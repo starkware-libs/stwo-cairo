@@ -1,0 +1,30 @@
+name: Cairo workflow
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - auto_merge_enabled
+
+  merge_group:
+    types:
+      - checks_requested
+
+jobs:
+  scarb-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_verifier
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.6.4"
+      - run: scarb fmt --check
+      - run: scarb test
