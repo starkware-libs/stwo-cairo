@@ -8,7 +8,7 @@ const P64NZ: NonZero<u64> = 0x7fffffff;
 
 #[derive(Copy, Drop, Debug, PartialEq, Eq)]
 pub struct M31 {
-    inner: u32
+    pub inner: u32
 }
 
 #[generate_trait]
