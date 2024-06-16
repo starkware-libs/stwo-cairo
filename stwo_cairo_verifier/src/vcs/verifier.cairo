@@ -284,7 +284,7 @@ fn test_verifier() {
         array![m31(650584843), m31(942699537), m31(310081088)].span(),
         array![m31(71167745), m31(330264928), m31(409791388)].span()
     ];
-    let err = MerkleVerifier { root, column_log_sizes, }
+    MerkleVerifier { root, column_log_sizes, }
         .verify(queries_per_log_size, queried_values, decommitment,)
         .expect('verification failed');
 }

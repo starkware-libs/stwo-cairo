@@ -22,6 +22,24 @@ pub impl M31Impl of M31Trait {
         let (_, res) = core::integer::u64_safe_divmod(val, P64NZ);
         M31 { inner: res.try_into().unwrap() }
     }
+
+    #[inline]
+    fn sqn(v: M31, n: usize) -> M31 {
+        if n == 0 {
+            return v;
+        }
+        Self::sqn(v * v, n - 1)
+    }
+
+    fn inverse(self: M31) -> M31 {
+        let t0 = Self::sqn(self, 2) * self;
+        let t1 = Self::sqn(t0, 1) * t0;
+        let t2 = Self::sqn(t1, 3) * t0;
+        let t3 = Self::sqn(t2, 1) * t0;
+        let t4 = Self::sqn(t3, 8) * t3;
+        let t5 = Self::sqn(t4, 8) * t3;
+        Self::sqn(t5, 7) * t2
+    }
 }
 pub impl M31Add of core::traits::Add<M31> {
     fn add(lhs: M31, rhs: M31) -> M31 {
@@ -78,7 +96,9 @@ pub fn m31(val: u32) -> M31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{m31, P};
+    use super::{m31, P, M31, M31Trait};
+    const POW2_15: u32 = 0b1000000000000000;
+    const POW2_16: u32 = 0b10000000000000000;
 
     #[test]
     fn test_m31() {
@@ -89,5 +109,10 @@ mod tests {
         assert_eq!(m31(P - 1) + m31(1), m31(0));
         assert_eq!(m31(0) - m31(1), m31(P - 1));
         assert_eq!(m31(0) - m31(P - 1), m31(1));
+    }
+
+    #[test]
+    fn test_m31_inv() {
+        assert_eq!(m31(POW2_15).inverse(), m31(POW2_16));
     }
 }
