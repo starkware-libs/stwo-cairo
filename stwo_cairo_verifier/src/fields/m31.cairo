@@ -89,6 +89,11 @@ pub impl M31Neg of Neg<M31> {
         }
     }
 }
+impl M31IntoFelt252 of Into<M31, felt252> {
+    fn into(self: M31) -> felt252 {
+        self.inner.into()
+    }
+}
 
 pub fn m31(val: u32) -> M31 {
     M31Impl::reduce_u32(val)

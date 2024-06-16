@@ -12,7 +12,16 @@ pub struct QM31 {
 }
 
 #[generate_trait]
-impl QM31Impl of QM31Trait {
+pub impl QM31Impl of QM31Trait {
+    #[inline]
+    fn from_array(arr: [M31; 4]) -> QM31 {
+        let [a, b, c, d] = arr;
+        QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
+    }
+    #[inline]
+    fn to_array(self: QM31) -> [M31; 4] {
+        [self.a.a, self.a.b, self.b.a, self.b.b]
+    }
     fn inverse(self: QM31) -> QM31 {
         let b2 = self.b * self.b;
         let ib2 = CM31 { a: -b2.b, b: b2.a };
