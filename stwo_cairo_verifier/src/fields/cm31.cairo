@@ -1,9 +1,19 @@
-use super::m31::{M31, m31};
+use core::num::traits::{One, Zero};
+use super::m31::{M31, m31, M31Trait};
 
 #[derive(Copy, Drop, Debug, PartialEq, Eq)]
 pub struct CM31 {
-    a: M31,
-    b: M31,
+    pub a: M31,
+    pub b: M31,
+}
+
+#[generate_trait]
+pub impl CM31Impl of CM31Trait {
+    fn inverse(self: CM31) -> CM31 {
+        assert_ne!(self, Zero::zero());
+        let denom_inverse: M31 = (self.a * self.a + self.b * self.b).inverse();
+        CM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
+    }
 }
 
 pub impl CM31Add of core::traits::Add<CM31> {
@@ -21,7 +31,7 @@ pub impl CM31Mul of core::traits::Mul<CM31> {
         CM31 { a: lhs.a * rhs.a - lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
-pub impl CM31Zero of core::num::traits::Zero<CM31> {
+pub impl CM31Zero of Zero<CM31> {
     fn zero() -> CM31 {
         cm31(0, 0)
     }
@@ -32,7 +42,7 @@ pub impl CM31Zero of core::num::traits::Zero<CM31> {
         (*self).a.is_non_zero() || (*self).b.is_non_zero()
     }
 }
-pub impl CM31One of core::num::traits::One<CM31> {
+pub impl CM31One of One<CM31> {
     fn one() -> CM31 {
         cm31(1, 0)
     }
