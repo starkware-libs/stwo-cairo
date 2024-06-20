@@ -28,3 +28,18 @@ jobs:
           scarb-version: "nightly-2024-04-24"
       - run: scarb fmt --check
       - run: scarb test
+
+  run-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: rustfmt
+          profile: minimal
+          toolchain: nightly-2024-01-04
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo +nightly-2024-01-04 test --release
