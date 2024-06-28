@@ -2,12 +2,23 @@ use core::result::ResultTrait;
 use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
-use stwo_cairo_verifier::fields::m31::{m31};
+use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
 use stwo_cairo_verifier::channel::Channel;
 
 const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 const FOLD_STEP: u32 = 1;
+
+#[derive(Drop)]
+pub struct CircleEvaluation {
+    domain: CircleDomain,
+    values: Array<QM31>
+}
+
+pub fn bit_reverse_index(index: usize, bits: u32) -> usize {
+    // TODO: implement
+    index
+}
 
 pub fn pow(base: u32, exponent: u32) -> u32 {
     // TODO: implement or include from alexandria
@@ -18,10 +29,15 @@ pub fn pow(base: u32, exponent: u32) -> u32 {
 pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
+    LastLayerEvaluationsInvalid
 }
 
 #[derive(Copy, Drop)]
 pub struct LineDomain {
+}
+
+#[derive(Copy, Drop)]
+pub struct CircleDomain {
 }
 
 #[generate_trait]
@@ -29,6 +45,16 @@ impl LineDomainImpl of LineDomainTrait {
     fn double(self: LineDomain) -> LineDomain {
         // TODO: implement
         self
+    }
+
+    fn at(self: @LineDomain, index: usize) -> M31 {
+        // TODO: implement
+        m31(1)
+    }
+
+    fn log_size(self: @LineDomain) -> usize {
+        // TODO: implement
+        1
     }
 }
 
@@ -43,6 +69,11 @@ impl LinePolyImpl of LinePolyTrait {
     fn len(self: @LinePoly) -> usize {
         // TODO: implement
         1
+    }
+
+    fn eval_at_point(self: @LinePoly, x: QM31) -> QM31 {
+        // TODO: implement
+        x
     }
 }
 
@@ -107,7 +138,7 @@ impl FriVerifierImpl of FriVerifierTrait {
         let mut layer_bound = *max_column_bound - CIRCLE_TO_LINE_FOLD_STEP;
         let mut layer_domain = LineDomain{};
 
-        let layer_index = 0;
+        let mut layer_index = 0;
         let mut invalid_fri_layers_number = false;
         while layer_index < proof.inner_layers.len() {
             let proof = proof.inner_layers[layer_index];
@@ -129,6 +160,7 @@ impl FriVerifierImpl of FriVerifierTrait {
                 break;
             }
             layer_domain = layer_domain.double();
+            layer_index += 1;
         };
 
         if invalid_fri_layers_number {
@@ -159,20 +191,55 @@ impl FriVerifierImpl of FriVerifierTrait {
         })
     }
 
-    // fn decommit_on_queries(
-    //     self: FriVerifier,
-    //     queries: @Queries,
-    //     decommitted_values: Array<SparseCircleEvaluation>
-    // ) {
+    fn decommit_on_queries(
+        self: @FriVerifier,
+        queries: Queries,
+        decommitted_values: Array<CircleEvaluation>
+    ) -> Result<(), FriVerificationError> {
+        let (last_layer_queries, last_layer_query_evals) =
+            self.decommit_inner_layers(queries, decommitted_values)?;
 
-    // }
+        self.decommit_last_layer(last_layer_queries, last_layer_query_evals)
+    }
+
+    fn decommit_inner_layers(
+        self: @FriVerifier,
+        queries: Queries,
+        decommitted_values: Array<CircleEvaluation>
+    ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
+        // TODO: implement
+        Result::Ok((queries, array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]))
+    }
+
+    fn decommit_last_layer(
+        self: @FriVerifier,
+        queries: Queries,
+        query_evals: Array<QM31>,
+    ) -> Result<(), FriVerificationError> {
+        let mut failed = false;
+        let mut i = 0;
+        while i < queries.positions.len() {
+            let query = queries.positions[i];
+            let domain = self.last_layer_domain;
+            let x = self.last_layer_domain.at(bit_reverse_index(*query, domain.log_size()));
+
+            if *query_evals[i] != self.last_layer_poly.eval_at_point(x.into()) {
+                failed = true;
+                break;
+            }
+            i += 1;
+        };
+        if failed {
+            return Result::Err(FriVerificationError::LastLayerEvaluationsInvalid);
+        } else {
+            Result::Ok(())
+        }
+    }
 }
 
 
-use core::poseidon::poseidon_hash_span;
 #[test]
 fn test_fri_verifier() {
-    let log_degree = 3;
     let proof = FriProof {
         inner_layers: array![FriLayerProof {
             evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
@@ -195,14 +262,18 @@ fn test_fri_verifier() {
         }
     };
 
+    let log_degree = 3;
     let log_domain_size = 4;
+    let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
+    let domain = CircleDomain{};
     let queries = Queries {positions: array![5], log_domain_size};
+
     let channel = ChannelTrait::new(0x00);
     let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1 };
     let bound = array![log_degree];
-    // let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
-    // let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0), ];
-    // verifier.decommit_on_queries(@queries, array![decommitment_value])
+
+    let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
+    verifier.decommit_on_queries(queries, array![CircleEvaluation{domain, values: decommitment_value}]);
 
     // assert!(verifier.verify(channel, proof));
 }
