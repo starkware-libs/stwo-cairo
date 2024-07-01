@@ -10,19 +10,49 @@ const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 const FOLD_STEP: u32 = 1;
 
 #[derive(Drop)]
-pub struct CircleEvaluation {
+pub struct SparseCircleEvaluation {
     domain: CircleDomain,
     values: Array<QM31>
 }
 
-pub fn bit_reverse_index(index: usize, bits: u32) -> usize {
+#[generate_trait]
+impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
+    fn accumulate(self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31) -> SparseCircleEvaluation {
+        // TODO: implement
+        SparseCircleEvaluation {
+            domain: CircleDomain {},
+            values: array![]
+        }
+    }
+
+    fn len(self: @SparseCircleEvaluation) -> usize {
+        // TODO: implement
+        1
+    }
+}
+
+fn bit_reverse_index(index: usize, bits: u32) -> usize {
     // TODO: implement
     index
 }
 
-pub fn pow(base: u32, exponent: u32) -> u32 {
+fn pow(base: u32, exponent: u32) -> u32 {
     // TODO: implement or include from alexandria
     1
+}
+
+fn qm31_zero_array(n: u32) -> Array<QM31> {
+    // TODO: implement
+    array![]
+}
+
+fn project_to_fft_space(
+    queries: @Queries,
+    evals: SparseCircleEvaluation,
+    lambda: QM31
+) -> SparseCircleEvaluation {
+    // TODO: implement
+    evals
 }
 
 #[derive(Drop)]
@@ -78,10 +108,23 @@ impl LinePolyImpl of LinePolyTrait {
 }
 
 
-#[derive(Drop)]
+#[derive(Drop, Clone)]
 pub struct Queries {
     pub positions: Array<usize>,
     pub log_domain_size: u32,
+}
+
+#[generate_trait]
+impl QueriesImpl of QueriesImplTrait {
+    fn len(self: @Queries) -> usize {
+        // TODO: implement
+        1
+    }
+
+    fn fold(self: @Queries, n_folds: u32) -> Queries {
+        // TODO: implement and remove clone in Queries
+        self.clone()
+    }
 }
 
 #[derive(Drop)]
@@ -194,20 +237,59 @@ impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_on_queries(
         self: @FriVerifier,
         queries: Queries,
-        decommitted_values: Array<CircleEvaluation>
+        decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(), FriVerificationError> {
-        let (last_layer_queries, last_layer_query_evals) =
-            self.decommit_inner_layers(queries, decommitted_values)?;
-
+        let (last_layer_queries, last_layer_query_evals) = self.decommit_inner_layers(queries, @decommitted_values)?;
         self.decommit_last_layer(last_layer_queries, last_layer_query_evals)
     }
 
     fn decommit_inner_layers(
         self: @FriVerifier,
         queries: Queries,
-        decommitted_values: Array<CircleEvaluation>
+        decommitted_values: @Array<SparseCircleEvaluation>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-        // TODO: implement
+        // TODO: adapt for multi-fri
+        let circle_poly_alpha = self.circle_poly_alpha;
+        let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
+
+        let mut layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
+        let mut layer_query_evals = qm31_zero_array(layer_queries.len());
+
+        let mut inner_layers_index = 0;
+        let mut column_bound_index = 0;
+        while inner_layers_index < self.inner_layers.len() {
+            let current_layer = self.inner_layers[inner_layers_index];
+            if column_bound_index < self.column_bounds.len() && *self.column_bounds[column_bound_index] - CIRCLE_TO_LINE_FOLD_STEP  == *current_layer.degree_bound {
+                let mut n_columns_in_layer = 1;
+                let mut combined_sparse_evals = {
+                    let mut values: Array<QM31> = array![];
+                    let mut i = 0;
+                    while i < decommitted_values[column_bound_index].len() {
+                        values.append(*(decommitted_values[column_bound_index].values[i]));
+                        i += 1;
+                    };
+                    SparseCircleEvaluation {
+                        domain: *decommitted_values[column_bound_index].domain,
+                        values: values
+                    }
+                };
+                column_bound_index += 1;
+
+                while column_bound_index < self.column_bounds.len() && *self.column_bounds[column_bound_index] - CIRCLE_TO_LINE_FOLD_STEP  == *current_layer.degree_bound {
+                    combined_sparse_evals = combined_sparse_evals.accumulate(decommitted_values[column_bound_index], circle_poly_alpha_sq);
+                    column_bound_index += 1;
+                    n_columns_in_layer += 1;
+                };
+                
+                combined_sparse_evals = project_to_fft_space(
+                    @layer_queries,
+                    combined_sparse_evals,
+                    **current_layer.proof.decomposition_coeff,
+                );
+            }
+            inner_layers_index += 1;
+        };
+
         Result::Ok((queries, array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]))
     }
 
@@ -273,7 +355,7 @@ fn test_fri_verifier() {
     let bound = array![log_degree];
 
     let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
-    verifier.decommit_on_queries(queries, array![CircleEvaluation{domain, values: decommitment_value}]);
+    verifier.decommit_on_queries(queries, array![SparseCircleEvaluation{domain, values: decommitment_value}]);
 
     // assert!(verifier.verify(channel, proof));
 }
