@@ -1,3 +1,4 @@
+use core::clone::Clone;
 use core::result::ResultTrait;
 use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
@@ -29,6 +30,11 @@ impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
         // TODO: implement
         1
     }
+
+    fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
+        // TODO: implement and remove clone in Queries
+        array![]
+    }
 }
 
 fn bit_reverse_index(index: usize, bits: u32) -> usize {
@@ -39,6 +45,11 @@ fn bit_reverse_index(index: usize, bits: u32) -> usize {
 fn pow(base: u32, exponent: u32) -> u32 {
     // TODO: implement or include from alexandria
     1
+}
+
+fn pow_qm31(base: QM31, exponent: u32) -> QM31 {
+    // TODO: implement
+    qm31(1, 0, 0, 0)
 }
 
 fn qm31_zero_array(n: u32) -> Array<QM31> {
@@ -118,7 +129,7 @@ pub struct Queries {
 impl QueriesImpl of QueriesImplTrait {
     fn len(self: @Queries) -> usize {
         // TODO: implement
-        1
+        0
     }
 
     fn fold(self: @Queries, n_folds: u32) -> Queries {
@@ -136,6 +147,12 @@ struct FriLayerVerifier {
     proof: @FriLayerProof,
 }
 
+#[generate_trait]
+impl FriLayerVerifierImpl of FriLayerVerifierTrait {
+    fn verify_and_fold(self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>) -> Result<(Queries, Array<QM31>), FriVerificationError> {
+        Result::Ok((queries.clone(), array![]))
+    }
+}
 
 #[derive(Clone, Copy, Drop)]
 pub struct FriConfig {
@@ -252,6 +269,7 @@ impl FriVerifierImpl of FriVerifierTrait {
         let circle_poly_alpha = self.circle_poly_alpha;
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
 
+        let mut error = false;
         let mut layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
         let mut layer_query_evals = qm31_zero_array(layer_queries.len());
 
@@ -286,11 +304,36 @@ impl FriVerifierImpl of FriVerifierTrait {
                     combined_sparse_evals,
                     **current_layer.proof.decomposition_coeff,
                 );
+
+                let folded_evals = combined_sparse_evals.fold(*circle_poly_alpha);
+                let prev_layer_combination_factor = pow_qm31(circle_poly_alpha_sq, n_columns_in_layer);
+
+                let mut k = 0;
+                let mut temp_layer_query_evals: Array<QM31> = array![];
+                assert!(folded_evals.len() == layer_queries.len());
+                while k <  folded_evals.len() {
+                    temp_layer_query_evals.append(*layer_query_evals[k] * prev_layer_combination_factor + *folded_evals[k]);
+                    k += 1;
+                };
+                layer_query_evals = temp_layer_query_evals;
             }
             inner_layers_index += 1;
+
+            let result = current_layer.verify_and_fold(@layer_queries, @layer_query_evals);
+            if result.is_err() {
+                error = true;
+            } else {
+                let (a, b) = result.unwrap();
+                layer_queries = a;
+                layer_query_evals = b;
+            }
         };
 
-        Result::Ok((queries, array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]))
+        if(error) {
+            return Result::Err(FriVerificationError::InvalidNumFriLayers);
+        } else {
+            return Result::Ok((queries, array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]));
+        }
     }
 
     fn decommit_last_layer(
