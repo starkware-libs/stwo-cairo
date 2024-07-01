@@ -32,7 +32,7 @@ impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
 
     fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
         // TODO: implement and remove clone in Queries
-        array![]
+        array![qm31(0,0,0,0), qm31(0,0,0,0)]
     }
 }
 
@@ -53,7 +53,7 @@ fn pow_qm31(base: QM31, exponent: u32) -> QM31 {
 
 fn qm31_zero_array(n: u32) -> Array<QM31> {
     // TODO: implement
-    array![]
+    array![qm31(0,0,0,0), qm31(0,0,0,0)]
 }
 
 fn project_to_fft_space(
@@ -128,7 +128,7 @@ pub struct Queries {
 impl QueriesImpl of QueriesImplTrait {
     fn len(self: @Queries) -> usize {
         // TODO: implement
-        0
+        2
     }
 
     fn fold(self: @Queries, n_folds: u32) -> Queries {
@@ -149,7 +149,7 @@ struct FriLayerVerifier {
 #[generate_trait]
 impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     fn verify_and_fold(self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-        Result::Ok((queries.clone(), array![]))
+        Result::Ok((queries.clone(), array![qm31(0,0,0,0)]))
     }
 }
 
@@ -306,7 +306,6 @@ impl FriVerifierImpl of FriVerifierTrait {
                 };
                 layer_query_evals = temp_layer_query_evals;
             }
-            inner_layers_index += 1;
 
             let result = current_layer.verify_and_fold(@layer_queries, @layer_query_evals);
             if result.is_err() {
@@ -316,14 +315,14 @@ impl FriVerifierImpl of FriVerifierTrait {
                 layer_queries = a;
                 layer_query_evals = b;
             }
+            inner_layers_index += 1;
         };
 
         if(error) {
             // TODO: return error
             return Result::Err(FriVerificationError::InvalidNumFriLayers);
         } else {
-            return Result::Ok((queries, array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]));
-            // TODO: return Result::Ok((layer_queries, layer_query_evals));
+            return Result::Ok((layer_queries, layer_query_evals));
         }
     }
 
