@@ -10,8 +10,13 @@ use stwo_cairo_verifier::channel::Channel;
 const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 const FOLD_STEP: u32 = 1;
 
-#[derive(Drop)]
+#[derive(Drop, Clone)]
 pub struct SparseCircleEvaluation {
+    subcircle_evals: Array<CircleEvaluation>
+}
+
+#[derive(Drop, Clone)]
+pub struct CircleEvaluation {
     domain: CircleDomain,
     values: Array<QM31>
 }
@@ -21,14 +26,8 @@ impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
     fn accumulate(self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31) -> SparseCircleEvaluation {
         // TODO: implement
         SparseCircleEvaluation {
-            domain: CircleDomain {},
-            values: array![]
+            subcircle_evals: array![]
         }
-    }
-
-    fn len(self: @SparseCircleEvaluation) -> usize {
-        // TODO: implement
-        1
     }
 
     fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
@@ -279,18 +278,8 @@ impl FriVerifierImpl of FriVerifierTrait {
             let current_layer = self.inner_layers[inner_layers_index];
             if column_bound_index < self.column_bounds.len() && *self.column_bounds[column_bound_index] - CIRCLE_TO_LINE_FOLD_STEP  == *current_layer.degree_bound {
                 let mut n_columns_in_layer = 1;
-                let mut combined_sparse_evals = {
-                    let mut values: Array<QM31> = array![];
-                    let mut i = 0;
-                    while i < decommitted_values[column_bound_index].len() {
-                        values.append(*(decommitted_values[column_bound_index].values[i]));
-                        i += 1;
-                    };
-                    SparseCircleEvaluation {
-                        domain: *decommitted_values[column_bound_index].domain,
-                        values: values
-                    }
-                };
+                let mut combined_sparse_evals = decommitted_values[column_bound_index].clone();
+
                 column_bound_index += 1;
 
                 while column_bound_index < self.column_bounds.len() && *self.column_bounds[column_bound_index] - CIRCLE_TO_LINE_FOLD_STEP  == *current_layer.degree_bound {
@@ -330,9 +319,11 @@ impl FriVerifierImpl of FriVerifierTrait {
         };
 
         if(error) {
+            // TODO: return error
             return Result::Err(FriVerificationError::InvalidNumFriLayers);
         } else {
             return Result::Ok((queries, array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]));
+            // TODO: return Result::Ok((layer_queries, layer_query_evals));
         }
     }
 
@@ -398,7 +389,8 @@ fn test_fri_verifier() {
     let bound = array![log_degree];
 
     let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
-    verifier.decommit_on_queries(queries, array![SparseCircleEvaluation{domain, values: decommitment_value}]);
+    let decommitted_values = array![SparseCircleEvaluation{subcircle_evals: array![CircleEvaluation{domain, values: decommitment_value}]}];
+    verifier.decommit_on_queries(queries, decommitted_values);
 
     // assert!(verifier.verify(channel, proof));
 }
