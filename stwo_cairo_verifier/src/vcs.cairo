@@ -1,2 +1,2 @@
-mod hasher;
-mod verifier;
+pub mod hasher;
+pub mod verifier;
