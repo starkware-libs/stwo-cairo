@@ -15,12 +15,12 @@ pub struct SparseCircleEvaluation {
     subcircle_evals: Array<CircleEvaluation>
 }
 
-#[derive(Drop, Copy)]
+#[derive(Drop)]
 pub struct SparseLineEvaluation {
     subline_evals: Array<LineEvaluation>,
 }
 
-#[derive(Drop, Copy)]
+#[derive(Drop)]
 pub struct LineEvaluation {
     values: Array<QM31>,
     domain: LineDomain
@@ -240,9 +240,9 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         let mut actual_decommitment_evals: Array<QM31> = array![];
         let mut i = 0;
         let mut j = 0;
-        while i < (*sparse_evaluation).subline_evals.len() {
+        while i < (sparse_evaluation).subline_evals.len() {
             let subline_eval = sparse_evaluation.subline_evals[i];
-            while j < (*sparse_evaluation.subline_evals[i]).values.len() {
+            while j < (sparse_evaluation.subline_evals[i]).values.len() {
                 actual_decommitment_evals.append(*subline_eval.values[j]);
                 j += 1;
             };
