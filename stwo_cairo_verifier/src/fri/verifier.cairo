@@ -15,6 +15,28 @@ pub struct SparseCircleEvaluation {
     subcircle_evals: Array<CircleEvaluation>
 }
 
+#[derive(Drop, Copy)]
+pub struct SparseLineEvaluation {
+    subline_evals: Array<LineEvaluation>,
+}
+
+#[derive(Drop, Copy)]
+pub struct LineEvaluation {
+    values: Array<QM31>,
+    domain: LineDomain
+}
+
+#[generate_trait]
+impl LineEvaluationImpl of LineEvaluationTrait {
+    fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
+        // TODO: implement asserts
+        LineEvaluation {
+            values: values,
+            domain: domain
+        }
+    }
+}
+
 #[derive(Drop, Clone)]
 pub struct CircleEvaluation {
     domain: CircleDomain,
@@ -78,15 +100,58 @@ fn project_to_fft_space(
     evals
 }
 
+fn dummy_line_domain() -> LineDomain {
+    LineDomain {
+        coset: Coset {
+            initial_index: CirclePointIndex { index: 0},
+            step_size: CirclePointIndex { index: 0},
+            log_size: 1
+        }
+    }
+}
+
+#[derive(Copy, Debug, PartialEq, Eq, Drop)]
+pub struct CirclePointIndex {
+    index: usize
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
+pub struct Coset {
+    pub initial_index: CirclePointIndex,
+    //pub initial: CirclePoint<M31>,
+    pub step_size: CirclePointIndex,
+    //pub step: CirclePoint<M31>,
+    pub log_size: u32,
+}
+
+#[generate_trait]
+impl CosetImpl of CosetTrait {
+    fn index_at(self: @Coset, index: usize) -> CirclePointIndex {
+        // TODO: implement
+        CirclePointIndex { index: 0 }
+    }
+
+    fn new(_initial_index: CirclePointIndex, log_size: u32) -> Coset {
+        // TODO: implement
+        Coset {
+            initial_index: CirclePointIndex {index: 0},
+            step_size: CirclePointIndex {index: 0},
+            log_size: 1
+        }
+    }
+}
+
 #[derive(Drop)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
-    LastLayerEvaluationsInvalid
+    LastLayerEvaluationsInvalid,
+    InnerLayerEvaluationsInvalid
 }
 
 #[derive(Copy, Drop)]
 pub struct LineDomain {
+    coset: Coset,
 }
 
 #[derive(Copy, Drop)]
@@ -95,6 +160,12 @@ pub struct CircleDomain {
 
 #[generate_trait]
 impl LineDomainImpl of LineDomainTrait {
+    fn new(coset: Coset) -> LineDomain {
+        // TODO: Implement, it does some assertions.
+        LineDomain {
+            coset: coset
+        }
+    }
     fn double(self: LineDomain) -> LineDomain {
         // TODO: implement
         self
@@ -161,7 +232,120 @@ struct FriLayerVerifier {
 #[generate_trait]
 impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     fn verify_and_fold(self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>) -> Result<(Queries, Array<QM31>), FriVerificationError> {
+        let decommitment = self.proof.decommitment.clone();
+        let commitment = self.proof.commitment;
+
+        let sparse_evaluation = @self.extract_evaluation(queries, evals_at_queries)?;
+
+        let mut actual_decommitment_evals: Array<QM31> = array![];
+        let mut i = 0;
+        let mut j = 0;
+        while i < (*sparse_evaluation).subline_evals.len() {
+            let subline_eval = sparse_evaluation.subline_evals[i];
+            while j < (*sparse_evaluation.subline_evals[i]).values.len() {
+                actual_decommitment_evals.append(*subline_eval.values[j]);
+                j += 1;
+            };
+            i += 1;
+        };
+
+        let folded_queries = queries.fold(FOLD_STEP);
+
+        //let mut decommitment_positions = array![];
+        //let mut i = 0;
+        //while i < folded_queries.positions.len() {
+        //    let start = *folded_queries.positions[i] * pow(2, FOLD_STEP);
+        //    let end = start + pow(2, FOLD_STEP);
+        //    let mut j = start;
+        //    while j < end {
+        //        decommitment_positions.append(j);
+        //        j += 1;
+        //    };
+        //    i += 1;
+        //};
+
+        //let merkle_verifier = MerkleVerifier::new(
+        //    commitment,
+        //    vec![self.domain.log_size(); SECURE_EXTENSION_DEGREE],
+        //);
+
         Result::Ok((queries.clone(), array![qm31(0,0,0,0)]))
+    }
+
+    fn extract_evaluation(self: @FriLayerVerifier,
+                          queries: @Queries,
+                          evals_at_queries: @Array<QM31>) -> Result<SparseLineEvaluation, FriVerificationError> {
+        let mut all_subline_evals: Array<LineEvaluation> = array![];
+
+        // Index of the evals provided by the verifier.
+        let mut evals_at_queries_index = 0;
+
+        // Index of the evals stored in the proof.
+        let mut proof_evals_index = 0;
+
+        // Group queries by the subline they reside in.
+        let mut error = false;
+        let mut i = 0;
+        while i < queries.positions.len() {
+            // In this step we'll work over queries.positions between
+            // start_subline_index and end_subline_index, which group
+            // the queries.
+            let start_subline_index = i;
+            while i + 1 < queries.positions.len() && (*queries.positions[i] / pow(2, FOLD_STEP)) == (*queries.positions[i + 1] / pow(2, FOLD_STEP)) {
+                i = i + 1;
+            };
+            let end_subline_index = i;
+
+            // These are the values whose evaluations are required.
+            let subline_start = (*queries.positions[start_subline_index] / pow(2, FOLD_STEP)) * pow(2, FOLD_STEP);
+            let subline_end = subline_start + pow(2, FOLD_STEP);
+
+            let mut subline_evals: Array<QM31> = array![];
+
+            let mut j = start_subline_index;
+            let mut eval_position = subline_start;
+
+            while eval_position < subline_end {
+                if *queries.positions[j] == eval_position {
+                    subline_evals.append(evals_at_queries[evals_at_queries_index].clone());
+                
+                    evals_at_queries_index += 1;
+                    j += 1;
+                } else {
+                    if(proof_evals_index < (*self.proof.evals_subset).len()) {
+                        subline_evals.append((*self.proof.evals_subset)[proof_evals_index].clone());
+                        proof_evals_index += 1;
+                    } else {
+                        error = true;
+                        break;
+                    }
+                }
+                eval_position += 1;
+            };
+
+            if(error) {
+                break;
+            }
+
+            let subline_initial_index = bit_reverse_index(subline_start, self.domain.log_size());
+            let subline_initial = self.domain.coset.index_at(subline_initial_index);
+            let subline_domain = LineDomainImpl::new(CosetImpl::new(subline_initial, FOLD_STEP));
+
+            all_subline_evals.append(
+                LineEvaluationImpl::new(
+                    subline_domain,
+                    subline_evals
+                )
+            );
+        };
+
+        if proof_evals_index != (*self.proof.evals_subset).len() {
+            // TODO: add the layer to the error?
+            return Result::Err(FriVerificationError::InnerLayerEvaluationsInvalid);
+        }
+
+        // TODO: return the correct error InnerLayerEvaluationsInvalid
+        Result::Ok(SparseLineEvaluation {subline_evals: all_subline_evals })
     }
 }
 
@@ -207,7 +391,7 @@ impl FriVerifierImpl of FriVerifierTrait {
 
         let mut inner_layers = array![];
         let mut layer_bound = *max_column_bound - CIRCLE_TO_LINE_FOLD_STEP;
-        let mut layer_domain = LineDomain{};
+        let mut layer_domain = dummy_line_domain(); // TODO: replace
 
         let mut layer_index = 0;
         let mut invalid_fri_layers_number = false;
@@ -242,7 +426,7 @@ impl FriVerifierImpl of FriVerifierTrait {
             return Result::Err(FriVerificationError::InvalidNumFriLayers);
         }
 
-        let last_layer_domain = LineDomain{};
+        let last_layer_domain = dummy_line_domain(); // TODO: replace
     
         if proof.last_layer_poly.len() > pow(2, config.log_last_layer_degree_bound) {
             return Result::Err(FriVerificationError::LastLayerDegreeInvalid);
