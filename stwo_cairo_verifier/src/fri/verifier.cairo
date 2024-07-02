@@ -52,8 +52,13 @@ fn pow_qm31(base: QM31, exponent: u32) -> QM31 {
 }
 
 fn qm31_zero_array(n: u32) -> Array<QM31> {
-    // TODO: implement
-    array![qm31(0,0,0,0), qm31(0,0,0,0)]
+    let mut result = array![];
+    let mut i = 0;
+    while i < n {
+        result.append(qm31(0, 0, 0, 0));
+        i += 1;
+    };
+    result
 }
 
 fn project_to_fft_space(
@@ -278,6 +283,7 @@ impl FriVerifierImpl of FriVerifierTrait {
             let current_layer = self.inner_layers[inner_layers_index];
             if column_bound_index < self.column_bounds.len() && *self.column_bounds[column_bound_index] - CIRCLE_TO_LINE_FOLD_STEP  == *current_layer.degree_bound {
                 let mut n_columns_in_layer = 1;
+                // TODO: remove clone?
                 let mut combined_sparse_evals = decommitted_values[column_bound_index].clone();
 
                 column_bound_index += 1;
@@ -298,13 +304,13 @@ impl FriVerifierImpl of FriVerifierTrait {
                 let prev_layer_combination_factor = pow_qm31(circle_poly_alpha_sq, n_columns_in_layer);
 
                 let mut k = 0;
-                let mut temp_layer_query_evals: Array<QM31> = array![];
+                let mut new_layer_query_evals: Array<QM31> = array![];
                 assert!(folded_evals.len() == layer_queries.len());
                 while k <  folded_evals.len() {
-                    temp_layer_query_evals.append(*layer_query_evals[k] * prev_layer_combination_factor + *folded_evals[k]);
+                    new_layer_query_evals.append(*layer_query_evals[k] * prev_layer_combination_factor + *folded_evals[k]);
                     k += 1;
                 };
-                layer_query_evals = temp_layer_query_evals;
+                layer_query_evals = new_layer_query_evals;
             }
 
             let result = current_layer.verify_and_fold(@layer_queries, @layer_query_evals);
@@ -389,7 +395,7 @@ fn test_fri_verifier() {
 
     let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
     let decommitted_values = array![SparseCircleEvaluation{subcircle_evals: array![CircleEvaluation{domain, values: decommitment_value}]}];
-    verifier.decommit_on_queries(queries, decommitted_values);
+    verifier.decommit_on_queries(queries, decommitted_values).unwrap();
 
     // assert!(verifier.verify(channel, proof));
 }
