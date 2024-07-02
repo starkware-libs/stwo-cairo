@@ -275,7 +275,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             ]
         };
 
-        // TODO: finish implementation
+        // TODO: finish implementing
 
         Result::Ok((queries.clone(), array![qm31(0,0,0,0)]))
     }
