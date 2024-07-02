@@ -15,12 +15,12 @@ pub struct SparseCircleEvaluation {
     subcircle_evals: Array<CircleEvaluation>
 }
 
-#[derive(Drop, Copy)]
+#[derive(Drop)]
 pub struct SparseLineEvaluation {
     subline_evals: Array<LineEvaluation>,
 }
 
-#[derive(Drop, Copy)]
+#[derive(Drop)]
 pub struct LineEvaluation {
     values: Array<QM31>,
     domain: LineDomain
@@ -240,9 +240,9 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         let mut actual_decommitment_evals: Array<QM31> = array![];
         let mut i = 0;
         let mut j = 0;
-        while i < (*sparse_evaluation).subline_evals.len() {
+        while i < (sparse_evaluation).subline_evals.len() {
             let subline_eval = sparse_evaluation.subline_evals[i];
-            while j < (*sparse_evaluation.subline_evals[i]).values.len() {
+            while j < (sparse_evaluation.subline_evals[i]).values.len() {
                 actual_decommitment_evals.append(*subline_eval.values[j]);
                 j += 1;
             };
@@ -251,23 +251,23 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
         let folded_queries = queries.fold(FOLD_STEP);
 
-        //let mut decommitment_positions = array![];
-        //let mut i = 0;
-        //while i < folded_queries.positions.len() {
-        //    let start = *folded_queries.positions[i] * pow(2, FOLD_STEP);
-        //    let end = start + pow(2, FOLD_STEP);
-        //    let mut j = start;
-        //    while j < end {
-        //        decommitment_positions.append(j);
-        //        j += 1;
-        //    };
-        //    i += 1;
-        //};
+        let mut decommitment_positions = array![];
+        let mut i = 0;
+        while i < folded_queries.positions.len() {
+           let start = *folded_queries.positions[i] * pow(2, FOLD_STEP);
+           let end = start + pow(2, FOLD_STEP);
+           let mut j = start;
+           while j < end {
+               decommitment_positions.append(j);
+               j += 1;
+           };
+           i += 1;
+        };
 
-        //let merkle_verifier = MerkleVerifier::new(
+        // let merkle_verifier = MerkleVerifier::new(
         //    commitment,
         //    vec![self.domain.log_size(); SECURE_EXTENSION_DEGREE],
-        //);
+        // );
 
         Result::Ok((queries.clone(), array![qm31(0,0,0,0)]))
     }
