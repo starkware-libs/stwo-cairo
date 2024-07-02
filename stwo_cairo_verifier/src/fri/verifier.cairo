@@ -4,7 +4,7 @@ use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};
-use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
+use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::channel::Channel;
 
 const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
@@ -251,23 +251,31 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
         let folded_queries = queries.fold(FOLD_STEP);
 
-        //let mut decommitment_positions = array![];
-        //let mut i = 0;
-        //while i < folded_queries.positions.len() {
-        //    let start = *folded_queries.positions[i] * pow(2, FOLD_STEP);
-        //    let end = start + pow(2, FOLD_STEP);
-        //    let mut j = start;
-        //    while j < end {
-        //        decommitment_positions.append(j);
-        //        j += 1;
-        //    };
-        //    i += 1;
-        //};
+        let mut decommitment_positions = array![];
+        let mut i = 0;
+        while i < folded_queries.positions.len() {
+            let start = *folded_queries.positions[i] * pow(2, FOLD_STEP);
+            let end = start + pow(2, FOLD_STEP);
+            let mut j = start;
+            while j < end {
+                decommitment_positions.append(j);
+                j += 1;
+            };
+            i += 1;
+        };
 
-        //let merkle_verifier = MerkleVerifier::new(
-        //    commitment,
-        //    vec![self.domain.log_size(); SECURE_EXTENSION_DEGREE],
-        //);
+        let merkle_verifier = MerkleVerifier {
+            root: *commitment.clone(),
+            column_log_sizes:  array![
+                // TODO: adapt to handle other secure_extension_degree
+                self.domain.log_size(),
+                self.domain.log_size(),
+                self.domain.log_size(),
+                self.domain.log_size()
+            ]
+        };
+
+        // TODO: finish implementation
 
         Result::Ok((queries.clone(), array![qm31(0,0,0,0)]))
     }
