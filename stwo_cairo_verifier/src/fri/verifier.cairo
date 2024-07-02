@@ -36,9 +36,17 @@ impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
     }
 }
 
-fn bit_reverse_index(index: usize, bits: u32) -> usize {
-    // TODO: implement
-    index
+fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
+    assert!(bits < 32);
+    let mut result = 0;
+    let mut pow_of_two = 1;
+    while bits > 0 {
+        result *= 2;
+        result = result | ((index / pow_of_two) & 1);
+        pow_of_two *= 2;
+        bits -= 1;
+    };
+    result
 }
 
 fn pow(base: u32, exponent: u32) -> u32 {
@@ -132,8 +140,7 @@ pub struct Queries {
 #[generate_trait]
 impl QueriesImpl of QueriesImplTrait {
     fn len(self: @Queries) -> usize {
-        // TODO: implement
-        2
+        self.positions.len()
     }
 
     fn fold(self: @Queries, n_folds: u32) -> Queries {
@@ -305,7 +312,7 @@ impl FriVerifierImpl of FriVerifierTrait {
 
                 let mut k = 0;
                 let mut new_layer_query_evals: Array<QM31> = array![];
-                assert!(folded_evals.len() == layer_queries.len());
+                assert!(folded_evals.len() == layer_query_evals.len());
                 while k <  folded_evals.len() {
                     new_layer_query_evals.append(*layer_query_evals[k] * prev_layer_combination_factor + *folded_evals[k]);
                     k += 1;
@@ -399,3 +406,29 @@ fn test_fri_verifier() {
 
     // assert!(verifier.verify(channel, proof));
 }
+
+#[test]
+fn test_bit_reverse() {
+    // 1 bit
+    assert_eq!(0, bit_reverse_index(0, 1));
+    assert_eq!(1, bit_reverse_index(1, 1));
+
+    // 2 bits
+    assert_eq!(0, bit_reverse_index(0, 2));
+    assert_eq!(2, bit_reverse_index(1, 2));
+    assert_eq!(1, bit_reverse_index(2, 2));
+    assert_eq!(3, bit_reverse_index(3, 2));
+
+    // 3 bits
+    assert_eq!(0, bit_reverse_index(0, 3));
+    assert_eq!(4, bit_reverse_index(1, 3));
+    assert_eq!(2, bit_reverse_index(2, 3));
+    assert_eq!(6, bit_reverse_index(3, 3));
+
+    // 16 bits
+    assert_eq!(24415, bit_reverse_index(64250, 16));
+
+    // 31 bits
+    assert_eq!(16448250, bit_reverse_index(800042880, 31));
+}
+
