@@ -13,9 +13,21 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     result
 }
 
-pub fn pow(base: u32, exponent: u32) -> u32 {
-    // TODO: implement or include from alexandria
-    1
+pub fn pow(base: u32, mut exponent: u32) -> u32 {
+    // TODO: include from alexandria?
+    let mut result = 1;
+    let mut base_power = base;
+    loop {
+        if exponent & 1 == 1 {
+            result *= base_power;
+        }
+        exponent = exponent / 2;
+        if exponent == 0 {
+            break;
+        }
+        base_power = base_power * base_power;
+    };
+    result
 }
 
 pub fn pow_qm31(base: QM31, exponent: u32) -> QM31 {
@@ -33,6 +45,14 @@ pub fn qm31_zero_array(n: u32) -> Array<QM31> {
     result
 }
 
+#[test]
+fn test_pow() {
+    assert_eq!(25, pow(5, 2));
+    assert_eq!(16, pow(2, 4));
+    assert_eq!(1024, pow(2, 10));
+    assert_eq!(4096, pow(2, 12));
+    assert_eq!(1048576, pow(2, 20));
+}
 
 #[test]
 fn test_bit_reverse() {

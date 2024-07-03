@@ -27,24 +27,21 @@ pub struct SparseCircleEvaluation {
 pub impl LineEvaluationImpl of LineEvaluationTrait {
     fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
         // TODO: implement asserts
-        LineEvaluation {
-            values: values,
-            domain: domain
-        }
+        LineEvaluation { values: values, domain: domain }
     }
 }
 
 #[generate_trait]
 pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
-    fn accumulate(self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31) -> SparseCircleEvaluation {
+    fn accumulate(
+        self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31
+    ) -> SparseCircleEvaluation {
         // TODO: implement
-        SparseCircleEvaluation {
-            subcircle_evals: array![]
-        }
+        SparseCircleEvaluation { subcircle_evals: array![] }
     }
 
     fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
         // TODO: implement and remove clone in Queries
-        array![qm31(0,0,0,0), qm31(0,0,0,0)]
+        array![qm31(0, 0, 0, 0), qm31(0, 0, 0, 0)]
     }
 }

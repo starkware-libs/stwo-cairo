@@ -9,12 +9,17 @@ pub struct LinePoly {
 #[generate_trait]
 pub impl LinePolyImpl of LinePolyTrait {
     fn len(self: @LinePoly) -> usize {
-        // TODO: implement
-        1
+        self.coeffs.len()
     }
 
     fn eval_at_point(self: @LinePoly, x: QM31) -> QM31 {
-        // TODO: implement
-        x
+        if self.len() == 1 {
+            *self.coeffs[0]
+        } else if self.len() == 2 {
+            *self.coeffs[0] + x * *self.coeffs[1]
+        } else {
+            // TODO: implement for non-linear polynomials
+            x
+        }
     }
 }

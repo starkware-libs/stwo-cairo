@@ -1,4 +1,3 @@
-
 #[derive(Drop, Clone)]
 pub struct Queries {
     pub positions: Array<usize>,
