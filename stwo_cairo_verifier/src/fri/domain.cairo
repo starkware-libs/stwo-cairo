@@ -2,6 +2,7 @@ use core::option::OptionTrait;
 use core::clone::Clone;
 use core::result::ResultTrait;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
+use super::utils::pow;
 
 
 #[derive(Copy, Debug, PartialEq, Eq, Drop)]
@@ -50,13 +51,9 @@ pub impl CosetImpl of CosetTrait {
         CirclePointIndex { index: result }
     }
 
-    fn new(_initial_index: CirclePointIndex, log_size: u32) -> Coset {
-        // TODO: implement
-        Coset {
-            initial_index: CirclePointIndex { index: 0 },
-            step_size: CirclePointIndex { index: 0 },
-            log_size: 1
-        }
+    fn new(initial_index: CirclePointIndex, log_size: u32) -> Coset {
+        let step_size = CirclePointIndex { index: pow(2, 31 - log_size) };
+        Coset { initial_index, step_size, log_size }
     }
 }
 
@@ -92,5 +89,16 @@ fn test_coset_index_at() {
     };
     let result = coset.index_at(8);
     let expected_result = CirclePointIndex { index: 553648128 };
+    assert_eq!(expected_result, result);
+}
+
+#[test]
+fn test_coset_constructor() {
+    let result = CosetImpl::new(CirclePointIndex{index: 16777216}, 5);
+    let expected_result = Coset {
+        initial_index: CirclePointIndex { index: 16777216 },
+        log_size: 5,
+        step_size: CirclePointIndex { index: 67108864 }
+    };
     assert_eq!(expected_result, result);
 }
