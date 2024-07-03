@@ -5,7 +5,7 @@ use stwo_cairo_verifier::fields::m31::{M31, m31};
 
 #[derive(Copy, Debug, PartialEq, Eq, Drop)]
 pub struct CirclePointIndex {
-    index: usize
+    pub index: usize
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
@@ -24,6 +24,7 @@ pub struct LineDomain {
 
 #[derive(Copy, Drop)]
 pub struct CircleDomain {
+    pub half_coset: Coset
 }
 
 pub fn dummy_line_domain() -> LineDomain {

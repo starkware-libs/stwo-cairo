@@ -5,7 +5,7 @@ use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
 use stwo_cairo_verifier::channel::Channel;
-use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, dummy_line_domain};
+use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, CirclePointIndex, dummy_line_domain};
 use super::evaluation::{LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
@@ -388,7 +388,16 @@ fn test_fri_verifier() {
     let log_degree = 3;
     let log_domain_size = 4;
     let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
-    let domain = CircleDomain{};
+    let domain = CircleDomain{
+        half_coset: Coset { 
+            initial_index: CirclePointIndex{index: 67108864}, 
+            //initial: CirclePoint { x: M31(1179735656), y: M31(1241207368) }, 
+            step_size: CirclePointIndex{index: 268435456}, 
+            //step: CirclePoint { x: M31(32768), y: M31(2147450879) }, 
+            log_size: 3 
+        }
+    };
+    // CircleDomain { half_coset: Coset { initial_index: CirclePointIndex(67108864), initial: CirclePoint { x: M31(1179735656), y: M31(1241207368) }, step_size: CirclePointIndex(268435456), step: CirclePoint { x: M31(32768), y: M31(2147450879) }, log_size: 3 } }
     let queries = Queries {positions: array![5], log_domain_size};
 
     let channel = ChannelTrait::new(0x00);
