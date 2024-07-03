@@ -2,7 +2,7 @@ use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};
-use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
+use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::channel::Channel;
 use super::domain::{
     Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, CirclePointIndex, dummy_line_domain
@@ -78,10 +78,18 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             i += 1;
         };
 
-        // let merkle_verifier = MerkleVerifier::new(
-        //    commitment,
-        //    vec![self.domain.log_size(); SECURE_EXTENSION_DEGREE],
-        // );
+        let merkle_verifier = MerkleVerifier {
+            root: *commitment.clone(),
+            column_log_sizes:  array![
+                // TODO: adapt to handle other secure_extension_degree
+                self.domain.log_size(),
+                self.domain.log_size(),
+                self.domain.log_size(),
+                self.domain.log_size()
+            ]
+        };
+
+        // TODO: finish implementing
 
         Result::Ok((queries.clone(), array![qm31(0, 0, 0, 0)]))
     }
