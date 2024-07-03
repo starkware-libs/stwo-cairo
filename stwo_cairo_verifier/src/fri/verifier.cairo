@@ -1,95 +1,17 @@
-use core::clone::Clone;
-use core::result::ResultTrait;
+
 use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
 use stwo_cairo_verifier::channel::Channel;
-
+use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, dummy_line_domain};
+use super::evaluation::{LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
+use super::query::{Queries, QueriesImpl};
+use super::polynomial::{LinePoly, LinePolyImpl};
+use super::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
 const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 const FOLD_STEP: u32 = 1;
-
-#[derive(Drop, Clone)]
-pub struct SparseCircleEvaluation {
-    subcircle_evals: Array<CircleEvaluation>
-}
-
-#[derive(Drop)]
-pub struct SparseLineEvaluation {
-    subline_evals: Array<LineEvaluation>,
-}
-
-#[derive(Drop)]
-pub struct LineEvaluation {
-    values: Array<QM31>,
-    domain: LineDomain
-}
-
-#[generate_trait]
-impl LineEvaluationImpl of LineEvaluationTrait {
-    fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
-        // TODO: implement asserts
-        LineEvaluation {
-            values: values,
-            domain: domain
-        }
-    }
-}
-
-#[derive(Drop, Clone)]
-pub struct CircleEvaluation {
-    domain: CircleDomain,
-    values: Array<QM31>
-}
-
-#[generate_trait]
-impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
-    fn accumulate(self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31) -> SparseCircleEvaluation {
-        // TODO: implement
-        SparseCircleEvaluation {
-            subcircle_evals: array![]
-        }
-    }
-
-    fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
-        // TODO: implement and remove clone in Queries
-        array![qm31(0,0,0,0), qm31(0,0,0,0)]
-    }
-}
-
-fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
-    assert!(bits < 32);
-    let mut result = 0;
-    let mut pow_of_two = 1;
-    while bits > 0 {
-        result *= 2;
-        result = result | ((index / pow_of_two) & 1);
-        pow_of_two *= 2;
-        bits -= 1;
-    };
-    result
-}
-
-fn pow(base: u32, exponent: u32) -> u32 {
-    // TODO: implement or include from alexandria
-    1
-}
-
-fn pow_qm31(base: QM31, exponent: u32) -> QM31 {
-    // TODO: implement
-    qm31(1, 0, 0, 0)
-}
-
-fn qm31_zero_array(n: u32) -> Array<QM31> {
-    let mut result = array![];
-    let mut i = 0;
-    while i < n {
-        result.append(qm31(0, 0, 0, 0));
-        i += 1;
-    };
-    result
-}
 
 fn project_to_fft_space(
     queries: @Queries,
@@ -100,47 +22,6 @@ fn project_to_fft_space(
     evals
 }
 
-fn dummy_line_domain() -> LineDomain {
-    LineDomain {
-        coset: Coset {
-            initial_index: CirclePointIndex { index: 0},
-            step_size: CirclePointIndex { index: 0},
-            log_size: 1
-        }
-    }
-}
-
-#[derive(Copy, Debug, PartialEq, Eq, Drop)]
-pub struct CirclePointIndex {
-    index: usize
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
-pub struct Coset {
-    pub initial_index: CirclePointIndex,
-    //pub initial: CirclePoint<M31>,
-    pub step_size: CirclePointIndex,
-    //pub step: CirclePoint<M31>,
-    pub log_size: u32,
-}
-
-#[generate_trait]
-impl CosetImpl of CosetTrait {
-    fn index_at(self: @Coset, index: usize) -> CirclePointIndex {
-        // TODO: implement
-        CirclePointIndex { index: 0 }
-    }
-
-    fn new(_initial_index: CirclePointIndex, log_size: u32) -> Coset {
-        // TODO: implement
-        Coset {
-            initial_index: CirclePointIndex {index: 0},
-            step_size: CirclePointIndex {index: 0},
-            log_size: 1
-        }
-    }
-}
-
 #[derive(Drop)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,
@@ -149,76 +30,6 @@ pub enum FriVerificationError {
     InnerLayerEvaluationsInvalid
 }
 
-#[derive(Copy, Drop)]
-pub struct LineDomain {
-    coset: Coset,
-}
-
-#[derive(Copy, Drop)]
-pub struct CircleDomain {
-}
-
-#[generate_trait]
-impl LineDomainImpl of LineDomainTrait {
-    fn new(coset: Coset) -> LineDomain {
-        // TODO: Implement, it does some assertions.
-        LineDomain {
-            coset: coset
-        }
-    }
-    fn double(self: LineDomain) -> LineDomain {
-        // TODO: implement
-        self
-    }
-
-    fn at(self: @LineDomain, index: usize) -> M31 {
-        // TODO: implement
-        m31(1)
-    }
-
-    fn log_size(self: @LineDomain) -> usize {
-        // TODO: implement
-        1
-    }
-}
-
-#[derive(Drop)]
-pub struct LinePoly {
-    coeffs: Array<QM31>,
-    log_size: u32,
-}
-
-#[generate_trait]
-impl LinePolyImpl of LinePolyTrait {
-    fn len(self: @LinePoly) -> usize {
-        // TODO: implement
-        1
-    }
-
-    fn eval_at_point(self: @LinePoly, x: QM31) -> QM31 {
-        // TODO: implement
-        x
-    }
-}
-
-
-#[derive(Drop, Clone)]
-pub struct Queries {
-    pub positions: Array<usize>,
-    pub log_domain_size: u32,
-}
-
-#[generate_trait]
-impl QueriesImpl of QueriesImplTrait {
-    fn len(self: @Queries) -> usize {
-        self.positions.len()
-    }
-
-    fn fold(self: @Queries, n_folds: u32) -> Queries {
-        // TODO: implement and remove clone in Queries
-        self.clone()
-    }
-}
 
 #[derive(Drop)]
 struct FriLayerVerifier {
@@ -590,29 +401,3 @@ fn test_fri_verifier() {
 
     // assert!(verifier.verify(channel, proof));
 }
-
-#[test]
-fn test_bit_reverse() {
-    // 1 bit
-    assert_eq!(0, bit_reverse_index(0, 1));
-    assert_eq!(1, bit_reverse_index(1, 1));
-
-    // 2 bits
-    assert_eq!(0, bit_reverse_index(0, 2));
-    assert_eq!(2, bit_reverse_index(1, 2));
-    assert_eq!(1, bit_reverse_index(2, 2));
-    assert_eq!(3, bit_reverse_index(3, 2));
-
-    // 3 bits
-    assert_eq!(0, bit_reverse_index(0, 3));
-    assert_eq!(4, bit_reverse_index(1, 3));
-    assert_eq!(2, bit_reverse_index(2, 3));
-    assert_eq!(6, bit_reverse_index(3, 3));
-
-    // 16 bits
-    assert_eq!(24415, bit_reverse_index(64250, 16));
-
-    // 31 bits
-    assert_eq!(16448250, bit_reverse_index(800042880, 31));
-}
-
