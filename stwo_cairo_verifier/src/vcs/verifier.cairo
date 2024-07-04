@@ -26,6 +26,14 @@ pub struct MerkleDecommitment<impl H: MerkleHasher> {
     pub column_witness: Array<BaseField>,
 }
 impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
+impl MerkleDecommitmentClone<impl H: MerkleHasher, +Clone<Array<H::Hash>>, +Drop<Array<H::Hash>>> of Clone<MerkleDecommitment<H>> {
+    fn clone(self: @MerkleDecommitment<H>) -> MerkleDecommitment<H> {
+        MerkleDecommitment::<H> {
+            hash_witness: self.hash_witness.clone(),
+            column_witness: self.column_witness.clone()
+        }
+    }
+}
 
 pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,

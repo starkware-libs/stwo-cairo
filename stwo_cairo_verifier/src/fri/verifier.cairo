@@ -105,8 +105,8 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         let mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
         queries_per_log_size.insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions.span()));
 
-        // let decommitment = self.proof.decommitment.clone();
-        // merkle_verifier.verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
+        let decommitment = self.proof.decommitment.clone();
+        merkle_verifier.verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
         // TODO: Propagate error.
         // merkle_verifier
         //    .verify(
