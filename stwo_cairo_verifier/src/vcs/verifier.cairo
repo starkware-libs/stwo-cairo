@@ -33,7 +33,7 @@ pub struct MerkleVerifier<impl H: MerkleHasher> {
 }
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
-trait MerkleVerifierTrait<impl H: MerkleHasher> {
+pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     /// Verifies the decommitment of the columns.
     ///
     /// # Arguments

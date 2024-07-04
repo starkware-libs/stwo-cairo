@@ -1,8 +1,11 @@
+use stwo_cairo_verifier::fri::domain::LineDomainTrait;
+use stwo_cairo_verifier::vcs::verifier::MerkleVerifierTrait;
 use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
+use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::channel::Channel;
 use super::domain::{
     Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, CirclePointIndex, dummy_line_domain
@@ -14,6 +17,7 @@ use super::evaluation::{
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
 use super::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
+
 const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 const FOLD_STEP: u32 = 1;
 
@@ -46,22 +50,29 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     fn verify_and_fold(
         self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-        let decommitment = self.proof.decommitment.clone();
         let commitment = self.proof.commitment;
 
         let sparse_evaluation = @self.extract_evaluation(queries, evals_at_queries)?;
 
-        let mut actual_decommitment_evals: Array<QM31> = array![];
+        let mut column_0: Array<M31> = array![];
+        let mut column_1: Array<M31> = array![];
+        let mut column_2: Array<M31> = array![];
+        let mut column_3: Array<M31> = array![];
         let mut i = 0;
         let mut j = 0;
         while i < (sparse_evaluation).subline_evals.len() {
             let subline_eval = sparse_evaluation.subline_evals[i];
             while j < (sparse_evaluation.subline_evals[i]).values.len() {
-                actual_decommitment_evals.append(*subline_eval.values[j]);
+                let value = subline_eval.values[j];
+                column_0.append(*value.a.a);
+                column_1.append(*value.a.b);
+                column_2.append(*value.b.a);
+                column_3.append(*value.b.b);
                 j += 1;
             };
             i += 1;
         };
+        let actual_decommitment_array = array![column_0.span(), column_1.span(), column_2.span(), column_3.span()];
 
         let folded_queries = queries.fold(FOLD_STEP);
         // TODO: check this approach
@@ -80,7 +91,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             i += 1;
         };
 
-        let merkle_verifier = MerkleVerifier {
+        let merkle_verifier = MerkleVerifier::<PoseidonMerkleHasher> {
             root: *commitment.clone(),
             column_log_sizes: array![
                 // TODO: adapt to handle other secure_extension_degree
@@ -91,6 +102,24 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             ]
         };
 
+        let mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
+        queries_per_log_size.insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions.span()));
+
+        // let decommitment = self.proof.decommitment.clone();
+        // merkle_verifier.verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
+        // TODO: Propagate error.
+        // merkle_verifier
+        //    .verify(
+        //        [(self.domain.log_size(), decommitment_positions)]
+        //            .into_iter()
+        //            .collect(),
+        //        actual_decommitment_evals.columns.to_vec(),
+        //        decommitment,
+        //    );
+        //     .map_err(|e| FriVerificationError::InnerLayerCommitmentInvalid {
+        //        layer: self.layer_index,
+        //        error: e,
+        //     })?;
         // TODO: finish implementing
 
         Result::Ok((folded_queries, array![qm31(0, 0, 0, 0)]))
@@ -182,7 +211,7 @@ pub struct FriConfig {
 #[derive(Drop)]
 pub struct FriLayerProof {
     pub evals_subset: Array<QM31>,
-    pub decommitment: MerkleDecommitment,
+    pub decommitment: MerkleDecommitment::<PoseidonMerkleHasher>,
     pub decomposition_coeff: QM31,
     pub commitment: felt252,
 }
@@ -392,7 +421,7 @@ fn test_fri_verifier() {
         inner_layers: array![
             FriLayerProof {
                 evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
-                decommitment: MerkleDecommitment {
+                decommitment: MerkleDecommitment::<PoseidonMerkleHasher> {
                     hash_witness: array![
                         0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
                         0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
