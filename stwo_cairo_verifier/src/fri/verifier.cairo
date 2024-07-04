@@ -80,7 +80,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
         let merkle_verifier = MerkleVerifier {
             root: *commitment.clone(),
-            column_log_sizes:  array![
+            column_log_sizes: array![
                 // TODO: adapt to handle other secure_extension_degree
                 self.domain.log_size(),
                 self.domain.log_size(),
