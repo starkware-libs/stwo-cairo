@@ -64,11 +64,13 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         };
 
         let folded_queries = queries.fold(FOLD_STEP);
+        // TODO: check this approach
+        let folded_queries_snapshot = @folded_queries;
 
         let mut decommitment_positions = array![];
         let mut i = 0;
-        while i < folded_queries.positions.len() {
-            let start = *folded_queries.positions[i] * pow(2, FOLD_STEP);
+        while i < folded_queries_snapshot.len() {
+            let start = *folded_queries_snapshot.positions[i] * pow(2, FOLD_STEP);
             let end = start + pow(2, FOLD_STEP);
             let mut j = start;
             while j < end {
@@ -91,7 +93,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
         // TODO: finish implementing
 
-        Result::Ok((queries.clone(), array![qm31(0, 0, 0, 0)]))
+        Result::Ok((folded_queries, array![qm31(0, 0, 0, 0)]))
     }
 
     fn extract_evaluation(
