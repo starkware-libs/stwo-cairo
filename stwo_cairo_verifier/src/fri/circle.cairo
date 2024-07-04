@@ -6,6 +6,8 @@ use super::utils::pow;
 pub const M31_CIRCLE_GEN: CirclePointM31 =
     CirclePointM31 { x: M31 { inner: 2 }, y: M31 { inner: 1268011823 }, };
 
+pub const CIRCLE_ORDER: u32 = 2147483648;
+
 #[derive(Drop, Copy, Debug, PartialEq, Eq)]
 pub struct CirclePointM31 {
     pub x: M31,

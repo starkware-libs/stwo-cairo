@@ -4,8 +4,7 @@ use core::clone::Clone;
 use core::result::ResultTrait;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use super::utils::pow;
-use super::circle::{CirclePointM31, CirclePointM31Impl, M31_CIRCLE_GEN};
-
+use super::circle::{CirclePointM31, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
 pub struct Coset {
@@ -107,7 +106,7 @@ pub impl CircleDomainImpl of CircleDomainTrait {
         if index < self.half_coset.size() {
             self.half_coset.index_at(index)
         } else {
-            pow(2, 31) - self.half_coset.index_at(index - self.half_coset.size())
+            CIRCLE_ORDER - self.half_coset.index_at(index - self.half_coset.size())
         }
     }
 
