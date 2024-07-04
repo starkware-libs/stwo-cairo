@@ -3,6 +3,7 @@ use core::clone::Clone;
 use core::result::ResultTrait;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use super::utils::pow;
+use super::circle::{CirclePointM31, CirclePointM31Impl, M31_CIRCLE_GEN};
 
 
 #[derive(Copy, Debug, PartialEq, Eq, Drop)]
@@ -73,6 +74,10 @@ pub impl CosetImpl of CosetTrait {
             log_size
         }
     }
+
+    fn at(self: @Coset, index: usize) -> CirclePointM31 {
+        M31_CIRCLE_GEN.mul(self.index_at(index).index)
+    }
 }
 
 #[generate_trait]
@@ -86,13 +91,11 @@ pub impl LineDomainImpl of LineDomainTrait {
     }
 
     fn at(self: @LineDomain, index: usize) -> M31 {
-        // TODO: implement
-        m31(1)
+        self.coset.at(index).x
     }
 
     fn log_size(self: @LineDomain) -> usize {
-        // TODO: implement
-        1
+        *self.coset.log_size
     }
 }
 
@@ -138,5 +141,19 @@ fn test_coset_double() {
         // step: CirclePoint { x: M31(590768354), y: M31(978592373) },
         log_size: 4
     };
+    assert_eq!(expected_result, result);
+}
+
+#[test]
+fn test_coset_at() {
+    let coset = Coset {
+        initial_index: CirclePointIndex { index: 16777216 },
+        // initial: CirclePoint { x: M31(838195206), y: M31(1774253895) },
+        step_size: CirclePointIndex { index: 67108864 },
+        // step: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
+        log_size: 5
+    };
+    let result = coset.at(17);
+    let expected_result = CirclePointM31 { x: m31(7144319), y: m31(1742797653) };
     assert_eq!(expected_result, result);
 }

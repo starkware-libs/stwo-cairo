@@ -23,7 +23,7 @@ pub impl CirclePointM31Impl of CirclePointM31Trait {
         }
     }
 
-    fn mul(self: @CirclePointM31, mut scalar: u128) -> CirclePointM31 {
+    fn mul(self: @CirclePointM31, mut scalar: u32) -> CirclePointM31 {
         let mut result = Self::zero();
         let mut cur = *self;
         while scalar > 0 {
