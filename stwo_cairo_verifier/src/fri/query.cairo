@@ -33,9 +33,6 @@ pub impl QueriesImpl of QueriesImplTrait {
             }
             i += 1;
         };
-        Queries {
-            positions: new_positions,
-            log_domain_size: *self.log_domain_size - n_folds
-        }
+        Queries { positions: new_positions, log_domain_size: *self.log_domain_size - n_folds }
     }
 }

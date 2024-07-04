@@ -1,4 +1,5 @@
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+use stwo_cairo_verifier::fields::m31::{m31};
 
 #[derive(Drop)]
 pub struct LinePoly {
@@ -22,4 +23,34 @@ pub impl LinePolyImpl of LinePolyTrait {
             x
         }
     }
+}
+
+#[test]
+fn test_line_poly_1() {
+    let line_poly = LinePoly {
+        coeffs: array![
+            qm31(1080276375, 1725024947, 477465525, 102017026),
+            qm31(1080276375, 1725024947, 477465525, 102017026)
+        ],
+        log_size: 1
+    };
+    let x = m31(590768354);
+    let result = line_poly.eval_at_point(x.into());
+    let expected_result = qm31(515899232, 1030391528, 1006544539, 11142505);
+    assert_eq!(expected_result, result);
+}
+
+#[test]
+fn test_line_poly_2() {
+    let line_poly = LinePoly {
+        coeffs: array![
+            qm31(1, 2, 3, 4),
+            qm31(5, 6, 7, 8)
+        ],
+        log_size: 1
+    };
+    let x = m31(10);
+    let result = line_poly.eval_at_point(x.into());
+    let expected_result = qm31(51, 62, 73, 84);
+    assert_eq!(expected_result, result);
 }
