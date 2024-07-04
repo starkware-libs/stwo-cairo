@@ -1,3 +1,4 @@
+use stwo_cairo_verifier::fri::circle::CirclePointM31Trait;
 use core::option::OptionTrait;
 use core::clone::Clone;
 use core::result::ResultTrait;
@@ -96,6 +97,24 @@ pub impl LineDomainImpl of LineDomainTrait {
     }
 }
 
+#[generate_trait]
+pub impl CircleDomainImpl of CircleDomainTrait {
+    fn log_size(self: @CircleDomain) -> usize {
+        *self.half_coset.log_size + 1
+    }
+
+    fn index_at(self: @CircleDomain, index: usize) -> usize {
+        if index < self.half_coset.size() {
+            self.half_coset.index_at(index)
+        } else {
+            pow(2, 31) - self.half_coset.index_at(index - self.half_coset.size())
+        }
+    }
+
+    fn at(self: @CircleDomain, index: usize) -> CirclePointM31 {
+        M31_CIRCLE_GEN.mul(self.index_at(index))
+    }
+}
 
 #[test]
 fn test_coset_index_at() {
@@ -114,23 +133,50 @@ fn test_coset_constructor() {
 
 #[test]
 fn test_coset_double() {
-    let coset = Coset { initial_index: 16777216, // initial: CirclePoint { x: M31(838195206), y: M31(1774253895) },
-    step_size: 67108864, // step: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
-    log_size: 5 };
+    let coset = Coset {
+        initial_index: 16777216, // initial: CirclePoint { x: M31(838195206), y: M31(1774253895) },
+        step_size: 67108864, // step: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
+        log_size: 5
+    };
     let result = coset.double();
 
-    let expected_result = Coset { initial_index: 33554432, // initial: CirclePoint { x: M31(579625837), y: M31(1690787918) },
-    step_size: 134217728, // step: CirclePoint { x: M31(590768354), y: M31(978592373) },
-    log_size: 4 };
+    let expected_result = Coset {
+        initial_index: 33554432, // initial: CirclePoint { x: M31(579625837), y: M31(1690787918) },
+        step_size: 134217728, // step: CirclePoint { x: M31(590768354), y: M31(978592373) },
+        log_size: 4
+    };
     assert_eq!(expected_result, result);
 }
 
 #[test]
 fn test_coset_at() {
-    let coset = Coset { initial_index: 16777216, // initial: CirclePoint { x: M31(838195206), y: M31(1774253895) },
-    step_size: 67108864, // step: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
-    log_size: 5 };
+    let coset = Coset {
+        initial_index: 16777216, // initial: CirclePoint { x: M31(838195206), y: M31(1774253895) },
+        step_size: 67108864, // step: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
+        log_size: 5
+    };
     let result = coset.at(17);
     let expected_result = CirclePointM31 { x: m31(7144319), y: m31(1742797653) };
     assert_eq!(expected_result, result);
 }
+
+#[test]
+fn test_circle_domain_at_1() {
+    let half_coset = Coset { initial_index: 16777216, step_size: 67108864, log_size: 5 };
+    let domain = CircleDomain { half_coset };
+    let index = 17;
+    let result = domain.at(index);
+    let expected_result = CirclePointM31 { x: m31(7144319), y: m31(1742797653) };
+    assert_eq!(expected_result, result);
+}
+
+#[test]
+fn test_circle_domain_at_2() {
+    let half_coset = Coset { initial_index: 16777216, step_size: 67108864, log_size: 5 };
+    let domain = CircleDomain { half_coset };
+    let index = 37;
+    let result = domain.at(index);
+    let expected_result = CirclePointM31 { x: m31(9803698), y: m31(2079025011) };
+    assert_eq!(expected_result, result);
+}
+

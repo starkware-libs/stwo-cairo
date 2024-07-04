@@ -453,9 +453,11 @@ fn test_fri_verifier() {
     let log_domain_size = 4;
     let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
     let domain = CircleDomain {
-        half_coset: Coset { initial_index: 67108864, //initial: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
-        step_size: 268435456, //step: CirclePoint { x: M31(32768), y: M31(2147450879) },
-        log_size: 3 }
+        half_coset: Coset {
+            initial_index: 67108864, //initial: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
+            step_size: 268435456, //step: CirclePoint { x: M31(32768), y: M31(2147450879) },
+            log_size: 3
+        }
     };
     // CircleDomain { half_coset: Coset { initial_index: CirclePointIndex(67108864), initial:
     // CirclePoint { x: M31(1179735656), y: M31(1241207368) }, step_size:

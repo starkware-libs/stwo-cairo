@@ -1,5 +1,8 @@
+use stwo_cairo_verifier::fri::domain::CircleDomainTrait;
+use stwo_cairo_verifier::fri::domain::CosetTrait;
 use core::array::ArrayTrait;
 use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, dummy_line_domain};
+use super::utils::bit_reverse_index;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 
 #[derive(Drop)]
