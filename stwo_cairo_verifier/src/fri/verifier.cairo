@@ -12,14 +12,14 @@ use super::domain::{
 };
 use super::evaluation::{
     LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation,
-    SparseCircleEvaluation, SparseCircleEvaluationImpl
+    SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
 };
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
 use super::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
 
-const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
-const FOLD_STEP: u32 = 1;
+pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
+pub const FOLD_STEP: u32 = 1;
 
 fn project_to_fft_space(
     queries: @Queries, evals: SparseCircleEvaluation, lambda: QM31
@@ -33,7 +33,8 @@ pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
     LastLayerEvaluationsInvalid,
-    InnerLayerEvaluationsInvalid
+    InnerLayerEvaluationsInvalid,
+    InnerLayerCommitmentInvalid
 }
 
 #[derive(Drop)]
@@ -106,23 +107,14 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         queries_per_log_size.insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions.span()));
 
         let decommitment = self.proof.decommitment.clone();
-        merkle_verifier.verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
-        // TODO: Propagate error.
-        // merkle_verifier
-        //    .verify(
-        //        [(self.domain.log_size(), decommitment_positions)]
-        //            .into_iter()
-        //            .collect(),
-        //        actual_decommitment_evals.columns.to_vec(),
-        //        decommitment,
-        //    );
-        //     .map_err(|e| FriVerificationError::InnerLayerCommitmentInvalid {
-        //        layer: self.layer_index,
-        //        error: e,
-        //     })?;
-        // TODO: finish implementing
+        let result = merkle_verifier.verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
+        
+        let evals_at_folded_queries = sparse_evaluation.fold(*self.folding_alpha);
 
-        Result::Ok((folded_queries, array![qm31(0, 0, 0, 0)]))
+        match result {
+            Result::Ok(()) => Result::Ok((folded_queries, evals_at_folded_queries)),
+            Result::Err(_) => Result::Err(FriVerificationError::InnerLayerCommitmentInvalid)
+        }
     }
 
     fn extract_evaluation(

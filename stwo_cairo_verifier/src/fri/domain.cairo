@@ -86,7 +86,8 @@ pub impl LineDomainImpl of LineDomainTrait {
         // TODO: Implement assertions.
         LineDomain { coset: coset }
     }
-    fn double(self: LineDomain) -> LineDomain {
+
+    fn double(self: @LineDomain) -> LineDomain {
         LineDomain { coset: self.coset.double() }
     }
 
