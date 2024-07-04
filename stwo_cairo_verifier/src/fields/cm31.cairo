@@ -69,7 +69,7 @@ pub fn cm31(a: u32, b: u32) -> CM31 {
 }
 
 pub fn cm31_from_m31(a: M31) -> CM31 {
-    CM31 { a: a, b: m31(0)}
+    CM31 { a: a, b: m31(0) }
 }
 
 

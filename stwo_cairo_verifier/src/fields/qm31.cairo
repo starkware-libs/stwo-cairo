@@ -92,7 +92,7 @@ pub fn qm31(a: u32, b: u32, c: u32, d: u32) -> QM31 {
 }
 
 pub fn qm31_from_m31(a: M31) -> QM31 {
-    QM31 { a: cm31_from_m31(a), b: cm31(0, 0)}
+    QM31 { a: cm31_from_m31(a), b: cm31(0, 0) }
 }
 
 #[cfg(test)]

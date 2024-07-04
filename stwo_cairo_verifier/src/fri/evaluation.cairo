@@ -36,10 +36,7 @@ pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
     }
 }
 
-pub fn fold_line(
-    eval: @LineEvaluation,
-    alpha: QM31
-) -> LineEvaluation {
+pub fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values: Array<QM31> = array![];
     let mut i = 0;

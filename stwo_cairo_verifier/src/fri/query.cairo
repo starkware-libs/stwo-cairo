@@ -33,28 +33,16 @@ pub impl QueriesImpl of QueriesImplTrait {
 
 #[test]
 fn test_fold_1() {
-    let queries = Queries {
-        positions: array![5],
-        log_domain_size: 6
-    };
+    let queries = Queries { positions: array![5], log_domain_size: 6 };
     let result = queries.fold(1);
-    let expected_result = Queries {
-        positions: array![2],
-        log_domain_size: 5
-    };
+    let expected_result = Queries { positions: array![2], log_domain_size: 5 };
     assert_eq!(expected_result, result);
 }
 
 #[test]
 fn test_fold_2() {
-    let queries = Queries {
-        positions: array![17, 27],
-        log_domain_size: 6
-    };
+    let queries = Queries { positions: array![17, 27], log_domain_size: 6 };
     let result = queries.fold(1);
-    let expected_result = Queries {
-        positions: array![8, 13],
-        log_domain_size: 5
-    };
+    let expected_result = Queries { positions: array![8, 13], log_domain_size: 5 };
     assert_eq!(expected_result, result);
 }
