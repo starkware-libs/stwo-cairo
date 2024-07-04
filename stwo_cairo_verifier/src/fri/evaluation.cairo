@@ -1,7 +1,5 @@
 use core::array::ArrayTrait;
-use super::domain::{
-    Coset, CosetImpl, LineDomain, CirclePointIndex, CircleDomain, LineDomainImpl, dummy_line_domain
-};
+use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, dummy_line_domain};
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 
 #[derive(Drop)]
@@ -72,21 +70,15 @@ fn test_accumulate_1() {
         subcircle_evals: array![
             CircleEvaluation {
                 values: array![qm31(28672, 0, 0, 0), qm31(36864, 0, 0, 0)],
-                domain: CircleDomain {
-                    half_coset: CosetImpl::new(CirclePointIndex { index: 16777216 }, 0)
-                }
+                domain: CircleDomain { half_coset: CosetImpl::new(16777216, 0) }
             },
             CircleEvaluation {
                 values: array![qm31(28672, 0, 0, 0), qm31(36864, 0, 0, 0)],
-                domain: CircleDomain {
-                    half_coset: CosetImpl::new(CirclePointIndex { index: 2030043136 }, 0)
-                }
+                domain: CircleDomain { half_coset: CosetImpl::new(2030043136, 0) }
             },
             CircleEvaluation {
                 values: array![qm31(2147454975, 0, 0, 0), qm31(2147446783, 0, 0, 0)],
-                domain: CircleDomain {
-                    half_coset: CosetImpl::new(CirclePointIndex { index: 2097152000 }, 0)
-                }
+                domain: CircleDomain { half_coset: CosetImpl::new(2097152000, 0) }
             },
         ]
     };
@@ -100,27 +92,21 @@ fn test_accumulate_1() {
                     qm31(667173716, 1020487722, 1791736788, 1346152946),
                     qm31(1471361534, 84922130, 1076528072, 810417939)
                 ],
-                domain: CircleDomain {
-                    half_coset: CosetImpl::new(CirclePointIndex { index: 16777216 }, 0)
-                }
+                domain: CircleDomain { half_coset: CosetImpl::new(16777216, 0) }
             },
             CircleEvaluation {
                 values: array![
                     qm31(667173716, 1020487722, 1791736788, 1346152946),
                     qm31(1471361534, 84922130, 1076528072, 810417939)
                 ],
-                domain: CircleDomain {
-                    half_coset: CosetImpl::new(CirclePointIndex { index: 2030043136 }, 0)
-                }
+                domain: CircleDomain { half_coset: CosetImpl::new(2030043136, 0) }
             },
             CircleEvaluation {
                 values: array![
                     qm31(1480309931, 1126995925, 355746859, 801330701),
                     qm31(676122113, 2062561517, 1070955575, 1337065708)
                 ],
-                domain: CircleDomain {
-                    half_coset: CosetImpl::new(CirclePointIndex { index: 2097152000 }, 0)
-                }
+                domain: CircleDomain { half_coset: CosetImpl::new(2097152000, 0) }
             },
         ]
     };
