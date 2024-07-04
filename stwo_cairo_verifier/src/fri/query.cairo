@@ -12,10 +12,6 @@ pub impl QueriesImpl of QueriesImplTrait {
         self.positions.len()
     }
 
-    fn get_position(self: @Queries, i: u32) -> usize {
-        *self.positions[i]
-    }
-
     fn fold(self: @Queries, n_folds: u32) -> Queries {
         assert!(n_folds <= *self.log_domain_size);
         assert!(self.positions.len() > 0);
