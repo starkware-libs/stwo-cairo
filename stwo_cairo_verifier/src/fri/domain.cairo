@@ -25,7 +25,7 @@ pub struct LineDomain {
     pub coset: Coset,
 }
 
-#[derive(Copy, Drop)]
+#[derive(Debug, Copy, Drop, PartialEq, Eq)]
 pub struct CircleDomain {
     pub half_coset: Coset
 }
@@ -78,6 +78,10 @@ pub impl CosetImpl of CosetTrait {
     fn at(self: @Coset, index: usize) -> CirclePointM31 {
         M31_CIRCLE_GEN.mul(self.index_at(index).index)
     }
+
+    fn size(self: @Coset) -> usize {
+        pow(2, *self.log_size)
+    }
 }
 
 #[generate_trait]
@@ -96,6 +100,10 @@ pub impl LineDomainImpl of LineDomainTrait {
 
     fn log_size(self: @LineDomain) -> usize {
         *self.coset.log_size
+    }
+
+    fn size(self: @LineDomain) -> usize {
+        self.coset.size()
     }
 }
 

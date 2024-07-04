@@ -42,13 +42,7 @@ fn test_line_poly_1() {
 
 #[test]
 fn test_line_poly_2() {
-    let line_poly = LinePoly {
-        coeffs: array![
-            qm31(1, 2, 3, 4),
-            qm31(5, 6, 7, 8)
-        ],
-        log_size: 1
-    };
+    let line_poly = LinePoly { coeffs: array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8)], log_size: 1 };
     let x = m31(10);
     let result = line_poly.eval_at_point(x.into());
     let expected_result = qm31(51, 62, 73, 84);

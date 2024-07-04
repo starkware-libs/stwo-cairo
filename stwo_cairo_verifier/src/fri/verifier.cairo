@@ -72,7 +72,9 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             };
             i += 1;
         };
-        let actual_decommitment_array = array![column_0.span(), column_1.span(), column_2.span(), column_3.span()];
+        let actual_decommitment_array = array![
+            column_0.span(), column_1.span(), column_2.span(), column_3.span()
+        ];
 
         let folded_queries = queries.fold(FOLD_STEP);
         // TODO: check this approach
@@ -91,7 +93,9 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             i += 1;
         };
 
-        let merkle_verifier = MerkleVerifier::<PoseidonMerkleHasher> {
+        let merkle_verifier = MerkleVerifier::<
+            PoseidonMerkleHasher
+        > {
             root: *commitment.clone(),
             column_log_sizes: array![
                 // TODO: adapt to handle other secure_extension_degree
@@ -103,10 +107,14 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         };
 
         let mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
-        queries_per_log_size.insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions.span()));
+        queries_per_log_size
+            .insert(
+                self.domain.log_size().into(), NullableTrait::new(decommitment_positions.span())
+            );
 
         // let decommitment = self.proof.decommitment.clone();
-        // merkle_verifier.verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
+        // merkle_verifier.verify(queries_per_log_size, actual_decommitment_array,
+        // decommitment.clone());
         // TODO: Propagate error.
         // merkle_verifier
         //    .verify(
@@ -421,7 +429,9 @@ fn test_fri_verifier() {
         inner_layers: array![
             FriLayerProof {
                 evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
-                decommitment: MerkleDecommitment::<PoseidonMerkleHasher> {
+                decommitment: MerkleDecommitment::<
+                    PoseidonMerkleHasher
+                > {
                     hash_witness: array![
                         0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
                         0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
