@@ -40,7 +40,8 @@ pub fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values: Array<QM31> = array![];
     let mut i = 0;
-    while i < eval.values.len() {
+    // TODO: is this loop needed? The calling method only uses the first element of `value`
+    while i < eval.values.len() / 2 {
         let x = domain.at(bit_reverse_index(i * pow(2, FOLD_STEP), domain.log_size()));
         let f_x = eval.values[2 * i];
         let f_neg_x = eval.values[2 * i + 1];
@@ -149,5 +150,37 @@ fn test_accumulate_1() {
         ]
     };
 
+    assert_eq!(expected_result, result);
+}
+
+#[test]
+fn test_fold_line_1() {
+    let domain = LineDomainImpl::new(CosetImpl::new(67108864, 1));
+    let values = array![
+        qm31(440443058, 1252794525, 1129773609, 1309365757),
+        qm31(974589897, 1592795796, 649052897, 863407657)
+    ];
+    let sparse_line_evaluation = SparseLineEvaluation {
+        subline_evals: array![LineEvaluation { values, domain }]
+    };
+    let alpha = qm31(1047716961, 506143067, 1065078409, 990356067);
+    let result = sparse_line_evaluation.fold(alpha);
+    let expected_result = array![qm31(515899232, 1030391528, 1006544539, 11142505)];
+    assert_eq!(expected_result, result);
+}
+
+#[test]
+fn test_fold_line_2() {
+    let domain = LineDomainImpl::new(CosetImpl::new(553648128, 1));
+    let values = array![
+        qm31(730692421, 1363821003, 2146256633, 106012305),
+        qm31(1387266930, 149259209, 1148988082, 1930518101)
+    ];
+    let sparse_line_evaluation = SparseLineEvaluation {
+        subline_evals: array![LineEvaluation { values, domain }]
+    };
+    let alpha = qm31(2084521793, 1326105747, 548635876, 1532708504);
+    let result = sparse_line_evaluation.fold(alpha);
+    let expected_result = array![qm31(1379727866, 1083096056, 1409020369, 1977903500)];
     assert_eq!(expected_result, result);
 }
