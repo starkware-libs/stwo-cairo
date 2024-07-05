@@ -1,3 +1,4 @@
+use stwo_cairo_verifier::fri::query::QueriesImplTrait;
 use stwo_cairo_verifier::fri::domain::LineDomainTrait;
 use stwo_cairo_verifier::vcs::verifier::MerkleVerifierTrait;
 use core::array::ArrayTrait;
@@ -22,8 +23,29 @@ pub const FOLD_STEP: u32 = 1;
 fn project_to_fft_space(
     queries: @Queries, evals: SparseCircleEvaluation, lambda: QM31
 ) -> SparseCircleEvaluation {
-    // TODO: implement
-    evals
+    // TODO: test
+    let mut subcircle_evals = array![];
+    let half_domain_size = pow(2, *queries.log_domain_size) / 2;
+    let mut i = 0;
+    while i < queries.len() {
+        let mut j = 0;
+        let values = evals.subcircle_evals[i].values;
+        let mut new_values = array![];
+        while j < values.len() {
+            if *queries.positions[i] < half_domain_size {
+                new_values.append(*values[j] + lambda);
+            } else {
+                new_values.append(*values[j] - lambda);
+            }
+            j += 1;
+        };
+        subcircle_evals
+            .append(
+                CircleEvaluation { values: new_values, domain: *evals.subcircle_evals[i].domain }
+            );
+        i += 1;
+    };
+    SparseCircleEvaluation { subcircle_evals }
 }
 
 #[derive(Drop)]
@@ -314,7 +336,6 @@ impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_inner_layers(
         self: @FriVerifier, queries: Queries, decommitted_values: @Array<SparseCircleEvaluation>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-        // TODO: adapt for multi-fri
         let circle_poly_alpha = self.circle_poly_alpha;
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
 

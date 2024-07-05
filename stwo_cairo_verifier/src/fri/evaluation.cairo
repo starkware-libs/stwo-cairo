@@ -1,5 +1,7 @@
 use stwo_cairo_verifier::fields::m31::M31Trait;
-use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl, dummy_line_domain};
+use super::domain::{
+    Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl, dummy_line_domain
+};
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31, qm31_from_m31};
 use stwo_cairo_verifier::fields::m31::M31;
 use super::utils::{bit_reverse_index, pow};
@@ -110,14 +112,15 @@ fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation
     let mut values = array![];
     let mut i = 0;
     while i < eval.values.len() / 2 {
-        let p = domain.at(bit_reverse_index(i * pow(2, CIRCLE_TO_LINE_FOLD_STEP), domain.log_size()));
+        let p = domain
+            .at(bit_reverse_index(i * pow(2, CIRCLE_TO_LINE_FOLD_STEP), domain.log_size()));
         let f_p = eval.values[2 * i];
         let f_neg_p = eval.values[2 * i + 1];
         let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
         values.append(f0 + alpha * f1);
         i += 1;
     };
-    LineEvaluation{values, domain: LineDomainImpl::new(*domain.half_coset)}
+    LineEvaluation { values, domain: LineDomainImpl::new(*domain.half_coset) }
 }
 
 pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
@@ -210,11 +213,8 @@ fn test_fold_line_2() {
 
 #[test]
 fn test_fold_circle_into_line_1() {
-    let domain = CircleDomain{ half_coset: CosetImpl::new(553648128, 0)};
-    let values = array![
-        qm31(807167738, 0, 0, 0),
-        qm31(1359821401, 0, 0, 0)
-    ];
+    let domain = CircleDomain { half_coset: CosetImpl::new(553648128, 0) };
+    let values = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
     let sparse_circle_evaluation = SparseCircleEvaluation {
         subcircle_evals: array![CircleEvaluation { values, domain }]
     };

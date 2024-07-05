@@ -30,10 +30,21 @@ pub fn pow(base: u32, mut exponent: u32) -> u32 {
     result
 }
 
-pub fn pow_qm31(base: QM31, exponent: u32) -> QM31 {
-    // TODO: implement
-    qm31(1, 0, 0, 0)
-}
+pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
+    // TODO: test
+    let mut result = qm31(1, 0, 0, 0);
+    let mut base_power = base;
+    loop {
+        if exponent & 1 == 1 {
+            result = result * base_power;
+        }
+        exponent = exponent / 2;
+        if exponent == 0 {
+            break;
+        }
+        base_power = base_power * base_power;
+    };
+    result}
 
 pub fn qm31_zero_array(n: u32) -> Array<QM31> {
     let mut result = array![];
