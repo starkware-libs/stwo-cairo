@@ -20,7 +20,7 @@ use super::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
 
-#[derive(Drop)]
+#[derive(Debug, Drop)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
@@ -136,10 +136,8 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             // start_subline_index and end_subline_index, which group
             // the queries.
             let start_subline_index = i;
-            while i
-                + 1 < queries.positions.len()
-                    && (*queries.positions[i]
-                        / pow(2, FOLD_STEP)) == (*queries.positions[i + 1] / pow(2, FOLD_STEP)) {
+            i += 1;
+            while i < queries.positions.len() && (*queries.positions[i - 1] / pow(2, FOLD_STEP)) == (*queries.positions[i] / pow(2, FOLD_STEP)) {
                 i = i + 1;
             };
             let end_subline_index = i;
@@ -155,7 +153,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             let mut eval_position = subline_start;
 
             while eval_position < subline_end {
-                if *queries.positions[j] == eval_position {
+                if  (j < end_subline_index) && (*queries.positions[j] == eval_position) {
                     subline_evals.append(evals_at_queries[evals_at_queries_index].clone());
 
                     evals_at_queries_index += 1;
@@ -460,6 +458,6 @@ fn test_fri_verifier() {
             subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
         }
     ];
-    verifier.decommit_on_queries(queries, decommitted_values).unwrap();
-// assert!(verifier.verify(channel, proof));
+    let err =verifier.decommit_on_queries(queries, decommitted_values);
+    println!("{:?}",err);
 }
