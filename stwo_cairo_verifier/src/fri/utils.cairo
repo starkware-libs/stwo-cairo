@@ -89,3 +89,24 @@ fn test_bit_reverse() {
     // 31 bits
     assert_eq!(16448250, bit_reverse_index(800042880, 31));
 }
+
+#[test]
+fn test_pow_qm31_1() {
+    let result = pow_qm31(qm31(1,2,3,4), 0);
+    let expected_result = qm31(1, 0, 0, 0);
+    assert_eq!(expected_result, result)
+}
+
+#[test]
+fn test_pow_qm31_2() {
+    let result = pow_qm31(qm31(1,2,3,4), 1);
+    let expected_result = qm31(1, 2, 3, 4);
+    assert_eq!(expected_result, result)
+}
+
+#[test]
+fn test_pow_qm31_3() {
+    let result = pow_qm31(qm31(1,2,3,4), 37);
+    let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
+    assert_eq!(expected_result, result)
+}
