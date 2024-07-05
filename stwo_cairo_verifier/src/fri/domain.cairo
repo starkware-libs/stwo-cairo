@@ -15,7 +15,7 @@ pub struct Coset {
     pub log_size: u32,
 }
 
-#[derive(Copy, Drop)]
+#[derive(Copy, Drop, Debug)]
 pub struct LineDomain {
     pub coset: Coset,
 }

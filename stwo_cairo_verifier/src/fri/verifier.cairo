@@ -1,3 +1,4 @@
+use core::result::ResultTrait;
 use stwo_cairo_verifier::fri::query::QueriesImplTrait;
 use stwo_cairo_verifier::fri::domain::LineDomainTrait;
 use stwo_cairo_verifier::vcs::verifier::MerkleVerifierTrait;
@@ -110,7 +111,6 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             .verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
 
         let evals_at_folded_queries = sparse_evaluation.fold(*self.folding_alpha);
-
         match result {
             Result::Ok(()) => Result::Ok((folded_queries, evals_at_folded_queries)),
             Result::Err(_) => Result::Err(FriVerificationError::InnerLayerCommitmentInvalid)
@@ -235,7 +235,12 @@ impl FriVerifierImpl of FriVerifierTrait {
 
         let mut inner_layers = array![];
         let mut layer_bound = *max_column_bound - CIRCLE_TO_LINE_FOLD_STEP;
-        let mut layer_domain = dummy_line_domain(); // TODO: replace
+        let mut layer_domain = LineDomain{
+            coset: CosetImpl::new(
+                pow(2, 31 - layer_bound - config.log_blowup_factor - 2),
+                layer_bound + config.log_blowup_factor
+            )
+        };
 
         let mut layer_index = 0;
         let mut invalid_fri_layers_number = false;
@@ -243,13 +248,13 @@ impl FriVerifierImpl of FriVerifierTrait {
             let proof = proof.inner_layers[layer_index];
             channel.mix_digest(*proof.commitment);
             channel.mix_felts(array![*proof.decomposition_coeff].span());
-            let folding_alpha = channel.draw_felt();
+            let new_folding_alpha = channel.draw_felt();
             inner_layers
                 .append(
                     FriLayerVerifier {
                         degree_bound: layer_bound,
                         domain: layer_domain,
-                        folding_alpha,
+                        folding_alpha: new_folding_alpha,
                         layer_index,
                         proof,
                     }
@@ -403,54 +408,52 @@ impl FriVerifierImpl of FriVerifierTrait {
     }
 }
 
-
 #[test]
-fn test_fri_verifier() {
+fn test_fri_verifier_2() {
     let proof = FriProof {
         inner_layers: array![
             FriLayerProof {
-                evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
-                decommitment: MerkleDecommitment::<
-                    PoseidonMerkleHasher
-                > {
+                evals_subset: array![qm31(244403758, 0, 0, 0)],
+                decommitment: MerkleDecommitment{
                     hash_witness: array![
-                        0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
-                        0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
+                        0x073f45dbdb9a5945136abec3a3c6fd4cbdb9e57b86473d9ee4b8ccff30b10c66,
+                        0x0449b8ccc62107d3a1f3793ac2e8aecbd757be318356c2954b55e60a26391bc0
                     ],
                     column_witness: array![]
                 },
                 decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
+                commitment: 0x0717ea0ebb718a3a2a0152fbd07c0bf12b270895440577857dd2392db48c7254
+            },
+            FriLayerProof { 
+                evals_subset: array![qm31(862359092, 0, 0, 0)],
+                decommitment: MerkleDecommitment { 
+                    hash_witness: array![0x05a226d1150a8761b38466637eed54cfd92adc9c5c438f17555e07d920412b13],
+                    column_witness: array![] 
+                }, 
+                decomposition_coeff: qm31(0, 0, 0, 0),
+                commitment: 0x026e083e4a627dc68a4b4216bc905c3b13292ca7f54b7a9e0279bd5f6538f31a
             }
         ],
         last_layer_poly: LinePoly {
-            coeffs: array![
-                qm31(1700411592, 1718151617, 1386964511, 2008082344),
-                qm31(1700411592, 1718151617, 1386964511, 2008082344)
-            ],
-            log_size: 1
+            coeffs: array![qm31(64, 0, 0, 0)],
+            log_size: 0
         }
     };
 
-    let log_degree = 3;
-    let log_domain_size = 4;
     let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
     let domain = CircleDomain {
         half_coset: Coset {
-            initial_index: 67108864, //initial: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
-            step_size: 268435456, //step: CirclePoint { x: M31(32768), y: M31(2147450879) },
-            log_size: 3
+            initial_index: 603979776, //initial: CirclePoint { x: M31(1179735656), y: M31(1241207368) },
+            step_size: 2147483648, //step: CirclePoint { x: M31(32768), y: M31(2147450879) },
+            log_size: 0
         }
     };
-    // CircleDomain { half_coset: Coset { initial_index: CirclePointIndex(67108864), initial:
-    // CirclePoint { x: M31(1179735656), y: M31(1241207368) }, step_size:
-    // CirclePointIndex(268435456), step: CirclePoint { x: M31(32768), y: M31(2147450879) },
-    // log_size: 3 } }
-    let queries = Queries { positions: array![5], log_domain_size };
+
+    let queries = Queries { positions: array![5], log_domain_size: 4 };
 
     let channel = ChannelTrait::new(0x00);
-    let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1 };
-    let bound = array![log_degree];
+    let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1 };
+    let bound = array![3];
 
     let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
     let decommitted_values = array![
@@ -458,6 +461,5 @@ fn test_fri_verifier() {
             subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
         }
     ];
-    let err =verifier.decommit_on_queries(queries, decommitted_values);
-    println!("{:?}",err);
+    verifier.decommit_on_queries(queries, decommitted_values).unwrap();
 }
