@@ -22,6 +22,19 @@ pub struct SparseLineEvaluation {
     pub subline_evals: Array<LineEvaluation>,
 }
 
+#[derive(Drop, Clone, Debug, PartialEq)]
+pub struct SparseCircleEvaluation {
+    pub subcircle_evals: Array<CircleEvaluation>
+}
+
+#[generate_trait]
+pub impl LineEvaluationImpl of LineEvaluationTrait {
+    fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
+        assert_eq!(values.len(), domain.size());
+        LineEvaluation { values: values, domain: domain }
+    }
+}
+
 #[generate_trait]
 pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
     fn fold(self: @SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
@@ -53,23 +66,6 @@ fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
     LineEvaluationImpl::new(domain.double(), values)
 }
 
-pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
-    (v0 + v1, (v0 - v1) * qm31_from_m31(itwid))
-}
-
-
-#[derive(Drop, Clone, Debug, PartialEq)]
-pub struct SparseCircleEvaluation {
-    pub subcircle_evals: Array<CircleEvaluation>
-}
-
-#[generate_trait]
-pub impl LineEvaluationImpl of LineEvaluationTrait {
-    fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
-        assert_eq!(values.len(), domain.size());
-        LineEvaluation { values: values, domain: domain }
-    }
-}
 
 #[generate_trait]
 pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
@@ -108,6 +104,7 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
     }
 }
 
+
 fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values = array![];
@@ -121,6 +118,10 @@ fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation
         i += 1;
     };
     LineEvaluation{values, domain: LineDomainImpl::new(*domain.half_coset)}
+}
+
+pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
+    (v0 + v1, (v0 - v1) * qm31_from_m31(itwid))
 }
 
 #[test]
