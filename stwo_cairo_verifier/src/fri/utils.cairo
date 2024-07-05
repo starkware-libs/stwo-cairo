@@ -31,7 +31,6 @@ pub fn pow(base: u32, mut exponent: u32) -> u32 {
 }
 
 pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
-    // TODO: test
     let mut result = qm31(1, 0, 0, 0);
     let mut base_power = base;
     loop {

@@ -11,7 +11,7 @@ use stwo_cairo_verifier::channel::Channel;
 use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, dummy_line_domain};
 use super::evaluation::{
     LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation,
-    SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
+    SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl, project_to_fft_space
 };
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
@@ -19,34 +19,6 @@ use super::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
 
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
-
-fn project_to_fft_space(
-    queries: @Queries, evals: SparseCircleEvaluation, lambda: QM31
-) -> SparseCircleEvaluation {
-    // TODO: test
-    let mut subcircle_evals = array![];
-    let half_domain_size = pow(2, *queries.log_domain_size) / 2;
-    let mut i = 0;
-    while i < queries.len() {
-        let mut j = 0;
-        let values = evals.subcircle_evals[i].values;
-        let mut new_values = array![];
-        while j < values.len() {
-            if *queries.positions[i] < half_domain_size {
-                new_values.append(*values[j] + lambda);
-            } else {
-                new_values.append(*values[j] - lambda);
-            }
-            j += 1;
-        };
-        subcircle_evals
-            .append(
-                CircleEvaluation { values: new_values, domain: *evals.subcircle_evals[i].domain }
-            );
-        i += 1;
-    };
-    SparseCircleEvaluation { subcircle_evals }
-}
 
 #[derive(Drop)]
 pub enum FriVerificationError {
