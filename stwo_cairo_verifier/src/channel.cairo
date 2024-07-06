@@ -1,9 +1,9 @@
 use core::array::SpanTrait;
-use core::poseidon::poseidon_hash_span;
+use core::poseidon::{poseidon_hash_span, hades_permutation};
 use core::traits::DivRem;
 
 use stwo_cairo_verifier::{BaseField, SecureField};
-use stwo_cairo_verifier::fields::qm31::{QM31Trait, qm31};
+use stwo_cairo_verifier::fields::qm31::QM31Trait;
 
 const M31_IN_HASH_SHIFT: felt252 = 0x80000000; // 2**31.
 const M31_IN_HASH_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
@@ -45,9 +45,9 @@ pub impl ChannelImpl of ChannelTrait {
     }
 
     fn draw_felt252(ref self: Channel) -> felt252 {
-        let res = poseidon_hash_span(array![self.digest, self.channel_time.n_sent.into()].span());
+        let (s0, _, _) = hades_permutation(self.digest, self.channel_time.n_sent.into(), 2);
         self.channel_time.inc_sent();
-        res
+        s0
     }
 
     #[inline]
@@ -66,12 +66,13 @@ pub impl ChannelImpl of ChannelTrait {
     }
 
     fn mix_digest(ref self: Channel, digest: felt252) {
-        self.digest = poseidon_hash_span(array![self.digest, digest].span());
+        let (s0, _, _) = hades_permutation(self.digest, digest, 2);
+        self.digest = s0;
         self.channel_time.inc_challenges();
     }
 
     fn mix_felts(ref self: Channel, mut felts: Span<SecureField>) {
-        let mut res = array![];
+        let mut res = array![self.digest];
         loop {
             match (felts.pop_front(), felts.pop_front()) {
                 (Option::None, _) => { break; },
@@ -122,10 +123,8 @@ pub impl ChannelImpl of ChannelTrait {
     }
 
     fn draw_felt(ref self: Channel) -> SecureField {
-        // let [a, b, c, d, _, _, _, _] = self.draw_base_felts();
-        // QM31Trait::from_array([a, b, c, d])
-        //TODO: REVERT
-        qm31(1, 0, 0, 0)
+        let [a, b, c, d, _, _, _, _] = self.draw_base_felts();
+        QM31Trait::from_array([a, b, c, d])
     }
 
     fn draw_felts(ref self: Channel, mut n_felts: usize) -> Array<SecureField> {

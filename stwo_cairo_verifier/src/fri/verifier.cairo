@@ -409,33 +409,33 @@ impl FriVerifierImpl of FriVerifierTrait {
 }
 
 #[test]
-fn test_fri_verifier_dummy_channel() {
+fn test_fri_verifier() {
     let proof = FriProof {
         inner_layers: array![
             FriLayerProof {
-                evals_subset: array![qm31(244403758, 0, 0, 0)],
-                decommitment: MerkleDecommitment{
+                evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
+                decommitment: MerkleDecommitment {
                     hash_witness: array![
-                        0x073f45dbdb9a5945136abec3a3c6fd4cbdb9e57b86473d9ee4b8ccff30b10c66,
-                        0x0449b8ccc62107d3a1f3793ac2e8aecbd757be318356c2954b55e60a26391bc0
+                        0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
+                        0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
                     ],
                     column_witness: array![]
                 },
                 decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x0717ea0ebb718a3a2a0152fbd07c0bf12b270895440577857dd2392db48c7254
+                commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
             },
             FriLayerProof { 
-                evals_subset: array![qm31(862359092, 0, 0, 0)],
+                evals_subset: array![qm31(1948473851, 1004529211, 1304438646, 1985407493)],
                 decommitment: MerkleDecommitment { 
-                    hash_witness: array![0x05a226d1150a8761b38466637eed54cfd92adc9c5c438f17555e07d920412b13],
+                    hash_witness: array![0x031e0d7125162e8c9022c7b9967b792472c77ac6f35b7a13703544e16d715d83],
                     column_witness: array![] 
                 }, 
                 decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x026e083e4a627dc68a4b4216bc905c3b13292ca7f54b7a9e0279bd5f6538f31a
+                commitment: 0x0536ed50a0da2d18e090646e869b52c8b202e6167758cd9ac514cf95179e9641
             }
         ],
         last_layer_poly: LinePoly {
-            coeffs: array![qm31(64, 0, 0, 0)],
+            coeffs: array![qm31(940020369, 1979164784, 955004309, 315468455)],
             log_size: 0
         }
     };
