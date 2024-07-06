@@ -409,7 +409,7 @@ impl FriVerifierImpl of FriVerifierTrait {
 }
 
 #[test]
-fn test_fri_verifier_2() {
+fn test_fri_verifier_dummy_channel() {
     let proof = FriProof {
         inner_layers: array![
             FriLayerProof {
