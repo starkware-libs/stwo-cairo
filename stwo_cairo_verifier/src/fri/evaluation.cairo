@@ -1,6 +1,6 @@
 use stwo_cairo_verifier::fields::m31::M31Trait;
 use super::domain::{
-    Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl, dummy_line_domain
+    Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl
 };
 use super::query::{Queries, QueriesImpl};
 

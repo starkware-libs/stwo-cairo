@@ -25,10 +25,6 @@ pub struct CircleDomain {
     pub half_coset: Coset
 }
 
-pub fn dummy_line_domain() -> LineDomain {
-    LineDomain { coset: Coset { initial_index: 0, step_size: 0, log_size: 1 } }
-}
-
 #[generate_trait]
 pub impl CosetImpl of CosetTrait {
     fn index_at(self: @Coset, index: usize) -> usize {

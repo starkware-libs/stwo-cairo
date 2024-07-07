@@ -9,7 +9,7 @@ use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::channel::Channel;
-use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl, dummy_line_domain};
+use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, LineDomainImpl};
 use super::evaluation::{
     LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation,
     SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl, project_to_fft_space
@@ -278,8 +278,6 @@ impl FriVerifierImpl of FriVerifierTrait {
             return Result::Err(FriVerificationError::InvalidNumFriLayers);
         }
 
-        let last_layer_domain = dummy_line_domain(); // TODO: replace
-
         if proof.last_layer_poly.len() > pow(2, config.log_last_layer_degree_bound) {
             return Result::Err(FriVerificationError::LastLayerDegreeInvalid);
         }
@@ -293,7 +291,7 @@ impl FriVerifierImpl of FriVerifierTrait {
                 column_bounds,
                 expected_query_log_domain_size,
                 inner_layers,
-                last_layer_domain,
+                last_layer_domain: layer_domain,
                 last_layer_poly: proof.last_layer_poly,
                 queries: Option::None
             }
