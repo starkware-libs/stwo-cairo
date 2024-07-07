@@ -2,7 +2,7 @@ use stwo_cairo_verifier::fields::m31::M31Trait;
 use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl};
 use super::query::{Queries, QueriesImpl};
 
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31, qm31_from_m31};
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::M31;
 use super::utils::{bit_reverse_index, pow};
 use super::verifier::{FOLD_STEP, CIRCLE_TO_LINE_FOLD_STEP};
@@ -152,7 +152,7 @@ pub fn project_to_fft_space(
 }
 
 pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
-    (v0 + v1, (v0 - v1) * qm31_from_m31(itwid))
+    (v0 + v1, (v0 - v1) * itwid.into())
 }
 
 #[test]
