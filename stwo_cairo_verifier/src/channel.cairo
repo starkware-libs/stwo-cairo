@@ -37,7 +37,7 @@ pub struct Channel {
 #[generate_trait]
 pub impl ChannelImpl of ChannelTrait {
     fn new(digest: felt252) -> Channel {
-        Channel { digest: 0, channel_time: Default::default(), }
+        Channel { digest, channel_time: Default::default(), }
     }
 
     fn get_digest(ref self: Channel) -> felt252 {

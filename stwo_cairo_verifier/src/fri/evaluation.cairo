@@ -1,7 +1,5 @@
 use stwo_cairo_verifier::fields::m31::M31Trait;
-use super::domain::{
-    Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl
-};
+use super::domain::{Coset, CosetImpl, LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl};
 use super::query::{Queries, QueriesImpl};
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31, qm31_from_m31};
@@ -261,7 +259,7 @@ fn test_project_to_fft_space_1() {
     let sparse_circle_evaluation = SparseCircleEvaluation {
         subcircle_evals: array![CircleEvaluation { values, domain }]
     };
-    let queries = Queries{ positions: array![2], log_domain_size: 5};
+    let queries = Queries { positions: array![2], log_domain_size: 5 };
     let lambda = qm31(0, 0, 0, 0);
     let result = project_to_fft_space(@queries, sparse_circle_evaluation.clone(), lambda);
     assert_eq!(sparse_circle_evaluation, result);
@@ -274,10 +272,10 @@ fn test_project_to_fft_space_2() {
     let sparse_circle_evaluation = SparseCircleEvaluation {
         subcircle_evals: array![CircleEvaluation { values, domain }]
     };
-    let queries = Queries{ positions: array![2], log_domain_size: 5};
+    let queries = Queries { positions: array![2], log_domain_size: 5 };
     let lambda = qm31(1, 2, 3, 4);
     let result = project_to_fft_space(@queries, sparse_circle_evaluation.clone(), lambda);
-    
+
     let expected_values = array![
         qm31(807167737, 2147483645, 2147483644, 2147483643),
         qm31(1359821400, 2147483645, 2147483644, 2147483643)

@@ -43,7 +43,8 @@ pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
         }
         base_power = base_power * base_power;
     };
-    result}
+    result
+}
 
 pub fn qm31_zero_array(n: u32) -> Array<QM31> {
     let mut result = array![];
@@ -91,21 +92,21 @@ fn test_bit_reverse() {
 
 #[test]
 fn test_pow_qm31_1() {
-    let result = pow_qm31(qm31(1,2,3,4), 0);
+    let result = pow_qm31(qm31(1, 2, 3, 4), 0);
     let expected_result = qm31(1, 0, 0, 0);
     assert_eq!(expected_result, result)
 }
 
 #[test]
 fn test_pow_qm31_2() {
-    let result = pow_qm31(qm31(1,2,3,4), 1);
+    let result = pow_qm31(qm31(1, 2, 3, 4), 1);
     let expected_result = qm31(1, 2, 3, 4);
     assert_eq!(expected_result, result)
 }
 
 #[test]
 fn test_pow_qm31_3() {
-    let result = pow_qm31(qm31(1,2,3,4), 37);
+    let result = pow_qm31(qm31(1, 2, 3, 4), 37);
     let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
     assert_eq!(expected_result, result)
 }
