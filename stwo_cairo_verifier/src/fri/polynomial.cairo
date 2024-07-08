@@ -18,8 +18,12 @@ pub impl LinePolyImpl of LinePolyTrait {
             *self.coeffs[0]
         } else if self.len() == 2 {
             *self.coeffs[0] + x * *self.coeffs[1]
+        } else if self.len() == 4 {
+            let t0 = x;
+            let t1 = m31(2).into() * x * x - m31(1).into();
+            *self.coeffs[0] + t1 * *self.coeffs[1] + t0 * (*self.coeffs[2] + t1 * *self.coeffs[3])
         } else {
-            // TODO: implement for non-linear polynomials
+            // TODO: generalize
             x
         }
     }
