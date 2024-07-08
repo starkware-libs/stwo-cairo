@@ -416,10 +416,58 @@ mod tests {
     use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation};
     use stwo_cairo_verifier::fri::query::Queries;
     use stwo_cairo_verifier::fri::polynomial::LinePoly;
-    use super::{FriProof, FriLayerProof, FriConfig, FriVerifier, FriVerifierImpl, FriLayerVerifier, FriLayerVerifierImpl};
-    
+    use super::{
+        FriProof, FriLayerProof, FriConfig, FriVerifier, FriVerifierImpl, FriLayerVerifier,
+        FriLayerVerifierImpl
+    };
+
     #[test]
     fn valid_proof_with_constant_last_layer_passes_verification() {
+        let test = test_with_constant_last_layer();
+
+        let channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(channel, test.config, test.proof, test.bounds)
+            .unwrap();
+
+        verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+    }
+
+    #[test]
+    fn valid_proof_passes_verification() {
+        let test = test_with_linear_last_layer();
+
+        let channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(channel, test.config, test.proof, test.bounds)
+            .unwrap();
+
+        verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+    }
+
+    #[test]
+    fn valid_mixed_degree_proof_passes_verification() {
+        let test = test_with_mixed_degree();
+
+        let channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(channel, test.config, test.proof, test.bounds)
+            .unwrap();
+
+        verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+    }
+
+    #[derive(Drop)]
+    struct TestValues {
+        config: FriConfig,
+        proof: FriProof,
+        bounds: Array<u32>,
+        queries: Queries,
+        decommitted_values: Array<SparseCircleEvaluation>
+    }
+
+
+    fn test_with_constant_last_layer() -> TestValues {
+        let config = FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1
+        };
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
@@ -450,29 +498,30 @@ mod tests {
                 coeffs: array![qm31(940020369, 1979164784, 955004309, 315468455)], log_size: 0
             }
         };
-    
-        let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
+        let bounds = array![3];
+
+        let queries = Queries { positions: array![5], log_domain_size: 4 };
         let domain = CircleDomain {
             half_coset: Coset { initial_index: 603979776, step_size: 2147483648, log_size: 0 }
         };
-    
-        let queries = Queries { positions: array![5], log_domain_size: 4 };
-    
-        let channel = ChannelTrait::new(0x00);
-        let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1 };
-        let bound = array![3];
-    
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
         let decommitted_values = array![
             SparseCircleEvaluation {
-                subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain, values: array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)]
+                    }
+                ]
             }
         ];
-        verifier.decommit_on_queries(queries, decommitted_values).unwrap();
+
+        TestValues { config, proof, bounds, queries, decommitted_values }
     }
-    
-    #[test]
-    fn valid_proof_passes_verification() {
+
+    fn test_with_linear_last_layer() -> TestValues {
+        let config = FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1
+        };
+
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
@@ -523,29 +572,30 @@ mod tests {
                 log_size: 1
             }
         };
-    
-        let decommitment_value = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
+        let bounds = array![5];
+
+        let queries = Queries { positions: array![5], log_domain_size: 6 };
         let domain = CircleDomain {
             half_coset: Coset { initial_index: 553648128, step_size: 2147483648, log_size: 0 }
         };
-    
-        let queries = Queries { positions: array![5], log_domain_size: 6 };
-    
-        let channel = ChannelTrait::new(0x00);
-        let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1 };
-        let bound = array![5];
-    
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
         let decommitted_values = array![
             SparseCircleEvaluation {
-                subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain, values: array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)]
+                    }
+                ]
             }
         ];
-        verifier.decommit_on_queries(queries, decommitted_values).unwrap();
+
+        TestValues { config, proof, bounds, queries, decommitted_values }
     }
-    
-    #[test]
-    fn valid_mixed_degree_proof_passes_verification() {
+
+
+    fn test_with_mixed_degree() -> TestValues {
+        let config = FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2
+        };
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
@@ -616,14 +666,8 @@ mod tests {
                 log_size: 2
             }
         };
-    
+        let bounds = array![6, 5, 4];
         let queries = Queries { positions: array![7, 70], log_domain_size: 7 };
-    
-        let channel = ChannelTrait::new(0x00);
-        let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2 };
-        let bound = array![6, 5, 4];
-    
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
         let decommitted_values = array![
             SparseCircleEvaluation {
                 subcircle_evals: array![
@@ -686,6 +730,7 @@ mod tests {
                 ]
             }
         ];
-        verifier.decommit_on_queries(queries, decommitted_values).unwrap();
-    }    
+
+        TestValues { config, proof, bounds, queries, decommitted_values }
+    }
 }
