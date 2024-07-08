@@ -4,13 +4,14 @@ use core::traits::DivRem;
 
 use stwo_cairo_verifier::{BaseField, SecureField};
 use stwo_cairo_verifier::fields::qm31::QM31Trait;
+use stwo_cairo_verifier::utils::pack4;
 
-const M31_IN_HASH_SHIFT: felt252 = 0x80000000; // 2**31.
-const M31_IN_HASH_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
+const M31_SHIFT: felt252 = 0x80000000; // 2**31.
+const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
 pub const EXTENSION_FELTS_PER_HASH: usize = 2;
 pub const FELTS_PER_HASH: usize = 8;
 
-#[derive(Default, Drop, Debug)]
+#[derive(Default, Drop)]
 pub struct ChannelTime {
     n_challenges: usize,
     n_sent: usize,
@@ -28,7 +29,7 @@ impl ChannelTimeImpl of ChannelTimeTrait {
     }
 }
 
-#[derive(Drop, Debug)]
+#[derive(Drop)]
 pub struct Channel {
     digest: felt252,
     channel_time: ChannelTime,
@@ -45,11 +46,12 @@ pub impl ChannelImpl of ChannelTrait {
     }
 
     fn draw_felt252(ref self: Channel) -> felt252 {
-        let (s0, _, _) = hades_permutation(self.digest, self.channel_time.n_sent.into(), 2);
+        let (res, _, _) = hades_permutation(self.digest, self.channel_time.n_sent.into(), 2);
         self.channel_time.inc_sent();
-        s0
+        res
     }
 
+    // TODO(spapini): Check that this is sound.
     #[inline]
     fn draw_base_felts(ref self: Channel) -> [BaseField; FELTS_PER_HASH] {
         let mut cur = self.draw_felt252().into();
@@ -76,38 +78,15 @@ pub impl ChannelImpl of ChannelTrait {
         loop {
             match (felts.pop_front(), felts.pop_front()) {
                 (Option::None, _) => { break; },
-                (
-                    Option::Some(x), Option::None
-                ) => {
-                    let [x0, x1, x2, x3] = (*x).to_array();
-                    res
-                        .append(
-                            ((x0.into() * M31_IN_HASH_SHIFT + x1.into()) * M31_IN_HASH_SHIFT
-                                + x2.into())
-                                * M31_IN_HASH_SHIFT
-                                + x3.into()
-                        );
+                (Option::Some(x), Option::None) => {
+                    res.append(pack4(0, (*x).to_array()));
                     break;
                 },
                 (
                     Option::Some(x), Option::Some(y)
                 ) => {
-                    let [x0, x1, x2, x3] = (*x).to_array();
-                    let [y0, y1, y2, y3] = (*y).to_array();
-                    res
-                        .append(
-                            ((x0.into() * M31_IN_HASH_SHIFT + x1.into()) * M31_IN_HASH_SHIFT
-                                + x2.into())
-                                * M31_IN_HASH_SHIFT
-                                + x3.into()
-                        );
-                    res
-                        .append(
-                            ((y0.into() * M31_IN_HASH_SHIFT + y1.into()) * M31_IN_HASH_SHIFT
-                                + y2.into())
-                                * M31_IN_HASH_SHIFT
-                                + y3.into()
-                        );
+                    let cur = pack4(0, (*x).to_array());
+                    res.append(pack4(cur, (*y).to_array()));
                 },
             };
         };
@@ -123,8 +102,8 @@ pub impl ChannelImpl of ChannelTrait {
     }
 
     fn draw_felt(ref self: Channel) -> SecureField {
-        let [a, b, c, d, _, _, _, _] = self.draw_base_felts();
-        QM31Trait::from_array([a, b, c, d])
+        let [r0, r1, r2, r3, _, _, _, _] = self.draw_base_felts();
+        QM31Trait::from_array([r0, r1, r2, r3])
     }
 
     fn draw_felts(ref self: Channel, mut n_felts: usize) -> Array<SecureField> {
@@ -133,12 +112,12 @@ pub impl ChannelImpl of ChannelTrait {
             if n_felts == 0 {
                 break;
             }
-            let [a, b, c, d, e, f, g, h] = self.draw_base_felts();
-            res.append(QM31Trait::from_array([a, b, c, d]));
+            let [r0, r1, r2, r3, r4, r5, r6, r7] = self.draw_base_felts();
+            res.append(QM31Trait::from_array([r0, r1, r2, r3]));
             if n_felts == 1 {
                 break;
             }
-            res.append(QM31Trait::from_array([e, f, g, h]));
+            res.append(QM31Trait::from_array([r4, r5, r6, r7]));
             n_felts -= 2;
         };
         res
@@ -147,10 +126,10 @@ pub impl ChannelImpl of ChannelTrait {
 
 #[inline]
 fn extract_m31<const N: usize>(ref num: u256) -> BaseField {
-    let (q, r) = DivRem::div_rem(num, M31_IN_HASH_SHIFT_NZ_U256);
+    let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     let r: u32 = r.try_into().unwrap();
-    if r.into() == M31_IN_HASH_SHIFT - 1 {
+    if r.into() == M31_SHIFT - 1 {
         BaseField { inner: 0 }
     } else {
         BaseField { inner: r }
@@ -221,7 +200,6 @@ mod tests {
         random_felts.append_span(channel.draw_felts(4).span());
 
         // Assert that all the random felts are unique.
-
         assert_ne!(random_felts[0], random_felts[5]);
     }
 
@@ -236,9 +214,9 @@ mod tests {
             channel.draw_felt();
         };
 
-        // Reseed channel and check the digest was changed.
+        let prev_digest = channel.digest;
         channel.mix_digest(0);
-        assert_ne!(initial_digest, channel.digest);
+        assert_ne!(prev_digest, channel.digest);
     }
 
     #[test]

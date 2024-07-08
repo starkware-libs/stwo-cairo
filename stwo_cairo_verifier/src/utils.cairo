@@ -6,6 +6,8 @@ use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
 use core::iter::Iterator;
 
+use stwo_cairo_verifier::BaseField;
+
 #[generate_trait]
 pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {
     fn replace(ref self: Felt252Dict<T>, key: felt252, new_value: T) -> T {
@@ -68,4 +70,11 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
         };
         Option::Some(max)
     }
+}
+
+const M31_SHIFT: felt252 = 0x80000000; // 2**31.
+pub fn pack4(cur: felt252, values: [BaseField; 4]) -> felt252 {
+    let [x0, x1, x2, x3] = values;
+    (((cur * M31_SHIFT + x0.into()) * M31_SHIFT + x1.into()) * M31_SHIFT + x2.into()) * M31_SHIFT
+        + x3.into()
 }

@@ -248,7 +248,7 @@ fn next_decommitment_node<H>(
 }
 
 /// Fetches the hash of the next node from the previous layer in the Merkle tree.
-/// Either from the computed values or from the witness.
+/// The hash is fetched either from the computed values or from the witness.
 fn fetch_prev_node_hash<H, +Copy<H>, +Drop<H>>(
     ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Array<H>, expected_query: u32
 ) -> Option<H> {
@@ -276,11 +276,8 @@ pub enum MerkleVerificationError {
 }
 
 
-use core::poseidon::poseidon_hash_span;
 #[test]
 fn test_verifier() {
-    let s = poseidon_hash_span(array![1, 2].span());
-    println!("{}", s);
     let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
     let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
     let decommitment = MerkleDecommitment {

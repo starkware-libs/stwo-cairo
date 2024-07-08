@@ -4,7 +4,7 @@ use stwo_cairo_verifier::fri::domain::LineDomainTrait;
 use stwo_cairo_verifier::vcs::verifier::MerkleVerifierTrait;
 use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
@@ -58,11 +58,11 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         while i < (sparse_evaluation).subline_evals.len() {
             let subline_eval = sparse_evaluation.subline_evals[i];
             while j < (sparse_evaluation.subline_evals[i]).values.len() {
-                let value = subline_eval.values[j];
-                column_0.append(*value.a.a);
-                column_1.append(*value.a.b);
-                column_2.append(*value.b.a);
-                column_3.append(*value.b.b);
+                let [x0, x1, x2, x3] = (*subline_eval.values[j]).to_array();
+                column_0.append(x0);
+                column_1.append(x1);
+                column_2.append(x2);
+                column_3.append(x3);
                 j += 1;
             };
             i += 1;

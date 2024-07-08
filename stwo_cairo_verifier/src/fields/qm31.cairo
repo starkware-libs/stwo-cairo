@@ -1,5 +1,5 @@
 use super::m31::{M31, m31};
-use super::cm31::{CM31, cm31, cm31_from_m31, CM31Trait};
+use super::cm31::{CM31, cm31, CM31Trait};
 use core::num::traits::zero::Zero;
 use core::num::traits::one::One;
 
@@ -7,8 +7,8 @@ pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
 #[derive(Copy, Drop, Debug, PartialEq, Eq)]
 pub struct QM31 {
-    pub a: CM31,
-    pub b: CM31,
+    a: CM31,
+    b: CM31,
 }
 
 #[generate_trait]
@@ -48,7 +48,6 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
         QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
-
 pub impl QM31Zero of Zero<QM31> {
     fn zero() -> QM31 {
         QM31 { a: Zero::zero(), b: Zero::zero() }
