@@ -198,7 +198,7 @@ pub struct FriConfig {
     n_queries: usize,
 }
 
-#[derive(Drop)]
+#[derive(Drop, Clone)]
 pub struct FriLayerProof {
     pub evals_subset: Array<QM31>,
     pub decommitment: MerkleDecommitment::<PoseidonMerkleHasher>,
@@ -409,6 +409,7 @@ impl FriVerifierImpl of FriVerifierTrait {
 
 #[cfg(test)]
 mod tests {
+    use core::array::ArrayTrait;
     use stwo_cairo_verifier::channel::ChannelTrait;
     use stwo_cairo_verifier::fields::qm31::qm31;
     use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
@@ -452,6 +453,73 @@ mod tests {
             .unwrap();
 
         verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+    }
+
+    // TODO: replace `should_panic` with a more precise test
+    #[should_panic]
+    #[test]
+    fn proof_with_removed_layer_fails_verification() {
+        let test = test_with_mixed_degree();
+
+        let mut invalid_config = test.config;
+        invalid_config.log_last_layer_degree_bound -= 1;
+
+        let channel = ChannelTrait::new(0x00);
+        let _verifier = FriVerifierImpl::commit(channel, invalid_config, test.proof, test.bounds)
+            .unwrap();
+    }
+
+    // TODO: replace `should_panic` with a more precise test
+    #[should_panic]
+    #[test]
+    fn proof_with_added_layer_fails_verification() {
+        let test = test_with_mixed_degree();
+
+        let mut invalid_config = test.config;
+        invalid_config.log_last_layer_degree_bound += 1;
+
+        let channel = ChannelTrait::new(0x00);
+        let _verifier = FriVerifierImpl::commit(channel, invalid_config, test.proof, test.bounds)
+            .unwrap();
+    }
+
+    // TODO: replace `should_panic` with a more precise test
+    #[should_panic]
+    #[test]
+    fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
+        let test = @test_with_mixed_degree();
+
+        // Create an invalid proof by removing an evaluation from the second layer's proof
+        let invalid_proof = {
+            let mut invalid_inner_layers = array![];
+            invalid_inner_layers.append(test.proof.inner_layers[0].clone());
+            let mut invalid_evals_subset = array![];
+            let mut i = 1;
+            while i < test.proof.inner_layers[1].evals_subset.len() {
+                invalid_evals_subset.append(test.proof.inner_layers[1].evals_subset[i].clone());
+                i += 1;
+            };
+            invalid_inner_layers
+                .append(
+                    FriLayerProof {
+                        evals_subset: invalid_evals_subset,
+                        decommitment: test.proof.inner_layers[1].decommitment.clone(),
+                        decomposition_coeff: *test.proof.inner_layers[1].decomposition_coeff,
+                        commitment: *test.proof.inner_layers[1].commitment
+                    }
+                );
+
+            FriProof {
+                inner_layers: invalid_inner_layers,
+                last_layer_poly: test.proof.last_layer_poly.clone()
+            }
+        };
+
+        let channel = ChannelTrait::new(0x00);
+        let _verifier = FriVerifierImpl::commit(
+            channel, *test.config, invalid_proof, test.bounds.clone()
+        )
+            .unwrap();
     }
 
     #[derive(Drop)]
