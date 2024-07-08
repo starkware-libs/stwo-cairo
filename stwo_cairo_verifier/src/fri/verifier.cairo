@@ -407,273 +407,285 @@ impl FriVerifierImpl of FriVerifierTrait {
     }
 }
 
-#[test]
-fn valid_proof_with_constant_last_layer_passes_verification() {
-    let proof = FriProof {
-        inner_layers: array![
-            FriLayerProof {
-                evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
-                        0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
-                    ],
-                    column_witness: array![]
+#[cfg(test)]
+mod tests {
+    use stwo_cairo_verifier::channel::ChannelTrait;
+    use stwo_cairo_verifier::fields::qm31::qm31;
+    use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
+    use stwo_cairo_verifier::fri::domain::{Coset, CircleDomain};
+    use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation};
+    use stwo_cairo_verifier::fri::query::Queries;
+    use stwo_cairo_verifier::fri::polynomial::LinePoly;
+    use super::{FriProof, FriLayerProof, FriConfig, FriVerifier, FriVerifierImpl, FriLayerVerifier, FriLayerVerifierImpl};
+    
+    #[test]
+    fn valid_proof_with_constant_last_layer_passes_verification() {
+        let proof = FriProof {
+            inner_layers: array![
+                FriLayerProof {
+                    evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
+                            0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
+                        ],
+                        column_witness: array![]
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
                 },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
-            },
-            FriLayerProof {
-                evals_subset: array![qm31(1948473851, 1004529211, 1304438646, 1985407493)],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x031e0d7125162e8c9022c7b9967b792472c77ac6f35b7a13703544e16d715d83
-                    ],
-                    column_witness: array![]
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x0536ed50a0da2d18e090646e869b52c8b202e6167758cd9ac514cf95179e9641
-            }
-        ],
-        last_layer_poly: LinePoly {
-            coeffs: array![qm31(940020369, 1979164784, 955004309, 315468455)], log_size: 0
-        }
-    };
-
-    let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
-    let domain = CircleDomain {
-        half_coset: Coset { initial_index: 603979776, step_size: 2147483648, log_size: 0 }
-    };
-
-    let queries = Queries { positions: array![5], log_domain_size: 4 };
-
-    let channel = ChannelTrait::new(0x00);
-    let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1 };
-    let bound = array![3];
-
-    let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
-    let decommitted_values = array![
-        SparseCircleEvaluation {
-            subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
-        }
-    ];
-    verifier.decommit_on_queries(queries, decommitted_values).unwrap();
-}
-
-#[test]
-fn valid_proof_passes_verification() {
-    let proof = FriProof {
-        inner_layers: array![
-            FriLayerProof {
-                evals_subset: array![qm31(1387266930, 149259209, 1148988082, 1930518101)],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x043160f2f363f93858aea3f6e621c1afc86d3fb1df6486d287347137cf3dfed1,
-                        0x02b0c0da3e416172be84dacba1e7b069e330431a954afd500e314f0298494a8c,
-                        0x021cf336150f7443d0860ccba345ab39f50825f1f44926a891ea2e05e258826c,
-                        0x01127fb653bf375b6248814ce48aa39235b6194146d54861160139e30076c47b
-                    ],
-                    column_witness: array![]
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x007a651ff28db891d325f04db37e9db38c77979ca66ee6a244eaa1b2c60aaf15
-            },
-            FriLayerProof {
-                evals_subset: array![qm31(861269867, 123962490, 964314161, 1930884004)],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x03b4b07433212611ac20d82849e4fae015c82fc96c404ee9d647256fcd12a07b,
-                        0x04898493682e4be2195e9b129f431be042c08a354e91d3747813f585bcb4aaca,
-                        0x017e767a71f3b55f18382b203c6146e695b27c81f96ece5f2ab44cafa743b0e7
-                    ],
-                    column_witness: array![]
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x06dc699d087a38aaf30c8ad95545c06ab641a9e2f690f790403f53437dc66392
-            },
-            FriLayerProof {
-                evals_subset: array![qm31(974589897, 1592795796, 649052897, 863407657)],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x079bc5cbec102a3c4a35a415b07ef7779ea5a41069331775c363f7cc7439be5b,
-                        0x01f0d2cb65d190a549b197c2b741b74156de322744fce68cb658033a0b390311,
-                    ],
-                    column_witness: array![]
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x0736746d72f39154aec3ef46d5c0e3855b4801d16c2c4feff404d4f0ccefd050
-            }
-        ],
-        last_layer_poly: LinePoly {
-            coeffs: array![
-                qm31(1080276375, 1725024947, 477465525, 102017026),
-                qm31(1080276375, 1725024947, 477465525, 102017026)
+                FriLayerProof {
+                    evals_subset: array![qm31(1948473851, 1004529211, 1304438646, 1985407493)],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x031e0d7125162e8c9022c7b9967b792472c77ac6f35b7a13703544e16d715d83
+                        ],
+                        column_witness: array![]
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x0536ed50a0da2d18e090646e869b52c8b202e6167758cd9ac514cf95179e9641
+                }
             ],
-            log_size: 1
-        }
-    };
-
-    let decommitment_value = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
-    let domain = CircleDomain {
-        half_coset: Coset { initial_index: 553648128, step_size: 2147483648, log_size: 0 }
-    };
-
-    let queries = Queries { positions: array![5], log_domain_size: 6 };
-
-    let channel = ChannelTrait::new(0x00);
-    let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1 };
-    let bound = array![5];
-
-    let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
-    let decommitted_values = array![
-        SparseCircleEvaluation {
-            subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
-        }
-    ];
-    verifier.decommit_on_queries(queries, decommitted_values).unwrap();
-}
-
-#[test]
-fn valid_mixed_degree_proof_passes_verification() {
-    let proof = FriProof {
-        inner_layers: array![
-            FriLayerProof {
-                evals_subset: array![
-                    qm31(1332072020, 1609661801, 1897498023, 686558487),
-                    qm31(886239056, 1157828441, 2019876782, 1060063104)
-                ],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x07434e99a997fed5183f02e248b2d77ce047e45a63418dd8039630b139d72487,
-                        0x020bcf949298f97180c360f6d55c2f65c19b9f3811c917d0368fe7203b53abcc,
-                        0x01e1aafd718c486b5e9b35927b27a6eb71ef97cdc7009c9f246647db63a7960c,
-                        0x062dd5d3993b66c78baf3608a2ed3de1ad865d0b174e006c8047b91fde98e462,
-                        0x0718cb047c50ba071b9a4696537695f273f42a7af8bfb0e465190b905548f754,
-                        0x055191c91b0668bab9271863162448c3396e8c2fc29f61bb621858210f4d0771,
-                        0x040db6d0f16909d1daaf710e3fa9663ef52419ac5ae5433c915ac5939809eb79,
-                        0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3
-                    ],
-                    column_witness: array![],
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc
-            },
-            FriLayerProof {
-                evals_subset: array![
-                    qm31(1274461871, 275737803, 1667187951, 1863765347),
-                    qm31(1340580983, 256049648, 1818983416, 980463906)
-                ],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x060fde801827a1681d30225a4fe690998e31a7bcd6c3c45667a8828c2e27916f,
-                        0x0207cd96c394d8bd203468ae483528de8d3b92914b031b5ea405147de9b64e3c,
-                        0x0033793e1985da45f1b7fded0a5dc55fe95cd69ddce3935972f7ffc971311d50,
-                        0x047d27eaf0d659e9afdf7ea6c102f82ccf1a40d06aa442ddbf294f17a393b057,
-                        0x036c9af3bfb0bfe616814083f6faced81dd408a6b97c4503c919a39769b97dcb,
-                        0x04ff41ff563354e1ad44fc2c36df75456706351c4e7f95595889466bc37e9594
-                    ],
-                    column_witness: array![]
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x011501b85ce5c3170d26ab4a39969af378459856c01b2026a107e7cf977d3a40
-            },
-            FriLayerProof {
-                evals_subset: array![
-                    qm31(2076487708, 821015293, 1124764643, 1515478998),
-                    qm31(1388613128, 1250129043, 2846551, 1151418480)
-                ],
-                decommitment: MerkleDecommitment {
-                    hash_witness: array![
-                        0x0377991e3583c5c64569c71d3038fdc4ff0d60760121092f21049fd2a47b0b3a,
-                        0x06de824fd62cb9081040a3d2f8b46b3b22f66c031d81aa6061c535968df0eafa,
-                        0x034ecdc04e481b229d7483ae21e5d73b3815fa61232b86856ce8e32f9d3bea64,
-                        0x02194f358c42ceb8027744f606257cf8ea158dcffc72aa62c71870631691f3e6
-                    ],
-                    column_witness: array![]
-                },
-                decomposition_coeff: qm31(0, 0, 0, 0),
-                commitment: 0x06db2192b3d4aec51d86779b026ed4c173b2679bd2da24cf6ad8b4ba5ab79143
+            last_layer_poly: LinePoly {
+                coeffs: array![qm31(940020369, 1979164784, 955004309, 315468455)], log_size: 0
             }
-        ],
-        last_layer_poly: LinePoly {
-            coeffs: array![
-                qm31(751072370, 712476851, 986633684, 1014125985),
-                qm31(751072370, 712476851, 986633684, 1014125985),
-                qm31(751072370, 712476851, 986633684, 1014125985),
-                qm31(751072370, 712476851, 986633684, 1014125985)
+        };
+    
+        let decommitment_value = array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)];
+        let domain = CircleDomain {
+            half_coset: Coset { initial_index: 603979776, step_size: 2147483648, log_size: 0 }
+        };
+    
+        let queries = Queries { positions: array![5], log_domain_size: 4 };
+    
+        let channel = ChannelTrait::new(0x00);
+        let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1 };
+        let bound = array![3];
+    
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
+        let decommitted_values = array![
+            SparseCircleEvaluation {
+                subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
+            }
+        ];
+        verifier.decommit_on_queries(queries, decommitted_values).unwrap();
+    }
+    
+    #[test]
+    fn valid_proof_passes_verification() {
+        let proof = FriProof {
+            inner_layers: array![
+                FriLayerProof {
+                    evals_subset: array![qm31(1387266930, 149259209, 1148988082, 1930518101)],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x043160f2f363f93858aea3f6e621c1afc86d3fb1df6486d287347137cf3dfed1,
+                            0x02b0c0da3e416172be84dacba1e7b069e330431a954afd500e314f0298494a8c,
+                            0x021cf336150f7443d0860ccba345ab39f50825f1f44926a891ea2e05e258826c,
+                            0x01127fb653bf375b6248814ce48aa39235b6194146d54861160139e30076c47b
+                        ],
+                        column_witness: array![]
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x007a651ff28db891d325f04db37e9db38c77979ca66ee6a244eaa1b2c60aaf15
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(861269867, 123962490, 964314161, 1930884004)],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x03b4b07433212611ac20d82849e4fae015c82fc96c404ee9d647256fcd12a07b,
+                            0x04898493682e4be2195e9b129f431be042c08a354e91d3747813f585bcb4aaca,
+                            0x017e767a71f3b55f18382b203c6146e695b27c81f96ece5f2ab44cafa743b0e7
+                        ],
+                        column_witness: array![]
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x06dc699d087a38aaf30c8ad95545c06ab641a9e2f690f790403f53437dc66392
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(974589897, 1592795796, 649052897, 863407657)],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x079bc5cbec102a3c4a35a415b07ef7779ea5a41069331775c363f7cc7439be5b,
+                            0x01f0d2cb65d190a549b197c2b741b74156de322744fce68cb658033a0b390311,
+                        ],
+                        column_witness: array![]
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x0736746d72f39154aec3ef46d5c0e3855b4801d16c2c4feff404d4f0ccefd050
+                }
             ],
-            log_size: 2
-        }
-    };
-
-    let queries = Queries { positions: array![7, 70], log_domain_size: 7 };
-
-    let channel = ChannelTrait::new(0x00);
-    let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2 };
-    let bound = array![6, 5, 4];
-
-    let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
-    let decommitted_values = array![
-        SparseCircleEvaluation {
-            subcircle_evals: array![
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 1619001344, step_size: 2147483648, log_size: 0
-                        }
+            last_layer_poly: LinePoly {
+                coeffs: array![
+                    qm31(1080276375, 1725024947, 477465525, 102017026),
+                    qm31(1080276375, 1725024947, 477465525, 102017026)
+                ],
+                log_size: 1
+            }
+        };
+    
+        let decommitment_value = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
+        let domain = CircleDomain {
+            half_coset: Coset { initial_index: 553648128, step_size: 2147483648, log_size: 0 }
+        };
+    
+        let queries = Queries { positions: array![5], log_domain_size: 6 };
+    
+        let channel = ChannelTrait::new(0x00);
+        let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1 };
+        let bound = array![5];
+    
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
+        let decommitted_values = array![
+            SparseCircleEvaluation {
+                subcircle_evals: array![CircleEvaluation { domain, values: decommitment_value }]
+            }
+        ];
+        verifier.decommit_on_queries(queries, decommitted_values).unwrap();
+    }
+    
+    #[test]
+    fn valid_mixed_degree_proof_passes_verification() {
+        let proof = FriProof {
+            inner_layers: array![
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(1332072020, 1609661801, 1897498023, 686558487),
+                        qm31(886239056, 1157828441, 2019876782, 1060063104)
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x07434e99a997fed5183f02e248b2d77ce047e45a63418dd8039630b139d72487,
+                            0x020bcf949298f97180c360f6d55c2f65c19b9f3811c917d0368fe7203b53abcc,
+                            0x01e1aafd718c486b5e9b35927b27a6eb71ef97cdc7009c9f246647db63a7960c,
+                            0x062dd5d3993b66c78baf3608a2ed3de1ad865d0b174e006c8047b91fde98e462,
+                            0x0718cb047c50ba071b9a4696537695f273f42a7af8bfb0e465190b905548f754,
+                            0x055191c91b0668bab9271863162448c3396e8c2fc29f61bb621858210f4d0771,
+                            0x040db6d0f16909d1daaf710e3fa9663ef52419ac5ae5433c915ac5939809eb79,
+                            0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3
+                        ],
+                        column_witness: array![],
                     },
-                    values: array![qm31(83295654, 0, 0, 0), qm31(666640840, 0, 0, 0)]
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc
                 },
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 1652555776, step_size: 2147483648, log_size: 0
-                        }
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(1274461871, 275737803, 1667187951, 1863765347),
+                        qm31(1340580983, 256049648, 1818983416, 980463906)
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x060fde801827a1681d30225a4fe690998e31a7bcd6c3c45667a8828c2e27916f,
+                            0x0207cd96c394d8bd203468ae483528de8d3b92914b031b5ea405147de9b64e3c,
+                            0x0033793e1985da45f1b7fded0a5dc55fe95cd69ddce3935972f7ffc971311d50,
+                            0x047d27eaf0d659e9afdf7ea6c102f82ccf1a40d06aa442ddbf294f17a393b057,
+                            0x036c9af3bfb0bfe616814083f6faced81dd408a6b97c4503c919a39769b97dcb,
+                            0x04ff41ff563354e1ad44fc2c36df75456706351c4e7f95595889466bc37e9594
+                        ],
+                        column_witness: array![]
                     },
-                    values: array![qm31(1598588979, 0, 0, 0), qm31(1615371031, 0, 0, 0)]
-                }
-            ]
-        },
-        SparseCircleEvaluation {
-            subcircle_evals: array![
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 1090519040, step_size: 2147483648, log_size: 0
-                        }
-                    },
-                    values: array![qm31(985597997, 0, 0, 0), qm31(139496415, 0, 0, 0)]
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x011501b85ce5c3170d26ab4a39969af378459856c01b2026a107e7cf977d3a40
                 },
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 1157627904, step_size: 2147483648, log_size: 0
-                        }
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(2076487708, 821015293, 1124764643, 1515478998),
+                        qm31(1388613128, 1250129043, 2846551, 1151418480)
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x0377991e3583c5c64569c71d3038fdc4ff0d60760121092f21049fd2a47b0b3a,
+                            0x06de824fd62cb9081040a3d2f8b46b3b22f66c031d81aa6061c535968df0eafa,
+                            0x034ecdc04e481b229d7483ae21e5d73b3815fa61232b86856ce8e32f9d3bea64,
+                            0x02194f358c42ceb8027744f606257cf8ea158dcffc72aa62c71870631691f3e6
+                        ],
+                        column_witness: array![]
                     },
-                    values: array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0)]
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x06db2192b3d4aec51d86779b026ed4c173b2679bd2da24cf6ad8b4ba5ab79143
                 }
-            ]
-        },
-        SparseCircleEvaluation {
-            subcircle_evals: array![
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 33554432, step_size: 2147483648, log_size: 0
-                        }
+            ],
+            last_layer_poly: LinePoly {
+                coeffs: array![
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(751072370, 712476851, 986633684, 1014125985)
+                ],
+                log_size: 2
+            }
+        };
+    
+        let queries = Queries { positions: array![7, 70], log_domain_size: 7 };
+    
+        let channel = ChannelTrait::new(0x00);
+        let config = FriConfig { log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2 };
+        let bound = array![6, 5, 4];
+    
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bound).unwrap();
+        let decommitted_values = array![
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1619001344, step_size: 2147483648, log_size: 0
+                            }
+                        },
+                        values: array![qm31(83295654, 0, 0, 0), qm31(666640840, 0, 0, 0)]
                     },
-                    values: array![qm31(1645691043, 0, 0, 0), qm31(2009531552, 0, 0, 0)]
-                },
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 167772160, step_size: 2147483648, log_size: 0
-                        }
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1652555776, step_size: 2147483648, log_size: 0
+                            }
+                        },
+                        values: array![qm31(1598588979, 0, 0, 0), qm31(1615371031, 0, 0, 0)]
+                    }
+                ]
+            },
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1090519040, step_size: 2147483648, log_size: 0
+                            }
+                        },
+                        values: array![qm31(985597997, 0, 0, 0), qm31(139496415, 0, 0, 0)]
                     },
-                    values: array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0)]
-                }
-            ]
-        }
-    ];
-    verifier.decommit_on_queries(queries, decommitted_values).unwrap();
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1157627904, step_size: 2147483648, log_size: 0
+                            }
+                        },
+                        values: array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0)]
+                    }
+                ]
+            },
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 33554432, step_size: 2147483648, log_size: 0
+                            }
+                        },
+                        values: array![qm31(1645691043, 0, 0, 0), qm31(2009531552, 0, 0, 0)]
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 167772160, step_size: 2147483648, log_size: 0
+                            }
+                        },
+                        values: array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0)]
+                    }
+                ]
+            }
+        ];
+        verifier.decommit_on_queries(queries, decommitted_values).unwrap();
+    }    
 }
