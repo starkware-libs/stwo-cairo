@@ -68,6 +68,7 @@ pub impl QueriesImpl of QueriesImplTrait {
             positions.append(x);
             lower_bound = Option::Some(x);
         };
+
         Queries { positions, log_domain_size }
     }
 

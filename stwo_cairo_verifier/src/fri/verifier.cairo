@@ -1,3 +1,4 @@
+use core::option::OptionTrait;
 use core::result::ResultTrait;
 use stwo_cairo_verifier::fri::query::QueriesImplTrait;
 use stwo_cairo_verifier::fri::domain::LineDomainTrait;
@@ -299,7 +300,7 @@ impl FriVerifierImpl of FriVerifierTrait {
     }
 
     fn decommit_on_queries(
-        self: @FriVerifier, queries: Queries, decommitted_values: Array<SparseCircleEvaluation>
+        self: @FriVerifier, queries: @Queries, decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(), FriVerificationError> {
         let (last_layer_queries, last_layer_query_evals) = self
             .decommit_inner_layers(queries, @decommitted_values)?;
@@ -307,7 +308,7 @@ impl FriVerifierImpl of FriVerifierTrait {
     }
 
     fn decommit_inner_layers(
-        self: @FriVerifier, queries: Queries, decommitted_values: @Array<SparseCircleEvaluation>
+        self: @FriVerifier, queries: @Queries, decommitted_values: @Array<SparseCircleEvaluation>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         let circle_poly_alpha = self.circle_poly_alpha;
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
@@ -394,7 +395,6 @@ impl FriVerifierImpl of FriVerifierTrait {
 
             if *query_evals[i] != self.last_layer_poly.eval_at_point(x.into()) {
                 failed = true;
-                println!("[debug] i: {}", i);
                 break;
             }
             i += 1;
@@ -405,10 +405,34 @@ impl FriVerifierImpl of FriVerifierTrait {
             Result::Ok(())
         }
     }
+
+    // TODO: Return opening positions
+    fn column_query_positions(ref self: FriVerifier, ref channel: Channel) {
+        let queries = QueriesImpl::generate(
+            ref channel,
+            *self.column_bounds[0] + self.config.log_blowup_factor,
+            self.config.n_queries
+        );
+        self.queries = Option::Some(queries);
+    }
+
+    fn decommit(
+        self: @FriVerifier, decommitted_values: Array<SparseCircleEvaluation>,
+    ) -> Result<(), FriVerificationError> {
+        let queries = if let Option::Some(queries_snapshot) = self.queries {
+            Option::Some(queries_snapshot)
+        } else {
+            Option::None
+        }
+            .expect('queries not sampled');
+        self.decommit_on_queries(queries, decommitted_values)
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
+    use stwo_cairo_verifier::fri::verifier::FriLayerVerifierTrait;
     use core::array::ArrayTrait;
     use stwo_cairo_verifier::channel::ChannelTrait;
     use stwo_cairo_verifier::fields::qm31::qm31;
@@ -422,115 +446,114 @@ mod tests {
         FriLayerVerifierImpl
     };
 
+    type TestValues = (FriConfig, FriProof, Array<u32>, Queries, Array<SparseCircleEvaluation>);
+
     #[test]
     fn valid_proof_with_constant_last_layer_passes_verification() {
-        let test = test_with_constant_last_layer();
+        let (config, proof, bounds, queries, decommitted_values) = test_with_constant_last_layer();
 
         let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, test.config, test.proof, test.bounds)
-            .unwrap();
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
 
-        verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+        verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
     }
 
     #[test]
     fn valid_proof_passes_verification() {
-        let test = test_with_linear_last_layer();
+        let (config, proof, bounds, queries, decommitted_values) = test_with_linear_last_layer();
 
         let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, test.config, test.proof, test.bounds)
-            .unwrap();
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
 
-        verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+        verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
     }
 
     #[test]
     fn valid_mixed_degree_proof_passes_verification() {
-        let test = test_with_mixed_degree();
+        let (config, proof, bounds, queries, decommitted_values) = test_with_mixed_degree_1();
 
         let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, test.config, test.proof, test.bounds)
-            .unwrap();
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
 
-        verifier.decommit_on_queries(test.queries, test.decommitted_values).unwrap();
+        verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
+    }
+
+    #[test]
+    fn valid_mixed_degree_end_to_end_proof_passes_verification() {
+        let (config, proof, bounds, decommitted_values) = test_with_mixed_degree_2();
+        let mut channel = ChannelTrait::new(0x00);
+        let mut verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
+
+        let mut channel = ChannelTrait::new(0x00);
+        verifier.column_query_positions(ref channel);
+
+        verifier.decommit(decommitted_values).unwrap();
     }
 
     // TODO: replace `should_panic` with a more precise test
     #[should_panic]
     #[test]
     fn proof_with_removed_layer_fails_verification() {
-        let test = test_with_mixed_degree();
+        let (config, proof, bounds, _queries, _decommitted_values) = test_with_mixed_degree_1();
 
-        let mut invalid_config = test.config;
+        let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound -= 1;
 
         let channel = ChannelTrait::new(0x00);
-        let _verifier = FriVerifierImpl::commit(channel, invalid_config, test.proof, test.bounds)
-            .unwrap();
+        let _verifier = FriVerifierImpl::commit(channel, invalid_config, proof, bounds).unwrap();
     }
 
     // TODO: replace `should_panic` with a more precise test
     #[should_panic]
     #[test]
     fn proof_with_added_layer_fails_verification() {
-        let test = test_with_mixed_degree();
+        let (config, proof, bounds, _queries, _decommitted_values) = test_with_mixed_degree_1();
 
-        let mut invalid_config = test.config;
+        let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound += 1;
 
         let channel = ChannelTrait::new(0x00);
-        let _verifier = FriVerifierImpl::commit(channel, invalid_config, test.proof, test.bounds)
-            .unwrap();
+        let _verifier = FriVerifierImpl::commit(channel, invalid_config, proof, bounds).unwrap();
     }
 
     // TODO: replace `should_panic` with a more precise test
     #[should_panic]
     #[test]
     fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
-        let test = @test_with_mixed_degree();
+        let (config, proof, bounds, _queries, _decommitted_values) = @test_with_mixed_degree_1();
 
         // Create an invalid proof by removing an evaluation from the second layer's proof
         let invalid_proof = {
             let mut invalid_inner_layers = array![];
-            invalid_inner_layers.append(test.proof.inner_layers[0].clone());
+            invalid_inner_layers.append(proof.inner_layers[0].clone());
             let mut invalid_evals_subset = array![];
             let mut i = 1;
-            while i < test.proof.inner_layers[1].evals_subset.len() {
-                invalid_evals_subset.append(test.proof.inner_layers[1].evals_subset[i].clone());
+            while i < proof.inner_layers[1].evals_subset.len() {
+                invalid_evals_subset.append(proof.inner_layers[1].evals_subset[i].clone());
                 i += 1;
             };
             invalid_inner_layers
                 .append(
                     FriLayerProof {
                         evals_subset: invalid_evals_subset,
-                        decommitment: test.proof.inner_layers[1].decommitment.clone(),
-                        decomposition_coeff: *test.proof.inner_layers[1].decomposition_coeff,
-                        commitment: *test.proof.inner_layers[1].commitment
+                        decommitment: proof.inner_layers[1].decommitment.clone(),
+                        decomposition_coeff: *proof.inner_layers[1].decomposition_coeff,
+                        commitment: *proof.inner_layers[1].commitment
                     }
                 );
 
             FriProof {
-                inner_layers: invalid_inner_layers,
-                last_layer_poly: test.proof.last_layer_poly.clone()
+                inner_layers: invalid_inner_layers, last_layer_poly: proof.last_layer_poly.clone()
             }
         };
 
         let channel = ChannelTrait::new(0x00);
-        let _verifier = FriVerifierImpl::commit(
-            channel, *test.config, invalid_proof, test.bounds.clone()
-        )
+        let _verifier = FriVerifierImpl::commit(channel, *config, invalid_proof, bounds.clone())
             .unwrap();
     }
 
-    #[derive(Drop)]
-    struct TestValues {
-        config: FriConfig,
-        proof: FriProof,
-        bounds: Array<u32>,
-        queries: Queries,
-        decommitted_values: Array<SparseCircleEvaluation>
-    }
 
+    // Proofs extracted from Stwo's rust implementation
 
     fn test_with_constant_last_layer() -> TestValues {
         let config = FriConfig {
@@ -582,7 +605,7 @@ mod tests {
             }
         ];
 
-        TestValues { config, proof, bounds, queries, decommitted_values }
+        (config, proof, bounds, queries, decommitted_values)
     }
 
     fn test_with_linear_last_layer() -> TestValues {
@@ -656,11 +679,11 @@ mod tests {
             }
         ];
 
-        TestValues { config, proof, bounds, queries, decommitted_values }
+        (config, proof, bounds, queries, decommitted_values)
     }
 
 
-    fn test_with_mixed_degree() -> TestValues {
+    fn test_with_mixed_degree_1() -> TestValues {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2
         };
@@ -799,6 +822,175 @@ mod tests {
             }
         ];
 
-        TestValues { config, proof, bounds, queries, decommitted_values }
+        (config, proof, bounds, queries, decommitted_values)
+    }
+
+    fn test_with_mixed_degree_2() -> (
+        FriConfig, FriProof, Array<u32>, Array<SparseCircleEvaluation>
+    ) {
+        let config = FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 3,
+        };
+        let proof = FriProof {
+            inner_layers: array![
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(1398603058, 1957874897, 461138270, 1700080921),
+                        qm31(393493522, 576752954, 1963336729, 1268892468),
+                        qm31(97718382, 739321442, 646668452, 906233770),
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x0220da6892f2906e76c2713dc027eba3b2df3dfc6c680d354061eb59372822d5,
+                            0x020bcf949298f97180c360f6d55c2f65c19b9f3811c917d0368fe7203b53abcc,
+                            0x0367082a2edcf72c44ec838abbd372aa27d39ecc3387791bf686a712db309846,
+                            0x028514dd0ce02e8e3266b17b788f200d1ae49cc5f007fe3bd98e90529192aac3,
+                            0x062dd5d3993b66c78baf3608a2ed3de1ad865d0b174e006c8047b91fde98e462,
+                            0x04c76a6b839945fb3cdab23a3c01333a0fa755eaa0631d76fc2d7f77cb9dbeb8,
+                            0x03af1609280ef18b58dfe676fa9ac9288ebc4f2a48f511fe714b059c487455da,
+                            0x01c0a53fdf814604afe54aebd2a6d2880b072e217367b3adcc8a9bc14269015f,
+                            0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
+                },
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(587836539, 506913333, 1813710983, 1401047129),
+                        qm31(1340580983, 256049648, 1818983416, 980463906),
+                        qm31(1604063481, 102792848, 617877666, 280621577),
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x03c9f83549383c1794af686f48b750224daa051420285e027aa31f5e6563ef91,
+                            0x0207cd96c394d8bd203468ae483528de8d3b92914b031b5ea405147de9b64e3c,
+                            0x0142d76928317b0616d3ce086c07ac6e040e669da0d4249f53617f5e61230fbf,
+                            0x02f4363840fc3c457a00744025155415f00bf2318e716f02403e767583974ceb,
+                            0x05db032206eda11f83633f76676bc490ceed6aed02c9331abde8657b2eb57d14,
+                            0x04ff41ff563354e1ad44fc2c36df75456706351c4e7f95595889466bc37e9594,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x011501b85ce5c3170d26ab4a39969af378459856c01b2026a107e7cf977d3a40,
+                },
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(230668059, 937515353, 336211937, 1486617083),
+                        qm31(1388613128, 1250129043, 2846551, 1151418480),
+                        qm31(1414633709, 1659698730, 45239225, 1630318681),
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x00d2e8ddf56ef114806c00e0ff510c401142ed60433ada9b93ed3c548ae37cc8,
+                            0x00e4552111db4ea23c2e693011a692ee6468f3de1d3c99c47f193eadd7b2b655,
+                            0x02194f358c42ceb8027744f606257cf8ea158dcffc72aa62c71870631691f3e6,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x06db2192b3d4aec51d86779b026ed4c173b2679bd2da24cf6ad8b4ba5ab79143,
+                },
+            ],
+            last_layer_poly: LinePoly {
+                coeffs: array![
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(751072370, 712476851, 986633684, 1014125985),
+                ],
+                log_size: 2,
+            },
+        };
+        let bounds = array![6, 5, 4];
+        let decommitted_values = array![
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 209715200, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(1784241578, 0, 0, 0), qm31(714402375, 0, 0, 0),],
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 578813952, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(673384396, 0, 0, 0), qm31(475618425, 0, 0, 0),],
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 981467136, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(315059915, 0, 0, 0), qm31(558088919, 0, 0, 0),],
+                    },
+                ],
+            },
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 419430400, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(142767236, 0, 0, 0), qm31(537984732, 0, 0, 0),],
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1157627904, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0),],
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1962934272, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(2124636505, 0, 0, 0), qm31(1506525049, 0, 0, 0),],
+                    },
+                ],
+            },
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 838860800, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(1014591066, 0, 0, 0), qm31(1931899148, 0, 0, 0),],
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 167772160, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0),],
+                    },
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 1778384896, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(509977960, 0, 0, 0), qm31(1887908506, 0, 0, 0),],
+                    },
+                ],
+            },
+        ];
+        (config, proof, bounds, decommitted_values)
     }
 }
