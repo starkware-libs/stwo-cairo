@@ -138,7 +138,7 @@ pub impl ChannelImpl of ChannelTrait {
             let res_representative: u256 = res.into();
             cur = next;
             bytes.append((res_representative & 0xff).try_into().unwrap());
-            i +=1;
+            i += 1;
         };
         bytes
     }
@@ -254,8 +254,37 @@ mod tests {
         let mut channel = ChannelTrait::new(initial_digest);
         let result = channel.draw_random_bytes();
         let expected_result = array![
-            197, 20, 139, 143, 49, 135, 207, 202, 93, 167, 20, 244, 184, 186, 20,
-            136, 204, 43, 46, 147, 213, 253, 175, 170, 13, 64, 15, 168, 232, 211, 17
+            197,
+            20,
+            139,
+            143,
+            49,
+            135,
+            207,
+            202,
+            93,
+            167,
+            20,
+            244,
+            184,
+            186,
+            20,
+            136,
+            204,
+            43,
+            46,
+            147,
+            213,
+            253,
+            175,
+            170,
+            13,
+            64,
+            15,
+            168,
+            232,
+            211,
+            17
         ];
         assert_eq!(expected_result, result);
     }
@@ -265,8 +294,37 @@ mod tests {
         let mut channel = ChannelTrait::new(initial_digest);
         let result = channel.draw_random_bytes();
         let expected_result = array![
-            168, 175, 85, 209, 218, 65, 155, 212, 165, 88, 130, 167, 44, 242, 17,
-            127, 75, 251, 142, 180, 157, 176, 27, 167, 179, 247, 27, 113, 149, 41, 12
+            168,
+            175,
+            85,
+            209,
+            218,
+            65,
+            155,
+            212,
+            165,
+            88,
+            130,
+            167,
+            44,
+            242,
+            17,
+            127,
+            75,
+            251,
+            142,
+            180,
+            157,
+            176,
+            27,
+            167,
+            179,
+            247,
+            27,
+            113,
+            149,
+            41,
+            12
         ];
         assert_eq!(expected_result, result);
     }
