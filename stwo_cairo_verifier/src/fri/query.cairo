@@ -1,4 +1,4 @@
-use super::utils::pow;
+use stwo_cairo_verifier::utils::pow;
 
 #[derive(Drop, Debug, PartialEq, Eq)]
 pub struct Queries {

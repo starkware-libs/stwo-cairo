@@ -1,10 +1,11 @@
+use core::traits::TryInto;
 use core::array::SpanTrait;
 use core::poseidon::{poseidon_hash_span, hades_permutation};
 use core::traits::DivRem;
 
 use stwo_cairo_verifier::{BaseField, SecureField};
 use stwo_cairo_verifier::fields::qm31::QM31Trait;
-use stwo_cairo_verifier::utils::pack4;
+use stwo_cairo_verifier::utils::{pack4};
 
 const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
@@ -122,6 +123,25 @@ pub impl ChannelImpl of ChannelTrait {
         };
         res
     }
+
+    fn draw_random_bytes(ref self: Channel) -> Array<u8> {
+        let shift: felt252 = 256;
+        let shift_representative: u256 = shift.into();
+        let mut cur = self.draw_felt252();
+        let mut bytes = array![];
+        let mut i: usize = 0;
+        while i < 31 {
+            let cur_representative: u256 = cur.into();
+            let next_representative = cur_representative / shift_representative;
+            let next: felt252 = next_representative.try_into().unwrap();
+            let res = cur - next * shift;
+            let res_representative: u256 = res.into();
+            cur = next;
+            bytes.append((res_representative & 0xff).try_into().unwrap());
+            i +=1;
+        };
+        bytes
+    }
 }
 
 #[inline]
@@ -227,5 +247,27 @@ mod tests {
         channel.mix_felts(array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12)].span());
 
         assert_ne!(initial_digest, channel.digest);
+    }
+
+    pub fn test_draw_random_bytes_1() {
+        let initial_digest = 0;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let result = channel.draw_random_bytes();
+        let expected_result = array![
+            197, 20, 139, 143, 49, 135, 207, 202, 93, 167, 20, 244, 184, 186, 20,
+            136, 204, 43, 46, 147, 213, 253, 175, 170, 13, 64, 15, 168, 232, 211, 17
+        ];
+        assert_eq!(expected_result, result);
+    }
+
+    pub fn test_draw_random_bytes_2() {
+        let initial_digest = 0xdeadbeef;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let result = channel.draw_random_bytes();
+        let expected_result = array![
+            168, 175, 85, 209, 218, 65, 155, 212, 165, 88, 130, 167, 44, 242, 17,
+            127, 75, 251, 142, 180, 157, 176, 27, 167, 179, 247, 27, 113, 149, 41, 12
+        ];
+        assert_eq!(expected_result, result);
     }
 }

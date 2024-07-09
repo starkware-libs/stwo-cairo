@@ -1,7 +1,7 @@
 use core::option::OptionTrait;
 use core::traits::TryInto;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
-use super::utils::pow;
+use stwo_cairo_verifier::utils::pow;
 
 pub const M31_CIRCLE_GEN: CirclePointM31 =
     CirclePointM31 { x: M31 { inner: 2 }, y: M31 { inner: 1268011823 }, };

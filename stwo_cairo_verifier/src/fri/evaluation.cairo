@@ -4,7 +4,7 @@ use super::query::{Queries, QueriesImpl};
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::M31;
-use super::utils::{bit_reverse_index, pow};
+use stwo_cairo_verifier::utils::{bit_reverse_index, pow};
 use super::verifier::{FOLD_STEP, CIRCLE_TO_LINE_FOLD_STEP};
 
 #[derive(Drop)]

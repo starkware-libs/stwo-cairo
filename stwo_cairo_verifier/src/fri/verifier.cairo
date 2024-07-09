@@ -17,7 +17,7 @@ use super::evaluation::{
 };
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
-use super::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
+use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
 
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
