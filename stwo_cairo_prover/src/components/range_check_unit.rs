@@ -2,11 +2,13 @@ use itertools::{zip_eq, Itertools};
 use num_traits::Zero;
 
 use stwo_prover::core::air::accumulation::PointEvaluationAccumulator;
+use stwo_prover::core::air::mask::fixed_mask_points;
 use stwo_prover::core::air::{Component, ComponentTraceWriter};
 use stwo_prover::core::backend::CpuBackend;
 use stwo_prover::core::circle::CirclePoint;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
+use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
@@ -23,6 +25,12 @@ pub struct RangeCheckUnitComponent {
     pub log_n_instances: usize,
 }
 
+impl RangeCheckUnitComponent {
+    pub fn n_columns(&self) -> usize {
+        2
+    }
+}
+
 pub struct RangeCheckUnitTraceGenerator {
     pub max_value: usize,
     pub multiplicities: Vec<u32>,
@@ -30,26 +38,32 @@ pub struct RangeCheckUnitTraceGenerator {
 
 impl Component for RangeCheckUnitComponent {
     fn n_constraints(&self) -> usize {
-        unimplemented!()
+        3
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
-        unimplemented!()
+        (self.log_n_instances + 1) as u32
     }
 
     fn n_interaction_phases(&self) -> u32 {
-        unimplemented!()
+        2
     }
 
     fn trace_log_degree_bounds(&self) -> TreeVec<ColumnVec<u32>> {
-        unimplemented!()
+        TreeVec::new(vec![
+            vec![self.log_n_instances as u32; self.n_columns()],
+            vec![self.log_n_instances as u32; SECURE_EXTENSION_DEGREE],
+        ])
     }
 
     fn mask_points(
         &self,
-        _point: CirclePoint<SecureField>,
+        point: CirclePoint<SecureField>,
     ) -> TreeVec<ColumnVec<Vec<CirclePoint<SecureField>>>> {
-        unimplemented!()
+        TreeVec::new(vec![
+            fixed_mask_points(&vec![vec![0_usize]; self.n_columns()], point),
+            vec![vec![point]; SECURE_EXTENSION_DEGREE],
+        ])
     }
 
     fn evaluate_constraint_quotients_at_point(
