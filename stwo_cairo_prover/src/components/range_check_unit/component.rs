@@ -20,6 +20,10 @@ use stwo_prover::trace_generation::{ComponentGen, ComponentTraceGenerator};
 
 pub const RC_Z: &str = "RangeCheckUnit_Z";
 pub const RC_COMPONENT_ID: &str = "RC_UNIT";
+pub const RC_LOOKUP_VALUE_0: &str = "RC_UNIT_LOOKUP_0";
+pub const RC_LOOKUP_VALUE_1: &str = "RC_UNIT_LOOKUP_1";
+pub const RC_LOOKUP_VALUE_2: &str = "RC_UNIT_LOOKUP_2";
+pub const RC_LOOKUP_VALUE_3: &str = "RC_UNIT_LOOKUP_3";
 
 #[derive(Clone)]
 pub struct RangeCheckUnitComponent {
@@ -39,6 +43,7 @@ impl RangeCheckUnitComponent {
         evaluation_accumulator: &mut PointEvaluationAccumulator,
         interaction_elements: &InteractionElements,
         constraint_zero_domain: Coset,
+        lookup_values: &LookupValues,
     ) {
         let z = interaction_elements[RC_Z];
         let value =
@@ -46,12 +51,25 @@ impl RangeCheckUnitComponent {
         let numerator = value * (z - mask[BASE_TRACE][0][0]) - mask[BASE_TRACE][1][0];
         let denom = point_vanishing(constraint_zero_domain.at(0), point);
         evaluation_accumulator.accumulate(numerator / denom);
+
+        let lookup_value = SecureField::from_m31(
+            lookup_values[RC_LOOKUP_VALUE_0],
+            lookup_values[RC_LOOKUP_VALUE_1],
+            lookup_values[RC_LOOKUP_VALUE_2],
+            lookup_values[RC_LOOKUP_VALUE_3],
+        );
+        let numerator = value - lookup_value;
+        let denom = point_vanishing(
+            constraint_zero_domain.at(constraint_zero_domain.size() - 1),
+            point,
+        );
+        evaluation_accumulator.accumulate(numerator / denom);
     }
 }
 
 impl Component for RangeCheckUnitComponent {
     fn n_constraints(&self) -> usize {
-        1
+        2
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -85,7 +103,7 @@ impl Component for RangeCheckUnitComponent {
         mask: &TreeVec<Vec<Vec<SecureField>>>,
         evaluation_accumulator: &mut PointEvaluationAccumulator,
         interaction_elements: &InteractionElements,
-        _lookup_values: &LookupValues,
+        lookup_values: &LookupValues,
     ) {
         let constraint_zero_domain = CanonicCoset::new(self.log_n_instances).coset;
         self.evaluate_lookup_boundary_constraints_at_point(
@@ -94,6 +112,7 @@ impl Component for RangeCheckUnitComponent {
             evaluation_accumulator,
             interaction_elements,
             constraint_zero_domain,
+            lookup_values,
         );
     }
 }
