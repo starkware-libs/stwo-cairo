@@ -1,6 +1,5 @@
 use itertools::{zip_eq, Itertools};
 use num_traits::Zero;
-
 use stwo_prover::core::air::accumulation::PointEvaluationAccumulator;
 use stwo_prover::core::air::{Component, ComponentTraceWriter};
 use stwo_prover::core::backend::CpuBackend;
@@ -12,7 +11,6 @@ use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::{ColumnVec, InteractionElements};
-
 use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
 use stwo_prover::trace_generation::{ComponentGen, TraceGenerator};
 
