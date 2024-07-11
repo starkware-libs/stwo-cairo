@@ -73,6 +73,8 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
 }
 
 const M31_SHIFT: felt252 = 0x80000000; // 2**31.
+// Packs 4 BaseField values and "append" to a felt252.
+// The resulting felt252 is: cur || x0 || x1 || x2 || x3.
 pub fn pack4(cur: felt252, values: [BaseField; 4]) -> felt252 {
     let [x0, x1, x2, x3] = values;
     (((cur * M31_SHIFT + x0.into()) * M31_SHIFT + x1.into()) * M31_SHIFT + x2.into()) * M31_SHIFT

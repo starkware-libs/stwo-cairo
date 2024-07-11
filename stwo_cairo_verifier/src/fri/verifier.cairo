@@ -1,9 +1,6 @@
-use core::option::OptionTrait;
-use core::result::ResultTrait;
 use stwo_cairo_verifier::fri::query::QueriesImplTrait;
 use stwo_cairo_verifier::fri::domain::LineDomainTrait;
 use stwo_cairo_verifier::vcs::verifier::MerkleVerifierTrait;
-use core::array::ArrayTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{M31, m31};

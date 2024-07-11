@@ -1,26 +1,27 @@
 use itertools::{zip_eq, Itertools};
 use num_traits::Zero;
-
 use stwo_prover::core::air::accumulation::PointEvaluationAccumulator;
-use stwo_prover::core::air::{Component, ComponentTraceWriter};
+use stwo_prover::core::air::mask::fixed_mask_points;
+use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::CpuBackend;
-use stwo_prover::core::circle::CirclePoint;
+use stwo_prover::core::circle::{CirclePoint, Coset};
+use stwo_prover::core::constraints::point_vanishing;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
+use stwo_prover::core::fields::secure_column::{SecureColumn, SECURE_EXTENSION_DEGREE};
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::{ColumnVec, InteractionElements};
-
+use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
 use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
-use stwo_prover::trace_generation::{ComponentGen, TraceGenerator};
+use stwo_prover::trace_generation::{ComponentGen, ComponentTraceGenerator};
 
 pub const RC_Z: &str = "RangeCheckUnit_Z";
 pub const RC_COMPONENT_ID: &str = "RC_UNIT";
 
 pub struct RangeCheckUnitComponent {
-    pub log_n_instances: usize,
+    pub log_n_instances: u32,
 }
 
 pub struct RangeCheckUnitTraceGenerator {
@@ -28,42 +29,66 @@ pub struct RangeCheckUnitTraceGenerator {
     pub multiplicities: Vec<u32>,
 }
 
+impl RangeCheckUnitComponent {
+    fn evaluate_lookup_boundary_constraints_at_point(
+        &self,
+        point: CirclePoint<SecureField>,
+        mask: &TreeVec<Vec<Vec<SecureField>>>,
+        evaluation_accumulator: &mut PointEvaluationAccumulator,
+        interaction_elements: &InteractionElements,
+        constraint_zero_domain: Coset,
+    ) {
+        let z = interaction_elements[RC_Z];
+        let value = SecureField::from_partial_evals(std::array::from_fn(|i| mask[1][i][0]));
+        let numerator = value * (z - mask[0][0][0]) - mask[0][1][0];
+        let denom = point_vanishing(constraint_zero_domain.at(0), point);
+        evaluation_accumulator.accumulate(numerator / denom);
+    }
+}
+
 impl Component for RangeCheckUnitComponent {
     fn n_constraints(&self) -> usize {
-        unimplemented!()
+        1
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
-        unimplemented!()
+        self.log_n_instances + 1
     }
 
     fn n_interaction_phases(&self) -> u32 {
-        unimplemented!()
+        2
     }
 
     fn trace_log_degree_bounds(&self) -> TreeVec<ColumnVec<u32>> {
-        unimplemented!()
+        TreeVec::new(vec![
+            vec![self.log_n_instances; 2],
+            vec![self.log_n_instances; SECURE_EXTENSION_DEGREE],
+        ])
     }
 
     fn mask_points(
         &self,
-        _point: CirclePoint<SecureField>,
+        point: CirclePoint<SecureField>,
     ) -> TreeVec<ColumnVec<Vec<CirclePoint<SecureField>>>> {
-        unimplemented!()
+        TreeVec::new(vec![fixed_mask_points(&vec![vec![0_usize]], point)])
     }
 
     fn evaluate_constraint_quotients_at_point(
         &self,
-        _point: CirclePoint<SecureField>,
-        _mask: &ColumnVec<Vec<SecureField>>,
-        _evaluation_accumulator: &mut PointEvaluationAccumulator,
-        _interaction_elements: &InteractionElements,
+        point: CirclePoint<SecureField>,
+        mask: &TreeVec<Vec<Vec<SecureField>>>,
+        evaluation_accumulator: &mut PointEvaluationAccumulator,
+        interaction_elements: &InteractionElements,
+        _lookup_values: &LookupValues,
     ) {
-        unimplemented!()
-    }
-
-    fn interaction_element_ids(&self) -> Vec<String> {
-        unimplemented!()
+        let constraint_zero_domain = CanonicCoset::new(self.log_n_instances).coset;
+        self.evaluate_lookup_boundary_constraints_at_point(
+            point,
+            mask,
+            evaluation_accumulator,
+            interaction_elements,
+            constraint_zero_domain,
+        );
     }
 }
 
@@ -79,7 +104,7 @@ impl RangeCheckUnitTraceGenerator {
 
 impl ComponentGen for RangeCheckUnitTraceGenerator {}
 
-impl TraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
+impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
     type Component = RangeCheckUnitComponent;
     type Inputs = Vec<BaseField>;
 
@@ -113,14 +138,6 @@ impl TraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
             .collect_vec()
     }
 
-    fn component(&self) -> RangeCheckUnitComponent {
-        RangeCheckUnitComponent {
-            log_n_instances: self.max_value.checked_ilog2().unwrap() as usize,
-        }
-    }
-}
-
-impl ComponentTraceWriter<CpuBackend> for RangeCheckUnitTraceGenerator {
     fn write_interaction_trace(
         &self,
         trace: &ColumnVec<&CircleEvaluation<CpuBackend, BaseField, BitReversedOrder>>,
@@ -129,21 +146,31 @@ impl ComponentTraceWriter<CpuBackend> for RangeCheckUnitTraceGenerator {
         let interaction_trace_domain = trace[0].domain;
         let z = elements[RC_Z];
 
-        let mut last = BaseField::zero();
-        let interaction_values = zip_eq(&trace[0].values, &trace[1].values).fold(
+        let mut last = SecureField::zero();
+        let denoms = trace[0].values.iter().map(|value| z - *value).collect_vec();
+        let mut denom_inverses = vec![SecureField::zero(); denoms.len()];
+        SecureField::batch_inverse(&denoms, &mut denom_inverses);
+        let logup_values = zip_eq(denom_inverses, &trace[1].values).fold(
             Vec::new(),
-            |mut acc, (trace_value, multiplicity)| {
-                let interaction_value = last + (z - *trace_value).inverse() * *multiplicity;
+            |mut acc, (denom_inverse, multiplicity)| {
+                let interaction_value = last + (denom_inverse * *multiplicity);
                 acc.push(interaction_value);
                 last = interaction_value;
                 acc
             },
         );
+        let secure_column: SecureColumn<CpuBackend> = logup_values.into_iter().collect();
+        secure_column
+            .columns
+            .into_iter()
+            .map(|eval| CircleEvaluation::new(interaction_trace_domain, eval))
+            .collect_vec()
+    }
 
-        vec![CircleEvaluation::new(
-            interaction_trace_domain,
-            interaction_values,
-        )]
+    fn component(&self) -> RangeCheckUnitComponent {
+        RangeCheckUnitComponent {
+            log_n_instances: self.max_value.checked_ilog2().unwrap(),
+        }
     }
 }
 
@@ -154,7 +181,6 @@ mod tests {
     #[test]
     fn test_rc_unit_trace() {
         let mut registry = ComponentGenerationRegistry::default();
-        let random_seed: usize = 117;
         registry.register(RC_COMPONENT_ID, RangeCheckUnitTraceGenerator::new(8));
         let inputs = vec![
             vec![BaseField::from_u32_unchecked(0); 3],
@@ -174,25 +200,23 @@ mod tests {
             .add_inputs(&inputs);
 
         let trace = RangeCheckUnitTraceGenerator::write_trace(RC_COMPONENT_ID, &mut registry);
-        let interaction_elements = InteractionElements::new(
-            [(
-                RC_Z.to_string(),
-                BaseField::from_u32_unchecked(random_seed as u32),
-            )]
-            .into(),
-        );
+        let random_value = SecureField::from_u32_unchecked(1, 2, 3, 117);
+        let interaction_elements =
+            InteractionElements::new([(RC_Z.to_string(), random_value)].into());
         let interaction_trace = registry
             .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
             .write_interaction_trace(&trace.iter().collect(), &interaction_elements);
 
-        let mut trace_sum = BaseField::zero();
+        let mut trace_sum = SecureField::zero();
         for i in 0..8 {
             assert_eq!(trace[0].values[i], BaseField::from_u32_unchecked(i as u32));
             trace_sum += trace.last().unwrap().values[i]
-                / BaseField::from_u32_unchecked((random_seed - i) as u32);
+                / (random_value - BaseField::from_u32_unchecked(i as u32));
         }
-        let logup_sum = interaction_trace.first().unwrap().last().unwrap();
+        let logup_sum = SecureField::from_m31_array(std::array::from_fn(|j| {
+            *interaction_trace[j].last().unwrap()
+        }));
 
-        assert_eq!(*logup_sum, trace_sum);
+        assert_eq!(logup_sum, trace_sum);
     }
 }
