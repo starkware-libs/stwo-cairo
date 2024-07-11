@@ -526,7 +526,10 @@ mod tests {
         // Create an invalid proof by removing an evaluation from the second layer's proof
         let invalid_proof = {
             let mut invalid_inner_layers = array![];
+            // Keep the first layer as it is
             invalid_inner_layers.append(proof.inner_layers[0].clone());
+
+            // Modify the second layer
             let mut invalid_evals_subset = array![];
             let mut i = 1;
             while i < inner_layers[1].evals_subset.len() {
@@ -542,6 +545,8 @@ mod tests {
                         commitment: *inner_layers[1].commitment
                     }
                 );
+
+            // Keep the rest of the layer as they are
             let mut i = 2;
             while i < proof.inner_layers.len() {
                 invalid_inner_layers.append(proof.inner_layers[i].clone());
@@ -559,9 +564,7 @@ mod tests {
         let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
 
         match verification_result {
-            Result::Ok(_) => {
-                panic!("Verifier should return InnerLayerEvaluationsInvalid");
-            },
+            Result::Ok(_) => { panic!("Verifier should return InnerLayerEvaluationsInvalid"); },
             Result::Err(error) => {
                 assert!(error == FriVerificationError::InnerLayerEvaluationsInvalid);
             }
@@ -572,13 +575,18 @@ mod tests {
     fn proof_with_invalid_inner_layer_decommitment_fails_verification() {
         let (config, proof, bounds, queries, decommitted_values) =
             proof_with_last_layer_of_degree_four();
-        
+
         let inner_layers = @proof.inner_layers;
         // Create an invalid proof by modifying the committed values in the second layer.
         let invalid_proof = {
             let mut invalid_inner_layers = array![];
+            // Keep the first layer as it is
             invalid_inner_layers.append(proof.inner_layers[0].clone());
-            let mut invalid_evals_subset = array![*inner_layers[1].evals_subset[0] + qm31(1, 0, 0, 0)];
+
+            // Modify the second layer
+            let mut invalid_evals_subset = array![
+                *inner_layers[1].evals_subset[0] + qm31(1, 0, 0, 0)
+            ];
             let mut i = 1;
             while i < inner_layers[1].evals_subset.len() {
                 invalid_evals_subset.append(inner_layers[1].evals_subset[i].clone());
@@ -593,6 +601,8 @@ mod tests {
                         commitment: *inner_layers[1].commitment
                     }
                 );
+
+            // Keep the rest of the layer as they are
             let mut i = 2;
             while i < proof.inner_layers.len() {
                 invalid_inner_layers.append(proof.inner_layers[i].clone());
@@ -609,9 +619,7 @@ mod tests {
         let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
 
         match verification_result {
-            Result::Ok(_) => {
-                panic!("Verifier should return InnerLayerCommitmentInvalid");
-            },
+            Result::Ok(_) => { panic!("Verifier should return InnerLayerCommitmentInvalid"); },
             Result::Err(error) => {
                 assert!(error == FriVerificationError::InnerLayerCommitmentInvalid);
             }
