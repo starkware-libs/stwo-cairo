@@ -1,12 +1,14 @@
 use itertools::{zip_eq, Itertools};
 use num_traits::Zero;
 use stwo_prover::core::air::accumulation::PointEvaluationAccumulator;
+use stwo_prover::core::air::mask::fixed_mask_points;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::CpuBackend;
-use stwo_prover::core::circle::CirclePoint;
+use stwo_prover::core::circle::{CirclePoint, Coset};
+use stwo_prover::core::constraints::point_vanishing;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::SecureColumn;
+use stwo_prover::core::fields::secure_column::{SecureColumn, SECURE_EXTENSION_DEGREE};
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
@@ -19,7 +21,7 @@ pub const RC_Z: &str = "RangeCheckUnit_Z";
 pub const RC_COMPONENT_ID: &str = "RC_UNIT";
 
 pub struct RangeCheckUnitComponent {
-    pub log_n_instances: usize,
+    pub log_n_instances: u32,
 }
 
 pub struct RangeCheckUnitTraceGenerator {
@@ -27,39 +29,66 @@ pub struct RangeCheckUnitTraceGenerator {
     pub multiplicities: Vec<u32>,
 }
 
+impl RangeCheckUnitComponent {
+    fn evaluate_lookup_boundary_constraints_at_point(
+        &self,
+        point: CirclePoint<SecureField>,
+        mask: &TreeVec<Vec<Vec<SecureField>>>,
+        evaluation_accumulator: &mut PointEvaluationAccumulator,
+        interaction_elements: &InteractionElements,
+        constraint_zero_domain: Coset,
+    ) {
+        let z = interaction_elements[RC_Z];
+        let value = SecureField::from_partial_evals(std::array::from_fn(|i| mask[1][i][0]));
+        let numerator = value * (z - mask[0][0][0]) - mask[0][1][0];
+        let denom = point_vanishing(constraint_zero_domain.at(0), point);
+        evaluation_accumulator.accumulate(numerator / denom);
+    }
+}
+
 impl Component for RangeCheckUnitComponent {
     fn n_constraints(&self) -> usize {
-        unimplemented!()
+        1
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
-        unimplemented!()
+        self.log_n_instances + 1
     }
 
     fn n_interaction_phases(&self) -> u32 {
-        unimplemented!()
+        2
     }
 
     fn trace_log_degree_bounds(&self) -> TreeVec<ColumnVec<u32>> {
-        unimplemented!()
+        TreeVec::new(vec![
+            vec![self.log_n_instances; 2],
+            vec![self.log_n_instances; SECURE_EXTENSION_DEGREE],
+        ])
     }
 
     fn mask_points(
         &self,
-        _point: CirclePoint<SecureField>,
+        point: CirclePoint<SecureField>,
     ) -> TreeVec<ColumnVec<Vec<CirclePoint<SecureField>>>> {
-        unimplemented!()
+        TreeVec::new(vec![fixed_mask_points(&vec![vec![0_usize]], point)])
     }
 
     fn evaluate_constraint_quotients_at_point(
         &self,
-        _point: CirclePoint<SecureField>,
-        _mask: &TreeVec<Vec<Vec<SecureField>>>,
-        _evaluation_accumulator: &mut PointEvaluationAccumulator,
-        _interaction_elements: &InteractionElements,
+        point: CirclePoint<SecureField>,
+        mask: &TreeVec<Vec<Vec<SecureField>>>,
+        evaluation_accumulator: &mut PointEvaluationAccumulator,
+        interaction_elements: &InteractionElements,
         _lookup_values: &LookupValues,
     ) {
-        unimplemented!()
+        let constraint_zero_domain = CanonicCoset::new(self.log_n_instances).coset;
+        self.evaluate_lookup_boundary_constraints_at_point(
+            point,
+            mask,
+            evaluation_accumulator,
+            interaction_elements,
+            constraint_zero_domain,
+        );
     }
 }
 
@@ -140,7 +169,7 @@ impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
 
     fn component(&self) -> RangeCheckUnitComponent {
         RangeCheckUnitComponent {
-            log_n_instances: self.max_value.checked_ilog2().unwrap() as usize,
+            log_n_instances: self.max_value.checked_ilog2().unwrap(),
         }
     }
 }
