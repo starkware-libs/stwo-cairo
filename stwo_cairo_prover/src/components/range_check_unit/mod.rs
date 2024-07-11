@@ -14,13 +14,14 @@ mod tests {
     use stwo_prover::core::fields::IntoSlice;
     use stwo_prover::core::poly::circle::CircleEvaluation;
     use stwo_prover::core::poly::BitReversedOrder;
-    use stwo_prover::core::prover::{prove, verify, VerificationError};
+    use stwo_prover::core::prover::VerificationError;
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
     use stwo_prover::core::vcs::hasher::Hasher;
     use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
     use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
     use stwo_prover::trace_generation::{
-        AirTraceGenerator, AirTraceVerifier, ComponentTraceGenerator,
+        commit_and_prove, commit_and_verify, AirTraceGenerator, AirTraceVerifier,
+        ComponentTraceGenerator,
     };
 
     use super::*;
@@ -135,7 +136,7 @@ mod tests {
         let trace = air.write_trace();
         let prover_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-        let proof = prove::<CpuBackend>(&air, prover_channel, trace).unwrap();
+        let proof = commit_and_prove::<CpuBackend>(&air, prover_channel, trace).unwrap();
 
         let verifier_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
@@ -145,6 +146,6 @@ mod tests {
                 .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
                 .component(),
         };
-        verify(proof, &air, verifier_channel).unwrap();
+        commit_and_verify(proof, &air, verifier_channel).unwrap();
     }
 }
