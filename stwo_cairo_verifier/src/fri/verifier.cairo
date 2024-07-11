@@ -442,11 +442,11 @@ mod tests {
         FriLayerVerifierImpl, FriVerificationError
     };
 
-    type TestValues = (FriConfig, FriProof, Array<u32>, Queries, Array<SparseCircleEvaluation>);
+    type ProofValues = (FriConfig, FriProof, Array<u32>, Queries, Array<SparseCircleEvaluation>);
 
     #[test]
     fn valid_proof_with_constant_last_layer_passes_verification() {
-        let (config, proof, bounds, queries, decommitted_values) = test_with_constant_last_layer();
+        let (config, proof, bounds, queries, decommitted_values) = proof_with_constant_last_layer();
 
         let channel = ChannelTrait::new(0x00);
         let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
@@ -456,7 +456,7 @@ mod tests {
 
     #[test]
     fn valid_proof_passes_verification() {
-        let (config, proof, bounds, queries, decommitted_values) = test_with_linear_last_layer();
+        let (config, proof, bounds, queries, decommitted_values) = proof_with_linear_last_layer();
 
         let channel = ChannelTrait::new(0x00);
         let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
@@ -466,7 +466,7 @@ mod tests {
 
     #[test]
     fn valid_mixed_degree_proof_passes_verification() {
-        let (config, proof, bounds, queries, decommitted_values) = test_with_mixed_degree_1();
+        let (config, proof, bounds, queries, decommitted_values) = proof_with_mixed_degree_1();
 
         let channel = ChannelTrait::new(0x00);
         let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
@@ -476,7 +476,7 @@ mod tests {
 
     #[test]
     fn valid_mixed_degree_end_to_end_proof_passes_verification() {
-        let (config, proof, bounds, decommitted_values) = test_with_mixed_degree_2();
+        let (config, proof, bounds, decommitted_values) = proof_with_mixed_degree_2();
         let mut channel = ChannelTrait::new(0x00);
         let mut verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
 
@@ -486,10 +486,9 @@ mod tests {
         verifier.decommit(decommitted_values).unwrap();
     }
 
-    // TODO: replace `should_panic` with a more precise test
     #[test]
     fn proof_with_removed_layer_fails_verification() {
-        let (config, proof, bounds, _queries, _decommitted_values) = test_with_mixed_degree_1();
+        let (config, proof, bounds, _queries, _decommitted_values) = proof_with_mixed_degree_1();
 
         let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound -= 1;
@@ -498,15 +497,14 @@ mod tests {
         let result = FriVerifierImpl::commit(channel, invalid_config, proof, bounds);
 
         match result {
-            Result::Ok(verifier) => { panic!("Verifier should return InvalidNumFriLayers"); },
+            Result::Ok(_) => { panic!("Verifier should return InvalidNumFriLayers"); },
             Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); }
         }
     }
 
-    // TODO: replace `should_panic` with a more precise test
     #[test]
     fn proof_with_added_layer_fails_verification() {
-        let (config, proof, bounds, _queries, _decommitted_values) = test_with_mixed_degree_1();
+        let (config, proof, bounds, _queries, _decommitted_values) = proof_with_mixed_degree_1();
 
         let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound += 1;
@@ -515,16 +513,15 @@ mod tests {
         let result = FriVerifierImpl::commit(channel, invalid_config, proof, bounds);
 
         match result {
-            Result::Ok(verifier) => { panic!("Verifier should return InvalidNumFriLayers"); },
+            Result::Ok(_) => { panic!("Verifier should return InvalidNumFriLayers"); },
             Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); }
         }
     }
 
-    // TODO: replace `should_panic` with a more precise test
     #[test]
     fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
         let (config, proof, bounds, queries, decommitted_values) =
-            test_with_last_layer_of_degree_four();
+            proof_with_last_layer_of_degree_four();
         let inner_layers = @proof.inner_layers;
         // Create an invalid proof by removing an evaluation from the second layer's proof
         let invalid_proof = {
@@ -562,7 +559,7 @@ mod tests {
         let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
 
         match verification_result {
-            Result::Ok(_verifier) => {
+            Result::Ok(_) => {
                 panic!("Verifier should return InnerLayerEvaluationsInvalid");
             },
             Result::Err(error) => {
@@ -571,10 +568,59 @@ mod tests {
         }
     }
 
+    #[test]
+    fn proof_with_invalid_inner_layer_decommitment_fails_verification() {
+        let (config, proof, bounds, queries, decommitted_values) =
+            proof_with_last_layer_of_degree_four();
+        
+        let inner_layers = @proof.inner_layers;
+        // Create an invalid proof by modifying the committed values in the second layer.
+        let invalid_proof = {
+            let mut invalid_inner_layers = array![];
+            invalid_inner_layers.append(proof.inner_layers[0].clone());
+            let mut invalid_evals_subset = array![*inner_layers[1].evals_subset[0] + qm31(1, 0, 0, 0)];
+            let mut i = 1;
+            while i < inner_layers[1].evals_subset.len() {
+                invalid_evals_subset.append(inner_layers[1].evals_subset[i].clone());
+                i += 1;
+            };
+            invalid_inner_layers
+                .append(
+                    FriLayerProof {
+                        evals_subset: invalid_evals_subset,
+                        decommitment: inner_layers[1].decommitment.clone(),
+                        decomposition_coeff: *inner_layers[1].decomposition_coeff,
+                        commitment: *inner_layers[1].commitment
+                    }
+                );
+            let mut i = 2;
+            while i < proof.inner_layers.len() {
+                invalid_inner_layers.append(proof.inner_layers[i].clone());
+                i += 1;
+            };
+
+            FriProof {
+                inner_layers: invalid_inner_layers, last_layer_poly: proof.last_layer_poly.clone()
+            }
+        };
+        let channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(channel, config, invalid_proof, bounds).unwrap();
+
+        let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
+
+        match verification_result {
+            Result::Ok(_) => {
+                panic!("Verifier should return InnerLayerCommitmentInvalid");
+            },
+            Result::Err(error) => {
+                assert!(error == FriVerificationError::InnerLayerCommitmentInvalid);
+            }
+        }
+    }
 
     // Proofs extracted from Stwo's rust implementation
 
-    fn test_with_constant_last_layer() -> TestValues {
+    fn proof_with_constant_last_layer() -> ProofValues {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1
         };
@@ -627,7 +673,7 @@ mod tests {
         (config, proof, bounds, queries, decommitted_values)
     }
 
-    fn test_with_linear_last_layer() -> TestValues {
+    fn proof_with_linear_last_layer() -> ProofValues {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1
         };
@@ -701,7 +747,7 @@ mod tests {
         (config, proof, bounds, queries, decommitted_values)
     }
 
-    fn test_with_last_layer_of_degree_four() -> TestValues {
+    fn proof_with_last_layer_of_degree_four() -> ProofValues {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 1
         };
@@ -780,7 +826,7 @@ mod tests {
     }
 
 
-    fn test_with_mixed_degree_1() -> TestValues {
+    fn proof_with_mixed_degree_1() -> ProofValues {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2
         };
@@ -922,7 +968,7 @@ mod tests {
         (config, proof, bounds, queries, decommitted_values)
     }
 
-    fn test_with_mixed_degree_2() -> (
+    fn proof_with_mixed_degree_2() -> (
         FriConfig, FriProof, Array<u32>, Array<SparseCircleEvaluation>
     ) {
         let config = FriConfig {
