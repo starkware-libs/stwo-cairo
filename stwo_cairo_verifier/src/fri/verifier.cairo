@@ -301,6 +301,8 @@ impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_on_queries(
         self: @FriVerifier, queries: @Queries, decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(), FriVerificationError> {
+        assert_eq!(queries.log_domain_size, self.expected_query_log_domain_size);
+
         let (last_layer_queries, last_layer_query_evals) = self
             .decommit_inner_layers(queries, @decommitted_values)?;
         self.decommit_last_layer(last_layer_queries, last_layer_query_evals)
@@ -427,7 +429,8 @@ impl FriVerifierImpl of FriVerifierTrait {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
+    use core::result::ResultTrait;
+use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
     use stwo_cairo_verifier::fri::verifier::FriLayerVerifierTrait;
     use core::array::ArrayTrait;
     use stwo_cairo_verifier::channel::ChannelTrait;
@@ -644,6 +647,24 @@ mod tests {
             Result::Err(error) => {
                 assert!(error == FriVerificationError::LastLayerDegreeInvalid);
             }
+        }
+    }
+
+    #[should_panic]
+    #[test]
+    fn decommit_queries_on_invalid_domain_fails_verification() {
+        let (config, proof, bounds, queries, decommitted_values) = proof_with_last_layer_of_degree_four();
+
+        let mut invalid_queries = queries;
+        invalid_queries.log_domain_size -= 1;
+
+        let channel = ChannelTrait::new(0x00);
+        let verifier_result = FriVerifierImpl::commit(channel, config, proof, bounds);
+        match verifier_result {
+            Result::Ok(verifier) => {
+                verifier.decommit_on_queries(@invalid_queries, decommitted_values).unwrap();
+            },
+            Result::Err(_) => {}
         }
     }
 
