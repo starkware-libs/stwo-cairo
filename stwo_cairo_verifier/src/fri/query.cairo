@@ -10,29 +10,6 @@ pub struct Queries {
     pub log_domain_size: u32,
 }
 
-// Returns the minimum element in `arr` that is larger than `lower_bound`
-fn get_minimum(arr: @Array<u32>, lower_bound: Option<u32>) -> Option<u32> {
-    let mut minimum = Option::None;
-    let mut i = 0;
-    while i < arr.len() {
-        let lower_bound_condition = if let Option::Some(lower_bound) = lower_bound {
-            lower_bound < *arr[i]
-        } else {
-            true
-        };
-        let upper_bound_condition = if let Option::Some(minimum) = minimum {
-            *arr[i] < minimum
-        } else {
-            true
-        };
-        if lower_bound_condition && upper_bound_condition {
-            minimum = Option::Some(*arr[i]);
-        }
-        i += 1;
-    };
-    minimum
-}
-
 #[generate_trait]
 pub impl QueriesImpl of QueriesImplTrait {
     fn generate(ref channel: Channel, log_domain_size: u32, n_queries: usize) -> Queries {
@@ -93,6 +70,29 @@ pub impl QueriesImpl of QueriesImplTrait {
         };
         Queries { positions: new_positions, log_domain_size: *self.log_domain_size - n_folds }
     }
+}
+
+// Returns the minimum element in `arr` that is larger than `lower_bound`
+fn get_minimum(arr: @Array<u32>, lower_bound: Option<u32>) -> Option<u32> {
+    let mut minimum = Option::None;
+    let mut i = 0;
+    while i < arr.len() {
+        let lower_bound_condition = if let Option::Some(lower_bound) = lower_bound {
+            lower_bound < *arr[i]
+        } else {
+            true
+        };
+        let upper_bound_condition = if let Option::Some(minimum) = minimum {
+            *arr[i] < minimum
+        } else {
+            true
+        };
+        if lower_bound_condition && upper_bound_condition {
+            minimum = Option::Some(*arr[i]);
+        }
+        i += 1;
+    };
+    minimum
 }
 
 #[test]

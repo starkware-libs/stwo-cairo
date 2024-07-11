@@ -81,7 +81,9 @@ fn test_line_poly_3() {
         log_size: 3
     };
     let x = qm31(2, 5, 7, 11);
+    
     let result = poly.eval_at_point(x);
+
     let expected_result = qm31(1857853974, 839310133, 939318020, 651207981);
     assert_eq!(expected_result, result);
 }
