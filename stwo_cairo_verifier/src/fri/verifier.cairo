@@ -278,7 +278,7 @@ impl FriVerifierImpl of FriVerifierTrait {
             return Result::Err(FriVerificationError::InvalidNumFriLayers);
         }
 
-        if proof.last_layer_poly.len() > pow(2, config.log_last_layer_degree_bound) {
+        if proof.last_layer_poly.len() != pow(2, config.log_last_layer_degree_bound) {
             return Result::Err(FriVerificationError::LastLayerDegreeInvalid);
         }
 
@@ -522,8 +522,9 @@ mod tests {
     fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
         let (config, proof, bounds, queries, decommitted_values) =
             proof_with_last_layer_of_degree_four();
-        let inner_layers = @proof.inner_layers;
+
         // Create an invalid proof by removing an evaluation from the second layer's proof
+        let inner_layers = @proof.inner_layers;
         let invalid_proof = {
             let mut invalid_inner_layers = array![];
             // Keep the first layer as it is
@@ -546,7 +547,7 @@ mod tests {
                     }
                 );
 
-            // Keep the rest of the layer as they are
+            // Keep the rest of the layers as they are
             let mut i = 2;
             while i < proof.inner_layers.len() {
                 invalid_inner_layers.append(proof.inner_layers[i].clone());
@@ -576,8 +577,8 @@ mod tests {
         let (config, proof, bounds, queries, decommitted_values) =
             proof_with_last_layer_of_degree_four();
 
-        let inner_layers = @proof.inner_layers;
         // Create an invalid proof by modifying the committed values in the second layer.
+        let inner_layers = @proof.inner_layers;
         let invalid_proof = {
             let mut invalid_inner_layers = array![];
             // Keep the first layer as it is
@@ -602,7 +603,7 @@ mod tests {
                     }
                 );
 
-            // Keep the rest of the layer as they are
+            // Keep the rest of the layers as they are
             let mut i = 2;
             while i < proof.inner_layers.len() {
                 invalid_inner_layers.append(proof.inner_layers[i].clone());
@@ -622,6 +623,26 @@ mod tests {
             Result::Ok(_) => { panic!("Verifier should return InnerLayerCommitmentInvalid"); },
             Result::Err(error) => {
                 assert!(error == FriVerificationError::InnerLayerCommitmentInvalid);
+            }
+        }
+    }
+
+    #[test]
+    fn proof_with_invalid_last_layer_degree_fails_verification() {
+        let (config, mut proof, bounds, _, _) =
+            proof_with_last_layer_of_degree_four();
+
+        proof.last_layer_poly = LinePoly {
+            coeffs: array![qm31(1, 0, 0, 0), qm31(1, 0, 0, 0)],
+            ..proof.last_layer_poly
+        };
+
+        let channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds);
+        match verifier {
+            Result::Ok(_) => { panic!("Verifier should return LastLayerDegreeInvalid"); },
+            Result::Err(error) => {
+                assert!(error == FriVerificationError::LastLayerDegreeInvalid);
             }
         }
     }
