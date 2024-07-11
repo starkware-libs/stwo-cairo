@@ -430,7 +430,7 @@ impl FriVerifierImpl of FriVerifierTrait {
 #[cfg(test)]
 mod tests {
     use core::result::ResultTrait;
-use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
+    use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
     use stwo_cairo_verifier::fri::verifier::FriLayerVerifierTrait;
     use core::array::ArrayTrait;
     use stwo_cairo_verifier::channel::ChannelTrait;
@@ -632,13 +632,13 @@ use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
 
     #[test]
     fn proof_with_invalid_last_layer_degree_fails_verification() {
-        let (config, mut proof, bounds, _, _) =
-            proof_with_last_layer_of_degree_four();
+        let (config, mut proof, bounds, _, _) = proof_with_last_layer_of_degree_four();
 
-        proof.last_layer_poly = LinePoly {
-            coeffs: array![qm31(1, 0, 0, 0), qm31(1, 0, 0, 0)],
-            ..proof.last_layer_poly
-        };
+        proof
+            .last_layer_poly =
+                LinePoly {
+                    coeffs: array![qm31(1, 0, 0, 0), qm31(1, 0, 0, 0)], ..proof.last_layer_poly
+                };
 
         let channel = ChannelTrait::new(0x00);
         let verifier = FriVerifierImpl::commit(channel, config, proof, bounds);
@@ -653,7 +653,8 @@ use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
     #[should_panic]
     #[test]
     fn decommit_queries_on_invalid_domain_fails_verification() {
-        let (config, proof, bounds, queries, decommitted_values) = proof_with_last_layer_of_degree_four();
+        let (config, proof, bounds, queries, decommitted_values) =
+            proof_with_last_layer_of_degree_four();
 
         let mut invalid_queries = queries;
         invalid_queries.log_domain_size -= 1;
@@ -668,7 +669,23 @@ use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
         }
     }
 
-    // Proofs extracted from Stwo's rust implementation
+    #[test]
+    fn low_degree_polynomials_outside_fft_space_pass_verification() {
+        let (config, proof, bounds, queries, decommitted_values) =
+            proof_values_of_polynomial_outside_fft_space_but_inside_riemann_roch_space();
+
+        // Check that the polynomial is out of the FFT space
+        assert_ne!(*proof.inner_layers[0].decomposition_coeff, qm31(0, 0, 0, 0));
+
+        let channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
+
+        verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
+    }
+
+    //////////////////////////////////////////////////////
+    // Proofs extracted from Stwo's rust implementation //
+    //////////////////////////////////////////////////////
 
     fn proof_with_constant_last_layer() -> ProofValues {
         let config = FriConfig {
@@ -1185,5 +1202,157 @@ use stwo_cairo_verifier::fri::verifier::FriVerifierTrait;
             },
         ];
         (config, proof, bounds, decommitted_values)
+    }
+
+
+    fn proof_values_of_polynomial_outside_fft_space_but_inside_riemann_roch_space() -> ProofValues {
+        let config = FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 3,
+        };
+
+        let proof = FriProof {
+            inner_layers: array![
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(111445185, 10505150, 1029569861, 2057042659),
+                        qm31(1827815553, 1805356595, 793641895, 1634032292),
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x069c20e7def00b806e671a23479423f2afad763504cd5e7ed05cbe720ffb6299,
+                            0x067115337a5cb98bc5f256352bf879fbe6b084361a483421cea460750e2cf96a,
+                            0x04e11048d3a3803a0067078d0bc8fb9091b51e0487077a24ed9f93dace9dd8b1,
+                            0x00d28deaf9a6be5b7339082484a7af52b616c12a5d4d6c2a77c0bb750858eac7,
+                            0x05123908ef18f3246e4b10e5129c99f4d94089cf4292c607327d49a3d1870318,
+                            0x044a99daaeab21c34f6d28e1f57845b92dad27192b283f01b4b9ee122c084d2b,
+                            0x04c1da84dafb3f74eb48b7593b6ed9f5dede3d8b74b080b444fa17f1d6f92f89,
+                            0x02bd72c0d1d7dfb2c01008bc2440f32351b6865f00e978de99b5ed09eb8bebc3,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(1069267625, 552704926, 1434132430, 4543619),
+                    commitment: 0x0298096048f98431a6f01b9e5155dcf38bf9a28e4f45f5a35d50ab629060abdc,
+                },
+                FriLayerProof {
+                    evals_subset: array![
+                        qm31(1946002195, 449579341, 1795400723, 1622996894),
+                        qm31(2064307970, 1612801142, 194313386, 1915667796),
+                    ],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x06db626f35a63ab4b79f38f8b24ecf2f62a5ef2ddf20246bb3a7da2e64b43c1a,
+                            0x07d7777acc1696e116c7f7c24e2ee03d4ddeda7bfe4fe06670c628b8c9c4d7bf,
+                            0x0335d2ec431674650c2bc64d223515cf6e5bf4052f413cee45574076e3aed4ff,
+                            0x07a0de1d980a4cc45ab9bcac380f7251dff4feae6dddbd8df6e07908f45b0681,
+                            0x05b0d09a1dce0f0474e9bd1b60a0eab3ffb069af8e259a1905ef0eee8eeac049,
+                            0x05cb83e5075728e95ea5441255fce67596c0e5ba9568b5b0b704c694a27cd1b0,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x06114b8bc2576f6aed68ff06f1cf331ad3ae661e7d32737df2a38379b8f104a5,
+                },
+                FriLayerProof {
+                    evals_subset: array![],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x06d8d23ed75facc9ce7f23ff4b8df77332103f7b86d1d154751dcf8f3c0bb235,
+                            0x070696c5b88593317360278b3a0325d99451c1de3a09d193923c0bc47709b3e8,
+                            0x074a697e14aaae76e7fba4451515ee0e28d25a1d4f2dfa69e4d3c46ebcd79b13,
+                            0x054e9fa9d1387013a17d856fb793a78d758c9f13e3e4be6c9c739fd07f9a18f6,
+                            0x02fbd075a35e1edd7544732731c9dde7db914062bdb0bdf48b75b5d47605eb73,
+                            0x05ef380dccc7ffac239892d9797994411582681efdcf2c1f525023dfd5086330,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x0200934ac982b61d5fe173a1f5e3d8751bc92ad9469d54e5438ba3bb77c8241d,
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(1299424593, 1953968618, 1242336230, 159808133),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x074c5bfec0520dbe9adb7fbc1981212131e70b0f616252468e1e2a2d48983b57,
+                            0x007f15e8e4764fe2ce7986c248791f26df0d43ac509a8d7682b3d70a786c3752,
+                            0x01e7b231c1a9577b41d1f26d2237574f93bd8e5ff04893d5adf0e28f07de8ab9,
+                            0x02c2af1568b68c2d664e141cecb1435409962b122c7b14e02de9ccb84cee47bc,
+                            0x076caa3bfd2c97675ddbbbfc720fd97f1ed5a913fd040100cf3714bd83ab9a04,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x032196aa89fccb63c5cca66ba451d0422917c075b46b02a244d52275977d3f16,
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(1145472614, 1470246892, 103177062, 581670495),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x00cf249d7c5c21240c8a4315c94d802c83ba0b2410689ca2abf9e8b836520d04,
+                            0x0520c3c8ad55c26d944af0469f100651b6692551bb548cc5d2f60bd9d2c26269,
+                            0x024563b19faf1e3bb9e3dbec67a0d44b337e9584449acb3ab616cb1148d2801b,
+                            0x06dbe1e622497fb32933e74c529262a681b9bd8bf02539bc9dc9767fe58827bc,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x00fb2f42e61b0269a281b559a597b400b6909791149139823f2acc6d9705af53,
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(993255757, 1333387780, 47290918, 341118579),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x07250b1493c1b28bee805b7c2a35a1ef4f36e8900ba1fedb3df4712126462a4d,
+                            0x0535ef2e9c73de8dd3fe53545e5371e5567d025e086a7d4a6927921bf8af18d7,
+                            0x007d8a986b13c03fef58846cd058185465ba5dbf9228e20e7be9c14870e23c12,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x02ea8f528cd9e749f2044f63eb4124ab363504aaa9d6ea65ec34985e941b6aac,
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(664525196, 1800971227, 1328282007, 745001268),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x0268621ff9ed5c8714e37d5db63a0d5bfba649e104eb6c2699f6cd05761c9dab,
+                            0x02eb62a72f5cedc706137e402f162feaa901cb5b11766e93a470447d3d430d19,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x014808a8effdf0a91b9b9d008cc681d9233685f8900abf9ed7c118db8af3fc36,
+                },
+            ],
+            last_layer_poly: LinePoly {
+                coeffs: array![
+                    qm31(0, 0, 0, 0), qm31(1828711622, 2128454428, 1325215297, 1309505507),
+                ],
+                log_size: 1,
+            },
+        };
+        let queries = Queries { positions: array![2, 10, 11], log_domain_size: 10 };
+        let bounds = array![9, 9];
+        let decommitted_value = SparseCircleEvaluation {
+            subcircle_evals: array![
+                CircleEvaluation {
+                    domain: CircleDomain {
+                        half_coset: Coset {
+                            initial_index: 1074790400, step_size: 2147483648, log_size: 0,
+                        },
+                    },
+                    values: array![qm31(32512, 0, 0, 0), qm31(33024, 0, 0, 0)],
+                },
+                CircleEvaluation {
+                    domain: CircleDomain {
+                        half_coset: Coset {
+                            initial_index: 1343225856, step_size: 2147483648, log_size: 0,
+                        },
+                    },
+                    values: array![qm31(32512, 0, 0, 0), qm31(33024, 0, 0, 0)],
+                },
+            ],
+        };
+
+        (config, proof, bounds, queries, array![decommitted_value.clone(), decommitted_value])
     }
 }
