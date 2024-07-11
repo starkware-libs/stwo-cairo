@@ -4,7 +4,7 @@ use stwo_cairo_verifier::utils::pow;
 use stwo_cairo_verifier::channel::Channel;
 
 
-#[derive(Drop, Debug, PartialEq, Eq)]
+#[derive(Drop, Clone, Debug, PartialEq, Eq)]
 pub struct Queries {
     pub positions: Array<usize>,
     pub log_domain_size: u32,

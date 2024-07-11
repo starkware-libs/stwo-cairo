@@ -175,7 +175,6 @@ impl MerkleVerifierImpl<
                 layer_total_queries
                     .append((current_query, H::hash_node(node_hashes, column_values)));
             };
-
             if let Result::Err(err) = res {
                 break Result::Err(err);
             }

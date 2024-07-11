@@ -23,7 +23,7 @@ use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_arr
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
 
-#[derive(Debug, Drop)]
+#[derive(Debug, Drop, PartialEq)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
@@ -59,6 +59,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             let subline_eval = sparse_evaluation.subline_evals[i];
             while j < (sparse_evaluation.subline_evals[i]).values.len() {
                 let [x0, x1, x2, x3] = (*subline_eval.values[j]).to_array();
+
                 column_0.append(x0);
                 column_1.append(x1);
                 column_2.append(x2);
@@ -182,12 +183,10 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             all_subline_evals.append(LineEvaluationImpl::new(subline_domain, subline_evals));
         };
 
-        if proof_evals_index != (*self.proof.evals_subset).len() {
-            // TODO: add the layer to the error?
+        if error || proof_evals_index != (*self.proof.evals_subset).len() {
             return Result::Err(FriVerificationError::InnerLayerEvaluationsInvalid);
         }
 
-        // TODO: return the correct error InnerLayerEvaluationsInvalid
         Result::Ok(SparseLineEvaluation { subline_evals: all_subline_evals })
     }
 }
@@ -313,13 +312,17 @@ impl FriVerifierImpl of FriVerifierTrait {
         let circle_poly_alpha = self.circle_poly_alpha;
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
 
-        let mut error = false;
         let mut layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
         let mut layer_query_evals = qm31_zero_array(layer_queries.len());
 
         let mut inner_layers_index = 0;
         let mut column_bound_index = 0;
-        while inner_layers_index < self.inner_layers.len() {
+        loop {
+            if inner_layers_index == self.inner_layers.len() {
+                // TODO: remove clones
+                break Result::Ok((layer_queries.clone(), layer_query_evals.clone()));
+            }
+
             let current_layer = self.inner_layers[inner_layers_index];
             if column_bound_index < self.column_bounds.len()
                 && *self.column_bounds[column_bound_index]
@@ -366,20 +369,13 @@ impl FriVerifierImpl of FriVerifierTrait {
 
             let result = current_layer.verify_and_fold(@layer_queries, @layer_query_evals);
             if result.is_err() {
-                error = true;
+                break result;
             } else {
-                let (a, b) = result.unwrap();
-                layer_queries = a;
-                layer_query_evals = b;
+                let (new_layer_queries, new_layer_query_evals) = result.unwrap();
+                layer_queries = new_layer_queries;
+                layer_query_evals = new_layer_query_evals;
             }
             inner_layers_index += 1;
-        };
-
-        if (error) {
-            // TODO: return error
-            return Result::Err(FriVerificationError::InvalidNumFriLayers);
-        } else {
-            return Result::Ok((layer_queries, layer_query_evals));
         }
     }
 
@@ -443,7 +439,7 @@ mod tests {
     use stwo_cairo_verifier::fri::polynomial::LinePoly;
     use super::{
         FriProof, FriLayerProof, FriConfig, FriVerifier, FriVerifierImpl, FriLayerVerifier,
-        FriLayerVerifierImpl
+        FriLayerVerifierImpl, FriVerificationError
     };
 
     type TestValues = (FriConfig, FriProof, Array<u32>, Queries, Array<SparseCircleEvaluation>);
@@ -491,7 +487,6 @@ mod tests {
     }
 
     // TODO: replace `should_panic` with a more precise test
-    #[should_panic]
     #[test]
     fn proof_with_removed_layer_fails_verification() {
         let (config, proof, bounds, _queries, _decommitted_values) = test_with_mixed_degree_1();
@@ -500,11 +495,15 @@ mod tests {
         invalid_config.log_last_layer_degree_bound -= 1;
 
         let channel = ChannelTrait::new(0x00);
-        let _verifier = FriVerifierImpl::commit(channel, invalid_config, proof, bounds).unwrap();
+        let result = FriVerifierImpl::commit(channel, invalid_config, proof, bounds);
+
+        match result {
+            Result::Ok(verifier) => { panic!("Verifier should return InvalidNumFriLayers"); },
+            Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); }
+        }
     }
 
     // TODO: replace `should_panic` with a more precise test
-    #[should_panic]
     #[test]
     fn proof_with_added_layer_fails_verification() {
         let (config, proof, bounds, _queries, _decommitted_values) = test_with_mixed_degree_1();
@@ -513,34 +512,44 @@ mod tests {
         invalid_config.log_last_layer_degree_bound += 1;
 
         let channel = ChannelTrait::new(0x00);
-        let _verifier = FriVerifierImpl::commit(channel, invalid_config, proof, bounds).unwrap();
+        let result = FriVerifierImpl::commit(channel, invalid_config, proof, bounds);
+
+        match result {
+            Result::Ok(verifier) => { panic!("Verifier should return InvalidNumFriLayers"); },
+            Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); }
+        }
     }
 
     // TODO: replace `should_panic` with a more precise test
-    #[should_panic]
     #[test]
     fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
-        let (config, proof, bounds, _queries, _decommitted_values) = @test_with_mixed_degree_1();
-
+        let (config, proof, bounds, queries, decommitted_values) =
+            test_with_last_layer_of_degree_four();
+        let inner_layers = @proof.inner_layers;
         // Create an invalid proof by removing an evaluation from the second layer's proof
         let invalid_proof = {
             let mut invalid_inner_layers = array![];
             invalid_inner_layers.append(proof.inner_layers[0].clone());
             let mut invalid_evals_subset = array![];
             let mut i = 1;
-            while i < proof.inner_layers[1].evals_subset.len() {
-                invalid_evals_subset.append(proof.inner_layers[1].evals_subset[i].clone());
+            while i < inner_layers[1].evals_subset.len() {
+                invalid_evals_subset.append(inner_layers[1].evals_subset[i].clone());
                 i += 1;
             };
             invalid_inner_layers
                 .append(
                     FriLayerProof {
                         evals_subset: invalid_evals_subset,
-                        decommitment: proof.inner_layers[1].decommitment.clone(),
-                        decomposition_coeff: *proof.inner_layers[1].decomposition_coeff,
-                        commitment: *proof.inner_layers[1].commitment
+                        decommitment: inner_layers[1].decommitment.clone(),
+                        decomposition_coeff: *inner_layers[1].decomposition_coeff,
+                        commitment: *inner_layers[1].commitment
                     }
                 );
+            let mut i = 2;
+            while i < proof.inner_layers.len() {
+                invalid_inner_layers.append(proof.inner_layers[i].clone());
+                i += 1;
+            };
 
             FriProof {
                 inner_layers: invalid_inner_layers, last_layer_poly: proof.last_layer_poly.clone()
@@ -548,8 +557,18 @@ mod tests {
         };
 
         let channel = ChannelTrait::new(0x00);
-        let _verifier = FriVerifierImpl::commit(channel, *config, invalid_proof, bounds.clone())
+        let verifier = FriVerifierImpl::commit(channel, config, invalid_proof, bounds.clone())
             .unwrap();
+        let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
+
+        match verification_result {
+            Result::Ok(_verifier) => {
+                panic!("Verifier should return InnerLayerEvaluationsInvalid");
+            },
+            Result::Err(error) => {
+                assert!(error == FriVerificationError::InnerLayerEvaluationsInvalid);
+            }
+        }
     }
 
 
@@ -679,6 +698,84 @@ mod tests {
             }
         ];
 
+        (config, proof, bounds, queries, decommitted_values)
+    }
+
+    fn test_with_last_layer_of_degree_four() -> TestValues {
+        let config = FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 1
+        };
+        let proof = FriProof {
+            inner_layers: array![
+                FriLayerProof {
+                    evals_subset: array![qm31(421951112, 668736057, 785571716, 551382471),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x07434e99a997fed5183f02e248b2d77ce047e45a63418dd8039630b139d72487,
+                            0x01e1aafd718c486b5e9b35927b27a6eb71ef97cdc7009c9f246647db63a7960c,
+                            0x0718cb047c50ba071b9a4696537695f273f42a7af8bfb0e465190b905548f754,
+                            0x040db6d0f16909d1daaf710e3fa9663ef52419ac5ae5433c915ac5939809eb79,
+                            0x06eb066c6e21999bc152bbac0a4b93c6c80b702f6ff7860be62cc10b89aa8352,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(1535376180, 1101522806, 788857635, 1882322924),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x036ecb4e522350744312fa6da1ed85f6b7975885983a1baf9563feae7b7f799a,
+                            0x017bdda6c344feddd93884211b626ca806da73bfa55cd7eef54b687dd744651a,
+                            0x038d80d42b4192fd30dc894d5a26f3db757da5313c7940685058641091eb6d71,
+                            0x0406355da40056abcf1278c92f3ab9aa52ca028fe437e6dbe15cdbcc7b83eed0,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x046198bc34caa0b046234fa46ef591327a6864cb8a373bc13ce2cc9b3d5f3720,
+                },
+                FriLayerProof {
+                    evals_subset: array![qm31(419894864, 130791138, 1485752547, 11937027),],
+                    decommitment: MerkleDecommitment {
+                        hash_witness: array![
+                            0x0454d5cffc792c2308fb8dcf992c255f0535048b7bfbe9d08c1c3ae92178cd16,
+                            0x071f311ea2e00f2e44066f0a577f27e62648b66152afa3122e0aebe7420fbcd2,
+                            0x037c8315cf3525ea7097be7b687f44f9f0cecf1054ec553e183f0a9d2bd0b5d7,
+                        ],
+                        column_witness: array![],
+                    },
+                    decomposition_coeff: qm31(0, 0, 0, 0),
+                    commitment: 0x0344b5796a1b37e154053d94532921bd1dc9db98b454d0a7537974e2b9fc17b5,
+                },
+            ],
+            last_layer_poly: LinePoly {
+                coeffs: array![
+                    qm31(1449311934, 1632038525, 278574869, 690369710),
+                    qm31(1449311934, 1632038525, 278574869, 690369710),
+                    qm31(1449311934, 1632038525, 278574869, 690369710),
+                    qm31(1449311934, 1632038525, 278574869, 690369710),
+                ],
+                log_size: 2,
+            },
+        };
+        let bounds = array![6];
+        let queries = Queries { positions: array![5], log_domain_size: 7 };
+        let decommitted_values = array![
+            SparseCircleEvaluation {
+                subcircle_evals: array![
+                    CircleEvaluation {
+                        domain: CircleDomain {
+                            half_coset: Coset {
+                                initial_index: 545259520, step_size: 2147483648, log_size: 0,
+                            },
+                        },
+                        values: array![qm31(1464849549, 0, 0, 0), qm31(35402781, 0, 0, 0),],
+                    },
+                ],
+            }
+        ];
         (config, proof, bounds, queries, decommitted_values)
     }
 
