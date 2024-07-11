@@ -14,10 +14,10 @@ mod tests {
     use stwo_prover::core::fields::IntoSlice;
     use stwo_prover::core::poly::circle::CircleEvaluation;
     use stwo_prover::core::poly::BitReversedOrder;
-    use stwo_prover::core::prover::{prove, verify};
+    use stwo_prover::core::prover::{prove, verify, VerificationError};
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
     use stwo_prover::core::vcs::hasher::Hasher;
-    use stwo_prover::core::{ColumnVec, InteractionElements};
+    use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
     use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
     use stwo_prover::trace_generation::{
         AirTraceGenerator, AirTraceVerifier, ComponentTraceGenerator,
@@ -109,6 +109,10 @@ mod tests {
     impl Air for TestAir {
         fn components(&self) -> Vec<&dyn Component> {
             vec![&self.component]
+        }
+
+        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
+            Ok(())
         }
     }
 
