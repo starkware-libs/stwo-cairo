@@ -70,7 +70,6 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         ];
 
         let folded_queries = queries.fold(FOLD_STEP);
-        // TODO: check this approach
         let folded_queries_snapshot = @folded_queries;
 
         let mut decommitment_positions = array![];
@@ -169,7 +168,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
                 eval_position += 1;
             };
 
-            if (error) {
+            if error {
                 break;
             }
 

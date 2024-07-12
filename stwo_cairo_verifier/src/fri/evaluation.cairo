@@ -55,7 +55,6 @@ fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values: Array<QM31> = array![];
     let mut i = 0;
-    // TODO: is this loop needed? The calling method only uses the first element of `value`
     while i < eval.values.len() / 2 {
         let x = domain.at(bit_reverse_index(i * pow(2, FOLD_STEP), domain.log_size()));
         let f_x = eval.values[2 * i];
@@ -126,7 +125,6 @@ fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation
 pub fn project_to_fft_space(
     queries: @Queries, evals: SparseCircleEvaluation, lambda: QM31
 ) -> SparseCircleEvaluation {
-    // TODO: test
     let mut subcircle_evals = array![];
     let half_domain_size = pow(2, *queries.log_domain_size) / 2;
     let mut i = 0;
