@@ -13,6 +13,7 @@ use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
+use stwo_prover::core::prover::{BASE_TRACE, INTERACTION_TRACE};
 use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
 use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
 use stwo_prover::trace_generation::{ComponentGen, ComponentTraceGenerator};
@@ -20,6 +21,7 @@ use stwo_prover::trace_generation::{ComponentGen, ComponentTraceGenerator};
 pub const RC_Z: &str = "RangeCheckUnit_Z";
 pub const RC_COMPONENT_ID: &str = "RC_UNIT";
 
+#[derive(Clone)]
 pub struct RangeCheckUnitComponent {
     pub log_n_instances: u32,
 }
@@ -39,8 +41,9 @@ impl RangeCheckUnitComponent {
         constraint_zero_domain: Coset,
     ) {
         let z = interaction_elements[RC_Z];
-        let value = SecureField::from_partial_evals(std::array::from_fn(|i| mask[1][i][0]));
-        let numerator = value * (z - mask[0][0][0]) - mask[0][1][0];
+        let value =
+            SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][0]));
+        let numerator = value * (z - mask[BASE_TRACE][0][0]) - mask[BASE_TRACE][1][0];
         let denom = point_vanishing(constraint_zero_domain.at(0), point);
         evaluation_accumulator.accumulate(numerator / denom);
     }
@@ -55,10 +58,6 @@ impl Component for RangeCheckUnitComponent {
         self.log_n_instances + 1
     }
 
-    fn n_interaction_phases(&self) -> u32 {
-        2
-    }
-
     fn trace_log_degree_bounds(&self) -> TreeVec<ColumnVec<u32>> {
         TreeVec::new(vec![
             vec![self.log_n_instances; 2],
@@ -70,7 +69,10 @@ impl Component for RangeCheckUnitComponent {
         &self,
         point: CirclePoint<SecureField>,
     ) -> TreeVec<ColumnVec<Vec<CirclePoint<SecureField>>>> {
-        TreeVec::new(vec![fixed_mask_points(&vec![vec![0_usize]], point)])
+        TreeVec::new(vec![
+            fixed_mask_points(&vec![vec![0_usize]; 2], point),
+            vec![vec![point]; SECURE_EXTENSION_DEGREE],
+        ])
     }
 
     fn evaluate_constraint_quotients_at_point(
@@ -177,28 +179,12 @@ impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::components::range_check_unit::tests::register_test_rc;
 
     #[test]
     fn test_rc_unit_trace() {
         let mut registry = ComponentGenerationRegistry::default();
-        registry.register(RC_COMPONENT_ID, RangeCheckUnitTraceGenerator::new(8));
-        let inputs = vec![
-            vec![BaseField::from_u32_unchecked(0); 3],
-            vec![BaseField::from_u32_unchecked(1); 1],
-            vec![BaseField::from_u32_unchecked(2); 2],
-            vec![BaseField::from_u32_unchecked(3); 5],
-            vec![BaseField::from_u32_unchecked(4); 10],
-            vec![BaseField::from_u32_unchecked(5); 1],
-            vec![BaseField::from_u32_unchecked(6); 0],
-            vec![BaseField::from_u32_unchecked(7); 1],
-        ]
-        .into_iter()
-        .flatten()
-        .collect_vec();
-        registry
-            .get_generator_mut::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
-            .add_inputs(&inputs);
-
+        register_test_rc(&mut registry);
         let trace = RangeCheckUnitTraceGenerator::write_trace(RC_COMPONENT_ID, &mut registry);
         let random_value = SecureField::from_u32_unchecked(1, 2, 3, 117);
         let interaction_elements =
