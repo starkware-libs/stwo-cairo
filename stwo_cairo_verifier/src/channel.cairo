@@ -123,6 +123,8 @@ pub impl ChannelImpl of ChannelTrait {
         res
     }
 
+    /// Returns 31 random bytes computed as the first 31 bytes of the representative of 
+    /// `self.draw_felt252()` in little endinan.
     fn draw_random_bytes(ref self: Channel) -> Array<u8> {
         let shift: felt252 = 256;
         let shift_representative: u256 = shift.into();
@@ -248,6 +250,7 @@ mod tests {
         assert_ne!(initial_digest, channel.digest);
     }
 
+    #[test]
     pub fn test_draw_random_bytes_1() {
         let initial_digest = 0;
         let mut channel = ChannelTrait::new(initial_digest);
@@ -283,11 +286,12 @@ mod tests {
             168,
             232,
             211,
-            17
+            147
         ];
         assert_eq!(expected_result, result);
     }
 
+    #[test]
     pub fn test_draw_random_bytes_2() {
         let initial_digest = 0xdeadbeef;
         let mut channel = ChannelTrait::new(initial_digest);
