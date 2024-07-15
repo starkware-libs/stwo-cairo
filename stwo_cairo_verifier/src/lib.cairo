@@ -1,6 +1,7 @@
 mod channel;
 mod circle;
 mod fields;
+mod poly;
 mod utils;
 mod vcs;
 
