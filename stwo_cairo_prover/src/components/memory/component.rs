@@ -70,6 +70,10 @@ impl MemoryTraceGenerator {
             multiplicities,
         }
     }
+
+    pub fn deduce_output(&self, input: BaseField) -> [BaseField; N_M31_IN_FELT252] {
+        self.values[input.0 as usize]
+    }
 }
 
 impl ComponentGen for MemoryTraceGenerator {}
