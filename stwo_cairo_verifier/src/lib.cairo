@@ -2,6 +2,7 @@ mod channel;
 mod fields;
 mod utils;
 mod vcs;
+mod fri;
 
 pub use fields::{BaseField, SecureField};
 
