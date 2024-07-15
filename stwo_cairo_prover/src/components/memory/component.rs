@@ -35,6 +35,7 @@ pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
 // TODO(AlonH): Make memory size configurable.
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 3;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
+pub const N_MEMORY_COLUMNS: usize = N_M31_IN_FELT252 + 2;
 
 /// Addresses are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
@@ -69,6 +70,10 @@ impl MemoryTraceGenerator {
             values,
             multiplicities,
         }
+    }
+
+    pub fn deduce_output(&self, input: BaseField) -> [BaseField; N_M31_IN_FELT252] {
+        self.values[input.0 as usize]
     }
 }
 
