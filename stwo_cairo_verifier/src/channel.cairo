@@ -123,22 +123,17 @@ pub impl ChannelImpl of ChannelTrait {
         res
     }
 
-    /// Returns 31 random bytes computed as the first 31 bytes of the representative of 
-    /// `self.draw_felt252()` in little endinan.
+    /// Returns 31 random bytes computed as the first 31 bytes of the representative of
+    /// `self.draw_felt252()` in little endian.
+    /// TODO: check that this distribution is good enough, as it is only close to uniform.
     fn draw_random_bytes(ref self: Channel) -> Array<u8> {
-        let shift: felt252 = 256;
-        let shift_representative: u256 = shift.into();
-        let mut cur = self.draw_felt252();
+        let mut cur: u256 = self.draw_felt252().into();
         let mut bytes = array![];
         let mut i: usize = 0;
         while i < 31 {
-            let cur_representative: u256 = cur.into();
-            let next_representative = cur_representative / shift_representative;
-            let next: felt252 = next_representative.try_into().unwrap();
-            let res = cur - next * shift;
-            let res_representative: u256 = res.into();
-            cur = next;
-            bytes.append((res_representative & 0xff).try_into().unwrap());
+            let (q, r) = DivRem::div_rem(cur, 256);
+            bytes.append(r.try_into().unwrap());
+            cur = q;
             i += 1;
         };
         bytes
@@ -330,5 +325,14 @@ mod tests {
             12
         ];
         assert_eq!(expected_result, result);
+    }
+
+    #[test]
+    pub fn test_draw_random_bytes_3() {
+        let initial_digest = 0xcafecafe;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let first_result = channel.draw_random_bytes();
+        let second_result = channel.draw_random_bytes();
+        assert_ne!(first_result, second_result);
     }
 }
