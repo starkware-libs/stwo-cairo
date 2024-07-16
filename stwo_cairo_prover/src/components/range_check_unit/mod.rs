@@ -6,7 +6,6 @@ mod tests {
     use std::collections::BTreeMap;
 
     use component::{RangeCheckUnitComponent, RangeCheckUnitTraceGenerator, RC_COMPONENT_ID, RC_Z};
-    use itertools::Itertools;
     use stwo_prover::core::air::{Air, AirProver, Component, ComponentProver};
     use stwo_prover::core::backend::CpuBackend;
     use stwo_prover::core::channel::{Blake2sChannel, Channel};
@@ -28,7 +27,7 @@ mod tests {
 
     pub fn register_test_rc(registry: &mut ComponentGenerationRegistry) {
         registry.register(RC_COMPONENT_ID, RangeCheckUnitTraceGenerator::new(8));
-        let inputs = vec![
+        vec![
             vec![BaseField::from_u32_unchecked(0); 3],
             vec![BaseField::from_u32_unchecked(1); 1],
             vec![BaseField::from_u32_unchecked(2); 2],
@@ -40,10 +39,11 @@ mod tests {
         ]
         .into_iter()
         .flatten()
-        .collect_vec();
-        registry
-            .get_generator_mut::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
-            .add_inputs(&inputs);
+        .for_each(|input| {
+            registry
+                .get_generator_mut::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
+                .add_inputs(&input);
+        });
     }
 
     struct TestAirGenerator {
