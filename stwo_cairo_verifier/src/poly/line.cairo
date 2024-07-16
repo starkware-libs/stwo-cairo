@@ -1,9 +1,9 @@
-use stwo_cairo_verifier::fields::qm31::QM31;
+use stwo_cairo_verifier::fields::SecureField;
 use stwo_cairo_verifier::fields::m31::m31;
 
 #[derive(Drop, Clone)]
 pub struct LinePoly {
-    pub coeffs: Array<QM31>,
+    pub coeffs: Array<SecureField>,
     pub log_size: u32,
 }
 
@@ -13,7 +13,7 @@ pub impl LinePolyImpl of LinePolyTrait {
         self.coeffs.len()
     }
 
-    fn eval_at_point(self: @LinePoly, mut x: QM31) -> QM31 {
+    fn eval_at_point(self: @LinePoly, mut x: SecureField) -> SecureField {
         let mut mappings = array![];
         let mut i = 0;
         while i < *self.log_size {
@@ -21,10 +21,10 @@ pub impl LinePolyImpl of LinePolyTrait {
             x = m31(2).into() * x * x - m31(1).into();
             i += 1;
         };
-        let mappings = @mappings;
 
         let mut level = self.coeffs.clone();
 
+        let mappings = @mappings;
         let mut i = mappings.len();
         while i > 0 {
             i -= 1;
