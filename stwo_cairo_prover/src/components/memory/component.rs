@@ -5,7 +5,8 @@ use stwo_prover::core::air::mask::fixed_mask_points;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::CpuBackend;
 use stwo_prover::core::circle::CirclePoint;
-use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::constraints::{coset_vanishing, point_excluder, point_vanishing};
+use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::{SecureColumn, SECURE_EXTENSION_DEGREE};
 use stwo_prover::core::fields::FieldExpOps;
@@ -17,24 +18,33 @@ use stwo_prover::core::utils::{
 };
 use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
 use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
-use stwo_prover::trace_generation::{ComponentGen, ComponentTraceGenerator};
+use stwo_prover::trace_generation::{
+    ComponentGen, ComponentTraceGenerator, BASE_TRACE, INTERACTION_TRACE,
+};
 
 pub const MEMORY_ALPHA: &str = "MEMORY_ALPHA";
 pub const MEMORY_Z: &str = "MEMORY_Z";
+pub const MEMORY_COMPONENT_ID: &str = "MEMORY";
+pub const MEMORY_LOOKUP_VALUE_0: &str = "MEMORY_LOOKUP_0";
+pub const MEMORY_LOOKUP_VALUE_1: &str = "MEMORY_LOOKUP_1";
+pub const MEMORY_LOOKUP_VALUE_2: &str = "MEMORY_LOOKUP_2";
+pub const MEMORY_LOOKUP_VALUE_3: &str = "MEMORY_LOOKUP_3";
 
-const N_M31_IN_FELT252: usize = 21;
-const MULTIPLICITY_COLUMN: usize = 22;
-const LOG_MEMORY_ADDRESS_BOUND: u32 = 20;
-const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
+pub const N_M31_IN_FELT252: usize = 21;
+pub const MULTIPLICITY_COLUMN: usize = 22;
+// TODO(AlonH): Make memory size configurable.
+pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 3;
+pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 
 /// Addresses are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value contain 12 bits).
 pub struct MemoryTraceGenerator {
     // TODO(AlonH): Consider to change values to be Felt252.
-    pub values: Vec<[M31; N_M31_IN_FELT252]>,
+    pub values: Vec<[BaseField; N_M31_IN_FELT252]>,
     pub multiplicities: Vec<u32>,
 }
 
+#[derive(Clone)]
 pub struct MemoryComponent {
     pub log_n_rows: u32,
 }
@@ -48,7 +58,7 @@ impl MemoryComponent {
 impl MemoryTraceGenerator {
     pub fn new(_path: String) -> Self {
         // TODO(AlonH): change to read from file.
-        let values = vec![[M31::zero(); N_M31_IN_FELT252]; MEMORY_ADDRESS_BOUND];
+        let values = vec![[BaseField::zero(); N_M31_IN_FELT252]; MEMORY_ADDRESS_BOUND];
         let multiplicities = vec![0; MEMORY_ADDRESS_BOUND];
         Self {
             values,
@@ -61,7 +71,7 @@ impl ComponentGen for MemoryTraceGenerator {}
 
 impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
     type Component = MemoryComponent;
-    type Inputs = M31;
+    type Inputs = BaseField;
 
     fn add_inputs(&mut self, inputs: &Self::Inputs) {
         let input = inputs.0 as usize;
@@ -172,12 +182,46 @@ impl Component for MemoryComponent {
 
     fn evaluate_constraint_quotients_at_point(
         &self,
-        _point: CirclePoint<SecureField>,
-        _mask: &TreeVec<Vec<Vec<SecureField>>>,
-        _evaluation_accumulator: &mut PointEvaluationAccumulator,
-        _interaction_elements: &InteractionElements,
-        _lookup_values: &LookupValues,
+        point: CirclePoint<SecureField>,
+        mask: &TreeVec<Vec<Vec<SecureField>>>,
+        evaluation_accumulator: &mut PointEvaluationAccumulator,
+        interaction_elements: &InteractionElements,
+        lookup_values: &LookupValues,
     ) {
-        todo!()
+        // First lookup point boundary constraint.
+        let constraint_zero_domain = CanonicCoset::new(self.log_n_rows).coset;
+        let (alpha, z) = (
+            interaction_elements[MEMORY_ALPHA],
+            interaction_elements[MEMORY_Z],
+        );
+        let value =
+            SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][0]));
+        let address_and_value: [SecureField; N_M31_IN_FELT252 + 1] =
+            std::array::from_fn(|i| mask[BASE_TRACE][i][0]);
+        let numerator = value * shifted_secure_combination(&address_and_value, alpha, z)
+            - mask[BASE_TRACE][MULTIPLICITY_COLUMN][0];
+        let denom = point_vanishing(constraint_zero_domain.at(0), point);
+        evaluation_accumulator.accumulate(numerator / denom);
+
+        // Last lookup point boundary constraint.
+        let lookup_value = SecureField::from_m31(
+            lookup_values[MEMORY_LOOKUP_VALUE_0],
+            lookup_values[MEMORY_LOOKUP_VALUE_1],
+            lookup_values[MEMORY_LOOKUP_VALUE_2],
+            lookup_values[MEMORY_LOOKUP_VALUE_3],
+        );
+        let numerator = value - lookup_value;
+        let denom = point_vanishing(constraint_zero_domain.at(1), point);
+        evaluation_accumulator.accumulate(numerator / denom);
+
+        // Lookup step constraint.
+        let prev_value =
+            SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][1]));
+        let numerator = (value - prev_value)
+            * shifted_secure_combination(&address_and_value, alpha, z)
+            - mask[BASE_TRACE][22][0];
+        let denom = coset_vanishing(constraint_zero_domain, point)
+            / point_excluder(constraint_zero_domain.at(0), point);
+        evaluation_accumulator.accumulate(numerator / denom);
     }
 }
