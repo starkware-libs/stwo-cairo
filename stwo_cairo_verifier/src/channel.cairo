@@ -122,6 +122,22 @@ pub impl ChannelImpl of ChannelTrait {
         };
         res
     }
+
+    /// Returns 31 random bytes computed as the first 31 bytes of the representative of
+    /// `self.draw_felt252()` in little endian.
+    /// TODO: check that this distribution is good enough, as it is only close to uniform.
+    fn draw_random_bytes(ref self: Channel) -> Array<u8> {
+        let mut cur: u256 = self.draw_felt252().into();
+        let mut bytes = array![];
+        let mut i: usize = 0;
+        while i < 31 {
+            let (q, r) = DivRem::div_rem(cur, 256);
+            bytes.append(r.try_into().unwrap());
+            cur = q;
+            i += 1;
+        };
+        bytes
+    }
 }
 
 #[inline]
@@ -227,5 +243,96 @@ mod tests {
         channel.mix_felts(array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12)].span());
 
         assert_ne!(initial_digest, channel.digest);
+    }
+
+    #[test]
+    pub fn test_draw_random_bytes_1() {
+        let initial_digest = 0;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let result = channel.draw_random_bytes();
+        let expected_result = array![
+            197,
+            20,
+            139,
+            143,
+            49,
+            135,
+            207,
+            202,
+            93,
+            167,
+            20,
+            244,
+            184,
+            186,
+            20,
+            136,
+            204,
+            43,
+            46,
+            147,
+            213,
+            253,
+            175,
+            170,
+            13,
+            64,
+            15,
+            168,
+            232,
+            211,
+            147
+        ];
+        assert_eq!(expected_result, result);
+    }
+
+    #[test]
+    pub fn test_draw_random_bytes_2() {
+        let initial_digest = 0xdeadbeef;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let result = channel.draw_random_bytes();
+        let expected_result = array![
+            168,
+            175,
+            85,
+            209,
+            218,
+            65,
+            155,
+            212,
+            165,
+            88,
+            130,
+            167,
+            44,
+            242,
+            17,
+            127,
+            75,
+            251,
+            142,
+            180,
+            157,
+            176,
+            27,
+            167,
+            179,
+            247,
+            27,
+            113,
+            149,
+            41,
+            12
+        ];
+        assert_eq!(expected_result, result);
+    }
+
+    #[test]
+    pub fn test_draw_random_bytes_3() {
+        let initial_digest = 0xcafecafe;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let first_result = channel.draw_random_bytes();
+        let second_result = channel.draw_random_bytes();
+        assert_ne!(first_result, second_result);
     }
 }
