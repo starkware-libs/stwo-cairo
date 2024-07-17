@@ -32,7 +32,7 @@ impl ComponentProver<CpuBackend> for RangeCheckUnitComponent {
         let max_constraint_degree = self.max_constraint_log_degree_bound();
         let trace_eval_domain = CanonicCoset::new(max_constraint_degree).circle_domain();
         let trace_evals = &trace.evals;
-        let zero_domain = CanonicCoset::new(self.log_n_instances).coset;
+        let zero_domain = CanonicCoset::new(self.log_n_rows).coset;
         let [mut accum] =
             evaluation_accumulator.columns([(max_constraint_degree, self.n_constraints())]);
 
@@ -93,7 +93,7 @@ impl ComponentProver<CpuBackend> for RangeCheckUnitComponent {
     }
 
     fn lookup_values(&self, trace: &ComponentTrace<'_, CpuBackend>) -> LookupValues {
-        let domain = CanonicCoset::new(self.log_n_instances);
+        let domain = CanonicCoset::new(self.log_n_rows);
         let trace_poly = &trace.polys[INTERACTION_TRACE];
         let values = BTreeMap::from_iter([
             (
