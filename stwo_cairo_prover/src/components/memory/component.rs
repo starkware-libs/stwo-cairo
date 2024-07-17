@@ -58,7 +58,12 @@ impl MemoryComponent {
 impl MemoryTraceGenerator {
     pub fn new(_path: String) -> Self {
         // TODO(AlonH): change to read from file.
-        let values = vec![[BaseField::zero(); N_M31_IN_FELT252]; MEMORY_ADDRESS_BOUND];
+        let values = (0..MEMORY_ADDRESS_BOUND)
+            .map(|i| {
+                let value = BaseField::from_u32_unchecked(i as u32);
+                [value; N_M31_IN_FELT252]
+            })
+            .collect();
         let multiplicities = vec![0; MEMORY_ADDRESS_BOUND];
         Self {
             values,
@@ -226,5 +231,41 @@ impl Component for MemoryComponent {
         let denom = coset_vanishing(constraint_zero_domain, point)
             / point_excluder(constraint_zero_domain.at(0), point);
         evaluation_accumulator.accumulate(numerator / denom);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::components::memory::tests::register_test_memory;
+
+    #[test]
+    fn test_memory_trace() {
+        let mut registry = ComponentGenerationRegistry::default();
+        register_test_memory(&mut registry);
+        let trace = MemoryTraceGenerator::write_trace(MEMORY_COMPONENT_ID, &mut registry);
+        let alpha = SecureField::from_u32_unchecked(1, 2, 3, 117);
+        let z = SecureField::from_u32_unchecked(2, 3, 4, 118);
+        let interaction_elements = InteractionElements::new(
+            [(MEMORY_ALPHA.to_string(), alpha), (MEMORY_Z.to_string(), z)].into(),
+        );
+        let interaction_trace = registry
+            .get_generator::<MemoryTraceGenerator>(MEMORY_COMPONENT_ID)
+            .write_interaction_trace(&trace.iter().collect(), &interaction_elements);
+
+        let mut expected_logup_sum = SecureField::zero();
+        for i in 0..MEMORY_ADDRESS_BOUND {
+            assert_eq!(trace[0].values[i], BaseField::from_u32_unchecked(i as u32));
+            expected_logup_sum += trace.last().unwrap().values[i]
+                / shifted_secure_combination(
+                    &[BaseField::from_u32_unchecked(i as u32); N_M31_IN_FELT252 + 1],
+                    alpha,
+                    z,
+                );
+        }
+        let logup_sum =
+            SecureField::from_m31_array(std::array::from_fn(|j| interaction_trace[j][1]));
+
+        assert_eq!(logup_sum, expected_logup_sum);
     }
 }
