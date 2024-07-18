@@ -117,15 +117,13 @@ impl ComponentGen for RangeCheckUnitTraceGenerator {}
 
 impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
     type Component = RangeCheckUnitComponent;
-    type Inputs = Vec<BaseField>;
+    type Inputs = BaseField;
 
     fn add_inputs(&mut self, inputs: &Self::Inputs) {
-        for input in inputs {
-            let input = input.0 as usize;
-            // TODO: replace the debug_assert! with an error return.
-            debug_assert!(input < self.max_value, "Input out of range");
-            self.multiplicities[input] += 1;
-        }
+        let input = inputs.0 as usize;
+        // TODO: replace the debug_assert! with an error return.
+        debug_assert!(input < self.max_value, "Input out of range");
+        self.multiplicities[input] += 1;
     }
 
     fn write_trace(
