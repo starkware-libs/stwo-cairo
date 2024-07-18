@@ -1,11 +1,11 @@
 use itertools::{zip_eq, Itertools};
-use num_traits::Zero;
+use num_traits::{One, Zero};
 use stwo_prover::core::air::accumulation::PointEvaluationAccumulator;
 use stwo_prover::core::air::mask::fixed_mask_points;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::CpuBackend;
 use stwo_prover::core::circle::CirclePoint;
-use stwo_prover::core::constraints::{coset_vanishing, point_excluder, point_vanishing};
+use stwo_prover::core::constraints::coset_vanishing;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::{SecureColumn, SECURE_EXTENSION_DEGREE};
@@ -22,6 +22,10 @@ use stwo_prover::trace_generation::{
     ComponentGen, ComponentTraceGenerator, BASE_TRACE, INTERACTION_TRACE,
 };
 
+use crate::components::range_check_unit::component::{
+    RangeCheckUnitTraceGenerator, RC_COMPONENT_ID, RC_Z,
+};
+
 pub const MEMORY_ALPHA: &str = "MEMORY_ALPHA";
 pub const MEMORY_Z: &str = "MEMORY_Z";
 pub const MEMORY_COMPONENT_ID: &str = "MEMORY";
@@ -29,13 +33,19 @@ pub const MEMORY_LOOKUP_VALUE_0: &str = "MEMORY_LOOKUP_0";
 pub const MEMORY_LOOKUP_VALUE_1: &str = "MEMORY_LOOKUP_1";
 pub const MEMORY_LOOKUP_VALUE_2: &str = "MEMORY_LOOKUP_2";
 pub const MEMORY_LOOKUP_VALUE_3: &str = "MEMORY_LOOKUP_3";
+pub const MEMORY_RC_LOOKUP_VALUE_0: &str = "MEMORY_RC_LOOKUP_0";
+pub const MEMORY_RC_LOOKUP_VALUE_1: &str = "MEMORY_RC_LOOKUP_1";
+pub const MEMORY_RC_LOOKUP_VALUE_2: &str = "MEMORY_RC_LOOKUP_2";
+pub const MEMORY_RC_LOOKUP_VALUE_3: &str = "MEMORY_RC_LOOKUP_3";
 
+pub const MAX_MEMORY_CELL_VALUE: usize = 1 << 9;
 pub const N_M31_IN_FELT252: usize = 28;
 pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
 // TODO(AlonH): Make memory size configurable.
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 3;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
-pub const N_MEMORY_COLUMNS: usize = N_M31_IN_FELT252 + 2;
+// Addresses, M31 values, and multiplicities.
+pub const N_MEMORY_COLUMNS: usize = 1 + N_M31_IN_FELT252 + 1;
 
 /// Addresses are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
@@ -52,7 +62,7 @@ pub struct MemoryComponent {
 
 impl MemoryComponent {
     pub const fn n_columns(&self) -> usize {
-        N_M31_IN_FELT252 + 2
+        N_MEMORY_COLUMNS
     }
 }
 
@@ -107,9 +117,17 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
             // here or add constraints to the column here.
             trace[0][i] = BaseField::from_u32_unchecked(i as u32);
             for (j, value) in values.iter().enumerate() {
-                trace[j + 1][i] = BaseField::from_u32_unchecked(value.0);
+                trace[j + 1][i] = *value;
             }
             trace[MULTIPLICITY_COLUMN_OFFSET][i] = BaseField::from_u32_unchecked(*multiplicity);
+        }
+
+        let rc_generator =
+            registry.get_generator_mut::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID);
+        for column in trace[1..MULTIPLICITY_COLUMN_OFFSET].iter() {
+            column
+                .iter()
+                .for_each(|input| rc_generator.add_inputs(input));
         }
 
         let domain = CanonicCoset::new(LOG_MEMORY_ADDRESS_BOUND).circle_domain();
@@ -126,7 +144,7 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
     ) -> ColumnVec<CircleEvaluation<CpuBackend, BaseField, BitReversedOrder>> {
         let interaction_trace_domain = trace[0].domain;
         let domain_size = interaction_trace_domain.size();
-        let (alpha, z) = (elements[MEMORY_ALPHA], elements[MEMORY_Z]);
+        let (alpha, z, rc_z) = (elements[MEMORY_ALPHA], elements[MEMORY_Z], elements[RC_Z]);
 
         let addresses_and_values: Vec<[BaseField; N_M31_IN_FELT252 + 1]> = (0
             ..MEMORY_ADDRESS_BOUND)
@@ -138,8 +156,8 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
             .collect_vec();
         let mut denom_inverses = vec![SecureField::zero(); domain_size];
         SecureField::batch_inverse(&denoms, &mut denom_inverses);
-        let mut logup_values = vec![SecureField::zero(); domain_size];
-        let mut last = SecureField::zero();
+        let mut logup_values = vec![vec![SecureField::zero(); domain_size]; 1 + N_M31_IN_FELT252];
+        let mut column_last = SecureField::zero();
         let log_size = interaction_trace_domain.log_size();
         for i in 0..domain_size {
             let index = bit_reverse_index(
@@ -147,13 +165,32 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
                 log_size,
             );
             let interaction_value =
-                last + (denom_inverses[index] * trace[MULTIPLICITY_COLUMN_OFFSET].values[index]);
-            logup_values[index] = interaction_value;
-            last = interaction_value;
+                denom_inverses[index] * trace[MULTIPLICITY_COLUMN_OFFSET].values[index];
+            logup_values[0][index] = interaction_value;
+            let mut row_last = interaction_value;
+
+            // TODO(AlonH): Batch inverse.
+            for j in 1..N_M31_IN_FELT252 {
+                let rc_interaction_value = row_last + (rc_z - trace[j].values[index]).inverse();
+                logup_values[j][index] = rc_interaction_value;
+                row_last = rc_interaction_value;
+            }
+
+            let final_interaction_value =
+                column_last + row_last + (rc_z - trace[N_M31_IN_FELT252].values[index]).inverse();
+            logup_values[N_M31_IN_FELT252][index] = final_interaction_value;
+            column_last = final_interaction_value;
         }
-        let secure_column: SecureColumn<CpuBackend> = logup_values.into_iter().collect();
-        secure_column
-            .columns
+        let interaction_columns: Vec<Vec<BaseField>> = logup_values
+            .into_iter()
+            .flat_map(|values| {
+                values
+                    .into_iter()
+                    .collect::<SecureColumn<CpuBackend>>()
+                    .columns
+            })
+            .collect_vec();
+        interaction_columns
             .into_iter()
             .map(|eval| CircleEvaluation::new(interaction_trace_domain, eval))
             .collect_vec()
@@ -168,7 +205,7 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
 
 impl Component for MemoryComponent {
     fn n_constraints(&self) -> usize {
-        3
+        N_M31_IN_FELT252
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -178,7 +215,7 @@ impl Component for MemoryComponent {
     fn trace_log_degree_bounds(&self) -> TreeVec<ColumnVec<u32>> {
         TreeVec::new(vec![
             vec![self.log_n_rows; self.n_columns()],
-            vec![self.log_n_rows; SECURE_EXTENSION_DEGREE],
+            vec![self.log_n_rows; SECURE_EXTENSION_DEGREE * (1 + N_M31_IN_FELT252)],
         ])
     }
 
@@ -189,7 +226,10 @@ impl Component for MemoryComponent {
         let domain = CanonicCoset::new(self.log_n_rows);
         TreeVec::new(vec![
             fixed_mask_points(&vec![vec![0_usize]; self.n_columns()], point),
-            vec![vec![point, point - domain.step().into_ef()]; SECURE_EXTENSION_DEGREE],
+            vec![
+                vec![point, point - domain.step().into_ef()];
+                SECURE_EXTENSION_DEGREE * (1 + N_M31_IN_FELT252)
+            ],
         ])
     }
 
@@ -201,48 +241,50 @@ impl Component for MemoryComponent {
         interaction_elements: &InteractionElements,
         lookup_values: &LookupValues,
     ) {
-        // First lookup point boundary constraint.
+        // TODO(AlonH): Add constraints to the range check interaction columns.
         let constraint_zero_domain = CanonicCoset::new(self.log_n_rows).coset;
-        let (alpha, z) = (
+        let (alpha, z, rc_z) = (
             interaction_elements[MEMORY_ALPHA],
             interaction_elements[MEMORY_Z],
+            interaction_elements[RC_Z],
         );
+
         let value =
             SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][0]));
         let address_and_value: [SecureField; N_M31_IN_FELT252 + 1] =
             std::array::from_fn(|i| mask[BASE_TRACE][i][0]);
-        let numerator = value * shifted_secure_combination(&address_and_value, alpha, z)
-            - mask[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][0];
-        let denom = point_vanishing(constraint_zero_domain.at(0), point);
-        evaluation_accumulator.accumulate(numerator / denom);
-
-        // Last lookup point boundary constraint.
-        let lookup_value = SecureField::from_m31(
+        let _lookup_value = SecureField::from_m31(
             lookup_values[MEMORY_LOOKUP_VALUE_0],
             lookup_values[MEMORY_LOOKUP_VALUE_1],
             lookup_values[MEMORY_LOOKUP_VALUE_2],
             lookup_values[MEMORY_LOOKUP_VALUE_3],
         );
-        let numerator = value - lookup_value;
-        let denom = point_vanishing(constraint_zero_domain.at(1), point);
+
+        // First interaction column constraint.
+        let numerator = value * shifted_secure_combination(&address_and_value, alpha, z)
+            - mask[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][0];
+        let denom = coset_vanishing(constraint_zero_domain, point);
         evaluation_accumulator.accumulate(numerator / denom);
 
-        // Lookup step constraint.
-        let prev_value =
-            SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][1]));
-        let numerator = (value - prev_value)
-            * shifted_secure_combination(&address_and_value, alpha, z)
-            - mask[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][0];
-        let denom = coset_vanishing(constraint_zero_domain, point)
-            / point_excluder(constraint_zero_domain.at(0), point);
-        evaluation_accumulator.accumulate(numerator / denom);
+        // Middle interaction columns constraints.
+        let mut prev_row_value = value;
+        #[allow(clippy::needless_range_loop)]
+        for i in 1..N_M31_IN_FELT252 {
+            let value = SecureField::from_partial_evals(std::array::from_fn(|j| {
+                mask[INTERACTION_TRACE][i * SECURE_EXTENSION_DEGREE + j][0]
+            }));
+            let numerator =
+                (value - prev_row_value) * (rc_z - address_and_value[i]) - BaseField::one();
+            evaluation_accumulator.accumulate(numerator / denom);
+            prev_row_value = value;
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::memory::tests::register_test_memory;
+    use crate::test_utils::register_test_memory;
 
     #[test]
     fn test_memory_trace() {
@@ -251,8 +293,14 @@ mod tests {
         let trace = MemoryTraceGenerator::write_trace(MEMORY_COMPONENT_ID, &mut registry);
         let alpha = SecureField::from_u32_unchecked(1, 2, 3, 117);
         let z = SecureField::from_u32_unchecked(2, 3, 4, 118);
+        let rc_z = SecureField::from_u32_unchecked(3, 4, 5, 119);
         let interaction_elements = InteractionElements::new(
-            [(MEMORY_ALPHA.to_string(), alpha), (MEMORY_Z.to_string(), z)].into(),
+            [
+                (MEMORY_ALPHA.to_string(), alpha),
+                (MEMORY_Z.to_string(), z),
+                (RC_Z.to_string(), rc_z),
+            ]
+            .into(),
         );
         let interaction_trace = registry
             .get_generator::<MemoryTraceGenerator>(MEMORY_COMPONENT_ID)
@@ -267,9 +315,13 @@ mod tests {
                     alpha,
                     z,
                 );
+            #[allow(clippy::needless_range_loop)]
+            for j in 1..(N_M31_IN_FELT252 + 1) {
+                expected_logup_sum += (rc_z - trace[j].values[i]).inverse();
+            }
         }
         let logup_sum =
-            SecureField::from_m31_array(std::array::from_fn(|j| interaction_trace[j][1]));
+            SecureField::from_m31_array(std::array::from_fn(|j| interaction_trace[112 + j][1]));
 
         assert_eq!(logup_sum, expected_logup_sum);
     }
