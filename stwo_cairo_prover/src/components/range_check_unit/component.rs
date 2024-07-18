@@ -202,15 +202,15 @@ mod tests {
             .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
             .write_interaction_trace(&trace.iter().collect(), &interaction_elements);
 
-        let mut trace_sum = SecureField::zero();
+        let mut expected_logup_sum = SecureField::zero();
         for i in 0..8 {
             assert_eq!(trace[0].values[i], BaseField::from_u32_unchecked(i as u32));
-            trace_sum += trace.last().unwrap().values[i]
+            expected_logup_sum += trace.last().unwrap().values[i]
                 / (random_value - BaseField::from_u32_unchecked(i as u32));
         }
         let logup_sum =
             SecureField::from_m31_array(std::array::from_fn(|j| interaction_trace[j][1]));
 
-        assert_eq!(logup_sum, trace_sum);
+        assert_eq!(logup_sum, expected_logup_sum);
     }
 }
