@@ -27,6 +27,8 @@ pub const RC_LOOKUP_VALUE_1: &str = "RC_UNIT_LOOKUP_1";
 pub const RC_LOOKUP_VALUE_2: &str = "RC_UNIT_LOOKUP_2";
 pub const RC_LOOKUP_VALUE_3: &str = "RC_UNIT_LOOKUP_3";
 
+pub const N_RC_COLUMNS: usize = 2;
+
 #[derive(Clone)]
 pub struct RangeCheckUnitComponent {
     pub log_n_rows: u32,
@@ -48,7 +50,7 @@ impl Component for RangeCheckUnitComponent {
 
     fn trace_log_degree_bounds(&self) -> TreeVec<ColumnVec<u32>> {
         TreeVec::new(vec![
-            vec![self.log_n_rows; 2],
+            vec![self.log_n_rows; N_RC_COLUMNS],
             vec![self.log_n_rows; SECURE_EXTENSION_DEGREE],
         ])
     }
@@ -59,7 +61,7 @@ impl Component for RangeCheckUnitComponent {
     ) -> TreeVec<ColumnVec<Vec<CirclePoint<SecureField>>>> {
         let domain = CanonicCoset::new(self.log_n_rows);
         TreeVec::new(vec![
-            fixed_mask_points(&vec![vec![0_usize]; 2], point),
+            fixed_mask_points(&vec![vec![0_usize]; N_RC_COLUMNS], point),
             vec![vec![point, point - domain.step().into_ef()]; SECURE_EXTENSION_DEGREE],
         ])
     }
@@ -134,7 +136,7 @@ impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
             registry.get_generator::<RangeCheckUnitTraceGenerator>(component_id);
         let rc_max_value = rc_unit_trace_generator.max_value;
 
-        let mut trace = vec![vec![BaseField::zero(); rc_max_value]; 2];
+        let mut trace = vec![vec![BaseField::zero(); rc_max_value]; N_RC_COLUMNS];
         for (i, multiplicity) in rc_unit_trace_generator.multiplicities.iter().enumerate() {
             // TODO(AlonH): Either create a constant column for the addresses and remove it from
             // here or add constraints to the column here.
