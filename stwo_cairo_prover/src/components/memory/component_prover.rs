@@ -19,7 +19,8 @@ use stwo_prover::trace_generation::{BASE_TRACE, INTERACTION_TRACE};
 
 use super::component::{
     MemoryComponent, MEMORY_ALPHA, MEMORY_LOOKUP_VALUE_0, MEMORY_LOOKUP_VALUE_1,
-    MEMORY_LOOKUP_VALUE_2, MEMORY_LOOKUP_VALUE_3, MEMORY_Z, MULTIPLICITY_COLUMN, N_M31_IN_FELT252,
+    MEMORY_LOOKUP_VALUE_2, MEMORY_LOOKUP_VALUE_3, MEMORY_Z, MULTIPLICITY_COLUMN_OFFSET,
+    N_M31_IN_FELT252,
 };
 
 impl ComponentProver<CpuBackend> for MemoryComponent {
@@ -84,12 +85,12 @@ impl ComponentProver<CpuBackend> for MemoryComponent {
 
             let first_point_numerator = accum.random_coeff_powers[2]
                 * (value * shifted_secure_combination(&address_and_value, alpha, z)
-                    - trace_evals[BASE_TRACE][MULTIPLICITY_COLUMN][i]);
+                    - trace_evals[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][i]);
 
             let last_point_numerator = accum.random_coeff_powers[1] * (value - lookup_value);
             let step_numerator = accum.random_coeff_powers[0]
                 * ((value - prev_value) * shifted_secure_combination(&address_and_value, alpha, z)
-                    - trace_evals[BASE_TRACE][MULTIPLICITY_COLUMN][i]);
+                    - trace_evals[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][i]);
             accum.accumulate(
                 i,
                 first_point_numerator * first_point_denom_inverse
