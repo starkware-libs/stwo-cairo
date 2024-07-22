@@ -12,6 +12,9 @@ pub const CIRCLE_ORDER: u32 = 2147483648;
 // `CIRCLE_ORDER_BIT_MASK` equals 2^31 - 1
 pub const CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 
+// `U32_BIT_MASK` equals 2^32 - 1
+pub const U32_BIT_MASK: u64 = 0xffffffff;
+
 #[derive(Drop, Copy, Debug, PartialEq, Eq)]
 pub struct CirclePointM31 {
     pub x: M31,
@@ -56,16 +59,18 @@ pub struct Coset {
 
 #[generate_trait]
 pub impl CosetImpl of CosetTrait {
-    fn index_at(self: @Coset, index: usize) -> usize {
-        let index_times_step = core::integer::u32_wide_mul(*self.step_size, index);
-        let result = ((*self.initial_index).into() + index_times_step);
-        (result & CIRCLE_ORDER_BIT_MASK.into()).try_into().unwrap()
-    }
-
     fn new(initial_index: usize, log_size: u32) -> Coset {
         assert!(initial_index < CIRCLE_ORDER);
         let step_size = pow(2, CIRCLE_LOG_ORDER - log_size);
         Coset { initial_index, step_size, log_size }
+    }
+
+    fn index_at(self: @Coset, index: usize) -> usize {
+        let index_times_step = (core::integer::u32_wide_mul(*self.step_size, index) & U32_BIT_MASK)
+            .try_into()
+            .unwrap();
+        let result = core::integer::u32_wrapping_add(*self.initial_index, index_times_step);
+        result & CIRCLE_ORDER_BIT_MASK
     }
 
     fn double(self: @Coset) -> Coset {
