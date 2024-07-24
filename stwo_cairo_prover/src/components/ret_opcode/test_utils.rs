@@ -5,6 +5,7 @@ use stwo_prover::core::air::{Air, AirProver, Component, ComponentProver};
 use stwo_prover::core::backend::CpuBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
 use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::prover::VerificationError;
@@ -13,10 +14,14 @@ use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
 use stwo_prover::trace_generation::{AirTraceGenerator, AirTraceVerifier, ComponentTraceGenerator};
 
 use crate::components::memory::component::{
-    MemoryComponent, MemoryTraceGenerator, MEMORY_ALPHA, MEMORY_COMPONENT_ID, MEMORY_Z,
-    N_M31_IN_FELT252, N_MEMORY_COLUMNS,
+    MemoryComponent, MemoryTraceGenerator, MEMORY_ALPHA, MEMORY_COMPONENT_ID,
+    MEMORY_LOOKUP_VALUE_0, MEMORY_LOOKUP_VALUE_1, MEMORY_LOOKUP_VALUE_2, MEMORY_LOOKUP_VALUE_3,
+    MEMORY_Z, N_M31_IN_FELT252, N_MEMORY_COLUMNS,
 };
-use crate::components::ret_opcode::component::{RetOpcode, RET_COMPONENT_ID, RET_N_TRACE_CELLS};
+use crate::components::ret_opcode::component::{
+    RetOpcode, RET_COMPONENT_ID, RET_LOOKUP_VALUE_0, RET_LOOKUP_VALUE_1, RET_LOOKUP_VALUE_2,
+    RET_LOOKUP_VALUE_3, RET_N_TRACE_CELLS,
+};
 use crate::components::ret_opcode::trace::RetOpcodeCpuTraceGenerator;
 
 pub fn register_test_ret_memory(registry: &mut ComponentGenerationRegistry) {
@@ -141,8 +146,26 @@ impl Air for TestAir {
         vec![&self.ret_component, &self.memory_component]
     }
 
-    fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
-        Ok(())
+    fn verify_lookups(&self, lookup_values: &LookupValues) -> Result<(), VerificationError> {
+        let memory_lookup_value = SecureField::from_m31(
+            lookup_values[MEMORY_LOOKUP_VALUE_0],
+            lookup_values[MEMORY_LOOKUP_VALUE_1],
+            lookup_values[MEMORY_LOOKUP_VALUE_2],
+            lookup_values[MEMORY_LOOKUP_VALUE_3],
+        );
+        let ret_lookup_value = SecureField::from_m31(
+            lookup_values[RET_LOOKUP_VALUE_0],
+            lookup_values[RET_LOOKUP_VALUE_1],
+            lookup_values[RET_LOOKUP_VALUE_2],
+            lookup_values[RET_LOOKUP_VALUE_3],
+        );
+
+        match memory_lookup_value.eq(&ret_lookup_value) {
+            true => Ok(()),
+            false => Err(VerificationError::InvalidLookup(
+                "Memory and RET".to_string(),
+            )),
+        }
     }
 }
 

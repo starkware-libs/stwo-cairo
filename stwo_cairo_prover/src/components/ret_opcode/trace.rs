@@ -55,13 +55,13 @@ impl ComponentTraceGenerator<CpuBackend> for RetOpcodeCpuTraceGenerator {
     }
 
     fn component(&self) -> RetOpcode {
-        // TODO(Ohad): Support non-power of 2 inputs.
+        // TODO(Ohad): support non-power of 2 inputs.
         RetOpcode {
             log_n_instances: self
                 .inputs
                 .len()
                 .checked_ilog2()
-                .expect("Input not a power of 2!"),
+                .expect("Input is not a power of 2!"),
         }
     }
 
