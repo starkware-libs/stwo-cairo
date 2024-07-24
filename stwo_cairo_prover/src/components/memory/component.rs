@@ -30,14 +30,14 @@ pub const MEMORY_LOOKUP_VALUE_1: &str = "MEMORY_LOOKUP_1";
 pub const MEMORY_LOOKUP_VALUE_2: &str = "MEMORY_LOOKUP_2";
 pub const MEMORY_LOOKUP_VALUE_3: &str = "MEMORY_LOOKUP_3";
 
-pub const N_M31_IN_FELT252: usize = 21;
-pub const MULTIPLICITY_COLUMN: usize = 22;
+pub const N_M31_IN_FELT252: usize = 28;
+pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
 // TODO(AlonH): Make memory size configurable.
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 3;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 
 /// Addresses are continuous and start from 0.
-/// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value contain 12 bits).
+/// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
 pub struct MemoryTraceGenerator {
     // TODO(AlonH): Consider to change values to be Felt252.
     pub values: Vec<[BaseField; N_M31_IN_FELT252]>,
@@ -104,7 +104,7 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
             for (j, value) in values.iter().enumerate() {
                 trace[j + 1][i] = BaseField::from_u32_unchecked(value.0);
             }
-            trace[MULTIPLICITY_COLUMN][i] = BaseField::from_u32_unchecked(*multiplicity);
+            trace[MULTIPLICITY_COLUMN_OFFSET][i] = BaseField::from_u32_unchecked(*multiplicity);
         }
 
         let domain = CanonicCoset::new(LOG_MEMORY_ADDRESS_BOUND).circle_domain();
@@ -142,7 +142,7 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
                 log_size,
             );
             let interaction_value =
-                last + (denom_inverses[index] * trace[MULTIPLICITY_COLUMN].values[index]);
+                last + (denom_inverses[index] * trace[MULTIPLICITY_COLUMN_OFFSET].values[index]);
             logup_values[index] = interaction_value;
             last = interaction_value;
         }
@@ -207,7 +207,7 @@ impl Component for MemoryComponent {
         let address_and_value: [SecureField; N_M31_IN_FELT252 + 1] =
             std::array::from_fn(|i| mask[BASE_TRACE][i][0]);
         let numerator = value * shifted_secure_combination(&address_and_value, alpha, z)
-            - mask[BASE_TRACE][MULTIPLICITY_COLUMN][0];
+            - mask[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][0];
         let denom = point_vanishing(constraint_zero_domain.at(0), point);
         evaluation_accumulator.accumulate(numerator / denom);
 
@@ -227,7 +227,7 @@ impl Component for MemoryComponent {
             SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][1]));
         let numerator = (value - prev_value)
             * shifted_secure_combination(&address_and_value, alpha, z)
-            - mask[BASE_TRACE][22][0];
+            - mask[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][0];
         let denom = coset_vanishing(constraint_zero_domain, point)
             / point_excluder(constraint_zero_domain.at(0), point);
         evaluation_accumulator.accumulate(numerator / denom);
