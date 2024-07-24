@@ -1,5 +1,5 @@
 use itertools::{zip_eq, Itertools};
-use num_traits::Zero;
+use num_traits::{One, Zero};
 use stwo_prover::core::air::accumulation::PointEvaluationAccumulator;
 use stwo_prover::core::air::mask::fixed_mask_points;
 use stwo_prover::core::air::Component;
@@ -207,7 +207,7 @@ impl ComponentTraceGenerator<CpuBackend> for MemoryTraceGenerator {
 
 impl Component for MemoryComponent {
     fn n_constraints(&self) -> usize {
-        3
+        4
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -226,12 +226,19 @@ impl Component for MemoryComponent {
         point: CirclePoint<SecureField>,
     ) -> TreeVec<ColumnVec<Vec<CirclePoint<SecureField>>>> {
         let domain = CanonicCoset::new(self.log_n_rows);
+        let mut interaction_points =
+            vec![vec![point, point - domain.step().into_ef()]; SECURE_EXTENSION_DEGREE];
+        interaction_points.append(&mut vec![
+            vec![point];
+            SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 - 1)
+        ]);
+        interaction_points.append(&mut vec![
+            vec![point, point - domain.step().into_ef()];
+            SECURE_EXTENSION_DEGREE
+        ]);
         TreeVec::new(vec![
             fixed_mask_points(&vec![vec![0_usize]; self.n_columns()], point),
-            vec![
-                vec![point, point - domain.step().into_ef()];
-                SECURE_EXTENSION_DEGREE * (1 + N_M31_IN_FELT252)
-            ],
+            interaction_points,
         ])
     }
 
@@ -246,9 +253,10 @@ impl Component for MemoryComponent {
         // TODO(AlonH): Add constraints to the range check interaction columns.
         // First lookup point boundary constraint.
         let constraint_zero_domain = CanonicCoset::new(self.log_n_rows).coset;
-        let (alpha, z) = (
+        let (alpha, z, rc_z) = (
             interaction_elements[MEMORY_ALPHA],
             interaction_elements[MEMORY_Z],
+            interaction_elements[RC_Z],
         );
         let value =
             SecureField::from_partial_evals(std::array::from_fn(|i| mask[INTERACTION_TRACE][i][0]));
@@ -281,6 +289,14 @@ impl Component for MemoryComponent {
             - mask[BASE_TRACE][MULTIPLICITY_COLUMN_OFFSET][0];
         let denom = coset_vanishing(constraint_zero_domain, point)
             / point_excluder(constraint_zero_domain.at(0), point);
+        evaluation_accumulator.accumulate(numerator / denom);
+
+        // First range check lookup column constraint.
+        let rc_value = SecureField::from_partial_evals(std::array::from_fn(|i| {
+            mask[INTERACTION_TRACE][i + SECURE_EXTENSION_DEGREE][0]
+        }));
+        let numerator = rc_value * (rc_z - address_and_value[1]) - BaseField::one();
+        let denom = coset_vanishing(constraint_zero_domain, point);
         evaluation_accumulator.accumulate(numerator / denom);
     }
 }
