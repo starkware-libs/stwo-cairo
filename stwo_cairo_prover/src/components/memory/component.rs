@@ -224,7 +224,10 @@ impl Component for MemoryComponent {
             lookup_values[MEMORY_LOOKUP_VALUE_3],
         );
         let numerator = value - lookup_value;
-        let denom = point_vanishing(constraint_zero_domain.at(1), point);
+        let denom = point_vanishing(
+            constraint_zero_domain.at(constraint_zero_domain.size() - 1),
+            point,
+        );
         evaluation_accumulator.accumulate(numerator / denom);
 
         // Lookup step constraint.

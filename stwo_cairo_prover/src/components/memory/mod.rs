@@ -2,7 +2,7 @@ pub mod component;
 pub mod component_prover;
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use std::collections::BTreeMap;
 
     use component::{
