@@ -8,6 +8,7 @@ pub mod trace;
 pub mod tests {
     use itertools::Itertools;
     use num_traits::{One, Zero};
+    use stwo_prover::core::backend::CpuBackend;
     use stwo_prover::core::channel::{Blake2sChannel, Channel};
     use stwo_prover::core::fields::m31::{BaseField, M31};
     use stwo_prover::core::fields::qm31::SecureField;
@@ -16,9 +17,17 @@ pub mod tests {
     use stwo_prover::core::utils::shifted_secure_combination;
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
     use stwo_prover::core::vcs::hasher::Hasher;
-    use stwo_prover::trace_generation::{AirTraceGenerator, AirTraceVerifier};
+    use stwo_prover::trace_generation::{
+        commit_and_prove, commit_and_verify, AirTraceGenerator, AirTraceVerifier,
+        ComponentTraceGenerator,
+    };
 
-    use crate::components::memory::component::{MEMORY_ALPHA, MEMORY_Z, N_M31_IN_FELT252};
+    use super::component::RET_COMPONENT_ID;
+    use super::test_utils::TestAir;
+    use super::trace::RetOpcodeCpuTraceGenerator;
+    use crate::components::memory::component::{
+        MemoryTraceGenerator, MEMORY_ALPHA, MEMORY_COMPONENT_ID, MEMORY_Z, N_M31_IN_FELT252,
+    };
     use crate::components::ret_opcode::test_utils::TestRetAirGenerator;
 
     #[test]
@@ -49,5 +58,28 @@ pub mod tests {
             SecureField::from_m31_array(std::array::from_fn(|j| interaction_trace[j][1]));
 
         assert_eq!(logup_sum, expected_logup_sum);
+    }
+
+    #[test]
+    fn test_ret_proof() {
+        let mut air_generator = TestRetAirGenerator::new();
+        let trace = air_generator.write_trace();
+        let prover_channel =
+            &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
+        let proof = commit_and_prove::<CpuBackend>(&air_generator, prover_channel, trace).unwrap();
+
+        let verifier_channel =
+            &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
+        let air = TestAir {
+            memory_component: air_generator
+                .registry
+                .get_generator::<MemoryTraceGenerator>(MEMORY_COMPONENT_ID)
+                .component(),
+            ret_component: air_generator
+                .registry
+                .get_generator::<RetOpcodeCpuTraceGenerator>(RET_COMPONENT_ID)
+                .component(),
+        };
+        commit_and_verify(proof, &air, verifier_channel).unwrap();
     }
 }
