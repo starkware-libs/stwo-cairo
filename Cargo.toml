@@ -1,3 +1,0 @@
-[workspace]
-members = ["stwo_cairo_prover"]
-resolver = "2"

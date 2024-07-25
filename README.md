@@ -1,1 +1,1 @@
-# stwo-verifier
+# stwo-cairo-air
