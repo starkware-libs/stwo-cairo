@@ -80,3 +80,34 @@ pub fn pack4(cur: felt252, values: [BaseField; 4]) -> felt252 {
     (((cur * M31_SHIFT + x0.into()) * M31_SHIFT + x1.into()) * M31_SHIFT + x2.into()) * M31_SHIFT
         + x3.into()
 }
+
+pub fn pow(base: u32, mut exponent: u32) -> u32 {
+    let mut result = 1;
+    let mut base_power = base;
+    loop {
+        if exponent & 1 == 1 {
+            result *= base_power;
+        }
+        exponent = exponent / 2;
+        if exponent == 0 {
+            break;
+        }
+        base_power = base_power * base_power;
+    };
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::pow;
+
+    #[test]
+    fn test_pow() {
+        assert_eq!(25, pow(5, 2));
+        assert_eq!(16, pow(2, 4));
+        assert_eq!(1024, pow(2, 10));
+        assert_eq!(4096, pow(2, 12));
+        assert_eq!(1048576, pow(2, 20));
+    }
+}
+
