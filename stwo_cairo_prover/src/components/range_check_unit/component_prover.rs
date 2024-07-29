@@ -39,8 +39,10 @@ impl ComponentProver<CpuBackend> for RangeCheckUnitComponent {
         // TODO(AlonH): Get all denominators in one loop and don't perform unnecessary inversions.
         let first_point_denom_inverses =
             point_vanish_denominator_inverses(trace_eval_domain, zero_domain.at(0));
-        let last_point_denom_inverses =
-            point_vanish_denominator_inverses(trace_eval_domain, zero_domain.at(1));
+        let last_point_denom_inverses = point_vanish_denominator_inverses(
+            trace_eval_domain,
+            zero_domain.at(zero_domain.size() - 1),
+        );
         let mut step_denoms = vec![];
         for point in trace_eval_domain.iter() {
             step_denoms.push(
@@ -99,28 +101,28 @@ impl ComponentProver<CpuBackend> for RangeCheckUnitComponent {
             (
                 RC_LOOKUP_VALUE_0.to_string(),
                 trace_poly[0]
-                    .eval_at_point(domain.at(1).into_ef())
+                    .eval_at_point(domain.at(domain.size() - 1).into_ef())
                     .try_into()
                     .unwrap(),
             ),
             (
                 RC_LOOKUP_VALUE_1.to_string(),
                 trace_poly[1]
-                    .eval_at_point(domain.at(1).into_ef())
+                    .eval_at_point(domain.at(domain.size() - 1).into_ef())
                     .try_into()
                     .unwrap(),
             ),
             (
                 RC_LOOKUP_VALUE_2.to_string(),
                 trace_poly[2]
-                    .eval_at_point(domain.at(1).into_ef())
+                    .eval_at_point(domain.at(domain.size() - 1).into_ef())
                     .try_into()
                     .unwrap(),
             ),
             (
                 RC_LOOKUP_VALUE_3.to_string(),
                 trace_poly[3]
-                    .eval_at_point(domain.at(1).into_ef())
+                    .eval_at_point(domain.at(domain.size() - 1).into_ef())
                     .try_into()
                     .unwrap(),
             ),

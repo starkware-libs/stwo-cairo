@@ -13,8 +13,11 @@ use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
 use stwo_prover::trace_generation::{AirTraceGenerator, AirTraceVerifier, ComponentTraceGenerator};
 
 use crate::components::memory::component::{
-    MemoryComponent, MemoryTraceGenerator, MEMORY_ALPHA, MEMORY_COMPONENT_ID, MEMORY_Z,
-    N_M31_IN_FELT252, N_MEMORY_COLUMNS,
+    MemoryComponent, MemoryTraceGenerator, MAX_MEMORY_CELL_VALUE, MEMORY_ALPHA,
+    MEMORY_COMPONENT_ID, MEMORY_Z, N_M31_IN_FELT252, N_MEMORY_COLUMNS,
+};
+use crate::components::range_check_unit::component::{
+    RangeCheckUnitTraceGenerator, RC_COMPONENT_ID, RC_Z,
 };
 use crate::components::ret_opcode::component::{RetOpcode, RET_COMPONENT_ID, RET_N_TRACE_CELLS};
 use crate::components::ret_opcode::trace::RetOpcodeCpuTraceGenerator;
@@ -23,6 +26,10 @@ pub fn register_test_ret_memory(registry: &mut ComponentGenerationRegistry) {
     registry.register(
         MEMORY_COMPONENT_ID,
         MemoryTraceGenerator::new("".to_string()),
+    );
+    registry.register(
+        RC_COMPONENT_ID,
+        RangeCheckUnitTraceGenerator::new(MAX_MEMORY_CELL_VALUE),
     );
     let mut value = [M31::from_u32_unchecked(0); N_M31_IN_FELT252];
     value[0] = M31::from_u32_unchecked(1);
@@ -67,10 +74,11 @@ impl TestRetAirGenerator {
 
 impl AirTraceVerifier for TestRetAirGenerator {
     fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
-        let elements = channel.draw_felts(2);
+        let elements = channel.draw_felts(3);
         InteractionElements::new(BTreeMap::from_iter(vec![
             (MEMORY_ALPHA.to_string(), elements[0]),
             (MEMORY_Z.to_string(), elements[1]),
+            (RC_Z.to_string(), elements[2]),
         ]))
     }
 }
@@ -154,10 +162,11 @@ impl AirProver<CpuBackend> for TestAir {
 
 impl AirTraceVerifier for TestAir {
     fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
-        let elements = channel.draw_felts(2);
+        let elements = channel.draw_felts(3);
         InteractionElements::new(BTreeMap::from_iter(vec![
             (MEMORY_ALPHA.to_string(), elements[0]),
             (MEMORY_Z.to_string(), elements[1]),
+            (RC_Z.to_string(), elements[2]),
         ]))
     }
 }

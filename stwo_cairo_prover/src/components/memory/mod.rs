@@ -26,30 +26,8 @@ mod tests {
     };
 
     use super::*;
-
-    pub fn register_test_memory(registry: &mut ComponentGenerationRegistry) {
-        registry.register(
-            MEMORY_COMPONENT_ID,
-            MemoryTraceGenerator::new("".to_string()),
-        );
-        vec![
-            vec![BaseField::from_u32_unchecked(0); 3],
-            vec![BaseField::from_u32_unchecked(1); 1],
-            vec![BaseField::from_u32_unchecked(2); 2],
-            vec![BaseField::from_u32_unchecked(3); 5],
-            vec![BaseField::from_u32_unchecked(4); 10],
-            vec![BaseField::from_u32_unchecked(5); 1],
-            vec![BaseField::from_u32_unchecked(6); 0],
-            vec![BaseField::from_u32_unchecked(7); 1],
-        ]
-        .into_iter()
-        .flatten()
-        .for_each(|input| {
-            registry
-                .get_generator_mut::<MemoryTraceGenerator>(MEMORY_COMPONENT_ID)
-                .add_inputs(&input);
-        });
-    }
+    use crate::components::range_check_unit::component::RC_Z;
+    use crate::test_utils::register_test_memory;
 
     struct TestAirGenerator {
         pub registry: ComponentGenerationRegistry,
@@ -65,10 +43,11 @@ mod tests {
 
     impl AirTraceVerifier for TestAirGenerator {
         fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
-            let elements = channel.draw_felts(2);
+            let elements = channel.draw_felts(3);
             InteractionElements::new(BTreeMap::from_iter(vec![
                 (MEMORY_ALPHA.to_string(), elements[0]),
                 (MEMORY_Z.to_string(), elements[1]),
+                (RC_Z.to_string(), elements[2]),
             ]))
         }
     }
@@ -133,10 +112,11 @@ mod tests {
 
     impl AirTraceVerifier for TestAir {
         fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
-            let elements = channel.draw_felts(2);
+            let elements = channel.draw_felts(3);
             InteractionElements::new(BTreeMap::from_iter(vec![
                 (MEMORY_ALPHA.to_string(), elements[0]),
                 (MEMORY_Z.to_string(), elements[1]),
+                (RC_Z.to_string(), elements[2]),
             ]))
         }
     }

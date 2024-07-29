@@ -7,4 +7,4 @@ edition = "2021"
 itertools = "0.12.0"
 num-traits = "0.2.17"
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "7a0bddee" }
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "7614d354" }
