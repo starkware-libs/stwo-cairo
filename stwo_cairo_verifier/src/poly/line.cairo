@@ -1,16 +1,8 @@
 use stwo_cairo_verifier::fields::SecureField;
 use stwo_cairo_verifier::fields::m31::m31;
 
-/// A univariate polynomial represented by its coefficients in the line part of the FFT-basis {bᵢ}
-/// in bit reversed order. See Definition 4 of the Circle STARKs paper
-/// https://eprint.iacr.org/2024/278. The line part of the FFT-basis is formed by the elements bᵢ
-/// with i even.
-///
-/// Example: The line part of the FFT-basis of order 4 in natural order is {b₀, b₂, b₄, b₆},
-/// where b₀ = 1, b₂ = x, b₄ = 2x² − 1, and b₆ = x(2x² − 1). The same basis but in bit
-/// reversed order is {b₀, b₄, b₂, b₆}.
-/// Then, the polynomial p represented by coeffs = [a₀, a₁, a₂, a₃] and log_size = 2 is
-/// p = a₀ * b₀ + a₁ * b₄ + a₂ * b₂ + a₃ * b₆.
+/// A univariate polynomial represented by its coefficients in the line part of the FFT-basis
+/// in bit reversed order.
 #[derive(Drop, Clone)]
 pub struct LinePoly {
     pub coeffs: Array<SecureField>,
