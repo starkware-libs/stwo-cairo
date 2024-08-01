@@ -8,3 +8,6 @@ itertools = "0.12.0"
 num-traits = "0.2.17"
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "006b3142" }
+
+[dev-dependencies]
+rand = "0.8.5"
