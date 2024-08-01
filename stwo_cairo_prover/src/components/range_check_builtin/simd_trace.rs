@@ -85,24 +85,20 @@ fn split_u128(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
     let mut curr_x = 0;
     let full_mask: u32x16 = u32x16::splat((1 << N_BITS_PER_FELT) - 1);
     let mut res = [PackedM31::zero(); N_VALUES_FELTS];
-    for e in res.iter_mut().take(N_VALUES_FELTS) {
+    for e in res.iter_mut() {
         // Check if the element bits overlap two 32-bit values.
-        match curr_bit + N_BITS_PER_FELT <= 32 {
-            true => {
-                let val = (x.get(curr_x).unwrap() >> curr_bit as u32) & full_mask;
-                *e = unsafe { PackedM31::from_simd_unchecked(val) };
-            }
-            false => {
-                let val_l = x.get(curr_x).unwrap() >> curr_bit as u32;
-                let mask_h = u32x16::splat(1 << (N_BITS_PER_FELT + curr_bit - 32));
-                // In the case of the last element, we don't have high bits.
-                let val_h = x.get(curr_x + 1).unwrap_or(&Simd::splat(0)) & mask_h;
-                *e = unsafe {
-                    PackedM31::from_simd_unchecked(val_h << (32 - curr_bit as u32) | val_l)
-                };
-                curr_x += 1;
-            }
+        if curr_bit + N_BITS_PER_FELT <= 32 {
+            let val = (x[curr_x] >> curr_bit as u32) & full_mask;
+            *e = unsafe { PackedM31::from_simd_unchecked(val) };
+        } else {
+            let val_l = x[curr_x] >> curr_bit as u32;
+            let mask_h = u32x16::splat((1 << (N_BITS_PER_FELT + curr_bit - 32)) - 1);
+            // In the case of the last element, we don't have high bits.
+            let val_h = x.get(curr_x + 1).unwrap_or(&Simd::splat(0)) & mask_h;
+            *e = unsafe { PackedM31::from_simd_unchecked(val_h << (32 - curr_bit as u32) | val_l) };
+            curr_x += 1;
         }
+
         curr_bit = (curr_bit + N_BITS_PER_FELT) % 32;
     }
     res
@@ -119,15 +115,15 @@ mod tests {
     fn test_generate_trace() {
         use super::*;
 
+        let mut rng = rand::thread_rng();
         let log_size = 8;
         let address_initial_offset = 1000;
-        let mut rng = rand::thread_rng();
-        let inputs = (0..32)
+        let inputs = (0..1 << (log_size - LOG_N_LANES))
             .map(|i| RangeCheckInput {
                 address: PackedM31::from_array(array::from_fn(|j| {
                     M31::from_u32_unchecked(i * N_LANES as u32 + j as u32 + address_initial_offset)
                 })),
-                values: array::from_fn(|_| Simd::splat(rng.gen())),
+                values: array::from_fn(|_| Simd::from_array(rng.gen())),
             })
             .collect_vec();
 
@@ -139,6 +135,29 @@ mod tests {
             trace[0].values.clone().into_cpu_vec(),
             (0..1 << log_size).map(M31::from).collect_vec()
         );
+
+        // Assert that the trace values are correct.
+        #[allow(clippy::needless_range_loop)]
+        for row_offset in 0..1 << (log_size - LOG_N_LANES) {
+            let input = inputs[row_offset].values;
+
+            let mut inputs_u128 = [0_u128; 16];
+            for (index, simd) in input.iter().enumerate() {
+                for (i, val) in simd.to_array().into_iter().enumerate() {
+                    let val_u128 = val as u128;
+                    inputs_u128[i] += val_u128 << (32 * index);
+                }
+            }
+
+            let mask = ((1 << N_BITS_PER_FELT) - 1) as u128;
+            for col in trace.iter().skip(1) {
+                for j in 0..N_LANES {
+                    let val = col.values.at((row_offset << LOG_N_LANES) + j);
+                    assert_eq!(val.0, (inputs_u128[j] & mask) as u32);
+                    inputs_u128[j] >>= N_BITS_PER_FELT;
+                }
+            }
+        }
 
         // Assert that the high values are in range [0, 4).
         let high_values_col = &lookup_data.memory_lookups[N_ADDRESS_FELTS + N_VALUES_FELTS - 1];
