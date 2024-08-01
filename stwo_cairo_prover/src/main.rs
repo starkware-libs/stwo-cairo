@@ -1,4 +1,4 @@
-#![feature(portable_simd)]
+#![feature(array_methods, portable_simd)]
 
 pub mod components;
 
