@@ -8,7 +8,7 @@ use stwo_prover::core::circle::CirclePoint;
 use stwo_prover::core::constraints::{coset_vanishing, point_excluder, point_vanishing};
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::{SecureColumn, SECURE_EXTENSION_DEGREE};
+use stwo_prover::core::fields::secure_column::{SecureColumnByCoords, SECURE_EXTENSION_DEGREE};
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
@@ -170,7 +170,7 @@ impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
             logup_values[index] = interaction_value;
             last = interaction_value;
         }
-        let secure_column: SecureColumn<CpuBackend> = logup_values.into_iter().collect();
+        let secure_column: SecureColumnByCoords<CpuBackend> = logup_values.into_iter().collect();
         secure_column
             .columns
             .into_iter()
