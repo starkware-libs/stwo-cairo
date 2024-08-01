@@ -47,7 +47,7 @@ impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
         self.logup.push_lookup(
             &mut self.eval,
             E::EF::one(),
-            &[values[N_VALUES_FELTS]],
+            &[values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1]],
             *self.range2_lookup_elements,
         );
 
