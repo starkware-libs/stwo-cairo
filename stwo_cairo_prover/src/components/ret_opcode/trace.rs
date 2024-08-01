@@ -5,7 +5,7 @@ use stwo_prover::core::backend::cpu::CpuCircleEvaluation;
 use stwo_prover::core::backend::CpuBackend;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::SecureColumn;
+use stwo_prover::core::fields::secure_column::SecureColumnByCoords;
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -101,7 +101,7 @@ impl ComponentTraceGenerator<CpuBackend> for RetOpcodeCpuTraceGenerator {
             logup_values[index] = prefix_sum;
         }
 
-        let secure_column: SecureColumn<CpuBackend> = logup_values.into_iter().collect();
+        let secure_column: SecureColumnByCoords<CpuBackend> = logup_values.into_iter().collect();
         secure_column
             .columns
             .into_iter()
