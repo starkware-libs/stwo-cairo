@@ -63,6 +63,10 @@ mod tests {
             let element = channel.draw_felts(1)[0];
             InteractionElements::new(BTreeMap::from_iter(vec![(RC_Z.to_string(), element)]))
         }
+
+        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
+            Ok(())
+        }
     }
 
     impl AirTraceGenerator<CpuBackend> for TestAirGenerator {
@@ -111,10 +115,6 @@ mod tests {
         fn components(&self) -> Vec<&dyn Component> {
             vec![&self.component]
         }
-
-        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
-            Ok(())
-        }
     }
 
     impl AirProver<CpuBackend> for TestAir {
@@ -127,6 +127,10 @@ mod tests {
         fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
             let element = channel.draw_felts(1)[0];
             InteractionElements::new(BTreeMap::from_iter(vec![(RC_Z.to_string(), element)]))
+        }
+
+        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
+            Ok(())
         }
     }
 

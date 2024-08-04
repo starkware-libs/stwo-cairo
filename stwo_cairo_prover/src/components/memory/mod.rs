@@ -71,6 +71,10 @@ mod tests {
                 (MEMORY_Z.to_string(), elements[1]),
             ]))
         }
+
+        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
+            Ok(())
+        }
     }
 
     impl AirTraceGenerator<CpuBackend> for TestAirGenerator {
@@ -119,10 +123,6 @@ mod tests {
         fn components(&self) -> Vec<&dyn Component> {
             vec![&self.component]
         }
-
-        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
-            Ok(())
-        }
     }
 
     impl AirProver<CpuBackend> for TestAir {
@@ -138,6 +138,10 @@ mod tests {
                 (MEMORY_ALPHA.to_string(), elements[0]),
                 (MEMORY_Z.to_string(), elements[1]),
             ]))
+        }
+
+        fn verify_lookups(&self, _lookup_values: &LookupValues) -> Result<(), VerificationError> {
+            Ok(())
         }
     }
 
