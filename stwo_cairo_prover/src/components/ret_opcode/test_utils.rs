@@ -9,7 +9,6 @@ use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::prover::VerificationError;
 use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
-use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
 use stwo_prover::trace_generation::{AirTraceGenerator, AirTraceVerifier, ComponentTraceGenerator};
 
 use crate::components::memory::component::{
