@@ -15,7 +15,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
 
 use super::component::{LAST_VALUE_OFFSET, N_VALUES_FELTS};
-use crate::components::memory::{MemoryElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
 use crate::components::range_check_unit::RangeElements;
 
 // Memory addresses and the corresponding values, for the RangeCheck128Builtin segment.
@@ -87,7 +87,7 @@ pub fn generate_trace(
 pub fn gen_interaction_trace(
     log_size: u32,
     lookup_data: RangeCheck128BuiltinLookupData,
-    memory_lookup_elements: &MemoryElements,
+    memory_lookup_elements: &MemoryLookupElements,
     range2_lookup_elements: &RangeElements,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
@@ -157,7 +157,6 @@ mod tests {
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
 
     use super::*;
-    use crate::components::memory::MemoryElements;
     use crate::components::range_check_builtin::component::RangeCheck128BuiltinComponent;
 
     #[test]
@@ -246,7 +245,7 @@ mod tests {
             generate_trace(log_size, M31::from(address_initial_offset), &inputs);
 
         let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-        let memory_lookup_elements = MemoryElements::draw(channel);
+        let memory_lookup_elements = MemoryLookupElements::draw(channel);
         let range2_lookup_elements = RangeElements::draw(channel);
 
         let (interaction_trace, claimed_sum) = gen_interaction_trace(
