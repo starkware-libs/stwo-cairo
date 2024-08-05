@@ -144,9 +144,12 @@ mod tests {
         let trace = air.write_trace();
         let prover_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-        let proof =
-            commit_and_prove::<CpuBackend, Blake2sMerkleHasher, _>(&air, prover_channel, trace)
-                .unwrap();
+        let proof = commit_and_prove::<CpuBackend, Blake2sMerkleHasher, Blake2sChannel>(
+            &air,
+            prover_channel,
+            trace,
+        )
+        .unwrap();
 
         let verifier_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
