@@ -2,7 +2,7 @@ use std::simd::{u32x16, Simd};
 
 use itertools::{chain, Itertools};
 use num_traits::Zero;
-use stwo_prover::constraint_framework::logup::{LogupTraceGenerator, LookupElements};
+use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -14,7 +14,9 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
 
-use super::component::{LAST_VALUE_OFFSET, N_ADDRESS_FELTS, N_BITS_PER_FELT, N_VALUES_FELTS};
+use super::component::{LAST_VALUE_OFFSET, N_VALUES_FELTS};
+use crate::components::memory::{MemoryElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+use crate::components::range_check_unit::RangeElements;
 
 // Memory addresses and the corresponding values, for the RangeCheck128Builtin segment.
 pub struct RangeCheckInput {
@@ -85,8 +87,8 @@ pub fn generate_trace(
 pub fn gen_interaction_trace(
     log_size: u32,
     lookup_data: RangeCheck128BuiltinLookupData,
-    memory_lookup_elements: &LookupElements,
-    range2_lookup_elements: &LookupElements,
+    memory_lookup_elements: &MemoryElements,
+    range2_lookup_elements: &RangeElements,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     SecureField,
@@ -146,14 +148,16 @@ fn split_u128(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
 mod tests {
     use std::array;
 
-    use num_traits::One;
     use rand::Rng;
     use stwo_prover::constraint_framework::constant_columns::gen_is_first;
     use stwo_prover::constraint_framework::FrameworkComponent;
-    use stwo_prover::core::fields::qm31::SecureField;
+    use stwo_prover::core::channel::{Blake2sChannel, Channel};
+    use stwo_prover::core::fields::IntoSlice;
     use stwo_prover::core::pcs::TreeVec;
+    use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
 
     use super::*;
+    use crate::components::memory::MemoryElements;
     use crate::components::range_check_builtin::component::RangeCheck128BuiltinComponent;
 
     #[test]
@@ -241,14 +245,9 @@ mod tests {
         let (trace, lookup_data) =
             generate_trace(log_size, M31::from(address_initial_offset), &inputs);
 
-        let memory_lookup_elements = LookupElements {
-            z: -SecureField::one(),
-            alpha: SecureField::one(),
-        };
-        let range2_lookup_elements = LookupElements {
-            z: -SecureField::one(),
-            alpha: SecureField::one(),
-        };
+        let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
+        let memory_lookup_elements = MemoryElements::draw(channel);
+        let range2_lookup_elements = RangeElements::draw(channel);
 
         let (interaction_trace, claimed_sum) = gen_interaction_trace(
             log_size,
