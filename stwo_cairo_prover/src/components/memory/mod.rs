@@ -1,5 +1,14 @@
+use stwo_prover::constraint_framework::logup::LookupElements;
+
 pub mod component;
 pub mod component_prover;
+
+pub const N_ADDRESS_FELTS: usize = 1;
+pub const N_BITS_PER_FELT: usize = 9;
+pub const FELT_BITS: usize = 252;
+pub const N_VALUE_FELTS: usize = FELT_BITS.div_ceil(N_BITS_PER_FELT);
+
+pub type MemoryElements = LookupElements<{ N_ADDRESS_FELTS + N_VALUE_FELTS }>;
 
 #[cfg(test)]
 mod tests {
@@ -17,7 +26,7 @@ mod tests {
     use stwo_prover::core::poly::BitReversedOrder;
     use stwo_prover::core::prover::VerificationError;
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
-    use stwo_prover::core::vcs::hasher::Hasher;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
     use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
     use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
     use stwo_prover::trace_generation::{
@@ -64,7 +73,7 @@ mod tests {
     }
 
     impl AirTraceVerifier for TestAirGenerator {
-        fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
+        fn interaction_elements(&self, channel: &mut impl Channel) -> InteractionElements {
             let elements = channel.draw_felts(2);
             InteractionElements::new(BTreeMap::from_iter(vec![
                 (MEMORY_ALPHA.to_string(), elements[0]),
@@ -126,13 +135,13 @@ mod tests {
     }
 
     impl AirProver<CpuBackend> for TestAir {
-        fn prover_components(&self) -> Vec<&dyn ComponentProver<CpuBackend>> {
+        fn component_provers(&self) -> Vec<&dyn ComponentProver<CpuBackend>> {
             vec![&self.component]
         }
     }
 
     impl AirTraceVerifier for TestAir {
-        fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
+        fn interaction_elements(&self, channel: &mut impl Channel) -> InteractionElements {
             let elements = channel.draw_felts(2);
             InteractionElements::new(BTreeMap::from_iter(vec![
                 (MEMORY_ALPHA.to_string(), elements[0]),
@@ -151,7 +160,9 @@ mod tests {
         let trace = air.write_trace();
         let prover_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-        let proof = commit_and_prove::<CpuBackend>(&air, prover_channel, trace).unwrap();
+        let proof =
+            commit_and_prove::<CpuBackend, Blake2sMerkleHasher, _>(&air, prover_channel, trace)
+                .unwrap();
 
         let verifier_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));

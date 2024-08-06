@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use itertools::Itertools;
 use stwo_prover::core::air::{Air, AirProver, Component, ComponentProver};
 use stwo_prover::core::backend::CpuBackend;
-use stwo_prover::core::channel::{Blake2sChannel, Channel};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
@@ -66,7 +66,7 @@ impl TestRetAirGenerator {
 }
 
 impl AirTraceVerifier for TestRetAirGenerator {
-    fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
+    fn interaction_elements(&self, channel: &mut impl Channel) -> InteractionElements {
         let elements = channel.draw_felts(2);
         InteractionElements::new(BTreeMap::from_iter(vec![
             (MEMORY_ALPHA.to_string(), elements[0]),
@@ -147,13 +147,13 @@ impl Air for TestAir {
 }
 
 impl AirProver<CpuBackend> for TestAir {
-    fn prover_components(&self) -> Vec<&dyn ComponentProver<CpuBackend>> {
+    fn component_provers(&self) -> Vec<&dyn ComponentProver<CpuBackend>> {
         vec![&self.ret_component, &self.memory_component]
     }
 }
 
 impl AirTraceVerifier for TestAir {
-    fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
+    fn interaction_elements(&self, channel: &mut impl Channel) -> InteractionElements {
         let elements = channel.draw_felts(2);
         InteractionElements::new(BTreeMap::from_iter(vec![
             (MEMORY_ALPHA.to_string(), elements[0]),
