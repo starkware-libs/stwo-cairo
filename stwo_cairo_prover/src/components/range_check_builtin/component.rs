@@ -10,6 +10,7 @@ const RANGE_CHECK_BITS: usize = 128;
 pub const N_ADDRESS_FELTS: usize = 1;
 pub const N_BITS_PER_FELT: usize = 9;
 pub const N_VALUES_FELTS: usize = RANGE_CHECK_BITS.div_ceil(N_BITS_PER_FELT);
+pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
 pub struct RangeCheck128BuiltinEval<'a, E: EvalAtRow> {
     pub eval: E,
@@ -49,7 +50,7 @@ impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
         self.logup.push_lookup(
             &mut self.eval,
             E::EF::one(),
-            &[values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1]],
+            &[values[LAST_VALUE_OFFSET]],
             *self.range2_lookup_elements,
         );
 
