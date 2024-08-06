@@ -1,5 +1,9 @@
+use stwo_prover::constraint_framework::logup::LookupElements;
+
 pub mod component;
 pub mod component_prover;
+
+pub type RangeElements = LookupElements<1>;
 
 #[cfg(test)]
 mod tests {
@@ -15,7 +19,7 @@ mod tests {
     use stwo_prover::core::poly::BitReversedOrder;
     use stwo_prover::core::prover::VerificationError;
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
-    use stwo_prover::core::vcs::hasher::Hasher;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
     use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
     use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
     use stwo_prover::trace_generation::{
@@ -59,7 +63,7 @@ mod tests {
     }
 
     impl AirTraceVerifier for TestAirGenerator {
-        fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
+        fn interaction_elements(&self, channel: &mut impl Channel) -> InteractionElements {
             let element = channel.draw_felts(1)[0];
             InteractionElements::new(BTreeMap::from_iter(vec![(RC_Z.to_string(), element)]))
         }
@@ -118,13 +122,13 @@ mod tests {
     }
 
     impl AirProver<CpuBackend> for TestAir {
-        fn prover_components(&self) -> Vec<&dyn ComponentProver<CpuBackend>> {
+        fn component_provers(&self) -> Vec<&dyn ComponentProver<CpuBackend>> {
             vec![&self.component]
         }
     }
 
     impl AirTraceVerifier for TestAir {
-        fn interaction_elements(&self, channel: &mut Blake2sChannel) -> InteractionElements {
+        fn interaction_elements(&self, channel: &mut impl Channel) -> InteractionElements {
             let element = channel.draw_felts(1)[0];
             InteractionElements::new(BTreeMap::from_iter(vec![(RC_Z.to_string(), element)]))
         }
@@ -140,7 +144,9 @@ mod tests {
         let trace = air.write_trace();
         let prover_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-        let proof = commit_and_prove::<CpuBackend>(&air, prover_channel, trace).unwrap();
+        let proof =
+            commit_and_prove::<CpuBackend, Blake2sMerkleHasher, _>(&air, prover_channel, trace)
+                .unwrap();
 
         let verifier_channel =
             &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));

@@ -15,7 +15,6 @@ pub mod tests {
     use stwo_prover::core::fields::IntoSlice;
     use stwo_prover::core::utils::shifted_secure_combination;
     use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
-    use stwo_prover::core::vcs::hasher::Hasher;
     use stwo_prover::trace_generation::{AirTraceGenerator, AirTraceVerifier};
 
     use crate::components::memory::component::{MEMORY_ALPHA, MEMORY_Z, N_M31_IN_FELT252};
