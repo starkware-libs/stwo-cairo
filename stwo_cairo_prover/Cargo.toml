@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+bytemuck = { version = "1.16.3", features = ["derive"] }
 itertools = "0.12.0"
 num-traits = "0.2.17"
 # TODO(ShaharS): take stwo version from the source repository.

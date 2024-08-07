@@ -65,7 +65,7 @@ pub struct CairoInput {
     // Tables. (rc, xor, ...)
 }
 
-pub struct OpcodeGenContext {
+struct OpcodeGenContext {
     // Table accumulators.
     // Memory.
 }
