@@ -1,13 +1,11 @@
 mod opcode;
-mod ret;
+pub mod ret;
 
 use std::iter::zip;
 
 use itertools::{chain, Itertools};
 use opcode::OpcodeElements;
-use ret::{
-    RetInput, RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim, RetOpcodeProver,
-};
+use ret::{RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim, RetOpcodeProver};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel as _};
@@ -19,6 +17,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 use stwo_prover::core::InteractionElements;
 
 use crate::components::range_check_unit::RangeElements;
+use crate::input::CairoInput;
 
 type Channel = Blake2sChannel;
 type MerkleHasher = Blake2sMerkleHasher;
@@ -54,18 +53,7 @@ impl CairoInteractionClaim {
     }
 }
 
-// Externally provided inputs.
-pub struct CairoInput {
-    // Opcodes.
-    ret: Vec<RetInput>,
-    // Builtins.
-
-    // Memory.
-
-    // Tables. (rc, xor, ...)
-}
-
-struct OpcodeGenContext {
+pub struct OpcodeGenContext {
     // Table accumulators.
     // Memory.
 }
@@ -92,7 +80,7 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof {
     let mut ctx = OpcodeGenContext::new();
 
     // Generate opcode traces.
-    let ret_provers = RetOpcodeProver::new(input.ret)
+    let ret_provers = RetOpcodeProver::new(input.instructions.ret)
         .into_iter()
         .map(|r| r.write_trace(&mut tree_builder, &mut ctx))
         .collect_vec();

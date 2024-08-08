@@ -15,9 +15,11 @@ use crate::air::OpcodeGenContext;
 // Top level prover.
 #[derive(Copy, Clone)]
 pub struct RetInput {
-    pub pc: M31,
-    pub ap: M31,
-    pub fp: M31,
+    pub pc: u32,
+    pub ap: u32,
+    pub fp: u32,
+    pub new_pc: u32,
+    pub new_fp: u32,
 }
 
 pub struct RetOpcodeProver {
