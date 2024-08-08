@@ -4,11 +4,14 @@ use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 
-use crate::components::memory::{MemoryElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+use crate::components::memory::MemoryLookupElements;
 use crate::components::range_check_unit::RangeElements;
 use crate::components::LOOKUP_INTERACTION_PHASE;
 
 const RANGE_CHECK_BITS: usize = 128;
+pub const N_RANGE_CHECK_COLUMNS: usize = 16;
+pub const N_ADDRESS_FELTS: usize = 1;
+pub const N_BITS_PER_FELT: usize = 9;
 pub const N_VALUES_FELTS: usize = RANGE_CHECK_BITS.div_ceil(N_BITS_PER_FELT);
 pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
@@ -16,7 +19,7 @@ pub struct RangeCheck128BuiltinEval<'a, E: EvalAtRow> {
     pub eval: E,
     pub logup: LogupAtRow<2, E>,
     pub initial_memory_address: E::F,
-    pub memory_lookup_elements: &'a MemoryElements,
+    pub memory_lookup_elements: &'a MemoryLookupElements,
     pub range2_lookup_elements: &'a RangeElements,
 }
 const _: () = assert!(
@@ -50,7 +53,7 @@ impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
         self.logup.push_lookup(
             &mut self.eval,
             E::EF::one(),
-            &[values[LAST_VALUE_OFFSET]],
+            &[values[N_VALUES_FELTS]],
             self.range2_lookup_elements,
         );
 
@@ -62,7 +65,7 @@ impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
 pub struct RangeCheck128BuiltinComponent {
     pub log_size: u32,
     pub initial_memory_address: M31,
-    pub memory_lookup_elements: MemoryElements,
+    pub memory_lookup_elements: MemoryLookupElements,
     pub range2_lookup_elements: RangeElements,
     pub claimed_sum: SecureField,
 }
@@ -74,14 +77,13 @@ impl FrameworkComponent for RangeCheck128BuiltinComponent {
     fn max_constraint_log_degree_bound(&self) -> u32 {
         self.log_size + 1
     }
-    fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let [is_first] = eval.next_interaction_mask(2, [0]);
+    fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
         let rc_builtin_eval = RangeCheck128BuiltinEval {
             eval,
             initial_memory_address: E::F::from(self.initial_memory_address),
             memory_lookup_elements: &self.memory_lookup_elements,
             range2_lookup_elements: &self.range2_lookup_elements,
-            logup: LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, is_first),
+            logup: LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size),
         };
         rc_builtin_eval.eval()
     }
