@@ -1,6 +1,6 @@
 use std::cmp::max;
 
-use itertools::{chain, Itertools};
+use itertools::Itertools;
 use num_traits::Zero;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
@@ -52,27 +52,12 @@ impl CairoClaim {
     pub fn mix_into(&self, _channel: &mut impl Channel) {
         self.ret.iter().for_each(|c| c.mix_into(_channel));
     }
+
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        // Interaction 0.
-        // TODO(Ohad): use concat when its merged in stwo.
-        let ret_log_sizes = self
-            .ret
-            .iter()
-            .flat_map(|c| c.log_sizes()[0].clone())
-            .collect_vec();
-        let memory_log_size = self.memory.log_sizes()[0].clone();
-        let interaction_0_log_sizes = chain(memory_log_size, ret_log_sizes).collect();
+        let ret_log_sizes = TreeVec::concat_cols(self.ret.iter().map(|c| c.log_sizes()));
+        let memory_log_size = self.memory.log_sizes();
 
-        // Interaction 1.
-        let ret_log_sizes = self
-            .ret
-            .iter()
-            .flat_map(|c| c.log_sizes()[1].clone())
-            .collect_vec();
-        let memory_log_size = self.memory.log_sizes()[1].clone();
-        let interaction_1_log_sizes = chain(memory_log_size, ret_log_sizes).collect();
-
-        TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
+        TreeVec::concat_cols(vec![ret_log_sizes, memory_log_size].into_iter())
     }
 }
 pub struct CairoInteractionElements {
