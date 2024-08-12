@@ -14,7 +14,7 @@ use super::component::{
     MemoryClaim, MemoryInteractionClaim, LOG_MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_BOUND,
     MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
 };
-use super::MemoryLookupElements;
+use super::{MemoryLookupElements, MemoryValues};
 use crate::prover_types::PackedUInt32;
 
 pub struct MemoryClaimProver {
@@ -33,6 +33,15 @@ impl MemoryClaimProver {
             })
             .collect();
         let multiplicities = vec![PackedUInt32::broadcast(0); MEMORY_ADDRESS_BOUND / N_LANES];
+        Self {
+            values,
+            multiplicities,
+        }
+    }
+
+    pub fn from_info(info: MemoryValues) -> Self {
+        let values = info.values;
+        let multiplicities = vec![PackedUInt32::broadcast(0); values.len()];
         Self {
             values,
             multiplicities,

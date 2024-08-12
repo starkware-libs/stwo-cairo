@@ -16,14 +16,17 @@ use super::packed_felt_252_one;
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
-use crate::input::N_REGISTERS;
 
 const N_MEMORY_CALLS: usize = 3;
 
-pub type RetInput = [PackedM31; N_REGISTERS];
+pub struct PackedRetInput {
+    pub pc: PackedM31,
+    pub ap: PackedM31,
+    pub fp: PackedM31,
+}
 
 pub struct RetOpcodeClaimProver {
-    pub inputs: Vec<RetInput>,
+    pub inputs: Vec<PackedRetInput>,
 }
 impl RetOpcodeClaimProver {
     pub fn write_trace(
@@ -103,7 +106,7 @@ impl RetOpcodeInteractionProver {
 }
 
 fn write_trace_simd(
-    inputs: &[RetInput],
+    inputs: &[PackedRetInput],
     memory_trace_generator: &MemoryClaimProver,
 ) -> (
     Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
@@ -117,7 +120,7 @@ fn write_trace_simd(
     inputs.iter().enumerate().for_each(|(i, input)| {
         write_trace_row(
             &mut trace_values,
-            *input,
+            input,
             i,
             &mut sub_components_inputs,
             memory_trace_generator,
@@ -146,21 +149,16 @@ fn write_trace_simd(
 // TODO(Ohad): redo when air team decides how it should look.
 fn write_trace_row(
     dst: &mut [Col<SimdBackend, M31>],
-    ret_opcode_input: RetInput,
+    ret_opcode_input: &PackedRetInput,
     row_index: usize,
     lookup_data: &mut RetOpcodeInteractionProver,
     memory_trace_generator: &MemoryClaimProver,
 ) {
-    let deduction_tmp_0 = [
-        ret_opcode_input[0],
-        ret_opcode_input[1],
-        ret_opcode_input[2],
-    ];
-    let col0 = deduction_tmp_0[0];
+    let col0 = ret_opcode_input.pc;
     dst[0].data[row_index] = col0;
-    let col1 = deduction_tmp_0[1];
+    let col1 = ret_opcode_input.ap;
     dst[1].data[row_index] = col1;
-    let col2 = deduction_tmp_0[2];
+    let col2 = ret_opcode_input.fp;
     dst[2].data[row_index] = col2;
     lookup_data.memory_inputs[0].push(col0);
     lookup_data.memory_inputs[1].push((col2) - (PackedM31::broadcast(M31::one())));
