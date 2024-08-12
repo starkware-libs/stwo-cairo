@@ -4,12 +4,14 @@ use std::path::Path;
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 
 use super::instructions::Instructions;
-use super::mem::Memory;
+use super::mem::{MemConfig, Memory};
 use super::CairoInput;
 
 pub fn import_from_vm_output(trace_path: &Path, mem_path: &Path) -> CairoInput {
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path).unwrap());
-    let mem = Memory::from_iter(MemEntryIter(&mut mem_file));
+    // TODO(spapini): dynamically understand the memory configuration.
+    let mem_config = MemConfig::default();
+    let mem = Memory::from_iter(mem_config, MemEntryIter(&mut mem_file));
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path).unwrap());
     let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
 
