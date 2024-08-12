@@ -189,7 +189,6 @@ impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
 mod tests {
     use super::*;
     use crate::components::range_check_unit::tests::register_test_rc;
-
     #[test]
     fn test_rc_unit_trace() {
         let mut registry = ComponentGenerationRegistry::default();
