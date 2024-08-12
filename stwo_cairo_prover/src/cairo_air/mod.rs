@@ -52,27 +52,12 @@ impl CairoClaim {
     pub fn mix_into(&self, _channel: &mut impl Channel) {
         self.ret.iter().for_each(|c| c.mix_into(_channel));
     }
+
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        // Interaction 0.
-        // TODO(Ohad): use concat when its merged in stwo.
-        let ret_log_sizes = self
-            .ret
-            .iter()
-            .flat_map(|c| c.log_sizes()[0].clone())
-            .collect_vec();
-        let memory_log_size = self.memory.log_sizes()[0].clone();
-        let interaction_0_log_sizes = chain(memory_log_size, ret_log_sizes).collect();
-
-        // Interaction 1.
-        let ret_log_sizes = self
-            .ret
-            .iter()
-            .flat_map(|c| c.log_sizes()[1].clone())
-            .collect_vec();
-        let memory_log_size = self.memory.log_sizes()[1].clone();
-        let interaction_1_log_sizes = chain(memory_log_size, ret_log_sizes).collect();
-
-        TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
+        TreeVec::concat_cols(chain!(
+            self.ret.iter().map(|c| c.log_sizes()),
+            [self.memory.log_sizes()]
+        ))
     }
 }
 pub struct CairoInteractionElements {
