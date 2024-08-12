@@ -9,6 +9,7 @@ use crate::components::range_check_unit::RangeElements;
 use crate::components::LOOKUP_INTERACTION_PHASE;
 
 const RANGE_CHECK_BITS: usize = 128;
+pub const N_RANGE_CHECK_COLUMNS: usize = 16;
 pub const N_VALUES_FELTS: usize = RANGE_CHECK_BITS.div_ceil(N_BITS_PER_FELT);
 pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
@@ -50,7 +51,7 @@ impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
         self.logup.push_lookup(
             &mut self.eval,
             E::EF::one(),
-            &[values[LAST_VALUE_OFFSET]],
+            &[values[N_VALUES_FELTS]],
             self.range2_lookup_elements,
         );
 
