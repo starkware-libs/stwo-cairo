@@ -69,12 +69,39 @@ mod tests {
     use std::path::PathBuf;
 
     use super::*;
+    use crate::input::instructions::InstructionUsage;
 
     #[test]
     fn test_read_from_files() {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data");
-        let _input =
+        let input =
             import_from_vm_output(d.join("trace_file").as_path(), d.join("mem_file").as_path());
+        assert_eq!(
+            input.instructions.usage(),
+            InstructionUsage {
+                ret: 99,
+                add_ap: 208,
+                jmp_rel_imm: [189, 0],
+                jmp_abs: [0, 0, 0, 0],
+                call_rel_imm: 105,
+                call_abs: [0, 0],
+                jnz_imm: [27, 5, 180, 17, 0, 0, 12, 0],
+                mov_mem: 302,
+                deref: 6671,
+                push_imm: 53,
+                generic: 2132
+            }
+        );
+    }
+
+    #[ignore]
+    #[test]
+    fn test_print_usage() {
+        let input = import_from_vm_output(
+            Path::new(&std::env::var("TRACE_FILE").unwrap()),
+            Path::new(&std::env::var("MEM_FILE").unwrap()),
+        );
+        println!("Usage: {:#?}", input.instructions.usage());
     }
 }
