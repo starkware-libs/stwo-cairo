@@ -48,9 +48,11 @@ pub struct CairoClaim {
     pub memory: MemoryClaim,
     // ...
 }
+
 impl CairoClaim {
-    pub fn mix_into(&self, _channel: &mut impl Channel) {
-        self.ret.iter().for_each(|c| c.mix_into(_channel));
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.memory.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -60,10 +62,12 @@ impl CairoClaim {
         ))
     }
 }
+
 pub struct CairoInteractionElements {
     memory_lookup: MemoryLookupElements,
     // ...
 }
+
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
@@ -86,8 +90,10 @@ impl CairoInteractionClaim {
 
 pub struct CairoComponentGenerator {
     ret: Vec<RetOpcodeComponent>,
-    memory: MemoryComponent, //..
+    memory: MemoryComponent,
+    // ...
 }
+
 impl CairoComponentGenerator {
     pub fn new(
         cairo_claim: &CairoClaim,

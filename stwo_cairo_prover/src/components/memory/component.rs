@@ -77,6 +77,10 @@ impl MemoryClaim {
         let interaction_1_log_size = vec![self.log_address_bound; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![interaction_0_log_size, interaction_1_log_size])
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_nonce(self.log_address_bound as u64);
+    }
 }
 
 #[derive(Clone)]
