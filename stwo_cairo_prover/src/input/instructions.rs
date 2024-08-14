@@ -1,11 +1,11 @@
-use cairo_vm::types::instruction::Opcode;
+use cairo_vm::types::instruction::{ApUpdate, Instruction, Opcode};
 use cairo_vm::vm::decoding::decoder::decode_instruction;
 
 use super::mem::Memory;
 use super::vm_import::TraceEntry;
 
 // TODO(spapini): Move this:
-pub struct RetInput {
+pub struct VmState {
     pub pc: u32,
     pub ap: u32,
     pub fp: u32,
@@ -13,7 +13,8 @@ pub struct RetInput {
 
 #[derive(Default)]
 pub struct Instructions {
-    pub ret: Vec<RetInput>,
+    pub ret: Vec<VmState>,
+    pub add_ap: Vec<VmState>,
     // ...
 }
 impl Instructions {
@@ -23,14 +24,25 @@ impl Instructions {
             let ap = ap as u32;
             let fp = fp as u32;
             let pc = pc as u32;
+            let state = VmState { pc, ap, fp };
             let instruction = mem.get(pc).as_u64();
             let instruction = decode_instruction(instruction).unwrap();
-            match instruction.opcode {
-                Opcode::Ret => {
+            match instruction {
+                Instruction {
+                    opcode: Opcode::Ret,
+                    ..
+                } => {
                     assert_eq!(instruction.off0, -2);
                     assert_eq!(instruction.off1, -1);
                     assert_eq!(instruction.off2, -1);
-                    res.ret.push(RetInput { pc, ap, fp });
+                    res.ret.push(state)
+                }
+                Instruction {
+                    ap_update: ApUpdate::Add,
+                    ..
+                } => {
+                    // TODO: asserts.
+                    res.add_ap.push(state)
                 }
                 _ => {
                     continue;
