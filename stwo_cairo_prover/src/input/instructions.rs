@@ -9,8 +9,6 @@ pub struct RetInput {
     pub pc: u32,
     pub ap: u32,
     pub fp: u32,
-    pub new_pc: u32,
-    pub new_fp: u32,
 }
 
 #[derive(Default)]
@@ -32,15 +30,7 @@ impl Instructions {
                     assert_eq!(instruction.off0, -2);
                     assert_eq!(instruction.off1, -1);
                     assert_eq!(instruction.off2, -1);
-                    let new_fp = mem.get(fp - 1).as_u32();
-                    let new_pc = mem.get(fp - 2).as_u32();
-                    res.ret.push(RetInput {
-                        pc,
-                        ap,
-                        fp,
-                        new_pc,
-                        new_fp,
-                    });
+                    res.ret.push(RetInput { pc, ap, fp });
                 }
                 _ => {
                     continue;
