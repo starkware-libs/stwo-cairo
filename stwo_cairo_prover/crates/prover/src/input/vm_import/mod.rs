@@ -33,7 +33,17 @@ pub fn import_from_vm_output(pub_json: &Path, priv_json: &Path) -> CairoInput {
     let mem = Memory::from_iter(mem_config, MemEntryIter(&mut mem_file));
     let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
 
-    CairoInput { instructions, mem }
+    let public_mem_addresses = pub_data
+        .public_memory
+        .iter()
+        .map(|entry| entry.address as u32)
+        .collect();
+
+    CairoInput {
+        instructions,
+        mem,
+        public_mem_addresses,
+    }
 }
 
 /// A single entry from the trace file.
