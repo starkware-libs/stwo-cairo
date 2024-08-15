@@ -13,8 +13,8 @@ use stwo_cairo_prover::input::CairoInput;
 pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> CairoInput {
     let felt_code = casm
         .into_iter()
-        .flat_map(|i| i.assemble().encode())
-        .map(|i| MaybeRelocatable::Int(i.into()))
+        .flat_map(|instruction| instruction.assemble().encode())
+        .map(|felt| MaybeRelocatable::Int(felt.into()))
         .collect_vec();
 
     let program_len = felt_code.len();
