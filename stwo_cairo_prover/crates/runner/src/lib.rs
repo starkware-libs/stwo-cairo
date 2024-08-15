@@ -6,7 +6,7 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 use stwo_cairo_prover::input::instructions::Instructions;
-use stwo_cairo_prover::input::mem::{MemConfig, Memory};
+use stwo_cairo_prover::input::mem::{MemConfig, MemoryBuilder};
 use stwo_cairo_prover::input::vm_import::{MemEntry, TraceEntry};
 use stwo_cairo_prover::input::CairoInput;
 
@@ -63,7 +63,7 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
     });
 
     let mem_config = MemConfig::default();
-    let mem = Memory::from_iter(mem_config, mem);
+    let mem = MemoryBuilder::from_iter(mem_config, mem);
     let instructions = Instructions::from_iter(trace, &mem);
 
     // TODO(spapini): Get public memory from program and output builtin.

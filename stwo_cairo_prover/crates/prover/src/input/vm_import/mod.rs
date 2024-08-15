@@ -7,8 +7,9 @@ use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use json::{PrivateInput, PublicInput};
 
 use super::instructions::Instructions;
-use super::mem::{MemConfig, Memory};
+use super::mem::MemConfig;
 use super::CairoInput;
+use crate::input::mem::MemoryBuilder;
 
 pub fn import_from_vm_output(pub_json: &Path, priv_json: &Path) -> CairoInput {
     let pub_data: PublicInput =
@@ -30,7 +31,7 @@ pub fn import_from_vm_output(pub_json: &Path, priv_json: &Path) -> CairoInput {
 
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path).unwrap());
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path).unwrap());
-    let mem = Memory::from_iter(mem_config, MemEntryIter(&mut mem_file));
+    let mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
     let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
 
     let public_mem_addresses = pub_data
