@@ -11,4 +11,6 @@ num-traits = "0.2.17"
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "4f062cb" }
 
 [dev-dependencies]
+cairo-lang-casm = "2.7.1"
 rand = "0.8.5"
+stwo_cairo_runner = { path = "../runner" }
