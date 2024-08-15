@@ -1,0 +1,14 @@
+[package]
+name = "stwo_cairo_prover"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bytemuck.workspace = true
+itertools.workspace = true
+num-traits = "0.2.17"
+# TODO(ShaharS): take stwo version from the source repository.
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "4f062cb" }
+
+[dev-dependencies]
+rand = "0.8.5"

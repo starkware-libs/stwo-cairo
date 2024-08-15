@@ -1,0 +1,11 @@
+[package]
+name = "stwo_cairo_runner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bytemuck.workspace = true
+cairo-lang-casm = "2.7.1"
+cairo-vm = "1.0.1"
+itertools.workspace = true
+stwo_cairo_prover = { path = "../prover" }
