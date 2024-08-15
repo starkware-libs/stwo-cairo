@@ -37,6 +37,8 @@ jobs:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v3
+        with:
+          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
