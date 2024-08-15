@@ -65,5 +65,11 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
     let mem_config = MemConfig::default();
     let mem = Memory::from_iter(mem_config, mem);
     let instructions = Instructions::from_iter(trace, &mem);
-    CairoInput { instructions, mem }
+
+    // TODO(spapini): Get public memory from program and output builtin.
+    CairoInput {
+        instructions,
+        mem,
+        public_mem_addresses: vec![],
+    }
 }
