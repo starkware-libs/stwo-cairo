@@ -12,4 +12,5 @@ pub const N_REGISTERS: usize = 3;
 pub struct CairoInput {
     pub instructions: Instructions,
     pub mem: Memory,
+    pub public_mem_addresses: Vec<u32>,
 }
