@@ -8,8 +8,9 @@ use json::{PrivateInput, PublicInput};
 use thiserror::Error;
 
 use super::instructions::Instructions;
-use super::mem::{MemConfig, Memory};
+use super::mem::MemConfig;
 use super::CairoInput;
+use crate::input::mem::MemoryBuilder;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -42,7 +43,7 @@ pub fn import_from_vm_output(
 
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
-    let mem = Memory::from_iter(mem_config, MemEntryIter(&mut mem_file));
+    let mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
     let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
 
     let public_mem_addresses = pub_data
