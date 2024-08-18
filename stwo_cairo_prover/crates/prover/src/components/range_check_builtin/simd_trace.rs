@@ -1,4 +1,5 @@
-use std::simd::{u32x16, Simd};
+use std::ops::{BitAnd, BitOrAssign, Shl, ShrAssign};
+use std::simd::u32x16;
 
 use itertools::{chain, Itertools};
 use num_traits::Zero;
@@ -64,7 +65,7 @@ pub fn generate_trace(
         let row_input = inputs.get(vec_row).unwrap();
         // TODO: remove address from the trace.
         let address = row_input.address - PackedM31::broadcast(address_initial_offset);
-        let split_values = split_u128(row_input.values);
+        let split_values = split_u128_simd(row_input.values);
         trace[0].data[vec_row] = address;
         for (i, v) in split_values.iter().enumerate() {
             trace[i + 1].data[vec_row] = *v;
@@ -111,18 +112,31 @@ pub fn gen_interaction_trace(
     logup_gen.finalize()
 }
 
-/// Split a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
-fn split<const N: usize, const M: usize>(x: [u32x16; N]) -> [PackedM31; M] {
-    const MASK: Simd<u32, N_LANES> = u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]);
-
-    let mut res = [Simd::splat(0); M];
+/// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
+///
+/// Parameters:
+/// - `N`: the number of 32-bit words in the input.
+/// - `M`: the number of felts in the output.
+/// - `TU32`: the type of the input and output words.
+/// - `x`: the input dense representation.
+/// - `mask`: (1 << N_BITS_PER_FELT) - 1.
+fn split<const N: usize, const M: usize, TU32>(x: [TU32; N], mask: TU32) -> [TU32; M]
+where
+    TU32: BitAnd<Output = TU32>
+        + BitOrAssign
+        + Copy
+        + ShrAssign<u32>
+        + Shl<u32, Output = TU32>
+        + Default,
+{
+    let mut res = [TU32::default(); M];
     let mut n_bits_in_word = 32;
     let mut word_i = 0;
     let mut word = x[word_i];
     for e in res.iter_mut() {
         // If current word has more bits than needed, chop it.
         if n_bits_in_word > N_BITS_PER_FELT {
-            *e = word & MASK;
+            *e = word & mask;
             word >>= N_BITS_PER_FELT as u32;
             n_bits_in_word -= N_BITS_PER_FELT;
             continue;
@@ -135,29 +149,36 @@ fn split<const N: usize, const M: usize>(x: [u32x16; N]) -> [PackedM31; M] {
 
         // If we need more bits to fill, take from next word.
         if n_bits_in_word < N_BITS_PER_FELT {
-            *e |= (word << n_bits_in_word as u32) & MASK;
+            *e |= (word << n_bits_in_word as u32) & mask;
             word >>= (N_BITS_PER_FELT - n_bits_in_word) as u32;
         }
 
         n_bits_in_word += 32 - N_BITS_PER_FELT;
     }
-
-    res.map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
+    res
 }
 
-/// Split a 128 bit dense representation into felts, each with N_BITS_PER_FELT bits.
-pub fn split_u128(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
-    split(x)
+/// Splits a 128 bit dense representation into felts, each with N_BITS_PER_FELT bits.
+pub fn split_u128_simd(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
+    split(x, u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]))
+        .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
 }
 
-/// Split a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
-pub fn split_f252(x: [u32x16; 8]) -> [PackedM31; N_M31_IN_FELT252] {
-    split(x)
+/// Splits a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
+pub fn split_f252_simd(x: [u32x16; 8]) -> [PackedM31; N_M31_IN_FELT252] {
+    split(x, u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]))
+        .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
+}
+
+/// Splits a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
+pub fn split_f252(x: [u32; 8]) -> [M31; N_M31_IN_FELT252] {
+    split(x, (1 << N_BITS_PER_FELT) - 1).map(M31::from_u32_unchecked)
 }
 
 #[cfg(test)]
 mod tests {
     use std::array;
+    use std::simd::Simd;
 
     use rand::Rng;
     use stwo_prover::constraint_framework::constant_columns::gen_is_first;
@@ -285,5 +306,21 @@ mod tests {
                 component.evaluate(eval);
             },
         )
+    }
+
+    #[test]
+    fn test_split() {
+        let x: [u32; 8] = [
+            0x12345678, 0x9abcdef0, 0x13579bdf, 0x2468ace0, 0x12345678, 0x9abcdef0, 0x13579bdf, 0,
+        ];
+        let res = split_f252(x);
+        assert_eq!(
+            res,
+            [
+                120, 43, 141, 2, 495, 486, 106, 447, 411, 427, 4, 412, 138, 291, 480, 172, 52, 9,
+                444, 411, 427, 252, 111, 175, 19, 0, 0, 0
+            ]
+            .map(M31::from)
+        );
     }
 }

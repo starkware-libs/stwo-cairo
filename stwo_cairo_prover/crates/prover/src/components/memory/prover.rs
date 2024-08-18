@@ -17,7 +17,7 @@ use super::component::{
     MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
 };
 use super::MemoryLookupElements;
-use crate::components::range_check_builtin::simd_trace::split_f252;
+use crate::components::range_check_builtin::simd_trace::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
 
@@ -60,15 +60,19 @@ impl MemoryClaimProver {
                 packed_res.map(|v| v.to_array()[i % N_LANES])[j]
             }))
         });
-        split_f252(values)
+        split_f252_simd(values)
     }
 
-    pub fn add_inputs(&mut self, inputs: &PackedM31) {
+    pub fn add_inputs_simd(&mut self, inputs: &PackedM31) {
         let addresses = inputs.to_array();
         for address in addresses {
-            let idx = address.0 as usize / N_LANES;
-            self.multiplicities[idx].simd[address.0 as usize % N_LANES] += 1;
+            self.add_inputs(address);
         }
+    }
+
+    pub fn add_inputs(&mut self, addr: M31) {
+        let addr = addr.0 as usize;
+        self.multiplicities[addr / N_LANES].simd[addr % N_LANES] += 1;
     }
 
     pub fn write_trace(
@@ -83,7 +87,7 @@ impl MemoryClaimProver {
             M31::from_u32_unchecked((i) as u32)
         }));
         for (i, (values, multiplicity)) in zip_eq(&self.values, &self.multiplicities).enumerate() {
-            let values = split_f252(*values);
+            let values = split_f252_simd(*values);
             // TODO(AlonH): Either create a constant column for the addresses and remove it from
             // here or add constraints to the column here.
             trace[0].data[i] =
