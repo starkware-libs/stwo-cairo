@@ -16,7 +16,7 @@ use stwo_prover::core::ColumnVec;
 
 use super::component::{LAST_VALUE_OFFSET, N_VALUES_FELTS};
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS};
-use crate::components::range_check_unit::RangeElements;
+use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_u128_simd;
 
 // Memory addresses and the corresponding values, for the RangeCheck128Builtin segment.
@@ -90,7 +90,7 @@ pub fn gen_interaction_trace(
     log_size: u32,
     lookup_data: RangeCheck128BuiltinLookupData,
     memory_lookup_elements: &MemoryLookupElements,
-    range2_lookup_elements: &RangeElements,
+    range2_lookup_elements: &RangeCheckElements,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     SecureField,
@@ -218,7 +218,7 @@ mod tests {
 
         let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
         let memory_lookup_elements = MemoryLookupElements::draw(channel);
-        let range2_lookup_elements = RangeElements::draw(channel);
+        let range2_lookup_elements = RangeCheckElements::draw(channel);
 
         let (interaction_trace, claimed_sum) = gen_interaction_trace(
             log_size,
