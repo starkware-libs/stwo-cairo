@@ -10,6 +10,7 @@ use super::instructions::Instructions;
 use super::mem::MemConfig;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
+use crate::input::RangeCheckInput;
 
 pub fn import_from_vm_output(pub_json: &Path, priv_json: &Path) -> CairoInput {
     let pub_data: PublicInput =
@@ -44,6 +45,10 @@ pub fn import_from_vm_output(pub_json: &Path, priv_json: &Path) -> CairoInput {
         instructions,
         mem,
         public_mem_addresses,
+        range_check: RangeCheckInput {
+            begin_addr: pub_data.memory_segments["range_check"].begin_addr as u32,
+            end_addr: pub_data.memory_segments["range_check"].stop_ptr as u32,
+        },
     }
 }
 
