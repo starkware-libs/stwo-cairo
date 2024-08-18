@@ -16,6 +16,7 @@ use super::packed_felt_252_one;
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
+use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
 
@@ -29,6 +30,30 @@ pub struct RetOpcodeClaimProver {
     pub inputs: Vec<PackedRetInput>,
 }
 impl RetOpcodeClaimProver {
+    pub fn new(mut inputs: Vec<VmState>) -> Self {
+        assert!(!inputs.is_empty());
+
+        // TODO(spapini): Split to multiple components.
+        let size = inputs.len().next_power_of_two().max(32);
+        inputs.resize(size, inputs[0].clone());
+
+        let inputs = inputs
+            .into_iter()
+            .array_chunks::<N_LANES>()
+            .map(|chunk| PackedRetInput {
+                pc: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(chunk[i].pc)
+                })),
+                ap: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(chunk[i].ap)
+                })),
+                fp: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(chunk[i].fp)
+                })),
+            })
+            .collect_vec();
+        Self { inputs }
+    }
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
@@ -90,6 +115,15 @@ impl RetOpcodeInteractionProver {
             .enumerate()
             {
                 let address_and_value = chain!([addr], output).copied().collect_vec();
+                for i in 0..N_LANES {
+                    println!(
+                        "ret: {:?}",
+                        address_and_value
+                            .iter()
+                            .map(|v| v.to_array()[i].0)
+                            .collect_vec()
+                    );
+                }
                 let denom = lookup_elements.combine(&address_and_value);
                 col_gen.write_frac(i, PackedQM31::one(), denom);
             }
