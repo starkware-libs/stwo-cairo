@@ -8,7 +8,7 @@ use itertools::Itertools;
 use stwo_cairo_prover::input::instructions::Instructions;
 use stwo_cairo_prover::input::mem::{MemConfig, MemoryBuilder};
 use stwo_cairo_prover::input::vm_import::{MemEntry, TraceEntry};
-use stwo_cairo_prover::input::CairoInput;
+use stwo_cairo_prover::input::{CairoInput, RangeCheckInput};
 
 pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> CairoInput {
     let felt_code = casm
@@ -71,5 +71,9 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
         instructions,
         mem,
         public_mem_addresses: vec![],
+        range_check: RangeCheckInput {
+            begin_addr: 0,
+            end_addr: 0,
+        },
     }
 }

@@ -13,4 +13,12 @@ pub struct CairoInput {
     pub instructions: Instructions,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
+
+    // Builtins.
+    pub range_check: RangeCheckInput,
+}
+
+pub struct RangeCheckInput {
+    pub begin_addr: u32,
+    pub end_addr: u32,
 }
