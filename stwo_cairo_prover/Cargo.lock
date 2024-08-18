@@ -1247,6 +1247,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "cairo-lang-casm",
+ "cairo-vm",
  "hex",
  "itertools 0.12.1",
  "num-traits",
@@ -1254,19 +1255,7 @@ dependencies = [
  "serde",
  "sonic-rs",
  "stwo-prover",
- "stwo_cairo_runner",
  "thiserror",
-]
-
-[[package]]
-name = "stwo_cairo_runner"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "cairo-lang-casm",
- "cairo-vm",
- "itertools 0.12.1",
- "stwo_cairo_prover",
 ]
 
 [[package]]

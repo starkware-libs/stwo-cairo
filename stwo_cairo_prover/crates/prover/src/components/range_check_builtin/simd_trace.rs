@@ -15,6 +15,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
 
 use super::component::{LAST_VALUE_OFFSET, N_VALUES_FELTS};
+use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
 use crate::components::range_check_unit::RangeElements;
 
@@ -110,11 +111,11 @@ pub fn gen_interaction_trace(
     logup_gen.finalize()
 }
 
-// Given 16 128-bit values, stored as 4 32-bit values, split them into 9-bit values elements.
-fn split_u128(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
+/// Split a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
+fn split<const N: usize, const M: usize>(x: [u32x16; N]) -> [PackedM31; M] {
     const MASK: Simd<u32, N_LANES> = u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]);
 
-    let mut res = [Simd::splat(0); N_VALUES_FELTS];
+    let mut res = [Simd::splat(0); M];
     let mut n_bits_in_word = 32;
     let mut word_i = 0;
     let mut word = x[word_i];
@@ -142,6 +143,16 @@ fn split_u128(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
     }
 
     res.map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
+}
+
+/// Split a 128 bit dense representation into felts, each with N_BITS_PER_FELT bits.
+pub fn split_u128(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
+    split(x)
+}
+
+/// Split a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
+pub fn split_f252(x: [u32x16; 8]) -> [PackedM31; N_M31_IN_FELT252] {
+    split(x)
 }
 
 #[cfg(test)]

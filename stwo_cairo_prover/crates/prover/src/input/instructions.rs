@@ -3,7 +3,7 @@ use super::mem::{Memory, MemoryValue};
 use super::vm_import::TraceEntry;
 
 // TODO(spapini): Move this:
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct VmState {
     pub pc: u32,
     pub ap: u32,

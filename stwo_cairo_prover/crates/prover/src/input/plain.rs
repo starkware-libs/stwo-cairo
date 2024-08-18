@@ -5,10 +5,11 @@ use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
-use stwo_cairo_prover::input::instructions::Instructions;
-use stwo_cairo_prover::input::mem::{MemConfig, MemoryBuilder};
-use stwo_cairo_prover::input::vm_import::{MemEntry, TraceEntry};
-use stwo_cairo_prover::input::{CairoInput, RangeCheckInput};
+
+use super::instructions::Instructions;
+use super::mem::{MemConfig, MemoryBuilder};
+use super::vm_import::{MemEntry, TraceEntry};
+use super::{CairoInput, RangeCheckInput};
 
 pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> CairoInput {
     let felt_code = casm
