@@ -1,130 +1,118 @@
-use std::collections::BTreeMap;
+use itertools::Itertools;
+use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::qm31::PackedQM31;
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::backend::{Col, Column};
+use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::pcs::TreeBuilder;
+use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
+use stwo_prover::core::poly::BitReversedOrder;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 
-use itertools::izip;
-use num_traits::Zero;
-use stwo_prover::core::air::accumulation::DomainEvaluationAccumulator;
-use stwo_prover::core::air::{Component, ComponentProver, ComponentTrace};
-use stwo_prover::core::backend::CpuBackend;
-use stwo_prover::core::constraints::{coset_vanishing, point_excluder};
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::FieldExpOps;
-use stwo_prover::core::poly::circle::CanonicCoset;
-use stwo_prover::core::utils::{
-    bit_reverse, point_vanish_denominator_inverses, previous_bit_reversed_circle_domain_index,
-};
-use stwo_prover::core::{InteractionElements, LookupValues};
-use stwo_prover::trace_generation::{BASE_TRACE, INTERACTION_TRACE};
+use super::component::{RangeCheckClaim, RangeCheckInteractionClaim};
+use super::RangeCheckElements;
+use crate::prover_types::PackedUInt32;
 
-use super::component::{
-    RangeCheckUnitComponent, RC_LOOKUP_VALUE_0, RC_LOOKUP_VALUE_1, RC_LOOKUP_VALUE_2,
-    RC_LOOKUP_VALUE_3, RC_Z,
-};
+const TRACE_INDICES_OFFSET: usize = 0;
+const TRACE_MULTIPLICITIES_OFFSET: usize = 1;
 
-impl ComponentProver<CpuBackend> for RangeCheckUnitComponent {
-    fn evaluate_constraint_quotients_on_domain(
-        &self,
-        trace: &ComponentTrace<'_, CpuBackend>,
-        evaluation_accumulator: &mut DomainEvaluationAccumulator<CpuBackend>,
-        interaction_elements: &InteractionElements,
-        lookup_values: &LookupValues,
-    ) {
-        let max_constraint_degree = self.max_constraint_log_degree_bound();
-        let trace_eval_domain = CanonicCoset::new(max_constraint_degree).circle_domain();
-        let trace_evals = &trace.evals;
-        let zero_domain = CanonicCoset::new(self.log_n_rows).coset;
-        let [mut accum] =
-            evaluation_accumulator.columns([(max_constraint_degree, self.n_constraints())]);
+pub struct RangeCheckClaimProver<const RC_TRACE_LEN: usize> {
+    pub multiplicities: [PackedUInt32; RC_TRACE_LEN],
+}
+impl<const RC_TRACE_LEN: usize> RangeCheckClaimProver<RC_TRACE_LEN> {
+    pub fn new() -> Self {
+        let multiplicities = [PackedUInt32::broadcast(0); RC_TRACE_LEN];
+        Self { multiplicities }
+    }
 
-        // TODO(AlonH): Get all denominators in one loop and don't perform unnecessary inversions.
-        let first_point_denom_inverses =
-            point_vanish_denominator_inverses(trace_eval_domain, zero_domain.at(0));
-        let last_point_denom_inverses =
-            point_vanish_denominator_inverses(trace_eval_domain, zero_domain.at(1));
-        let mut step_denoms = vec![];
-        for point in trace_eval_domain.iter() {
-            step_denoms.push(
-                coset_vanishing(zero_domain, point) / point_excluder(zero_domain.at(0), point),
-            );
-        }
-        bit_reverse(&mut step_denoms);
-        let mut step_denom_inverses = vec![BaseField::zero(); 1 << (max_constraint_degree)];
-        BaseField::batch_inverse(&step_denoms, &mut step_denom_inverses);
-        let z = interaction_elements[RC_Z];
-        let lookup_value = SecureField::from_m31(
-            lookup_values[RC_LOOKUP_VALUE_0],
-            lookup_values[RC_LOOKUP_VALUE_1],
-            lookup_values[RC_LOOKUP_VALUE_2],
-            lookup_values[RC_LOOKUP_VALUE_3],
-        );
-        for (i, (first_point_denom_inverse, last_point_denom_inverse, step_denom_inverse)) in izip!(
-            first_point_denom_inverses,
-            last_point_denom_inverses,
-            step_denom_inverses,
-        )
-        .enumerate()
-        {
-            let value = SecureField::from_m31_array(std::array::from_fn(|j| {
-                trace_evals[INTERACTION_TRACE][j][i]
-            }));
-            let prev_index = previous_bit_reversed_circle_domain_index(
-                i,
-                zero_domain.log_size,
-                trace_eval_domain.log_size(),
-            );
-            let prev_value = SecureField::from_m31_array(std::array::from_fn(|j| {
-                trace_evals[INTERACTION_TRACE][j][prev_index]
-            }));
-
-            let first_point_numerator = accum.random_coeff_powers[2]
-                * (value * (z - trace_evals[BASE_TRACE][0][i]) - trace_evals[BASE_TRACE][1][i]);
-
-            let last_point_numerator = accum.random_coeff_powers[1] * (value - lookup_value);
-            let step_numerator = accum.random_coeff_powers[0]
-                * ((value - prev_value) * (z - trace_evals[BASE_TRACE][0][i])
-                    - trace_evals[BASE_TRACE][1][i]);
-            accum.accumulate(
-                i,
-                first_point_numerator * first_point_denom_inverse
-                    + last_point_numerator * last_point_denom_inverse
-                    + step_numerator * step_denom_inverse,
-            );
+    pub fn add_inputs(&mut self, inputs: &PackedM31) {
+        for input in inputs.to_array() {
+            let num = input.0 as usize;
+            let (input_row, input_lane) = (num / N_LANES, num % N_LANES);
+            self.multiplicities[input_row].simd[input_lane] += 1;
         }
     }
 
-    fn lookup_values(&self, trace: &ComponentTrace<'_, CpuBackend>) -> LookupValues {
-        let domain = CanonicCoset::new(self.log_n_rows);
-        let trace_poly = &trace.polys[INTERACTION_TRACE];
-        let values = BTreeMap::from_iter([
-            (
-                RC_LOOKUP_VALUE_0.to_string(),
-                trace_poly[0]
-                    .eval_at_point(domain.at(1).into_ef())
-                    .try_into()
-                    .unwrap(),
-            ),
-            (
-                RC_LOOKUP_VALUE_1.to_string(),
-                trace_poly[1]
-                    .eval_at_point(domain.at(1).into_ef())
-                    .try_into()
-                    .unwrap(),
-            ),
-            (
-                RC_LOOKUP_VALUE_2.to_string(),
-                trace_poly[2]
-                    .eval_at_point(domain.at(1).into_ef())
-                    .try_into()
-                    .unwrap(),
-            ),
-            (
-                RC_LOOKUP_VALUE_3.to_string(),
-                trace_poly[3]
-                    .eval_at_point(domain.at(1).into_ef())
-                    .try_into()
-                    .unwrap(),
-            ),
-        ]);
-        LookupValues::new(values)
+    pub fn write_trace(
+        &mut self,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+    ) -> (
+        RangeCheckClaim,
+        RangeCheckInteractionClaimProver<RC_TRACE_LEN>,
+    ) {
+        let mut trace = (0..2)
+            .map(|_| Col::<SimdBackend, BaseField>::zeros(RC_TRACE_LEN / N_LANES))
+            .collect_vec();
+
+        for (vec_row, multiplicity) in self.multiplicities.into_iter().enumerate() {
+            trace[TRACE_INDICES_OFFSET].data[vec_row] =
+                PackedBaseField::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(((vec_row << LOG_N_LANES) + i) as u32)
+                }));
+            trace[TRACE_MULTIPLICITIES_OFFSET].data[vec_row] = multiplicity.as_m31_unchecked();
+        }
+
+        let multiplicities = trace[TRACE_MULTIPLICITIES_OFFSET].data.clone();
+
+        // Extend trace.
+        let domain = CanonicCoset::new(RC_TRACE_LEN.ilog2()).circle_domain();
+        let trace = trace
+            .into_iter()
+            .map(|eval| CircleEvaluation::<SimdBackend, _, BitReversedOrder>::new(domain, eval))
+            .collect_vec();
+        tree_builder.extend_evals(trace);
+
+        (
+            RangeCheckClaim {
+                log_rc_max: RC_TRACE_LEN.ilog2() - LOG_N_LANES,
+            },
+            RangeCheckInteractionClaimProver { multiplicities },
+        )
+    }
+}
+
+impl<const RC_TRACE_LEN: usize> Default for RangeCheckClaimProver<RC_TRACE_LEN> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[derive(Debug)]
+pub struct RangeCheckInteractionClaimProver<const RC_MAX: usize> {
+    pub multiplicities: Vec<PackedM31>,
+}
+impl<const RC_MAX: usize> RangeCheckInteractionClaimProver<RC_MAX> {
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            multiplicities: Vec::with_capacity(capacity),
+        }
+    }
+
+    pub fn write_interaction_trace(
+        &self,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        lookup_elements: &RangeCheckElements,
+    ) -> RangeCheckInteractionClaim {
+        let mut logup_gen = LogupTraceGenerator::new(1 << RC_MAX);
+        let mut col_gen = logup_gen.new_col();
+
+        // Lookup values columns.
+        for vec_row in 0..1 << (RC_MAX - LOG_N_LANES as usize) {
+            let value = PackedBaseField::from_array(std::array::from_fn(|i| {
+                M31((vec_row << LOG_N_LANES) + i as u32)
+            }));
+            let denom: PackedQM31 = lookup_elements.combine(&[value]);
+            col_gen.write_frac(
+                vec_row as usize,
+                (-self.multiplicities[vec_row as usize]).into(),
+                denom,
+            );
+        }
+        col_gen.finalize_col();
+        let (trace, claimed_sum) = logup_gen.finalize();
+        tree_builder.extend_evals(trace);
+
+        RangeCheckInteractionClaim { claimed_sum }
     }
 }
