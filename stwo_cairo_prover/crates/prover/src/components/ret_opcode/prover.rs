@@ -11,11 +11,11 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 
-use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim};
-use super::packed_felt_252_one;
+use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
+use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
 
@@ -29,6 +29,30 @@ pub struct RetOpcodeClaimProver {
     pub inputs: Vec<PackedRetInput>,
 }
 impl RetOpcodeClaimProver {
+    pub fn new(mut inputs: Vec<VmState>) -> Self {
+        assert!(!inputs.is_empty());
+
+        // TODO(spapini): Split to multiple components.
+        let size = inputs.len().next_power_of_two().max(64);
+        inputs.resize(size, inputs[0].clone());
+
+        let inputs = inputs
+            .into_iter()
+            .array_chunks::<N_LANES>()
+            .map(|chunk| PackedRetInput {
+                pc: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(chunk[i].pc)
+                })),
+                ap: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(chunk[i].ap)
+                })),
+                fp: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(chunk[i].fp)
+                })),
+            })
+            .collect_vec();
+        Self { inputs }
+    }
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
@@ -162,7 +186,7 @@ fn write_trace_row(
     dst[2].data[row_index] = col2;
     lookup_data.memory_inputs[0].push(col0);
     lookup_data.memory_inputs[1].push((col2) - (PackedM31::broadcast(M31::one())));
-    lookup_data.memory_outputs[0].push(packed_felt_252_one());
+    lookup_data.memory_outputs[0].push(RET_INSTRUCTION.map(|v| PackedM31::broadcast(M31::from(v))));
     let mem_fp_minus_one =
         memory_trace_generator.deduce_output((col2) - (PackedM31::broadcast(M31::from(1))));
     lookup_data.memory_outputs[1].push(mem_fp_minus_one);
