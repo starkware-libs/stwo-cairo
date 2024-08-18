@@ -1,9 +1,6 @@
-use std::cmp::max;
-
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use stwo_prover::core::air::{Component, ComponentProver};
-use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
 use stwo_prover::core::fields::m31::BaseField;
@@ -17,25 +14,14 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::InteractionElements;
 
-use crate::components::memory::component::{
-    MemoryClaim, MemoryComponent, MemoryInteractionClaim, LOG_MEMORY_ADDRESS_BOUND,
-};
+use crate::components::memory::component::{MemoryClaim, MemoryComponent, MemoryInteractionClaim};
 use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::{MemoryLookupElements, MemoryValues};
+use crate::components::memory::MemoryLookupElements;
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim,
 };
-use crate::components::ret_opcode::prover::{PackedRetInput, RetOpcodeClaimProver};
-
-pub struct CairoInput {
-    // Opcodes.
-    pub ret: Vec<PackedRetInput>,
-    // Builtins.
-
-    // Memory.
-    pub memory: MemoryValues,
-    // Tables..?
-}
+use crate::components::ret_opcode::prover::RetOpcodeClaimProver;
+use crate::input::CairoInput;
 
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
@@ -142,13 +128,10 @@ impl CairoComponentGenerator {
     }
 }
 
+const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
-    // log_n_rows will not be known at this point, TODO(Ohad): figure out log_max_rows.
-    let ret_log_n_rows = input.ret.len().ilog2() + LOG_N_LANES;
-    let log_max_rows = max(LOG_MEMORY_ADDRESS_BOUND, ret_log_n_rows);
-
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(log_max_rows + LOG_BLOWUP_FACTOR + 2)
+        CanonicCoset::new(LOG_MAX_ROWS + LOG_BLOWUP_FACTOR + 2)
             .circle_domain()
             .half_coset,
     );
@@ -161,8 +144,8 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
 
     // Base trace.
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
-    let ret_trace_generator = RetOpcodeClaimProver { inputs: input.ret };
-    let mut memory_trace_generator = MemoryClaimProver::from_info(input.memory);
+    let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
+    let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
     let mut tree_builder = commitment_scheme.tree_builder();
     let (ret_claim, ret_interaction_prover) =
         ret_trace_generator.write_trace(&mut tree_builder, &mut memory_trace_generator);
@@ -266,44 +249,31 @@ pub fn verify_cairo(
 
 #[cfg(test)]
 mod tests {
-    use itertools::Itertools;
-    use num_traits::{One, Zero};
-    use stwo_prover::core::backend::simd::m31::PackedM31;
-    use stwo_prover::core::fields::m31::M31;
+    use cairo_lang_casm::casm;
 
     use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
-    use crate::components::memory::component::N_M31_IN_FELT252;
-    use crate::components::memory::MemoryValues;
-    use crate::components::ret_opcode::prover::PackedRetInput;
+    use crate::input::plain::input_from_plain_casm;
 
-    pub fn test_simd_ret_inputs() -> Vec<PackedRetInput> {
-        (0..8)
-            .map(|i| PackedRetInput {
-                pc: PackedM31::broadcast(M31::from_u32_unchecked(i)),
-                ap: PackedM31::broadcast(M31::from_u32_unchecked(2)),
-                fp: PackedM31::broadcast(M31::from_u32_unchecked(2)),
-            })
-            .collect_vec()
-    }
+    fn test_input() -> CairoInput {
+        let instructions = casm! {
+            [ap] = 10, ap++;
+            call rel 4;
+            jmp rel 11;
 
-    pub fn generate_test_simd_ret_memory() -> MemoryValues {
-        let mut value = [PackedM31::zero(); N_M31_IN_FELT252];
-        value[0] = PackedM31::one();
-        MemoryValues {
-            values: vec![value; 8],
+            jmp rel 4 if [fp-3] != 0;
+            jmp rel 6;
+            [ap] = [fp-3] + (-1), ap++;
+            call rel (-6);
+            ret;
         }
+        .instructions;
+
+        input_from_plain_casm(instructions)
     }
 
     #[test]
     fn test_cairo_air() {
-        let ret_inputs = test_simd_ret_inputs();
-        let memory_info = generate_test_simd_ret_memory();
-        let cairo_input = CairoInput {
-            ret: ret_inputs,
-            memory: memory_info,
-        };
-
-        let cairo_proof = prove_cairo(cairo_input);
+        let cairo_proof = prove_cairo(test_input());
 
         verify_cairo(cairo_proof)
     }
