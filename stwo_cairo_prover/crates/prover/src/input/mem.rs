@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::ops::{Deref, DerefMut};
+
 use super::vm_import::MemEntry;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
@@ -58,48 +61,12 @@ pub struct Memory {
     pub f252_values: Vec<[u32; 8]>,
 }
 impl Memory {
-    fn new(config: MemConfig) -> Memory {
-        Memory {
-            config,
-            address_to_id: Vec::new(),
-            u64_values: Vec::new(),
-            f252_values: Vec::new(),
-        }
-    }
     pub fn get(&self, addr: u32) -> MemoryValue {
         match self.address_to_id[addr as usize].decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(id),
             MemoryValueId::U64(id) => MemoryValue::U64(self.u64_values[id]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id]),
         }
-    }
-    pub fn set(&mut self, addr: u64, value: MemoryValue) {
-        if addr as usize >= self.address_to_id.len() {
-            self.address_to_id
-                .resize(addr as usize + 1, EncodedMemoryValueId(0));
-        }
-        self.address_to_id[addr as usize] = EncodedMemoryValueId::encode(match value {
-            MemoryValue::Small(id) => MemoryValueId::Small(id),
-            MemoryValue::U64(id) => {
-                let res = self.u64_values.len();
-                self.u64_values.push(id);
-                MemoryValueId::U64(res)
-            }
-            MemoryValue::F252(id) => {
-                let res = self.f252_values.len();
-                self.f252_values.push(id);
-                MemoryValueId::F252(res)
-            }
-        })
-    }
-    pub fn from_iter<I: IntoIterator<Item = MemEntry>>(config: MemConfig, iter: I) -> Memory {
-        let mem_entries = iter.into_iter();
-        let mut memory = Memory::new(config);
-        for entry in mem_entries {
-            let value = memory.value_from_felt252(entry.val);
-            memory.set(entry.addr, value);
-        }
-        memory
     }
     // TODO(spapini): Optimize. This should be SIMD.
     fn value_from_felt252(&self, value: [u32; 8]) -> MemoryValue {
@@ -131,7 +98,76 @@ impl Memory {
     }
 }
 
-#[derive(Copy, Clone, Default)]
+pub struct MemoryBuilder {
+    mem: Memory,
+    u64_id_cache: HashMap<u64, usize>,
+    felt252_id_cache: HashMap<[u32; 8], usize>,
+}
+impl MemoryBuilder {
+    fn new(config: MemConfig) -> Self {
+        Self {
+            mem: Memory {
+                config,
+                address_to_id: Vec::new(),
+                u64_values: Vec::new(),
+                f252_values: Vec::new(),
+            },
+            u64_id_cache: HashMap::new(),
+            felt252_id_cache: HashMap::new(),
+        }
+    }
+    pub fn from_iter<I: IntoIterator<Item = MemEntry>>(config: MemConfig, iter: I) -> Memory {
+        let mem_entries = iter.into_iter();
+        let mut builder = Self::new(config);
+        for entry in mem_entries {
+            let value = builder.value_from_felt252(entry.val);
+            builder.set(entry.addr, value);
+        }
+        builder.build()
+    }
+    pub fn set(&mut self, addr: u64, value: MemoryValue) {
+        if addr as usize >= self.address_to_id.len() {
+            self.address_to_id
+                .resize(addr as usize + 1, EncodedMemoryValueId(0));
+        }
+        let res = EncodedMemoryValueId::encode(match value {
+            MemoryValue::Small(val) => MemoryValueId::Small(val),
+            MemoryValue::U64(val) => {
+                let len = self.u64_values.len();
+                let id = *self.u64_id_cache.entry(val).or_insert(len);
+                if id == len {
+                    self.u64_values.push(val);
+                };
+                MemoryValueId::U64(id)
+            }
+            MemoryValue::F252(val) => {
+                let len = self.f252_values.len();
+                let id = *self.felt252_id_cache.entry(val).or_insert(len);
+                if id == len {
+                    self.f252_values.push(val);
+                };
+                MemoryValueId::F252(id)
+            }
+        });
+        self.address_to_id[addr as usize] = res;
+    }
+    pub fn build(self) -> Memory {
+        self.mem
+    }
+}
+impl Deref for MemoryBuilder {
+    type Target = Memory;
+    fn deref(&self) -> &Self::Target {
+        &self.mem
+    }
+}
+impl DerefMut for MemoryBuilder {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.mem
+    }
+}
+
+#[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
 pub struct EncodedMemoryValueId(u32);
 impl EncodedMemoryValueId {
     pub fn encode(value: MemoryValueId) -> EncodedMemoryValueId {
@@ -216,13 +252,27 @@ mod tests {
                 addr: 9,
                 val: P_MIN_2,
             },
+            // Duplicates.
+            MemEntry {
+                addr: 100,
+                val: [1; 8],
+            },
+            MemEntry {
+                addr: 105,
+                val: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
+            },
         ];
-        let memory = Memory::from_iter(MemConfig::default(), entries.iter().cloned());
+        let memory = MemoryBuilder::from_iter(MemConfig::default(), entries.iter().cloned());
         assert_eq!(memory.get(0), MemoryValue::F252([1; 8]));
         assert_eq!(memory.get(1), MemoryValue::Small(6));
         assert_eq!(memory.get(2), MemoryValue::U64((2 << 32) | 1));
         assert_eq!(memory.get(5), MemoryValue::U64(1 << 24));
         assert_eq!(memory.get(8), MemoryValue::Small(-1));
         assert_eq!(memory.get(9), MemoryValue::Small(-2));
+        // Duplicates.
+        assert_eq!(memory.get(100), MemoryValue::F252([1; 8]));
+        assert_eq!(memory.get(105), MemoryValue::U64(1 << 24));
+        assert_eq!(memory.address_to_id[0], memory.address_to_id[100]);
+        assert_eq!(memory.address_to_id[5], memory.address_to_id[105]);
     }
 }
