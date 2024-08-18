@@ -9,7 +9,7 @@ use itertools::Itertools;
 use super::instructions::Instructions;
 use super::mem::{MemConfig, MemoryBuilder};
 use super::vm_import::{MemEntry, TraceEntry};
-use super::{CairoInput, RangeCheckInput};
+use super::{CairoInput, SegmentAddrs};
 
 pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> CairoInput {
     let felt_code = casm
@@ -45,6 +45,7 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
 }
 
 pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
+    let program_len = runner.get_program().iter_data().count();
     runner.relocate(true).expect("Relocation failed");
     let mem = runner
         .relocated_memory
@@ -67,12 +68,13 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
     let mem = MemoryBuilder::from_iter(mem_config, mem);
     let instructions = Instructions::from_iter(trace, &mem);
 
-    // TODO(spapini): Get public memory from program and output builtin.
+    // TODO(spapini): Add output builtin to public memory.
+    let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
         instructions,
         mem,
-        public_mem_addresses: vec![],
-        range_check: RangeCheckInput {
+        public_mem_addresses,
+        range_check: SegmentAddrs {
             begin_addr: 0,
             end_addr: 0,
         },
