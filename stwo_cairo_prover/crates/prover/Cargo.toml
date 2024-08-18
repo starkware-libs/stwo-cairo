@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 bytemuck.workspace = true
+cairo-lang-casm = "2.7.1"
+cairo-vm = "1.0.1"
 hex = "0.4.3"
 itertools.workspace = true
 num-traits = "0.2.17"
@@ -17,4 +19,3 @@ thiserror = "1.0.63"
 [dev-dependencies]
 cairo-lang-casm = "2.7.1"
 rand = "0.8.5"
-stwo_cairo_runner = { path = "../runner" }

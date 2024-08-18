@@ -47,8 +47,17 @@ impl FrameworkComponent for RetOpcodeComponent {
         // PC Column
         let mut values = [E::F::zero(); N_M31_IN_FELT252 + 1];
         values[0] = eval.next_trace_mask();
-        values[1] = E::F::one();
+        let a = [
+            510, 447, 511, 495, 511, 91, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
+        for i in 0..N_M31_IN_FELT252 {
+            values[i + 1] = E::F::from(M31::from(a[i]));
+        }
         logup.push_lookup(&mut eval, E::EF::one(), &values, &self.lookup_elements);
+        for i in 0..N_M31_IN_FELT252 {
+            values[i + 1] = E::F::from(M31::from(0));
+        }
 
         // TODO(Ohad): Add AP to the VM logup constraint.
         let _ap = eval.next_trace_mask();
