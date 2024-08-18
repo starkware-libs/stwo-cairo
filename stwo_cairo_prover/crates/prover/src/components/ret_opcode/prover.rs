@@ -59,10 +59,10 @@ impl RetOpcodeClaimProver {
         memory_trace_generator: &mut MemoryClaimProver,
     ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
-        interaction_prover
-            .memory_inputs
-            .iter()
-            .for_each(|c| c.iter().for_each(|v| memory_trace_generator.add_inputs(v)));
+        interaction_prover.memory_inputs.iter().for_each(|c| {
+            c.iter()
+                .for_each(|v| memory_trace_generator.add_inputs_simd(v))
+        });
         tree_builder.extend_evals(trace);
         let claim = RetOpcodeClaim {
             log_size: self.inputs.len().ilog2() + LOG_N_LANES,

@@ -16,10 +16,10 @@ pub struct CairoInput {
     pub public_mem_addresses: Vec<u32>,
 
     // Builtins.
-    pub range_check: RangeCheckInput,
+    pub range_check: SegmentAddrs,
 }
 
-pub struct RangeCheckInput {
+pub struct SegmentAddrs {
     pub begin_addr: u32,
     pub end_addr: u32,
 }
