@@ -29,9 +29,9 @@ const P_MIN_2: [u32; 8] = [
 const SMALL_VALUE_SHIFT: u32 = 1 << 26;
 pub struct MemConfig {
     /// The absolute value of the smallest negative value that can be stored as a small value.
-    small_min_neg: u32,
+    pub small_min_neg: u32,
     /// The largest value that can be stored as a small value.
-    small_max: u32,
+    pub small_max: u32,
 }
 impl MemConfig {
     pub fn new(small_min_neg: u32, small_max: u32) -> MemConfig {
@@ -46,8 +46,8 @@ impl MemConfig {
 impl Default for MemConfig {
     fn default() -> Self {
         MemConfig {
-            small_min_neg: (1 << 20) - 1,
-            small_max: (1 << 20) - 1,
+            small_min_neg: (1 << 10) - 1,
+            small_max: (1 << 10) - 1,
         }
     }
 }
@@ -104,7 +104,7 @@ pub struct MemoryBuilder {
     felt252_id_cache: HashMap<[u32; 8], usize>,
 }
 impl MemoryBuilder {
-    fn new(config: MemConfig) -> Self {
+    pub fn new(config: MemConfig) -> Self {
         Self {
             mem: Memory {
                 config,
@@ -216,6 +216,28 @@ impl MemoryValue {
             MemoryValue::Small(x) => (*x).try_into().unwrap(),
             MemoryValue::U64(x) => *x,
             MemoryValue::F252(_) => panic!("Cannot convert F252 to u64"),
+        }
+    }
+    pub fn as_u256(&self) -> [u32; 8] {
+        match self {
+            MemoryValue::Small(x) => {
+                if *x >= 0 {
+                    [(*x) as u32, 0, 0, 0, 0, 0, 0, 0]
+                } else if *x == -1 {
+                    P_MIN_1
+                } else {
+                    let mut res = P_MIN_2;
+                    res[0] = 0xFFFF_FFFF - (-x - 2) as u32;
+                    res
+                }
+            }
+            MemoryValue::U64(x) => {
+                let mut res = [0; 8];
+                res[0] = *x as u32;
+                res[1] = (*x >> 32) as u32;
+                res
+            }
+            MemoryValue::F252(x) => *x,
         }
     }
 }
