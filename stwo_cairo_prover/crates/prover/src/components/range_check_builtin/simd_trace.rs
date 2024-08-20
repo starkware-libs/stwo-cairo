@@ -15,8 +15,8 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
 
 use super::component::{LAST_VALUE_OFFSET, N_VALUES_FELTS};
-use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
-use crate::components::range_check_unit::RangeElements;
+use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS};
+use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_u128_simd;
 
 // Memory addresses and the corresponding values, for the RangeCheck128Builtin segment.
