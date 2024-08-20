@@ -11,7 +11,7 @@ use super::instructions::Instructions;
 use super::mem::MemConfig;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
-use crate::input::RangeCheckInput;
+use crate::input::SegmentAddrs;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -57,7 +57,7 @@ pub fn import_from_vm_output(
         instructions,
         mem,
         public_mem_addresses,
-        range_check: RangeCheckInput {
+        range_check: SegmentAddrs {
             begin_addr: pub_data.memory_segments["range_check"].begin_addr as u32,
             end_addr: pub_data.memory_segments["range_check"].stop_ptr as u32,
         },
