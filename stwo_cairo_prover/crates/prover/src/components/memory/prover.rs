@@ -17,9 +17,9 @@ use super::component::{
     MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
 };
 use super::MemoryLookupElements;
-use crate::components::range_check_builtin::simd_trace::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
+use crate::felt::split_f252_simd;
 
 pub struct MemoryClaimProver {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
