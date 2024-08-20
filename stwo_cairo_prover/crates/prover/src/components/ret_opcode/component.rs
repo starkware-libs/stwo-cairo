@@ -11,6 +11,9 @@ use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::MemoryLookupElements;
 
 pub const RET_N_TRACE_CELLS: usize = 7;
+pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
+    510, 447, 511, 495, 511, 91, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+];
 
 #[derive(Clone)]
 pub struct RetOpcodeComponent {
@@ -47,8 +50,13 @@ impl FrameworkComponent for RetOpcodeComponent {
         // PC Column
         let mut values = [E::F::zero(); N_M31_IN_FELT252 + 1];
         values[0] = eval.next_trace_mask();
-        values[1] = E::F::one();
+        for i in 0..N_M31_IN_FELT252 {
+            values[i + 1] = E::F::from(M31::from(RET_INSTRUCTION[i]));
+        }
         logup.push_lookup(&mut eval, E::EF::one(), &values, &self.lookup_elements);
+        for i in 0..N_M31_IN_FELT252 {
+            values[i + 1] = E::F::from(M31::from(0));
+        }
 
         // TODO(Ohad): Add AP to the VM logup constraint.
         let _ap = eval.next_trace_mask();

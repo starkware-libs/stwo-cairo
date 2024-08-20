@@ -8,6 +8,8 @@ pub mod prover_types;
 mod tests {
     use cairo_lang_casm::casm;
 
+    use crate::input::plain::input_from_plain_casm;
+
     // TODO: Move next to the opcode.
     #[test]
     fn test_jmp_abs() {
@@ -18,7 +20,7 @@ mod tests {
         }
         .instructions;
 
-        let inp = stwo_cairo_runner::input_from_plain_casm(instructions);
+        let inp = input_from_plain_casm(instructions);
         let usage = inp.instructions.usage();
         assert_eq!(usage.jmp_abs[0], 1);
         println!("Usage: {:#?}", usage);
