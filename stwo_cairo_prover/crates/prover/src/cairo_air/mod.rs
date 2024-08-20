@@ -18,11 +18,11 @@ use thiserror::Error;
 use crate::components::memory::component::{MemoryClaim, MemoryComponent, MemoryInteractionClaim};
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
-use crate::components::range_check_builtin::simd_trace::split_f252;
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim,
 };
 use crate::components::ret_opcode::prover::RetOpcodeClaimProver;
+use crate::felt::split_f252;
 use crate::input::instructions::VmState;
 use crate::input::{CairoInput, SegmentAddrs};
 
