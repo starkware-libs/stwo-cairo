@@ -23,6 +23,13 @@ impl PackedUInt32 {
         }
     }
 
+    pub fn from_m31_array(arr: [m31::M31; N_LANES]) -> Self {
+        // Safe because UInt32 is u32.
+        Self {
+            simd: Simd::from_array(arr.map(|v| v.0)),
+        }
+    }
+
     pub fn as_array(&self) -> [u32; N_LANES] {
         // Safe because UInt32 is u32.
         self.simd.to_array()

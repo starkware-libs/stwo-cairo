@@ -1,5 +1,5 @@
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -8,14 +8,17 @@ use stwo_prover::core::pcs::TreeVec;
 
 use super::RangeCheckElements;
 
+pub type RangeCheckUnitComponent<const N_REPETITIONS: usize> =
+    FrameworkComponent<RangeCheckUnitEval<N_REPETITIONS>>;
+
 #[derive(Clone)]
-pub struct RangeCheckUnitComponent<const N_REPETITIONS: usize> {
+pub struct RangeCheckUnitEval<const N_REPETITIONS: usize> {
     pub log_n_rows: u32,
     pub lookup_elements: RangeCheckElements,
     pub claimed_sum: SecureField,
 }
 
-impl<const N_REPETITIONS: usize> FrameworkEval for RangeCheckUnitComponent<N_REPETITIONS> {
+impl<const N_REPETITIONS: usize> FrameworkEval for RangeCheckUnitEval<N_REPETITIONS> {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }

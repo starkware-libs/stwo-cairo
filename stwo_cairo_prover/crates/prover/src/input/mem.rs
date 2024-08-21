@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
+use itertools::Itertools;
+
 use super::vm_import::MemEntry;
+use crate::components::memory::component::MEMORY_ADDRESS_BOUND;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 const P_MIN_1: [u32; 8] = [
@@ -98,6 +101,16 @@ impl Memory {
             }
             MemoryValue::F252(value)
         }
+    }
+
+    pub fn iter_values(&self) -> impl Iterator<Item = MemoryValue> + '_ {
+        let mut values = (0..self.address_to_id.len())
+            .map(|addr| self.get(addr as u32))
+            .collect_vec();
+
+        let size = values.len().next_power_of_two().max(MEMORY_ADDRESS_BOUND);
+        values.resize(size, MemoryValue::U64(0));
+        values.into_iter()
     }
 }
 
