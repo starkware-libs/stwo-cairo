@@ -27,6 +27,8 @@ const P_MIN_2: [u32; 8] = [
 
 // Note: this should be smaller than 2^29.
 const SMALL_VALUE_SHIFT: u32 = 1 << 26;
+
+#[derive(Debug)]
 pub struct MemConfig {
     /// The absolute value of the smallest negative value that can be stored as a small value.
     pub small_min_neg: u32,
@@ -54,6 +56,7 @@ impl Default for MemConfig {
 
 // TODO(spapini): Add U26 for addresses and U128 for range checks.
 // TODO(spapini): Use some struct for Felt252 (that is still memory efficient).
+#[derive(Debug)]
 pub struct Memory {
     pub config: MemConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
