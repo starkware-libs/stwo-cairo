@@ -1,3 +1,4 @@
+use num_traits::One;
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
@@ -6,6 +7,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use super::MemoryLookupElements;
+use crate::components::range_check_unit::RangeCheckElements;
 
 pub const N_M31_IN_FELT252: usize = 28;
 pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
@@ -13,6 +15,8 @@ pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
 pub const N_MEMORY_COLUMNS: usize = N_M31_IN_FELT252 + 2;
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 20;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
+pub const MEMORY_ADDRESS_SIZE: usize = 1;
+
 pub type MemoryComponent = FrameworkComponent<MemoryEval>;
 
 /// Addresses are continuous and start from 0.
@@ -21,6 +25,7 @@ pub type MemoryComponent = FrameworkComponent<MemoryEval>;
 pub struct MemoryEval {
     pub log_n_rows: u32,
     pub lookup_elements: MemoryLookupElements,
+    pub range9_lookup_elements: RangeCheckElements,
     pub claimed_sum: QM31,
 }
 impl MemoryEval {
@@ -30,11 +35,13 @@ impl MemoryEval {
     pub fn new(
         claim: MemoryClaim,
         lookup_elements: MemoryLookupElements,
+        range9_lookup_elements: RangeCheckElements,
         interaction_claim: MemoryInteractionClaim,
     ) -> Self {
         Self {
             log_n_rows: claim.log_address_bound,
             lookup_elements,
+            range9_lookup_elements,
             claimed_sum: interaction_claim.claimed_sum,
         }
     }
@@ -61,7 +68,17 @@ impl FrameworkEval for MemoryEval {
             &address_and_value,
             &self.lookup_elements,
         );
-        // TODO(Ohad): add range check lookup constraint.
+
+        // Range check elements.
+        for value_limb in address_and_value.iter().skip(MEMORY_ADDRESS_SIZE) {
+            logup.push_lookup(
+                &mut eval,
+                E::EF::one(),
+                &[*value_limb],
+                &self.range9_lookup_elements,
+            );
+        }
+
         logup.finalize(&mut eval);
 
         eval
@@ -75,7 +92,8 @@ pub struct MemoryClaim {
 impl MemoryClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_address_bound; N_M31_IN_FELT252 + 2];
-        let interaction_1_log_size = vec![self.log_address_bound; SECURE_EXTENSION_DEGREE];
+        let interaction_1_log_size =
+            vec![self.log_address_bound; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 + 1)];
         TreeVec::new(vec![interaction_0_log_size, interaction_1_log_size])
     }
 

@@ -176,7 +176,7 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
 mod tests {
     use itertools::Itertools;
     use rand::Rng;
-    use stwo_prover::constraint_framework::FrameworkEval;
+    use stwo_prover::constraint_framework::{FrameworkEval, TraceLocationAllocator};
     use stwo_prover::core::backend::simd::column::BaseColumn;
     use stwo_prover::core::backend::simd::SimdBackend;
     use stwo_prover::core::backend::Column;
@@ -186,7 +186,9 @@ mod tests {
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 
     use super::RangeCheckClaimProver;
-    use crate::components::range_check_unit::component::RangeCheckUnitComponent;
+    use crate::components::range_check_unit::component::{
+        RangeCheckUnitComponent, RangeCheckUnitEval,
+    };
     use crate::components::range_check_unit::RangeCheckElements;
 
     #[test]
@@ -253,11 +255,15 @@ mod tests {
             interaction_claim_prover.write_interaction_trace(&mut tree_builder, &lookup_elements);
         tree_builder.commit(channel);
 
-        let component = RangeCheckUnitComponent::<{ N_REPS as usize }> {
-            log_n_rows: LOG_HEIGHT,
-            lookup_elements,
-            claimed_sum: interaction_claim.claimed_sum,
-        };
+        let tree_span_provider = &mut TraceLocationAllocator::default();
+        let component = RangeCheckUnitComponent::new(
+            tree_span_provider,
+            RangeCheckUnitEval::<{ N_REPS as usize }> {
+                log_n_rows: LOG_HEIGHT,
+                lookup_elements,
+                claimed_sum: interaction_claim.claimed_sum,
+            },
+        );
 
         let trace_polys = commitment_scheme
             .trees

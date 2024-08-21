@@ -13,10 +13,11 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{
-    MemoryClaim, MemoryInteractionClaim, MEMORY_ADDRESS_BOUND, MULTIPLICITY_COLUMN_OFFSET,
-    N_M31_IN_FELT252,
+    MemoryClaim, MemoryInteractionClaim, MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_SIZE,
+    MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
 };
 use super::MemoryLookupElements;
+use crate::components::range_check_unit::RangeCheckElements;
 use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
@@ -141,6 +142,7 @@ impl InteractionClaimProver {
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &MemoryLookupElements,
+        range9_lookup_elements: &RangeCheckElements,
     ) -> MemoryInteractionClaim {
         let log_size = self.addresses_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -154,6 +156,19 @@ impl InteractionClaimProver {
             col_gen.write_frac(vec_row, (-self.multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
+
+        for value_col in self.addresses_and_values.iter().skip(MEMORY_ADDRESS_SIZE) {
+            let mut col_gen = logup_gen.new_col();
+            for (vec_row, value) in value_col.iter().enumerate() {
+                // TOOD(alont) Add 2-batching.
+                col_gen.write_frac(
+                    vec_row,
+                    PackedQM31::broadcast(M31(1).into()),
+                    range9_lookup_elements.combine(&[PackedQM31::from(*value)]),
+                );
+            }
+            col_gen.finalize_col();
+        }
         let (trace, claimed_sum) = logup_gen.finalize();
         tree_builder.extend_evals(trace);
 
@@ -170,6 +185,7 @@ mod tests {
 
     use crate::components::memory::component::N_M31_IN_FELT252;
     use crate::input::mem::{MemConfig, MemoryBuilder};
+    use crate::input::range_check_unit::RangeCheckUnitInput;
 
     #[test]
     fn test_deduce_output_simd() {
@@ -181,7 +197,8 @@ mod tests {
             .map(|v| std::array::from_fn(|i| if i == 0 { v } else { M31::zero() }));
 
         // Create memory.
-        let mut mem = MemoryBuilder::new(MemConfig::default());
+        let mut range_check9 = RangeCheckUnitInput::new();
+        let mut mem = MemoryBuilder::new(MemConfig::default(), &mut range_check9);
         for a in &addr {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));

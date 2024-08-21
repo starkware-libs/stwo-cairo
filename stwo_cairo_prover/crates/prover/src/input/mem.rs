@@ -1,7 +1,12 @@
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
+use itertools::Itertools;
+
+use super::range_check_unit::RangeCheckUnitInput;
 use super::vm_import::MemEntry;
+use crate::components::MIN_SIMD_TRACE_LENGTH;
+use crate::felt::split_f252;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 const P_MIN_1: [u32; 8] = [
@@ -99,15 +104,26 @@ impl Memory {
             MemoryValue::F252(value)
         }
     }
+
+    pub fn iter_values(&self) -> impl Iterator<Item = MemoryValue> + '_ {
+        let mut values = (0..self.address_to_id.len())
+            .map(|addr| self.get(addr as u32))
+            .collect_vec();
+
+        let size = values.len().next_power_of_two().max(MIN_SIMD_TRACE_LENGTH);
+        values.resize(size, MemoryValue::U64(0));
+        values.into_iter()
+    }
 }
 
-pub struct MemoryBuilder {
+pub struct MemoryBuilder<'a> {
     mem: Memory,
     u64_id_cache: HashMap<u64, usize>,
     felt252_id_cache: HashMap<[u32; 8], usize>,
+    range_check9: &'a mut RangeCheckUnitInput,
 }
-impl MemoryBuilder {
-    pub fn new(config: MemConfig) -> Self {
+impl<'a> MemoryBuilder<'a> {
+    pub fn new(config: MemConfig, range_check9: &'a mut RangeCheckUnitInput) -> Self {
         Self {
             mem: Memory {
                 config,
@@ -117,15 +133,28 @@ impl MemoryBuilder {
             },
             u64_id_cache: HashMap::new(),
             felt252_id_cache: HashMap::new(),
+            range_check9,
         }
     }
-    pub fn from_iter<I: IntoIterator<Item = MemEntry>>(config: MemConfig, iter: I) -> Memory {
+    pub fn from_iter<I: IntoIterator<Item = MemEntry>>(
+        config: MemConfig,
+        range_check9: &'a mut RangeCheckUnitInput,
+        iter: I,
+    ) -> Memory {
         let mem_entries = iter.into_iter();
-        let mut builder = Self::new(config);
+        let mut builder = Self::new(config, range_check9);
         for entry in mem_entries {
             let value = builder.value_from_felt252(entry.val);
             builder.set(entry.addr, value);
         }
+
+        for value in builder.mem.iter_values() {
+            let value = split_f252(value.as_u256());
+            for limb in value {
+                builder.range_check9.add_value(limb);
+            }
+        }
+
         builder.build()
     }
     pub fn set(&mut self, addr: u64, value: MemoryValue) {
@@ -158,13 +187,13 @@ impl MemoryBuilder {
         self.mem
     }
 }
-impl Deref for MemoryBuilder {
+impl Deref for MemoryBuilder<'_> {
     type Target = Memory;
     fn deref(&self) -> &Self::Target {
         &self.mem
     }
 }
-impl DerefMut for MemoryBuilder {
+impl DerefMut for MemoryBuilder<'_> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.mem
     }
@@ -293,7 +322,12 @@ mod tests {
                 val: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
             },
         ];
-        let memory = MemoryBuilder::from_iter(MemConfig::default(), entries.iter().cloned());
+        let mut range_check9 = RangeCheckUnitInput::new();
+        let memory = MemoryBuilder::from_iter(
+            MemConfig::default(),
+            &mut range_check9,
+            entries.iter().cloned(),
+        );
         assert_eq!(memory.get(0), MemoryValue::F252([1; 8]));
         assert_eq!(memory.get(1), MemoryValue::Small(6));
         assert_eq!(memory.get(2), MemoryValue::U64((2 << 32) | 1));
