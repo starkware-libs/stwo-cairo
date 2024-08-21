@@ -11,6 +11,7 @@ use super::instructions::Instructions;
 use super::mem::MemConfig;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
+use crate::input::range_check_unit::RangeCheckUnitInput;
 use crate::input::SegmentAddrs;
 
 #[derive(Debug, Error)]
@@ -42,9 +43,11 @@ pub fn import_from_vm_output(
     let mem_path = priv_json.parent().unwrap().join(&priv_data.memory_path);
     let trace_path = priv_json.parent().unwrap().join(&priv_data.trace_path);
 
+    let mut range_check9 = RangeCheckUnitInput::new();
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
     let mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
+    range_check9.collect_from_memory(&mem);
     let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
 
     let public_mem_addresses = pub_data
@@ -57,6 +60,7 @@ pub fn import_from_vm_output(
         instructions,
         mem,
         public_mem_addresses,
+        range_check9,
         range_check: SegmentAddrs {
             begin_addr: pub_data.memory_segments["range_check"].begin_addr as u32,
             end_addr: pub_data.memory_segments["range_check"].stop_ptr as u32,

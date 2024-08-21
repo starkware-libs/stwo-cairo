@@ -17,6 +17,7 @@ use super::component::{
     MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
 };
 use super::MemoryLookupElements;
+use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
@@ -140,6 +141,7 @@ impl InteractionClaimProver {
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
         lookup_elements: &MemoryLookupElements,
+        range9_lookup_elements: &RangeCheckElements,
     ) -> MemoryInteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_MEMORY_ADDRESS_BOUND);
         let mut col_gen = logup_gen.new_col();
@@ -152,6 +154,21 @@ impl InteractionClaimProver {
             col_gen.write_frac(vec_row, (-self.multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
+
+        for limb_idx in 1..(N_M31_IN_FELT252 + 1) {
+            let mut col_gen = logup_gen.new_col();
+            for vec_row in 0..1 << (LOG_MEMORY_ADDRESS_BOUND - LOG_N_LANES) {
+                let value: PackedM31 = self.adresses_and_values[limb_idx][vec_row];
+
+                // TOOD(alont) add parametric chunks.
+                col_gen.write_frac(
+                    vec_row,
+                    PackedQM31::broadcast(M31(1).into()),
+                    range9_lookup_elements.combine(&[value]),
+                );
+            }
+            col_gen.finalize_col();
+        }
         let (trace, claimed_sum) = logup_gen.finalize();
         tree_builder.extend_evals(trace);
 

@@ -18,6 +18,11 @@ use thiserror::Error;
 use crate::components::memory::component::{MemoryClaim, MemoryComponent, MemoryInteractionClaim};
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
+use crate::components::range_check_unit::component::{
+    RangeCheckClaim, RangeCheckInteractionClaim, RangeCheckUnitComponent,
+};
+use crate::components::range_check_unit::component_prover::RangeCheckClaimProver;
+use crate::components::range_check_unit::RangeCheckElements;
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim,
 };
@@ -25,6 +30,11 @@ use crate::components::ret_opcode::prover::RetOpcodeClaimProver;
 use crate::felt::split_f252;
 use crate::input::instructions::VmState;
 use crate::input::{CairoInput, SegmentAddrs};
+
+const RC9_LOG_MAX: u32 = 9;
+const RC9_LOG_REPS: u32 = 1;
+const RC9_LOG_HEIGHT: u32 = RC9_LOG_MAX - RC9_LOG_REPS;
+const RC9_REPS: usize = 1 << RC9_LOG_REPS;
 
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
@@ -41,6 +51,7 @@ pub struct CairoClaim {
 
     pub ret: Vec<RetOpcodeClaim>,
     pub memory: MemoryClaim,
+    pub range_check9: RangeCheckClaim<RC9_REPS>,
     // ...
 }
 impl CairoClaim {
@@ -53,19 +64,22 @@ impl CairoClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
-            [self.memory.log_sizes()]
+            [self.memory.log_sizes()],
+            [self.range_check9.log_sizes()]
         ))
     }
 }
 
 pub struct CairoInteractionElements {
     memory_lookup: MemoryLookupElements,
+    range9_lookup: RangeCheckElements,
     // ...
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
             memory_lookup: MemoryLookupElements::draw(channel),
+            range9_lookup: RangeCheckElements::draw(channel),
         }
     }
 }
@@ -73,6 +87,7 @@ impl CairoInteractionElements {
 pub struct CairoInteractionClaim {
     pub ret: Vec<RetOpcodeInteractionClaim>,
     pub memory: MemoryInteractionClaim,
+    pub range_check9: RangeCheckInteractionClaim<RC9_REPS>,
     // ...
 }
 impl CairoInteractionClaim {
@@ -107,6 +122,7 @@ pub fn lookup_sum_valid(
         })
         .sum::<SecureField>();
     // TODO: include initial and final state.
+    sum += interaction_claim.range_check9.claimed_sum;
     sum += interaction_claim.memory.claimed_sum;
     sum += interaction_claim.ret[0].claimed_sum;
     sum == SecureField::zero()
@@ -115,6 +131,7 @@ pub fn lookup_sum_valid(
 pub struct CairoComponentGenerator {
     ret: Vec<RetOpcodeComponent>,
     memory: MemoryComponent,
+    range_check9: RangeCheckUnitComponent<RC9_REPS>,
     // ...
 }
 
@@ -139,11 +156,18 @@ impl CairoComponentGenerator {
         let memory_component = MemoryComponent::new(
             cairo_claim.memory.clone(),
             interaction_elements.memory_lookup.clone(),
+            interaction_elements.range9_lookup.clone(),
             interaction_claim.memory.clone(),
         );
+        let range_check9_component = RangeCheckUnitComponent {
+            log_n_rows: RC9_LOG_HEIGHT,
+            lookup_elements: interaction_elements.range9_lookup.clone(),
+            claimed_sum: interaction_claim.range_check9.claimed_sum,
+        };
         Self {
             ret: ret_components,
             memory: memory_component,
+            range_check9: range_check9_component,
         }
     }
 
@@ -153,6 +177,7 @@ impl CairoComponentGenerator {
             vec.push(ret);
         }
         vec.push(&self.memory);
+        vec.push(&self.range_check9);
         vec
     }
 
@@ -162,6 +187,7 @@ impl CairoComponentGenerator {
             vec.push(ret);
         }
         vec.push(&self.memory);
+        vec.push(&self.range_check9);
         vec
     }
 }
@@ -192,6 +218,11 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
     let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
     let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
+    let mut range_check9_trace_generator = RangeCheckClaimProver::<RC9_LOG_HEIGHT, RC9_REPS> {
+        multiplicities: input
+            .range_check9
+            .to_2d_simd_vec::<RC9_LOG_HEIGHT, RC9_REPS>(),
+    };
 
     // Add public memory.
     for addr in &input.public_mem_addresses {
@@ -199,10 +230,13 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     }
 
     let mut tree_builder = commitment_scheme.tree_builder();
+
     let (ret_claim, ret_interaction_prover) =
         ret_trace_generator.write_trace(&mut tree_builder, &mut memory_trace_generator);
     let (memory_claim, memory_interaction_prover) =
         memory_trace_generator.write_trace(&mut tree_builder);
+    let (range_check9_claim, range_check9_interaction_prover) =
+        range_check9_trace_generator.write_trace(&mut tree_builder);
 
     // Commit to the claim and the trace.
     let claim = CairoClaim {
@@ -212,6 +246,7 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
         range_check: input.range_check,
         ret: vec![ret_claim],
         memory: memory_claim.clone(),
+        range_check9: range_check9_claim.clone(),
     };
     claim.mix_into(channel);
     tree_builder.commit(channel);
@@ -223,13 +258,20 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let mut tree_builder = commitment_scheme.tree_builder();
     let ret_interaction_claim = ret_interaction_prover
         .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
-    let memory_interaction_claim = memory_interaction_prover
-        .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
+    let memory_interaction_claim = memory_interaction_prover.write_interaction_trace(
+        &mut tree_builder,
+        &interaction_elements.memory_lookup,
+        &interaction_elements.range9_lookup,
+    );
+
+    let range_check9_interaction_claim = range_check9_interaction_prover
+        .write_interaction_trace(&mut tree_builder, &interaction_elements.range9_lookup);
 
     // Commit to the interaction claim and the interaction trace.
     let interaction_claim = CairoInteractionClaim {
         ret: vec![ret_interaction_claim.clone()],
         memory: memory_interaction_claim.clone(),
+        range_check9: range_check9_interaction_claim.clone(),
     };
     debug_assert!(lookup_sum_valid(
         &claim,
@@ -329,7 +371,6 @@ mod tests {
     #[test]
     fn test_cairo_air() {
         let cairo_proof = prove_cairo(test_input());
-
         verify_cairo(cairo_proof).unwrap();
     }
 }
