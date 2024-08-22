@@ -20,8 +20,14 @@ pub struct CairoInput {
     pub range_check: SegmentAddrs,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SegmentAddrs {
     pub begin_addr: u32,
     pub end_addr: u32,
+}
+
+impl SegmentAddrs {
+    pub fn addresses(&self) -> Vec<u32> {
+        (self.begin_addr..self.end_addr).collect()
+    }
 }
