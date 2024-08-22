@@ -1,6 +1,7 @@
 use instructions::Instructions;
 use mem::Memory;
 
+pub mod analyzer;
 mod decode;
 pub mod instructions;
 pub mod mem;
