@@ -1,8 +1,11 @@
 use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
+use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
 use crate::components::range_check_unit::RangeElements;
@@ -27,16 +30,15 @@ const _: () = assert!(
 
 impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
     pub fn eval(mut self) -> E {
-        let mut values = [E::F::zero(); N_VALUES_FELTS + 1];
+        let mut values = [E::F::zero(); N_ADDRESS_FELTS + N_VALUES_FELTS];
 
         // Memory address.
         // TODO(ShaharS): Use a constant column instead of taking the next_trace_mask().
         values[0] = self.initial_memory_address + self.eval.next_trace_mask();
 
         // Memory values.
-        #[allow(clippy::needless_range_loop)]
-        for i in N_ADDRESS_FELTS..N_VALUES_FELTS + N_ADDRESS_FELTS {
-            values[i] = self.eval.next_trace_mask();
+        for value in values.iter_mut().skip(N_ADDRESS_FELTS) {
+            *value = self.eval.next_trace_mask();
         }
 
         // Compute lookup for memory.
@@ -84,5 +86,38 @@ impl FrameworkComponent for RangeCheck128BuiltinComponent {
             logup: LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size),
         };
         rc_builtin_eval.eval()
+    }
+}
+
+#[derive(Clone)]
+pub struct RangeCheckClaim {
+    pub log_size: u32,
+    pub n_values: usize,
+}
+impl RangeCheckClaim {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_nonce(self.log_size as u64);
+        channel.mix_nonce(self.n_values as u64);
+    }
+
+    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
+        let interaction_0_log_sizes = vec![self.log_size; N_ADDRESS_FELTS + N_VALUES_FELTS];
+        let interaction_1_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 2];
+        TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
+    }
+}
+
+#[derive(Clone)]
+pub struct RangeCheckInteractionClaim {
+    pub log_size: u32,
+    pub claimed_sum: SecureField,
+}
+
+impl RangeCheckInteractionClaim {
+    pub fn log_sizes(&self) -> Vec<u32> {
+        vec![self.log_size; 12]
+    }
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_felts(&[self.claimed_sum]);
     }
 }
