@@ -20,7 +20,7 @@ pub struct CairoInput {
     pub range_check: SegmentAddrs,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SegmentAddrs {
     pub begin_addr: u32,
     pub end_addr: u32,
