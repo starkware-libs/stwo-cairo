@@ -16,16 +16,16 @@ use super::component::{
     MemoryClaim, MemoryInteractionClaim, LOG_MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_BOUND,
     MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
 };
-use super::MemoryLookupElements;
+use super::MemoryElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
 
-pub struct MemoryClaimProver {
+pub struct MemoryProver {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
     pub multiplicities: Vec<PackedUInt32>,
 }
-impl MemoryClaimProver {
+impl MemoryProver {
     pub fn new(mem: Memory) -> Self {
         // TODO(spapini): Split to multiple components.
         // TODO(spapini): More repetitions, for efficiency.
@@ -139,7 +139,7 @@ impl InteractionClaimProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
-        lookup_elements: &MemoryLookupElements,
+        lookup_elements: &MemoryElements,
     ) -> MemoryInteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_MEMORY_ADDRESS_BOUND);
         let mut col_gen = logup_gen.new_col();
@@ -184,7 +184,7 @@ mod tests {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));
         }
-        let generator = super::MemoryClaimProver::new(mem.build());
+        let generator = super::MemoryProver::new(mem.build());
         let output = generator.deduce_output(input);
 
         for (i, expected) in expected_output.into_iter().enumerate() {

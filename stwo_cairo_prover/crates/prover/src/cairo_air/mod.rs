@@ -16,8 +16,8 @@ use stwo_prover::core::InteractionElements;
 use thiserror::Error;
 
 use crate::components::memory::component::{MemoryClaim, MemoryComponent, MemoryInteractionClaim};
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::prover::MemoryProver;
+use crate::components::memory::MemoryElements;
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim,
 };
@@ -59,13 +59,13 @@ impl CairoClaim {
 }
 
 pub struct CairoInteractionElements {
-    memory_lookup: MemoryLookupElements,
+    memory_lookup: MemoryElements,
     // ...
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
-            memory_lookup: MemoryLookupElements::draw(channel),
+            memory_lookup: MemoryElements::draw(channel),
         }
     }
 }
@@ -191,7 +191,7 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     // Base trace.
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
     let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
-    let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
+    let mut memory_trace_generator = MemoryProver::new(input.mem);
 
     // Add public memory.
     for addr in &input.public_mem_addresses {

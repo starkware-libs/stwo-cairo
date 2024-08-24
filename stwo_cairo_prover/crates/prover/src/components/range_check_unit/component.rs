@@ -32,7 +32,7 @@ pub struct RangeCheckUnitComponent {
     pub log_n_rows: u32,
 }
 
-pub struct RangeCheckUnitTraceGenerator {
+pub struct RangeProver {
     pub max_value: usize,
     pub multiplicities: Vec<u32>,
 }
@@ -103,7 +103,7 @@ impl Component for RangeCheckUnitComponent {
     }
 }
 
-impl RangeCheckUnitTraceGenerator {
+impl RangeProver {
     pub fn new(max_value: usize) -> Self {
         assert!(max_value.is_power_of_two());
         Self {
@@ -113,9 +113,9 @@ impl RangeCheckUnitTraceGenerator {
     }
 }
 
-impl ComponentGen for RangeCheckUnitTraceGenerator {}
+impl ComponentGen for RangeProver {}
 
-impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
+impl ComponentTraceGenerator<CpuBackend> for RangeProver {
     type Component = RangeCheckUnitComponent;
     type Inputs = BaseField;
 
@@ -130,8 +130,7 @@ impl ComponentTraceGenerator<CpuBackend> for RangeCheckUnitTraceGenerator {
         component_id: &str,
         registry: &mut ComponentGenerationRegistry,
     ) -> ColumnVec<CircleEvaluation<CpuBackend, BaseField, BitReversedOrder>> {
-        let rc_unit_trace_generator =
-            registry.get_generator::<RangeCheckUnitTraceGenerator>(component_id);
+        let rc_unit_trace_generator = registry.get_generator::<RangeProver>(component_id);
         let rc_max_value = rc_unit_trace_generator.max_value;
 
         let mut trace = vec![vec![BaseField::zero(); rc_max_value]; 2];
@@ -193,12 +192,12 @@ mod tests {
     fn test_rc_unit_trace() {
         let mut registry = ComponentGenerationRegistry::default();
         register_test_rc(&mut registry);
-        let trace = RangeCheckUnitTraceGenerator::write_trace(RC_COMPONENT_ID, &mut registry);
+        let trace = RangeProver::write_trace(RC_COMPONENT_ID, &mut registry);
         let random_value = SecureField::from_u32_unchecked(1, 2, 3, 117);
         let interaction_elements =
             InteractionElements::new([(RC_Z.to_string(), random_value)].into());
         let interaction_trace = registry
-            .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
+            .get_generator::<RangeProver>(RC_COMPONENT_ID)
             .write_interaction_trace(&trace.iter().collect(), &interaction_elements);
 
         let mut expected_logup_sum = SecureField::zero();

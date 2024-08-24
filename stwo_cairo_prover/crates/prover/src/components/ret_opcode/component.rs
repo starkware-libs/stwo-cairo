@@ -8,7 +8,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::component::N_M31_IN_FELT252;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::MemoryElements;
 
 pub const RET_N_TRACE_CELLS: usize = 7;
 pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
@@ -18,13 +18,13 @@ pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
 #[derive(Clone)]
 pub struct RetOpcodeComponent {
     pub log_size: u32,
-    pub lookup_elements: MemoryLookupElements,
+    pub lookup_elements: MemoryElements,
     pub claimed_sum: SecureField,
 }
 impl RetOpcodeComponent {
     pub fn new(
         ret_claim: RetOpcodeClaim,
-        memory_lookup_elements: MemoryLookupElements,
+        memory_lookup_elements: MemoryElements,
         interaction_claim: RetOpcodeInteractionClaim,
     ) -> Self {
         Self {

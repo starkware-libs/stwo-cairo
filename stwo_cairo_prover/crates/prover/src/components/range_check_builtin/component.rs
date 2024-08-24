@@ -4,7 +4,7 @@ use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 
-use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+use crate::components::memory::{MemoryElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
 use crate::components::range_check_unit::RangeElements;
 use crate::components::LOOKUP_INTERACTION_PHASE;
 
@@ -17,7 +17,7 @@ pub struct RangeCheck128BuiltinEval<'a, E: EvalAtRow> {
     pub eval: E,
     pub logup: LogupAtRow<2, E>,
     pub initial_memory_address: E::F,
-    pub memory_lookup_elements: &'a MemoryLookupElements,
+    pub memory_lookup_elements: &'a MemoryElements,
     pub range2_lookup_elements: &'a RangeElements,
 }
 const _: () = assert!(
@@ -63,7 +63,7 @@ impl<'a, E: EvalAtRow> RangeCheck128BuiltinEval<'a, E> {
 pub struct RangeCheck128BuiltinComponent {
     pub log_size: u32,
     pub initial_memory_address: M31,
-    pub memory_lookup_elements: MemoryLookupElements,
+    pub memory_lookup_elements: MemoryElements,
     pub range2_lookup_elements: RangeElements,
     pub claimed_sum: SecureField,
 }

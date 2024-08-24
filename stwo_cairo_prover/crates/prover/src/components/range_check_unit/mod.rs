@@ -1,7 +1,7 @@
 use stwo_prover::constraint_framework::logup::LookupElements;
 
 pub mod component;
-pub mod component_prover;
+pub mod prover;
 
 pub type RangeElements = LookupElements<1>;
 
@@ -9,7 +9,7 @@ pub type RangeElements = LookupElements<1>;
 pub mod tests {
     use std::collections::BTreeMap;
 
-    use component::{RangeCheckUnitComponent, RangeCheckUnitTraceGenerator, RC_COMPONENT_ID, RC_Z};
+    use component::{RangeCheckUnitComponent, RangeProver, RC_COMPONENT_ID, RC_Z};
     use stwo_prover::core::air::{Air, AirProver, Component, ComponentProver};
     use stwo_prover::core::backend::CpuBackend;
     use stwo_prover::core::channel::{Blake2sChannel, Channel};
@@ -30,7 +30,7 @@ pub mod tests {
     use super::*;
 
     pub fn register_test_rc(registry: &mut ComponentGenerationRegistry) {
-        registry.register(RC_COMPONENT_ID, RangeCheckUnitTraceGenerator::new(8));
+        registry.register(RC_COMPONENT_ID, RangeProver::new(8));
         vec![
             vec![BaseField::from_u32_unchecked(0); 3],
             vec![BaseField::from_u32_unchecked(1); 1],
@@ -45,7 +45,7 @@ pub mod tests {
         .flatten()
         .for_each(|input| {
             registry
-                .get_generator_mut::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
+                .get_generator_mut::<RangeProver>(RC_COMPONENT_ID)
                 .add_inputs(&input);
         });
     }
@@ -77,7 +77,7 @@ pub mod tests {
         fn write_trace(
             &mut self,
         ) -> Vec<CircleEvaluation<CpuBackend, BaseField, BitReversedOrder>> {
-            RangeCheckUnitTraceGenerator::write_trace(RC_COMPONENT_ID, &mut self.registry)
+            RangeProver::write_trace(RC_COMPONENT_ID, &mut self.registry)
         }
 
         fn interact(
@@ -85,25 +85,19 @@ pub mod tests {
             trace: &ColumnVec<CircleEvaluation<CpuBackend, BaseField, BitReversedOrder>>,
             elements: &InteractionElements,
         ) -> Vec<CircleEvaluation<CpuBackend, BaseField, BitReversedOrder>> {
-            let component_generator = self
-                .registry
-                .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID);
+            let component_generator = self.registry.get_generator::<RangeProver>(RC_COMPONENT_ID);
             component_generator.write_interaction_trace(&trace.iter().collect(), elements)
         }
 
         fn to_air_prover(&self) -> impl AirProver<CpuBackend> {
-            let component_generator = self
-                .registry
-                .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID);
+            let component_generator = self.registry.get_generator::<RangeProver>(RC_COMPONENT_ID);
             TestAir {
                 component: component_generator.component(),
             }
         }
 
         fn composition_log_degree_bound(&self) -> u32 {
-            let component_generator = self
-                .registry
-                .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID);
+            let component_generator = self.registry.get_generator::<RangeProver>(RC_COMPONENT_ID);
             component_generator
                 .component()
                 .max_constraint_log_degree_bound()
@@ -156,7 +150,7 @@ pub mod tests {
         let air = TestAir {
             component: air
                 .registry
-                .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
+                .get_generator::<RangeProver>(RC_COMPONENT_ID)
                 .component(),
         };
         commit_and_verify(proof, &air, verifier_channel).unwrap();

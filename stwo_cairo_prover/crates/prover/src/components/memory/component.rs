@@ -5,7 +5,7 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
-use super::MemoryLookupElements;
+use super::MemoryElements;
 
 pub const N_M31_IN_FELT252: usize = 28;
 pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
@@ -19,7 +19,7 @@ pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 #[derive(Clone)]
 pub struct MemoryComponent {
     pub log_n_rows: u32,
-    pub lookup_elements: MemoryLookupElements,
+    pub lookup_elements: MemoryElements,
     pub claimed_sum: QM31,
 }
 impl MemoryComponent {
@@ -28,7 +28,7 @@ impl MemoryComponent {
     }
     pub fn new(
         claim: MemoryClaim,
-        lookup_elements: MemoryLookupElements,
+        lookup_elements: MemoryElements,
         interaction_claim: MemoryInteractionClaim,
     ) -> Self {
         Self {
