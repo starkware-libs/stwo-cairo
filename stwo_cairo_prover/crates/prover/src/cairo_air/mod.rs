@@ -113,7 +113,6 @@ pub fn lookup_sum_valid(
 pub struct CairoComponentGenerator {
     ret: Vec<StandardComponent<RetOpcode>>,
     addr_to_id: AddrToIdComponent,
-    // ...
 }
 
 impl CairoComponentGenerator {
@@ -127,6 +126,8 @@ impl CairoComponentGenerator {
             .iter()
             .zip(interaction_claim.ret.iter())
             .map(|(claim, interaction_claim)| {
+                println!("L0 {:?}", claim.log_sizes());
+
                 StandardComponent::new(
                     claim.clone(),
                     interaction_elements.opcode.clone(),
@@ -134,6 +135,7 @@ impl CairoComponentGenerator {
                 )
             })
             .collect_vec();
+        println!("L0 {:?}", cairo_claim.addr_to_id.log_sizes());
         let addr_to_id = AddrToIdComponent::new(
             cairo_claim.addr_to_id.clone(),
             interaction_elements.opcode.memory_elements.clone(),
@@ -163,10 +165,12 @@ impl CairoComponentGenerator {
         vec
     }
 
+    #[allow(dead_code)]
     fn assert_constraints(&self, trace_polys: TreeVec<Vec<CirclePoly<SimdBackend>>>) {
         let mut trace_polys = trace_polys.map(|x| x.into_iter());
         for ret in self.ret.iter() {
             let mask_offsets = ret.evaluate(InfoEvaluator::default()).mask_offsets;
+            println!("L1 {:?}", mask_offsets.as_ref().map(|x| x.len()));
             let polys = trace_polys
                 .as_mut()
                 .zip(mask_offsets)
@@ -175,6 +179,11 @@ impl CairoComponentGenerator {
                 ret.evaluate(e);
             });
         }
+        let mask_offsets = self
+            .addr_to_id
+            .evaluate(InfoEvaluator::default())
+            .mask_offsets;
+        println!("L1 {:?}", mask_offsets.as_ref().map(|x| x.len()));
     }
 }
 

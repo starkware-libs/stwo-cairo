@@ -191,7 +191,7 @@ pub struct AddrToIdLookupData {
     pub mult: [Vec<Simd<u32, N_LANES>>; N_IDS_PER_LINE],
 }
 impl StandardLookupData for AddrToIdLookupData {
-    const N_LOOKUPS: usize = 2 * N_IDS_PER_LINE;
+    const N_LOOKUPS: usize = N_IDS_PER_LINE;
     type Elements = LookupElements<2>;
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         (0..N_IDS_PER_LINE)

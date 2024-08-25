@@ -112,7 +112,7 @@ impl<O: Standard> StandardClaim<O> {
         let interaction_1_log_sizes =
             vec![
                 self.log_size;
-                SECURE_EXTENSION_DEGREE * O::LookupData::N_LOOKUPS * O::N_REPETITIONS / 2
+                SECURE_EXTENSION_DEGREE * (O::LookupData::N_LOOKUPS * O::N_REPETITIONS).div_ceil(2)
             ];
         TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
     }
