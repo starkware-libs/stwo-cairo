@@ -4,9 +4,9 @@ use std::simd::u32x16;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::fields::m31::M31;
 
-use crate::components::memory::component::N_M31_IN_FELT252;
-use crate::components::memory::N_BITS_PER_FELT;
-use crate::components::range_check_builtin::component::N_VALUES_FELTS;
+use crate::components::memory::N_MEM_BIG_LIMB_BITS;
+
+const N_BITS_PER_FELT: usize = N_MEM_BIG_LIMB_BITS;
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
@@ -55,18 +55,18 @@ where
 }
 
 /// Splits a 128 bit dense representation into felts, each with N_BITS_PER_FELT bits.
-pub fn split_u128_simd(x: [u32x16; 4]) -> [PackedM31; N_VALUES_FELTS] {
-    split(x, u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]))
+pub fn split_u128_simd(x: [u32x16; 4]) -> [PackedM31; 5] {
+    split(x, u32x16::from_array([(1 << 27) - 1; N_LANES]))
         .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
 }
 
 /// Splits a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
-pub fn split_f252_simd(x: [u32x16; 8]) -> [PackedM31; N_M31_IN_FELT252] {
-    split(x, u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]))
+pub fn split_f252_simd(x: [u32x16; 8]) -> [PackedM31; 10] {
+    split(x, u32x16::from_array([(1 << 27) - 1; N_LANES]))
         .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
 }
 
 /// Splits a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
-pub fn split_f252(x: [u32; 8]) -> [M31; N_M31_IN_FELT252] {
-    split(x, (1 << N_BITS_PER_FELT) - 1).map(M31::from_u32_unchecked)
+pub fn split_f252(x: [u32; 8]) -> [M31; 10] {
+    split(x, (1 << 27) - 1).map(M31::from_u32_unchecked)
 }

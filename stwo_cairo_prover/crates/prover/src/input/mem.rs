@@ -171,7 +171,7 @@ impl DerefMut for MemoryBuilder {
 }
 
 #[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
-pub struct EncodedMemoryValueId(u32);
+pub struct EncodedMemoryValueId(pub u32);
 impl EncodedMemoryValueId {
     pub fn encode(value: MemoryValueId) -> EncodedMemoryValueId {
         match value {

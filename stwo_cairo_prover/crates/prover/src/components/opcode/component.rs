@@ -6,7 +6,8 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use super::prover::N_REPETITIONS;
-use super::{FVmState, Opcode, OpcodeElements, OPCODE_N_TRACE_CELLS};
+use super::{FVmState, Opcode, OpcodeElements};
+use crate::components::{StandardInteractionClaim, StandardLookupData};
 
 #[derive(Clone)]
 pub struct OpcodeComponent<O: Opcode> {
@@ -19,7 +20,7 @@ impl<O: Opcode> OpcodeComponent<O> {
     pub fn new(
         ret_claim: OpcodeClaim<O>,
         opcode_elements: OpcodeElements,
-        interaction_claim: OpcodeInteractionClaim,
+        interaction_claim: StandardInteractionClaim,
     ) -> Self {
         Self {
             log_size: ret_claim.log_size,
@@ -73,19 +74,12 @@ impl<O: Opcode> OpcodeClaim<O> {
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let interaction_0_log_sizes = vec![self.log_size; OPCODE_N_TRACE_CELLS];
-        let interaction_1_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * O::N_LOOKUPS];
+        let interaction_0_log_sizes = vec![self.log_size; O::n_columns() * N_REPETITIONS];
+        let interaction_1_log_sizes =
+            vec![
+                self.log_size;
+                SECURE_EXTENSION_DEGREE * O::LookupData::N_LOOKUPS * N_REPETITIONS / 2
+            ];
         TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
-    }
-}
-
-#[derive(Clone)]
-pub struct OpcodeInteractionClaim {
-    pub log_size: u32,
-    pub claimed_sum: SecureField,
-}
-impl OpcodeInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
     }
 }
