@@ -1,5 +1,6 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
+use stwo_prover::constraint_framework::{assert_constraints, FrameworkComponent, InfoEvaluator};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
@@ -7,7 +8,7 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::{
     CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
 };
-use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
+use stwo_prover::core::poly::circle::{CanonicCoset, CirclePoly, PolyOps};
 use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo_prover::core::vcs::ops::MerkleHasher;
@@ -85,14 +86,14 @@ pub fn lookup_sum_valid(
     interaction_claim: &CairoInteractionClaim,
 ) -> bool {
     let mut sum = QM31::zero();
-    // // Public memory.
-    // // TODO(spapini): Optimized inverse.
+    // Public memory.
+    // TODO(spapini): Optimized inverse.
     // sum += claim
     //     .public_memory
     //     .iter()
     //     .map(|(addr, val)| {
     //         elements
-    //             .memory_lookup
+    //             .opcode.memory_elements.addr_to_id
     //             .combine::<M31, QM31>(
     //                 &[
     //                     [M31::from_u32_unchecked(*addr)].as_slice(),
@@ -161,6 +162,20 @@ impl CairoComponentGenerator {
         vec.push(&self.addr_to_id);
         vec
     }
+
+    fn assert_constraints(&self, trace_polys: TreeVec<Vec<CirclePoly<SimdBackend>>>) {
+        let mut trace_polys = trace_polys.map(|x| x.into_iter());
+        for ret in self.ret.iter() {
+            let mask_offsets = ret.evaluate(InfoEvaluator::default()).mask_offsets;
+            let polys = trace_polys
+                .as_mut()
+                .zip(mask_offsets)
+                .map(|(polys, masks)| polys.take(masks.len()).collect_vec());
+            assert_constraints(&polys, CanonicCoset::new(ret.log_size()), |e| {
+                ret.evaluate(e);
+            });
+        }
+    }
 }
 
 const LOG_MAX_ROWS: u32 = 20;
@@ -198,10 +213,10 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         },
     };
 
-    // Add public memory.
-    for addr in &input.public_mem_addresses {
-        opcode_ctx.addr_to_id.add_inputs(*addr);
-    }
+    // // Add public memory.
+    // for addr in &input.public_mem_addresses {
+    //     opcode_ctx.addr_to_id.add_inputs(*addr);
+    // }
 
     let mut tree_builder = commitment_scheme.tree_builder();
     let (ret_claim, ret) = ret_prover.write_trace(&mut tree_builder, opcode_ctx);
@@ -237,11 +252,10 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         ret: vec![ret_interaction_claim.clone()],
         addr_to_id: addr_to_id_interaction_claim.clone(),
     };
-    debug_assert!(lookup_sum_valid(
-        &claim,
-        &interaction_elements,
-        &interaction_claim
-    ));
+    debug_assert!(
+        lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
+        "Lookups are invalid"
+    );
     interaction_claim.mix_into(channel);
     tree_builder.commit(channel);
 
@@ -249,6 +263,13 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let component_builder =
         CairoComponentGenerator::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_builder.provers();
+
+    // TODO: Remove. Only for debugging.
+    let trace_polys = commitment_scheme
+        .trees
+        .as_ref()
+        .map(|t| t.polynomials.iter().cloned().collect_vec());
+    component_builder.assert_constraints(trace_polys);
 
     // Prove stark.
     let proof = prove::<SimdBackend, _>(

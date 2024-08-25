@@ -64,7 +64,10 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
         fp: t.fp as u64,
     });
 
-    let mem_config = MemConfig::default();
+    let mem_config = MemConfig {
+        small_min_neg: 1 << 16,
+        small_max: runner.relocated_memory.len() as u32,
+    };
     let mem = MemoryBuilder::from_iter(mem_config, mem);
     let instructions = Instructions::from_iter(trace, &mem);
 

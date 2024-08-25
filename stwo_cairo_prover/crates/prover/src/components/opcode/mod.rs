@@ -2,13 +2,15 @@ use std::simd::Simd;
 
 use stwo_prover::core::backend::simd::m31::N_LANES;
 use stwo_prover::core::channel::Channel;
+use stwo_prover::core::fields::m31::M31;
 
 use super::memory::{AddrToIdProverBuilder, InstructionElements, MemoryElements};
 use super::range_check::{RangeElements, RangeProver};
 use crate::input::instructions::VmState;
 
-// pub mod component;
-// pub mod prover;
+pub fn cairo_offset(val: i32) -> M31 {
+    M31::from(val + (1 << 15))
+}
 
 pub struct PackedVmState {
     pub pc: Simd<u32, N_LANES>,

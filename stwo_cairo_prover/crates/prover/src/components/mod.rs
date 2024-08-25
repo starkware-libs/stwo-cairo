@@ -158,11 +158,13 @@ impl<C: Standard> StandardProver<C> {
     ) -> (StandardClaim<C>, StandardInteractionProver<C::LookupData>) {
         let inputs = self.inputs;
         let n_cols = C::n_columns();
+        assert_eq!(inputs.len() % C::N_REPETITIONS, 0);
+        let n_rows = inputs.len() / C::N_REPETITIONS * N_LANES;
         let mut trace_values = (0..(n_cols * C::N_REPETITIONS))
-            .map(|_| BaseColumn::zeros(inputs.len() / C::N_REPETITIONS * N_LANES))
+            .map(|_| BaseColumn::zeros(n_rows))
             .collect_vec();
 
-        let log_size = inputs.len().ilog2() + LOG_N_LANES;
+        let log_size = n_rows.ilog2();
         let mut lookup_data = (0..C::N_REPETITIONS)
             .map(|_| C::new_lookup_data(log_size))
             .collect_vec();
@@ -228,7 +230,8 @@ impl<LD: StandardLookupData> StandardInteractionProver<LD> {
             col_gen.finalize_col();
         }
         // TODO: Remainder.
-        assert!(it.into_remainder().is_none());
+        let remainder = it.into_remainder();
+        assert!(remainder.map(|x| x.count() == 0).unwrap_or(true));
 
         let (trace, claimed_sum) = logup_gen.finalize();
         tree_builder.extend_evals(trace);
