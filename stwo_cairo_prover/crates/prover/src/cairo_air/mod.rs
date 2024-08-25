@@ -14,14 +14,11 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::InteractionElements;
 use thiserror::Error;
 
-use crate::components::memory::component::{AddrToIdClaim, AddrToIdComponent};
-use crate::components::memory::prover::AddrToIdProverBuilder;
-use crate::components::opcode::component::{OpcodeClaim, OpcodeComponent};
-use crate::components::opcode::prover::OpcodeProver;
+use crate::components::memory::{AddrToIdClaim, AddrToIdComponent, AddrToIdProverBuilder};
 use crate::components::opcode::{CpuRangeProvers, OpcodeElements, OpcodeGenContext};
 use crate::components::range_check::RangeProver;
-use crate::components::ret_opcode::RetOpcode;
-use crate::components::StandardInteractionClaim;
+use crate::components::ret_opcode::{RetOpcode, RetProver};
+use crate::components::{StandardClaim, StandardComponent, StandardInteractionClaim};
 use crate::input::instructions::VmState;
 use crate::input::{CairoInput, SegmentAddrs};
 
@@ -39,7 +36,7 @@ pub struct CairoClaim {
     pub range_check: SegmentAddrs,
 
     // Opcodes.
-    pub ret: Vec<OpcodeClaim<RetOpcode>>,
+    pub ret: Vec<StandardClaim<RetOpcode>>,
 
     // Memory.
     pub addr_to_id: AddrToIdClaim,
@@ -113,7 +110,7 @@ pub fn lookup_sum_valid(
 }
 
 pub struct CairoComponentGenerator {
-    ret: Vec<OpcodeComponent<RetOpcode>>,
+    ret: Vec<StandardComponent<RetOpcode>>,
     addr_to_id: AddrToIdComponent,
     // ...
 }
@@ -129,7 +126,7 @@ impl CairoComponentGenerator {
             .iter()
             .zip(interaction_claim.ret.iter())
             .map(|(claim, interaction_claim)| {
-                OpcodeComponent::new(
+                StandardComponent::new(
                     claim.clone(),
                     interaction_elements.opcode.clone(),
                     interaction_claim.clone(),
@@ -189,7 +186,9 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     // TODO: Table interaction.
 
     // Base trace.
-    let ret_prover = OpcodeProver::new(input.instructions.ret);
+    let ret_prover = RetProver::new(input.instructions.ret.into_iter())
+        .pop()
+        .unwrap();
     let mut addr_to_id = AddrToIdProverBuilder::new(input.mem.address_to_id);
     let opcode_ctx = &mut OpcodeGenContext {
         addr_to_id: &mut addr_to_id,
@@ -207,7 +206,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let mut tree_builder = commitment_scheme.tree_builder();
     let (ret_claim, ret) = ret_prover.write_trace(&mut tree_builder, opcode_ctx);
     let addr_to_id = addr_to_id.build();
-    let (memory_claim, addr_to_id) = addr_to_id.write_trace(&mut tree_builder);
+    let (memory_claim, addr_to_id) = addr_to_id.write_trace(&mut tree_builder, &mut ());
 
     // Commit to the claim and the trace.
     let claim = CairoClaim {

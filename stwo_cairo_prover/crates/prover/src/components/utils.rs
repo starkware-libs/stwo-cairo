@@ -9,7 +9,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 pub fn to_evals(
     trace_values: Vec<BaseColumn>,
 ) -> Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>> {
-    let trace = trace_values
+    trace_values
         .into_iter()
         .map(|eval| {
             // TODO(Ohad): Support non-power of 2 inputs.
@@ -21,6 +21,5 @@ pub fn to_evals(
             .circle_domain();
             CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(domain, eval)
         })
-        .collect_vec();
-    trace
+        .collect_vec()
 }
