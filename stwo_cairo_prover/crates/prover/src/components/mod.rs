@@ -1,4 +1,5 @@
 use itertools::{chain, Itertools};
+use num_traits::One;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
@@ -21,7 +22,7 @@ pub mod utils;
 pub const LOOKUP_INTERACTION_PHASE: usize = 1;
 
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, InfoEvaluator};
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use utils::to_evals;
@@ -34,8 +35,18 @@ pub trait Standard: Clone {
     type LookupData: StandardLookupData;
 
     const N_REPETITIONS: usize;
-    // TODO: Consider deducing from evaluate.
-    fn n_columns() -> usize;
+
+    fn n_columns() -> usize {
+        Self::info().mask_offsets[0].len()
+    }
+    fn info() -> InfoEvaluator {
+        let mut logup = LogupAtRow::<2, InfoEvaluator>::new(1, SecureField::one(), 1);
+        let mut eval = InfoEvaluator::default();
+        Self::evaluate(&mut eval, &mut logup, &Self::dummy_elements());
+        logup.finalize(&mut eval);
+        eval
+    }
+    fn dummy_elements() -> Self::LookupElements;
     fn new_lookup_data(log_size: u32) -> Self::LookupData;
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
@@ -101,20 +112,27 @@ pub struct StandardClaim<C: Standard> {
     pub n_instances: usize,
     pub phantom: std::marker::PhantomData<C>,
 }
-impl<O: Standard> StandardClaim<O> {
+impl<C: Standard> StandardClaim<C> {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_nonce(self.log_size as u64);
         channel.mix_nonce(self.n_instances as u64);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let interaction_0_log_sizes = vec![self.log_size; O::n_columns() * O::N_REPETITIONS];
+        let interaction_0_log_sizes = vec![self.log_size; C::n_columns() * C::N_REPETITIONS];
         let interaction_1_log_sizes =
             vec![
                 self.log_size;
-                SECURE_EXTENSION_DEGREE * (O::LookupData::N_LOOKUPS * O::N_REPETITIONS).div_ceil(2)
+                SECURE_EXTENSION_DEGREE * (C::LookupData::N_LOOKUPS * C::N_REPETITIONS).div_ceil(2)
             ];
-        TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
+        let log_sizes = TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes]);
+
+        debug_assert_eq!(
+            C::info().mask_offsets.map(|x| x.len())[..2],
+            log_sizes.as_ref().map(|x| x.len())[..2]
+        );
+
+        log_sizes
     }
 }
 
@@ -219,7 +237,11 @@ impl<LD: StandardLookupData> StandardInteractionProver<LD> {
     ) -> StandardInteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
-        let lookups = self.lookup_data.iter().flat_map(|ld| ld.lookups(elements));
+        let lookups = self.lookup_data.iter().flat_map(|ld| {
+            let lookups = ld.lookups(elements);
+            assert_eq!(lookups.len(), LD::N_LOOKUPS);
+            lookups
+        });
         let mut it = lookups.array_chunks();
         for [l0, l1] in &mut it {
             let mut col_gen = logup_gen.new_col();

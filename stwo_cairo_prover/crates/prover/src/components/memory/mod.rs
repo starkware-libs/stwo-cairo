@@ -32,6 +32,13 @@ impl MemoryElements {
             id_to_big: LookupElements::draw(channel),
         }
     }
+
+    pub fn dummy() -> MemoryElements {
+        Self {
+            addr_to_id: LookupElements::dummy(),
+            id_to_big: LookupElements::dummy(),
+        }
+    }
 }
 
 pub type AddrToIdProver = StandardProver<AddrToId>;
@@ -73,7 +80,6 @@ impl AddrToIdProverBuilder {
         self.ids[addr]
     }
     pub fn build(self) -> AddrToIdProver {
-        println!("ids: {:?}", self.ids);
         let size = self.ids.len();
         // Cut self.ids and self.mults into a vector of AddToIdInput s.
         let inputs = (0..size).step_by(N_IDS_PER_LINE).map(|i| {
@@ -122,8 +128,8 @@ impl Standard for AddrToId {
     type LookupData = AddrToIdLookupData;
     const N_REPETITIONS: usize = 1;
 
-    fn n_columns() -> usize {
-        1 + N_IDS_PER_LINE * 2
+    fn dummy_elements() -> Self::LookupElements {
+        MemoryElements::dummy()
     }
 
     fn new_lookup_data(log_size: u32) -> Self::LookupData {
@@ -209,17 +215,6 @@ impl StandardLookupData for AddrToIdLookupData {
                         let mult = unsafe { PackedM31::from_simd_unchecked(self.mult[i][row]) };
                         let denom = elements.combine(&[addr, id]);
 
-                        // TODO: Debug.
-                        for i in 0..N_LANES {
-                            if mult.to_array()[i].0 != 0 {
-                                println!(
-                                    "A mult: -{} addr: {} id: {}",
-                                    mult.to_array()[i].0,
-                                    addr.to_array()[i].0,
-                                    id.to_array()[i].0
-                                );
-                            }
-                        }
                         Fraction::new(-mult, denom)
                     }))
                         as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,

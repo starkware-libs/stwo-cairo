@@ -41,6 +41,14 @@ impl OpcodeElements {
             range_elements: RangeElements::draw(channel),
         }
     }
+
+    pub fn dummy() -> OpcodeElements {
+        Self {
+            memory_elements: MemoryElements::dummy(),
+            instruction_elements: InstructionElements::dummy(),
+            range_elements: RangeElements::dummy(),
+        }
+    }
 }
 
 // Move

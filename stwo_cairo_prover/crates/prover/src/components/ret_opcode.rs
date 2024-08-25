@@ -4,7 +4,7 @@ use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::EvalAtRow;
 use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
@@ -31,8 +31,8 @@ impl Standard for RetOpcode {
     type LookupData = RetLookupData;
     const N_REPETITIONS: usize = 1;
 
-    fn n_columns() -> usize {
-        5
+    fn dummy_elements() -> Self::LookupElements {
+        OpcodeElements::dummy()
     }
     fn new_lookup_data(log_size: u32) -> Self::LookupData {
         RetLookupData {
@@ -152,14 +152,6 @@ impl StandardLookupData for RetLookupData {
                     self.fp[row] - PackedM31::broadcast(M31::from(1)),
                     self.new_fp[row],
                 ]);
-                // TODO: Debug.
-                for i in 0..N_LANES {
-                    println!(
-                        "B mult: 1 addr: {} id: {}",
-                        self.fp[row].to_array()[i].0 - 1,
-                        self.new_fp[row].to_array()[i].0,
-                    );
-                }
                 Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // fp-2 lookup.
@@ -168,14 +160,6 @@ impl StandardLookupData for RetLookupData {
                     self.fp[row] - PackedM31::broadcast(M31::from(2)),
                     self.new_pc[row],
                 ]);
-                // TODO: Debug.
-                for i in 0..N_LANES {
-                    println!(
-                        "C mult: 1 addr: {} id: {}",
-                        self.fp[row].to_array()[i].0 - 2,
-                        self.new_pc[row].to_array()[i].0,
-                    );
-                }
                 Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
