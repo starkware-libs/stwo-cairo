@@ -21,13 +21,18 @@ use crate::components::memory::component::{
 };
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
+use crate::components::range_check_builtin::component::{
+    RangeCheckBuiltinClaim, RangeCheckBuiltinComponent, RangeCheckBuiltinEval,
+    RangeCheckBuiltinInteractionClaim,
+};
+use crate::components::range_check_builtin::prover::RangeCheckBuiltinClaimProver;
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeEval, RetOpcodeInteractionClaim,
 };
 use crate::components::ret_opcode::prover::RetOpcodeClaimProver;
 use crate::felt::split_f252;
 use crate::input::instructions::VmState;
-use crate::input::{CairoInput, SegmentAddrs};
+use crate::input::CairoInput;
 
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
@@ -40,23 +45,26 @@ pub struct CairoClaim {
     pub public_memory: Vec<(u32, [u32; 8])>,
     pub initial_state: VmState,
     pub final_state: VmState,
-    pub range_check: SegmentAddrs,
 
     pub ret: Vec<RetOpcodeClaim>,
+    pub range_check_builtin: RangeCheckBuiltinClaim,
     pub memory: MemoryClaim,
     // ...
 }
+
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
         self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.range_check_builtin.mix_into(channel);
         self.memory.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
-            [self.memory.log_sizes()]
+            [self.range_check_builtin.log_sizes()],
+            [self.memory.log_sizes()],
         ))
     }
 }
@@ -75,12 +83,15 @@ impl CairoInteractionElements {
 
 pub struct CairoInteractionClaim {
     pub ret: Vec<RetOpcodeInteractionClaim>,
+    pub range_check_builtin: RangeCheckBuiltinInteractionClaim,
     pub memory: MemoryInteractionClaim,
     // ...
 }
+
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.range_check_builtin.mix_into(channel);
         self.memory.mix_into(channel);
     }
 }
@@ -110,13 +121,15 @@ pub fn lookup_sum_valid(
         })
         .sum::<SecureField>();
     // TODO: include initial and final state.
-    sum += interaction_claim.memory.claimed_sum;
     sum += interaction_claim.ret[0].claimed_sum;
+    sum += interaction_claim.range_check_builtin.claimed_sum;
+    sum += interaction_claim.memory.claimed_sum;
     sum == SecureField::zero()
 }
 
 pub struct CairoComponents {
     ret: Vec<RetOpcodeComponent>,
+    range_check_builtin: RangeCheckBuiltinComponent,
     memory: MemoryComponent,
     // ...
 }
@@ -144,6 +157,14 @@ impl CairoComponents {
                 )
             })
             .collect_vec();
+        let range_check_builtin_component = RangeCheckBuiltinComponent::new(
+            tree_span_provider,
+            RangeCheckBuiltinEval::new(
+                cairo_claim.range_check_builtin.clone(),
+                interaction_elements.memory_lookup.clone(),
+                interaction_claim.range_check_builtin.clone(),
+            ),
+        );
         let memory_component = MemoryComponent::new(
             tree_span_provider,
             MemoryEval::new(
@@ -152,8 +173,10 @@ impl CairoComponents {
                 interaction_claim.memory.clone(),
             ),
         );
+
         Self {
             ret: ret_components,
+            range_check_builtin: range_check_builtin_component,
             memory: memory_component,
         }
     }
@@ -163,6 +186,7 @@ impl CairoComponents {
         for ret in self.ret.iter() {
             vec.push(ret);
         }
+        vec.push(&self.range_check_builtin);
         vec.push(&self.memory);
         vec
     }
@@ -172,6 +196,7 @@ impl CairoComponents {
         for ret in self.ret.iter() {
             vec.push(ret);
         }
+        vec.push(&self.range_check_builtin);
         vec.push(&self.memory);
         vec
     }
@@ -203,6 +228,8 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     // Base trace.
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
     let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
+    let range_check_builtin_trace_generator =
+        RangeCheckBuiltinClaimProver::new(input.range_check_builtin);
     let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
 
     // Add public memory.
@@ -213,6 +240,9 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let mut tree_builder = commitment_scheme.tree_builder();
     let (ret_claim, ret_interaction_prover) =
         ret_trace_generator.write_trace(&mut tree_builder, &mut memory_trace_generator);
+    let (range_check_builtin_claim, range_check_builtin_interaction_prover) =
+        range_check_builtin_trace_generator
+            .write_trace(&mut tree_builder, &mut memory_trace_generator);
     let (memory_claim, memory_interaction_prover) =
         memory_trace_generator.write_trace(&mut tree_builder);
 
@@ -221,8 +251,8 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
         public_memory,
         initial_state: input.instructions.initial_state,
         final_state: input.instructions.final_state,
-        range_check: input.range_check,
         ret: vec![ret_claim],
+        range_check_builtin: range_check_builtin_claim.clone(),
         memory: memory_claim.clone(),
     };
     claim.mix_into(channel);
@@ -235,12 +265,15 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let mut tree_builder = commitment_scheme.tree_builder();
     let ret_interaction_claim = ret_interaction_prover
         .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
+    let range_check_builtin_interaction_claim = range_check_builtin_interaction_prover
+        .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
     let memory_interaction_claim = memory_interaction_prover
         .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
 
     // Commit to the interaction claim and the interaction trace.
     let interaction_claim = CairoInteractionClaim {
         ret: vec![ret_interaction_claim.clone()],
+        range_check_builtin: range_check_builtin_interaction_claim.clone(),
         memory: memory_interaction_claim.clone(),
     };
     debug_assert!(lookup_sum_valid(
@@ -317,6 +350,12 @@ mod tests {
 
     fn test_input() -> CairoInput {
         let instructions = casm! {
+            // TODO(AlonH): Add actual range check segment.
+            // Manually writing range check builtin segment of size 40 to memory.
+            [ap] = 1, ap++;
+            [ap + 38] = 1, ap++;
+            ap += 38;
+
             [ap] = 10, ap++;
             call rel 4;
             jmp rel 11;
