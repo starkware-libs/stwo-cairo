@@ -1,3 +1,4 @@
+use std::simd::num::SimdInt;
 use std::simd::Simd;
 
 use num_traits::{One, Zero};
@@ -9,15 +10,17 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
 
-use super::opcode::PackedVmState;
-use super::{
-    LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
+use super::super::{
+    LookupFunc, Standard, StandardClaim, StandardComponent, StandardInteractionProver,
+    StandardLookupData, StandardProver,
 };
+use super::PackedVmState;
 use crate::components::opcode::{OpcodeElements, OpcodeGenContext};
 
 pub type RetProver = StandardProver<RetOpcode>;
 pub type RetClaim = StandardClaim<RetOpcode>;
 pub type RetComponent = StandardComponent<RetOpcode>;
+pub type RetInteractionProver = StandardInteractionProver<RetLookupData>;
 
 // const RET_FLAGS: u32 = 0b010000010001011;
 
@@ -29,12 +32,14 @@ impl Standard for RetOpcode {
     type Context<'a> = OpcodeGenContext<'a>;
     type PackedInput = PackedVmState;
     type LookupData = RetLookupData;
+    type Params = ();
     const N_REPETITIONS: usize = 2;
 
     fn dummy_elements() -> Self::LookupElements {
         OpcodeElements::dummy()
     }
-    fn new_lookup_data(log_size: u32) -> Self::LookupData {
+    fn dummy_params() -> Self::Params {}
+    fn new_lookup_data(log_size: u32, _params: &()) -> Self::LookupData {
         RetLookupData {
             log_size,
             pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
@@ -47,6 +52,7 @@ impl Standard for RetOpcode {
         eval: &mut E,
         logup: &mut LogupAtRow<2, E>,
         elements: &OpcodeElements,
+        _params: &(),
     ) {
         let _pc = eval.next_trace_mask();
         let _ap = eval.next_trace_mask();
@@ -89,14 +95,14 @@ impl Standard for RetOpcode {
     }
     fn write_trace_row(
         dst: &mut [BaseColumn],
-        state_input: &PackedVmState,
+        input: &PackedVmState,
         row_index: usize,
         ctx: &mut OpcodeGenContext<'_>,
         lookup_data: &mut Self::LookupData,
     ) {
-        let pc = unsafe { PackedM31::from_simd_unchecked(state_input.pc) };
-        let ap = unsafe { PackedM31::from_simd_unchecked(state_input.ap) };
-        let fp = unsafe { PackedM31::from_simd_unchecked(state_input.fp) };
+        let pc = unsafe { PackedM31::from_simd_unchecked(input.pc) };
+        let ap = unsafe { PackedM31::from_simd_unchecked(input.ap) };
+        let fp = unsafe { PackedM31::from_simd_unchecked(input.fp) };
         dst[0].data[row_index] = pc;
         dst[1].data[row_index] = ap;
         dst[2].data[row_index] = fp;
@@ -107,13 +113,15 @@ impl Standard for RetOpcode {
 
         let new_fp = ctx
             .addr_to_id
-            .add_inputs_simd(state_input.fp - Simd::splat(1));
+            .add_inputs_simd(ctx.mem, input.fp - Simd::splat(1));
+        let new_fp = unsafe { PackedM31::from_simd_unchecked(new_fp.cast()) };
         dst[3].data[row_index] = new_fp;
         lookup_data.new_fp[row_index] = new_fp;
 
         let new_pc = ctx
             .addr_to_id
-            .add_inputs_simd(state_input.fp - Simd::splat(2));
+            .add_inputs_simd(ctx.mem, input.fp - Simd::splat(2));
+        let new_pc = unsafe { PackedM31::from_simd_unchecked(new_pc.cast()) };
         dst[4].data[row_index] = new_pc;
         lookup_data.new_pc[row_index] = new_pc;
     }

@@ -15,7 +15,6 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 pub mod memory;
 pub mod opcode;
 pub mod range_check;
-pub mod ret_opcode;
 pub mod utils;
 
 // TODO(ShaharS): Move to a common file.
@@ -33,6 +32,7 @@ pub trait Standard: Clone {
     type Context<'a>;
     type PackedInput;
     type LookupData: StandardLookupData;
+    type Params;
 
     const N_REPETITIONS: usize;
 
@@ -42,16 +42,23 @@ pub trait Standard: Clone {
     fn info() -> InfoEvaluator {
         let mut logup = LogupAtRow::<2, InfoEvaluator>::new(1, SecureField::one(), 1);
         let mut eval = InfoEvaluator::default();
-        Self::evaluate(&mut eval, &mut logup, &Self::dummy_elements());
+        Self::evaluate(
+            &mut eval,
+            &mut logup,
+            &Self::dummy_elements(),
+            &Self::dummy_params(),
+        );
         logup.finalize(&mut eval);
         eval
     }
     fn dummy_elements() -> Self::LookupElements;
-    fn new_lookup_data(log_size: u32) -> Self::LookupData;
+    fn dummy_params() -> Self::Params;
+    fn new_lookup_data(log_size: u32, params: &Self::Params) -> Self::LookupData;
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
         logup: &mut LogupAtRow<2, E>,
         elements: &Self::LookupElements,
+        params: &Self::Params,
     );
     fn write_trace_row(
         dst: &mut [BaseColumn],
@@ -66,6 +73,7 @@ pub trait Standard: Clone {
 #[derive(Clone)]
 pub struct StandardComponent<C: Standard> {
     pub log_size: u32,
+    pub params: C::Params,
     pub opcode_elements: C::LookupElements,
     pub claimed_sum: SecureField,
     phantom: std::marker::PhantomData<C>,
@@ -78,6 +86,7 @@ impl<C: Standard> StandardComponent<C> {
     ) -> Self {
         Self {
             log_size: ret_claim.log_size,
+            params: ret_claim.params,
             opcode_elements,
             claimed_sum: interaction_claim.claimed_sum,
             phantom: std::marker::PhantomData,
@@ -98,7 +107,7 @@ impl<C: Standard> FrameworkComponent for StandardComponent<C> {
         let mut logup = LogupAtRow::<2, E>::new(1, self.claimed_sum, self.log_size);
 
         for _ in 0..C::N_REPETITIONS {
-            C::evaluate(&mut eval, &mut logup, &self.opcode_elements);
+            C::evaluate(&mut eval, &mut logup, &self.opcode_elements, &self.params);
         }
 
         logup.finalize(&mut eval);
@@ -110,12 +119,14 @@ impl<C: Standard> FrameworkComponent for StandardComponent<C> {
 pub struct StandardClaim<C: Standard> {
     pub log_size: u32,
     pub n_instances: usize,
+    pub params: C::Params,
     pub phantom: std::marker::PhantomData<C>,
 }
 impl<C: Standard> StandardClaim<C> {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_nonce(self.log_size as u64);
         channel.mix_nonce(self.n_instances as u64);
+        // TODO: mix params. Have some Channel serialization trait.
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -141,10 +152,14 @@ impl<C: Standard> StandardClaim<C> {
 pub struct StandardProver<C: Standard> {
     pub inputs: Vec<C::PackedInput>,
     pub n_instances: usize,
+    pub params: C::Params,
     pub phantom: std::marker::PhantomData<C>,
 }
 impl<C: Standard> StandardProver<C> {
-    pub fn new<Input: Clone>(inputs: impl ExactSizeIterator<Item = Input>) -> Vec<Self>
+    pub fn new<Input: Clone>(
+        params: C::Params,
+        inputs: impl ExactSizeIterator<Item = Input>,
+    ) -> Vec<Self>
     where
         C::PackedInput: From<[Input; N_LANES]>,
     {
@@ -166,6 +181,7 @@ impl<C: Standard> StandardProver<C> {
         vec![Self {
             inputs: packed_inputs,
             n_instances,
+            params,
             phantom: std::marker::PhantomData,
         }]
     }
@@ -184,7 +200,7 @@ impl<C: Standard> StandardProver<C> {
 
         let log_size = n_rows.ilog2();
         let mut lookup_data = (0..C::N_REPETITIONS)
-            .map(|_| C::new_lookup_data(log_size))
+            .map(|_| C::new_lookup_data(log_size, &self.params))
             .collect_vec();
 
         for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
@@ -204,6 +220,7 @@ impl<C: Standard> StandardProver<C> {
         let claim = StandardClaim {
             log_size,
             n_instances: self.n_instances,
+            params: self.params,
             phantom: std::marker::PhantomData,
         };
 
