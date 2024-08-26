@@ -44,7 +44,7 @@ impl RangeCheckClaimProver {
             .len()
             .next_power_of_two()
             .max(MIN_SIMD_TRACE_LENGTH);
-        addresses.resize(size, 0);
+        addresses.resize(size, addresses[0]);
 
         let inputs = addresses
             .into_iter()

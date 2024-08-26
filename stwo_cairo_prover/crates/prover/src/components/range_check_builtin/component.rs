@@ -71,6 +71,25 @@ pub struct RangeCheckBuiltinComponent {
     pub claimed_sum: SecureField,
 }
 
+impl RangeCheckBuiltinComponent {
+    pub fn new(
+        claim: RangeCheckBuiltinClaim,
+        memory_lookup_elements: MemoryLookupElements,
+        range2_lookup_elements: RangeCheckElements,
+        interaction_claim: RangeCheckBuiltinInteractionClaim,
+    ) -> Self {
+        let n_values = claim.memory_segment.end_addr - claim.memory_segment.begin_addr;
+        let log_size = n_values.next_power_of_two().ilog2();
+        Self {
+            log_size,
+            initial_memory_address: M31::from(claim.memory_segment.begin_addr),
+            memory_lookup_elements,
+            range2_lookup_elements,
+            claimed_sum: interaction_claim.claimed_sum,
+        }
+    }
+}
+
 impl FrameworkComponent for RangeCheckBuiltinComponent {
     fn log_size(&self) -> u32 {
         self.log_size
