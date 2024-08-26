@@ -2,7 +2,7 @@ use itertools::{chain, Itertools};
 use num_traits::One;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::Column;
@@ -127,8 +127,9 @@ impl<C: Standard> StandardClaim<C> {
             ];
         let log_sizes = TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes]);
 
+        // TODO: This is not always right for the lookups.
         debug_assert_eq!(
-            C::info().mask_offsets.map(|x| x.len())[..2],
+            C::info().mask_offsets.map(|x| x.len() * C::N_REPETITIONS)[..2],
             log_sizes.as_ref().map(|x| x.len())[..2]
         );
 
@@ -154,7 +155,6 @@ impl<C: Standard> StandardProver<C> {
             .next_power_of_two()
             .max(64);
 
-        // Pad the input vector to a power of 2.
         let new_size = n_rows * C::N_REPETITIONS;
         let mut inputs = inputs.peekable();
         let pad = inputs.peek().unwrap().clone();
@@ -190,7 +190,6 @@ impl<C: Standard> StandardProver<C> {
         for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
             for i in 0..C::N_REPETITIONS {
                 let offset = n_cols * i;
-                // Write opcode columns.
                 C::write_trace_row(
                     &mut trace_values[offset..(offset + n_cols)],
                     &inputs[i],
@@ -203,7 +202,7 @@ impl<C: Standard> StandardProver<C> {
 
         tree_builder.extend_evals(to_evals(trace_values));
         let claim = StandardClaim {
-            log_size: inputs.len().ilog2() + LOG_N_LANES,
+            log_size,
             n_instances: self.n_instances,
             phantom: std::marker::PhantomData,
         };
@@ -212,7 +211,7 @@ impl<C: Standard> StandardProver<C> {
             claim,
             StandardInteractionProver {
                 log_size,
-                lookup_data: lookup_data.into_iter().collect_vec(),
+                lookup_data,
             },
         )
     }

@@ -29,7 +29,7 @@ impl Standard for RetOpcode {
     type Context<'a> = OpcodeGenContext<'a>;
     type PackedInput = PackedVmState;
     type LookupData = RetLookupData;
-    const N_REPETITIONS: usize = 1;
+    const N_REPETITIONS: usize = 2;
 
     fn dummy_elements() -> Self::LookupElements {
         OpcodeElements::dummy()
@@ -132,6 +132,7 @@ impl StandardLookupData for RetLookupData {
 
     type Elements = OpcodeElements;
 
+    // TODO: Ensure length.
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         vec![
             // // TODO: Instruction lookup.
