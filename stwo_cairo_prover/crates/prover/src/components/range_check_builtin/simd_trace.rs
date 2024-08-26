@@ -121,10 +121,8 @@ mod tests {
     use stwo_prover::constraint_framework::constant_columns::gen_is_first;
     use stwo_prover::constraint_framework::FrameworkComponent;
     use stwo_prover::core::backend::simd::m31::N_LANES;
-    use stwo_prover::core::channel::{Blake2sChannel, Channel};
-    use stwo_prover::core::fields::IntoSlice;
+    use stwo_prover::core::channel::Blake2sChannel;
     use stwo_prover::core::pcs::TreeVec;
-    use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
 
     use super::*;
     use crate::components::memory::{MemoryLookupElements, N_BITS_PER_FELT};
@@ -216,7 +214,7 @@ mod tests {
         let (trace, lookup_data) =
             generate_trace(log_size, M31::from(address_initial_offset), &inputs);
 
-        let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
+        let channel = &mut Blake2sChannel::default();
         let memory_lookup_elements = MemoryLookupElements::draw(channel);
         let range2_lookup_elements = RangeElements::draw(channel);
 

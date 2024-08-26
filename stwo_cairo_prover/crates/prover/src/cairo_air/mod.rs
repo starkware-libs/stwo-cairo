@@ -3,14 +3,15 @@ use num_traits::Zero;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
-use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::fields::{FieldExpOps, IntoSlice};
-use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, TreeVec};
+use stwo_prover::core::fields::FieldExpOps;
+use stwo_prover::core::pcs::{
+    CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
+};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError, LOG_BLOWUP_FACTOR};
-use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
+use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::InteractionElements;
 use thiserror::Error;
@@ -168,15 +169,16 @@ impl CairoComponentGenerator {
 
 const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
+    let config = PcsConfig::default();
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(LOG_MAX_ROWS + LOG_BLOWUP_FACTOR + 2)
+        CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
             .circle_domain()
             .half_coset,
     );
 
     // Setup protocol.
-    let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(&[]));
-    let commitment_scheme = &mut CommitmentSchemeProver::new(LOG_BLOWUP_FACTOR, &twiddles);
+    let channel = &mut Blake2sChannel::default();
+    let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
 
     // Extract public memory.
     let public_memory = input
@@ -245,7 +247,7 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let components = component_builder.provers();
 
     // Prove stark.
-    let proof = prove::<SimdBackend, _, _>(
+    let proof = prove::<SimdBackend, _>(
         &components,
         channel,
         &InteractionElements::default(),
@@ -268,8 +270,10 @@ pub fn verify_cairo(
     }: CairoProof<Blake2sMerkleHasher>,
 ) -> Result<(), CairoVerificationError> {
     // Verify.
-    let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-    let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<Blake2sMerkleHasher>::new();
+    let config = PcsConfig::default();
+    let channel = &mut Blake2sChannel::default();
+    let commitment_scheme_verifier =
+        &mut CommitmentSchemeVerifier::<Blake2sMerkleChannel>::new(config);
 
     claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &claim.log_sizes()[0], channel);

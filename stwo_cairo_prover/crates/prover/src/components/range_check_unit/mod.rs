@@ -9,17 +9,15 @@ pub type RangeElements = LookupElements<1>;
 pub mod tests {
     use std::collections::BTreeMap;
 
-    use component::{RangeCheckUnitComponent, RangeCheckUnitTraceGenerator, RC_COMPONENT_ID, RC_Z};
     use stwo_prover::core::air::{Air, AirProver, Component, ComponentProver};
     use stwo_prover::core::backend::CpuBackend;
     use stwo_prover::core::channel::{Blake2sChannel, Channel};
     use stwo_prover::core::fields::m31::BaseField;
-    use stwo_prover::core::fields::IntoSlice;
+    use stwo_prover::core::pcs::PcsConfig;
     use stwo_prover::core::poly::circle::CircleEvaluation;
     use stwo_prover::core::poly::BitReversedOrder;
     use stwo_prover::core::prover::VerificationError;
-    use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
-    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
     use stwo_prover::core::{ColumnVec, InteractionElements, LookupValues};
     use stwo_prover::trace_generation::registry::ComponentGenerationRegistry;
     use stwo_prover::trace_generation::{
@@ -27,7 +25,9 @@ pub mod tests {
         ComponentTraceGenerator,
     };
 
-    use super::*;
+    use super::component::{
+        RangeCheckUnitComponent, RangeCheckUnitTraceGenerator, RC_COMPONENT_ID, RC_Z,
+    };
 
     pub fn register_test_rc(registry: &mut ComponentGenerationRegistry) {
         registry.register(RC_COMPONENT_ID, RangeCheckUnitTraceGenerator::new(8));
@@ -142,23 +142,23 @@ pub mod tests {
     fn test_rc_constraints() {
         let mut air = TestAirGenerator::new();
         let trace = air.write_trace();
-        let prover_channel =
-            &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-        let proof = commit_and_prove::<CpuBackend, Blake2sMerkleHasher, Blake2sChannel>(
+        let config = PcsConfig::default();
+        let prover_channel = &mut Blake2sChannel::default();
+        let proof = commit_and_prove::<CpuBackend, Blake2sMerkleChannel>(
             &air,
             prover_channel,
             trace,
+            config,
         )
         .unwrap();
 
-        let verifier_channel =
-            &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
+        let verifier_channel = &mut Blake2sChannel::default();
         let air = TestAir {
             component: air
                 .registry
                 .get_generator::<RangeCheckUnitTraceGenerator>(RC_COMPONENT_ID)
                 .component(),
         };
-        commit_and_verify(proof, &air, verifier_channel).unwrap();
+        commit_and_verify::<Blake2sMerkleChannel>(proof, &air, verifier_channel, config).unwrap();
     }
 }
