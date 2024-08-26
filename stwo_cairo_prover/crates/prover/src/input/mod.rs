@@ -17,7 +17,7 @@ pub struct CairoInput {
     pub public_mem_addresses: Vec<u32>,
 
     // Builtins.
-    pub range_check: SegmentAddrs,
+    pub range_check_builtin: SegmentAddrs,
 }
 
 #[derive(Clone, Debug)]

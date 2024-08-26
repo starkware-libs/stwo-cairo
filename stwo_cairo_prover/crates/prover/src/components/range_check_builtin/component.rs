@@ -1,6 +1,6 @@
 use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -8,7 +8,6 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
-use crate::components::range_check_unit::RangeCheckElements;
 use crate::components::LOOKUP_INTERACTION_PHASE;
 use crate::input::SegmentAddrs;
 
@@ -17,76 +16,73 @@ pub const N_RANGE_CHECK_COLUMNS: usize = 16;
 pub const N_VALUES_FELTS: usize = RANGE_CHECK_BITS.div_ceil(N_BITS_PER_FELT);
 pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
-pub struct RangeCheckBuiltinEval<'a, E: EvalAtRow> {
-    pub eval: E,
-    pub logup: LogupAtRow<2, E>,
-    pub initial_memory_address: E::F,
-    pub memory_lookup_elements: &'a MemoryLookupElements,
-    pub range2_lookup_elements: &'a RangeCheckElements,
-}
+pub type RangeCheckBuiltinComponent = FrameworkComponent<RangeCheckBuiltinEval>;
+
 const _: () = assert!(
     RANGE_CHECK_BITS % N_BITS_PER_FELT == 2,
     "High non-zero element must be 2 bits"
 );
 
-impl<'a, E: EvalAtRow> RangeCheckBuiltinEval<'a, E> {
-    pub fn eval(mut self) -> E {
+pub struct RangeCheckBuiltinEval {
+    pub log_size: u32,
+    pub initial_memory_address: M31,
+    pub memory_lookup_elements: MemoryLookupElements,
+    pub claimed_sum: SecureField,
+}
+
+impl RangeCheckBuiltinEval {
+    pub fn new(
+        claim: RangeCheckBuiltinClaim,
+        memory_lookup_elements: MemoryLookupElements,
+        interaction_claim: RangeCheckBuiltinInteractionClaim,
+    ) -> Self {
+        let n_values = claim.memory_segment.end_addr - claim.memory_segment.begin_addr;
+        let log_size = n_values.next_power_of_two().ilog2();
+        Self {
+            log_size,
+            initial_memory_address: M31::from(claim.memory_segment.begin_addr),
+            memory_lookup_elements,
+            claimed_sum: interaction_claim.claimed_sum,
+        }
+    }
+}
+
+impl FrameworkEval for RangeCheckBuiltinEval {
+    fn log_size(&self) -> u32 {
+        self.log_size
+    }
+
+    fn max_constraint_log_degree_bound(&self) -> u32 {
+        self.log_size + 1
+    }
+
+    fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
+        let mut eval = eval;
         let mut values = [E::F::zero(); N_ADDRESS_FELTS + N_VALUES_FELTS];
 
         // Memory address.
         // TODO(ShaharS): Use a constant column instead of taking the next_trace_mask().
-        values[0] = self.initial_memory_address + self.eval.next_trace_mask();
+        values[0] = E::F::from(self.initial_memory_address) + eval.next_trace_mask();
 
         // Memory values.
         for value in values.iter_mut().skip(N_ADDRESS_FELTS) {
-            *value = self.eval.next_trace_mask();
+            *value = eval.next_trace_mask();
         }
 
         // Compute lookup for memory.
-        self.logup.push_lookup(
-            &mut self.eval,
+        let mut logup =
+            LogupAtRow::<1, _>::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size);
+        logup.push_lookup(
+            &mut eval,
             E::EF::one(),
             &values,
-            self.memory_lookup_elements,
+            &self.memory_lookup_elements,
         );
 
-        // Compute lookup for last element range check.
-        self.logup.push_lookup(
-            &mut self.eval,
-            E::EF::one(),
-            &[values[N_VALUES_FELTS]],
-            self.range2_lookup_elements,
-        );
+        // TODO(AlonH): Add constraints to the last 2 bit value.
 
-        self.logup.finalize(&mut self.eval);
-        self.eval
-    }
-}
-
-pub struct RangeCheckBuiltinComponent {
-    pub log_size: u32,
-    pub initial_memory_address: M31,
-    pub memory_lookup_elements: MemoryLookupElements,
-    pub range2_lookup_elements: RangeCheckElements,
-    pub claimed_sum: SecureField,
-}
-
-impl FrameworkEval for RangeCheckBuiltinComponent {
-    fn log_size(&self) -> u32 {
-        self.log_size
-    }
-    fn max_constraint_log_degree_bound(&self) -> u32 {
-        self.log_size + 1
-    }
-    fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
-        let rc_builtin_eval = RangeCheckBuiltinEval {
-            eval,
-            initial_memory_address: E::F::from(self.initial_memory_address),
-            memory_lookup_elements: &self.memory_lookup_elements,
-            range2_lookup_elements: &self.range2_lookup_elements,
-            logup: LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size),
-        };
-        rc_builtin_eval.eval()
+        logup.finalize(&mut eval);
+        eval
     }
 }
 
