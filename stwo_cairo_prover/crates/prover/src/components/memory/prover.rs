@@ -13,10 +13,11 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 
 use super::component::{
-    MemoryClaim, MemoryInteractionClaim, LOG_MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_BOUND,
-    MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
+    MemoryClaim, MemoryInteractionClaim, MEMORY_ADDRESS_BOUND, MULTIPLICITY_COLUMN_OFFSET,
+    N_M31_IN_FELT252,
 };
 use super::MemoryLookupElements;
+use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
@@ -33,7 +34,7 @@ impl MemoryClaimProver {
             .map(|addr| mem.get(addr as u32).as_u256())
             .collect_vec();
 
-        let size = values.len().next_power_of_two().max(MEMORY_ADDRESS_BOUND);
+        let size = values.len().next_power_of_two().max(MIN_SIMD_TRACE_LENGTH);
         assert!(size <= MEMORY_ADDRESS_BOUND);
         values.resize(size, MemoryValue::U64(0).as_u256());
 
@@ -79,8 +80,9 @@ impl MemoryClaimProver {
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
     ) -> (MemoryClaim, InteractionClaimProver) {
+        let size = self.values.len() * N_LANES;
         let mut trace = (0..N_M31_IN_FELT252 + 2)
-            .map(|_| Col::<SimdBackend, BaseField>::zeros(MEMORY_ADDRESS_BOUND))
+            .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
             .collect_vec();
 
         let inc = PackedBaseField::from_array(std::array::from_fn(|i| {
@@ -104,7 +106,8 @@ impl MemoryClaimProver {
         let multiplicities = trace[MULTIPLICITY_COLUMN_OFFSET].data.clone();
 
         // Extend trace.
-        let domain = CanonicCoset::new(LOG_MEMORY_ADDRESS_BOUND).circle_domain();
+        let log_address_bound = size.checked_ilog2().unwrap();
+        let domain = CanonicCoset::new(log_address_bound).circle_domain();
         let trace = trace
             .into_iter()
             .map(|eval| CircleEvaluation::<SimdBackend, _, BitReversedOrder>::new(domain, eval))
@@ -112,9 +115,7 @@ impl MemoryClaimProver {
         tree_builder.extend_evals(trace);
 
         (
-            MemoryClaim {
-                log_address_bound: LOG_MEMORY_ADDRESS_BOUND,
-            },
+            MemoryClaim { log_address_bound },
             InteractionClaimProver {
                 adresses_and_values: addresses_and_values,
                 multiplicities,
@@ -141,11 +142,12 @@ impl InteractionClaimProver {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
         lookup_elements: &MemoryLookupElements,
     ) -> MemoryInteractionClaim {
-        let mut logup_gen = LogupTraceGenerator::new(LOG_MEMORY_ADDRESS_BOUND);
+        let log_size = self.adresses_and_values[0].len().ilog2() + LOG_N_LANES;
+        let mut logup_gen = LogupTraceGenerator::new(log_size);
         let mut col_gen = logup_gen.new_col();
 
         // Lookup values columns.
-        for vec_row in 0..1 << (LOG_MEMORY_ADDRESS_BOUND - LOG_N_LANES) {
+        for vec_row in 0..1 << (log_size - LOG_N_LANES) {
             let values: [PackedM31; N_M31_IN_FELT252 + 1] =
                 std::array::from_fn(|i| self.adresses_and_values[i][vec_row]);
             let denom: PackedQM31 = lookup_elements.combine(&values);

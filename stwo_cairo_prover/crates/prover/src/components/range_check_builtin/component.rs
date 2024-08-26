@@ -8,7 +8,6 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
-use crate::components::range_check_unit::RangeCheckElements;
 use crate::components::LOOKUP_INTERACTION_PHASE;
 use crate::input::SegmentAddrs;
 
@@ -19,10 +18,9 @@ pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
 pub struct RangeCheckBuiltinEval<'a, E: EvalAtRow> {
     pub eval: E,
-    pub logup: LogupAtRow<2, E>,
+    pub logup: LogupAtRow<1, E>,
     pub initial_memory_address: E::F,
     pub memory_lookup_elements: &'a MemoryLookupElements,
-    pub range2_lookup_elements: &'a RangeCheckElements,
 }
 const _: () = assert!(
     RANGE_CHECK_BITS % N_BITS_PER_FELT == 2,
@@ -50,14 +48,6 @@ impl<'a, E: EvalAtRow> RangeCheckBuiltinEval<'a, E> {
             self.memory_lookup_elements,
         );
 
-        // Compute lookup for last element range check.
-        self.logup.push_lookup(
-            &mut self.eval,
-            E::EF::one(),
-            &[values[N_VALUES_FELTS]],
-            self.range2_lookup_elements,
-        );
-
         self.logup.finalize(&mut self.eval);
         self.eval
     }
@@ -67,8 +57,24 @@ pub struct RangeCheckBuiltinComponent {
     pub log_size: u32,
     pub initial_memory_address: M31,
     pub memory_lookup_elements: MemoryLookupElements,
-    pub range2_lookup_elements: RangeCheckElements,
     pub claimed_sum: SecureField,
+}
+
+impl RangeCheckBuiltinComponent {
+    pub fn new(
+        claim: RangeCheckBuiltinClaim,
+        memory_lookup_elements: MemoryLookupElements,
+        interaction_claim: RangeCheckBuiltinInteractionClaim,
+    ) -> Self {
+        let n_values = claim.memory_segment.end_addr - claim.memory_segment.begin_addr;
+        let log_size = n_values.next_power_of_two().ilog2();
+        Self {
+            log_size,
+            initial_memory_address: M31::from(claim.memory_segment.begin_addr),
+            memory_lookup_elements,
+            claimed_sum: interaction_claim.claimed_sum,
+        }
+    }
 }
 
 impl FrameworkComponent for RangeCheckBuiltinComponent {
@@ -83,7 +89,6 @@ impl FrameworkComponent for RangeCheckBuiltinComponent {
             eval,
             initial_memory_address: E::F::from(self.initial_memory_address),
             memory_lookup_elements: &self.memory_lookup_elements,
-            range2_lookup_elements: &self.range2_lookup_elements,
             logup: LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size),
         };
         rc_builtin_eval.eval()
