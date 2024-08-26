@@ -1,14 +1,11 @@
-mod addr_to_id;
-mod id_to_big;
-mod instruction_mem;
+pub mod addr_to_id;
+pub mod id_to_big;
+pub mod instruction_mem;
 
 use std::simd::cmp::SimdOrd;
 use std::simd::num::SimdInt;
 use std::simd::Simd;
 
-pub use addr_to_id::{AddrToIdBuilder, AddrToIdClaim, AddrToIdComponent, AddrToIdProver};
-pub use id_to_big::{IdToBigBuilder, IdToBigClaim, IdToBigComponent, IdToBigProver};
-pub use instruction_mem::{InstMemBuilder, InstMemClaim, InstMemComponent, InstMemProver};
 use stwo_prover::constraint_framework::logup::LookupElements;
 use stwo_prover::core::backend::simd::m31::{self, PackedM31, N_LANES};
 use stwo_prover::core::channel::Channel;

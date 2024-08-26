@@ -15,9 +15,9 @@ use stwo_prover::core::InteractionElements;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::components::memory::{
-    AddrToIdBuilder, AddrToIdClaim, AddrToIdComponent, IdToBigBuilder, InstMemBuilder,
-};
+use crate::components::memory::addr_to_id::{AddrToIdBuilder, AddrToIdClaim, AddrToIdComponent};
+use crate::components::memory::id_to_big::IdToBigBuilder;
+use crate::components::memory::instruction_mem::{InstMemBuilder, InstMemCtx};
 use crate::components::opcode::{
     CpuRangeProvers, OpcodeElements, OpcodeGenContext, OpcodesClaim, OpcodesComponentGenerator,
     OpcodesInteractionClaim, OpcodesProvers,
@@ -175,6 +175,8 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         .copied()
         .map(|a| (a, input.mem.get(a).as_u256()))
         .collect_vec();
+    let initial_state = input.instructions.initial_state;
+    let final_state = input.instructions.final_state;
 
     // TODO: Table interaction.
 
@@ -183,7 +185,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let opcode_provers = OpcodesProvers::new(input.instructions);
     let mut addr_to_id = AddrToIdBuilder::new(&input.mem);
     let mut id_to_big = IdToBigBuilder::new(&input.mem);
-    let mut inst_mem = InstMemBuilder::new(&input.mem);
+    let mut inst_mem = InstMemBuilder::new();
     let mut tree_builder = commitment_scheme.tree_builder();
 
     // // Add public memory.
@@ -206,15 +208,26 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     );
 
     let inst_mem = inst_mem.build();
+    let (inst_mem_claim, inst_mem) = inst_mem.write_trace(
+        &mut tree_builder,
+        &mut InstMemCtx {
+            addr_to_id: &mut addr_to_id,
+            id_to_big: &mut id_to_big,
+            mem: &input.mem,
+        },
+    );
+
     let addr_to_id = addr_to_id.build(input.mem.address_to_id);
-    let id_to_big = id_to_big.build(input.mem.f252_values);
     let (memory_claim, addr_to_id) = addr_to_id.write_trace(&mut tree_builder, &mut ());
+
+    let id_to_big = id_to_big.build(input.mem.f252_values);
+    let (id_to_big_claim, id_to_big) = id_to_big.write_trace(&mut tree_builder, &mut ());
 
     // Commit to the claim and the trace.
     let claim = CairoClaim {
         public_memory,
-        initial_state: input.instructions.initial_state,
-        final_state: input.instructions.final_state,
+        initial_state,
+        final_state,
         range_check: input.range_check,
         opcodes: opcodes_claim,
         addr_to_id: memory_claim.clone(),

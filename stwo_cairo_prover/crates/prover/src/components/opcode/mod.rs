@@ -12,7 +12,10 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use super::memory::{AddrToIdBuilder, IdToBigBuilder, InstMemBuilder, MemoryElements};
+use super::memory::addr_to_id::AddrToIdBuilder;
+use super::memory::id_to_big::IdToBigBuilder;
+use super::memory::instruction_mem::InstMemBuilder;
+use super::memory::MemoryElements;
 use super::range_check::RangeProver;
 use super::{StandardComponent, StandardInteractionClaim};
 use crate::input::instructions::{Instructions, VmState};
@@ -98,7 +101,7 @@ impl CpuRangeElements {
 pub struct OpcodeGenContext<'a, 'b> {
     pub addr_to_id: &'a mut AddrToIdBuilder,
     pub id_to_big: &'a mut IdToBigBuilder,
-    pub inst_mem: &'b mut InstMemBuilder<'a>,
+    pub inst_mem: &'b mut InstMemBuilder,
     pub mem: &'a Memory,
     pub range: CpuRangeProvers<'a>,
 }
@@ -165,7 +168,7 @@ impl OpcodesInteractionProvers {
         elements: &OpcodeElements,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> OpcodesInteractionClaim {
-        let ret = self.ret.write_interaction_trace(tree_builder, &elements);
+        let ret = self.ret.write_interaction_trace(tree_builder, elements);
         OpcodesInteractionClaim { ret }
     }
 }

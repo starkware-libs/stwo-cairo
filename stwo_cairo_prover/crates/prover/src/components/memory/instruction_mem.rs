@@ -13,7 +13,9 @@ use stwo_prover::core::lookups::utils::Fraction;
 use super::super::{
     LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
 };
-use super::{AddrToIdBuilder, IdToBigBuilder, MemoryElements};
+use super::addr_to_id::AddrToIdBuilder;
+use super::id_to_big::IdToBigBuilder;
+use super::MemoryElements;
 use crate::components::opcode::CpuRangeElements;
 use crate::components::ContextFor;
 use crate::input::mem::Memory;
@@ -23,17 +25,13 @@ pub type InstMemClaim = StandardClaim<InstMem>;
 pub type InstMemComponent = StandardComponent<InstMem>;
 
 // Builder
-pub struct InstMemBuilder<'a> {
+#[derive(Default)]
+pub struct InstMemBuilder {
     pub addr_to_mult: HashMap<u32, u32>,
-    // TODO: Replace with big mem.
-    mem: &'a Memory,
 }
-impl<'a> InstMemBuilder<'a> {
-    pub fn new(mem: &'a Memory) -> Self {
-        Self {
-            addr_to_mult: Default::default(),
-            mem,
-        }
+impl InstMemBuilder {
+    pub fn new() -> Self {
+        Self::default()
     }
     pub fn add_inputs_simd(&mut self, inputs: Simd<u32, N_LANES>) {
         inputs.to_array().map(|addr| self.add_inputs(addr));
@@ -48,12 +46,6 @@ impl<'a> InstMemBuilder<'a> {
             .map(|(addr, mult)| InstMemInput { addr, mult });
         StandardProver::new((), inputs).pop().unwrap()
     }
-}
-pub struct PackedInst {
-    offset0: Simd<u32, N_LANES>,
-    offset1: Simd<u32, N_LANES>,
-    offset2: Simd<u32, N_LANES>,
-    flags: Simd<u32, N_LANES>,
 }
 
 #[derive(Clone)]
@@ -128,9 +120,9 @@ impl Standard for InstMem {
 }
 
 pub struct InstMemCtx<'a> {
-    addr_to_id: &'a mut AddrToIdBuilder,
-    id_to_big: &'a mut IdToBigBuilder,
-    mem: &'a Memory,
+    pub addr_to_id: &'a mut AddrToIdBuilder,
+    pub id_to_big: &'a mut IdToBigBuilder,
+    pub mem: &'a Memory,
 }
 impl<'a> ContextFor<InstMem> for InstMemCtx<'a> {
     fn write_trace_row(

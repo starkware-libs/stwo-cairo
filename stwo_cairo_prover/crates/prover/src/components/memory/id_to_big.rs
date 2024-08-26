@@ -182,6 +182,7 @@ impl StandardLookupData for IdToBigLookupData {
                     let id = offset + M31::from((row * N_LANES) as u32 + self.initial_id);
                     let mut lookup_values = [Zero::zero(); 1 + N_MEM_BIG_LIMBS];
                     lookup_values[0] = id;
+                    #[allow(clippy::manual_memcpy)]
                     for i in 0..N_MEM_BIG_LIMBS {
                         lookup_values[i + 1] = limbs[i];
                     }

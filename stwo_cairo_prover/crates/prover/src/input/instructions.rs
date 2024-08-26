@@ -1,9 +1,9 @@
 use super::decode::Instruction;
-use super::mem::{Memory, MemoryValue};
+use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
 // TODO(spapini): Move this:
-#[derive(Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default)]
 pub struct VmState {
     pub pc: u32,
     pub ap: u32,
@@ -61,7 +61,7 @@ pub struct Instructions {
     pub generic: Vec<VmState>,
 }
 impl Instructions {
-    pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &Memory) -> Self {
+    pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
         let mut res = Self::default();
 
         let Some(first) = iter.next() else {
@@ -77,9 +77,9 @@ impl Instructions {
         res
     }
 
-    fn push_instr(&mut self, mem: &Memory, state: VmState) {
+    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState) {
         let VmState { ap, fp, pc } = state;
-        let instruction = mem.get(pc).as_u64();
+        let instruction = mem.get_inst(pc);
         let instruction = Instruction::decode(instruction);
         match instruction {
             // ret.
