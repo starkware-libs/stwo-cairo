@@ -14,6 +14,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::InteractionElements;
 use thiserror::Error;
+use tracing::{span, Level};
 
 use crate::components::memory::{AddrToIdClaim, AddrToIdComponent, AddrToIdProverBuilder};
 use crate::components::opcode::{CpuRangeProvers, OpcodeElements, OpcodeGenContext};
@@ -180,11 +181,14 @@ impl CairoComponentGenerator {
 
 const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
+    let _span = span!(Level::INFO, "Proof").entered();
+    let span = span!(Level::INFO, "Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
             .circle_domain()
             .half_coset,
     );
+    span.exit();
 
     // Setup protocol.
     let channel = &mut Blake2sChannel::default();
@@ -201,6 +205,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     // TODO: Table interaction.
 
     // Base trace.
+    let span = span!(Level::INFO, "Trace gen").entered();
     let ret_prover = RetProver::new(input.instructions.ret.into_iter())
         .pop()
         .unwrap();
@@ -233,12 +238,14 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         addr_to_id: memory_claim.clone(),
     };
     claim.mix_into(channel);
+    span.exit();
     tree_builder.commit(channel);
 
     // Draw interaction elements.
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Interaction trace.
+    let span = span!(Level::INFO, "Interaction trace gen").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
     let ret_interaction_claim =
         ret.write_interaction_trace(&mut tree_builder, &interaction_elements.opcode);
@@ -257,6 +264,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         "Lookups are invalid"
     );
     interaction_claim.mix_into(channel);
+    span.exit();
     tree_builder.commit(channel);
 
     // Component provers.
@@ -264,12 +272,12 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         CairoComponentGenerator::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_builder.provers();
 
-    // TODO: Remove. Only for debugging.
-    let trace_polys = commitment_scheme
-        .trees
-        .as_ref()
-        .map(|t| t.polynomials.iter().cloned().collect_vec());
-    component_builder.assert_constraints(trace_polys);
+    // // TODO: Remove. Only for debugging.
+    // let trace_polys = commitment_scheme
+    //     .trees
+    //     .as_ref()
+    //     .map(|t| t.polynomials.iter().cloned().collect_vec());
+    // component_builder.assert_constraints(trace_polys);
 
     // Prove stark.
     let proof = prove::<SimdBackend, _>(
@@ -356,7 +364,7 @@ mod tests {
         input_from_plain_casm(instructions)
     }
 
-    #[test]
+    #[test_log::test]
     fn test_cairo_air() {
         let config = PcsConfig::default();
         let cairo_proof = prove_cairo(config, test_input());

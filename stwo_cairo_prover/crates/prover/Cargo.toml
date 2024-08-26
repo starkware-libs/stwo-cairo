@@ -15,7 +15,9 @@ sonic-rs = "0.3.10"
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "f16ba08846a96a120e4bd1b1a5d3a87d64b1e503" }
 thiserror = "1.0.63"
+tracing = "0.1.40"
 
 [dev-dependencies]
 cairo-lang-casm = "2.7.1"
 rand = "0.8.5"
+test-log = { version = "0.2.15", features = ["trace"] }
