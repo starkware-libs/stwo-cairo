@@ -1,6 +1,5 @@
 use itertools::Itertools;
 use num_traits::Zero;
-use stwo_prover::constraint_framework::{assert_constraints, InfoEvaluator};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
@@ -8,7 +7,7 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::{
     CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
 };
-use stwo_prover::core::poly::circle::{CanonicCoset, CirclePoly, PolyOps};
+use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo_prover::core::vcs::ops::MerkleHasher;
@@ -21,7 +20,7 @@ use crate::components::memory::{
 };
 use crate::components::opcode::{
     CpuRangeProvers, OpcodeElements, OpcodeGenContext, OpcodesClaim, OpcodesComponentGenerator,
-    OpcodesInteractionClaim, OpcodesInteractionProvers, OpcodesProvers,
+    OpcodesInteractionClaim, OpcodesProvers,
 };
 use crate::components::range_check::RangeProver;
 use crate::components::StandardInteractionClaim;
@@ -191,17 +190,17 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     // for addr in &input.public_mem_addresses {
     //     opcode_ctx.addr_to_id.add_inputs(*addr);
     // }
-
+    let range_provers = CpuRangeProvers {
+        range2: &mut RangeProver,
+        range3: &mut RangeProver,
+    };
     let (opcodes_claim, opcodes_provers) = opcode_provers.generate(
         OpcodeGenContext {
             addr_to_id: &mut addr_to_id,
             id_to_big: &mut id_to_big,
             inst_mem: &mut inst_mem,
             mem: &input.mem,
-            range: CpuRangeProvers {
-                range2: &mut RangeProver,
-                range3: &mut RangeProver,
-            },
+            range: range_provers,
         },
         &mut tree_builder,
     );

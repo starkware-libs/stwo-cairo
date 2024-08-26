@@ -16,6 +16,7 @@ use super::super::{
 };
 use super::PackedVmState;
 use crate::components::opcode::{OpcodeElements, OpcodeGenContext};
+use crate::components::ContextFor;
 
 pub type RetProver = StandardProver<RetOpcode>;
 pub type RetClaim = StandardClaim<RetOpcode>;
@@ -29,7 +30,6 @@ pub struct RetOpcode;
 
 impl Standard for RetOpcode {
     type LookupElements = OpcodeElements;
-    type Context<'a> = OpcodeGenContext<'a>;
     type PackedInput = PackedVmState;
     type LookupData = RetLookupData;
     type Params = ();
@@ -93,12 +93,14 @@ impl Standard for RetOpcode {
 
         // TODO: State lookups.
     }
+}
+impl<'a, 'b> ContextFor<RetOpcode> for OpcodeGenContext<'a, 'b> {
     fn write_trace_row(
+        &mut self,
         dst: &mut [BaseColumn],
         input: &PackedVmState,
         row_index: usize,
-        ctx: &mut OpcodeGenContext<'_>,
-        lookup_data: &mut Self::LookupData,
+        lookup_data: &mut RetLookupData,
     ) {
         let pc = unsafe { PackedM31::from_simd_unchecked(input.pc) };
         let ap = unsafe { PackedM31::from_simd_unchecked(input.ap) };
@@ -111,16 +113,16 @@ impl Standard for RetOpcode {
 
         // TODO: Instruction lookup.
 
-        let new_fp = ctx
+        let new_fp = self
             .addr_to_id
-            .add_inputs_simd(ctx.mem, input.fp - Simd::splat(1));
+            .add_inputs_simd(self.mem, input.fp - Simd::splat(1));
         let new_fp = unsafe { PackedM31::from_simd_unchecked(new_fp.cast()) };
         dst[3].data[row_index] = new_fp;
         lookup_data.new_fp[row_index] = new_fp;
 
-        let new_pc = ctx
+        let new_pc = self
             .addr_to_id
-            .add_inputs_simd(ctx.mem, input.fp - Simd::splat(2));
+            .add_inputs_simd(self.mem, input.fp - Simd::splat(2));
         let new_pc = unsafe { PackedM31::from_simd_unchecked(new_pc.cast()) };
         dst[4].data[row_index] = new_pc;
         lookup_data.new_pc[row_index] = new_pc;

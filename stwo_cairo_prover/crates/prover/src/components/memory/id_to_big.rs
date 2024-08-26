@@ -16,6 +16,7 @@ use super::super::{
 use super::addr_to_id::BIG_INITIAL_ID;
 use super::{MemoryElements, N_MEM_BIG_LIMBS};
 use crate::components::opcode::CpuRangeElements;
+use crate::components::ContextFor;
 use crate::felt::split_f252_simd;
 use crate::input::mem::Memory;
 
@@ -86,7 +87,6 @@ impl From<[IdToBigInput; N_LANES]> for PackedIdToBigInput {
 pub struct IdToBig;
 impl Standard for IdToBig {
     type LookupElements = (MemoryElements, CpuRangeElements);
-    type Context<'a> = ();
     type PackedInput = PackedIdToBigInput;
     type LookupData = IdToBigLookupData;
     type Params = u32;
@@ -132,13 +132,14 @@ impl Standard for IdToBig {
             logup.push_lookup(eval, E::EF::one(), &[values[i + 1]], &range_elements.rc18);
         }
     }
-
+}
+impl ContextFor<IdToBig> for () {
     fn write_trace_row(
+        &mut self,
         dst: &mut [BaseColumn],
-        input: &Self::PackedInput,
+        input: &PackedIdToBigInput,
         row_index: usize,
-        _ctx: &mut Self::Context<'_>,
-        lookup_data: &mut Self::LookupData,
+        lookup_data: &mut IdToBigLookupData,
     ) {
         // TODO: This should be a constant column.
         dst[0].data[row_index] = PackedM31::from_array(std::array::from_fn(|i| {
@@ -167,7 +168,7 @@ impl StandardLookupData for IdToBigLookupData {
     type Elements = (MemoryElements, CpuRangeElements);
     fn lookups<'a>(
         &'a self,
-        (mem_elements, range_elements): &Self::Elements,
+        (mem_elements, range_elements): &'a Self::Elements,
     ) -> Vec<LookupFunc<'a>> {
         chain![
             // Add to big value relation.

@@ -13,6 +13,7 @@ use super::super::{
     LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
 };
 use super::{m31_from_i32, MemoryElements};
+use crate::components::ContextFor;
 use crate::input::mem::{EncodedMemoryValueId, Memory, MemoryValueId};
 
 pub type AddrToIdProver = StandardProver<AddrToId>;
@@ -95,7 +96,6 @@ impl From<[AddrToIdInput; N_LANES]> for PackedAddrToIdInput {
 pub struct AddrToId;
 impl Standard for AddrToId {
     type LookupElements = MemoryElements;
-    type Context<'a> = ();
     type PackedInput = PackedAddrToIdInput;
     type LookupData = AddrToIdLookupData;
     type Params = ();
@@ -136,13 +136,14 @@ impl Standard for AddrToId {
             );
         }
     }
-
+}
+impl ContextFor<AddrToId> for () {
     fn write_trace_row(
+        &mut self,
         dst: &mut [BaseColumn],
-        input: &Self::PackedInput,
+        input: &PackedAddrToIdInput,
         row_index: usize,
-        _ctx: &mut Self::Context<'_>,
-        lookup_data: &mut Self::LookupData,
+        lookup_data: &mut AddrToIdLookupData,
     ) {
         // TODO: This should be a constant column.
         dst[0].data[row_index] = PackedM31::from_array(std::array::from_fn(|i| {

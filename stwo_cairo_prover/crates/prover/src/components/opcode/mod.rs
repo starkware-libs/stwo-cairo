@@ -95,10 +95,10 @@ impl CpuRangeElements {
     }
 }
 
-pub struct OpcodeGenContext<'a> {
+pub struct OpcodeGenContext<'a, 'b> {
     pub addr_to_id: &'a mut AddrToIdBuilder,
     pub id_to_big: &'a mut IdToBigBuilder,
-    pub inst_mem: &'a mut InstMemBuilder<'a>,
+    pub inst_mem: &'b mut InstMemBuilder<'a>,
     pub mem: &'a Memory,
     pub range: CpuRangeProvers<'a>,
 }
@@ -145,7 +145,7 @@ impl OpcodesProvers {
     }
     pub fn generate(
         self,
-        mut ctx: OpcodeGenContext<'_>,
+        mut ctx: OpcodeGenContext<'_, '_>,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (OpcodesClaim, OpcodesInteractionProvers) {
         let (ret_claim, ret) = self.ret.write_trace(tree_builder, &mut ctx);

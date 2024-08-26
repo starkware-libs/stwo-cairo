@@ -15,6 +15,7 @@ use super::super::{
 };
 use super::{AddrToIdBuilder, IdToBigBuilder, MemoryElements};
 use crate::components::opcode::CpuRangeElements;
+use crate::components::ContextFor;
 use crate::input::mem::Memory;
 
 pub type InstMemProver = StandardProver<InstMem>;
@@ -61,7 +62,6 @@ pub struct InstMem;
 impl Standard for InstMem {
     type LookupElements = (MemoryElements, CpuRangeElements);
     // TODO: Add big memory and range checks.
-    type Context<'a> = InstMemCtx<'a>;
     type PackedInput = PackedInstMemInput;
     type LookupData = InstMemLookupData;
     type Params = ();
@@ -125,20 +125,28 @@ impl Standard for InstMem {
             &mem_elements.id_to_big,
         );
     }
+}
+
+pub struct InstMemCtx<'a> {
+    addr_to_id: &'a mut AddrToIdBuilder,
+    id_to_big: &'a mut IdToBigBuilder,
+    mem: &'a Memory,
+}
+impl<'a> ContextFor<InstMem> for InstMemCtx<'a> {
     fn write_trace_row(
+        &mut self,
         dst: &mut [BaseColumn],
         input: &PackedInstMemInput,
         row_index: usize,
-        ctx: &mut Self::Context<'_>,
-        lookup_data: &mut Self::LookupData,
+        lookup_data: &mut InstMemLookupData,
     ) {
         let mult = unsafe { PackedM31::from_simd_unchecked(input.mult) };
         let addr = unsafe { PackedM31::from_simd_unchecked(input.addr) };
         dst[0].data[row_index] = mult;
         dst[1].data[row_index] = addr;
 
-        let id = ctx.addr_to_id.add_inputs_simd(ctx.mem, input.addr);
-        let value = ctx.id_to_big.add_inputs_simd(ctx.mem, id);
+        let id = self.addr_to_id.add_inputs_simd(self.mem, input.addr);
+        let value = self.id_to_big.add_inputs_simd(self.mem, id);
         split_big(&value).iter().enumerate().for_each(|(i, part)| {
             dst[2 + i].data[row_index] = *part;
         });
@@ -147,12 +155,6 @@ impl Standard for InstMem {
         lookup_data.addr[row_index] = addr;
         lookup_data.value[row_index] = [value[0], value[1]];
     }
-}
-
-pub struct InstMemCtx<'a> {
-    addr_to_id: &'a mut AddrToIdBuilder,
-    id_to_big: &'a mut IdToBigBuilder,
-    mem: &'a Memory,
 }
 
 pub fn split_big(value: &[Simd<u32, N_LANES>]) -> [PackedM31; 7] {

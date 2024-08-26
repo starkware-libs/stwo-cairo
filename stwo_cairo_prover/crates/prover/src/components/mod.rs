@@ -29,7 +29,6 @@ use utils::to_evals;
 // Trait.
 pub trait Standard: Clone {
     type LookupElements;
-    type Context<'a>;
     type PackedInput;
     type LookupData: StandardLookupData;
     type Params;
@@ -60,12 +59,14 @@ pub trait Standard: Clone {
         elements: &Self::LookupElements,
         params: &Self::Params,
     );
+}
+pub trait ContextFor<C: Standard> {
     fn write_trace_row(
+        &mut self,
         dst: &mut [BaseColumn],
-        input: &Self::PackedInput,
+        input: &C::PackedInput,
         row_index: usize,
-        ctx: &mut Self::Context<'_>,
-        lookup_data: &mut Self::LookupData,
+        lookup_data: &mut C::LookupData,
     );
 }
 
@@ -185,10 +186,10 @@ impl<C: Standard> StandardProver<C> {
             phantom: std::marker::PhantomData,
         }]
     }
-    pub fn write_trace(
+    pub fn write_trace<Ctx: ContextFor<C>>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        ctx: &mut C::Context<'_>,
+        ctx: &mut Ctx,
     ) -> (StandardClaim<C>, StandardInteractionProver<C::LookupData>) {
         let inputs = self.inputs;
         let n_cols = C::n_columns();
@@ -206,11 +207,10 @@ impl<C: Standard> StandardProver<C> {
         for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
             for i in 0..C::N_REPETITIONS {
                 let offset = n_cols * i;
-                C::write_trace_row(
+                ctx.write_trace_row(
                     &mut trace_values[offset..(offset + n_cols)],
                     &inputs[i],
                     row_index,
-                    ctx,
                     &mut lookup_data[i],
                 );
             }
