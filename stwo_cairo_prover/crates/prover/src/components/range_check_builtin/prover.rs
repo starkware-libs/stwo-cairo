@@ -1,4 +1,5 @@
 use itertools::{chain, Itertools};
+use num_traits::One;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -15,18 +16,17 @@ use stwo_prover::core::ColumnVec;
 use super::component::{RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionClaim, N_VALUES_FELTS};
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS};
-use crate::components::range_check_unit::RangeCheckElements;
 use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::input::SegmentAddrs;
 
 // Memory addresses for the RangeCheckBuiltin segment.
 pub type RangeCheckBuiltinInput = PackedM31;
 
-pub struct RangeCheckClaimProver {
+pub struct RangeCheckBuiltinClaimProver {
     pub memory_segment: SegmentAddrs,
 }
 
-impl RangeCheckClaimProver {
+impl RangeCheckBuiltinClaimProver {
     pub fn new(input: SegmentAddrs) -> Self {
         Self {
             memory_segment: input,
@@ -44,7 +44,7 @@ impl RangeCheckClaimProver {
             .len()
             .next_power_of_two()
             .max(MIN_SIMD_TRACE_LENGTH);
-        addresses.resize(size, 0);
+        addresses.resize(size, addresses[0]);
 
         let inputs = addresses
             .into_iter()
@@ -83,15 +83,9 @@ impl RangeCheckBuiltinInteractionProver {
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memory_lookup_elements: &MemoryLookupElements,
-        range2_lookup_elements: &RangeCheckElements,
     ) -> RangeCheckBuiltinInteractionClaim {
         let log_size = self.memory_addresses.len().ilog2() + LOG_N_LANES;
-        let (trace, claimed_sum) = gen_interaction_trace(
-            self,
-            log_size,
-            memory_lookup_elements,
-            range2_lookup_elements,
-        );
+        let (trace, claimed_sum) = gen_interaction_trace(self, log_size, memory_lookup_elements);
         tree_builder.extend_evals(trace);
 
         RangeCheckBuiltinInteractionClaim {
@@ -147,7 +141,6 @@ pub fn gen_interaction_trace(
     interaction_prover: &RangeCheckBuiltinInteractionProver,
     log_size: u32,
     memory_lookup_elements: &MemoryLookupElements,
-    range2_lookup_elements: &RangeCheckElements,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     SecureField,
@@ -162,9 +155,7 @@ pub fn gen_interaction_trace(
             )
             .collect_vec(),
         );
-        let p_rc2: PackedQM31 = range2_lookup_elements
-            .combine(&[interaction_prover.memory_values[vec_row][N_VALUES_FELTS - 1]]);
-        col_gen.write_frac(vec_row, p_mem + p_rc2, p_mem * p_rc2);
+        col_gen.write_frac(vec_row, PackedQM31::one(), p_mem);
     }
     col_gen.finalize_col();
 
@@ -184,7 +175,7 @@ mod tests {
 
     use super::*;
     use crate::components::memory::{MemoryLookupElements, N_BITS_PER_FELT};
-    use crate::components::range_check_builtin::component::RangeCheckBuiltinComponent;
+    use crate::components::range_check_builtin::component::RangeCheckBuiltinEval;
     use crate::felt::split_f252;
     use crate::prover_types::PackedUInt32;
 
@@ -303,23 +294,17 @@ mod tests {
 
         let channel = &mut Blake2sChannel::default();
         let memory_lookup_elements = MemoryLookupElements::draw(channel);
-        let range2_lookup_elements = RangeCheckElements::draw(channel);
 
-        let (interaction_trace, claimed_sum) = gen_interaction_trace(
-            &interaction_prover,
-            log_size,
-            &memory_lookup_elements,
-            &range2_lookup_elements,
-        );
+        let (interaction_trace, claimed_sum) =
+            gen_interaction_trace(&interaction_prover, log_size, &memory_lookup_elements);
 
         let trace = TreeVec::new(vec![trace, interaction_trace]);
         let trace_polys = trace.map_cols(|c| c.interpolate());
 
-        let component = RangeCheckBuiltinComponent {
+        let component = RangeCheckBuiltinEval {
             log_size,
             initial_memory_address: M31::from(address_initial_offset),
             memory_lookup_elements,
-            range2_lookup_elements,
             claimed_sum,
         };
 

@@ -130,8 +130,10 @@ impl MemoryBuilder {
     }
     pub fn set(&mut self, addr: u64, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
-            self.address_to_id
-                .resize(addr as usize + 1, EncodedMemoryValueId(0));
+            self.address_to_id.resize(
+                addr as usize + 1,
+                EncodedMemoryValueId::encode(MemoryValueId::Small(0)),
+            );
         }
         let res = EncodedMemoryValueId::encode(match value {
             MemoryValue::Small(val) => MemoryValueId::Small(val),
