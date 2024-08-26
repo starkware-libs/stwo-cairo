@@ -131,7 +131,7 @@ impl MemoryBuilder {
     pub fn set(&mut self, addr: u64, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
-                .resize(addr as usize + 1, EncodedMemoryValueId(0));
+                .resize(addr as usize + 1, EncodedMemoryValueId::default());
         }
         let res = EncodedMemoryValueId::encode(match value {
             MemoryValue::Small(val) => MemoryValueId::Small(val),
@@ -170,7 +170,7 @@ impl DerefMut for MemoryBuilder {
     }
 }
 
-#[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct EncodedMemoryValueId(u32);
 impl EncodedMemoryValueId {
     pub fn encode(value: MemoryValueId) -> EncodedMemoryValueId {
@@ -191,6 +191,12 @@ impl EncodedMemoryValueId {
             2 => MemoryValueId::F252(val as usize),
             _ => panic!("Invalid tag"),
         }
+    }
+}
+
+impl Default for EncodedMemoryValueId {
+    fn default() -> Self {
+        EncodedMemoryValueId::encode(MemoryValueId::Small(0))
     }
 }
 
