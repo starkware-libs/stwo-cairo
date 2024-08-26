@@ -66,7 +66,6 @@ impl RetOpcodeClaimProver {
         });
         tree_builder.extend_evals(trace);
         let claim = RetOpcodeClaim {
-            log_size: self.inputs.len().ilog2() + LOG_N_LANES,
             n_rets: self.inputs.len() * N_LANES,
         };
         (claim, interaction_prover)
