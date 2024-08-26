@@ -74,9 +74,9 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
         instructions,
         mem,
         public_mem_addresses,
-        range_check: SegmentAddrs {
-            begin_addr: 0,
-            end_addr: 0,
+        range_check_builtin: SegmentAddrs {
+            begin_addr: 24,
+            end_addr: 64,
         },
     }
 }
