@@ -9,13 +9,11 @@ use stwo_prover::core::backend::simd::m31::N_LANES;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use super::memory::addr_to_id::AddrToIdBuilder;
-use super::memory::id_to_big::IdToBigBuilder;
-use super::memory::instruction_mem::InstMemBuilder;
-use super::memory::MemoryElements;
+use super::memory::{MemoryElements, MemoryProverBuilder};
 use super::range_check::RangeProver;
 use super::{StandardComponent, StandardInteractionClaim};
 use crate::input::instructions::{Instructions, VmState};
@@ -42,21 +40,21 @@ impl From<[VmState; N_LANES]> for PackedVmState {
 
 #[derive(Clone)]
 pub struct OpcodeElements {
-    pub memory_elements: MemoryElements,
-    pub range_elements: CpuRangeElements,
+    pub mem: MemoryElements,
+    pub range: CpuRangeElements,
 }
 impl OpcodeElements {
     pub fn draw(channel: &mut impl Channel) -> Self {
         Self {
-            memory_elements: MemoryElements::draw(channel),
-            range_elements: CpuRangeElements::draw(channel),
+            mem: MemoryElements::draw(channel),
+            range: CpuRangeElements::draw(channel),
         }
     }
 
     pub fn dummy() -> OpcodeElements {
         Self {
-            memory_elements: MemoryElements::dummy(),
-            range_elements: CpuRangeElements::dummy(),
+            mem: MemoryElements::dummy(),
+            range: CpuRangeElements::dummy(),
         }
     }
 }
@@ -98,10 +96,8 @@ impl CpuRangeElements {
     }
 }
 
-pub struct OpcodeGenContext<'a, 'b> {
-    pub addr_to_id: &'a mut AddrToIdBuilder,
-    pub id_to_big: &'a mut IdToBigBuilder,
-    pub inst_mem: &'b mut InstMemBuilder,
+pub struct OpcodeGenContext<'a> {
+    pub mem_builder: &'a mut MemoryProverBuilder,
     pub mem: &'a Memory,
     pub range: CpuRangeProvers<'a>,
 }
@@ -133,6 +129,10 @@ impl OpcodesInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.mix_into(channel);
     }
+
+    pub fn logup_sum(&self) -> SecureField {
+        self.ret.logup_sum()
+    }
 }
 
 pub struct OpcodesProvers {
@@ -148,7 +148,7 @@ impl OpcodesProvers {
     }
     pub fn generate(
         self,
-        mut ctx: OpcodeGenContext<'_, '_>,
+        mut ctx: OpcodeGenContext<'_>,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (OpcodesClaim, OpcodesInteractionProvers) {
         let (ret_claim, ret) = self.ret.write_trace(tree_builder, &mut ctx);
@@ -173,17 +173,17 @@ impl OpcodesInteractionProvers {
     }
 }
 
-pub struct OpcodesComponentGenerator {
+pub struct OpcodesComponents {
     pub ret: StandardComponent<RetOpcode>,
 }
-impl OpcodesComponentGenerator {
+impl OpcodesComponents {
     pub fn new(
-        claim: OpcodesClaim,
-        elements: OpcodeElements,
-        interaction_claim: OpcodesInteractionClaim,
+        claim: &OpcodesClaim,
+        elements: &OpcodeElements,
+        interaction_claim: &OpcodesInteractionClaim,
     ) -> Self {
         Self {
-            ret: StandardComponent::new(claim.ret, elements, interaction_claim.ret),
+            ret: StandardComponent::new(&claim.ret, elements.clone(), &interaction_claim.ret),
         }
     }
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {

@@ -13,11 +13,13 @@ use super::super::{
     LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
 };
 use super::{m31_from_i32, MemoryElements};
-use crate::components::ContextFor;
+use crate::components::{ContextFor, StandardInteractionClaim, StandardInteractionProver};
 use crate::input::mem::{EncodedMemoryValueId, Memory, MemoryValueId};
 
 pub type AddrToIdProver = StandardProver<AddrToId>;
+pub type AddrToIdInteractionProver = StandardInteractionProver<AddrToIdLookupData>;
 pub type AddrToIdClaim = StandardClaim<AddrToId>;
+pub type AddrToIdInteractionClaim = StandardInteractionClaim;
 pub type AddrToIdComponent = StandardComponent<AddrToId>;
 
 pub const BIG_INITIAL_ID: i32 = 1 << 29;
@@ -105,13 +107,13 @@ impl Standard for AddrToId {
         MemoryElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &()) -> Self::LookupData {
+    fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
         let a = [(); N_IDS_PER_LINE];
-        AddrToIdLookupData {
+        vec![AddrToIdLookupData {
             log_size,
             id: a.map(|_| vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)]),
             mult: a.map(|_| vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)]),
-        }
+        }]
     }
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,

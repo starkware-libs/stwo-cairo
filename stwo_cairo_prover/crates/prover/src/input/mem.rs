@@ -100,9 +100,8 @@ impl Memory {
 }
 
 pub struct MemoryBuilder {
-    mem: Memory,
+    pub mem: Memory,
     felt252_id_cache: HashMap<[u32; 8], usize>,
-    address_to_id: Vec<EncodedMemoryValueId>,
 }
 impl MemoryBuilder {
     pub fn new(config: MemConfig) -> Self {
@@ -114,7 +113,6 @@ impl MemoryBuilder {
                 f252_values: Vec::new(),
             },
             felt252_id_cache: HashMap::new(),
-            address_to_id: Vec::new(),
         }
     }
     pub fn from_iter<I: IntoIterator<Item = MemEntry>>(
@@ -158,10 +156,7 @@ impl MemoryBuilder {
         res
     }
     pub fn build(self) -> Memory {
-        Memory {
-            address_to_id: self.address_to_id,
-            ..self.mem
-        }
+        self.mem
     }
 }
 impl Deref for MemoryBuilder {

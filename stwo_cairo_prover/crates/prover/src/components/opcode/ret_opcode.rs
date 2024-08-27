@@ -14,7 +14,7 @@ use super::super::{
     LookupFunc, Standard, StandardClaim, StandardComponent, StandardInteractionProver,
     StandardLookupData, StandardProver,
 };
-use super::PackedVmState;
+use super::{cairo_offset, PackedVmState};
 use crate::components::opcode::{OpcodeElements, OpcodeGenContext};
 use crate::components::ContextFor;
 
@@ -23,7 +23,7 @@ pub type RetClaim = StandardClaim<RetOpcode>;
 pub type RetComponent = StandardComponent<RetOpcode>;
 pub type RetInteractionProver = StandardInteractionProver<RetLookupData>;
 
-// const RET_FLAGS: u32 = 0b010000010001011;
+const RET_FLAGS: u32 = 0b010000010001011;
 
 #[derive(Clone)]
 pub struct RetOpcode;
@@ -39,14 +39,16 @@ impl Standard for RetOpcode {
         OpcodeElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &()) -> Self::LookupData {
-        RetLookupData {
-            log_size,
-            pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-            fp: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-            new_pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-            new_fp: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-        }
+    fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
+        (0..2)
+            .map(|_| RetLookupData {
+                log_size,
+                pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+                fp: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+                new_pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+                new_fp: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+            })
+            .collect()
     }
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
@@ -54,24 +56,23 @@ impl Standard for RetOpcode {
         elements: &OpcodeElements,
         _params: &(),
     ) {
-        let _pc = eval.next_trace_mask();
+        let pc = eval.next_trace_mask();
         let _ap = eval.next_trace_mask();
         let fp = eval.next_trace_mask();
 
-        // // TODO: Instruction lookup.
-        // logup.push_lookup(
-        //     eval,
-        //     E::EF::zero(),
-        //     // E::EF::one(),
-        //     &[
-        //         pc,
-        //         cairo_offset(-2).into(),
-        //         cairo_offset(-1).into(),
-        //         cairo_offset(-1).into(),
-        //         M31::from(RET_FLAGS).into(),
-        //     ],
-        //     &elements.instruction_elements,
-        // );
+        // Instruction lookup.
+        logup.push_lookup(
+            eval,
+            E::EF::one(),
+            &[
+                pc,
+                cairo_offset(-2).into(),
+                cairo_offset(-1).into(),
+                cairo_offset(-1).into(),
+                M31::from(RET_FLAGS).into(),
+            ],
+            &elements.mem.instructions,
+        );
 
         // fp-1 lookup.
         let new_fp = eval.next_trace_mask();
@@ -79,7 +80,7 @@ impl Standard for RetOpcode {
             eval,
             E::EF::one(),
             &[fp - M31::from(1).into(), new_fp],
-            &elements.memory_elements.addr_to_id,
+            &elements.mem.addr_to_id,
         );
 
         // fp-2 lookup
@@ -88,13 +89,13 @@ impl Standard for RetOpcode {
             eval,
             E::EF::one(),
             &[fp - M31::from(2).into(), new_pc],
-            &elements.memory_elements.addr_to_id,
+            &elements.mem.addr_to_id,
         );
 
         // TODO: State lookups.
     }
 }
-impl<'a, 'b> ContextFor<RetOpcode> for OpcodeGenContext<'a, 'b> {
+impl<'a> ContextFor<RetOpcode> for OpcodeGenContext<'a> {
     fn write_trace_row(
         &mut self,
         dst: &mut [BaseColumn],
@@ -111,9 +112,10 @@ impl<'a, 'b> ContextFor<RetOpcode> for OpcodeGenContext<'a, 'b> {
         lookup_data.pc[row_index] = pc;
         lookup_data.fp[row_index] = fp;
 
-        // TODO: Instruction lookup.
+        self.mem_builder.instruction_mem.add_inputs_simd(input.pc);
 
         let new_fp = self
+            .mem_builder
             .addr_to_id
             .add_inputs_simd(self.mem, input.fp - Simd::splat(1));
         let new_fp = unsafe { PackedM31::from_simd_unchecked(new_fp.cast()) };
@@ -121,6 +123,7 @@ impl<'a, 'b> ContextFor<RetOpcode> for OpcodeGenContext<'a, 'b> {
         lookup_data.new_fp[row_index] = new_fp;
 
         let new_pc = self
+            .mem_builder
             .addr_to_id
             .add_inputs_simd(self.mem, input.fp - Simd::splat(2));
         let new_pc = unsafe { PackedM31::from_simd_unchecked(new_pc.cast()) };
@@ -138,28 +141,28 @@ pub struct RetLookupData {
 }
 
 impl StandardLookupData for RetLookupData {
-    const N_LOOKUPS: usize = 2;
+    const N_LOOKUPS: usize = 3;
 
     type Elements = OpcodeElements;
 
     // TODO: Ensure length.
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         vec![
-            // // TODO: Instruction lookup.
-            // Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-            //     let denom = elements.instruction_elements.combine(&[
-            //         self.pc[row],
-            //         cairo_offset(-2).into(),
-            //         cairo_offset(-1).into(),
-            //         cairo_offset(-1).into(),
-            //         M31::from(RET_FLAGS).into(),
-            //     ]);
-            //     Fraction::new(PackedM31::zero(), denom)
-            //     // Fraction::new(PackedM31::one(), denom)
-            // })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
+            // TODO: Instruction lookup.
+            Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
+                let denom = elements.mem.instructions.combine(&[
+                    self.pc[row],
+                    cairo_offset(-2).into(),
+                    cairo_offset(-1).into(),
+                    cairo_offset(-1).into(),
+                    M31::from(RET_FLAGS).into(),
+                ]);
+                Fraction::new(PackedM31::zero(), denom)
+                // Fraction::new(PackedM31::one(), denom)
+            })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // fp-1 lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = elements.memory_elements.addr_to_id.combine(&[
+                let denom = elements.mem.addr_to_id.combine(&[
                     self.fp[row] - PackedM31::broadcast(M31::from(1)),
                     self.new_fp[row],
                 ]);
@@ -167,7 +170,7 @@ impl StandardLookupData for RetLookupData {
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // fp-2 lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = elements.memory_elements.addr_to_id.combine(&[
+                let denom = elements.mem.addr_to_id.combine(&[
                     self.fp[row] - PackedM31::broadcast(M31::from(2)),
                     self.new_pc[row],
                 ]);

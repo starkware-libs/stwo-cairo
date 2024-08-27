@@ -31,7 +31,7 @@ pub trait Standard: Clone {
     type LookupElements;
     type PackedInput;
     type LookupData: StandardLookupData;
-    type Params;
+    type Params: Clone;
 
     const N_REPETITIONS: usize;
 
@@ -52,7 +52,7 @@ pub trait Standard: Clone {
     }
     fn dummy_elements() -> Self::LookupElements;
     fn dummy_params() -> Self::Params;
-    fn new_lookup_data(log_size: u32, params: &Self::Params) -> Self::LookupData;
+    fn new_lookup_data(log_size: u32, params: &Self::Params) -> Vec<Self::LookupData>;
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
         logup: &mut LogupAtRow<2, E>,
@@ -81,13 +81,13 @@ pub struct StandardComponent<C: Standard> {
 }
 impl<C: Standard> StandardComponent<C> {
     pub fn new(
-        ret_claim: StandardClaim<C>,
+        claim: &StandardClaim<C>,
         opcode_elements: C::LookupElements,
-        interaction_claim: StandardInteractionClaim,
+        interaction_claim: &StandardInteractionClaim,
     ) -> Self {
         Self {
-            log_size: ret_claim.log_size,
-            params: ret_claim.params,
+            log_size: claim.log_size,
+            params: claim.params.clone(),
             opcode_elements,
             claimed_sum: interaction_claim.claimed_sum,
             phantom: std::marker::PhantomData,
@@ -200,9 +200,8 @@ impl<C: Standard> StandardProver<C> {
             .collect_vec();
 
         let log_size = n_rows.ilog2();
-        let mut lookup_data = (0..C::N_REPETITIONS)
-            .map(|_| C::new_lookup_data(log_size, &self.params))
-            .collect_vec();
+        let mut lookup_data = C::new_lookup_data(log_size, &self.params);
+        assert_eq!(lookup_data.len(), C::N_REPETITIONS);
 
         for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
             for i in 0..C::N_REPETITIONS {
@@ -274,20 +273,20 @@ impl<LD: StandardLookupData> StandardInteractionProver<LD> {
         let (trace, claimed_sum) = logup_gen.finalize();
         tree_builder.extend_evals(trace);
 
-        StandardInteractionClaim {
-            log_size: self.log_size,
-            claimed_sum,
-        }
+        StandardInteractionClaim { claimed_sum }
     }
 }
 
 #[derive(Clone)]
 pub struct StandardInteractionClaim {
-    pub log_size: u32,
     pub claimed_sum: SecureField,
 }
 impl StandardInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
+    }
+
+    fn logup_sum(&self) -> SecureField {
+        self.claimed_sum
     }
 }

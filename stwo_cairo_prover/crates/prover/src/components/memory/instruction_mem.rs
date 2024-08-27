@@ -15,13 +15,14 @@ use super::super::{
 };
 use super::addr_to_id::AddrToIdBuilder;
 use super::id_to_big::IdToBigBuilder;
-use super::MemoryElements;
-use crate::components::opcode::CpuRangeElements;
-use crate::components::ContextFor;
+use super::MemoryAndRangeElements;
+use crate::components::{ContextFor, StandardInteractionClaim, StandardInteractionProver};
 use crate::input::mem::Memory;
 
 pub type InstMemProver = StandardProver<InstMem>;
+pub type InstMemInteractionProver = StandardInteractionProver<InstMemLookupData>;
 pub type InstMemClaim = StandardClaim<InstMem>;
+pub type InstMemInteractionClaim = StandardInteractionClaim;
 pub type InstMemComponent = StandardComponent<InstMem>;
 
 // Builder
@@ -52,7 +53,7 @@ impl InstMemBuilder {
 pub struct InstMem;
 
 impl Standard for InstMem {
-    type LookupElements = (MemoryElements, CpuRangeElements);
+    type LookupElements = MemoryAndRangeElements;
     // TODO: Add big memory and range checks.
     type PackedInput = PackedInstMemInput;
     type LookupData = InstMemLookupData;
@@ -60,21 +61,23 @@ impl Standard for InstMem {
     const N_REPETITIONS: usize = 2;
 
     fn dummy_elements() -> Self::LookupElements {
-        (MemoryElements::dummy(), CpuRangeElements::dummy())
+        MemoryAndRangeElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &()) -> Self::LookupData {
-        InstMemLookupData {
-            log_size,
-            addr: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-            mult: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-            value: vec![[Simd::splat(0); 2]; 1 << (log_size - LOG_N_LANES)],
-        }
+    fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
+        (0..2)
+            .map(|_| InstMemLookupData {
+                log_size,
+                addr: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+                mult: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+                value: vec![[Simd::splat(0); 2]; 1 << (log_size - LOG_N_LANES)],
+            })
+            .collect()
     }
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
         logup: &mut LogupAtRow<2, E>,
-        (mem_elements, range_elements): &Self::LookupElements,
+        els: &Self::LookupElements,
         _params: &Self::Params,
     ) {
         // 16 16 16 15 \cap 18 18 18 =
@@ -85,10 +88,10 @@ impl Standard for InstMem {
         let parts = [0; 7].map(|_| eval.next_trace_mask());
 
         // Range checks.
-        logup.push_lookup(eval, E::EF::one(), &[parts[0]], &range_elements.rc16);
-        logup.push_lookup(eval, E::EF::one(), &parts[1..=2], &range_elements.rc2_14);
-        logup.push_lookup(eval, E::EF::one(), &parts[3..=4], &range_elements.rc4_12);
-        logup.push_lookup(eval, E::EF::one(), &parts[5..=6], &range_elements.rc6_9);
+        logup.push_lookup(eval, E::EF::one(), &[parts[0]], &els.range.rc16);
+        logup.push_lookup(eval, E::EF::one(), &parts[1..=2], &els.range.rc2_14);
+        logup.push_lookup(eval, E::EF::one(), &parts[3..=4], &els.range.rc4_12);
+        logup.push_lookup(eval, E::EF::one(), &parts[5..=6], &els.range.rc6_9);
 
         // Instruction decoding.
         let offset0 = parts[0];
@@ -99,11 +102,11 @@ impl Standard for InstMem {
             eval,
             (-mult).into(),
             &[addr, offset0, offset1, offset2, flags],
-            &mem_elements.instructions,
+            &els.mem.instructions,
         );
 
         // Id lookup.
-        logup.push_lookup(eval, E::EF::one(), &[addr, id], &mem_elements.addr_to_id);
+        logup.push_lookup(eval, E::EF::one(), &[addr, id], &els.mem.addr_to_id);
 
         // Memory lookup.
         let limb0 = parts[0] + parts[1] * M31::from(1 << 16);
@@ -114,7 +117,7 @@ impl Standard for InstMem {
             eval,
             E::EF::one(),
             &[id, limb0, limb1, limb2, limb3],
-            &mem_elements.id_to_big,
+            &els.mem.id_to_big,
         );
     }
 }
@@ -187,35 +190,32 @@ pub struct InstMemLookupData {
 }
 
 impl StandardLookupData for InstMemLookupData {
-    const N_LOOKUPS: usize = 2;
+    const N_LOOKUPS: usize = 6;
 
-    type Elements = (MemoryElements, CpuRangeElements);
+    type Elements = MemoryAndRangeElements;
 
     // TODO: Ensure length.
-    fn lookups<'a>(
-        &'a self,
-        (mem_elements, range_elements): &'a Self::Elements,
-    ) -> Vec<LookupFunc<'a>> {
+    fn lookups<'a>(&'a self, els: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         vec![
             // Range checks.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = range_elements.rc16.combine(&parts[0..=0]);
+                let denom = els.range.rc16.combine(&parts[0..=0]);
                 Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = range_elements.rc2_14.combine(&parts[1..=2]);
+                let denom = els.range.rc2_14.combine(&parts[1..=2]);
                 Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = range_elements.rc4_12.combine(&parts[3..=4]);
+                let denom = els.range.rc4_12.combine(&parts[3..=4]);
                 Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = range_elements.rc6_9.combine(&parts[5..=6]);
+                let denom = els.range.rc6_9.combine(&parts[5..=6]);
                 Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Instruction decoding.
@@ -225,7 +225,7 @@ impl StandardLookupData for InstMemLookupData {
                 let offset1 = parts[1] + parts[2] * M31::from(1 << 2);
                 let offset2 = parts[3] + parts[4] * M31::from(1 << 4);
                 let flags = parts[5] + parts[6] * M31::from(1 << 6);
-                let denom = mem_elements.instructions.combine(&[
+                let denom = els.mem.instructions.combine(&[
                     self.addr[row],
                     offset0,
                     offset1,
@@ -242,7 +242,7 @@ impl StandardLookupData for InstMemLookupData {
                 let limb2 = parts[4] + parts[5] * M31::from(1 << 12);
                 let limb3 = parts[6];
                 let denom =
-                    mem_elements
+                    els.mem
                         .id_to_big
                         .combine(&[self.addr[row], limb0, limb1, limb2, limb3]);
                 Fraction::new(PackedM31::one(), denom)
