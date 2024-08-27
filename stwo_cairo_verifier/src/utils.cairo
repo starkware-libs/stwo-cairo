@@ -5,8 +5,9 @@ use core::box::BoxTrait;
 use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
 use core::iter::Iterator;
-
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::BaseField;
+
 
 #[generate_trait]
 pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {
@@ -81,7 +82,6 @@ pub fn pack4(cur: felt252, values: [BaseField; 4]) -> felt252 {
         + x3.into()
 }
 
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 
 pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     assert!(bits < 32);
@@ -96,8 +96,8 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     result
 }
 
+
 pub fn pow(base: u32, mut exponent: u32) -> u32 {
-    // TODO: include from alexandria?
     let mut result = 1;
     let mut base_power = base;
     loop {
@@ -139,57 +139,63 @@ pub fn qm31_zero_array(n: u32) -> Array<QM31> {
     result
 }
 
-#[test]
-fn test_pow() {
-    assert_eq!(25, pow(5, 2));
-    assert_eq!(16, pow(2, 4));
-    assert_eq!(1024, pow(2, 10));
-    assert_eq!(4096, pow(2, 12));
-    assert_eq!(1048576, pow(2, 20));
+#[cfg(test)]
+mod tests {
+    use super::{pow, bit_reverse_index, pow_qm31, qm31};
+    
+    #[test]
+    fn test_pow() {
+        assert_eq!(25, pow(5, 2));
+        assert_eq!(16, pow(2, 4));
+        assert_eq!(1024, pow(2, 10));
+        assert_eq!(4096, pow(2, 12));
+        assert_eq!(1048576, pow(2, 20));
+    }
+
+    #[test]
+    fn test_bit_reverse() {
+        // 1 bit
+        assert_eq!(0, bit_reverse_index(0, 1));
+        assert_eq!(1, bit_reverse_index(1, 1));
+
+        // 2 bits
+        assert_eq!(0, bit_reverse_index(0, 2));
+        assert_eq!(2, bit_reverse_index(1, 2));
+        assert_eq!(1, bit_reverse_index(2, 2));
+        assert_eq!(3, bit_reverse_index(3, 2));
+
+        // 3 bits
+        assert_eq!(0, bit_reverse_index(0, 3));
+        assert_eq!(4, bit_reverse_index(1, 3));
+        assert_eq!(2, bit_reverse_index(2, 3));
+        assert_eq!(6, bit_reverse_index(3, 3));
+
+        // 16 bits
+        assert_eq!(24415, bit_reverse_index(64250, 16));
+
+        // 31 bits
+        assert_eq!(16448250, bit_reverse_index(800042880, 31));
+    }
+
+    #[test]
+    fn test_pow_qm31_1() {
+        let result = pow_qm31(qm31(1, 2, 3, 4), 0);
+        let expected_result = qm31(1, 0, 0, 0);
+        assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_pow_qm31_2() {
+        let result = pow_qm31(qm31(1, 2, 3, 4), 1);
+        let expected_result = qm31(1, 2, 3, 4);
+        assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_pow_qm31_3() {
+        let result = pow_qm31(qm31(1, 2, 3, 4), 37);
+        let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
+        assert_eq!(expected_result, result)
+    }
 }
 
-#[test]
-fn test_bit_reverse() {
-    // 1 bit
-    assert_eq!(0, bit_reverse_index(0, 1));
-    assert_eq!(1, bit_reverse_index(1, 1));
-
-    // 2 bits
-    assert_eq!(0, bit_reverse_index(0, 2));
-    assert_eq!(2, bit_reverse_index(1, 2));
-    assert_eq!(1, bit_reverse_index(2, 2));
-    assert_eq!(3, bit_reverse_index(3, 2));
-
-    // 3 bits
-    assert_eq!(0, bit_reverse_index(0, 3));
-    assert_eq!(4, bit_reverse_index(1, 3));
-    assert_eq!(2, bit_reverse_index(2, 3));
-    assert_eq!(6, bit_reverse_index(3, 3));
-
-    // 16 bits
-    assert_eq!(24415, bit_reverse_index(64250, 16));
-
-    // 31 bits
-    assert_eq!(16448250, bit_reverse_index(800042880, 31));
-}
-
-#[test]
-fn test_pow_qm31_1() {
-    let result = pow_qm31(qm31(1, 2, 3, 4), 0);
-    let expected_result = qm31(1, 0, 0, 0);
-    assert_eq!(expected_result, result)
-}
-
-#[test]
-fn test_pow_qm31_2() {
-    let result = pow_qm31(qm31(1, 2, 3, 4), 1);
-    let expected_result = qm31(1, 2, 3, 4);
-    assert_eq!(expected_result, result)
-}
-
-#[test]
-fn test_pow_qm31_3() {
-    let result = pow_qm31(qm31(1, 2, 3, 4), 37);
-    let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
-    assert_eq!(expected_result, result)
-}
