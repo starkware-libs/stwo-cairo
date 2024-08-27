@@ -1,4 +1,4 @@
-use stwo_cairo_verifier::fri::circle::CirclePointM31Trait;
+use stwo_cairo_verifier::circle::CirclePointM31Trait;
 use core::option::OptionTrait;
 use core::clone::Clone;
 use core::result::ResultTrait;

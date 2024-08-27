@@ -100,6 +100,7 @@ pub impl CosetImpl of CosetTrait {
 mod tests {
     use super::{M31_CIRCLE_GEN, CIRCLE_ORDER, CirclePointM31, CirclePointM31Impl, Coset, CosetImpl};
     use stwo_cairo_verifier::fields::m31::m31;
+    use stwo_cairo_verifier::utils::pow;
 
     #[test]
     fn test_add_1() {
@@ -173,6 +174,13 @@ mod tests {
         let expected_result = CirclePointM31 { x: -m31(1), y: m31(0) };
 
         // Assert `M31_CIRCLE_GEN^{2^30}` equals `-1`.
+        assert_eq!(expected_result, result);
+    }
+
+    #[test]
+    fn test_generator() {
+        let mut result = M31_CIRCLE_GEN.mul(pow(2, 30).try_into().unwrap());
+        let expected_result = CirclePointM31 { x: -m31(1), y: m31(0) };
         assert_eq!(expected_result, result);
     }
 
