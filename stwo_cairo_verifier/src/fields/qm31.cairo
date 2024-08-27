@@ -90,6 +90,7 @@ pub fn qm31(a: u32, b: u32, c: u32, d: u32) -> QM31 {
     QM31 { a: cm31(a, b), b: cm31(c, d) }
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::{QM31, qm31, QM31Trait};
