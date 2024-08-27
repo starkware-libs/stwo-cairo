@@ -142,7 +142,7 @@ pub fn qm31_zero_array(n: u32) -> Array<QM31> {
 #[cfg(test)]
 mod tests {
     use super::{pow, bit_reverse_index, pow_qm31, qm31};
-    
+
     #[test]
     fn test_pow() {
         assert_eq!(25, pow(5, 2));

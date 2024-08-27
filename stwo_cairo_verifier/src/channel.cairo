@@ -122,7 +122,7 @@ pub impl ChannelImpl of ChannelTrait {
         };
         res
     }
-   
+
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
     /// `self.draw_felt252()` in little endian.
     /// TODO: check that this distribution is good enough, as it is only close to uniform.
