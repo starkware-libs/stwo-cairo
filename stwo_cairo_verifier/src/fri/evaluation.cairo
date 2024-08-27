@@ -1,12 +1,14 @@
 use stwo_cairo_verifier::fields::m31::M31Trait;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
-use super::domain::{LineDomain, CircleDomain, CircleDomainImpl, LineDomainImpl};
+use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
+use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
 use super::query::{Queries, QueriesImpl};
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::utils::{bit_reverse_index, pow};
 use super::verifier::{FOLD_STEP, CIRCLE_TO_LINE_FOLD_STEP};
+
 
 #[derive(Drop)]
 pub struct LineEvaluation {
