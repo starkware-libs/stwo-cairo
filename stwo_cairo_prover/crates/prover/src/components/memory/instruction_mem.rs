@@ -157,14 +157,18 @@ impl<'a> ContextFor<InstMem> for InstMemCtx<'a> {
         dst[1].data[row_index] = addr;
 
         let id = self.addr_to_id.add_inputs_simd(self.mem, input.addr);
+
         let value = self.id_to_big.add_inputs_simd(self.mem, id);
         split_big(&value).iter().enumerate().for_each(|(i, part)| {
-            dst[2 + i].data[row_index] = *part;
+            dst[3 + i].data[row_index] = *part;
         });
+
+        let id = unsafe { PackedM31::from_simd_unchecked(id.cast()) };
+        dst[2].data[row_index] = id;
 
         lookup_data.mult[row_index] = mult;
         lookup_data.addr[row_index] = addr;
-        lookup_data.id[row_index] = unsafe { PackedM31::from_simd_unchecked(id.cast()) };
+        lookup_data.id[row_index] = id;
         lookup_data.value[row_index] = [value[0], value[1]];
     }
 }

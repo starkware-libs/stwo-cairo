@@ -11,6 +11,7 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::poly::circle::CirclePoly;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::memory::{MemoryElements, MemoryProver};
@@ -191,5 +192,12 @@ impl OpcodesComponents {
     }
     pub fn components(&self) -> Vec<&dyn Component> {
         vec![&self.ret]
+    }
+
+    pub fn assert_constraints(
+        &self,
+        trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
+    ) {
+        self.ret.assert_constraints(trace_polys);
     }
 }

@@ -10,6 +10,7 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeBuilder;
+use stwo_prover::core::poly::circle::{CanonicCoset, CirclePoly};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 pub mod memory;
@@ -21,7 +22,9 @@ pub mod utils;
 pub const LOOKUP_INTERACTION_PHASE: usize = 1;
 
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, InfoEvaluator};
+use stwo_prover::constraint_framework::{
+    assert_constraints, EvalAtRow, FrameworkComponent, InfoEvaluator,
+};
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use utils::to_evals;
@@ -96,6 +99,20 @@ impl<C: Standard> StandardComponent<C> {
             claimed_sum: interaction_claim.claimed_sum,
             phantom: std::marker::PhantomData,
         }
+    }
+
+    fn assert_constraints(
+        &self,
+        trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
+    ) {
+        let polys = trace_polys
+            .as_mut()
+            .zip(C::info().mask_offsets)
+            .map(|(c, m)| c.take(m.len()).collect_vec());
+        let trace_domain = CanonicCoset::new(self.log_size);
+        assert_constraints(&polys, trace_domain, |e| {
+            self.evaluate(e);
+        })
     }
 }
 

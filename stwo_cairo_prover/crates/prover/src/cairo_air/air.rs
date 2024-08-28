@@ -3,6 +3,7 @@ use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::poly::circle::CirclePoly;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use crate::components::memory::{
@@ -193,5 +194,13 @@ impl CairoComponents {
 
     pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
         chain![self.opcodes.components(), self.mem.components()]
+    }
+
+    pub fn assert_constraints(
+        &self,
+        trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
+    ) {
+        self.opcodes.assert_constraints(trace_polys);
+        self.mem.assert_constraints(trace_polys);
     }
 }

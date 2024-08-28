@@ -14,6 +14,7 @@ use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::poly::circle::CirclePoly;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::opcode::CpuRangeElements;
@@ -217,5 +218,14 @@ impl MemoryComponents {
     pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
         let res: [&dyn Component; 3] = [&self.inst_mem, &self.addr_to_id, &self.id_to_big];
         res.into_iter()
+    }
+
+    pub fn assert_constraints(
+        &self,
+        trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
+    ) {
+        self.inst_mem.assert_constraints(trace_polys);
+        self.addr_to_id.assert_constraints(trace_polys);
+        self.id_to_big.assert_constraints(trace_polys);
     }
 }

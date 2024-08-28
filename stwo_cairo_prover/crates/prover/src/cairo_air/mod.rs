@@ -102,12 +102,12 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_builder.provers();
 
-    // // TODO: Remove. Only for debugging.
-    // let trace_polys = commitment_scheme
-    //     .trees
-    //     .as_ref()
-    //     .map(|t| t.polynomials.iter().cloned().collect_vec());
-    // component_builder.assert_constraints(trace_polys);
+    // TODO: Remove. Only for debugging.
+    let mut trace_polys = commitment_scheme
+        .trees
+        .as_ref()
+        .map(|t| t.polynomials.iter().cloned());
+    component_builder.assert_constraints(&mut trace_polys);
 
     // Assert sizes.
     println!("A");
