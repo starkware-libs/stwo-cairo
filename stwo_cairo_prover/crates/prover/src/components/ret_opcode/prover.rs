@@ -12,21 +12,15 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
-use crate::components::memory::component::N_M31_IN_FELT252;
-use crate::components::memory::prover::MemoryClaimProver;
+use crate::components::memory::prover::MemoryClaimGenerator;
 use crate::components::memory::MemoryLookupElements;
 use crate::input::instructions::VmState;
+use crate::prover_types::{PackedCasmState, PackedFelt252};
 
-const N_MEMORY_CALLS: usize = 3;
-
-pub struct PackedRetInput {
-    pub pc: PackedM31,
-    pub ap: PackedM31,
-    pub fp: PackedM31,
-}
+pub const N_MEMORY_CALLS: usize = 3;
 
 pub struct RetOpcodeClaimProver {
-    pub inputs: Vec<PackedRetInput>,
+    pub inputs: Vec<PackedCasmState>,
 }
 impl RetOpcodeClaimProver {
     pub fn new(mut inputs: Vec<VmState>) -> Self {
@@ -39,7 +33,7 @@ impl RetOpcodeClaimProver {
         let inputs = inputs
             .into_iter()
             .array_chunks::<N_LANES>()
-            .map(|chunk| PackedRetInput {
+            .map(|chunk| PackedCasmState {
                 pc: PackedM31::from_array(std::array::from_fn(|i| {
                     M31::from_u32_unchecked(chunk[i].pc)
                 })),
@@ -56,7 +50,7 @@ impl RetOpcodeClaimProver {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_trace_generator: &mut MemoryClaimProver,
+        memory_trace_generator: &mut MemoryClaimGenerator,
     ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
         interaction_prover.memory_inputs.iter().for_each(|c| {
@@ -74,7 +68,7 @@ impl RetOpcodeClaimProver {
 
 pub struct RetOpcodeInteractionProver {
     pub memory_inputs: [Vec<PackedM31>; N_MEMORY_CALLS],
-    pub memory_outputs: [Vec<[PackedM31; N_M31_IN_FELT252]>; N_MEMORY_CALLS],
+    pub memory_outputs: [Vec<PackedFelt252>; N_MEMORY_CALLS],
     // Callee data.
     // pc: Vec<PackedM31>,
     // fp: Vec<PackedM31>,
@@ -113,7 +107,7 @@ impl RetOpcodeInteractionProver {
             )
             .enumerate()
             {
-                let address_and_value = chain!([addr], output).copied().collect_vec();
+                let address_and_value = chain!([addr], &output.value).copied().collect_vec();
                 let denom = lookup_elements.combine(&address_and_value);
                 col_gen.write_frac(i, PackedQM31::one(), denom);
             }
@@ -130,8 +124,8 @@ impl RetOpcodeInteractionProver {
 }
 
 fn write_trace_simd(
-    inputs: &[PackedRetInput],
-    memory_trace_generator: &MemoryClaimProver,
+    inputs: &[PackedCasmState],
+    memory_trace_generator: &MemoryClaimGenerator,
 ) -> (
     Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
     RetOpcodeInteractionProver,
@@ -173,10 +167,10 @@ fn write_trace_simd(
 // TODO(Ohad): redo when air team decides how it should look.
 fn write_trace_row(
     dst: &mut [Col<SimdBackend, M31>],
-    ret_opcode_input: &PackedRetInput,
+    ret_opcode_input: &PackedCasmState,
     row_index: usize,
     lookup_data: &mut RetOpcodeInteractionProver,
-    memory_trace_generator: &MemoryClaimProver,
+    memory_trace_generator: &MemoryClaimGenerator,
 ) {
     let col0 = ret_opcode_input.pc;
     dst[0].data[row_index] = col0;
@@ -186,7 +180,9 @@ fn write_trace_row(
     dst[2].data[row_index] = col2;
     lookup_data.memory_inputs[0].push(col0);
     lookup_data.memory_inputs[1].push((col2) - (PackedM31::broadcast(M31::one())));
-    lookup_data.memory_outputs[0].push(RET_INSTRUCTION.map(|v| PackedM31::broadcast(M31::from(v))));
+    lookup_data.memory_outputs[0].push(PackedFelt252::from(
+        RET_INSTRUCTION.map(|v| PackedM31::broadcast(M31::from(v))),
+    ));
     let mem_fp_minus_one =
         memory_trace_generator.deduce_output((col2) - (PackedM31::broadcast(M31::from(1))));
     lookup_data.memory_outputs[1].push(mem_fp_minus_one);

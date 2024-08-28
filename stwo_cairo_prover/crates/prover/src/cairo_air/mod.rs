@@ -1,5 +1,6 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
+use stwo_prover::constraint_framework::logup::LookupElements;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
@@ -16,8 +17,9 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::InteractionElements;
 use thiserror::Error;
 
+use crate::components::addap;
 use crate::components::memory::component::{MemoryClaim, MemoryComponent, MemoryInteractionClaim};
-use crate::components::memory::prover::MemoryClaimProver;
+use crate::components::memory::prover::MemoryClaimGenerator;
 use crate::components::memory::MemoryLookupElements;
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim,
@@ -41,6 +43,7 @@ pub struct CairoClaim {
     pub range_check: SegmentAddrs,
 
     pub ret: Vec<RetOpcodeClaim>,
+    pub addap: Vec<addap::Claim>,
     pub memory: MemoryClaim,
     // ...
 }
@@ -48,37 +51,44 @@ impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
         self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.addap.iter().for_each(|c| c.mix_into(channel));
         self.memory.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
+            self.addap.iter().map(|c| c.log_sizes()),
             [self.memory.log_sizes()]
         ))
     }
 }
 
+pub type VmStateLookupElements = LookupElements<3>;
 pub struct CairoInteractionElements {
     memory_lookup: MemoryLookupElements,
+    vm_state_lookup: VmStateLookupElements,
     // ...
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
             memory_lookup: MemoryLookupElements::draw(channel),
+            vm_state_lookup: VmStateLookupElements::draw(channel),
         }
     }
 }
 
 pub struct CairoInteractionClaim {
     pub ret: Vec<RetOpcodeInteractionClaim>,
+    pub addap: Vec<addap::InteractionClaim>,
     pub memory: MemoryInteractionClaim,
     // ...
 }
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.addap.iter().for_each(|c| c.mix_into(channel));
         self.memory.mix_into(channel);
     }
 }
@@ -110,11 +120,13 @@ pub fn lookup_sum_valid(
     // TODO: include initial and final state.
     sum += interaction_claim.memory.claimed_sum;
     sum += interaction_claim.ret[0].claimed_sum;
+    sum += interaction_claim.addap[0].claimed_sum;
     sum == SecureField::zero()
 }
 
 pub struct CairoComponentGenerator {
     ret: Vec<RetOpcodeComponent>,
+    addap: Vec<addap::Component>,
     memory: MemoryComponent,
     // ...
 }
@@ -137,6 +149,19 @@ impl CairoComponentGenerator {
                 )
             })
             .collect_vec();
+        let addap_components = cairo_claim
+            .addap
+            .iter()
+            .zip(interaction_claim.addap.iter())
+            .map(|(&claim, &interaction_claim)| {
+                addap::Component::new(
+                    claim,
+                    interaction_claim,
+                    interaction_elements.vm_state_lookup.clone(),
+                    interaction_elements.memory_lookup.clone(),
+                )
+            })
+            .collect_vec();
         let memory_component = MemoryComponent::new(
             cairo_claim.memory.clone(),
             interaction_elements.memory_lookup.clone(),
@@ -144,6 +169,7 @@ impl CairoComponentGenerator {
         );
         Self {
             ret: ret_components,
+            addap: addap_components,
             memory: memory_component,
         }
     }
@@ -153,6 +179,9 @@ impl CairoComponentGenerator {
         for ret in self.ret.iter() {
             vec.push(ret);
         }
+        for addap in self.addap.iter() {
+            vec.push(addap);
+        }
         vec.push(&self.memory);
         vec
     }
@@ -161,6 +190,9 @@ impl CairoComponentGenerator {
         let mut vec: Vec<&dyn Component> = vec![];
         for ret in self.ret.iter() {
             vec.push(ret);
+        }
+        for addap in self.addap.iter() {
+            vec.push(addap);
         }
         vec.push(&self.memory);
         vec
@@ -193,7 +225,8 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     // Base trace.
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
     let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
-    let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
+    let add_ap_trace_generator = addap::ClaimGenerator::new(input.instructions.add_ap);
+    let mut memory_trace_generator = MemoryClaimGenerator::new(input.mem);
 
     // Add public memory.
     for addr in &input.public_mem_addresses {
@@ -203,6 +236,8 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let mut tree_builder = commitment_scheme.tree_builder();
     let (ret_claim, ret_interaction_prover) =
         ret_trace_generator.write_trace(&mut tree_builder, &mut memory_trace_generator);
+    let addap_claim_prover =
+        add_ap_trace_generator.write_trace(&mut tree_builder, &mut memory_trace_generator);
     let (memory_claim, memory_interaction_prover) =
         memory_trace_generator.write_trace(&mut tree_builder);
 
@@ -213,6 +248,7 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
         final_state: input.instructions.final_state,
         range_check: input.range_check,
         ret: vec![ret_claim],
+        addap: vec![addap_claim_prover.claim],
         memory: memory_claim.clone(),
     };
     claim.mix_into(channel);
@@ -225,12 +261,18 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let mut tree_builder = commitment_scheme.tree_builder();
     let ret_interaction_claim = ret_interaction_prover
         .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
+    let addap_interaction_claim = addap_claim_prover.write_interaction_trace(
+        &mut tree_builder,
+        &interaction_elements.vm_state_lookup,
+        &interaction_elements.memory_lookup,
+    );
     let memory_interaction_claim = memory_interaction_prover
         .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
 
     // Commit to the interaction claim and the interaction trace.
     let interaction_claim = CairoInteractionClaim {
         ret: vec![ret_interaction_claim.clone()],
+        addap: vec![addap_interaction_claim],
         memory: memory_interaction_claim.clone(),
     };
     debug_assert!(lookup_sum_valid(
@@ -315,6 +357,7 @@ mod tests {
 
     fn test_input() -> CairoInput {
         let instructions = casm! {
+            ap += 1;
             [ap] = 10, ap++;
             call rel 4;
             jmp rel 11;

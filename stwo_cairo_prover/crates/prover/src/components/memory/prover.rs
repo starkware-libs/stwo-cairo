@@ -19,13 +19,13 @@ use super::component::{
 use super::MemoryLookupElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
-use crate::prover_types::PackedUInt32;
+use crate::prover_types::{PackedFelt252, PackedUInt32};
 
-pub struct MemoryClaimProver {
+pub struct MemoryClaimGenerator {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
     pub multiplicities: Vec<PackedUInt32>,
 }
-impl MemoryClaimProver {
+impl MemoryClaimGenerator {
     pub fn new(mem: Memory) -> Self {
         // TODO(spapini): Split to multiple components.
         // TODO(spapini): More repetitions, for efficiency.
@@ -52,7 +52,7 @@ impl MemoryClaimProver {
         }
     }
 
-    pub fn deduce_output(&self, input: PackedM31) -> [PackedM31; N_M31_IN_FELT252] {
+    pub fn deduce_output(&self, input: PackedM31) -> PackedFelt252 {
         let indices = input.to_array().map(|i| i.0 as usize);
         let values = std::array::from_fn(|j| {
             Simd::from_array(indices.map(|i| {
@@ -60,7 +60,7 @@ impl MemoryClaimProver {
                 packed_res.map(|v| v.to_array()[i % N_LANES])[j]
             }))
         });
-        split_f252_simd(values)
+        split_f252_simd(values).into()
     }
 
     pub fn add_inputs_simd(&mut self, inputs: &PackedM31) {
@@ -184,7 +184,7 @@ mod tests {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));
         }
-        let generator = super::MemoryClaimProver::new(mem.build());
+        let generator = super::MemoryClaimGenerator::new(mem.build());
         let output = generator.deduce_output(input);
 
         for (i, expected) in expected_output.into_iter().enumerate() {

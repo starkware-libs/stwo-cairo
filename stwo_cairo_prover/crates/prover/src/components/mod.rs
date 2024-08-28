@@ -1,3 +1,4 @@
+pub mod addap;
 pub mod memory;
 pub mod range_check_builtin;
 pub mod range_check_unit;
