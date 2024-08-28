@@ -13,7 +13,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use super::memory::{MemoryElements, MemoryProverBuilder};
+use super::memory::{MemoryElements, MemoryProver};
 use super::range_check::RangeProver;
 use super::{StandardComponent, StandardInteractionClaim};
 use crate::input::instructions::{Instructions, VmState};
@@ -97,15 +97,15 @@ impl CpuRangeElements {
 }
 
 pub struct OpcodeGenContext<'a> {
-    pub mem_builder: &'a mut MemoryProverBuilder,
+    pub mem_builder: &'a mut MemoryProver,
     pub mem: &'a Memory,
-    pub range: CpuRangeProvers<'a>,
+    pub range: &'a mut CpuRangeProvers,
 }
 
 // Move
-pub struct CpuRangeProvers<'a> {
-    pub range2: &'a mut RangeProver,
-    pub range3: &'a mut RangeProver,
+pub struct CpuRangeProvers {
+    pub range2: RangeProver,
+    pub range3: RangeProver,
 }
 
 #[derive(Clone)]

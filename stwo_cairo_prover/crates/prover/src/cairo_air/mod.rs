@@ -1,12 +1,14 @@
-use itertools::{chain, Itertools};
-use num_traits::Zero;
-use stwo_prover::core::air::{Component, ComponentProver};
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::channel::{Blake2sChannel, Channel};
-use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::pcs::{
-    CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
+mod air;
+
+use air::{
+    CairoClaim, CairoComponents, CairoInteractionClaim, CairoInteractionElements, CairoProvers,
 };
+use itertools::Itertools;
+use num_traits::Zero;
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::channel::Blake2sChannel;
+use stwo_prover::core::fields::qm31::{SecureField, QM31};
+use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
@@ -15,70 +17,12 @@ use stwo_prover::core::InteractionElements;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::components::memory::{
-    MemoryAndRangeElements, MemoryClaim, MemoryComponents, MemoryInteractionClaim,
-    MemoryProverBuilder,
-};
-use crate::components::opcode::{
-    CpuRangeProvers, OpcodeElements, OpcodeGenContext, OpcodesClaim, OpcodesComponents,
-    OpcodesInteractionClaim, OpcodesProvers,
-};
-use crate::components::range_check::RangeProver;
-use crate::input::instructions::VmState;
-use crate::input::{CairoInput, SegmentAddrs};
+use crate::input::CairoInput;
 
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
-}
-
-pub struct CairoClaim {
-    // Common claim values.
-    pub public_memory: Vec<(u32, [u32; 8])>,
-    pub initial_state: VmState,
-    pub final_state: VmState,
-    pub range_check: SegmentAddrs,
-
-    // Opcodes.
-    pub opcodes: OpcodesClaim,
-
-    // Memory.
-    pub mem: MemoryClaim,
-}
-impl CairoClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        // TODO(spapini): Add common values.
-        self.mem.mix_into(channel);
-        self.opcodes.mix_into(channel);
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols([self.mem.log_sizes(), self.opcodes.log_sizes()].into_iter())
-    }
-}
-
-pub struct CairoInteractionElements {
-    opcode: OpcodeElements,
-    // ...
-}
-impl CairoInteractionElements {
-    pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
-        CairoInteractionElements {
-            opcode: OpcodeElements::draw(channel),
-        }
-    }
-}
-
-pub struct CairoInteractionClaim {
-    pub opcodes: OpcodesInteractionClaim,
-    pub mem: MemoryInteractionClaim,
-}
-impl CairoInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.opcodes.mix_into(channel);
-        self.mem.mix_into(channel);
-    }
 }
 
 pub fn lookup_sum_valid(
@@ -111,40 +55,6 @@ pub fn lookup_sum_valid(
     sum == SecureField::zero()
 }
 
-pub struct CairoComponents {
-    opcodes: OpcodesComponents,
-    mem: MemoryComponents,
-}
-
-impl CairoComponents {
-    pub fn new(
-        cairo_claim: &CairoClaim,
-        interaction_elements: &CairoInteractionElements,
-        interaction_claim: &CairoInteractionClaim,
-    ) -> Self {
-        let opcodes = OpcodesComponents::new(
-            &cairo_claim.opcodes,
-            &interaction_elements.opcode,
-            &interaction_claim.opcodes,
-        );
-        let mem_and_range_els = MemoryAndRangeElements {
-            mem: interaction_elements.opcode.mem.clone(),
-            range: interaction_elements.opcode.range.clone(),
-        };
-        let mem =
-            MemoryComponents::new(&cairo_claim.mem, &mem_and_range_els, &interaction_claim.mem);
-        Self { opcodes, mem }
-    }
-
-    pub fn provers(&self) -> impl Iterator<Item = &dyn ComponentProver<SimdBackend>> {
-        chain![self.opcodes.provers(), self.mem.provers()]
-    }
-
-    pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
-        chain![self.opcodes.components(), self.mem.components()]
-    }
-}
-
 const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let _span = span!(Level::INFO, "Proof").entered();
@@ -160,81 +70,28 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let channel = &mut Blake2sChannel::default();
     let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
 
-    // Extract public memory.
-    let public_memory = input
-        .public_mem_addresses
-        .iter()
-        .copied()
-        .map(|a| (a, input.mem.get(a).as_u256()))
-        .collect_vec();
-    let initial_state = input.instructions.initial_state;
-    let final_state = input.instructions.final_state;
-
-    // TODO: Table interaction.
+    let cairo_provers = CairoProvers::new(input);
 
     // Base trace.
     let span = span!(Level::INFO, "Trace gen").entered();
-    let opcode_provers = OpcodesProvers::new(input.instructions);
     let mut tree_builder = commitment_scheme.tree_builder();
+    let (claim, cairo_provers) = cairo_provers.generate(&mut tree_builder);
 
-    // // Add public memory.
-    // for addr in &input.public_mem_addresses {
-    //     opcode_ctx.addr_to_id.add_inputs(*addr);
-    // }
-    let range_provers = CpuRangeProvers {
-        range2: &mut RangeProver,
-        range3: &mut RangeProver,
-    };
-    let mut mem = MemoryProverBuilder::new(&input.mem);
-    let (opcodes_claim, opcodes_provers) = opcode_provers.generate(
-        OpcodeGenContext {
-            mem_builder: &mut mem,
-            mem: &input.mem,
-            range: range_provers,
-        },
-        &mut tree_builder,
-    );
-    let (memory_claim, mem) = mem.generate(input.mem, &mut tree_builder);
-
-    // Commit to the claim and the trace.
-    let claim = CairoClaim {
-        public_memory,
-        initial_state,
-        final_state,
-        range_check: input.range_check,
-        opcodes: opcodes_claim,
-        mem: memory_claim,
-    };
     claim.mix_into(channel);
     span.exit();
     tree_builder.commit(channel);
 
     // Draw interaction elements.
     let interaction_elements = CairoInteractionElements::draw(channel);
-    let memory_and_range_elements = MemoryAndRangeElements {
-        mem: interaction_elements.opcode.mem.clone(),
-        range: interaction_elements.opcode.range.clone(),
-    };
 
     // Interaction trace.
     let span = span!(Level::INFO, "Interaction trace gen").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
-    let opcodes_interaction_claim =
-        opcodes_provers.generate(&interaction_elements.opcode, &mut tree_builder);
-    let mem_interaction_claim = mem.generate(&mut tree_builder, &memory_and_range_elements);
-
-    // Commit to the interaction claim and the interaction trace.
-    let interaction_claim = CairoInteractionClaim {
-        opcodes: opcodes_interaction_claim,
-        mem: mem_interaction_claim,
-    };
+    let interaction_claim = cairo_provers.generate(&interaction_elements, &mut tree_builder);
     debug_assert!(
         lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
         "Lookups are invalid"
     );
-    if true {
-        panic!("Passed lookup sum check");
-    }
     interaction_claim.mix_into(channel);
     span.exit();
     tree_builder.commit(channel);

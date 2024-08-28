@@ -95,10 +95,11 @@ impl Standard for InstMem {
         let parts = [0; 7].map(|_| eval.next_trace_mask());
 
         // Range checks.
-        logup.push_lookup(eval, E::EF::one(), &[parts[0]], &els.range.rc16);
-        logup.push_lookup(eval, E::EF::one(), &parts[1..=2], &els.range.rc2_14);
-        logup.push_lookup(eval, E::EF::one(), &parts[3..=4], &els.range.rc4_12);
-        logup.push_lookup(eval, E::EF::one(), &parts[5..=6], &els.range.rc6_9);
+        // TODO: Change to 1.
+        logup.push_lookup(eval, E::EF::zero(), &[parts[0]], &els.range.rc16);
+        logup.push_lookup(eval, E::EF::zero(), &parts[1..=2], &els.range.rc2_14);
+        logup.push_lookup(eval, E::EF::zero(), &parts[3..=4], &els.range.rc4_12);
+        logup.push_lookup(eval, E::EF::zero(), &parts[5..=6], &els.range.rc6_9);
 
         // Instruction decoding.
         let offset0 = parts[0];

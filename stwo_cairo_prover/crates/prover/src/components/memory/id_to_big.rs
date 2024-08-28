@@ -1,7 +1,7 @@
 use std::simd::Simd;
 
 use itertools::{chain, Itertools};
-use num_traits::{One, Zero};
+use num_traits::Zero;
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::EvalAtRow;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -136,7 +136,8 @@ impl Standard for IdToBig {
 
         // Range check limbs.
         for i in 0..N_MEM_BIG_LIMBS {
-            logup.push_lookup(eval, E::EF::one(), &[values[i + 1]], &els.range.rc18);
+            // TODO: Change to 1.
+            logup.push_lookup(eval, E::EF::zero(), &[values[i + 1]], &els.range.rc18);
         }
     }
 }

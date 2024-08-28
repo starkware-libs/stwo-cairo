@@ -68,12 +68,12 @@ pub fn m31_from_i32(x: Simd<i32, N_LANES>) -> PackedM31 {
     unsafe { PackedM31::from_simd_unchecked(x) }
 }
 
-pub struct MemoryProverBuilder {
+pub struct MemoryProver {
     pub addr_to_id: addr_to_id::AddrToIdBuilder,
     pub id_to_big: id_to_big::IdToBigBuilder,
     pub instruction_mem: instruction_mem::InstMemBuilder,
 }
-impl MemoryProverBuilder {
+impl MemoryProver {
     pub fn new(mem: &Memory) -> Self {
         Self {
             addr_to_id: addr_to_id::AddrToIdBuilder::new(mem),
