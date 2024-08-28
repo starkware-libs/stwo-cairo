@@ -200,6 +200,9 @@ impl<C: Standard> StandardProver<C> {
             phantom: std::marker::PhantomData,
         }]
     }
+    pub fn n_padding(&self) -> u32 {
+        (self.inputs.len() * N_LANES - self.n_instances) as u32
+    }
     pub fn write_trace<Ctx: ContextFor<C>>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,

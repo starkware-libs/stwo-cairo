@@ -3,11 +3,13 @@ mod air;
 use air::{
     CairoClaim, CairoComponents, CairoInteractionClaim, CairoInteractionElements, CairoProvers,
 };
-use itertools::Itertools;
+use itertools::{chain, Itertools};
 use num_traits::Zero;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Blake2sChannel;
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
+use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::{
     CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
 };
@@ -28,8 +30,8 @@ pub struct CairoProof<H: MerkleHasher> {
 }
 
 pub fn lookup_sum_valid(
-    _claim: &CairoClaim,
-    _elements: &CairoInteractionElements,
+    claim: &CairoClaim,
+    elements: &CairoInteractionElements,
     interaction_claim: &CairoInteractionClaim,
 ) -> bool {
     let mut sum = QM31::zero();
@@ -54,6 +56,39 @@ pub fn lookup_sum_valid(
     // TODO: include initial and final state.
     sum += interaction_claim.mem.logup_sum();
     sum += interaction_claim.opcodes.logup_sum();
+
+    // Extra transitions.
+    // TODO: Check that the extra transitions are valid.
+    let extra_transitions = chain![
+        claim.opcodes.extra_transitions.iter().copied(),
+        [(1, [claim.initial_state, claim.final_state])].into_iter()
+    ];
+    println!(
+        "extra_transitions: {:#?}",
+        extra_transitions.clone().collect_vec()
+    );
+    let frac: Fraction<QM31, QM31> = extra_transitions
+        .map(|(n, transition)| {
+            Fraction::new(
+                QM31::from(M31::from(n)),
+                elements.opcode.state.combine(&[
+                    M31::from(transition[0].pc),
+                    M31::from(transition[0].ap),
+                    M31::from(transition[0].fp),
+                ]),
+            ) + Fraction::new(
+                QM31::from(-M31::from(n)),
+                elements.opcode.state.combine(&[
+                    M31::from(transition[1].pc),
+                    M31::from(transition[1].ap),
+                    M31::from(transition[1].fp),
+                ]),
+            )
+        })
+        .reduce(|a, b| a + b)
+        .unwrap();
+
+    sum += frac.numerator / frac.denominator;
     sum == SecureField::zero()
 }
 

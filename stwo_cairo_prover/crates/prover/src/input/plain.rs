@@ -69,12 +69,13 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
         small_max: runner.relocated_memory.len() as u32,
     };
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let instructions = Instructions::from_iter(trace, &mut mem);
+    let (instructions, aux) = Instructions::from_iter(trace, &mut mem);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
         instructions,
+        aux,
         mem: mem.build(),
         public_mem_addresses,
         range_check: SegmentAddrs {

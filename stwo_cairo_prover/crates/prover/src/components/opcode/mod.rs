@@ -1,8 +1,10 @@
-pub mod ret_opcode;
+pub mod generic;
+pub mod ret;
 
 use std::simd::Simd;
 
-use ret_opcode::{RetClaim, RetInteractionProver, RetOpcode, RetProver};
+use generic::{GenericOpcodeClaim, GenericOpcodeInteractionProver, GenericOpcodeProver};
+use ret::{RetOpcode, RetOpcodeClaim, RetOpcodeInteractionProver, RetOpcodeProver};
 use stwo_prover::constraint_framework::logup::LookupElements;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::m31::N_LANES;
@@ -29,6 +31,15 @@ pub struct PackedVmState {
     pub ap: Simd<u32, N_LANES>,
     pub fp: Simd<u32, N_LANES>,
 }
+impl PackedVmState {
+    pub fn first(&self) -> VmState {
+        VmState {
+            pc: self.pc.to_array()[0],
+            ap: self.ap.to_array()[0],
+            fp: self.fp.to_array()[0],
+        }
+    }
+}
 impl From<[VmState; N_LANES]> for PackedVmState {
     fn from(value: [VmState; N_LANES]) -> Self {
         PackedVmState {
@@ -39,16 +50,19 @@ impl From<[VmState; N_LANES]> for PackedVmState {
     }
 }
 
+pub type StateElements = LookupElements<3>;
 #[derive(Clone)]
 pub struct OpcodeElements {
     pub mem: MemoryElements,
     pub range: CpuRangeElements,
+    pub state: StateElements,
 }
 impl OpcodeElements {
     pub fn draw(channel: &mut impl Channel) -> Self {
         Self {
             mem: MemoryElements::draw(channel),
             range: CpuRangeElements::draw(channel),
+            state: LookupElements::draw(channel),
         }
     }
 
@@ -56,6 +70,7 @@ impl OpcodeElements {
         Self {
             mem: MemoryElements::dummy(),
             range: CpuRangeElements::dummy(),
+            state: LookupElements::dummy(),
         }
     }
 }
@@ -111,38 +126,47 @@ pub struct CpuRangeProvers {
 
 #[derive(Clone)]
 pub struct OpcodesClaim {
-    pub ret: RetClaim,
+    pub ret: RetOpcodeClaim,
+    pub generic: GenericOpcodeClaim,
+    pub extra_transitions: Vec<(u32, [VmState; 2])>,
 }
 impl OpcodesClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.mix_into(channel);
+        self.generic.mix_into(channel);
     }
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        self.ret.log_sizes()
+        TreeVec::concat_cols([self.ret.log_sizes(), self.generic.log_sizes()].into_iter())
     }
 }
 
 #[derive(Clone)]
 pub struct OpcodesInteractionClaim {
     pub ret: StandardInteractionClaim,
+    pub generic: StandardInteractionClaim,
 }
 impl OpcodesInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.mix_into(channel);
+        self.generic.mix_into(channel);
     }
 
     pub fn logup_sum(&self) -> SecureField {
-        self.ret.logup_sum()
+        self.ret.logup_sum() + self.generic.logup_sum()
     }
 }
 
 pub struct OpcodesProvers {
-    pub ret: RetProver,
+    pub ret: RetOpcodeProver,
+    pub generic: GenericOpcodeProver,
 }
 impl OpcodesProvers {
     pub fn new(instructions: Instructions) -> Self {
         Self {
-            ret: RetProver::new((), instructions.ret.into_iter())
+            ret: RetOpcodeProver::new((), instructions.ret.into_iter())
+                .pop()
+                .unwrap(),
+            generic: GenericOpcodeProver::new((), instructions.generic.into_iter())
                 .pop()
                 .unwrap(),
         }
@@ -152,16 +176,31 @@ impl OpcodesProvers {
         mut ctx: OpcodeGenContext<'_>,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (OpcodesClaim, OpcodesInteractionProvers) {
+        let mut extra_transitions = Vec::new();
+        extra_transitions.push(self.ret.pad_transition(self.ret.inputs[0].first(), ctx.mem));
         let (ret_claim, ret) = self.ret.write_trace(tree_builder, &mut ctx);
+        extra_transitions.push((
+            self.generic.n_padding(),
+            [
+                self.generic.inputs[0].0[0].first(),
+                self.generic.inputs[0].0[1].first(),
+            ],
+        ));
+        let (generic_claim, generic) = self.generic.write_trace(tree_builder, &mut ctx);
         (
-            OpcodesClaim { ret: ret_claim },
-            OpcodesInteractionProvers { ret },
+            OpcodesClaim {
+                ret: ret_claim,
+                generic: generic_claim,
+                extra_transitions,
+            },
+            OpcodesInteractionProvers { ret, generic },
         )
     }
 }
 
 pub struct OpcodesInteractionProvers {
-    pub ret: RetInteractionProver,
+    pub ret: RetOpcodeInteractionProver,
+    pub generic: GenericOpcodeInteractionProver,
 }
 impl OpcodesInteractionProvers {
     pub fn generate(
@@ -170,7 +209,8 @@ impl OpcodesInteractionProvers {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> OpcodesInteractionClaim {
         let ret = self.ret.write_interaction_trace(tree_builder, elements);
-        OpcodesInteractionClaim { ret }
+        let generic = self.generic.write_interaction_trace(tree_builder, elements);
+        OpcodesInteractionClaim { ret, generic }
     }
 }
 

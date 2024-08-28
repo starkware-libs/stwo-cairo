@@ -80,6 +80,7 @@ impl CairoProvers {
             range2: RangeProver,
             range3: RangeProver,
         };
+
         let opcodes = OpcodesProvers::new(std::mem::take(&mut input.instructions));
         let mem = MemoryProver::new(&input.mem);
         Self {
@@ -101,8 +102,8 @@ impl CairoProvers {
             .copied()
             .map(|a| (a, self.input.mem.get(a).as_u256()))
             .collect_vec();
-        let initial_state = self.input.instructions.initial_state;
-        let final_state = self.input.instructions.final_state;
+        let initial_state = self.input.aux.initial_state;
+        let final_state = self.input.aux.final_state;
 
         // // Add public memory.
         // for addr in &input.public_mem_addresses {

@@ -1,4 +1,4 @@
-use instructions::Instructions;
+use instructions::{AuxData, Instructions};
 use mem::Memory;
 
 mod decode;
@@ -13,6 +13,7 @@ pub const N_REGISTERS: usize = 3;
 #[derive(Debug)]
 pub struct CairoInput {
     pub instructions: Instructions,
+    pub aux: AuxData,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
 
