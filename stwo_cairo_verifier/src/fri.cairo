@@ -1,4 +1,4 @@
-mod verifier;
-mod query;
-mod evaluation;
-mod polynomial;
+pub mod verifier;
+pub mod query;
+pub mod evaluation;
+pub mod polynomial;

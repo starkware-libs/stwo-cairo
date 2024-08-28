@@ -3,6 +3,7 @@ mod circle;
 mod fields;
 mod utils;
 mod vcs;
+mod pcs;
 mod fri;
 mod poly;
 
