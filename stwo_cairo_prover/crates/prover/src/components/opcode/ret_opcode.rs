@@ -17,6 +17,7 @@ use super::super::{
 use super::{cairo_offset, PackedVmState};
 use crate::components::opcode::{OpcodeElements, OpcodeGenContext};
 use crate::components::ContextFor;
+use crate::input::instructions::VmState;
 
 pub type RetProver = StandardProver<RetOpcode>;
 pub type RetClaim = StandardClaim<RetOpcode>;
@@ -30,11 +31,15 @@ pub struct RetOpcode;
 
 impl Standard for RetOpcode {
     type LookupElements = OpcodeElements;
+    type Input = VmState;
     type PackedInput = PackedVmState;
     type LookupData = RetLookupData;
     type Params = ();
     const N_REPETITIONS: usize = 2;
 
+    fn pad(input: VmState) -> VmState {
+        input
+    }
     fn dummy_elements() -> Self::LookupElements {
         OpcodeElements::dummy()
     }
@@ -157,8 +162,7 @@ impl StandardLookupData for RetLookupData {
                     cairo_offset(-1).into(),
                     M31::from(RET_FLAGS).into(),
                 ]);
-                Fraction::new(PackedM31::zero(), denom)
-                // Fraction::new(PackedM31::one(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // fp-1 lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {

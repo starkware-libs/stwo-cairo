@@ -88,11 +88,16 @@ impl From<[IdToBigInput; N_LANES]> for PackedIdToBigInput {
 pub struct IdToBig;
 impl Standard for IdToBig {
     type LookupElements = MemoryAndRangeElements;
+    type Input = IdToBigInput;
     type PackedInput = PackedIdToBigInput;
     type LookupData = IdToBigLookupData;
     type Params = u32;
-    const N_REPETITIONS: usize = 2;
+    const N_REPETITIONS: usize = 1;
 
+    fn pad(mut input: IdToBigInput) -> IdToBigInput {
+        input.mult = 0;
+        input
+    }
     fn dummy_elements() -> Self::LookupElements {
         MemoryAndRangeElements::dummy()
     }
@@ -100,20 +105,12 @@ impl Standard for IdToBig {
         0
     }
     fn new_lookup_data(log_size: u32, &initial_id: &u32) -> Vec<Self::LookupData> {
-        vec![
-            IdToBigLookupData {
-                log_size,
-                initial_id,
-                value: vec![[Simd::splat(0); 8]; 1 << (log_size - LOG_N_LANES)],
-                mult: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
-            },
-            IdToBigLookupData {
-                log_size,
-                initial_id: initial_id + 1,
-                value: vec![[Simd::splat(0); 8]; 1 << (log_size - LOG_N_LANES)],
-                mult: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
-            },
-        ]
+        vec![IdToBigLookupData {
+            log_size,
+            initial_id,
+            value: vec![[Simd::splat(0); 8]; 1 << (log_size - LOG_N_LANES)],
+            mult: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
+        }]
     }
 
     fn evaluate<E: EvalAtRow>(
@@ -135,6 +132,7 @@ impl Standard for IdToBig {
 
         // Add to big value relation.
         logup.push_lookup(eval, (-mult).into(), &values, &els.mem.id_to_big);
+        logup.push_lookup(eval, Zero::zero(), &values, &els.mem.id_to_big); // TODO: Remove.
 
         // Range check limbs.
         for i in 0..N_MEM_BIG_LIMBS {
@@ -173,7 +171,7 @@ pub struct IdToBigLookupData {
     pub mult: Vec<Simd<u32, N_LANES>>,
 }
 impl StandardLookupData for IdToBigLookupData {
-    const N_LOOKUPS: usize = N_MEM_BIG_LIMBS + 1;
+    const N_LOOKUPS: usize = N_MEM_BIG_LIMBS + 1 + 1; // TODO: Remove.
     type Elements = MemoryAndRangeElements;
     fn lookups<'a>(&'a self, els: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         chain![
@@ -202,6 +200,31 @@ impl StandardLookupData for IdToBigLookupData {
                     Fraction::new(-mult, denom)
                 })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
             ],
+            // Dummy. TODO: Remove.
+            [
+                Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(move |row| {
+                    let offset = PackedM31::from_array(std::array::from_fn(|i| {
+                        M31::from_u32_unchecked(i as u32)
+                    }));
+
+                    let limbs = split_f252_simd(self.value[row]);
+                    let id = offset
+                        + M31::from(
+                            (row * N_LANES * IdToBig::N_REPETITIONS) as u32 + self.initial_id,
+                        );
+                    let mut lookup_values = [Zero::zero(); 1 + N_MEM_BIG_LIMBS];
+                    lookup_values[0] = id;
+                    #[allow(clippy::manual_memcpy)]
+                    for i in 0..N_MEM_BIG_LIMBS {
+                        lookup_values[i + 1] = limbs[i];
+                    }
+
+                    let _mult = unsafe { PackedM31::from_simd_unchecked(self.mult[row]) };
+                    let denom = els.mem.id_to_big.combine(&lookup_values);
+
+                    Fraction::new(PackedM31::zero(), denom)
+                })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
+            ],
             // Range check limbs.
             (0..N_MEM_BIG_LIMBS).map(|i| {
                 Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(move |row| {
@@ -209,7 +232,8 @@ impl StandardLookupData for IdToBigLookupData {
                     let limbs = split_f252_simd(self.value[row]);
                     let denom = els.range.rc18.combine(&[limbs[i]]);
 
-                    Fraction::new(PackedM31::one(), denom)
+                    // Fraction::new(PackedM31::one(), denom)
+                    Fraction::new(PackedM31::zero(), denom)
                 })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
             })
         ]

@@ -98,11 +98,16 @@ impl From<[AddrToIdInput; N_LANES]> for PackedAddrToIdInput {
 pub struct AddrToId;
 impl Standard for AddrToId {
     type LookupElements = MemoryElements;
+    type Input = AddrToIdInput;
     type PackedInput = PackedAddrToIdInput;
     type LookupData = AddrToIdLookupData;
     type Params = ();
     const N_REPETITIONS: usize = 1;
 
+    fn pad(mut input: Self::Input) -> Self::Input {
+        input.mult = [0; N_IDS_PER_LINE];
+        input
+    }
     fn dummy_elements() -> Self::LookupElements {
         MemoryElements::dummy()
     }

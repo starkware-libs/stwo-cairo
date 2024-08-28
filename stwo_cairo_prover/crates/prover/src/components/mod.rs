@@ -29,12 +29,14 @@ use utils::to_evals;
 // Trait.
 pub trait Standard: Clone {
     type LookupElements;
-    type PackedInput;
+    type Input: Clone;
+    type PackedInput: From<[Self::Input; N_LANES]>;
     type LookupData: StandardLookupData;
     type Params: Clone;
 
     const N_REPETITIONS: usize;
 
+    fn pad(input: Self::Input) -> Self::Input;
     fn n_columns() -> usize {
         Self::info().mask_offsets[0].len()
     }
@@ -157,13 +159,7 @@ pub struct StandardProver<C: Standard> {
     pub phantom: std::marker::PhantomData<C>,
 }
 impl<C: Standard> StandardProver<C> {
-    pub fn new<Input: Clone>(
-        params: C::Params,
-        inputs: impl ExactSizeIterator<Item = Input>,
-    ) -> Vec<Self>
-    where
-        C::PackedInput: From<[Input; N_LANES]>,
-    {
+    pub fn new(params: C::Params, inputs: impl ExactSizeIterator<Item = C::Input>) -> Vec<Self> {
         // TODO(spapini): Split to multiple components.
         let n_instances = inputs.len();
         let n_rows = n_instances
@@ -173,7 +169,7 @@ impl<C: Standard> StandardProver<C> {
 
         let new_size = n_rows * C::N_REPETITIONS;
         let mut inputs = inputs.peekable();
-        let pad = inputs.peek().unwrap().clone();
+        let pad = C::pad(inputs.peek().unwrap().clone());
         let packed_inputs = chain![inputs, std::iter::repeat(pad).take(new_size - n_instances)]
             .array_chunks::<N_LANES>()
             .map(C::PackedInput::from)

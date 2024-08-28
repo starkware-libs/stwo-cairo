@@ -232,6 +232,9 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
         lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
         "Lookups are invalid"
     );
+    if true {
+        panic!("Passed lookup sum check");
+    }
     interaction_claim.mix_into(channel);
     span.exit();
     tree_builder.commit(channel);
