@@ -33,12 +33,12 @@ pub struct CairoClaim {
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
-        self.mem.mix_into(channel);
         self.opcodes.mix_into(channel);
+        self.mem.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols([self.mem.log_sizes(), self.opcodes.log_sizes()].into_iter())
+        TreeVec::concat_cols([self.opcodes.log_sizes(), self.mem.log_sizes()].into_iter())
     }
 }
 

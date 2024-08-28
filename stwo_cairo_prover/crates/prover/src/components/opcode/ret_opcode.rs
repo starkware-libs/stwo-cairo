@@ -153,7 +153,7 @@ impl StandardLookupData for RetLookupData {
     // TODO: Ensure length.
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         vec![
-            // TODO: Instruction lookup.
+            // Instruction lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let denom = elements.mem.instructions.combine(&[
                     self.pc[row],

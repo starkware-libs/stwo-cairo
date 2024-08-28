@@ -25,24 +25,24 @@ pub const N_INSTR_LIMBS: usize = 4;
 
 #[derive(Clone)]
 pub struct MemoryElements {
+    pub instructions: LookupElements<{ 1 + N_INSTR_LIMBS }>,
     pub addr_to_id: LookupElements<2>,
     pub id_to_big: LookupElements<{ 1 + N_MEM_BIG_LIMBS }>,
-    pub instructions: LookupElements<{ 1 + N_INSTR_LIMBS }>,
 }
 impl MemoryElements {
     pub fn draw(channel: &mut impl Channel) -> Self {
         Self {
+            instructions: LookupElements::draw(channel),
             addr_to_id: LookupElements::draw(channel),
             id_to_big: LookupElements::draw(channel),
-            instructions: LookupElements::draw(channel),
         }
     }
 
     pub fn dummy() -> MemoryElements {
         Self {
+            instructions: LookupElements::dummy(),
             addr_to_id: LookupElements::dummy(),
             id_to_big: LookupElements::dummy(),
-            instructions: LookupElements::dummy(),
         }
     }
 }
@@ -69,9 +69,9 @@ pub fn m31_from_i32(x: Simd<i32, N_LANES>) -> PackedM31 {
 }
 
 pub struct MemoryProver {
+    pub instruction_mem: instruction_mem::InstMemBuilder,
     pub addr_to_id: addr_to_id::AddrToIdBuilder,
     pub id_to_big: id_to_big::IdToBigBuilder,
-    pub instruction_mem: instruction_mem::InstMemBuilder,
 }
 impl MemoryProver {
     pub fn new(mem: &Memory) -> Self {
@@ -104,14 +104,14 @@ impl MemoryProver {
 
         (
             MemoryClaim {
+                instruction_mem: inst_mem_claim,
                 addr_to_id: addr_to_id_claim,
                 id_to_big: id_to_big_claim,
-                instruction_mem: inst_mem_claim,
             },
             MemoryInteractionProver {
+                inst_mem,
                 addr_to_id,
                 id_to_big,
-                inst_mem,
             },
         )
     }
@@ -125,16 +125,16 @@ pub struct MemoryClaim {
 }
 impl MemoryClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.instruction_mem.mix_into(channel);
         self.addr_to_id.mix_into(channel);
         self.id_to_big.mix_into(channel);
-        self.instruction_mem.mix_into(channel);
     }
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(
             [
+                self.instruction_mem.log_sizes(),
                 self.addr_to_id.log_sizes(),
                 self.id_to_big.log_sizes(),
-                self.instruction_mem.log_sizes(),
             ]
             .into_iter(),
         )
@@ -142,9 +142,9 @@ impl MemoryClaim {
 }
 
 pub struct MemoryInteractionProver {
+    pub inst_mem: instruction_mem::InstMemInteractionProver,
     pub addr_to_id: addr_to_id::AddrToIdInteractionProver,
     pub id_to_big: id_to_big::IdToBigInteractionProver,
-    pub inst_mem: instruction_mem::InstMemInteractionProver,
 }
 impl MemoryInteractionProver {
     pub fn generate(
@@ -152,39 +152,39 @@ impl MemoryInteractionProver {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         els: &MemoryAndRangeElements,
     ) -> MemoryInteractionClaim {
+        let inst_mem = self.inst_mem.write_interaction_trace(tree_builder, els);
         let addr_to_id = self
             .addr_to_id
             .write_interaction_trace(tree_builder, &els.mem.addr_to_id);
         let id_to_big = self.id_to_big.write_interaction_trace(tree_builder, els);
-        let inst_mem = self.inst_mem.write_interaction_trace(tree_builder, els);
         MemoryInteractionClaim {
+            inst_mem,
             addr_to_id,
             id_to_big,
-            inst_mem,
         }
     }
 }
 
 pub struct MemoryInteractionClaim {
+    pub inst_mem: instruction_mem::InstMemInteractionClaim,
     pub addr_to_id: addr_to_id::AddrToIdInteractionClaim,
     pub id_to_big: id_to_big::IdToBigInteractionClaim,
-    pub inst_mem: instruction_mem::InstMemInteractionClaim,
 }
 impl MemoryInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.inst_mem.mix_into(channel);
         self.addr_to_id.mix_into(channel);
         self.id_to_big.mix_into(channel);
-        self.inst_mem.mix_into(channel);
     }
     pub fn logup_sum(&self) -> SecureField {
-        self.addr_to_id.logup_sum() + self.id_to_big.logup_sum() + self.inst_mem.logup_sum()
+        self.inst_mem.logup_sum() + self.addr_to_id.logup_sum() + self.id_to_big.logup_sum()
     }
 }
 
 pub struct MemoryComponents {
+    pub inst_mem: instruction_mem::InstMemComponent,
     pub addr_to_id: addr_to_id::AddrToIdComponent,
     pub id_to_big: id_to_big::IdToBigComponent,
-    pub inst_mem: instruction_mem::InstMemComponent,
 }
 impl MemoryComponents {
     pub fn new(
@@ -193,6 +193,11 @@ impl MemoryComponents {
         interaction_claim: &MemoryInteractionClaim,
     ) -> Self {
         Self {
+            inst_mem: instruction_mem::InstMemComponent::new(
+                &claim.instruction_mem,
+                els.clone(),
+                &interaction_claim.inst_mem,
+            ),
             addr_to_id: addr_to_id::AddrToIdComponent::new(
                 &claim.addr_to_id,
                 els.mem.clone(),
@@ -203,19 +208,14 @@ impl MemoryComponents {
                 els.clone(),
                 &interaction_claim.id_to_big,
             ),
-            inst_mem: instruction_mem::InstMemComponent::new(
-                &claim.instruction_mem,
-                els.clone(),
-                &interaction_claim.inst_mem,
-            ),
         }
     }
     pub fn provers(&self) -> impl Iterator<Item = &dyn ComponentProver<SimdBackend>> {
-        let res: [&dyn ComponentProver<_>; 3] = [&self.addr_to_id, &self.id_to_big, &self.inst_mem];
+        let res: [&dyn ComponentProver<_>; 3] = [&self.inst_mem, &self.addr_to_id, &self.id_to_big];
         res.into_iter()
     }
     pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
-        let res: [&dyn Component; 3] = [&self.addr_to_id, &self.id_to_big, &self.inst_mem];
+        let res: [&dyn Component; 3] = [&self.inst_mem, &self.addr_to_id, &self.id_to_big];
         res.into_iter()
     }
 }

@@ -8,7 +8,9 @@ use num_traits::Zero;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Blake2sChannel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig};
+use stwo_prover::core::pcs::{
+    CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
+};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
@@ -106,6 +108,19 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     //     .as_ref()
     //     .map(|t| t.polynomials.iter().cloned().collect_vec());
     // component_builder.assert_constraints(trace_polys);
+
+    // Assert sizes.
+    println!("A");
+    let actual_lens = commitment_scheme.polynomials().map_cols(|x| x.log_size());
+    let expected_lens = claim.log_sizes();
+    assert_eq!(actual_lens.0, expected_lens.0);
+
+    let component_lens = TreeVec::concat_cols(
+        component_builder
+            .provers()
+            .map(|c| c.trace_log_degree_bounds()),
+    );
+    assert_eq!(actual_lens.0, component_lens.0);
 
     // Prove stark.
     let proof = prove::<SimdBackend, _>(

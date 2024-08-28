@@ -127,6 +127,14 @@ impl Standard for InstMem {
             &[id, limb0, limb1, limb2, limb3],
             &els.mem.id_to_big,
         );
+
+        // Dummy. Remove.
+        logup.push_lookup(
+            eval,
+            E::EF::zero(),
+            &[id, limb0, limb1, limb2, limb3],
+            &els.mem.id_to_big,
+        );
     }
 }
 

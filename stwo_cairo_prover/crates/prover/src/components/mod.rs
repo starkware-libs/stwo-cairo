@@ -38,17 +38,19 @@ pub trait Standard: Clone {
 
     fn pad(input: Self::Input) -> Self::Input;
     fn n_columns() -> usize {
-        Self::info().mask_offsets[0].len()
+        Self::info().mask_offsets[0].len() / Self::N_REPETITIONS
     }
     fn info() -> InfoEvaluator {
         let mut logup = LogupAtRow::<2, InfoEvaluator>::new(1, SecureField::one(), 1);
         let mut eval = InfoEvaluator::default();
-        Self::evaluate(
-            &mut eval,
-            &mut logup,
-            &Self::dummy_elements(),
-            &Self::dummy_params(),
-        );
+        for _ in 0..Self::N_REPETITIONS {
+            Self::evaluate(
+                &mut eval,
+                &mut logup,
+                &Self::dummy_elements(),
+                &Self::dummy_params(),
+            );
+        }
         logup.finalize(&mut eval);
         eval
     }
@@ -141,9 +143,8 @@ impl<C: Standard> StandardClaim<C> {
             ];
         let log_sizes = TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes]);
 
-        // TODO: This is not always right for the lookups.
         debug_assert_eq!(
-            C::info().mask_offsets.map(|x| x.len() * C::N_REPETITIONS)[..2],
+            C::info().mask_offsets.map(|x| x.len())[..2],
             log_sizes.as_ref().map(|x| x.len())[..2]
         );
 
