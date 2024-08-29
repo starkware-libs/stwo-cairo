@@ -1391,7 +1391,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=f16ba08846a96a120e4bd1b1a5d3a87d64b1e503#f16ba08846a96a120e4bd1b1a5d3a87d64b1e503"
+source = "git+https://github.com/starkware-libs/stwo?rev=6c48e08eec358c82d2745edf04a7ecc843b9d95e#6c48e08eec358c82d2745edf04a7ecc843b9d95e"
 dependencies = [
  "blake2",
  "blake3",

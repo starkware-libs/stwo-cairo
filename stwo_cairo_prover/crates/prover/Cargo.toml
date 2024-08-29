@@ -13,7 +13,8 @@ num-traits = "0.2.17"
 serde = "1.0.207"
 sonic-rs = "0.3.10"
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "f16ba08846a96a120e4bd1b1a5d3a87d64b1e503" }
+
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "6c48e08eec358c82d2745edf04a7ecc843b9d95e" }
 thiserror = "1.0.63"
 tracing = "0.1.40"
 

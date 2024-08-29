@@ -97,40 +97,58 @@ impl Standard for InstMem {
 
         // Range checks.
         // TODO: Change to 1.
-        logup.push_lookup(eval, E::EF::zero(), &parts[0..=0], &els.range.rc16);
-        logup.push_lookup(eval, E::EF::zero(), &parts[1..=2], &els.range.rc2_14);
-        logup.push_lookup(eval, E::EF::zero(), &parts[3..=4], &els.range.rc4_12);
-        logup.push_lookup(eval, E::EF::zero(), &parts[5..=6], &els.range.rc6_9);
+        logup.push_frac(
+            eval,
+            els.range.rc16.combine_frac(E::F::zero(), &parts[0..=0]),
+        );
+        logup.push_frac(
+            eval,
+            els.range.rc2_14.combine_frac(E::F::zero(), &parts[1..=2]),
+        );
+        logup.push_frac(
+            eval,
+            els.range.rc4_12.combine_frac(E::F::zero(), &parts[3..=4]),
+        );
+        logup.push_frac(
+            eval,
+            els.range.rc6_9.combine_frac(E::F::zero(), &parts[5..=6]),
+        );
 
         // Instruction decoding.
         let offset0 = parts[0];
         let offset1 = parts[1] + parts[2] * M31::from(1 << 2);
         let offset2 = parts[3] + parts[4] * M31::from(1 << 4);
         let flags = parts[5] + parts[6] * M31::from(1 << 6);
-        logup.push_lookup(
+        logup.push_frac(
             eval,
-            (-mult).into(),
-            &[addr, offset0, offset1, offset2, flags],
-            &els.mem.instructions,
+            els.mem
+                .instructions
+                .combine_frac(-mult, &[addr, offset0, offset1, offset2, flags]),
         );
 
         // Id lookup.
-        logup.push_lookup(eval, E::EF::one(), &[addr, id], &els.mem.addr_to_id);
+        logup.push_frac(
+            eval,
+            els.mem.addr_to_id.combine_frac(E::F::one(), &[addr, id]),
+        );
 
         // Memory lookup.
         let limb0 = parts[0] + parts[1] * M31::from(1 << 16);
         let limb1 = parts[2] + parts[3] * M31::from(1 << 14);
         let limb2 = parts[4] + parts[5] * M31::from(1 << 12);
         let limb3 = parts[6];
-        logup.push_lookup(
+        logup.push_frac(
             eval,
-            E::EF::one(),
-            &[id, limb0, limb1, limb2, limb3],
-            &els.mem.id_to_big,
+            els.mem
+                .id_to_big
+                .combine_frac(E::F::one(), &[id, limb0, limb1, limb2, limb3]),
         );
 
         // Dummy. Remove.
-        logup.push_lookup(eval, E::EF::zero(), &[addr, id], &els.mem.addr_to_id);
+        logup.push_frac(
+            eval,
+            els.mem.addr_to_id.combine_frac(E::F::zero(), &[addr, id]),
+        );
     }
 }
 
@@ -218,23 +236,27 @@ impl StandardLookupData for InstMemLookupData {
             // Range checks.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = els.range.rc16.combine(&parts[0..=0]);
-                Fraction::new(PackedM31::zero(), denom)
+                els.range
+                    .rc16
+                    .combine_frac(PackedM31::zero(), &parts[0..=0])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = els.range.rc2_14.combine(&parts[1..=2]);
-                Fraction::new(PackedM31::zero(), denom)
+                els.range
+                    .rc2_14
+                    .combine_frac(PackedM31::zero(), &parts[1..=2])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = els.range.rc4_12.combine(&parts[3..=4]);
-                Fraction::new(PackedM31::zero(), denom)
+                els.range
+                    .rc4_12
+                    .combine_frac(PackedM31::zero(), &parts[3..=4])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let parts = split_big(&self.value[row]);
-                let denom = els.range.rc6_9.combine(&parts[5..=6]);
-                Fraction::new(PackedM31::zero(), denom)
+                els.range
+                    .rc6_9
+                    .combine_frac(PackedM31::zero(), &parts[5..=6])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Instruction decoding.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -243,19 +265,16 @@ impl StandardLookupData for InstMemLookupData {
                 let offset1 = parts[1] + parts[2] * M31::from(1 << 2);
                 let offset2 = parts[3] + parts[4] * M31::from(1 << 4);
                 let flags = parts[5] + parts[6] * M31::from(1 << 6);
-                let denom = els.mem.instructions.combine(&[
-                    self.addr[row],
-                    offset0,
-                    offset1,
-                    offset2,
-                    flags,
-                ]);
-                Fraction::new(-self.mult[row], denom)
+                els.mem.instructions.combine_frac(
+                    -self.mult[row],
+                    &[self.addr[row], offset0, offset1, offset2, flags],
+                )
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Id lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = els.mem.addr_to_id.combine(&[self.addr[row], self.id[row]]);
-                Fraction::new(PackedM31::one(), denom)
+                els.mem
+                    .addr_to_id
+                    .combine_frac(PackedM31::one(), &[self.addr[row], self.id[row]])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Memory lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -264,16 +283,16 @@ impl StandardLookupData for InstMemLookupData {
                 let limb1 = parts[2] + parts[3] * M31::from(1 << 14);
                 let limb2 = parts[4] + parts[5] * M31::from(1 << 12);
                 let limb3 = parts[6];
-                let denom = els
-                    .mem
-                    .id_to_big
-                    .combine(&[self.id[row], limb0, limb1, limb2, limb3]);
-                Fraction::new(PackedM31::one(), denom)
+                els.mem.id_to_big.combine_frac(
+                    PackedM31::one(),
+                    &[self.id[row], limb0, limb1, limb2, limb3],
+                )
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // TODO: Dummy. Remove.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = els.mem.addr_to_id.combine(&[self.addr[row], self.id[row]]);
-                Fraction::new(PackedM31::zero(), denom)
+                els.mem
+                    .addr_to_id
+                    .combine_frac(PackedM31::zero(), &[self.addr[row], self.id[row]])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }

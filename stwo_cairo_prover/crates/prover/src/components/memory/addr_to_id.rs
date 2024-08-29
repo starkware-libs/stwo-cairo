@@ -132,15 +132,16 @@ impl Standard for AddrToId {
         for i in 0..N_IDS_PER_LINE {
             let id = eval.next_trace_mask();
             let mult = eval.next_trace_mask();
-            logup.push_lookup(
+            logup.push_frac(
                 eval,
-                (-mult).into(),
-                &[
-                    base_addr * M31::from(N_IDS_PER_LINE)
-                        + E::F::from(M31::from_u32_unchecked(i as u32)),
-                    id,
-                ],
-                &elements.addr_to_id,
+                elements.addr_to_id.combine_frac(
+                    -mult,
+                    &[
+                        base_addr * M31::from(N_IDS_PER_LINE)
+                            + E::F::from(M31::from_u32_unchecked(i as u32)),
+                        id,
+                    ],
+                ),
             );
         }
     }
@@ -189,9 +190,7 @@ impl StandardLookupData for AddrToIdLookupData {
                             PackedM31::broadcast(M31::from_u32_unchecked(index as u32)) + offset;
                         let id = m31_from_i32(self.id[i][row]);
                         let mult = unsafe { PackedM31::from_simd_unchecked(self.mult[i][row]) };
-                        let denom = elements.combine(&[addr, id]);
-
-                        Fraction::new(-mult, denom)
+                        elements.combine_frac(-mult, &[addr, id])
                     }))
                         as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
                 ]

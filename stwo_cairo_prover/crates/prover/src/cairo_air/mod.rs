@@ -67,20 +67,20 @@ pub fn lookup_sum_valid(
     );
     let frac: Fraction<QM31, QM31> = extra_transitions
         .map(|(n, transition)| {
-            Fraction::new(
-                QM31::from(M31::from(n)),
-                elements.opcode.state.combine(&[
+            elements.opcode.state.combine_frac(
+                M31::from(n),
+                &[
                     M31::from(transition[0].pc),
                     M31::from(transition[0].ap),
                     M31::from(transition[0].fp),
-                ]),
-            ) + Fraction::new(
-                QM31::from(-M31::from(n)),
-                elements.opcode.state.combine(&[
+                ],
+            ) + elements.opcode.state.combine_frac(
+                -M31::from(n),
+                &[
                     M31::from(transition[1].pc),
                     M31::from(transition[1].ap),
                     M31::from(transition[1].fp),
-                ]),
+                ],
             )
         })
         .reduce(|a, b| a + b)
@@ -132,7 +132,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let components = component_builder.provers();
 
     // TODO: Remove. Only for debugging.
-    if false {
+    if true {
         assert!(
             lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
             "Lookups are invalid"

@@ -108,35 +108,44 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         let fp = eval.next_trace_mask();
         let offset2 = eval.next_trace_mask();
         let new_pc = eval.next_trace_mask();
-
         // Instruction lookup.
-        logup.push_lookup(
+        logup.push_frac(
             eval,
-            E::EF::one(),
-            &[
-                pc,
-                cairo_offset(-1).into(),
-                cairo_offset(-1).into(),
-                offset2,
-                M31::from(Self::FLAGS).into(),
-            ],
-            &elements.mem.instructions,
+            elements.mem.instructions.combine_frac(
+                E::F::one(),
+                &[
+                    pc,
+                    cairo_offset(-1).into(),
+                    cairo_offset(-1).into(),
+                    offset2,
+                    M31::from(Self::FLAGS).into(),
+                ],
+            ),
         );
 
         // op1 lookup
         let addr = if OP1_FP { fp } else { ap } + offset2 - M31::from(CAIRO_OFFSET_SHIFT).into();
-        logup.push_lookup(
+        logup.push_frac(
             eval,
-            E::EF::one(),
-            &[addr, new_pc],
-            &elements.mem.addr_to_id,
+            elements
+                .mem
+                .addr_to_id
+                .combine_frac(E::F::one(), &[addr, new_pc]),
         );
 
         let new_ap = if INC_AP { ap + E::F::one() } else { ap };
 
         // State lookups.
-        logup.push_lookup(eval, -E::EF::zero(), &[pc, ap, fp], &elements.state);
-        logup.push_lookup(eval, E::EF::zero(), &[new_pc, new_ap, fp], &elements.state);
+        logup.push_frac(
+            eval,
+            elements.state.combine_frac(-E::F::zero(), &[pc, ap, fp]),
+        );
+        logup.push_frac(
+            eval,
+            elements
+                .state
+                .combine_frac(E::F::zero(), &[new_pc, new_ap, fp]),
+        );
     }
 }
 impl<'a, const OP1_FP: bool, const INC_AP: bool> ContextFor<JmpAbsOpcode<OP1_FP, INC_AP>>
@@ -197,28 +206,32 @@ impl<const OP1_FP: bool, const INC_AP: bool> StandardLookupData
         vec![
             // Instruction lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = elements.mem.instructions.combine(&[
-                    self.pc[row],
-                    cairo_offset(-1).into(),
-                    cairo_offset(-1).into(),
-                    self.offset2[row],
-                    M31::from(JmpAbsOpcode::<OP1_FP, INC_AP>::FLAGS).into(),
-                ]);
-                Fraction::new(PackedM31::one(), denom)
+                elements.mem.instructions.combine_frac(
+                    PackedM31::one(),
+                    &[
+                        self.pc[row],
+                        cairo_offset(-1).into(),
+                        cairo_offset(-1).into(),
+                        self.offset2[row],
+                        M31::from(JmpAbsOpcode::<OP1_FP, INC_AP>::FLAGS).into(),
+                    ],
+                )
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // op1 lookup
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let addr = if OP1_FP { self.fp[row] } else { self.ap[row] } + self.offset2[row]
                     - M31::from(CAIRO_OFFSET_SHIFT).into();
-                let denom = elements.mem.addr_to_id.combine(&[addr, self.new_pc[row]]);
-                Fraction::new(PackedM31::one(), denom)
+                elements
+                    .mem
+                    .addr_to_id
+                    .combine_frac(PackedM31::one(), &[addr, self.new_pc[row]])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Input state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = elements
-                    .state
-                    .combine(&[self.pc[row], self.ap[row], self.fp[row]]);
-                Fraction::new(-PackedM31::zero(), denom)
+                elements.state.combine_frac(
+                    -PackedM31::zero(),
+                    &[self.pc[row], self.ap[row], self.fp[row]],
+                )
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Output state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -227,10 +240,9 @@ impl<const OP1_FP: bool, const INC_AP: bool> StandardLookupData
                 } else {
                     self.ap[row]
                 };
-                let denom = elements
+                elements
                     .state
-                    .combine(&[self.new_pc[row], new_ap, self.fp[row]]);
-                Fraction::new(PackedM31::zero(), denom)
+                    .combine_frac(PackedM31::zero(), &[self.new_pc[row], new_ap, self.fp[row]])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }

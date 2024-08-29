@@ -132,13 +132,16 @@ impl Standard for IdToBig {
         }
 
         // Add to big value relation.
-        logup.push_lookup(eval, (-mult).into(), &values, &els.mem.id_to_big);
-        logup.push_lookup(eval, Zero::zero(), &values, &els.mem.id_to_big); // TODO: Remove.
+        logup.push_frac(eval, els.mem.id_to_big.combine_frac(-mult, &values));
+        logup.push_frac(eval, els.mem.id_to_big.combine_frac(Zero::zero(), &values)); // TODO: Remove.
 
         // Range check limbs.
         for i in 0..N_MEM_BIG_LIMBS {
             // TODO: Change to 1.
-            logup.push_lookup(eval, E::EF::zero(), &[values[i + 1]], &els.range.rc18);
+            logup.push_frac(
+                eval,
+                els.range.rc18.combine_frac(E::F::zero(), &[values[i + 1]]),
+            );
         }
     }
 }
@@ -197,9 +200,7 @@ impl StandardLookupData for IdToBigLookupData {
                     }
 
                     let mult = unsafe { PackedM31::from_simd_unchecked(self.mult[row]) };
-                    let denom = els.mem.id_to_big.combine(&lookup_values);
-
-                    Fraction::new(-mult, denom)
+                    els.mem.id_to_big.combine_frac(-mult, &lookup_values)
                 })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
             ],
             // Dummy. TODO: Remove.
@@ -222,20 +223,18 @@ impl StandardLookupData for IdToBigLookupData {
                     }
 
                     let _mult = unsafe { PackedM31::from_simd_unchecked(self.mult[row]) };
-                    let denom = els.mem.id_to_big.combine(&lookup_values);
-
-                    Fraction::new(PackedM31::zero(), denom)
+                    els.mem
+                        .id_to_big
+                        .combine_frac(PackedM31::zero(), &lookup_values)
                 })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
             ],
             // Range check limbs.
             (0..N_MEM_BIG_LIMBS).map(|i| {
                 Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(move |row| {
                     // TODO: Consider optimizing.
+                    // TODO: Activate range checks.
                     let limbs = split_f252_simd(self.value[row]);
-                    let denom = els.range.rc18.combine(&[limbs[i]]);
-
-                    // Fraction::new(PackedM31::one(), denom)
-                    Fraction::new(PackedM31::zero(), denom)
+                    els.range.rc18.combine_frac(PackedM31::zero(), &[limbs[i]])
                 })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
             })
         ]

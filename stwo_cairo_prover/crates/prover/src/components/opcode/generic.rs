@@ -81,12 +81,15 @@ impl Standard for GenericOpcode {
         let new_fp = eval.next_trace_mask();
 
         // State lookups.
-        logup.push_lookup(eval, -E::EF::one(), &[pc, ap, fp], &elements.state);
-        logup.push_lookup(
+        logup.push_frac(
             eval,
-            E::EF::one(),
-            &[new_pc, new_ap, new_fp],
-            &elements.state,
+            elements.state.combine_frac(-E::F::one(), &[pc, ap, fp]),
+        );
+        logup.push_frac(
+            eval,
+            elements
+                .state
+                .combine_frac(E::F::one(), &[new_pc, new_ap, new_fp]),
         );
     }
 }
@@ -160,18 +163,17 @@ impl StandardLookupData for GenericOpcodeLookupData {
         vec![
             // Input state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom = elements
-                    .state
-                    .combine(&[self.pc[row], self.ap[row], self.fp[row]]);
-                Fraction::new(-PackedM31::one(), denom)
+                elements.state.combine_frac(
+                    -PackedM31::one(),
+                    &[self.pc[row], self.ap[row], self.fp[row]],
+                )
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Output state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                let denom =
-                    elements
-                        .state
-                        .combine(&[self.new_pc[row], self.new_ap[row], self.new_fp[row]]);
-                Fraction::new(PackedM31::one(), denom)
+                elements.state.combine_frac(
+                    PackedM31::one(),
+                    &[self.new_pc[row], self.new_ap[row], self.new_fp[row]],
+                )
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }
