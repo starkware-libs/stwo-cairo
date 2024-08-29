@@ -32,9 +32,10 @@ use crate::input::instructions::VmState;
 use crate::input::{CairoInput, SegmentAddrs};
 
 const RC9_LOG_MAX: u32 = 9;
-const RC9_LOG_REPS: u32 = 1;
+const RC9_LOG_REPS: u32 = 2;
 const RC9_LOG_HEIGHT: u32 = RC9_LOG_MAX - RC9_LOG_REPS;
 const RC9_REPS: usize = 1 << RC9_LOG_REPS;
+const RC9_BATCH_SIZE: usize = RC9_REPS / 2;
 
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
@@ -51,7 +52,7 @@ pub struct CairoClaim {
 
     pub ret: Vec<RetOpcodeClaim>,
     pub memory: MemoryClaim,
-    pub range_check9: RangeCheckClaim<RC9_REPS>,
+    pub range_check9: RangeCheckClaim<RC9_REPS, RC9_BATCH_SIZE>,
     // ...
 }
 impl CairoClaim {
@@ -131,7 +132,7 @@ pub fn lookup_sum_valid(
 pub struct CairoComponentGenerator {
     ret: Vec<RetOpcodeComponent>,
     memory: MemoryComponent,
-    range_check9: RangeCheckUnitComponent<RC9_REPS>,
+    range_check9: RangeCheckUnitComponent<RC9_REPS, RC9_BATCH_SIZE>,
     // ...
 }
 
@@ -218,11 +219,12 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
     let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
     let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
-    let mut range_check9_trace_generator = RangeCheckClaimProver::<RC9_LOG_HEIGHT, RC9_REPS> {
-        multiplicities: input
-            .range_check9
-            .to_2d_simd_vec::<RC9_LOG_HEIGHT, RC9_REPS>(),
-    };
+    let mut range_check9_trace_generator =
+        RangeCheckClaimProver::<RC9_LOG_HEIGHT, RC9_REPS, RC9_BATCH_SIZE> {
+            multiplicities: input
+                .range_check9
+                .to_2d_simd_vec::<RC9_LOG_HEIGHT, RC9_REPS>(),
+        };
 
     // Add public memory.
     for addr in &input.public_mem_addresses {

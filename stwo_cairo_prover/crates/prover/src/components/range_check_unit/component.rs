@@ -9,13 +9,15 @@ use stwo_prover::core::pcs::TreeVec;
 use super::RangeCheckElements;
 
 #[derive(Clone)]
-pub struct RangeCheckUnitComponent<const N_REPETITIONS: usize> {
+pub struct RangeCheckUnitComponent<const N_REPETITIONS: usize, const BATCH_SIZE: usize> {
     pub log_n_rows: u32,
     pub lookup_elements: RangeCheckElements,
     pub claimed_sum: SecureField,
 }
 
-impl<const N_REPETITIONS: usize> FrameworkComponent for RangeCheckUnitComponent<N_REPETITIONS> {
+impl<const N_REPETITIONS: usize, const BATCH_SIZE: usize> FrameworkComponent
+    for RangeCheckUnitComponent<N_REPETITIONS, BATCH_SIZE>
+{
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }
@@ -23,7 +25,7 @@ impl<const N_REPETITIONS: usize> FrameworkComponent for RangeCheckUnitComponent<
         self.log_n_rows + 1
     }
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<N_REPETITIONS, E>::new(1, self.claimed_sum, self.log_size());
+        let mut logup = LogupAtRow::<BATCH_SIZE, E>::new(1, self.claimed_sum, self.log_size());
         let rc_value = eval.next_trace_mask();
         for repetition in 0..N_REPETITIONS {
             let multiplicity = eval.next_trace_mask();
@@ -47,14 +49,16 @@ impl<const N_REPETITIONS: usize> FrameworkComponent for RangeCheckUnitComponent<
 /// `log_rc_height` is the log of the number of rows in the range check table, meaning that that
 /// range checked is 0..(N_REPETITIONS * 2^log_rc_height).
 #[derive(Clone)]
-pub struct RangeCheckClaim<const N_REPETITIONS: usize> {
+pub struct RangeCheckClaim<const N_REPETITIONS: usize, const BATCH_SIZE: usize> {
     pub log_rc_height: u32,
 }
-impl<const N_REPETITIONS: usize> RangeCheckClaim<N_REPETITIONS> {
+impl<const N_REPETITIONS: usize, const BATCH_SIZE: usize>
+    RangeCheckClaim<N_REPETITIONS, BATCH_SIZE>
+{
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::new(vec![
             vec![self.log_rc_height; 1 + N_REPETITIONS],
-            vec![self.log_rc_height; SECURE_EXTENSION_DEGREE],
+            vec![self.log_rc_height; SECURE_EXTENSION_DEGREE * (N_REPETITIONS / BATCH_SIZE)],
         ])
     }
 

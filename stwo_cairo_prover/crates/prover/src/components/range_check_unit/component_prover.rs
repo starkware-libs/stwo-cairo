@@ -23,11 +23,15 @@ const TRACE_MULTIPLICITIES_OFFSET: usize = 1;
 /// repetition and the second dimension is the offset within the repetition.
 /// Thus, `multiplicities[rep][off].simd[i]` refers to the multiplicity of
 /// rep * RC_LOG_HEIGHT + off * N_LANES + i.
-pub struct RangeCheckClaimProver<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize> {
+pub struct RangeCheckClaimProver<
+    const RC_LOG_HEIGHT: u32,
+    const N_REPETITIONS: usize,
+    const BATCH_SIZE: usize,
+> {
     pub multiplicities: [Vec<PackedUInt32>; N_REPETITIONS],
 }
-impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
-    RangeCheckClaimProver<RC_LOG_HEIGHT, N_REPETITIONS>
+impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize, const BATCH_SIZE: usize>
+    RangeCheckClaimProver<RC_LOG_HEIGHT, N_REPETITIONS, BATCH_SIZE>
 {
     pub fn new() -> Self {
         let multiplicities: [Vec<PackedUInt32>; N_REPETITIONS] = std::array::from_fn(|_| {
@@ -82,8 +86,8 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
     ) -> (
-        RangeCheckClaim<N_REPETITIONS>,
-        RangeCheckInteractionClaimProver<RC_LOG_HEIGHT, N_REPETITIONS>,
+        RangeCheckClaim<N_REPETITIONS, BATCH_SIZE>,
+        RangeCheckInteractionClaimProver<RC_LOG_HEIGHT, N_REPETITIONS, BATCH_SIZE>,
     ) {
         let trace = self.generate_trace();
 
@@ -104,7 +108,7 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
         );
 
         (
-            RangeCheckClaim::<N_REPETITIONS> {
+            RangeCheckClaim {
                 log_rc_height: RC_LOG_HEIGHT,
             },
             RangeCheckInteractionClaimProver { multiplicities },
@@ -112,8 +116,8 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
     }
 }
 
-impl<const RC_TRACE_LEN: u32, const N_REPETITIONS: usize> Default
-    for RangeCheckClaimProver<RC_TRACE_LEN, N_REPETITIONS>
+impl<const RC_TRACE_LEN: u32, const N_REPETITIONS: usize, const BATCH_SIZE: usize> Default
+    for RangeCheckClaimProver<RC_TRACE_LEN, N_REPETITIONS, BATCH_SIZE>
 {
     fn default() -> Self {
         Self::new()
@@ -121,11 +125,15 @@ impl<const RC_TRACE_LEN: u32, const N_REPETITIONS: usize> Default
 }
 
 #[derive(Debug)]
-pub struct RangeCheckInteractionClaimProver<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize> {
+pub struct RangeCheckInteractionClaimProver<
+    const RC_LOG_HEIGHT: u32,
+    const N_REPETITIONS: usize,
+    const BATCH_SIZE: usize,
+> {
     pub multiplicities: [Vec<PackedUInt32>; N_REPETITIONS],
 }
-impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
-    RangeCheckInteractionClaimProver<RC_LOG_HEIGHT, N_REPETITIONS>
+impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize, const BATCH_SIZE: usize>
+    RangeCheckInteractionClaimProver<RC_LOG_HEIGHT, N_REPETITIONS, BATCH_SIZE>
 {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
@@ -138,24 +146,28 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
         lookup_elements: &RangeCheckElements,
     ) -> LogupTraceGenerator {
         let mut logup_gen = LogupTraceGenerator::new(RC_LOG_HEIGHT);
-        let mut col_gen = logup_gen.new_col();
+        for (batch_idx, mult_batch) in self.multiplicities.array_chunks::<BATCH_SIZE>().enumerate()
+        {
+            let mut col_gen = logup_gen.new_col();
 
-        // Lookup values columns.
-        for vec_row in 0..(1 << (RC_LOG_HEIGHT - LOG_N_LANES)) {
-            let mut cum_num = PackedQM31::broadcast(M31(0).into());
-            let mut cum_denom = PackedQM31::broadcast(M31(1).into());
-            for rep in 0..N_REPETITIONS {
-                let value = PackedBaseField::from_array(std::array::from_fn(|i| {
-                    M31(((vec_row << LOG_N_LANES) + (rep << RC_LOG_HEIGHT) + i) as u32)
-                }));
-                let num: PackedQM31 =
-                    (-self.multiplicities[rep][vec_row].as_m31_unchecked()).into();
-                let denom: PackedQM31 = lookup_elements.combine(&[value]);
-                (cum_num, cum_denom) = (cum_num * denom + num * cum_denom, cum_denom * denom);
+            // Lookup values columns.
+            for vec_row in 0..(1 << (RC_LOG_HEIGHT - LOG_N_LANES)) {
+                let mut cum_num = PackedQM31::broadcast(M31(0).into());
+                let mut cum_denom = PackedQM31::broadcast(M31(1).into());
+                for (idx_in_batch, mults) in mult_batch.iter().enumerate() {
+                    let value = PackedBaseField::from_array(std::array::from_fn(|i| {
+                        M31(((vec_row << LOG_N_LANES)
+                            + ((BATCH_SIZE * batch_idx + idx_in_batch) << RC_LOG_HEIGHT)
+                            + i) as u32)
+                    }));
+                    let num: PackedQM31 = (-mults[vec_row].as_m31_unchecked()).into();
+                    let denom: PackedQM31 = lookup_elements.combine(&[value]);
+                    (cum_num, cum_denom) = (cum_num * denom + num * cum_denom, cum_denom * denom);
+                }
+                col_gen.write_frac(vec_row, cum_num, cum_denom);
             }
-            col_gen.write_frac(vec_row, cum_num, cum_denom);
+            col_gen.finalize_col();
         }
-        col_gen.finalize_col();
         logup_gen
     }
 
@@ -196,7 +208,7 @@ mod tests {
         let inputs: [M31; 17 * 8 + 3] =
             std::array::from_fn(|i| M31::from_u32_unchecked((i % 17) as u32));
 
-        let mut rc_prover = RangeCheckClaimProver::<4, 4>::new();
+        let mut rc_prover = RangeCheckClaimProver::<4, 4, 2>::new();
 
         rc_prover.add_m31s(&inputs);
 
@@ -225,6 +237,7 @@ mod tests {
         const LOG_HEIGHT: u32 = 6;
         const LOG_BLOWUP_FACTOR: u32 = 1;
         const N_REPS: u32 = 4;
+        const BATCH_SIZE: usize = 2;
 
         let twiddles = SimdBackend::precompute_twiddles(
             CanonicCoset::new(LOG_HEIGHT + LOG_BLOWUP_FACTOR)
@@ -239,7 +252,8 @@ mod tests {
             M31::from_u32_unchecked(rng.gen::<u32>() % (N_REPS << LOG_HEIGHT))
         });
 
-        let mut rc_prover = RangeCheckClaimProver::<LOG_HEIGHT, { N_REPS as usize }>::new();
+        let mut rc_prover =
+            RangeCheckClaimProver::<LOG_HEIGHT, { N_REPS as usize }, BATCH_SIZE>::new();
         rc_prover.add_m31s(&inputs);
 
         let mut tree_builder = commitment_scheme.tree_builder();
@@ -253,7 +267,7 @@ mod tests {
             interaction_claim_prover.write_interaction_trace(&mut tree_builder, &lookup_elements);
         tree_builder.commit(channel);
 
-        let component = RangeCheckUnitComponent::<{ N_REPS as usize }> {
+        let component = RangeCheckUnitComponent::<{ N_REPS as usize }, BATCH_SIZE> {
             log_n_rows: LOG_HEIGHT,
             lookup_elements,
             claimed_sum: interaction_claim.claimed_sum,
