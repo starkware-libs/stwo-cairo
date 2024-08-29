@@ -103,18 +103,6 @@ impl<'a> ContextFor<GenericOpcode> for OpcodeGenContext<'a> {
         lookup_data.new_pc[row_index] = new_pc;
         lookup_data.new_ap[row_index] = new_ap;
         lookup_data.new_fp[row_index] = new_fp;
-
-        for i in 0..N_LANES {
-            println!(
-                "g ({},{},{})->({},{},{})",
-                pc.to_array()[i],
-                ap.to_array()[i],
-                fp.to_array()[i],
-                new_pc.to_array()[i],
-                new_ap.to_array()[i],
-                new_fp.to_array()[i]
-            );
-        }
     }
 }
 

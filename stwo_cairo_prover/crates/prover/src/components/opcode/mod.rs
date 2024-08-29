@@ -1,10 +1,17 @@
 pub mod generic;
+pub mod jmp_abs;
 pub mod ret;
 
 use std::simd::Simd;
 
-use generic::{GenericOpcodeClaim, GenericOpcodeInteractionProver, GenericOpcodeProver};
-use ret::{RetOpcode, RetOpcodeClaim, RetOpcodeInteractionProver, RetOpcodeProver};
+use generic::{
+    GenericOpcodeClaim, GenericOpcodeComponent, GenericOpcodeInteractionProver, GenericOpcodeProver,
+};
+use itertools::chain;
+use jmp_abs::{
+    JmpAbsOpcodeClaim, JmpAbsOpcodeComponent, JmpAbsOpcodeInteractionProver, JmpAbsOpcodeProver,
+};
+use ret::{RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionProver, RetOpcodeProver};
 use stwo_prover::constraint_framework::logup::LookupElements;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::m31::N_LANES;
@@ -18,12 +25,13 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::memory::{MemoryElements, MemoryProver};
 use super::range_check::RangeProver;
-use super::{StandardComponent, StandardInteractionClaim};
+use super::{StandardInteractionClaim, StandardInteractionClaimStack};
 use crate::input::instructions::{Instructions, VmState};
 use crate::input::mem::Memory;
 
+pub const CAIRO_OFFSET_SHIFT: u32 = 1 << 15;
 pub fn cairo_offset(val: i32) -> M31 {
-    M31::from(val + (1 << 15))
+    M31::from(val + CAIRO_OFFSET_SHIFT as i32)
 }
 
 pub struct PackedVmState {
@@ -127,48 +135,94 @@ pub struct CpuRangeProvers {
 #[derive(Clone)]
 pub struct OpcodesClaim {
     pub ret: RetOpcodeClaim,
+
+    pub jmp_abs_ap: JmpAbsOpcodeClaim<false, false>,
+    pub jmp_abs_fp: JmpAbsOpcodeClaim<true, false>,
+    pub jmp_abs_ap_inc: JmpAbsOpcodeClaim<false, true>,
+    pub jmp_abs_fp_inc: JmpAbsOpcodeClaim<true, true>,
+
     pub generic: GenericOpcodeClaim,
     pub extra_transitions: Vec<(u32, [VmState; 2])>,
 }
 impl OpcodesClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.mix_into(channel);
+
+        self.jmp_abs_ap.mix_into(channel);
+        self.jmp_abs_fp.mix_into(channel);
+        self.jmp_abs_ap_inc.mix_into(channel);
+        self.jmp_abs_fp_inc.mix_into(channel);
+
         self.generic.mix_into(channel);
     }
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols([self.ret.log_sizes(), self.generic.log_sizes()].into_iter())
+        TreeVec::concat_cols(
+            [
+                self.ret.log_sizes(),
+                self.jmp_abs_ap.log_sizes(),
+                self.jmp_abs_fp.log_sizes(),
+                self.jmp_abs_ap_inc.log_sizes(),
+                self.jmp_abs_fp_inc.log_sizes(),
+                self.generic.log_sizes(),
+            ]
+            .into_iter(),
+        )
     }
 }
 
 #[derive(Clone)]
 pub struct OpcodesInteractionClaim {
     pub ret: StandardInteractionClaim,
+
+    pub jmp_abs_ap: StandardInteractionClaimStack,
+    pub jmp_abs_fp: StandardInteractionClaimStack,
+    pub jmp_abs_ap_inc: StandardInteractionClaimStack,
+    pub jmp_abs_fp_inc: StandardInteractionClaimStack,
+
     pub generic: StandardInteractionClaim,
 }
 impl OpcodesInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.mix_into(channel);
+
+        self.jmp_abs_ap.mix_into(channel);
+        self.jmp_abs_fp.mix_into(channel);
+        self.jmp_abs_ap_inc.mix_into(channel);
+        self.jmp_abs_fp_inc.mix_into(channel);
+
         self.generic.mix_into(channel);
     }
 
     pub fn logup_sum(&self) -> SecureField {
-        self.ret.logup_sum() + self.generic.logup_sum()
+        self.ret.logup_sum()
+            + self.jmp_abs_ap.logup_sum()
+            + self.jmp_abs_fp.logup_sum()
+            + self.jmp_abs_ap_inc.logup_sum()
+            + self.jmp_abs_fp_inc.logup_sum()
+            + self.generic.logup_sum()
     }
 }
 
 pub struct OpcodesProvers {
     pub ret: RetOpcodeProver,
+
+    pub jmp_abs_ap: JmpAbsOpcodeProver<false, false>,
+    pub jmp_abs_fp: JmpAbsOpcodeProver<true, false>,
+    pub jmp_abs_ap_inc: JmpAbsOpcodeProver<false, true>,
+    pub jmp_abs_fp_inc: JmpAbsOpcodeProver<true, true>,
+
     pub generic: GenericOpcodeProver,
 }
 impl OpcodesProvers {
     pub fn new(instructions: Instructions) -> Self {
+        let [jmp_abs_ap, jmp_abs_fp, jmp_abs_ap_inc, jmp_abs_fp_inc] = instructions.jmp_abs;
         Self {
-            ret: RetOpcodeProver::new((), instructions.ret.into_iter())
-                .pop()
-                .unwrap(),
-            generic: GenericOpcodeProver::new((), instructions.generic.into_iter())
-                .pop()
-                .unwrap(),
+            ret: RetOpcodeProver::new((), instructions.ret.into_iter()),
+            jmp_abs_ap: JmpAbsOpcodeProver::new((), jmp_abs_ap.into_iter()),
+            jmp_abs_fp: JmpAbsOpcodeProver::new((), jmp_abs_fp.into_iter()),
+            jmp_abs_ap_inc: JmpAbsOpcodeProver::new((), jmp_abs_ap_inc.into_iter()),
+            jmp_abs_fp_inc: JmpAbsOpcodeProver::new((), jmp_abs_fp_inc.into_iter()),
+            generic: GenericOpcodeProver::new((), instructions.generic.into_iter()),
         }
     }
     pub fn generate(
@@ -177,8 +231,24 @@ impl OpcodesProvers {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (OpcodesClaim, OpcodesInteractionProvers) {
         let mut extra_transitions = Vec::new();
+
         extra_transitions.push(self.ret.pad_transition(self.ret.inputs[0].first(), ctx.mem));
         let (ret_claim, ret) = self.ret.write_trace(tree_builder, &mut ctx);
+
+        extra_transitions.push(self.jmp_abs_ap.pad_transition(ctx.mem));
+        let (jmp_abs_ap_claim, jmp_abs_ap) = self.jmp_abs_ap.write_trace(tree_builder, &mut ctx);
+
+        extra_transitions.push(self.jmp_abs_fp.pad_transition(ctx.mem));
+        let (jmp_abs_fp_claim, jmp_abs_fp) = self.jmp_abs_fp.write_trace(tree_builder, &mut ctx);
+
+        extra_transitions.push(self.jmp_abs_ap_inc.pad_transition(ctx.mem));
+        let (jmp_abs_ap_inc_claim, jmp_abs_ap_inc) =
+            self.jmp_abs_ap_inc.write_trace(tree_builder, &mut ctx);
+
+        extra_transitions.push(self.jmp_abs_fp_inc.pad_transition(ctx.mem));
+        let (jmp_abs_fp_inc_claim, jmp_abs_fp_inc) =
+            self.jmp_abs_fp_inc.write_trace(tree_builder, &mut ctx);
+
         extra_transitions.push((
             self.generic.n_padding(),
             [
@@ -190,16 +260,32 @@ impl OpcodesProvers {
         (
             OpcodesClaim {
                 ret: ret_claim,
+                jmp_abs_ap: jmp_abs_ap_claim,
+                jmp_abs_fp: jmp_abs_fp_claim,
+                jmp_abs_ap_inc: jmp_abs_ap_inc_claim,
+                jmp_abs_fp_inc: jmp_abs_fp_inc_claim,
                 generic: generic_claim,
                 extra_transitions,
             },
-            OpcodesInteractionProvers { ret, generic },
+            OpcodesInteractionProvers {
+                ret,
+                jmp_abs_ap,
+                jmp_abs_fp,
+                jmp_abs_ap_inc,
+                jmp_abs_fp_inc,
+                generic,
+            },
         )
     }
 }
 
 pub struct OpcodesInteractionProvers {
     pub ret: RetOpcodeInteractionProver,
+
+    pub jmp_abs_ap: JmpAbsOpcodeInteractionProver<false, false>,
+    pub jmp_abs_fp: JmpAbsOpcodeInteractionProver<true, false>,
+    pub jmp_abs_ap_inc: JmpAbsOpcodeInteractionProver<false, true>,
+    pub jmp_abs_fp_inc: JmpAbsOpcodeInteractionProver<true, true>,
     pub generic: GenericOpcodeInteractionProver,
 }
 impl OpcodesInteractionProvers {
@@ -209,13 +295,41 @@ impl OpcodesInteractionProvers {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> OpcodesInteractionClaim {
         let ret = self.ret.write_interaction_trace(tree_builder, elements);
+
+        let jmp_abs_ap = self
+            .jmp_abs_ap
+            .write_interaction_trace(tree_builder, elements);
+        let jmp_abs_fp = self
+            .jmp_abs_fp
+            .write_interaction_trace(tree_builder, elements);
+        let jmp_abs_ap_inc = self
+            .jmp_abs_ap_inc
+            .write_interaction_trace(tree_builder, elements);
+        let jmp_abs_fp_inc = self
+            .jmp_abs_fp_inc
+            .write_interaction_trace(tree_builder, elements);
+
         let generic = self.generic.write_interaction_trace(tree_builder, elements);
-        OpcodesInteractionClaim { ret, generic }
+        OpcodesInteractionClaim {
+            ret,
+            jmp_abs_ap,
+            jmp_abs_fp,
+            jmp_abs_ap_inc,
+            jmp_abs_fp_inc,
+            generic,
+        }
     }
 }
 
 pub struct OpcodesComponents {
-    pub ret: StandardComponent<RetOpcode>,
+    pub ret: RetOpcodeComponent,
+
+    pub jmp_abs_ap: JmpAbsOpcodeComponent<false, false>,
+    pub jmp_abs_fp: JmpAbsOpcodeComponent<true, false>,
+    pub jmp_abs_ap_inc: JmpAbsOpcodeComponent<false, true>,
+    pub jmp_abs_fp_inc: JmpAbsOpcodeComponent<true, true>,
+
+    pub generic: GenericOpcodeComponent,
 }
 impl OpcodesComponents {
     pub fn new(
@@ -224,14 +338,55 @@ impl OpcodesComponents {
         interaction_claim: &OpcodesInteractionClaim,
     ) -> Self {
         Self {
-            ret: StandardComponent::new(&claim.ret, elements.clone(), &interaction_claim.ret),
+            ret: RetOpcodeComponent::new(&claim.ret, elements.clone(), &interaction_claim.ret),
+
+            jmp_abs_ap: JmpAbsOpcodeComponent::new(
+                &claim.jmp_abs_ap,
+                elements.clone(),
+                &interaction_claim.jmp_abs_ap,
+            ),
+            jmp_abs_fp: JmpAbsOpcodeComponent::new(
+                &claim.jmp_abs_fp,
+                elements.clone(),
+                &interaction_claim.jmp_abs_fp,
+            ),
+            jmp_abs_ap_inc: JmpAbsOpcodeComponent::new(
+                &claim.jmp_abs_ap_inc,
+                elements.clone(),
+                &interaction_claim.jmp_abs_ap_inc,
+            ),
+            jmp_abs_fp_inc: JmpAbsOpcodeComponent::new(
+                &claim.jmp_abs_fp_inc,
+                elements.clone(),
+                &interaction_claim.jmp_abs_fp_inc,
+            ),
+
+            generic: GenericOpcodeComponent::new(
+                &claim.generic,
+                elements.clone(),
+                &interaction_claim.generic,
+            ),
         }
     }
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
-        vec![&self.ret]
+    pub fn provers(&self) -> impl Iterator<Item = &dyn ComponentProver<SimdBackend>> {
+        chain![
+            self.ret.provers(),
+            self.jmp_abs_ap.provers(),
+            self.jmp_abs_fp.provers(),
+            self.jmp_abs_ap_inc.provers(),
+            self.jmp_abs_fp_inc.provers(),
+            self.generic.provers()
+        ]
     }
-    pub fn components(&self) -> Vec<&dyn Component> {
-        vec![&self.ret]
+    pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
+        chain![
+            self.ret.components(),
+            self.jmp_abs_ap.components(),
+            self.jmp_abs_fp.components(),
+            self.jmp_abs_ap_inc.components(),
+            self.jmp_abs_fp_inc.components(),
+            self.generic.components(),
+        ]
     }
 
     pub fn assert_constraints(
@@ -239,5 +394,12 @@ impl OpcodesComponents {
         trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
     ) {
         self.ret.assert_constraints(trace_polys);
+
+        self.jmp_abs_ap.assert_constraints(trace_polys);
+        self.jmp_abs_fp.assert_constraints(trace_polys);
+        self.jmp_abs_ap_inc.assert_constraints(trace_polys);
+        self.jmp_abs_fp_inc.assert_constraints(trace_polys);
+
+        self.generic.assert_constraints(trace_polys);
     }
 }

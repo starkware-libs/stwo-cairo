@@ -105,7 +105,7 @@ impl MemoryProver {
 
         (
             MemoryClaim {
-                instruction_mem: inst_mem_claim,
+                inst_mem: inst_mem_claim,
                 addr_to_id: addr_to_id_claim,
                 id_to_big: id_to_big_claim,
             },
@@ -122,18 +122,18 @@ impl MemoryProver {
 pub struct MemoryClaim {
     pub addr_to_id: addr_to_id::AddrToIdClaim,
     pub id_to_big: id_to_big::IdToBigClaim,
-    pub instruction_mem: instruction_mem::InstMemClaim,
+    pub inst_mem: instruction_mem::InstMemClaim,
 }
 impl MemoryClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.instruction_mem.mix_into(channel);
+        self.inst_mem.mix_into(channel);
         self.addr_to_id.mix_into(channel);
         self.id_to_big.mix_into(channel);
     }
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(
             [
-                self.instruction_mem.log_sizes(),
+                self.inst_mem.log_sizes(),
                 self.addr_to_id.log_sizes(),
                 self.id_to_big.log_sizes(),
             ]
@@ -195,7 +195,7 @@ impl MemoryComponents {
     ) -> Self {
         Self {
             inst_mem: instruction_mem::InstMemComponent::new(
-                &claim.instruction_mem,
+                &claim.inst_mem,
                 els.clone(),
                 &interaction_claim.inst_mem,
             ),

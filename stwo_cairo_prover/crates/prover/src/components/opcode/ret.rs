@@ -5,7 +5,7 @@ use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::EvalAtRow;
 use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
@@ -149,18 +149,6 @@ impl<'a> ContextFor<RetOpcode> for OpcodeGenContext<'a> {
         let new_fp = unsafe { PackedM31::from_simd_unchecked(new_fp.cast()) };
         dst[4].data[row_index] = new_fp;
         lookup_data.new_fp[row_index] = new_fp;
-
-        for i in 0..N_LANES {
-            println!(
-                "r ({},{},{})->({},{},{})",
-                input.pc.to_array()[i],
-                input.ap.to_array()[i],
-                input.fp.to_array()[i],
-                new_pc.to_array()[i],
-                input.ap.to_array()[i],
-                new_fp.to_array()[i]
-            );
-        }
     }
 }
 

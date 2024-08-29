@@ -46,7 +46,7 @@ impl InstMemBuilder {
             .addr_to_mult
             .into_iter()
             .map(|(addr, mult)| InstMemInput { addr, mult });
-        StandardProver::new((), inputs).pop().unwrap()
+        StandardProver::new((), inputs)
     }
 }
 
@@ -60,7 +60,7 @@ impl Standard for InstMem {
     type PackedInput = PackedInstMemInput;
     type LookupData = InstMemLookupData;
     type Params = ();
-    const N_REPETITIONS: usize = 2;
+    const N_REPETITIONS: usize = 1;
 
     fn dummy_elements() -> Self::LookupElements {
         MemoryAndRangeElements::dummy()
@@ -71,7 +71,7 @@ impl Standard for InstMem {
     }
     fn dummy_params() -> Self::Params {}
     fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
-        (0..2)
+        (0..1)
             .map(|_| InstMemLookupData {
                 log_size,
                 addr: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
@@ -96,7 +96,7 @@ impl Standard for InstMem {
 
         // Range checks.
         // TODO: Change to 1.
-        logup.push_lookup(eval, E::EF::zero(), &[parts[0]], &els.range.rc16);
+        logup.push_lookup(eval, E::EF::zero(), &parts[0..=0], &els.range.rc16);
         logup.push_lookup(eval, E::EF::zero(), &parts[1..=2], &els.range.rc2_14);
         logup.push_lookup(eval, E::EF::zero(), &parts[3..=4], &els.range.rc4_12);
         logup.push_lookup(eval, E::EF::zero(), &parts[5..=6], &els.range.rc6_9);
@@ -129,12 +129,7 @@ impl Standard for InstMem {
         );
 
         // Dummy. Remove.
-        logup.push_lookup(
-            eval,
-            E::EF::zero(),
-            &[id, limb0, limb1, limb2, limb3],
-            &els.mem.id_to_big,
-        );
+        logup.push_lookup(eval, E::EF::zero(), &[addr, id], &els.mem.addr_to_id);
     }
 }
 
@@ -157,18 +152,17 @@ impl<'a> ContextFor<InstMem> for InstMemCtx<'a> {
         dst[1].data[row_index] = addr;
 
         let id = self.addr_to_id.add_inputs_simd(self.mem, input.addr);
+        let id_m31 = unsafe { PackedM31::from_simd_unchecked(id.cast()) };
+        dst[2].data[row_index] = id_m31;
 
         let value = self.id_to_big.add_inputs_simd(self.mem, id);
         split_big(&value).iter().enumerate().for_each(|(i, part)| {
             dst[3 + i].data[row_index] = *part;
         });
 
-        let id = unsafe { PackedM31::from_simd_unchecked(id.cast()) };
-        dst[2].data[row_index] = id;
-
         lookup_data.mult[row_index] = mult;
         lookup_data.addr[row_index] = addr;
-        lookup_data.id[row_index] = id;
+        lookup_data.id[row_index] = id_m31;
         lookup_data.value[row_index] = [value[0], value[1]];
     }
 }

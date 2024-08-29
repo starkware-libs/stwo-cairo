@@ -1,6 +1,7 @@
 use itertools::{chain, Itertools};
 use num_traits::One;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -31,7 +32,7 @@ use utils::to_evals;
 
 // Trait.
 pub trait Standard: Clone {
-    type LookupElements;
+    type LookupElements: Clone;
     type Input: Clone;
     type PackedInput: From<[Self::Input; N_LANES]>;
     type LookupData: StandardLookupData;
@@ -100,8 +101,7 @@ impl<C: Standard> StandardComponent<C> {
             phantom: std::marker::PhantomData,
         }
     }
-
-    fn assert_constraints(
+    pub fn assert_constraints(
         &self,
         trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
     ) {
@@ -113,6 +113,45 @@ impl<C: Standard> StandardComponent<C> {
         assert_constraints(&polys, trace_domain, |e| {
             self.evaluate(e);
         })
+    }
+    pub fn provers(&self) -> impl Iterator<Item = &dyn ComponentProver<SimdBackend>> {
+        std::iter::once(self as &dyn ComponentProver<_>)
+    }
+    pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
+        std::iter::once(self as &dyn Component)
+    }
+}
+
+pub struct StandardComponentStack<C: Standard>(pub Vec<StandardComponent<C>>);
+impl<C: Standard> StandardComponentStack<C> {
+    pub fn new(
+        claims: &StandardClaimStack<C>,
+        opcode_elements: C::LookupElements,
+        interaction_claim: &StandardInteractionClaimStack,
+    ) -> Self {
+        let mut stack = Vec::with_capacity(claims.0.len());
+        for (claim, interaction_claim) in claims.0.iter().zip(&interaction_claim.0) {
+            stack.push(StandardComponent::new(
+                claim,
+                opcode_elements.clone(),
+                interaction_claim,
+            ));
+        }
+        Self(stack)
+    }
+    pub fn assert_constraints(
+        &self,
+        trace_polys: &mut TreeVec<impl Iterator<Item = CirclePoly<SimdBackend>>>,
+    ) {
+        for component in &self.0 {
+            component.assert_constraints(trace_polys);
+        }
+    }
+    pub fn provers(&self) -> impl Iterator<Item = &dyn ComponentProver<SimdBackend>> {
+        self.0.iter().map(|x| x as &dyn ComponentProver<_>)
+    }
+    pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
+        self.0.iter().map(|x| x as &dyn Component)
     }
 }
 
@@ -169,6 +208,20 @@ impl<C: Standard> StandardClaim<C> {
     }
 }
 
+#[derive(Clone)]
+pub struct StandardClaimStack<C: Standard>(pub Vec<StandardClaim<C>>);
+impl<C: Standard> StandardClaimStack<C> {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        for claim in &self.0 {
+            claim.mix_into(channel);
+        }
+    }
+    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
+        let log_sizes = self.0.iter().map(StandardClaim::log_sizes).collect_vec();
+        TreeVec::concat_cols(log_sizes.into_iter())
+    }
+}
+
 // Prover.
 pub struct StandardProver<C: Standard> {
     pub inputs: Vec<C::PackedInput>,
@@ -177,9 +230,12 @@ pub struct StandardProver<C: Standard> {
     pub phantom: std::marker::PhantomData<C>,
 }
 impl<C: Standard> StandardProver<C> {
-    pub fn new(params: C::Params, inputs: impl ExactSizeIterator<Item = C::Input>) -> Vec<Self> {
-        // TODO(spapini): Split to multiple components.
+    pub fn new(
+        params: C::Params,
+        inputs: impl ExactSizeIterator<Item = C::Input>,
+    ) -> StandardProver<C> {
         let n_instances = inputs.len();
+        assert!(n_instances > 0);
         let n_rows = n_instances
             .div_ceil(C::N_REPETITIONS)
             .next_power_of_two()
@@ -193,12 +249,12 @@ impl<C: Standard> StandardProver<C> {
             .map(C::PackedInput::from)
             .collect();
 
-        vec![Self {
+        Self {
             inputs: packed_inputs,
             n_instances,
             params,
             phantom: std::marker::PhantomData,
-        }]
+        }
     }
     pub fn n_padding(&self) -> u32 {
         (self.inputs.len() * N_LANES - self.n_instances) as u32
@@ -250,6 +306,38 @@ impl<C: Standard> StandardProver<C> {
     }
 }
 
+pub struct StandardProverStack<C: Standard>(pub Vec<StandardProver<C>>);
+impl<C: Standard> StandardProverStack<C> {
+    pub fn new(params: C::Params, inputs: impl ExactSizeIterator<Item = C::Input>) -> Self {
+        // TODO(spapini): Split to multiple components.
+        if inputs.len() == 0 {
+            return Self(vec![]);
+        }
+        let prover = StandardProver::new(params, inputs);
+        Self(vec![prover])
+    }
+    pub fn write_trace<Ctx: ContextFor<C>>(
+        self,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        ctx: &mut Ctx,
+    ) -> (
+        StandardClaimStack<C>,
+        StandardInteractionProverStack<C::LookupData>,
+    ) {
+        let mut claims = Vec::with_capacity(self.0.len());
+        let mut interaction_provers = Vec::with_capacity(self.0.len());
+        for prover in self.0 {
+            let (claim, interaction_prover) = prover.write_trace(tree_builder, ctx);
+            claims.push(claim);
+            interaction_provers.push(interaction_prover);
+        }
+        (
+            StandardClaimStack(claims),
+            StandardInteractionProverStack(interaction_provers),
+        )
+    }
+}
+
 pub trait StandardLookupData {
     const N_LOOKUPS: usize;
     type Elements;
@@ -294,6 +382,23 @@ impl<LD: StandardLookupData> StandardInteractionProver<LD> {
     }
 }
 
+pub struct StandardInteractionProverStack<LD: StandardLookupData>(
+    pub Vec<StandardInteractionProver<LD>>,
+);
+impl<LD: StandardLookupData> StandardInteractionProverStack<LD> {
+    pub fn write_interaction_trace(
+        self,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        elements: &LD::Elements,
+    ) -> StandardInteractionClaimStack {
+        let mut interaction_claims = Vec::with_capacity(self.0.len());
+        for prover in self.0 {
+            interaction_claims.push(prover.write_interaction_trace(tree_builder, elements));
+        }
+        StandardInteractionClaimStack(interaction_claims)
+    }
+}
+
 #[derive(Clone)]
 pub struct StandardInteractionClaim {
     pub claimed_sum: SecureField,
@@ -305,5 +410,18 @@ impl StandardInteractionClaim {
 
     fn logup_sum(&self) -> SecureField {
         self.claimed_sum
+    }
+}
+
+#[derive(Clone)]
+pub struct StandardInteractionClaimStack(pub Vec<StandardInteractionClaim>);
+impl StandardInteractionClaimStack {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        for claim in &self.0 {
+            claim.mix_into(channel);
+        }
+    }
+    pub fn logup_sum(&self) -> SecureField {
+        self.0.iter().map(StandardInteractionClaim::logup_sum).sum()
     }
 }

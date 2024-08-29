@@ -60,7 +60,7 @@ impl IdToBigBuilder {
             .into_iter()
             .zip(self.mults)
             .map(|(value, mult)| IdToBigInput { value, mult });
-        StandardProver::new(self.initial_id, inputs).pop().unwrap()
+        StandardProver::new(self.initial_id, inputs)
     }
 }
 

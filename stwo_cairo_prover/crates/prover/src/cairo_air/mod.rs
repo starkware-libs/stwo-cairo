@@ -63,10 +63,6 @@ pub fn lookup_sum_valid(
         claim.opcodes.extra_transitions.iter().copied(),
         [(1, [claim.initial_state, claim.final_state])].into_iter()
     ];
-    println!(
-        "extra_transitions: {:#?}",
-        extra_transitions.clone().collect_vec()
-    );
     let frac: Fraction<QM31, QM31> = extra_transitions
         .map(|(n, transition)| {
             Fraction::new(
@@ -145,7 +141,6 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     component_builder.assert_constraints(&mut trace_polys);
 
     // Assert sizes.
-    println!("A");
     let actual_lens = commitment_scheme.polynomials().map_cols(|x| x.log_size());
     let expected_lens = claim.log_sizes();
     assert_eq!(actual_lens.0, expected_lens.0);

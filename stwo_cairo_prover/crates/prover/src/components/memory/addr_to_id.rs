@@ -63,7 +63,7 @@ impl AddrToIdBuilder {
             }
             AddrToIdInput { id, mult }
         });
-        StandardProver::new((), inputs).pop().unwrap()
+        StandardProver::new((), inputs)
     }
 }
 pub fn id_from_encoded(id: EncodedMemoryValueId) -> i32 {
