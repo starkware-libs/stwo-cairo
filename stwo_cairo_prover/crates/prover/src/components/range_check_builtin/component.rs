@@ -5,7 +5,7 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
-use crate::components::range_check_unit::RangeElements;
+use crate::components::range_check_unit::RangeCheckElements;
 use crate::components::LOOKUP_INTERACTION_PHASE;
 
 const RANGE_CHECK_BITS: usize = 128;
@@ -18,7 +18,7 @@ pub struct RangeCheck128BuiltinEval<'a, E: EvalAtRow> {
     pub logup: LogupAtRow<2, E>,
     pub initial_memory_address: E::F,
     pub memory_lookup_elements: &'a MemoryLookupElements,
-    pub range2_lookup_elements: &'a RangeElements,
+    pub range2_lookup_elements: &'a RangeCheckElements,
 }
 const _: () = assert!(
     RANGE_CHECK_BITS % N_BITS_PER_FELT == 2,
@@ -64,7 +64,7 @@ pub struct RangeCheck128BuiltinComponent {
     pub log_size: u32,
     pub initial_memory_address: M31,
     pub memory_lookup_elements: MemoryLookupElements,
-    pub range2_lookup_elements: RangeElements,
+    pub range2_lookup_elements: RangeCheckElements,
     pub claimed_sum: SecureField,
 }
 
