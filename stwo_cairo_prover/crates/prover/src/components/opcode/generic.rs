@@ -8,22 +8,33 @@ use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::lookups::utils::Fraction;
 
-use super::super::{
-    LookupFunc, Standard, StandardClaim, StandardComponent, StandardInteractionProver,
-    StandardLookupData, StandardProver,
-};
+use super::super::{LookupFunc, Standard, StandardLookupData};
 use super::PackedVmState;
 use crate::components::opcode::{OpcodeElements, OpcodeGenContext};
-use crate::components::ContextFor;
+use crate::components::{
+    ContextFor, StandardClaimStack, StandardComponentStack, StandardInteractionClaimStack,
+    StandardInteractionProverStack, StandardProverStack,
+};
 use crate::input::instructions::VmState;
 
-pub type GenericOpcodeProver = StandardProver<GenericOpcode>;
-pub type GenericOpcodeClaim = StandardClaim<GenericOpcode>;
-pub type GenericOpcodeComponent = StandardComponent<GenericOpcode>;
-pub type GenericOpcodeInteractionProver = StandardInteractionProver<GenericOpcodeLookupData>;
+pub type GenericOpcodeProver = StandardProverStack<GenericOpcode>;
+pub type GenericOpcodeInteractionProver = StandardInteractionProverStack<GenericOpcodeLookupData>;
+pub type GenericOpcodeClaim = StandardClaimStack<GenericOpcode>;
+pub type GenericOpcodeInteractionClaim = StandardInteractionClaimStack;
+pub type GenericOpcodeComponent = StandardComponentStack<GenericOpcode>;
 
 #[derive(Clone)]
 pub struct GenericOpcode;
+impl GenericOpcodeProver {
+    pub fn pad_transition(&self) -> (u32, [VmState; 2]) {
+        if self.0.is_empty() {
+            return (0, [VmState::default(), VmState::default()]);
+        }
+        let input = self.0[0].inputs[0].first();
+        let n_padding = self.0.last().unwrap().n_padding();
+        (n_padding, [input.0[0], input.0[1]])
+    }
+}
 
 impl Standard for GenericOpcode {
     type LookupElements = OpcodeElements;
@@ -110,6 +121,11 @@ impl<'a> ContextFor<GenericOpcode> for OpcodeGenContext<'a> {
 pub struct GenericInput(pub [VmState; 2]);
 
 pub struct PackedGenericInput(pub [PackedVmState; 2]);
+impl PackedGenericInput {
+    pub fn first(&self) -> GenericInput {
+        GenericInput(self.0.each_ref().map(|x| x.first()))
+    }
+}
 
 impl From<[GenericInput; N_LANES]> for PackedGenericInput {
     fn from(value: [GenericInput; N_LANES]) -> Self {

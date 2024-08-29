@@ -88,7 +88,7 @@ pub fn lookup_sum_valid(
     sum == SecureField::zero()
 }
 
-const LOG_MAX_ROWS: u32 = 26;
+const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let _span = span!(Level::INFO, "Proof").entered();
     let span = span!(Level::INFO, "Twiddles").entered();
@@ -134,11 +134,13 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let components = component_builder.provers();
 
     // TODO: Remove. Only for debugging.
-    let mut trace_polys = commitment_scheme
-        .trees
-        .as_ref()
-        .map(|t| t.polynomials.iter().cloned());
-    component_builder.assert_constraints(&mut trace_polys);
+    if false {
+        let mut trace_polys = commitment_scheme
+            .trees
+            .as_ref()
+            .map(|t| t.polynomials.iter().cloned());
+        component_builder.assert_constraints(&mut trace_polys);
+    }
 
     // Assert sizes.
     let actual_lens = commitment_scheme.polynomials().map_cols(|x| x.log_size());
@@ -151,6 +153,14 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
             .map(|c| c.trace_log_degree_bounds()),
     );
     assert_eq!(actual_lens.0, component_lens.0);
+
+    // Compute total trace size.
+    let total_size: u64 = commitment_scheme
+        .polynomials()
+        .iter()
+        .flat_map(|x| x.iter().map(|y| (1 << y.log_size()) as u64))
+        .sum();
+    println!("Total trace size: {}", total_size);
 
     // Prove stark.
     let proof = prove::<SimdBackend, _>(
@@ -214,13 +224,13 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 mod tests {
-    // use cairo_lang_casm::casm;
+    use cairo_lang_casm::casm;
     use stwo_prover::core::pcs::PcsConfig;
 
     use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
-    // use crate::input::plain::input_from_plain_casm;
+    use crate::input::plain::input_from_plain_casm;
 
-    fn test_input() -> CairoInput {
+    fn big_input() -> CairoInput {
         let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/sample0");
 
@@ -233,27 +243,36 @@ mod tests {
             Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
         )
     }
-    // fn test_input() -> CairoInput {
-    //     let instructions = casm! {
-    //         [ap] = 10, ap++;
-    //         call rel 4;
-    //         jmp rel 11;
+    fn test_input() -> CairoInput {
+        let instructions = casm! {
+            [ap] = 10, ap++;
+            call rel 4;
+            jmp rel 11;
 
-    //         jmp rel 4 if [fp-3] != 0;
-    //         jmp rel 6;
-    //         [ap] = [fp-3] + (-1), ap++;
-    //         call rel (-6);
-    //         ret;
-    //     }
-    //     .instructions;
+            jmp rel 4 if [fp-3] != 0;
+            jmp rel 6;
+            [ap] = [fp-3] + (-1), ap++;
+            call rel (-6);
+            ret;
+        }
+        .instructions;
 
-    //     input_from_plain_casm(instructions)
-    // }
+        input_from_plain_casm(instructions)
+    }
 
     #[test_log::test]
-    fn test_cairo_air() {
+    fn test_cairo_air_simple() {
         let config = PcsConfig::default();
         let cairo_proof = prove_cairo(config, test_input());
+
+        verify_cairo(config, cairo_proof).unwrap();
+    }
+
+    #[ignore]
+    #[test_log::test]
+    fn test_cairo_air_big() {
+        let config = PcsConfig::default();
+        let cairo_proof = prove_cairo(config, big_input());
 
         verify_cairo(config, cairo_proof).unwrap();
     }

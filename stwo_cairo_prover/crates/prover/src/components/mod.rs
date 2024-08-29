@@ -306,15 +306,44 @@ impl<C: Standard> StandardProver<C> {
     }
 }
 
+pub struct WithSize<I: Iterator> {
+    pub iter: I,
+    pub size: usize,
+}
+impl<I: Iterator> Iterator for WithSize<I> {
+    type Item = I::Item;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter.next()
+    }
+}
+impl<I: Iterator> ExactSizeIterator for WithSize<I> {
+    fn len(&self) -> usize {
+        self.size
+    }
+}
+
 pub struct StandardProverStack<C: Standard>(pub Vec<StandardProver<C>>);
 impl<C: Standard> StandardProverStack<C> {
     pub fn new(params: C::Params, inputs: impl ExactSizeIterator<Item = C::Input>) -> Self {
-        // TODO(spapini): Split to multiple components.
-        if inputs.len() == 0 {
-            return Self(vec![]);
-        }
-        let prover = StandardProver::new(params, inputs);
-        Self(vec![prover])
+        // TODO(spapini): Split better to multiple components.
+        let mut remaining = inputs.len();
+        Self(
+            inputs
+                .chunks(1 << 20)
+                .into_iter()
+                .map(|inputs| {
+                    let size = remaining.min(1 << 20);
+                    remaining -= size;
+                    StandardProver::new(
+                        params.clone(),
+                        WithSize {
+                            iter: inputs.into_iter(),
+                            size,
+                        },
+                    )
+                })
+                .collect(),
+        )
     }
     pub fn write_trace<Ctx: ContextFor<C>>(
         self,

@@ -7,6 +7,7 @@ use std::simd::num::SimdInt;
 use std::simd::Simd;
 
 use instruction_mem::InstMemCtx;
+use itertools::chain;
 use stwo_prover::constraint_framework::logup::LookupElements;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::m31::{self, PackedM31, N_LANES};
@@ -212,12 +213,18 @@ impl MemoryComponents {
         }
     }
     pub fn provers(&self) -> impl Iterator<Item = &dyn ComponentProver<SimdBackend>> {
-        let res: [&dyn ComponentProver<_>; 3] = [&self.inst_mem, &self.addr_to_id, &self.id_to_big];
-        res.into_iter()
+        chain![
+            self.inst_mem.provers(),
+            self.addr_to_id.provers(),
+            self.id_to_big.provers()
+        ]
     }
     pub fn components(&self) -> impl Iterator<Item = &dyn Component> {
-        let res: [&dyn Component; 3] = [&self.inst_mem, &self.addr_to_id, &self.id_to_big];
-        res.into_iter()
+        chain![
+            self.inst_mem.components(),
+            self.addr_to_id.components(),
+            self.id_to_big.components()
+        ]
     }
 
     pub fn assert_constraints(

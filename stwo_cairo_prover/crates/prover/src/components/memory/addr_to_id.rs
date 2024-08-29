@@ -9,18 +9,19 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
 
-use super::super::{
-    LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
-};
+use super::super::{LookupFunc, Standard, StandardLookupData};
 use super::{m31_from_i32, MemoryElements};
-use crate::components::{ContextFor, StandardInteractionClaim, StandardInteractionProver};
+use crate::components::{
+    ContextFor, StandardClaimStack, StandardComponentStack, StandardInteractionClaimStack,
+    StandardInteractionProverStack, StandardProverStack,
+};
 use crate::input::mem::{EncodedMemoryValueId, Memory, MemoryValueId};
 
-pub type AddrToIdProver = StandardProver<AddrToId>;
-pub type AddrToIdInteractionProver = StandardInteractionProver<AddrToIdLookupData>;
-pub type AddrToIdClaim = StandardClaim<AddrToId>;
-pub type AddrToIdInteractionClaim = StandardInteractionClaim;
-pub type AddrToIdComponent = StandardComponent<AddrToId>;
+pub type AddrToIdProver = StandardProverStack<AddrToId>;
+pub type AddrToIdInteractionProver = StandardInteractionProverStack<AddrToIdLookupData>;
+pub type AddrToIdClaim = StandardClaimStack<AddrToId>;
+pub type AddrToIdInteractionClaim = StandardInteractionClaimStack;
+pub type AddrToIdComponent = StandardComponentStack<AddrToId>;
 
 pub const BIG_INITIAL_ID: i32 = 1 << 29;
 
@@ -63,7 +64,7 @@ impl AddrToIdBuilder {
             }
             AddrToIdInput { id, mult }
         });
-        StandardProver::new((), inputs)
+        AddrToIdProver::new((), inputs)
     }
 }
 pub fn id_from_encoded(id: EncodedMemoryValueId) -> i32 {

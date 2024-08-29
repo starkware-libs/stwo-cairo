@@ -10,33 +10,38 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
 
-use super::super::{
-    LookupFunc, Standard, StandardClaim, StandardComponent, StandardInteractionProver,
-    StandardLookupData, StandardProver,
-};
+use super::super::{LookupFunc, Standard, StandardLookupData};
 use super::{cairo_offset, PackedVmState};
 use crate::components::opcode::{OpcodeElements, OpcodeGenContext};
-use crate::components::ContextFor;
+use crate::components::{
+    ContextFor, StandardClaimStack, StandardComponentStack, StandardInteractionProverStack,
+    StandardProverStack,
+};
 use crate::input::instructions::VmState;
 use crate::input::mem::Memory;
 
-pub type RetOpcodeProver = StandardProver<RetOpcode>;
-pub type RetOpcodeClaim = StandardClaim<RetOpcode>;
-pub type RetOpcodeComponent = StandardComponent<RetOpcode>;
-pub type RetOpcodeInteractionProver = StandardInteractionProver<RetLookupData>;
+pub type RetOpcodeProver = StandardProverStack<RetOpcode>;
+pub type RetOpcodeClaim = StandardClaimStack<RetOpcode>;
+pub type RetOpcodeComponent = StandardComponentStack<RetOpcode>;
+pub type RetOpcodeInteractionProver = StandardInteractionProverStack<RetLookupData>;
 
 const RET_FLAGS: u32 = 0b010000010001011;
 
 #[derive(Clone)]
 pub struct RetOpcode;
 impl RetOpcodeProver {
-    pub fn pad_transition(&self, input: VmState, mem: &Memory) -> (u32, [VmState; 2]) {
+    pub fn pad_transition(&self, mem: &Memory) -> (u32, [VmState; 2]) {
+        if self.0.is_empty() {
+            return (0, [VmState::default(), VmState::default()]);
+        }
+        let input = self.0[0].inputs[0].first();
         let output_state = VmState {
             pc: mem.get(input.fp - 1).as_small() as u32,
             ap: input.ap,
             fp: mem.get(input.fp - 2).as_small() as u32,
         };
-        (self.n_padding(), [input, output_state])
+        let n_padding = self.0.last().unwrap().n_padding();
+        (n_padding, [input, output_state])
     }
 }
 

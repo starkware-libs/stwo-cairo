@@ -25,7 +25,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::memory::{MemoryElements, MemoryProver};
 use super::range_check::RangeProver;
-use super::{StandardInteractionClaim, StandardInteractionClaimStack};
+use super::StandardInteractionClaimStack;
 use crate::input::instructions::{Instructions, VmState};
 use crate::input::mem::Memory;
 
@@ -172,14 +172,14 @@ impl OpcodesClaim {
 
 #[derive(Clone)]
 pub struct OpcodesInteractionClaim {
-    pub ret: StandardInteractionClaim,
+    pub ret: StandardInteractionClaimStack,
 
     pub jmp_abs_ap: StandardInteractionClaimStack,
     pub jmp_abs_fp: StandardInteractionClaimStack,
     pub jmp_abs_ap_inc: StandardInteractionClaimStack,
     pub jmp_abs_fp_inc: StandardInteractionClaimStack,
 
-    pub generic: StandardInteractionClaim,
+    pub generic: StandardInteractionClaimStack,
 }
 impl OpcodesInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -232,7 +232,7 @@ impl OpcodesProvers {
     ) -> (OpcodesClaim, OpcodesInteractionProvers) {
         let mut extra_transitions = Vec::new();
 
-        extra_transitions.push(self.ret.pad_transition(self.ret.inputs[0].first(), ctx.mem));
+        extra_transitions.push(self.ret.pad_transition(ctx.mem));
         let (ret_claim, ret) = self.ret.write_trace(tree_builder, &mut ctx);
 
         extra_transitions.push(self.jmp_abs_ap.pad_transition(ctx.mem));
@@ -249,13 +249,7 @@ impl OpcodesProvers {
         let (jmp_abs_fp_inc_claim, jmp_abs_fp_inc) =
             self.jmp_abs_fp_inc.write_trace(tree_builder, &mut ctx);
 
-        extra_transitions.push((
-            self.generic.n_padding(),
-            [
-                self.generic.inputs[0].0[0].first(),
-                self.generic.inputs[0].0[1].first(),
-            ],
-        ));
+        extra_transitions.push(self.generic.pad_transition());
         let (generic_claim, generic) = self.generic.write_trace(tree_builder, &mut ctx);
         (
             OpcodesClaim {

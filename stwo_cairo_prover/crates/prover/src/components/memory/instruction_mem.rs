@@ -11,20 +11,21 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
 
-use super::super::{
-    LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
-};
+use super::super::{LookupFunc, Standard, StandardLookupData};
 use super::addr_to_id::AddrToIdBuilder;
 use super::id_to_big::IdToBigBuilder;
 use super::MemoryAndRangeElements;
-use crate::components::{ContextFor, StandardInteractionClaim, StandardInteractionProver};
+use crate::components::{
+    ContextFor, StandardClaimStack, StandardComponentStack, StandardInteractionClaimStack,
+    StandardInteractionProverStack, StandardProverStack,
+};
 use crate::input::mem::Memory;
 
-pub type InstMemProver = StandardProver<InstMem>;
-pub type InstMemInteractionProver = StandardInteractionProver<InstMemLookupData>;
-pub type InstMemClaim = StandardClaim<InstMem>;
-pub type InstMemInteractionClaim = StandardInteractionClaim;
-pub type InstMemComponent = StandardComponent<InstMem>;
+pub type InstMemProver = StandardProverStack<InstMem>;
+pub type InstMemInteractionProver = StandardInteractionProverStack<InstMemLookupData>;
+pub type InstMemClaim = StandardClaimStack<InstMem>;
+pub type InstMemInteractionClaim = StandardInteractionClaimStack;
+pub type InstMemComponent = StandardComponentStack<InstMem>;
 
 // Builder
 #[derive(Default)]
@@ -46,7 +47,7 @@ impl InstMemBuilder {
             .addr_to_mult
             .into_iter()
             .map(|(addr, mult)| InstMemInput { addr, mult });
-        StandardProver::new((), inputs)
+        InstMemProver::new((), inputs)
     }
 }
 

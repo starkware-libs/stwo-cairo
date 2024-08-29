@@ -10,20 +10,21 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::lookups::utils::Fraction;
 
-use super::super::{
-    LookupFunc, Standard, StandardClaim, StandardComponent, StandardLookupData, StandardProver,
-};
+use super::super::{LookupFunc, Standard, StandardLookupData};
 use super::addr_to_id::BIG_INITIAL_ID;
 use super::{MemoryAndRangeElements, N_MEM_BIG_LIMBS};
-use crate::components::{ContextFor, StandardInteractionClaim, StandardInteractionProver};
+use crate::components::{
+    ContextFor, StandardClaimStack, StandardComponentStack, StandardInteractionClaimStack,
+    StandardInteractionProverStack, StandardProverStack,
+};
 use crate::felt::split_f252_simd;
 use crate::input::mem::Memory;
 
-pub type IdToBigProver = StandardProver<IdToBig>;
-pub type IdToBigInteractionProver = StandardInteractionProver<IdToBigLookupData>;
-pub type IdToBigClaim = StandardClaim<IdToBig>;
-pub type IdToBigInteractionClaim = StandardInteractionClaim;
-pub type IdToBigComponent = StandardComponent<IdToBig>;
+pub type IdToBigProver = StandardProverStack<IdToBig>;
+pub type IdToBigInteractionProver = StandardInteractionProverStack<IdToBigLookupData>;
+pub type IdToBigClaim = StandardClaimStack<IdToBig>;
+pub type IdToBigInteractionClaim = StandardInteractionClaimStack;
+pub type IdToBigComponent = StandardComponentStack<IdToBig>;
 
 // Builder
 pub struct IdToBigBuilder {
@@ -60,7 +61,7 @@ impl IdToBigBuilder {
             .into_iter()
             .zip(self.mults)
             .map(|(value, mult)| IdToBigInput { value, mult });
-        StandardProver::new(self.initial_id, inputs)
+        IdToBigProver::new(self.initial_id, inputs)
     }
 }
 
