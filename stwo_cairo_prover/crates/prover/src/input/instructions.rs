@@ -161,30 +161,30 @@ impl Instructions {
             // } => {
             //     self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
             // }
-            // // jump abs [ap/fp + offset].
-            // Instruction {
-            //     offset0: -1,
-            //     offset1: -1,
-            //     offset2: _,
-            //     dst_base_fp: true,
-            //     op0_base_fp: true,
-            //     op1_imm: false,
-            //     op1_base_fp,
-            //     op1_base_ap,
-            //     res_add: false,
-            //     res_mul: false,
-            //     pc_update_jump: true,
-            //     pc_update_jump_rel: false,
-            //     pc_update_jnz: false,
-            //     ap_update_add: false,
-            //     ap_update_add_1,
-            //     opcode_call: false,
-            //     opcode_ret: false,
-            //     opcode_assert_eq: false,
-            // } if op1_base_fp != op1_base_ap => {
-            //     let index = op1_base_fp as usize | (ap_update_add_1 as usize) << 1;
-            //     self.jmp_abs[index].push(state);
-            // }
+            // jump abs [ap/fp + offset].
+            Instruction {
+                offset0: -1,
+                offset1: -1,
+                offset2: _,
+                dst_base_fp: true,
+                op0_base_fp: true,
+                op1_imm: false,
+                op1_base_fp,
+                op1_base_ap,
+                res_add: false,
+                res_mul: false,
+                pc_update_jump: true,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: false,
+            } if op1_base_fp != op1_base_ap => {
+                let index = op1_base_fp as usize | (ap_update_add_1 as usize) << 1;
+                self.jmp_abs[index].push(state);
+            }
             // // call rel imm.
             // Instruction {
             //     offset0: 0,
