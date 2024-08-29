@@ -61,6 +61,10 @@ pub fn lookup_sum_valid(
         claim.opcodes.extra_transitions.iter().copied(),
         [(1, [claim.initial_state, claim.final_state])].into_iter()
     ];
+    println!(
+        "Extra transitions: {:#?}",
+        extra_transitions.clone().collect_vec()
+    );
     let frac: Fraction<QM31, QM31> = extra_transitions
         .map(|(n, transition)| {
             Fraction::new(

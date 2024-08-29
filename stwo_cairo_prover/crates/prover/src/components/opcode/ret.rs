@@ -34,17 +34,17 @@ impl RetOpcodeProver {
         if self.0.is_empty() {
             return (0, [VmState::default(), VmState::default()]);
         }
-        let input = self.0.last().unwrap().inputs[0].first();
+        let input_state = self.0.last().unwrap().inputs[0].first();
         let output_state = VmState {
-            pc: mem.get(input.fp - 1).as_small() as u32,
-            ap: input.ap,
-            fp: mem.get(input.fp - 2).as_small() as u32,
+            pc: mem.get(input_state.fp - 1).as_small() as u32,
+            ap: input_state.ap,
+            fp: mem.get(input_state.fp - 2).as_small() as u32,
         };
         assert!(self.0[..self.0.len() - 1]
             .iter()
             .all(|x| x.n_padding() == 0));
         let n_padding = self.0.last().unwrap().n_padding();
-        (n_padding, [input, output_state])
+        (n_padding, [input_state, output_state])
     }
 }
 
@@ -118,8 +118,8 @@ impl Standard for RetOpcode {
         );
 
         // State lookups.
-        logup.push_lookup(eval, -E::EF::zero(), &[pc, ap, fp], &elements.state);
-        logup.push_lookup(eval, E::EF::zero(), &[new_pc, ap, new_fp], &elements.state);
+        logup.push_lookup(eval, -E::EF::one(), &[pc, ap, fp], &elements.state);
+        logup.push_lookup(eval, E::EF::one(), &[new_pc, ap, new_fp], &elements.state);
     }
 }
 impl<'a> ContextFor<RetOpcode> for OpcodeGenContext<'a> {
@@ -209,7 +209,7 @@ impl StandardLookupData for RetLookupData {
                 let denom = elements
                     .state
                     .combine(&[self.pc[row], self.ap[row], self.fp[row]]);
-                Fraction::new(-PackedM31::zero(), denom)
+                Fraction::new(-PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Output state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -217,7 +217,7 @@ impl StandardLookupData for RetLookupData {
                     elements
                         .state
                         .combine(&[self.new_pc[row], self.ap[row], self.new_fp[row]]);
-                Fraction::new(PackedM31::zero(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }

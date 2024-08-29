@@ -30,13 +30,7 @@ pub fn import_from_vm_output(
     let pub_data: PublicInput = sonic_rs::from_str(&std::fs::read_to_string(pub_json)?)?;
     let priv_data: PrivateInput = sonic_rs::from_str(&std::fs::read_to_string(priv_json)?)?;
 
-    let end_addr = pub_data
-        .memory_segments
-        .values()
-        .map(|v| v.stop_ptr)
-        .max()
-        .ok_or(VmImportError::NoMemorySegments)?;
-    assert!(end_addr < (1 << 32));
+    let end_addr = 1 << 26; // TODO: Find a better wat to get maximum address.
     let mem_config = MemConfig::new((1 << 20) - 1, end_addr as u32);
 
     let mem_path = priv_json.parent().unwrap().join(&priv_data.memory_path);

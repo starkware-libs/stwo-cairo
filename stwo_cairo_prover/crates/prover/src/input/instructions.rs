@@ -4,7 +4,7 @@ use super::vm_import::TraceEntry;
 use crate::components::opcode::generic::GenericInput;
 
 // TODO(spapini): Move this:
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
 pub struct VmState {
     pub pc: u32,
     pub ap: u32,
@@ -96,27 +96,27 @@ impl Instructions {
         let instruction = Instruction::decode(instruction);
         #[allow(clippy::match_single_binding)]
         match instruction {
-            // // ret.
-            // Instruction {
-            //     offset0: -2,
-            //     offset1: -1,
-            //     offset2: -1,
-            //     dst_base_fp: true,
-            //     op0_base_fp: true,
-            //     op1_imm: false,
-            //     op1_base_fp: true,
-            //     op1_base_ap: false,
-            //     res_add: false,
-            //     res_mul: false,
-            //     pc_update_jump: true,
-            //     pc_update_jump_rel: false,
-            //     pc_update_jnz: false,
-            //     ap_update_add: false,
-            //     ap_update_add_1: false,
-            //     opcode_call: false,
-            //     opcode_ret: true,
-            //     opcode_assert_eq: false,
-            // } => self.ret.push(state),
+            // ret.
+            Instruction {
+                offset0: -2,
+                offset1: -1,
+                offset2: -1,
+                dst_base_fp: true,
+                op0_base_fp: true,
+                op1_imm: false,
+                op1_base_fp: true,
+                op1_base_ap: false,
+                res_add: false,
+                res_mul: false,
+                pc_update_jump: true,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: false,
+                opcode_call: false,
+                opcode_ret: true,
+                opcode_assert_eq: false,
+            } => self.ret.push(state),
             // // ap += imm.
             // Instruction {
             //     offset0: -1,
