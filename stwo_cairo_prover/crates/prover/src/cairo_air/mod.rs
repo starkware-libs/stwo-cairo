@@ -88,7 +88,7 @@ pub fn lookup_sum_valid(
     sum == SecureField::zero()
 }
 
-const LOG_MAX_ROWS: u32 = 20;
+const LOG_MAX_ROWS: u32 = 26;
 pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let _span = span!(Level::INFO, "Proof").entered();
     let span = span!(Level::INFO, "Twiddles").entered();
@@ -214,28 +214,41 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 mod tests {
-    use cairo_lang_casm::casm;
+    // use cairo_lang_casm::casm;
     use stwo_prover::core::pcs::PcsConfig;
 
     use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
-    use crate::input::plain::input_from_plain_casm;
+    // use crate::input::plain::input_from_plain_casm;
 
     fn test_input() -> CairoInput {
-        let instructions = casm! {
-            [ap] = 10, ap++;
-            call rel 4;
-            jmp rel 11;
+        let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.push("test_data/sample0");
 
-            jmp rel 4 if [fp-3] != 0;
-            jmp rel 6;
-            [ap] = [fp-3] + (-1), ap++;
-            call rel (-6);
-            ret;
-        }
-        .instructions;
-
-        input_from_plain_casm(instructions)
+        crate::input::vm_import::import_from_vm_output(
+            d.join("pub.json").as_path(),
+            d.join("priv.json").as_path(),
+        )
+        .expect(
+            "
+            Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
+        )
     }
+    // fn test_input() -> CairoInput {
+    //     let instructions = casm! {
+    //         [ap] = 10, ap++;
+    //         call rel 4;
+    //         jmp rel 11;
+
+    //         jmp rel 4 if [fp-3] != 0;
+    //         jmp rel 6;
+    //         [ap] = [fp-3] + (-1), ap++;
+    //         call rel (-6);
+    //         ret;
+    //     }
+    //     .instructions;
+
+    //     input_from_plain_casm(instructions)
+    // }
 
     #[test_log::test]
     fn test_cairo_air() {
