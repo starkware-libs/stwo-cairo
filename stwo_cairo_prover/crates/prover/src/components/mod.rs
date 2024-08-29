@@ -44,7 +44,7 @@ pub trait Standard: Clone {
 
     fn pad(input: Self::Input) -> Self::Input;
     fn n_columns() -> usize {
-        Self::info().mask_offsets[0].len() / Self::N_REPETITIONS
+        Self::info().mask_offsets[0].len()
     }
     fn info() -> InfoEvaluator {
         let mut logup = LogupAtRow::<2, InfoEvaluator>::new(1, SecureField::one(), 1);
@@ -211,7 +211,7 @@ impl<C: Standard> StandardClaim<C> {
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let interaction_0_log_sizes = vec![self.log_size; C::n_columns() * C::N_REPETITIONS];
+        let interaction_0_log_sizes = vec![self.log_size; C::n_columns()];
         let interaction_1_log_sizes =
             vec![
                 self.log_size;
@@ -289,23 +289,24 @@ impl<C: Standard> StandardProver<C> {
     ) -> (StandardClaim<C>, StandardInteractionProver<C::LookupData>) {
         let inputs = self.inputs;
         let n_cols = C::n_columns();
-        assert_eq!(inputs.len() % C::N_REPETITIONS, 0);
-        let n_rows = inputs.len() / C::N_REPETITIONS * N_LANES;
-        let mut trace_values = (0..(n_cols * C::N_REPETITIONS))
-            .map(|_| BaseColumn::zeros(n_rows))
-            .collect_vec();
+        let n_cols_per_rep = n_cols / C::N_REPETITIONS;
+        let n_vec_rows = inputs.len() / C::N_REPETITIONS;
+        let n_rows = n_vec_rows * N_LANES;
+        let mut trace_values = (0..n_cols).map(|_| BaseColumn::zeros(n_rows)).collect_vec();
 
         let log_size = n_rows.ilog2();
         let mut lookup_data = (0..C::N_REPETITIONS)
             .map(|i| C::new_lookup_data(log_size, &self.params, self.start_index + (i << log_size)))
             .collect_vec();
 
-        for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
+        for row_index in 0..n_vec_rows {
+            #[allow(clippy::needless_range_loop)]
             for i in 0..C::N_REPETITIONS {
-                let offset = n_cols * i;
+                let col_offset = n_cols_per_rep * i;
+                let input_vec_index = row_index + i * n_vec_rows;
                 ctx.write_trace_row(
-                    &mut trace_values[offset..(offset + n_cols)],
-                    &inputs[i],
+                    &mut trace_values[col_offset..(col_offset + n_cols_per_rep)],
+                    &inputs[input_vec_index],
                     row_index,
                     &mut lookup_data[i],
                 );
@@ -354,19 +355,19 @@ impl<C: Standard> StandardProverStack<C> {
         let mut index: usize = 0;
         Self(
             inputs
-                .chunks(1 << LOG_MAX_ROWS)
+                .chunks(C::N_REPETITIONS << LOG_MAX_ROWS)
                 .into_iter()
                 .map(|inputs| {
-                    let size = remaining.min(1 << LOG_MAX_ROWS);
-                    remaining -= size;
+                    let n_inputs_in_chunk = remaining.min(C::N_REPETITIONS << LOG_MAX_ROWS);
+                    remaining -= n_inputs_in_chunk;
                     let cur_index = index;
-                    index += size * C::N_REPETITIONS;
+                    index += n_inputs_in_chunk;
                     StandardProver::new(
                         cur_index,
                         params.clone(),
                         WithSize {
                             iter: inputs.into_iter(),
-                            size,
+                            size: n_inputs_in_chunk,
                         },
                     )
                 })
@@ -396,7 +397,7 @@ impl<C: Standard> StandardProverStack<C> {
 }
 
 pub trait StandardLookupData {
-    const N_LOOKUPS: usize;
+    const N_LOOKUPS: usize; // TODO: Remove.
     type Elements;
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>>;
 }

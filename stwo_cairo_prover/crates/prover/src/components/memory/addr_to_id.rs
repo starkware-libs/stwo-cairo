@@ -1,6 +1,5 @@
 use std::simd::Simd;
 
-use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::EvalAtRow;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -94,7 +93,7 @@ impl Standard for AddrToId {
     type PackedInput = PackedAddrToIdInput;
     type LookupData = AddrToIdLookupData;
     type Params = ();
-    const N_REPETITIONS: usize = 1;
+    const N_REPETITIONS: usize = 2;
 
     fn pad(mut input: Self::Input) -> Self::Input {
         input.mult = 0;
@@ -124,12 +123,6 @@ impl Standard for AddrToId {
         let id = eval.next_trace_mask();
         let mult = eval.next_trace_mask();
         logup.push_frac(eval, elements.addr_to_id.combine_frac(-mult, &[addr, id]));
-
-        // TODO: Dummy lookup.
-        logup.push_frac(
-            eval,
-            elements.addr_to_id.combine_frac(Zero::zero(), &[addr, id]),
-        );
     }
 }
 impl ContextFor<AddrToId> for () {
@@ -158,7 +151,7 @@ pub struct AddrToIdLookupData {
     pub mult: Vec<Simd<u32, N_LANES>>,
 }
 impl StandardLookupData for AddrToIdLookupData {
-    const N_LOOKUPS: usize = 2;
+    const N_LOOKUPS: usize = 1;
     type Elements = LookupElements<2>;
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         vec![
@@ -175,9 +168,6 @@ impl StandardLookupData for AddrToIdLookupData {
                 let mult = unsafe { PackedM31::from_simd_unchecked(self.mult[row]) };
                 elements.combine_frac(-mult, &[addr, id])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
-            // TODO: Dummy lookup.
-            Box::new(std::iter::repeat(Fraction::new(Zero::zero(), One::one())))
-                as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }
 }

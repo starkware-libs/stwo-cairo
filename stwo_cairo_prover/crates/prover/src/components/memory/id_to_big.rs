@@ -93,7 +93,7 @@ impl Standard for IdToBig {
     type PackedInput = PackedIdToBigInput;
     type LookupData = IdToBigLookupData;
     type Params = u32;
-    const N_REPETITIONS: usize = 1;
+    const N_REPETITIONS: usize = 2;
 
     fn pad(mut input: IdToBigInput) -> IdToBigInput {
         input.mult = 0;
@@ -135,7 +135,6 @@ impl Standard for IdToBig {
 
         // Add to big value relation.
         logup.push_frac(eval, els.mem.id_to_big.combine_frac(-mult, &values));
-        logup.push_frac(eval, els.mem.id_to_big.combine_frac(Zero::zero(), &values)); // TODO: Remove.
 
         // Range check limbs.
         for i in 0..N_MEM_BIG_LIMBS {
@@ -179,7 +178,7 @@ pub struct IdToBigLookupData {
     pub mult: Vec<Simd<u32, N_LANES>>,
 }
 impl StandardLookupData for IdToBigLookupData {
-    const N_LOOKUPS: usize = N_MEM_BIG_LIMBS + 1 + 1; // TODO: Remove.
+    const N_LOOKUPS: usize = N_MEM_BIG_LIMBS + 1;
     type Elements = MemoryAndRangeElements;
     fn lookups<'a>(&'a self, els: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         chain![
@@ -205,31 +204,6 @@ impl StandardLookupData for IdToBigLookupData {
 
                     let mult = unsafe { PackedM31::from_simd_unchecked(self.mult[row]) };
                     els.mem.id_to_big.combine_frac(-mult, &lookup_values)
-                })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
-            ],
-            // Dummy. TODO: Remove.
-            [
-                Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(move |row| {
-                    let offset = PackedM31::from_array(std::array::from_fn(|i| {
-                        M31::from_u32_unchecked(i as u32)
-                    }));
-
-                    let limbs = split_f252_simd(self.value[row]);
-                    let id = offset
-                        + M31::from(
-                            (row * N_LANES * IdToBig::N_REPETITIONS) as u32 + self.initial_id,
-                        );
-                    let mut lookup_values = [Zero::zero(); 1 + N_MEM_BIG_LIMBS];
-                    lookup_values[0] = id;
-                    #[allow(clippy::manual_memcpy)]
-                    for i in 0..N_MEM_BIG_LIMBS {
-                        lookup_values[i + 1] = limbs[i];
-                    }
-
-                    let _mult = unsafe { PackedM31::from_simd_unchecked(self.mult[row]) };
-                    els.mem
-                        .id_to_big
-                        .combine_frac(PackedM31::zero(), &lookup_values)
                 })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>
             ],
             // Range check limbs.
