@@ -138,29 +138,36 @@ impl Instructions {
             //     opcode_ret: false,
             //     opcode_assert_eq: false,
             // } => self.add_ap.push(state),
-            // // jump rel imm.
-            // Instruction {
-            //     offset0: -1,
-            //     offset1: -1,
-            //     offset2: 1,
-            //     dst_base_fp: true,
-            //     op0_base_fp: true,
-            //     op1_imm: true,
-            //     op1_base_fp: false,
-            //     op1_base_ap: false,
-            //     res_add: false,
-            //     res_mul: false,
-            //     pc_update_jump: false,
-            //     pc_update_jump_rel: true,
-            //     pc_update_jnz: false,
-            //     ap_update_add: false,
-            //     ap_update_add_1,
-            //     opcode_call: false,
-            //     opcode_ret: false,
-            //     opcode_assert_eq: false,
-            // } => {
-            //     self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
-            // }
+            // jump rel imm.
+            Instruction {
+                offset0: -1,
+                offset1: -1,
+                offset2: 1,
+                dst_base_fp: true,
+                op0_base_fp: true,
+                op1_imm: true,
+                op1_base_fp: false,
+                op1_base_ap: false,
+                res_add: false,
+                res_mul: false,
+                pc_update_jump: false,
+                pc_update_jump_rel: true,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: false,
+            } => {
+                self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
+                let imm = mem.get(state.pc + 1).as_small();
+                let expected_new_state = VmState {
+                    pc: (state.pc as i32 + imm) as u32,
+                    ap: state.ap + if ap_update_add_1 { 1 } else { 0 },
+                    fp: state.fp,
+                };
+                assert_eq!(next_state, expected_new_state);
+            }
             // jump abs [ap/fp + offset].
             Instruction {
                 offset0: -1,
