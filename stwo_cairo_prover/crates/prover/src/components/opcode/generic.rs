@@ -31,6 +31,9 @@ impl GenericOpcodeProver {
             return (0, [VmState::default(), VmState::default()]);
         }
         let input = self.0[0].inputs[0].first();
+        assert!(self.0[..self.0.len() - 1]
+            .iter()
+            .all(|x| x.n_padding() == 0));
         let n_padding = self.0.last().unwrap().n_padding();
         (n_padding, [input.0[0], input.0[1]])
     }

@@ -34,7 +34,7 @@ pub fn lookup_sum_valid(
     elements: &CairoInteractionElements,
     interaction_claim: &CairoInteractionClaim,
 ) -> bool {
-    let mut sum = QM31::zero();
+    let mut sum = interaction_claim.logup_sum();
     // Public memory.
     // TODO(spapini): Optimized inverse.
     // sum += claim
@@ -54,8 +54,6 @@ pub fn lookup_sum_valid(
     //     })
     //     .sum::<SecureField>();
     // TODO: include initial and final state.
-    sum += interaction_claim.mem.logup_sum();
-    sum += interaction_claim.opcodes.logup_sum();
 
     // Extra transitions.
     // TODO: Check that the extra transitions are valid.
@@ -121,10 +119,6 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let span = span!(Level::INFO, "Interaction trace gen").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
     let interaction_claim = cairo_provers.generate(&interaction_elements, &mut tree_builder);
-    debug_assert!(
-        lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
-        "Lookups are invalid"
-    );
     interaction_claim.mix_into(channel);
     span.exit();
     tree_builder.commit(channel);
@@ -135,6 +129,11 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
 
     // TODO: Remove. Only for debugging.
     if false {
+        assert!(
+            lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
+            "Lookups are invalid"
+        );
+
         let mut trace_polys = commitment_scheme
             .trees
             .as_ref()

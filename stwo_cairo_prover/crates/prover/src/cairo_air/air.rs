@@ -2,6 +2,7 @@ use itertools::{chain, Itertools};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Channel;
+use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::poly::circle::CirclePoly;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -63,6 +64,9 @@ impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.opcodes.mix_into(channel);
         self.mem.mix_into(channel);
+    }
+    pub fn logup_sum(&self) -> SecureField {
+        self.opcodes.logup_sum() + self.mem.logup_sum()
     }
 }
 

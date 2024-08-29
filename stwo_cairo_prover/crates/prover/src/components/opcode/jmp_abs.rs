@@ -62,6 +62,9 @@ impl<const OP1_FP: bool, const INC_AP: bool> JmpAbsOpcodeProver<OP1_FP, INC_AP> 
             ap: input.ap + if INC_AP { 1 } else { 0 },
             fp: input.fp,
         };
+        assert!(self.0[..self.0.len() - 1]
+            .iter()
+            .all(|x| x.n_padding() == 0));
         let n_padding = self.0.last().unwrap().n_padding();
         (n_padding, [input, output_state])
     }
