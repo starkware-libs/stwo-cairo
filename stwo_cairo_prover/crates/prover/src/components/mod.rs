@@ -30,6 +30,8 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use utils::to_evals;
 
+use crate::cairo_air::LOG_MAX_ROWS;
+
 // Trait.
 pub trait Standard: Clone {
     type LookupElements: Clone;
@@ -65,7 +67,7 @@ pub trait Standard: Clone {
         log_size: u32,
         params: &Self::Params,
         start_index: usize,
-    ) -> Vec<Self::LookupData>;
+    ) -> Self::LookupData;
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
         logup: &mut LogupAtRow<2, E>,
@@ -147,7 +149,7 @@ impl<C: Standard> StandardComponentStack<C> {
                 interaction_claim,
                 start_index,
             ));
-            start_index += 1 << claim.log_size;
+            start_index += C::N_REPETITIONS << claim.log_size;
         }
         Self(stack)
     }
@@ -179,13 +181,13 @@ impl<C: Standard> FrameworkComponent for StandardComponent<C> {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let mut logup = LogupAtRow::<2, E>::new(1, self.claimed_sum, self.log_size);
 
-        for _ in 0..C::N_REPETITIONS {
+        for i in 0..C::N_REPETITIONS {
             C::evaluate(
                 &mut eval,
                 &mut logup,
                 &self.opcode_elements,
                 &self.params,
-                self.start_index,
+                self.start_index + (i << self.log_size),
             );
         }
 
@@ -294,8 +296,9 @@ impl<C: Standard> StandardProver<C> {
             .collect_vec();
 
         let log_size = n_rows.ilog2();
-        let mut lookup_data = C::new_lookup_data(log_size, &self.params, self.start_index);
-        assert_eq!(lookup_data.len(), C::N_REPETITIONS);
+        let mut lookup_data = (0..C::N_REPETITIONS)
+            .map(|i| C::new_lookup_data(log_size, &self.params, self.start_index + (i << log_size)))
+            .collect_vec();
 
         for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
             for i in 0..C::N_REPETITIONS {
@@ -351,13 +354,13 @@ impl<C: Standard> StandardProverStack<C> {
         let mut index: usize = 0;
         Self(
             inputs
-                .chunks(1 << 20)
+                .chunks(1 << LOG_MAX_ROWS)
                 .into_iter()
                 .map(|inputs| {
-                    let size = remaining.min(1 << 20);
+                    let size = remaining.min(1 << LOG_MAX_ROWS);
                     remaining -= size;
                     let cur_index = index;
-                    index += size;
+                    index += size * C::N_REPETITIONS;
                     StandardProver::new(
                         cur_index,
                         params.clone(),

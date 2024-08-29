@@ -105,18 +105,14 @@ impl Standard for IdToBig {
     fn dummy_params() -> Self::Params {
         0
     }
-    fn new_lookup_data(
-        log_size: u32,
-        &initial_id: &u32,
-        start_index: usize,
-    ) -> Vec<Self::LookupData> {
-        vec![IdToBigLookupData {
+    fn new_lookup_data(log_size: u32, &initial_id: &u32, start_index: usize) -> Self::LookupData {
+        IdToBigLookupData {
             log_size,
             initial_id,
             start_index,
             value: vec![[Simd::splat(0); 8]; 1 << (log_size - LOG_N_LANES)],
             mult: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
-        }]
+        }
     }
 
     fn evaluate<E: EvalAtRow>(

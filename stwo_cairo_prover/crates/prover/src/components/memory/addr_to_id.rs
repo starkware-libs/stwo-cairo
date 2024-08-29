@@ -48,8 +48,7 @@ impl AddrToIdBuilder {
     pub fn add_inputs(&mut self, mem: &Memory, addr: u32) -> i32 {
         let addr = addr as usize;
         self.mults[addr] += 1;
-        let res = id_from_encoded(mem.address_to_id[addr]);
-        res
+        id_from_encoded(mem.address_to_id[addr])
     }
     pub fn build(self, addr_to_id: Vec<EncodedMemoryValueId>) -> AddrToIdProver {
         let inputs = addr_to_id
@@ -105,13 +104,13 @@ impl Standard for AddrToId {
         MemoryElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &(), start_index: usize) -> Vec<Self::LookupData> {
-        vec![AddrToIdLookupData {
+    fn new_lookup_data(log_size: u32, _params: &(), start_index: usize) -> Self::LookupData {
+        AddrToIdLookupData {
             log_size,
             start_index,
             id: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
             mult: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
-        }]
+        }
     }
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,

@@ -85,17 +85,15 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         OpcodeElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &(), _start_index: usize) -> Vec<Self::LookupData> {
-        (0..2)
-            .map(|_| JmpAbsOpcodeLookupData {
-                log_size,
-                pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-                ap: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-                fp: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-                offset2: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-                new_pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
-            })
-            .collect()
+    fn new_lookup_data(log_size: u32, _params: &(), _start_index: usize) -> Self::LookupData {
+        JmpAbsOpcodeLookupData {
+            log_size,
+            pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+            ap: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+            fp: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+            offset2: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+            new_pc: vec![PackedM31::zero(); 1 << (log_size - LOG_N_LANES)],
+        }
     }
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,

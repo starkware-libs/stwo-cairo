@@ -86,7 +86,7 @@ pub fn lookup_sum_valid(
     sum == SecureField::zero()
 }
 
-const LOG_MAX_ROWS: u32 = 20;
+pub const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let _span = span!(Level::INFO, "Proof").entered();
     let span = span!(Level::INFO, "Twiddles").entered();
