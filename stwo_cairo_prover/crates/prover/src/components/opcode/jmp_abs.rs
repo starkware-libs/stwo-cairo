@@ -85,7 +85,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         OpcodeElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
+    fn new_lookup_data(log_size: u32, _params: &(), _start_index: usize) -> Vec<Self::LookupData> {
         (0..2)
             .map(|_| JmpAbsOpcodeLookupData {
                 log_size,
@@ -102,6 +102,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         logup: &mut LogupAtRow<2, E>,
         elements: &OpcodeElements,
         _params: &(),
+        _start_index: usize,
     ) {
         let pc = eval.next_trace_mask();
         let ap = eval.next_trace_mask();

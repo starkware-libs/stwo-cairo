@@ -53,6 +53,7 @@ pub trait Standard: Clone {
                 &mut logup,
                 &Self::dummy_elements(),
                 &Self::dummy_params(),
+                0,
             );
         }
         logup.finalize(&mut eval);
@@ -60,12 +61,17 @@ pub trait Standard: Clone {
     }
     fn dummy_elements() -> Self::LookupElements;
     fn dummy_params() -> Self::Params;
-    fn new_lookup_data(log_size: u32, params: &Self::Params) -> Vec<Self::LookupData>;
+    fn new_lookup_data(
+        log_size: u32,
+        params: &Self::Params,
+        start_index: usize,
+    ) -> Vec<Self::LookupData>;
     fn evaluate<E: EvalAtRow>(
         eval: &mut E,
         logup: &mut LogupAtRow<2, E>,
         elements: &Self::LookupElements,
         params: &Self::Params,
+        start_index: usize,
     );
 }
 pub trait ContextFor<C: Standard> {
@@ -83,6 +89,7 @@ pub trait ContextFor<C: Standard> {
 pub struct StandardComponent<C: Standard> {
     pub log_size: u32,
     pub params: C::Params,
+    pub start_index: usize,
     pub opcode_elements: C::LookupElements,
     pub claimed_sum: SecureField,
     phantom: std::marker::PhantomData<C>,
@@ -92,10 +99,12 @@ impl<C: Standard> StandardComponent<C> {
         claim: &StandardClaim<C>,
         opcode_elements: C::LookupElements,
         interaction_claim: &StandardInteractionClaim,
+        start_index: usize,
     ) -> Self {
         Self {
             log_size: claim.log_size,
             params: claim.params.clone(),
+            start_index,
             opcode_elements,
             claimed_sum: interaction_claim.claimed_sum,
             phantom: std::marker::PhantomData,
@@ -130,12 +139,15 @@ impl<C: Standard> StandardComponentStack<C> {
         interaction_claim: &StandardInteractionClaimStack,
     ) -> Self {
         let mut stack = Vec::with_capacity(claims.0.len());
+        let mut start_index = 0;
         for (claim, interaction_claim) in claims.0.iter().zip(&interaction_claim.0) {
             stack.push(StandardComponent::new(
                 claim,
                 opcode_elements.clone(),
                 interaction_claim,
+                start_index,
             ));
+            start_index += 1 << claim.log_size;
         }
         Self(stack)
     }
@@ -168,7 +180,13 @@ impl<C: Standard> FrameworkComponent for StandardComponent<C> {
         let mut logup = LogupAtRow::<2, E>::new(1, self.claimed_sum, self.log_size);
 
         for _ in 0..C::N_REPETITIONS {
-            C::evaluate(&mut eval, &mut logup, &self.opcode_elements, &self.params);
+            C::evaluate(
+                &mut eval,
+                &mut logup,
+                &self.opcode_elements,
+                &self.params,
+                self.start_index,
+            );
         }
 
         logup.finalize(&mut eval);
@@ -226,11 +244,13 @@ impl<C: Standard> StandardClaimStack<C> {
 pub struct StandardProver<C: Standard> {
     pub inputs: Vec<C::PackedInput>,
     pub n_instances: usize,
+    pub start_index: usize,
     pub params: C::Params,
     pub phantom: std::marker::PhantomData<C>,
 }
 impl<C: Standard> StandardProver<C> {
     pub fn new(
+        start_index: usize,
         params: C::Params,
         inputs: impl ExactSizeIterator<Item = C::Input>,
     ) -> StandardProver<C> {
@@ -253,6 +273,7 @@ impl<C: Standard> StandardProver<C> {
             inputs: packed_inputs,
             n_instances,
             params,
+            start_index,
             phantom: std::marker::PhantomData,
         }
     }
@@ -273,7 +294,7 @@ impl<C: Standard> StandardProver<C> {
             .collect_vec();
 
         let log_size = n_rows.ilog2();
-        let mut lookup_data = C::new_lookup_data(log_size, &self.params);
+        let mut lookup_data = C::new_lookup_data(log_size, &self.params, self.start_index);
         assert_eq!(lookup_data.len(), C::N_REPETITIONS);
 
         for (row_index, inputs) in inputs.chunks(C::N_REPETITIONS).enumerate() {
@@ -327,6 +348,7 @@ impl<C: Standard> StandardProverStack<C> {
     pub fn new(params: C::Params, inputs: impl ExactSizeIterator<Item = C::Input>) -> Self {
         // TODO(spapini): Split better to multiple components.
         let mut remaining = inputs.len();
+        let mut index: usize = 0;
         Self(
             inputs
                 .chunks(1 << 20)
@@ -334,7 +356,10 @@ impl<C: Standard> StandardProverStack<C> {
                 .map(|inputs| {
                     let size = remaining.min(1 << 20);
                     remaining -= size;
+                    let cur_index = index;
+                    index += size;
                     StandardProver::new(
+                        cur_index,
                         params.clone(),
                         WithSize {
                             iter: inputs.into_iter(),

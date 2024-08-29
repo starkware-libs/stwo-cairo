@@ -61,10 +61,6 @@ pub fn lookup_sum_valid(
         claim.opcodes.extra_transitions.iter().copied(),
         [(1, [claim.initial_state, claim.final_state])].into_iter()
     ];
-    println!(
-        "Extra transitions: {:#?}",
-        extra_transitions.clone().collect_vec()
-    );
     let frac: Fraction<QM31, QM31> = extra_transitions
         .map(|(n, transition)| {
             elements.opcode.state.combine_frac(
@@ -133,6 +129,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
 
     // TODO: Remove. Only for debugging.
     if false {
+        let _span = span!(Level::INFO, "DEBUG: Assert constraints").entered();
         assert!(
             lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
             "Lookups are invalid"

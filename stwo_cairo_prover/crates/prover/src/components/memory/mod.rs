@@ -8,7 +8,7 @@ use std::simd::Simd;
 
 use instruction_mem::InstMemCtx;
 use itertools::chain;
-// use stwo_prover::constraint_framework::logup::LookupElements;
+use stwo_prover::constraint_framework::logup::LookupElements;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::m31::{self, PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -19,7 +19,6 @@ use stwo_prover::core::poly::circle::CirclePoly;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::opcode::CpuRangeElements;
-use super::utils::FakeElements;
 use crate::input::mem::Memory;
 
 pub const N_MEM_BIG_LIMBS: usize = 14;
@@ -28,24 +27,24 @@ pub const N_INSTR_LIMBS: usize = 4;
 
 #[derive(Clone)]
 pub struct MemoryElements {
-    pub instructions: FakeElements, // LookupElements<{ 1 + N_INSTR_LIMBS }>,
-    pub addr_to_id: FakeElements,   // LookupElements<2>,
-    pub id_to_big: FakeElements,    // LookupElements<{ 1 + N_MEM_BIG_LIMBS }>,
+    pub instructions: LookupElements<{ 1 + N_INSTR_LIMBS }>,
+    pub addr_to_id: LookupElements<2>,
+    pub id_to_big: LookupElements<{ 1 + N_MEM_BIG_LIMBS }>,
 }
 impl MemoryElements {
     pub fn draw(channel: &mut impl Channel) -> Self {
         Self {
-            instructions: FakeElements::draw(channel),
-            addr_to_id: FakeElements::draw(channel),
-            id_to_big: FakeElements::draw(channel),
+            instructions: LookupElements::draw(channel),
+            addr_to_id: LookupElements::draw(channel),
+            id_to_big: LookupElements::draw(channel),
         }
     }
 
     pub fn dummy() -> MemoryElements {
         Self {
-            instructions: FakeElements::dummy(),
-            addr_to_id: FakeElements::dummy(),
-            id_to_big: FakeElements::dummy(),
+            instructions: LookupElements::dummy(),
+            addr_to_id: LookupElements::dummy(),
+            id_to_big: LookupElements::dummy(),
         }
     }
 }

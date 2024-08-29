@@ -105,10 +105,15 @@ impl Standard for IdToBig {
     fn dummy_params() -> Self::Params {
         0
     }
-    fn new_lookup_data(log_size: u32, &initial_id: &u32) -> Vec<Self::LookupData> {
+    fn new_lookup_data(
+        log_size: u32,
+        &initial_id: &u32,
+        start_index: usize,
+    ) -> Vec<Self::LookupData> {
         vec![IdToBigLookupData {
             log_size,
             initial_id,
+            start_index,
             value: vec![[Simd::splat(0); 8]; 1 << (log_size - LOG_N_LANES)],
             mult: vec![Simd::splat(0); 1 << (log_size - LOG_N_LANES)],
         }]
@@ -119,10 +124,11 @@ impl Standard for IdToBig {
         logup: &mut LogupAtRow<2, E>,
         els: &Self::LookupElements,
         &initial_id: &u32,
+        start_index: usize,
     ) {
         // TODO: This should be a constant column.
         let base_id = eval.next_trace_mask();
-        let id = base_id + E::F::from(M31::from_u32_unchecked(initial_id));
+        let id = base_id + E::F::from(M31::from_u32_unchecked(initial_id + start_index as u32));
         let mult = eval.next_trace_mask();
 
         let mut values = [E::F::zero(); 1 + N_MEM_BIG_LIMBS];
@@ -172,6 +178,7 @@ impl ContextFor<IdToBig> for () {
 pub struct IdToBigLookupData {
     log_size: u32,
     initial_id: u32,
+    start_index: usize,
     pub value: Vec<[Simd<u32, N_LANES>; 8]>,
     pub mult: Vec<Simd<u32, N_LANES>>,
 }
@@ -190,7 +197,8 @@ impl StandardLookupData for IdToBigLookupData {
                     let limbs = split_f252_simd(self.value[row]);
                     let id = offset
                         + M31::from(
-                            (row * N_LANES * IdToBig::N_REPETITIONS) as u32 + self.initial_id,
+                            (row * N_LANES * IdToBig::N_REPETITIONS + self.start_index) as u32
+                                + self.initial_id,
                         );
                     let mut lookup_values = [Zero::zero(); 1 + N_MEM_BIG_LIMBS];
                     lookup_values[0] = id;

@@ -63,7 +63,7 @@ impl Standard for RetOpcode {
         OpcodeElements::dummy()
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
+    fn new_lookup_data(log_size: u32, _params: &(), _start_index: usize) -> Vec<Self::LookupData> {
         (0..2)
             .map(|_| RetLookupData {
                 log_size,
@@ -80,6 +80,7 @@ impl Standard for RetOpcode {
         logup: &mut LogupAtRow<2, E>,
         elements: &OpcodeElements,
         _params: &(),
+        _start_index: usize,
     ) {
         let pc = eval.next_trace_mask();
         let ap = eval.next_trace_mask();
@@ -157,6 +158,7 @@ impl<'a> ContextFor<RetOpcode> for OpcodeGenContext<'a> {
             .mem_builder
             .addr_to_id
             .add_inputs_simd(self.mem, input.fp - Simd::splat(1));
+        assert!(new_pc.to_array().iter().all(|x| x < &(1 << 26)));
         let new_pc = unsafe { PackedM31::from_simd_unchecked(new_pc.cast()) };
         dst[3].data[row_index] = new_pc;
         lookup_data.new_pc[row_index] = new_pc;
@@ -165,6 +167,7 @@ impl<'a> ContextFor<RetOpcode> for OpcodeGenContext<'a> {
             .mem_builder
             .addr_to_id
             .add_inputs_simd(self.mem, input.fp - Simd::splat(2));
+        assert!(new_fp.to_array().iter().all(|x| x < &(1 << 26)));
         let new_fp = unsafe { PackedM31::from_simd_unchecked(new_fp.cast()) };
         dst[4].data[row_index] = new_fp;
         lookup_data.new_fp[row_index] = new_fp;

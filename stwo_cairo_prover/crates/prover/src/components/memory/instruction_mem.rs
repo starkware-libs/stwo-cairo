@@ -71,7 +71,7 @@ impl Standard for InstMem {
         input
     }
     fn dummy_params() -> Self::Params {}
-    fn new_lookup_data(log_size: u32, _params: &()) -> Vec<Self::LookupData> {
+    fn new_lookup_data(log_size: u32, _params: &(), _start_index: usize) -> Vec<Self::LookupData> {
         (0..1)
             .map(|_| InstMemLookupData {
                 log_size,
@@ -87,6 +87,7 @@ impl Standard for InstMem {
         logup: &mut LogupAtRow<2, E>,
         els: &Self::LookupElements,
         _params: &Self::Params,
+        _start_index: usize,
     ) {
         // 16 16 16 15 \cap 18 18 18 =
         // 16 2 14 4 12 6 9
