@@ -1,11 +1,11 @@
-use stwo_cairo_verifier::circle::CirclePointM31Trait;
+use stwo_cairo_verifier::circle::CirclePointTrait;
 use core::option::OptionTrait;
 use core::clone::Clone;
 use core::result::ResultTrait;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::utils::pow;
 use stwo_cairo_verifier::circle::{
-    Coset, CosetImpl, CirclePointM31, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER
+    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER
 };
 
 
@@ -28,8 +28,8 @@ pub impl CircleDomainImpl of CircleDomainTrait {
         }
     }
 
-    fn at(self: @CircleDomain, index: usize) -> CirclePointM31 {
-        M31_CIRCLE_GEN.mul(self.index_at(index))
+    fn at(self: @CircleDomain, index: usize) -> CirclePoint<M31> {
+        M31_CIRCLE_GEN.mul(self.index_at(index).into())
     }
 }
 
@@ -39,7 +39,7 @@ fn test_circle_domain_at_1() {
     let domain = CircleDomain { half_coset };
     let index = 17;
     let result = domain.at(index);
-    let expected_result = CirclePointM31 { x: m31(7144319), y: m31(1742797653) };
+    let expected_result = CirclePoint::<M31> { x: m31(7144319), y: m31(1742797653) };
     assert_eq!(expected_result, result);
 }
 
@@ -49,7 +49,7 @@ fn test_circle_domain_at_2() {
     let domain = CircleDomain { half_coset };
     let index = 37;
     let result = domain.at(index);
-    let expected_result = CirclePointM31 { x: m31(9803698), y: m31(2079025011) };
+    let expected_result = CirclePoint::<M31> { x: m31(9803698), y: m31(2079025011) };
     assert_eq!(expected_result, result);
 }
 
