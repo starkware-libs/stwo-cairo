@@ -147,7 +147,7 @@ impl<'a> ContextFor<RetOpcode> for OpcodeGenContext<'a> {
             .addr_to_id
             .add_inputs_simd(self.mem, input.fp - Simd::splat(2));
         let new_fp = unsafe { PackedM31::from_simd_unchecked(new_fp.cast()) };
-        dst[2].data[row_index] = new_fp;
+        dst[4].data[row_index] = new_fp;
         lookup_data.new_fp[row_index] = new_fp;
 
         for i in 0..N_LANES {
