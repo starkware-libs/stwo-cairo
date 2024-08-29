@@ -1,7 +1,6 @@
 use std::simd::Simd;
 
 use itertools::Itertools;
-use num_traits::Zero;
 use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::EvalAtRow;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -132,10 +131,10 @@ impl Standard for AddrToId {
         let base_addr = eval.next_trace_mask();
         for i in 0..N_IDS_PER_LINE {
             let id = eval.next_trace_mask();
-            let _mult = eval.next_trace_mask();
+            let mult = eval.next_trace_mask();
             logup.push_lookup(
                 eval,
-                E::EF::zero(),
+                (-mult).into(),
                 &[
                     base_addr * M31::from(N_IDS_PER_LINE)
                         + E::F::from(M31::from_u32_unchecked(i as u32)),
@@ -189,10 +188,10 @@ impl StandardLookupData for AddrToIdLookupData {
                         let addr =
                             PackedM31::broadcast(M31::from_u32_unchecked(index as u32)) + offset;
                         let id = m31_from_i32(self.id[i][row]);
-                        let _mult = unsafe { PackedM31::from_simd_unchecked(self.mult[i][row]) };
+                        let mult = unsafe { PackedM31::from_simd_unchecked(self.mult[i][row]) };
                         let denom = elements.combine(&[addr, id]);
 
-                        Fraction::new(Zero::zero(), denom)
+                        Fraction::new(-mult, denom)
                     }))
                         as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
                 ]

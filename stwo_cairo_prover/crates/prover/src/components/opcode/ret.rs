@@ -103,7 +103,7 @@ impl Standard for RetOpcode {
         let new_pc = eval.next_trace_mask();
         logup.push_lookup(
             eval,
-            E::EF::zero(),
+            E::EF::one(),
             &[fp - M31::from(1).into(), new_pc],
             &elements.mem.addr_to_id,
         );
@@ -112,7 +112,7 @@ impl Standard for RetOpcode {
         let new_fp = eval.next_trace_mask();
         logup.push_lookup(
             eval,
-            E::EF::zero(),
+            E::EF::one(),
             &[fp - M31::from(2).into(), new_fp],
             &elements.mem.addr_to_id,
         );
@@ -194,7 +194,7 @@ impl StandardLookupData for RetLookupData {
                     self.fp[row] - PackedM31::broadcast(M31::from(1)),
                     self.new_pc[row],
                 ]);
-                Fraction::new(PackedM31::zero(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // fp-2 lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -202,7 +202,7 @@ impl StandardLookupData for RetLookupData {
                     self.fp[row] - PackedM31::broadcast(M31::from(2)),
                     self.new_fp[row],
                 ]);
-                Fraction::new(PackedM31::zero(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Input state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {

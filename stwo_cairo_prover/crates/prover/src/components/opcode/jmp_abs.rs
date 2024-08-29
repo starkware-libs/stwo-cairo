@@ -127,7 +127,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         let addr = if OP1_FP { fp } else { ap } + offset2 - M31::from(CAIRO_OFFSET_SHIFT).into();
         logup.push_lookup(
             eval,
-            E::EF::zero(),
+            E::EF::one(),
             &[addr, new_pc],
             &elements.mem.addr_to_id,
         );
@@ -211,7 +211,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> StandardLookupData
                 let addr = if OP1_FP { self.fp[row] } else { self.ap[row] } + self.offset2[row]
                     - M31::from(CAIRO_OFFSET_SHIFT).into();
                 let denom = elements.mem.addr_to_id.combine(&[addr, self.new_pc[row]]);
-                Fraction::new(PackedM31::zero(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Input state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {

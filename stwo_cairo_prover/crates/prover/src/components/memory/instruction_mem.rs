@@ -115,7 +115,7 @@ impl Standard for InstMem {
         );
 
         // Id lookup.
-        logup.push_lookup(eval, E::EF::zero(), &[addr, id], &els.mem.addr_to_id);
+        logup.push_lookup(eval, E::EF::one(), &[addr, id], &els.mem.addr_to_id);
 
         // Memory lookup.
         let limb0 = parts[0] + parts[1] * M31::from(1 << 16);
@@ -130,7 +130,7 @@ impl Standard for InstMem {
         );
 
         // Dummy. Remove.
-        logup.push_lookup(eval, E::EF::zero(), &[addr, id], &els.mem.addr_to_id);
+        logup.push_lookup(eval, E::EF::one(), &[addr, id], &els.mem.addr_to_id);
     }
 }
 
@@ -255,7 +255,7 @@ impl StandardLookupData for InstMemLookupData {
             // Id lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let denom = els.mem.addr_to_id.combine(&[self.addr[row], self.id[row]]);
-                Fraction::new(PackedM31::zero(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Memory lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -273,7 +273,7 @@ impl StandardLookupData for InstMemLookupData {
             // TODO: Dummy. Remove.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let denom = els.mem.addr_to_id.combine(&[self.addr[row], self.id[row]]);
-                Fraction::new(PackedM31::zero(), denom)
+                Fraction::new(PackedM31::one(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }
