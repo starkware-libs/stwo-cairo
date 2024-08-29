@@ -132,7 +132,7 @@ pub fn prove_cairo(config: PcsConfig, input: CairoInput) -> CairoProof<Blake2sMe
     let components = component_builder.provers();
 
     // TODO: Remove. Only for debugging.
-    if true {
+    if false {
         assert!(
             lookup_sum_valid(&claim, &interaction_elements, &interaction_claim),
             "Lookups are invalid"

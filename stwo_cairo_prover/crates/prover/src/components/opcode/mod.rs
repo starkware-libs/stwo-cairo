@@ -70,7 +70,7 @@ impl OpcodeElements {
         Self {
             mem: MemoryElements::draw(channel),
             range: CpuRangeElements::draw(channel),
-            state: LookupElements::draw(channel),
+            state: StateElements::draw(channel),
         }
     }
 
@@ -78,7 +78,7 @@ impl OpcodeElements {
         Self {
             mem: MemoryElements::dummy(),
             range: CpuRangeElements::dummy(),
-            state: LookupElements::dummy(),
+            state: StateElements::dummy(),
         }
     }
 }

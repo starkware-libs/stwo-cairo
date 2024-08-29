@@ -1,7 +1,7 @@
 use std::simd::Simd;
 
 use itertools::Itertools;
-use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
+use stwo_prover::constraint_framework::logup::LogupAtRow; //, LookupElements};
 use stwo_prover::constraint_framework::EvalAtRow;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
@@ -11,6 +11,7 @@ use stwo_prover::core::lookups::utils::Fraction;
 
 use super::super::{LookupFunc, Standard, StandardLookupData};
 use super::{m31_from_i32, MemoryElements};
+use crate::components::utils::FakeElements;
 use crate::components::{
     ContextFor, StandardClaimStack, StandardComponentStack, StandardInteractionClaimStack,
     StandardInteractionProverStack, StandardProverStack,
@@ -175,7 +176,7 @@ pub struct AddrToIdLookupData {
 }
 impl StandardLookupData for AddrToIdLookupData {
     const N_LOOKUPS: usize = N_IDS_PER_LINE;
-    type Elements = LookupElements<2>;
+    type Elements = FakeElements; // LookupElements<2>;
     fn lookups<'a>(&'a self, elements: &'a Self::Elements) -> Vec<LookupFunc<'a>> {
         (0..N_IDS_PER_LINE)
             .flat_map(|i| {
