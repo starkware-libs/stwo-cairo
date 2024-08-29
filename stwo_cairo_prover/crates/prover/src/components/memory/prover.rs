@@ -22,11 +22,11 @@ use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
 
-pub struct MemoryClaimProver {
+pub struct MemoryClaimProver<const BATCH_SIZE: usize> {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
     pub multiplicities: Vec<PackedUInt32>,
 }
-impl MemoryClaimProver {
+impl<const BATCH_SIZE: usize> MemoryClaimProver<BATCH_SIZE> {
     pub fn new(mem: Memory) -> Self {
         // TODO(spapini): Split to multiple components.
         // TODO(spapini): More repetitions, for efficiency.
@@ -79,7 +79,7 @@ impl MemoryClaimProver {
     pub fn write_trace(
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
-    ) -> (MemoryClaim, InteractionClaimProver) {
+    ) -> (MemoryClaim<BATCH_SIZE>, InteractionClaimProver<BATCH_SIZE>) {
         let mut trace = (0..N_M31_IN_FELT252 + 2)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(MEMORY_ADDRESS_BOUND))
             .collect_vec();
@@ -125,11 +125,11 @@ impl MemoryClaimProver {
 }
 
 #[derive(Debug)]
-pub struct InteractionClaimProver {
+pub struct InteractionClaimProver<const CHUNK_SIZE: usize> {
     pub adresses_and_values: [Vec<PackedM31>; N_M31_IN_FELT252 + 1],
     pub multiplicities: Vec<PackedM31>,
 }
-impl InteractionClaimProver {
+impl<const CHUNK_SIZE: usize> InteractionClaimProver<CHUNK_SIZE> {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             adresses_and_values: std::array::from_fn(|_| Vec::with_capacity(capacity)),
@@ -144,28 +144,38 @@ impl InteractionClaimProver {
         range9_lookup_elements: &RangeCheckElements,
     ) -> MemoryInteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_MEMORY_ADDRESS_BOUND);
-        let mut col_gen = logup_gen.new_col();
 
         // Lookup values columns.
-        for vec_row in 0..1 << (LOG_MEMORY_ADDRESS_BOUND - LOG_N_LANES) {
-            let values: [PackedM31; N_M31_IN_FELT252 + 1] =
-                std::array::from_fn(|i| self.adresses_and_values[i][vec_row]);
-            let denom: PackedQM31 = lookup_elements.combine(&values);
-            col_gen.write_frac(vec_row, (-self.multiplicities[vec_row]).into(), denom);
-        }
-        col_gen.finalize_col();
-
-        for limb_idx in 1..(N_M31_IN_FELT252 + 1) {
+        // TODO(alont): change this logic when chunks are supported in LogupTraceGenerator.
+        for (chunk_idx, address_value_chunk) in
+            self.adresses_and_values.chunks(CHUNK_SIZE).enumerate()
+        {
             let mut col_gen = logup_gen.new_col();
             for vec_row in 0..1 << (LOG_MEMORY_ADDRESS_BOUND - LOG_N_LANES) {
-                let value: PackedM31 = self.adresses_and_values[limb_idx][vec_row];
+                let mut total_num = PackedQM31::broadcast(M31(0).into());
+                let mut total_denom = PackedQM31::broadcast(M31(1).into());
+                for (idx_in_chunk, address_or_value) in address_value_chunk.iter().enumerate() {
+                    let col = CHUNK_SIZE * chunk_idx + idx_in_chunk;
+                    let (num, denom) = match col {
+                        0 => {
+                            let values: [PackedM31; N_M31_IN_FELT252 + 1] =
+                                std::array::from_fn(|i| self.adresses_and_values[i][vec_row]);
+                            let num: PackedQM31 = (-self.multiplicities[vec_row]).into();
+                            let denom: PackedQM31 = lookup_elements.combine(&values);
+                            (num, denom)
+                        }
+                        _ => {
+                            let value: PackedM31 = address_or_value[vec_row];
 
-                // TOOD(alont) add parametric chunks.
-                col_gen.write_frac(
-                    vec_row,
-                    PackedQM31::broadcast(M31(1).into()),
-                    range9_lookup_elements.combine(&[value]),
-                );
+                            let num = PackedQM31::broadcast(M31(1).into());
+                            let denom = range9_lookup_elements.combine(&[value]);
+                            (num, denom)
+                        }
+                    };
+                    (total_num, total_denom) =
+                        (total_num * denom + num * total_denom, total_denom * denom)
+                }
+                col_gen.write_frac(vec_row, total_num, total_denom);
             }
             col_gen.finalize_col();
         }
@@ -184,11 +194,13 @@ mod tests {
     use stwo_prover::core::fields::m31::M31;
 
     use crate::components::memory::component::N_M31_IN_FELT252;
+    use crate::components::memory::prover::MemoryClaimProver;
     use crate::input::mem::{MemConfig, MemoryBuilder};
 
     #[test]
     fn test_deduce_output_simd() {
         // Set up data.
+        const BATCH_SIZE: usize = 2;
         let addr = [0, 1, 2, 3, 4, 5, 6, 7, 15, 16, 17, 18, 0, 0, 0, 0];
         let input = PackedM31::from_array(addr.map(M31::from_u32_unchecked));
         let expected_output = input
@@ -201,7 +213,7 @@ mod tests {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));
         }
-        let generator = super::MemoryClaimProver::new(mem.build());
+        let generator = MemoryClaimProver::<BATCH_SIZE>::new(mem.build());
         let output = generator.deduce_output(input);
 
         for (i, expected) in expected_output.into_iter().enumerate() {

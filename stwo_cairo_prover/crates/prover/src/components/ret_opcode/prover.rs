@@ -12,6 +12,8 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
+// TODO(alont) Should this component be generic in MEMORY_BATCH_SIZE?
+use crate::cairo_air::MEMORY_BATCH_SIZE;
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
@@ -57,7 +59,7 @@ impl RetOpcodeClaimProver {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
-        memory_trace_generator: &mut MemoryClaimProver,
+        memory_trace_generator: &mut MemoryClaimProver<MEMORY_BATCH_SIZE>,
     ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
         interaction_prover.memory_inputs.iter().for_each(|c| {
@@ -132,7 +134,7 @@ impl RetOpcodeInteractionProver {
 
 fn write_trace_simd(
     inputs: &[PackedRetInput],
-    memory_trace_generator: &MemoryClaimProver,
+    memory_trace_generator: &MemoryClaimProver<MEMORY_BATCH_SIZE>,
 ) -> (
     Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
     RetOpcodeInteractionProver,
@@ -177,7 +179,7 @@ fn write_trace_row(
     ret_opcode_input: &PackedRetInput,
     row_index: usize,
     lookup_data: &mut RetOpcodeInteractionProver,
-    memory_trace_generator: &MemoryClaimProver,
+    memory_trace_generator: &MemoryClaimProver<MEMORY_BATCH_SIZE>,
 ) {
     let col0 = ret_opcode_input.pc;
     dst[0].data[row_index] = col0;

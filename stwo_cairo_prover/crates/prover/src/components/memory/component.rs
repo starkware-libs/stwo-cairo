@@ -19,18 +19,18 @@ pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 /// Addresses are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
 #[derive(Clone)]
-pub struct MemoryComponent {
+pub struct MemoryComponent<const BATCH_SIZE: usize> {
     pub log_n_rows: u32,
     pub lookup_elements: MemoryLookupElements,
     pub range9_lookup_elements: RangeCheckElements,
     pub claimed_sum: QM31,
 }
-impl MemoryComponent {
+impl<const BATCH_SIZE: usize> MemoryComponent<BATCH_SIZE> {
     pub const fn n_columns(&self) -> usize {
         N_M31_IN_FELT252 + 2
     }
     pub fn new(
-        claim: MemoryClaim,
+        claim: MemoryClaim<BATCH_SIZE>,
         lookup_elements: MemoryLookupElements,
         range9_lookup_elements: RangeCheckElements,
         interaction_claim: MemoryInteractionClaim,
@@ -44,7 +44,7 @@ impl MemoryComponent {
     }
 }
 
-impl FrameworkComponent for MemoryComponent {
+impl<const BATCH_SIZE: usize> FrameworkComponent for MemoryComponent<BATCH_SIZE> {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }
@@ -54,7 +54,7 @@ impl FrameworkComponent for MemoryComponent {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<1, E>::new(1, self.claimed_sum, self.log_size());
+        let mut logup = LogupAtRow::<BATCH_SIZE, E>::new(1, self.claimed_sum, self.log_size());
 
         let address_and_value: [E::F; N_M31_IN_FELT252 + 1] =
             std::array::from_fn(|_| eval.next_trace_mask());
@@ -83,14 +83,17 @@ impl FrameworkComponent for MemoryComponent {
 }
 
 #[derive(Clone)]
-pub struct MemoryClaim {
+pub struct MemoryClaim<const BATCH_SIZE: usize> {
     pub log_address_bound: u32,
 }
-impl MemoryClaim {
+impl<const BATCH_SIZE: usize> MemoryClaim<BATCH_SIZE> {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_address_bound; N_M31_IN_FELT252 + 2];
+        // Memory lookup + N_M31_IN_FELT252 range checks.
+        let n_logup_entries = N_M31_IN_FELT252 + 1;
+        let n_logup_cols = (n_logup_entries + BATCH_SIZE - 1) / BATCH_SIZE;
         let interaction_1_log_size =
-            vec![self.log_address_bound; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 + 1)];
+            vec![self.log_address_bound; n_logup_cols * SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![interaction_0_log_size, interaction_1_log_size])
     }
 
