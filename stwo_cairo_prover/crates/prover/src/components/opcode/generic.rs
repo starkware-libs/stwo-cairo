@@ -45,7 +45,7 @@ impl Standard for GenericOpcode {
     type PackedInput = PackedGenericInput;
     type LookupData = GenericOpcodeLookupData;
     type Params = ();
-    const N_REPETITIONS: usize = 2;
+    const N_REPETITIONS: usize = 8;
 
     fn pad(input: GenericInput) -> GenericInput {
         input

@@ -63,7 +63,7 @@ impl<const INC_AP: bool> Standard for JmpRelOpcode<INC_AP> {
     type PackedInput = PackedVmState;
     type LookupData = JmpRelOpcodeLookupData<INC_AP>;
     type Params = ();
-    const N_REPETITIONS: usize = 1;
+    const N_REPETITIONS: usize = 8;
 
     fn pad(input: VmState) -> VmState {
         input

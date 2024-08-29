@@ -93,7 +93,7 @@ impl Standard for AddrToId {
     type PackedInput = PackedAddrToIdInput;
     type LookupData = AddrToIdLookupData;
     type Params = ();
-    const N_REPETITIONS: usize = 2;
+    const N_REPETITIONS: usize = 8;
 
     fn pad(mut input: Self::Input) -> Self::Input {
         input.mult = 0;

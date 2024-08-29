@@ -76,7 +76,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
     type PackedInput = PackedVmState;
     type LookupData = JmpAbsOpcodeLookupData<OP1_FP, INC_AP>;
     type Params = ();
-    const N_REPETITIONS: usize = 1;
+    const N_REPETITIONS: usize = 4;
 
     fn pad(input: VmState) -> VmState {
         input

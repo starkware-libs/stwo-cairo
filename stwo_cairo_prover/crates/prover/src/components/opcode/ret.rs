@@ -54,7 +54,7 @@ impl Standard for RetOpcode {
     type PackedInput = PackedVmState;
     type LookupData = RetLookupData;
     type Params = ();
-    const N_REPETITIONS: usize = 2;
+    const N_REPETITIONS: usize = 4;
 
     fn pad(input: VmState) -> VmState {
         input

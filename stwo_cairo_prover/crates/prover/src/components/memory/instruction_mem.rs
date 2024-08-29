@@ -61,7 +61,7 @@ impl Standard for InstMem {
     type PackedInput = PackedInstMemInput;
     type LookupData = InstMemLookupData;
     type Params = ();
-    const N_REPETITIONS: usize = 1;
+    const N_REPETITIONS: usize = 2;
 
     fn dummy_elements() -> Self::LookupElements {
         MemoryAndRangeElements::dummy()
@@ -142,12 +142,6 @@ impl Standard for InstMem {
                 .id_to_big
                 .combine_frac(E::F::one(), &[id, limb0, limb1, limb2, limb3]),
         );
-
-        // Dummy. Remove.
-        logup.push_frac(
-            eval,
-            els.mem.addr_to_id.combine_frac(E::F::zero(), &[addr, id]),
-        );
     }
 }
 
@@ -224,7 +218,7 @@ pub struct InstMemLookupData {
 }
 
 impl StandardLookupData for InstMemLookupData {
-    const N_LOOKUPS: usize = 8;
+    const N_LOOKUPS: usize = 7;
 
     type Elements = MemoryAndRangeElements;
 
@@ -286,12 +280,6 @@ impl StandardLookupData for InstMemLookupData {
                     PackedM31::one(),
                     &[self.id[row], limb0, limb1, limb2, limb3],
                 )
-            })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
-            // TODO: Dummy. Remove.
-            Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
-                els.mem
-                    .addr_to_id
-                    .combine_frac(PackedM31::zero(), &[self.addr[row], self.id[row]])
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }
