@@ -80,38 +80,43 @@ impl Instructions {
         aux.initial_state = (*first).into();
 
         while let Some(entry) = iter.next() {
-            aux.final_state = entry.into();
-            res.push_instr(mem, entry.into(), iter.peek().map(|x| (*x).into()));
+            // TODO: this is wrong(?), as it ignores the last step.
+            let Some(next) = iter.peek() else {
+                break;
+            };
+            aux.final_state = (*next).into();
+            res.push_instr(mem, entry.into(), (*next).into());
         }
         (res, aux)
     }
 
-    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState, next_state: Option<VmState>) {
+    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState, next_state: VmState) {
         let VmState { ap: _, fp: _, pc } = state;
         let instruction = mem.get_inst(pc);
         let instruction = Instruction::decode(instruction);
+        #[allow(clippy::match_single_binding)]
         match instruction {
-            // ret.
-            Instruction {
-                offset0: -2,
-                offset1: -1,
-                offset2: -1,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op1_imm: false,
-                op1_base_fp: true,
-                op1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: false,
-                opcode_ret: true,
-                opcode_assert_eq: false,
-            } => self.ret.push(state),
+            // // ret.
+            // Instruction {
+            //     offset0: -2,
+            //     offset1: -1,
+            //     offset2: -1,
+            //     dst_base_fp: true,
+            //     op0_base_fp: true,
+            //     op1_imm: false,
+            //     op1_base_fp: true,
+            //     op1_base_ap: false,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: true,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: false,
+            //     opcode_call: false,
+            //     opcode_ret: true,
+            //     opcode_assert_eq: false,
+            // } => self.ret.push(state),
             // // ap += imm.
             // Instruction {
             //     offset0: -1,
@@ -156,30 +161,30 @@ impl Instructions {
             // } => {
             //     self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
             // }
-            // jump abs [ap/fp + offset].
-            Instruction {
-                offset0: -1,
-                offset1: -1,
-                offset2: _,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op1_imm: false,
-                op1_base_fp,
-                op1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } if op1_base_fp != op1_base_ap => {
-                let index = op1_base_fp as usize | (ap_update_add_1 as usize) << 1;
-                self.jmp_abs[index].push(state);
-            }
+            // // jump abs [ap/fp + offset].
+            // Instruction {
+            //     offset0: -1,
+            //     offset1: -1,
+            //     offset2: _,
+            //     dst_base_fp: true,
+            //     op0_base_fp: true,
+            //     op1_imm: false,
+            //     op1_base_fp,
+            //     op1_base_ap,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: true,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: false,
+            // } if op1_base_fp != op1_base_ap => {
+            //     let index = op1_base_fp as usize | (ap_update_add_1 as usize) << 1;
+            //     self.jmp_abs[index].push(state);
+            // }
             // // call rel imm.
             // Instruction {
             //     offset0: 0,
@@ -327,9 +332,7 @@ impl Instructions {
             // }
             _ => {
                 // TODO: Only pass state.
-                if let Some(next_state) = next_state {
-                    self.generic.push(GenericInput([state, next_state]));
-                }
+                self.generic.push(GenericInput([state, next_state]));
             }
         }
     }

@@ -53,7 +53,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> JmpAbsOpcodeProver<OP1_FP, INC_AP> 
         if self.0.is_empty() {
             return (0, [VmState::default(), VmState::default()]);
         }
-        let input = self.0[0].inputs[0].first();
+        let input = self.0.last().unwrap().inputs[0].first();
         let offset2 = ((mem.get_inst(input.pc).unwrap() >> 32) & 0xFF) as u32;
         let addr = if OP1_FP { input.fp } else { input.ap } + offset2 - CAIRO_OFFSET_SHIFT;
         let new_pc = mem.get(addr).as_small() as u32;
@@ -127,7 +127,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         let addr = if OP1_FP { fp } else { ap } + offset2 - M31::from(CAIRO_OFFSET_SHIFT).into();
         logup.push_lookup(
             eval,
-            E::EF::one(),
+            E::EF::zero(),
             &[addr, new_pc],
             &elements.mem.addr_to_id,
         );
@@ -135,8 +135,8 @@ impl<const OP1_FP: bool, const INC_AP: bool> Standard for JmpAbsOpcode<OP1_FP, I
         let new_ap = if INC_AP { ap + E::F::one() } else { ap };
 
         // State lookups.
-        logup.push_lookup(eval, -E::EF::one(), &[pc, ap, fp], &elements.state);
-        logup.push_lookup(eval, E::EF::one(), &[new_pc, new_ap, fp], &elements.state);
+        logup.push_lookup(eval, -E::EF::zero(), &[pc, ap, fp], &elements.state);
+        logup.push_lookup(eval, E::EF::zero(), &[new_pc, new_ap, fp], &elements.state);
     }
 }
 impl<'a, const OP1_FP: bool, const INC_AP: bool> ContextFor<JmpAbsOpcode<OP1_FP, INC_AP>>
@@ -211,14 +211,14 @@ impl<const OP1_FP: bool, const INC_AP: bool> StandardLookupData
                 let addr = if OP1_FP { self.fp[row] } else { self.ap[row] } + self.offset2[row]
                     - M31::from(CAIRO_OFFSET_SHIFT).into();
                 let denom = elements.mem.addr_to_id.combine(&[addr, self.new_pc[row]]);
-                Fraction::new(PackedM31::one(), denom)
+                Fraction::new(PackedM31::zero(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Input state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
                 let denom = elements
                     .state
                     .combine(&[self.pc[row], self.ap[row], self.fp[row]]);
-                Fraction::new(-PackedM31::one(), denom)
+                Fraction::new(-PackedM31::zero(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
             // Output state lookup.
             Box::new((0..(1 << (self.log_size - LOG_N_LANES))).map(|row| {
@@ -230,7 +230,7 @@ impl<const OP1_FP: bool, const INC_AP: bool> StandardLookupData
                 let denom = elements
                     .state
                     .combine(&[self.new_pc[row], new_ap, self.fp[row]]);
-                Fraction::new(PackedM31::one(), denom)
+                Fraction::new(PackedM31::zero(), denom)
             })) as Box<dyn Iterator<Item = Fraction<PackedM31, PackedQM31>>>,
         ]
     }
