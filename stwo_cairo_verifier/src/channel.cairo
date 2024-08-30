@@ -13,8 +13,8 @@ pub const FELTS_PER_HASH: usize = 8;
 
 #[derive(Default, Drop)]
 pub struct ChannelTime {
-    n_challenges: usize,
-    n_sent: usize,
+    pub n_challenges: usize,
+    pub n_sent: usize,
 }
 
 #[generate_trait]
@@ -31,8 +31,8 @@ impl ChannelTimeImpl of ChannelTimeTrait {
 
 #[derive(Drop)]
 pub struct Channel {
-    digest: felt252,
-    channel_time: ChannelTime,
+    pub digest: felt252,
+    pub channel_time: ChannelTime,
 }
 
 #[generate_trait]

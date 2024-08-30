@@ -190,9 +190,9 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
 #[derive(Clone, Copy, Drop)]
 pub struct FriConfig {
-    log_blowup_factor: u32,
-    log_last_layer_degree_bound: usize,
-    n_queries: usize,
+    pub log_blowup_factor: u32,
+    pub log_last_layer_degree_bound: usize,
+    pub n_queries: usize,
 }
 
 #[derive(Drop, Clone)]
