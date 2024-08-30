@@ -1,8 +1,9 @@
+use core::array::ArrayTrait;
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::vcs::hasher::{PoseidonMerkleHasher};
 use stwo_cairo_verifier::fri::verifier::{FriConfig};
-use stwo_cairo_verifier::channel::{ChannelTime, Channel};
+use stwo_cairo_verifier::channel::{ChannelTime, Channel, ChannelImpl};
 
 
 #[derive(Drop)]
@@ -17,7 +18,7 @@ pub trait CommitmentSchemeVerifierTrait {
     fn column_log_sizes(self: @CommitmentSchemeVerifier) -> Array<Array<u32>>;
 
     fn commit(
-        self: @CommitmentSchemeVerifier,
+        ref self: CommitmentSchemeVerifier,
         commitment: felt252,
         log_sizes: Array<u32>,
         channel: Channel
@@ -46,19 +47,40 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     }
 
     fn commit(
-        self: @CommitmentSchemeVerifier,
+        ref self: CommitmentSchemeVerifier,
         commitment: felt252,
         log_sizes: Array<u32>,
         channel: Channel
     ) -> Channel {
+
+        let channel_copy = channel.clone();
         // TODO: code
-        Channel {
-            digest: 0x00, // Default
-            channel_time: ChannelTime {
-                n_challenges: 0, // Default
-                n_sent: 0 // Default
-            }
-        }
+        MerkleChannelTraitImpl::mix_root(channel_copy, commitment);
+        let log_blowup_factor = self.config.fri_config.log_blowup_factor;
+        let mut extended_log_sizes: Array<u32> = ArrayTrait::new();
+        
+        let mut i = 0;
+        while i < log_sizes.len(){
+            extended_log_sizes.append(
+                *log_sizes.at(i) + log_blowup_factor
+            );
+            i = i+1;
+        };
+        let verifier = MerkleVerifier::<PoseidonMerkleHasher>{root: commitment,
+                                      column_log_sizes: extended_log_sizes};
+        
+        self.trees.append(verifier);
+
+        channel_copy
+        // {
+        // MC::mix_root(channel, commitment);
+        // let extended_log_sizes = log_sizes
+        //     .iter()
+        //     .map(|&log_size| log_size + self.config.fri_config.log_blowup_factor)
+        //     .collect();
+        // let verifier = MerkleVerifier::new(commitment, extended_log_sizes);
+        // self.trees.push(verifier);
+        // }
     }
 
     fn verify_values(
@@ -92,6 +114,12 @@ pub trait MerkleChannelTrait {
     fn mix_root(channel: Channel, root: felt252);
 }
 
+impl MerkleChannelTraitImpl of MerkleChannelTrait{
+    fn mix_root(mut channel: Channel, root: felt252){
+        channel.mix_digest(root)
+    }
+}
+
 
 #[derive(Debug, Drop, PartialEq)]
 pub enum VerificationError {
@@ -122,7 +150,7 @@ mod tests {
                 n_sent: 0 // Default
             }
         };
-        let commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+        let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
         let commitment_1 = 0x01cafae415ba4e4f6648b9c8d0c44a664060485580ac65ff8c161fb756836bd5;
         let sizes_1 = array![10, 10, 10, 10];

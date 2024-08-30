@@ -33,9 +33,8 @@ impl CirclePointAdd<F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>> of Add<Cir
 
 pub trait CirclePointTrait<F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>, +Zero<F>, +One<F>> {
     // Returns the neutral element of the circle.
-    fn zero() -> CirclePoint<F>{
+    fn zero() -> CirclePoint<F> {
             CirclePoint::<F> { x: One::<F>::one(), y: Zero::<F>::zero() }
-        
     }
 
     fn mul(self: @CirclePoint<F>, initial_scalar: u128) -> CirclePoint<F> {
@@ -107,8 +106,8 @@ pub impl CosetImpl of CosetTrait {
 #[cfg(test)]
 mod tests {
     use core::option::OptionTrait;
-use core::array::ArrayTrait;
-use core::traits::TryInto;
+    use core::array::ArrayTrait;
+    use core::traits::TryInto;
     use super::{M31_CIRCLE_GEN, CIRCLE_ORDER, CirclePoint, CirclePointM31Impl, Coset, CosetImpl};
     use super::{CirclePointQM31Impl};
     use stwo_cairo_verifier::fields::m31::{m31,M31};
