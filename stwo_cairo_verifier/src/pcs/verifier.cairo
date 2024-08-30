@@ -72,15 +72,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         self.trees.append(verifier);
 
         channel_copy
-        // {
-        // MC::mix_root(channel, commitment);
-        // let extended_log_sizes = log_sizes
-        //     .iter()
-        //     .map(|&log_size| log_size + self.config.fri_config.log_blowup_factor)
-        //     .collect();
-        // let verifier = MerkleVerifier::new(commitment, extended_log_sizes);
-        // self.trees.push(verifier);
-        // }
     }
 
     fn verify_values(
