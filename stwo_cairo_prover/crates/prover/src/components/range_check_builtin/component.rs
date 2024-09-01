@@ -79,7 +79,15 @@ impl FrameworkEval for RangeCheckBuiltinEval {
             &self.memory_lookup_elements,
         );
 
-        // TODO(AlonH): Add constraints to the last 2 bit value.
+        // Add constraints for the last 2 bit value.
+        let last_value_felt = values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1];
+        let tmp_value = eval.next_trace_mask();
+        eval.add_constraint(tmp_value - (last_value_felt * (last_value_felt - E::F::one())));
+        eval.add_constraint(
+            tmp_value
+                * (last_value_felt - E::F::from(M31::from(2)))
+                * (last_value_felt - E::F::from(M31::from(3))),
+        );
 
         logup.finalize(&mut eval);
         eval
@@ -100,7 +108,7 @@ impl RangeCheckBuiltinClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let n_values = self.memory_segment.end_addr - self.memory_segment.begin_addr;
         let log_size = n_values.next_power_of_two().ilog2();
-        let trace_log_sizes = vec![log_size; N_ADDRESS_FELTS + N_VALUES_FELTS];
+        let trace_log_sizes = vec![log_size; N_ADDRESS_FELTS + N_VALUES_FELTS + 1];
         let interaction_trace_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![trace_log_sizes, interaction_trace_log_sizes])
     }
