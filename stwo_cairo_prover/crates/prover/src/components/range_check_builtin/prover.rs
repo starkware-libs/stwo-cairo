@@ -104,7 +104,7 @@ pub fn write_trace_simd(
 ) {
     let log_size = inputs.len().ilog2() + LOG_N_LANES;
     let mut interaction_prover = RangeCheckBuiltinInteractionProver::with_capacity(inputs.len());
-    let mut trace = (0..N_ADDRESS_FELTS + N_VALUES_FELTS)
+    let mut trace = (0..N_ADDRESS_FELTS + N_VALUES_FELTS + 1)
         .map(|_| unsafe { Col::<SimdBackend, M31>::uninitialized(1 << log_size) })
         .collect_vec();
 
@@ -122,6 +122,9 @@ pub fn write_trace_simd(
         for (i, v) in split_values.iter().enumerate() {
             trace[i + 1].data[vec_row] = *v;
         }
+        let last_value_felt = split_values[N_VALUES_FELTS - 1];
+        trace[N_VALUES_FELTS + 1].data[vec_row] =
+            last_value_felt * (last_value_felt - PackedM31::one());
 
         interaction_prover.memory_addresses.push(row_input);
         interaction_prover.memory_values.push(split_values);
@@ -167,6 +170,7 @@ mod tests {
     use std::array;
     use std::simd::Simd;
 
+    use itertools::zip_eq;
     use rand::Rng;
     use stwo_prover::constraint_framework::FrameworkEval;
     use stwo_prover::core::backend::simd::m31::N_LANES;
@@ -210,7 +214,7 @@ mod tests {
         };
         let (trace, interaction_prover) = write_trace_simd(&inputs, &memory_trace_generator);
 
-        assert_eq!(trace.len(), N_ADDRESS_FELTS + N_VALUES_FELTS);
+        assert_eq!(trace.len(), N_ADDRESS_FELTS + N_VALUES_FELTS + 1);
         assert_eq!(
             trace[0].values.clone().into_cpu_vec(),
             (0..1 << log_size).map(M31::from).collect_vec()
@@ -234,12 +238,21 @@ mod tests {
             }
 
             let mask = ((1 << N_BITS_PER_FELT) - 1) as u128;
-            for col in trace.iter().skip(1) {
+            for col in trace.iter().skip(N_ADDRESS_FELTS).take(N_VALUES_FELTS) {
                 for j in 0..N_LANES {
                     let val = col.values.at((row_offset << LOG_N_LANES) + j);
                     assert_eq!(val.0, (inputs_u128[j] & mask) as u32);
                     inputs_u128[j] >>= N_BITS_PER_FELT;
                 }
+            }
+
+            let last_value_felts = trace[N_ADDRESS_FELTS + N_VALUES_FELTS - 1].values.clone();
+            let tmp_values = trace[N_ADDRESS_FELTS + N_VALUES_FELTS].values.clone();
+            for (last_value_felt, tmp_value) in zip_eq(last_value_felts.data, tmp_values.data) {
+                assert_eq!(
+                    tmp_value.to_array(),
+                    (last_value_felt * (last_value_felt - PackedM31::one())).to_array()
+                );
             }
         }
 
