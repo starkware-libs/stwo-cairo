@@ -12,8 +12,9 @@ use crate::components::LOOKUP_INTERACTION_PHASE;
 use crate::input::SegmentAddrs;
 
 const RANGE_CHECK_BITS: usize = 128;
-pub const N_RANGE_CHECK_COLUMNS: usize = 16;
+const N_INTERMEDIATE_COLUMNS: usize = 1;
 pub const N_VALUES_FELTS: usize = RANGE_CHECK_BITS.div_ceil(N_BITS_PER_FELT);
+pub const N_RANGE_CHECK_COLUMNS: usize = N_ADDRESS_FELTS + N_VALUES_FELTS + N_INTERMEDIATE_COLUMNS;
 pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
 pub type RangeCheckBuiltinComponent = FrameworkComponent<RangeCheckBuiltinEval>;
@@ -79,7 +80,17 @@ impl FrameworkEval for RangeCheckBuiltinEval {
             &self.memory_lookup_elements,
         );
 
-        // TODO(AlonH): Add constraints to the last 2 bit value.
+        // Add constraints for the last 2 bit value.
+        let last_value_felt = values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1];
+        let intermediate_value = eval.next_trace_mask();
+        eval.add_constraint(
+            intermediate_value - (last_value_felt * (last_value_felt - E::F::one())),
+        );
+        eval.add_constraint(
+            intermediate_value
+                * (last_value_felt - E::F::from(M31::from(2)))
+                * (last_value_felt - E::F::from(M31::from(3))),
+        );
 
         logup.finalize(&mut eval);
         eval
@@ -100,7 +111,7 @@ impl RangeCheckBuiltinClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let n_values = self.memory_segment.end_addr - self.memory_segment.begin_addr;
         let log_size = n_values.next_power_of_two().ilog2();
-        let trace_log_sizes = vec![log_size; N_ADDRESS_FELTS + N_VALUES_FELTS];
+        let trace_log_sizes = vec![log_size; N_RANGE_CHECK_COLUMNS];
         let interaction_trace_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![trace_log_sizes, interaction_trace_log_sizes])
     }

@@ -349,10 +349,11 @@ mod tests {
     use crate::input::plain::input_from_plain_casm;
 
     fn test_input() -> CairoInput {
+        let u128_max = u128::MAX;
         let instructions = casm! {
             // TODO(AlonH): Add actual range check segment.
             // Manually writing range check builtin segment of size 40 to memory.
-            [ap] = 1, ap++;
+            [ap] = u128_max, ap++;
             [ap + 38] = 1, ap++;
             ap += 38;
 
