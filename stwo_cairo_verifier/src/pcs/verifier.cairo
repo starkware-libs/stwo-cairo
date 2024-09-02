@@ -2,8 +2,10 @@ use core::array::ArrayTrait;
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::vcs::hasher::{PoseidonMerkleHasher};
-use stwo_cairo_verifier::fri::verifier::{FriConfig};
+use stwo_cairo_verifier::fri::verifier::{FriConfig, FriProof};
 use stwo_cairo_verifier::channel::{ChannelTime, Channel, ChannelImpl};
+use stwo_cairo_verifier::fields::qm31::QM31;
+use stwo_cairo_verifier::fields::m31::M31;
 
 
 #[derive(Drop)]
@@ -98,7 +100,11 @@ pub struct CirclePointQM31 {
 
 #[derive(Drop)]
 pub struct CommitmentSchemeProof {
-    
+    sampled_values: Array<Array<Array<QM31>>>,
+    decommitments: Array<MerkleDecommitment>,
+    queried_values: Array<Array<Array<M31>>>,
+    proof_of_work: u64,
+    fri_proof: FriProof
 }
 
 pub trait MerkleChannelTrait {
@@ -119,9 +125,12 @@ pub enum VerificationError {
 
 #[cfg(test)]
 mod tests {
-    use super::{CommitmentSchemeVerifier, PcsConfig, CommitmentSchemeVerifierImpl};
-    use stwo_cairo_verifier::fri::verifier::FriConfig;
+    use super::{CommitmentSchemeVerifier, PcsConfig, CommitmentSchemeVerifierImpl, CommitmentSchemeProof};
+    use stwo_cairo_verifier::fri::verifier::{FriConfig, MerkleDecommitment, FriProof, FriLayerProof};
     use stwo_cairo_verifier::channel::{ChannelTime, Channel};
+    use stwo_cairo_verifier::circle::CirclePoint;
+    use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+    use stwo_cairo_verifier::fields::m31::m31;
 
     #[test]
     fn test_pcs_verifier() {
@@ -167,5 +176,70 @@ mod tests {
         assert_eq!(commitment_scheme.trees.len(), 3);
         assert_eq!(commitment_scheme.trees[2].root, @0x032fb1cb4a18da436f91b455ef3a8153b55eab841ba8b3fee7fa33ec050356bc);
         assert_eq!(commitment_scheme.trees[2].column_log_sizes, @array![14, 14, 14, 14]);
+    }
+
+    #[test]
+    fn test_pcs_verifier_verify_values() {
+        let config = PcsConfig {
+            pow_bits: 10,
+            fri_config: FriConfig {
+                log_last_layer_degree_bound: 0,
+                log_blowup_factor: 1,
+                n_queries: 1
+            },
+        };
+
+        let channel = Channel {
+            digest: 0x00, // Default
+            channel_time: ChannelTime {
+                n_challenges: 0, // Default
+                n_sent: 0 // Default
+            }
+        };
+        let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+        let commitment_1 = 0x03be559c45bbcfed8f4557f6201ad09cac7bb4d339e70a8aa9886ac3a130ca8e;
+        let sizes_1 = array![3];
+
+        assert_eq!(commitment_scheme.trees.len(), 0);
+        let channel = commitment_scheme.commit(commitment_1, sizes_1, channel);
+        assert_eq!(commitment_scheme.trees.len(), 1);
+        assert_eq!(commitment_scheme.trees[0].root, @0x03be559c45bbcfed8f4557f6201ad09cac7bb4d339e70a8aa9886ac3a130ca8e);
+        assert_eq!(commitment_scheme.trees[0].column_log_sizes, @array![4]);
+
+        let sample_points = array![array![array![CirclePoint::<QM31> { x: qm31(1395048677, 640591314, 342871101, 1049385418), y: qm31(474688795, 2119282552, 160740005, 798859953) }]]];
+        //let proof = CommitmentSchemeProof {
+        //    sampled_values: array![array![array![qm31(2082657879, 1175528048, 1000432343, 763013627)]]],
+        //    decommitments: array![MerkleDecommitment {
+        //        hash_witness: array![0x008616ef876c5a76edb3abf09fd8ffd5d80ccadce1ad581844bbaa7235a2da56, 0x04d8220ddc27d89ae6846d9191ecf02c1c0bbcb25a6f7ac4685a9bf42f1f010f, 0x073f38df4fcaa0170ee42e66ead2de1824dedfa6413be32cc365595d116cc32b],
+        //        column_witness: array![]
+        //    }],
+        //    queried_values: array![array![array![m31(1323727772), m31(1323695004)]]],
+        //    proof_of_work: 2,
+        //    fri_proof: FriProof {
+        //        inner_layers: array![
+        //            FriLayerProof {
+        //                evals_subset: array![qm31(1095793631, 1536834955, 2042516263, 1366783014)],
+        //                decommitment: MerkleDecommitment {
+        //                    hash_witness: array![0x0574b67cc46ad2d8f1f45ba903b57f7374e0358585e1129276cb0ad055c5ab9e, 0x06156efae86345fb4e6c116dcdd41a00c430c91b3304163ba150ad51965f952d],
+        //                    column_witness: array![]
+        //                },
+        //                commitment: 0x0627d9d20f6b14fbd148a257e77e56017fa4984332ceb30d87d71f79564a5541
+        //            },
+        //            FriLayerProof {
+        //                evals_subset: array![qm31(872305103, 1427717794, 368086230, 1461103938)],
+        //                decommitment: MerkleDecommitment {
+        //                    hash_witness: array![0x0469214fcf5d28d3d24123d4f04b03309dca680896fb50e64cfdabd225050d3b],
+        //                    column_witness: array![]
+        //                },
+        //                commitment: 0x0013431268a11ebb22826f67d87d1625f1064799577cc4709373d93ef05e1971
+        //            }
+        //        ],
+        //        last_layer_poly: LinePoly { coeffs: array![qm31(42760190, 1889301382, 1748376489, 1325373839)], log_size: 0 } 
+        //    } 
+        //}
+
+        //assert!(commitment_scheme.verify_values(sample_points, proof, channel).is_ok());
+
     }
 }
