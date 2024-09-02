@@ -1,6 +1,6 @@
 use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -71,7 +71,7 @@ pub struct RangeCheckBuiltinComponent {
     pub claimed_sum: SecureField,
 }
 
-impl FrameworkComponent for RangeCheckBuiltinComponent {
+impl FrameworkEval for RangeCheckBuiltinComponent {
     fn log_size(&self) -> u32 {
         self.log_size
     }

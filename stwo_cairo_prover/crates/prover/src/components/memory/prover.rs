@@ -10,7 +10,7 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{
     MemoryClaim, MemoryInteractionClaim, LOG_MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_BOUND,
@@ -77,7 +77,7 @@ impl MemoryClaimProver {
 
     pub fn write_trace(
         &mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (MemoryClaim, InteractionClaimProver) {
         let mut trace = (0..N_M31_IN_FELT252 + 2)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(MEMORY_ADDRESS_BOUND))
@@ -138,7 +138,7 @@ impl InteractionClaimProver {
 
     pub fn write_interaction_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &MemoryLookupElements,
     ) -> MemoryInteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_MEMORY_ADDRESS_BOUND);

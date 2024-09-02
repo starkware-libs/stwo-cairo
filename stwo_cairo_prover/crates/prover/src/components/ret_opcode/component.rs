@@ -1,6 +1,6 @@
 use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -14,14 +14,15 @@ pub const RET_N_TRACE_CELLS: usize = 7;
 pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
     510, 447, 511, 495, 511, 91, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ];
+pub type RetOpcodeComponent = FrameworkComponent<RetOpcodeEval>;
 
 #[derive(Clone)]
-pub struct RetOpcodeComponent {
+pub struct RetOpcodeEval {
     pub log_size: u32,
     pub lookup_elements: MemoryLookupElements,
     pub claimed_sum: SecureField,
 }
-impl RetOpcodeComponent {
+impl RetOpcodeEval {
     pub fn new(
         ret_claim: RetOpcodeClaim,
         memory_lookup_elements: MemoryLookupElements,
@@ -35,7 +36,7 @@ impl RetOpcodeComponent {
     }
 }
 
-impl FrameworkComponent for RetOpcodeComponent {
+impl FrameworkEval for RetOpcodeEval {
     fn log_size(&self) -> u32 {
         self.log_size
     }

@@ -1,25 +1,28 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
+use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
-use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::fields::{FieldExpOps, IntoSlice};
-use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, TreeVec};
+use stwo_prover::core::fields::FieldExpOps;
+use stwo_prover::core::pcs::{
+    CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
+};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError, LOG_BLOWUP_FACTOR};
-use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
+use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo_prover::core::vcs::ops::MerkleHasher;
-use stwo_prover::core::InteractionElements;
 use thiserror::Error;
 
-use crate::components::memory::component::{MemoryClaim, MemoryComponent, MemoryInteractionClaim};
+use crate::components::memory::component::{
+    MemoryClaim, MemoryComponent, MemoryEval, MemoryInteractionClaim,
+};
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
 use crate::components::ret_opcode::component::{
-    RetOpcodeClaim, RetOpcodeComponent, RetOpcodeInteractionClaim,
+    RetOpcodeClaim, RetOpcodeComponent, RetOpcodeEval, RetOpcodeInteractionClaim,
 };
 use crate::components::ret_opcode::prover::RetOpcodeClaimProver;
 use crate::felt::split_f252;
@@ -112,34 +115,42 @@ pub fn lookup_sum_valid(
     sum == SecureField::zero()
 }
 
-pub struct CairoComponentGenerator {
+pub struct CairoComponents {
     ret: Vec<RetOpcodeComponent>,
     memory: MemoryComponent,
     // ...
 }
 
-impl CairoComponentGenerator {
+impl CairoComponents {
     pub fn new(
         cairo_claim: &CairoClaim,
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
+        let tree_span_provider = &mut TraceLocationAllocator::default();
+
         let ret_components = cairo_claim
             .ret
             .iter()
             .zip(interaction_claim.ret.iter())
             .map(|(claim, interaction_claim)| {
                 RetOpcodeComponent::new(
-                    claim.clone(),
-                    interaction_elements.memory_lookup.clone(),
-                    interaction_claim.clone(),
+                    tree_span_provider,
+                    RetOpcodeEval::new(
+                        claim.clone(),
+                        interaction_elements.memory_lookup.clone(),
+                        interaction_claim.clone(),
+                    ),
                 )
             })
             .collect_vec();
         let memory_component = MemoryComponent::new(
-            cairo_claim.memory.clone(),
-            interaction_elements.memory_lookup.clone(),
-            interaction_claim.memory.clone(),
+            tree_span_provider,
+            MemoryEval::new(
+                cairo_claim.memory.clone(),
+                interaction_elements.memory_lookup.clone(),
+                interaction_claim.memory.clone(),
+            ),
         );
         Self {
             ret: ret_components,
@@ -168,15 +179,16 @@ impl CairoComponentGenerator {
 
 const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
+    let config = PcsConfig::default();
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(LOG_MAX_ROWS + LOG_BLOWUP_FACTOR + 2)
+        CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
             .circle_domain()
             .half_coset,
     );
 
     // Setup protocol.
-    let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(&[]));
-    let commitment_scheme = &mut CommitmentSchemeProver::new(LOG_BLOWUP_FACTOR, &twiddles);
+    let channel = &mut Blake2sChannel::default();
+    let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
 
     // Extract public memory.
     let public_memory = input
@@ -240,18 +252,11 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     tree_builder.commit(channel);
 
     // Component provers.
-    let component_builder =
-        CairoComponentGenerator::new(&claim, &interaction_elements, &interaction_claim);
+    let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_builder.provers();
 
     // Prove stark.
-    let proof = prove::<SimdBackend, _, _>(
-        &components,
-        channel,
-        &InteractionElements::default(),
-        commitment_scheme,
-    )
-    .unwrap();
+    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme).unwrap();
 
     CairoProof {
         claim,
@@ -268,8 +273,10 @@ pub fn verify_cairo(
     }: CairoProof<Blake2sMerkleHasher>,
 ) -> Result<(), CairoVerificationError> {
     // Verify.
-    let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
-    let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<Blake2sMerkleHasher>::new();
+    let config = PcsConfig::default();
+    let channel = &mut Blake2sChannel::default();
+    let commitment_scheme_verifier =
+        &mut CommitmentSchemeVerifier::<Blake2sMerkleChannel>::new(config);
 
     claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &claim.log_sizes()[0], channel);
@@ -281,13 +288,12 @@ pub fn verify_cairo(
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &claim.log_sizes()[1], channel);
 
     let component_generator =
-        CairoComponentGenerator::new(&claim, &interaction_elements, &interaction_claim);
+        CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_generator.components();
 
     verify(
         &components,
         channel,
-        &InteractionElements::default(),
         commitment_scheme_verifier,
         stark_proof,
     )

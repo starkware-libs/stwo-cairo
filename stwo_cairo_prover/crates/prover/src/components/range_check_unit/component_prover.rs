@@ -8,7 +8,7 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RangeCheckClaim, RangeCheckInteractionClaim};
 use super::RangeCheckElements;
@@ -36,7 +36,7 @@ impl<const RC_TRACE_LEN: usize> RangeCheckClaimProver<RC_TRACE_LEN> {
 
     pub fn write_trace(
         &mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (
         RangeCheckClaim,
         RangeCheckInteractionClaimProver<RC_TRACE_LEN>,
@@ -97,7 +97,7 @@ impl<const RC_TRACE_LEN: usize> RangeCheckInteractionClaimProver<RC_TRACE_LEN> {
 
     pub fn write_interaction_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &RangeCheckElements,
     ) -> RangeCheckInteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(1 << RC_TRACE_LEN);

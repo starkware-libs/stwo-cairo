@@ -1,5 +1,5 @@
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
@@ -14,7 +14,7 @@ pub struct RangeCheckUnitComponent {
     pub claimed_sum: SecureField,
 }
 
-impl FrameworkComponent for RangeCheckUnitComponent {
+impl FrameworkEval for RangeCheckUnitComponent {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }

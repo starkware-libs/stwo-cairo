@@ -9,7 +9,7 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
 use crate::components::memory::component::N_M31_IN_FELT252;
@@ -56,7 +56,7 @@ impl RetOpcodeClaimProver {
     }
     pub fn write_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memory_trace_generator: &mut MemoryClaimProver,
     ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
@@ -101,7 +101,7 @@ impl RetOpcodeInteractionProver {
 
     pub fn write_interaction_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &MemoryLookupElements,
     ) -> RetOpcodeInteractionClaim {
         let log_size = self.memory_inputs[0].len().ilog2() + LOG_N_LANES;

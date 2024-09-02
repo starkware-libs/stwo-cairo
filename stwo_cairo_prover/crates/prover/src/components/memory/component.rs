@@ -1,5 +1,5 @@
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
@@ -13,16 +13,17 @@ pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
 pub const N_MEMORY_COLUMNS: usize = N_M31_IN_FELT252 + 2;
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 7;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
+pub type MemoryComponent = FrameworkComponent<MemoryEval>;
 
 /// Addresses are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
 #[derive(Clone)]
-pub struct MemoryComponent {
+pub struct MemoryEval {
     pub log_n_rows: u32,
     pub lookup_elements: MemoryLookupElements,
     pub claimed_sum: QM31,
 }
-impl MemoryComponent {
+impl MemoryEval {
     pub const fn n_columns(&self) -> usize {
         N_M31_IN_FELT252 + 2
     }
@@ -39,7 +40,7 @@ impl MemoryComponent {
     }
 }
 
-impl FrameworkComponent for MemoryComponent {
+impl FrameworkEval for MemoryEval {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }
