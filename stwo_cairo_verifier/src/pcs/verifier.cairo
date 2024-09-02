@@ -128,12 +128,12 @@ mod tests {
         let config = PcsConfig {
             pow_bits: 10,
             fri_config: FriConfig {
-                log_blowup_factor: 5,
-                log_last_layer_degree_bound: 4,
+                log_last_layer_degree_bound: 5,
+                log_blowup_factor: 4,
                 n_queries: 64
             },
         };
-        
+
         let channel = Channel {
             digest: 0x00, // Default
             channel_time: ChannelTime {
