@@ -9,7 +9,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::ColumnVec;
 
 use super::component::{RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionClaim, N_VALUES_FELTS};
@@ -35,7 +35,7 @@ impl RangeCheckClaimProver {
 
     pub fn write_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memory_trace_generator: &mut MemoryClaimProver,
     ) -> (RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionProver) {
         let mut addresses = self.memory_segment.addresses();
@@ -81,7 +81,7 @@ impl RangeCheckBuiltinInteractionProver {
 
     pub fn write_interaction_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memory_lookup_elements: &MemoryLookupElements,
         range2_lookup_elements: &RangeCheckElements,
     ) -> RangeCheckBuiltinInteractionClaim {
@@ -177,12 +177,10 @@ mod tests {
     use std::simd::Simd;
 
     use rand::Rng;
-    use stwo_prover::constraint_framework::FrameworkComponent;
+    use stwo_prover::constraint_framework::FrameworkEval;
     use stwo_prover::core::backend::simd::m31::N_LANES;
-    use stwo_prover::core::channel::{Blake2sChannel, Channel};
-    use stwo_prover::core::fields::IntoSlice;
+    use stwo_prover::core::channel::Blake2sChannel;
     use stwo_prover::core::pcs::TreeVec;
-    use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
 
     use super::*;
     use crate::components::memory::{MemoryLookupElements, N_BITS_PER_FELT};
@@ -303,7 +301,7 @@ mod tests {
         };
         let (trace, interaction_prover) = write_trace_simd(&inputs, &memory_trace_generator);
 
-        let channel = &mut Blake2sChannel::new(Blake2sHasher::hash(BaseField::into_slice(&[])));
+        let channel = &mut Blake2sChannel::default();
         let memory_lookup_elements = MemoryLookupElements::draw(channel);
         let range2_lookup_elements = RangeCheckElements::draw(channel);
 
