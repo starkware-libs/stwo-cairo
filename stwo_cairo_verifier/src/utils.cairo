@@ -85,10 +85,11 @@ pub fn pow(base: u32, mut exponent: u32) -> u32 {
     let mut result = 1;
     let mut base_power = base;
     loop {
-        if exponent & 1 == 1 {
+        let (q,r) = DivRem::div_rem(exponent, 2);
+        if r == 1 {
             result *= base_power;
         }
-        exponent = exponent / 2;
+        exponent = q;
         if exponent == 0 {
             break;
         }
