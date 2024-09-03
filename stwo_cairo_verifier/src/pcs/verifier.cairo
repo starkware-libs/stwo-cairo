@@ -126,7 +126,7 @@ pub enum VerificationError {
 #[cfg(test)]
 mod tests {
     use super::{CommitmentSchemeVerifier, PcsConfig, CommitmentSchemeVerifierImpl, CommitmentSchemeProof};
-    use stwo_cairo_verifier::fri::verifier::{FriConfig, MerkleDecommitment, FriProof, FriLayerProof};
+    use stwo_cairo_verifier::fri::verifier::{FriConfig, FriProof, FriLayerProof};
     use stwo_cairo_verifier::channel::{ChannelTime, Channel};
     use stwo_cairo_verifier::circle::CirclePoint;
     use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
@@ -240,6 +240,5 @@ mod tests {
         //}
 
         //assert!(commitment_scheme.verify_values(sample_points, proof, channel).is_ok());
-
     }
 }

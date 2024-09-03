@@ -199,7 +199,6 @@ pub struct FriConfig {
 pub struct FriLayerProof {
     pub evals_subset: Array<QM31>,
     pub decommitment: MerkleDecommitment::<PoseidonMerkleHasher>,
-    pub decomposition_coeff: QM31,
     pub commitment: felt252,
 }
 
@@ -244,7 +243,6 @@ impl FriVerifierImpl of FriVerifierTrait {
         while layer_index < proof.inner_layers.len() {
             let proof = proof.inner_layers[layer_index];
             channel.mix_digest(*proof.commitment);
-            channel.mix_felts(array![*proof.decomposition_coeff].span());
             let new_folding_alpha = channel.draw_felt();
             inner_layers
                 .append(
@@ -340,13 +338,6 @@ impl FriVerifierImpl of FriVerifierTrait {
                     column_bound_index += 1;
                     n_columns_in_layer += 1;
                 };
-
-                combined_sparse_evals =
-                    project_to_fft_space(
-                        @layer_queries,
-                        combined_sparse_evals,
-                        **current_layer.proof.decomposition_coeff,
-                    );
 
                 let folded_evals = combined_sparse_evals.fold(*circle_poly_alpha);
                 let prev_layer_combination_factor = pow_qm31(
@@ -543,7 +534,6 @@ mod tests {
                     FriLayerProof {
                         evals_subset: invalid_evals_subset,
                         decommitment: inner_layers[1].decommitment.clone(),
-                        decomposition_coeff: *inner_layers[1].decomposition_coeff,
                         commitment: *inner_layers[1].commitment
                     }
                 );
@@ -599,7 +589,6 @@ mod tests {
                     FriLayerProof {
                         evals_subset: invalid_evals_subset,
                         decommitment: inner_layers[1].decommitment.clone(),
-                        decomposition_coeff: *inner_layers[1].decomposition_coeff,
                         commitment: *inner_layers[1].commitment
                     }
                 );
@@ -667,20 +656,6 @@ mod tests {
         }
     }
 
-    #[test]
-    fn low_degree_polynomials_outside_fft_space_pass_verification() {
-        let (config, proof, bounds, queries, decommitted_values) =
-            proof_values_of_polynomial_outside_fft_space_but_inside_riemann_roch_space();
-
-        // Check that the polynomial is out of the FFT space
-        assert_ne!(*proof.inner_layers[0].decomposition_coeff, qm31(0, 0, 0, 0));
-
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
-
-        verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
-    }
-
     //////////////////////////////////////////////////////
     // Proofs extracted from Stwo's rust implementation //
     //////////////////////////////////////////////////////
@@ -689,6 +664,7 @@ mod tests {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1
         };
+
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
@@ -700,23 +676,21 @@ mod tests {
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
                 },
                 FriLayerProof {
-                    evals_subset: array![qm31(1948473851, 1004529211, 1304438646, 1985407493)],
+                    evals_subset: array![qm31(1396531676, 750161390, 1275165237, 1824394799)],
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
-                            0x031e0d7125162e8c9022c7b9967b792472c77ac6f35b7a13703544e16d715d83
+                            0x0539eb6bd5d99019f938130703ddfd97aaa9f46dea9714f9ed75528babb4db55
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x0536ed50a0da2d18e090646e869b52c8b202e6167758cd9ac514cf95179e9641
+                    commitment: 0x078189f0ad5c044994f4b3100183203ed10545891f2459770dde4af4b9c2def7
                 }
             ],
             last_layer_poly: LinePoly {
-                coeffs: array![qm31(940020369, 1979164784, 955004309, 315468455)], log_size: 0
+                coeffs: array![qm31(1030963115, 122157260, 1848484002, 1387601044)], log_size: 0
             }
         };
         let bounds = array![3];
@@ -756,7 +730,6 @@ mod tests {
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x007a651ff28db891d325f04db37e9db38c77979ca66ee6a244eaa1b2c60aaf15
                 },
                 FriLayerProof {
@@ -769,7 +742,6 @@ mod tests {
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x06dc699d087a38aaf30c8ad95545c06ab641a9e2f690f790403f53437dc66392
                 },
                 FriLayerProof {
@@ -781,7 +753,6 @@ mod tests {
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x0736746d72f39154aec3ef46d5c0e3855b4801d16c2c4feff404d4f0ccefd050
                 }
             ],
@@ -830,7 +801,6 @@ mod tests {
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
                 FriLayerProof {
@@ -844,7 +814,6 @@ mod tests {
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x046198bc34caa0b046234fa46ef591327a6864cb8a373bc13ce2cc9b3d5f3720,
                 },
                 FriLayerProof {
@@ -857,7 +826,6 @@ mod tests {
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x0344b5796a1b37e154053d94532921bd1dc9db98b454d0a7537974e2b9fc17b5,
                 },
             ],
@@ -895,6 +863,7 @@ mod tests {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2
         };
+
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
@@ -915,52 +884,49 @@ mod tests {
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc
                 },
                 FriLayerProof {
                     evals_subset: array![
-                        qm31(1274461871, 275737803, 1667187951, 1863765347),
-                        qm31(1340580983, 256049648, 1818983416, 980463906)
+                        qm31(1263943078, 172354194, 2127081660, 1999316363),
+                        qm31(1311532324, 582549508, 1702052122, 36581530)
                     ],
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
-                            0x060fde801827a1681d30225a4fe690998e31a7bcd6c3c45667a8828c2e27916f,
-                            0x0207cd96c394d8bd203468ae483528de8d3b92914b031b5ea405147de9b64e3c,
-                            0x0033793e1985da45f1b7fded0a5dc55fe95cd69ddce3935972f7ffc971311d50,
-                            0x047d27eaf0d659e9afdf7ea6c102f82ccf1a40d06aa442ddbf294f17a393b057,
-                            0x036c9af3bfb0bfe616814083f6faced81dd408a6b97c4503c919a39769b97dcb,
-                            0x04ff41ff563354e1ad44fc2c36df75456706351c4e7f95595889466bc37e9594
+                            0x05b7057376e8da41e7d1da285482571944f47848332279ce0de6b5ceeb21cb22,
+                            0x00e3a1b78a35229bb9a60ad0d1bab478f52a087cd15c51dfa83cd47fc6bb7334,
+                            0x013b2a8963d1de05e52484bf6e62fe25855780625d8e6f831cbac73801339267,
+                            0x0163c94c52552862374f1d7b09036d7cf74b4d59914c4393503cfd9bc49d53d3,
+                            0x0668d865abd1cb2b868c20784728cd48a6c4cbd926da318ce8814c5dae779fd0,
+                            0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769,
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x011501b85ce5c3170d26ab4a39969af378459856c01b2026a107e7cf977d3a40
+                    commitment: 0x06a3f2b104508429f6b74edcd62044afb4f618302a382f281fee118b12dc9dbd
                 },
                 FriLayerProof {
                     evals_subset: array![
-                        qm31(2076487708, 821015293, 1124764643, 1515478998),
-                        qm31(1388613128, 1250129043, 2846551, 1151418480)
+                        qm31(1660083285, 865580381, 2025493291, 1151079474),
+                        qm31(24828450, 1304266370, 129024597, 1635057579)
                     ],
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
-                            0x0377991e3583c5c64569c71d3038fdc4ff0d60760121092f21049fd2a47b0b3a,
-                            0x06de824fd62cb9081040a3d2f8b46b3b22f66c031d81aa6061c535968df0eafa,
-                            0x034ecdc04e481b229d7483ae21e5d73b3815fa61232b86856ce8e32f9d3bea64,
-                            0x02194f358c42ceb8027744f606257cf8ea158dcffc72aa62c71870631691f3e6
+                            0x03c70415b07af713627bd1405e284be50c30ce6b628fb6a7d2accd3bb631c04c,
+                            0x062c36d3bd5fec84f54c5e835935a923db06521e937e3fbdd99cd9cd9701a329,
+                            0x0414361ae7771b465d1ed7241c6a9c383e19cee6db3230e16164ded0da216c4d,
+                            0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc
                         ],
                         column_witness: array![]
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x06db2192b3d4aec51d86779b026ed4c173b2679bd2da24cf6ad8b4ba5ab79143
+                    commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e
                 }
             ],
             last_layer_poly: LinePoly {
                 coeffs: array![
-                    qm31(751072370, 712476851, 986633684, 1014125985),
-                    qm31(751072370, 712476851, 986633684, 1014125985),
-                    qm31(751072370, 712476851, 986633684, 1014125985),
-                    qm31(751072370, 712476851, 986633684, 1014125985)
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840)
                 ],
                 log_size: 2
             }
@@ -1039,8 +1005,10 @@ mod tests {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 3,
         };
+
         let proof = FriProof {
             inner_layers: array![
+
                 FriLayerProof {
                     evals_subset: array![
                         qm31(1398603058, 1957874897, 461138270, 1700080921),
@@ -1061,53 +1029,50 @@ mod tests {
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
                 FriLayerProof {
                     evals_subset: array![
-                        qm31(587836539, 506913333, 1813710983, 1401047129),
-                        qm31(1340580983, 256049648, 1818983416, 980463906),
-                        qm31(1604063481, 102792848, 617877666, 280621577),
+                        qm31(1943731343, 338094235, 1579129158, 1325042400),
+                        qm31(1311532324, 582549508, 1702052122, 36581530),
+                        qm31(1561129265, 1456838851, 1325040656, 1580898325),
                     ],
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
-                            0x03c9f83549383c1794af686f48b750224daa051420285e027aa31f5e6563ef91,
-                            0x0207cd96c394d8bd203468ae483528de8d3b92914b031b5ea405147de9b64e3c,
-                            0x0142d76928317b0616d3ce086c07ac6e040e669da0d4249f53617f5e61230fbf,
-                            0x02f4363840fc3c457a00744025155415f00bf2318e716f02403e767583974ceb,
-                            0x05db032206eda11f83633f76676bc490ceed6aed02c9331abde8657b2eb57d14,
-                            0x04ff41ff563354e1ad44fc2c36df75456706351c4e7f95595889466bc37e9594,
+                            0x021bdc711e4823702cb7da701c301ebc832ffc967a21932d66f7998e9efbbf46,
+                            0x00e3a1b78a35229bb9a60ad0d1bab478f52a087cd15c51dfa83cd47fc6bb7334,
+                            0x0046d76cf189a1c1a9aad123f2c6a447af2c9fa4a7f58e11cd1852c00011a74b,
+                            0x03f8cb35e41d5291f1539b1cd73b018d6510aa85ba3bc9720e6014aa95ec4248,
+                            0x002d5922250cdbfedf908cabd24a158e9bdbb3de503e7636376c8a74921b8d41,
+                            0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x011501b85ce5c3170d26ab4a39969af378459856c01b2026a107e7cf977d3a40,
+                    commitment: 0x06a3f2b104508429f6b74edcd62044afb4f618302a382f281fee118b12dc9dbd,
                 },
                 FriLayerProof {
                     evals_subset: array![
-                        qm31(230668059, 937515353, 336211937, 1486617083),
-                        qm31(1388613128, 1250129043, 2846551, 1151418480),
-                        qm31(1414633709, 1659698730, 45239225, 1630318681),
+                        qm31(1219072197, 1782590850, 228657378, 784891462),
+                        qm31(24828450, 1304266370, 129024597, 1635057579),
+                        qm31(715531896, 1292811410, 725451910, 1608811481),
                     ],
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
-                            0x00d2e8ddf56ef114806c00e0ff510c401142ed60433ada9b93ed3c548ae37cc8,
-                            0x00e4552111db4ea23c2e693011a692ee6468f3de1d3c99c47f193eadd7b2b655,
-                            0x02194f358c42ceb8027744f606257cf8ea158dcffc72aa62c71870631691f3e6,
+                            0x058978bedb6abe931a3de1cdff9bce0f7e7ac7b14c9c2107ea66679874a67e9a,
+                            0x027cf2f25d11835dbf4d3e0b0a3ab32f5b75de4f9904d1873115ecb5f2bd0555,
+                            0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc
                         ],
                         column_witness: array![],
                     },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x06db2192b3d4aec51d86779b026ed4c173b2679bd2da24cf6ad8b4ba5ab79143,
+                    commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e,
                 },
             ],
             last_layer_poly: LinePoly {
                 coeffs: array![
-                    qm31(751072370, 712476851, 986633684, 1014125985),
-                    qm31(751072370, 712476851, 986633684, 1014125985),
-                    qm31(751072370, 712476851, 986633684, 1014125985),
-                    qm31(751072370, 712476851, 986633684, 1014125985),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
                 ],
                 log_size: 2,
             },
@@ -1200,157 +1165,5 @@ mod tests {
             },
         ];
         (config, proof, bounds, decommitted_values)
-    }
-
-
-    fn proof_values_of_polynomial_outside_fft_space_but_inside_riemann_roch_space() -> ProofValues {
-        let config = FriConfig {
-            log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 3,
-        };
-
-        let proof = FriProof {
-            inner_layers: array![
-                FriLayerProof {
-                    evals_subset: array![
-                        qm31(111445185, 10505150, 1029569861, 2057042659),
-                        qm31(1827815553, 1805356595, 793641895, 1634032292),
-                    ],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x069c20e7def00b806e671a23479423f2afad763504cd5e7ed05cbe720ffb6299,
-                            0x067115337a5cb98bc5f256352bf879fbe6b084361a483421cea460750e2cf96a,
-                            0x04e11048d3a3803a0067078d0bc8fb9091b51e0487077a24ed9f93dace9dd8b1,
-                            0x00d28deaf9a6be5b7339082484a7af52b616c12a5d4d6c2a77c0bb750858eac7,
-                            0x05123908ef18f3246e4b10e5129c99f4d94089cf4292c607327d49a3d1870318,
-                            0x044a99daaeab21c34f6d28e1f57845b92dad27192b283f01b4b9ee122c084d2b,
-                            0x04c1da84dafb3f74eb48b7593b6ed9f5dede3d8b74b080b444fa17f1d6f92f89,
-                            0x02bd72c0d1d7dfb2c01008bc2440f32351b6865f00e978de99b5ed09eb8bebc3,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(1069267625, 552704926, 1434132430, 4543619),
-                    commitment: 0x0298096048f98431a6f01b9e5155dcf38bf9a28e4f45f5a35d50ab629060abdc,
-                },
-                FriLayerProof {
-                    evals_subset: array![
-                        qm31(1946002195, 449579341, 1795400723, 1622996894),
-                        qm31(2064307970, 1612801142, 194313386, 1915667796),
-                    ],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x06db626f35a63ab4b79f38f8b24ecf2f62a5ef2ddf20246bb3a7da2e64b43c1a,
-                            0x07d7777acc1696e116c7f7c24e2ee03d4ddeda7bfe4fe06670c628b8c9c4d7bf,
-                            0x0335d2ec431674650c2bc64d223515cf6e5bf4052f413cee45574076e3aed4ff,
-                            0x07a0de1d980a4cc45ab9bcac380f7251dff4feae6dddbd8df6e07908f45b0681,
-                            0x05b0d09a1dce0f0474e9bd1b60a0eab3ffb069af8e259a1905ef0eee8eeac049,
-                            0x05cb83e5075728e95ea5441255fce67596c0e5ba9568b5b0b704c694a27cd1b0,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x06114b8bc2576f6aed68ff06f1cf331ad3ae661e7d32737df2a38379b8f104a5,
-                },
-                FriLayerProof {
-                    evals_subset: array![],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x06d8d23ed75facc9ce7f23ff4b8df77332103f7b86d1d154751dcf8f3c0bb235,
-                            0x070696c5b88593317360278b3a0325d99451c1de3a09d193923c0bc47709b3e8,
-                            0x074a697e14aaae76e7fba4451515ee0e28d25a1d4f2dfa69e4d3c46ebcd79b13,
-                            0x054e9fa9d1387013a17d856fb793a78d758c9f13e3e4be6c9c739fd07f9a18f6,
-                            0x02fbd075a35e1edd7544732731c9dde7db914062bdb0bdf48b75b5d47605eb73,
-                            0x05ef380dccc7ffac239892d9797994411582681efdcf2c1f525023dfd5086330,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x0200934ac982b61d5fe173a1f5e3d8751bc92ad9469d54e5438ba3bb77c8241d,
-                },
-                FriLayerProof {
-                    evals_subset: array![qm31(1299424593, 1953968618, 1242336230, 159808133),],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x074c5bfec0520dbe9adb7fbc1981212131e70b0f616252468e1e2a2d48983b57,
-                            0x007f15e8e4764fe2ce7986c248791f26df0d43ac509a8d7682b3d70a786c3752,
-                            0x01e7b231c1a9577b41d1f26d2237574f93bd8e5ff04893d5adf0e28f07de8ab9,
-                            0x02c2af1568b68c2d664e141cecb1435409962b122c7b14e02de9ccb84cee47bc,
-                            0x076caa3bfd2c97675ddbbbfc720fd97f1ed5a913fd040100cf3714bd83ab9a04,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x032196aa89fccb63c5cca66ba451d0422917c075b46b02a244d52275977d3f16,
-                },
-                FriLayerProof {
-                    evals_subset: array![qm31(1145472614, 1470246892, 103177062, 581670495),],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x00cf249d7c5c21240c8a4315c94d802c83ba0b2410689ca2abf9e8b836520d04,
-                            0x0520c3c8ad55c26d944af0469f100651b6692551bb548cc5d2f60bd9d2c26269,
-                            0x024563b19faf1e3bb9e3dbec67a0d44b337e9584449acb3ab616cb1148d2801b,
-                            0x06dbe1e622497fb32933e74c529262a681b9bd8bf02539bc9dc9767fe58827bc,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x00fb2f42e61b0269a281b559a597b400b6909791149139823f2acc6d9705af53,
-                },
-                FriLayerProof {
-                    evals_subset: array![qm31(993255757, 1333387780, 47290918, 341118579),],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x07250b1493c1b28bee805b7c2a35a1ef4f36e8900ba1fedb3df4712126462a4d,
-                            0x0535ef2e9c73de8dd3fe53545e5371e5567d025e086a7d4a6927921bf8af18d7,
-                            0x007d8a986b13c03fef58846cd058185465ba5dbf9228e20e7be9c14870e23c12,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x02ea8f528cd9e749f2044f63eb4124ab363504aaa9d6ea65ec34985e941b6aac,
-                },
-                FriLayerProof {
-                    evals_subset: array![qm31(664525196, 1800971227, 1328282007, 745001268),],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x0268621ff9ed5c8714e37d5db63a0d5bfba649e104eb6c2699f6cd05761c9dab,
-                            0x02eb62a72f5cedc706137e402f162feaa901cb5b11766e93a470447d3d430d19,
-                        ],
-                        column_witness: array![],
-                    },
-                    decomposition_coeff: qm31(0, 0, 0, 0),
-                    commitment: 0x014808a8effdf0a91b9b9d008cc681d9233685f8900abf9ed7c118db8af3fc36,
-                },
-            ],
-            last_layer_poly: LinePoly {
-                coeffs: array![
-                    qm31(0, 0, 0, 0), qm31(1828711622, 2128454428, 1325215297, 1309505507),
-                ],
-                log_size: 1,
-            },
-        };
-        let queries = Queries { positions: array![2, 10, 11], log_domain_size: 10 };
-        let bounds = array![9, 9];
-        let decommitted_value = SparseCircleEvaluation {
-            subcircle_evals: array![
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 1074790400, step_size: 2147483648, log_size: 0,
-                        },
-                    },
-                    values: array![qm31(32512, 0, 0, 0), qm31(33024, 0, 0, 0)],
-                },
-                CircleEvaluation {
-                    domain: CircleDomain {
-                        half_coset: Coset {
-                            initial_index: 1343225856, step_size: 2147483648, log_size: 0,
-                        },
-                    },
-                    values: array![qm31(32512, 0, 0, 0), qm31(33024, 0, 0, 0)],
-                },
-            ],
-        };
-
-        (config, proof, bounds, queries, array![decommitted_value.clone(), decommitted_value])
     }
 }
