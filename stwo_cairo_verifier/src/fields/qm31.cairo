@@ -45,7 +45,7 @@ pub impl QM31Sub of core::traits::Sub<QM31> {
 pub impl QM31Mul of core::traits::Mul<QM31> {
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
-        QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
+        QM31 { a: lhs.a * rhs.a + (lhs.b * rhs.b).mul_by_R(), b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
 pub impl QM31Zero of Zero<QM31> {

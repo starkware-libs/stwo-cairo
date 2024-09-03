@@ -14,6 +14,10 @@ pub impl CM31Impl of CM31Trait {
         let denom_inverse: M31 = (self.a * self.a + self.b * self.b).inverse();
         CM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+    fn mul_by_R(self: CM31) -> CM31 {
+        // R = (2, 1)
+        CM31 { a: self.a + self.a - self.b, b: self.a + self.b + self.b }
+    }
 }
 
 pub impl CM31Add of core::traits::Add<CM31> {
