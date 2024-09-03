@@ -1,0 +1,9 @@
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/large_sample/fact.json filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/large_sample/mem filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/large_sample/priv.json filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/large_sample/pub.json filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/large_sample/trace filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/small_sample/priv.json filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/small_sample/pub.json filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/small_sample/trace filter=lfs diff=lfs merge=lfs -text
+/home/alonh/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/test_data/small_sample/mem filter=lfs diff=lfs merge=lfs -text

@@ -1,5 +1,0 @@
-sample0/fact.json filter=lfs diff=lfs merge=lfs -text
-sample0/mem filter=lfs diff=lfs merge=lfs -text
-sample0/priv.json filter=lfs diff=lfs merge=lfs -text
-sample0/pub.json filter=lfs diff=lfs merge=lfs -text
-sample0/trace filter=lfs diff=lfs merge=lfs -text

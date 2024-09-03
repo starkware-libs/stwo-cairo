@@ -1,0 +1,16 @@
+{
+    "fact_topologies": [
+        {
+            "tree_structure": [
+                2,
+                1,
+                0,
+                2
+            ],
+            "page_sizes": [
+                12,
+                112
+            ]
+        }
+    ]
+}
