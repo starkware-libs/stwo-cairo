@@ -32,11 +32,12 @@ pub impl CirclePointM31Impl of CirclePointM31Trait {
         let mut result = Self::zero();
         let mut cur = *self;
         while scalar > 0 {
-            if scalar & 1 == 1 {
+            let (q, r) = DivRem::div_rem(scalar, 2);
+            if r == 1 {
                 result = result + cur;
             }
             cur = cur + cur;
-            scalar = scalar / 2;
+            scalar = q;
         };
         result
     }
