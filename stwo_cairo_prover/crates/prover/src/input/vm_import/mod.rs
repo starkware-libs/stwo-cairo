@@ -117,7 +117,7 @@ pub mod tests {
     use super::*;
     use crate::input::instructions::InstructionUsage;
 
-    pub fn full_cairo_input() -> CairoInput {
+    pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/large_cairo_input");
 
@@ -127,10 +127,19 @@ pub mod tests {
         )
     }
 
+    pub fn small_cairo_input() -> CairoInput {
+        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.push("test_data/small_cairo_input");
+        import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+            "
+            Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
+        )
+    }
+
     // Slow test. Run only in release.
     #[test]
-    fn test_read_from_files() {
-        let input = full_cairo_input();
+    fn test_read_from_large_files() {
+        let input = large_cairo_input();
         assert_eq!(
             input.instructions.usage(),
             InstructionUsage {
@@ -145,6 +154,28 @@ pub mod tests {
                 deref: 811061,
                 push_imm: 43184,
                 generic: 362623
+            }
+        );
+        println!("Usage: {:#?}", input.instructions.usage());
+    }
+
+    #[test]
+    fn test_read_from_small_files() {
+        let input = small_cairo_input();
+        assert_eq!(
+            input.instructions.usage(),
+            InstructionUsage {
+                ret: 462,
+                add_ap: 2,
+                jmp_rel_imm: [124627, 0],
+                jmp_abs: [0, 0, 0, 0],
+                call_rel_imm: 462,
+                call_abs: [0, 0],
+                jnz_imm: [0, 11, 0, 450, 0, 0, 0, 0],
+                mov_mem: 55,
+                deref: 2100,
+                push_imm: 1952,
+                generic: 951
             }
         );
         println!("Usage: {:#?}", input.instructions.usage());
