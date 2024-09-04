@@ -80,9 +80,9 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
         let sampled_values_copy = proof.sampled_values.clone();
-        let mut i: u32 = 0;
         let mut flattened = array![];
 
+        let mut i: u32 = 0;
         while i < sampled_values_copy.len() {
             let mut j: u32 = 0;
             let i_copy = sampled_values_copy.at(i);
