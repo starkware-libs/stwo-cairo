@@ -9,8 +9,8 @@ use super::MemoryLookupElements;
 
 pub const N_M31_IN_FELT252: usize = 28;
 pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
-// TODO(AlonH): Make memory size configurable.
 pub const N_MEMORY_COLUMNS: usize = N_M31_IN_FELT252 + 2;
+// TODO(AlonH): Make memory size configurable.
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 7;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 pub type MemoryComponent = FrameworkComponent<MemoryEval>;
