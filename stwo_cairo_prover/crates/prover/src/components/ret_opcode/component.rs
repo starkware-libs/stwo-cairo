@@ -29,7 +29,7 @@ impl RetOpcodeEval {
         interaction_claim: RetOpcodeInteractionClaim,
     ) -> Self {
         Self {
-            log_size: ret_claim.log_size,
+            log_size: ret_claim.n_rets.next_power_of_two().ilog2(),
             lookup_elements: memory_lookup_elements,
             claimed_sum: interaction_claim.claimed_sum,
         }
@@ -86,18 +86,17 @@ impl FrameworkEval for RetOpcodeEval {
 
 #[derive(Clone)]
 pub struct RetOpcodeClaim {
-    pub log_size: u32,
     pub n_rets: usize,
 }
 impl RetOpcodeClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_nonce(self.log_size as u64);
         channel.mix_nonce(self.n_rets as u64);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let interaction_0_log_sizes = vec![self.log_size; RET_N_TRACE_CELLS];
-        let interaction_1_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
+        let log_size = self.n_rets.next_power_of_two().ilog2();
+        let interaction_0_log_sizes = vec![log_size; RET_N_TRACE_CELLS];
+        let interaction_1_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
         TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
     }
 }
@@ -108,9 +107,6 @@ pub struct RetOpcodeInteractionClaim {
     pub claimed_sum: SecureField,
 }
 impl RetOpcodeInteractionClaim {
-    pub fn log_sizes(&self) -> Vec<u32> {
-        vec![self.log_size; 12]
-    }
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
     }
