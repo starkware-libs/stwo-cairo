@@ -721,7 +721,7 @@ mod tests {
             inner_layers: array![
                 FriLayerProof {
                     evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
-                    decommitment: MerkleDecommitment { 
+                    decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
                             0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
@@ -731,9 +731,9 @@ mod tests {
                     commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
                 },
             ],
-            last_layer_poly: LinePoly { 
+            last_layer_poly: LinePoly {
                 coeffs: array![
-                    qm31(1166420758, 1481024254, 705780805, 948549530), 
+                    qm31(1166420758, 1481024254, 705780805, 948549530),
                     qm31(1166420758, 1481024254, 705780805, 948549530)
                 ],
                 log_size: 1
@@ -983,7 +983,6 @@ mod tests {
 
         let proof = FriProof {
             inner_layers: array![
-
                 FriLayerProof {
                     evals_subset: array![
                         qm31(1398603058, 1957874897, 461138270, 1700080921),

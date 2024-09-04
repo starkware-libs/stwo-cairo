@@ -34,10 +34,14 @@ impl CirclePointAdd<F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>> of Add<Cir
 pub trait CirclePointTrait<F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>, +Zero<F>, +One<F>> {
     // Returns the neutral element of the circle.
     fn zero() -> CirclePoint<F> {
-            CirclePoint::<F> { x: One::<F>::one(), y: Zero::<F>::zero() }
+        CirclePoint::<F> { x: One::<F>::one(), y: Zero::<F>::zero() }
     }
 
-    fn mul(self: @CirclePoint<F>, initial_scalar: u128) -> CirclePoint<F> {
+    fn mul(
+        self: @CirclePoint<F>, initial_scalar: u128
+    ) -> CirclePoint<
+        F
+    > {
         let mut scalar = initial_scalar;
         let mut result: CirclePoint<F> = Self::zero();
         let mut cur: CirclePoint<F> = *self;
@@ -110,8 +114,8 @@ mod tests {
     use core::traits::TryInto;
     use super::{M31_CIRCLE_GEN, CIRCLE_ORDER, CirclePoint, CirclePointM31Impl, Coset, CosetImpl};
     use super::{CirclePointQM31Impl};
-    use stwo_cairo_verifier::fields::m31::{m31,M31};
-    use stwo_cairo_verifier::fields::qm31::{qm31,QM31, QM31One};
+    use stwo_cairo_verifier::fields::m31::{m31, M31};
+    use stwo_cairo_verifier::fields::qm31::{qm31, QM31, QM31One};
     use stwo_cairo_verifier::utils::pow;
 
     #[test]
@@ -122,7 +126,7 @@ mod tests {
 
         assert_eq!(result, expected_result);
     }
-    
+
     #[test]
     fn test_add_2() {
         let point_1 = CirclePoint::<M31> { x: m31(750649172), y: m31(1991648574) };
@@ -235,19 +239,21 @@ mod tests {
         let expected_result = 32;
         assert_eq!(result, expected_result);
     }
-    
+
     #[test]
     fn test_qm31_circle_gen() {
         let P4: u128 = 21267647892944572736998860269687930881;
 
-        let QM31_CIRCLE_GEN: CirclePoint<QM31> = CirclePoint::<QM31> {
+        let QM31_CIRCLE_GEN: CirclePoint<QM31> = CirclePoint::<
+            QM31
+        > {
             x: qm31(1, 0, 478637715, 513582971),
             y: qm31(992285211, 649143431, 740191619, 1186584352),
         };
-        
+
         let first_prime = 2;
         let last_prime = 368140581013;
-        let prime_factors: Array<(u128,u32)> = array![
+        let prime_factors: Array<(u128, u32)> = array![
             (first_prime, 33),
             (3, 2),
             (5, 1),
@@ -263,35 +269,36 @@ mod tests {
 
         let product = iter_product(first_prime, @prime_factors, last_prime);
 
-        assert_eq!(product, P4-1);
+        assert_eq!(product, P4 - 1);
 
         assert_eq!(
             QM31_CIRCLE_GEN.x * QM31_CIRCLE_GEN.x + QM31_CIRCLE_GEN.y * QM31_CIRCLE_GEN.y,
             QM31One::one()
         );
-        
+
         assert_eq!(QM31_CIRCLE_GEN.mul(P4 - 1), CirclePointQM31Impl::zero());
 
         let mut i = 0;
         while i < prime_factors.len() {
             let (p, _) = *prime_factors.at(i);
-            assert_ne!(
-                QM31_CIRCLE_GEN.mul((P4 - 1) / p.into()),
-                CirclePointQM31Impl::zero()
-            );
+            assert_ne!(QM31_CIRCLE_GEN.mul((P4 - 1) / p.into()), CirclePointQM31Impl::zero());
 
             i = i + 1;
         }
     }
 
-    fn iter_product(first_prime: u128, prime_factors: @Array<(u128, u32)>, last_prime: u128) -> u128 {
+    fn iter_product(
+        first_prime: u128, prime_factors: @Array<(u128, u32)>, last_prime: u128
+    ) -> u128 {
         let mut accum_product: u128 = 1;
-        accum_product = accum_product * pow(first_prime.try_into().unwrap(), 31).into() * 4; // * 2^33
+        accum_product = accum_product
+            * pow(first_prime.try_into().unwrap(), 31).into()
+            * 4; // * 2^33
         let mut i = 1;
         while i < prime_factors.len() - 1 {
             let (prime, exponent): (u128, u32) = *prime_factors.at(i);
             accum_product = accum_product * pow(prime.try_into().unwrap(), exponent).into();
-            i = i+1;
+            i = i + 1;
         };
         accum_product = accum_product * last_prime;
         accum_product
