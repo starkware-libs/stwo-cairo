@@ -720,61 +720,36 @@ mod tests {
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
-                    evals_subset: array![qm31(1387266930, 149259209, 1148988082, 1930518101)],
-                    decommitment: MerkleDecommitment {
+                    evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
+                    decommitment: MerkleDecommitment { 
                         hash_witness: array![
-                            0x043160f2f363f93858aea3f6e621c1afc86d3fb1df6486d287347137cf3dfed1,
-                            0x02b0c0da3e416172be84dacba1e7b069e330431a954afd500e314f0298494a8c,
-                            0x021cf336150f7443d0860ccba345ab39f50825f1f44926a891ea2e05e258826c,
-                            0x01127fb653bf375b6248814ce48aa39235b6194146d54861160139e30076c47b
+                            0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
+                            0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
                         ],
                         column_witness: array![]
                     },
-                    commitment: 0x007a651ff28db891d325f04db37e9db38c77979ca66ee6a244eaa1b2c60aaf15
+                    commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
                 },
-                FriLayerProof {
-                    evals_subset: array![qm31(861269867, 123962490, 964314161, 1930884004)],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x03b4b07433212611ac20d82849e4fae015c82fc96c404ee9d647256fcd12a07b,
-                            0x04898493682e4be2195e9b129f431be042c08a354e91d3747813f585bcb4aaca,
-                            0x017e767a71f3b55f18382b203c6146e695b27c81f96ece5f2ab44cafa743b0e7
-                        ],
-                        column_witness: array![]
-                    },
-                    commitment: 0x06dc699d087a38aaf30c8ad95545c06ab641a9e2f690f790403f53437dc66392
-                },
-                FriLayerProof {
-                    evals_subset: array![qm31(974589897, 1592795796, 649052897, 863407657)],
-                    decommitment: MerkleDecommitment {
-                        hash_witness: array![
-                            0x079bc5cbec102a3c4a35a415b07ef7779ea5a41069331775c363f7cc7439be5b,
-                            0x01f0d2cb65d190a549b197c2b741b74156de322744fce68cb658033a0b390311,
-                        ],
-                        column_witness: array![]
-                    },
-                    commitment: 0x0736746d72f39154aec3ef46d5c0e3855b4801d16c2c4feff404d4f0ccefd050
-                }
             ],
-            last_layer_poly: LinePoly {
+            last_layer_poly: LinePoly { 
                 coeffs: array![
-                    qm31(1080276375, 1725024947, 477465525, 102017026),
-                    qm31(1080276375, 1725024947, 477465525, 102017026)
+                    qm31(1166420758, 1481024254, 705780805, 948549530), 
+                    qm31(1166420758, 1481024254, 705780805, 948549530)
                 ],
                 log_size: 1
             }
         };
-        let bounds = array![5];
+        let bounds = array![3];
 
-        let queries = Queries { positions: array![5], log_domain_size: 6 };
+        let queries = Queries { positions: array![5], log_domain_size: 4 };
         let domain = CircleDomain {
-            half_coset: Coset { initial_index: 553648128, step_size: 2147483648, log_size: 0 }
+            half_coset: Coset { initial_index: 603979776, step_size: 2147483648, log_size: 0 }
         };
         let decommitted_values = array![
             SparseCircleEvaluation {
                 subcircle_evals: array![
                     CircleEvaluation {
-                        domain, values: array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)]
+                        domain, values: array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)]
                     }
                 ]
             }
