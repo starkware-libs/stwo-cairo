@@ -1,0 +1,5 @@
+crates/prover/test_data/large_cairo_input/fact.json filter=lfs diff=lfs merge=lfs -text
+crates/prover/test_data/large_cairo_input/mem filter=lfs diff=lfs merge=lfs -text
+crates/prover/test_data/large_cairo_input/priv.json filter=lfs diff=lfs merge=lfs -text
+crates/prover/test_data/large_cairo_input/pub.json filter=lfs diff=lfs merge=lfs -text
+crates/prover/test_data/large_cairo_input/trace filter=lfs diff=lfs merge=lfs -text

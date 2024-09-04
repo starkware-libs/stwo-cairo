@@ -121,7 +121,7 @@ mod tests {
     #[test]
     fn test_read_from_files() {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/sample0");
+        d.push("test_data/large_cairo_input");
         let input =
             import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path())
                 .expect(
