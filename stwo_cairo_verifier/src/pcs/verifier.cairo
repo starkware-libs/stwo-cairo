@@ -43,8 +43,15 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     }
 
     fn column_log_sizes(self: @CommitmentSchemeVerifier) -> Array<Array<u32>> {
-        // TODO: code
-        array![]
+        let mut i = 0;
+
+        let mut result = array![];
+        while i < self.trees.len() {
+            result.append(self.trees.at(i).column_log_sizes.clone());
+            i = i + 1;
+        };
+
+        result
     }
 
     fn commit(
@@ -100,7 +107,9 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         channel.mix_felts(flattened.span());
+        let random_coeff = channel.draw_felt();
 
+        let column_log_sizes = self.column_log_sizes();
         // TODO: code
         Result::Ok(())
     }
