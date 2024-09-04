@@ -1,3 +1,4 @@
+use core::array::ToSpanTrait;
 use core::array::ArrayTrait;
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
@@ -31,7 +32,7 @@ pub trait CommitmentSchemeVerifierTrait {
         self: @CommitmentSchemeVerifier,
         sampled_points: Array<Array<Array<CirclePoint<QM31>>>>,
         proof: CommitmentSchemeProof,
-        channel: Channel,
+        ref channel: Channel,
     ) -> Result<(), VerificationError>;
 }
 
@@ -76,8 +77,30 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         self: @CommitmentSchemeVerifier,
         sampled_points: Array<Array<Array<CirclePoint<QM31>>>>,
         proof: CommitmentSchemeProof,
-        channel: Channel,
+        ref channel: Channel,
     ) -> Result<(), VerificationError> {
+        let sampled_values_copy = proof.sampled_values.clone();
+        let mut i: u32 = 0;
+        let mut flattened = array![];
+
+        while i < sampled_values_copy.len() {
+            let mut j: u32 = 0;
+            let i_copy = sampled_values_copy.at(i);
+            while j < i_copy.len() {
+                let mut k: u32 = 0;
+                let j_copy = i_copy.at(j);
+                while k < j_copy.len() {
+                    flattened.append(j_copy.at(k).clone());
+
+                    k = k + 1;
+                };
+                j = j + 1;
+            };
+            i = i + 1;
+        };
+
+        channel.mix_felts(flattened.span());
+
         // TODO: code
         Result::Ok(())
     }
@@ -202,7 +225,7 @@ mod tests {
         let sizes_1 = array![3];
 
         assert_eq!(commitment_scheme.trees.len(), 0);
-        let channel = commitment_scheme.commit(commitment_1, sizes_1, channel);
+        let mut channel = commitment_scheme.commit(commitment_1, sizes_1, channel);
         assert_eq!(commitment_scheme.trees.len(), 1);
         assert_eq!(
             commitment_scheme.trees[0].root,
@@ -268,6 +291,6 @@ mod tests {
             }
         };
 
-        assert!(commitment_scheme.verify_values(sample_points, proof, channel).is_ok());
+        assert!(commitment_scheme.verify_values(sample_points, proof, ref channel).is_ok());
     }
 }
