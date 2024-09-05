@@ -108,11 +108,32 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-        let bounds = array![]; // TODO
 
         channel.mix_felts(flattened.span());
         let random_coeff = channel.draw_felt();
         let column_log_sizes = self.column_log_sizes();
+
+        let mut vec_to_sort = array![];
+        let mut i = 0;
+        while i < column_log_sizes.len() {
+            let i_c_copy: @Array<u32> = column_log_sizes.at(i);
+
+            let mut j = 0;
+            while j < i_c_copy.len() {
+
+                let log_size: @u32 = i_c_copy.at(j);
+                vec_to_sort.append(*log_size - *self.config.fri_config.log_blowup_factor);
+                j = j + 1;
+            };
+            i = i + 1;
+        };
+        // Sort and deduplicate
+        let mut bounds = array![];
+        let mut upper_bound = Option::None;
+        while let Option::Some(x) = get_maximum(@vec_to_sort, upper_bound) {
+            bounds.append(x);
+            upper_bound = Option::Some(x);
+        };
 
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierImpl::commit(channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
@@ -208,6 +229,28 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // TODO: code
         Result::Ok(())
     }
+}
+
+fn get_maximum(arr: @Array<u32>, upper_bound: Option<u32>) -> Option<u32> {
+    let mut maximum = Option::None;
+    let mut i = 0;
+    while i < arr.len() {
+        let upper_bound_condition = if let Option::Some(upper_bound) = upper_bound {
+            upper_bound > *arr[i]
+        } else {
+            true
+        };
+        let lower_bound_condition = if let Option::Some(maximum) = maximum {
+            *arr[i] > maximum
+        } else {
+            true
+        };
+        if upper_bound_condition && lower_bound_condition {
+            maximum = Option::Some(*arr[i]);
+        }
+        i += 1;
+    };
+    maximum
 }
 
 #[derive(Drop)]
