@@ -1,3 +1,4 @@
+use core::to_byte_array::AppendFormattedToByteArray;
 use core::array::SpanTrait;
 use core::poseidon::{poseidon_hash_span, hades_permutation};
 use core::traits::DivRem;
@@ -137,6 +138,28 @@ pub impl ChannelImpl of ChannelTrait {
             i += 1;
         };
         bytes
+    }
+
+    fn trailing_zeros(self: Channel) -> u8{
+        let digest: felt252 = self.digest;
+        //let digest_as_u128: u128 = digest.try_into().unwrap();
+        //println!("{}", digest_as_u128);
+        // count the number of trailing zeros by doing AND against each power of two.
+        let digest_as_u128: u128 = 3405695742_u128;
+        let mut trailing_zeros_count: u8 = 0;
+        let mut power_of_two: u128 = 1;
+
+        if digest_as_u128 & power_of_two == 0{
+            trailing_zeros_count = trailing_zeros_count +1;
+        }
+        while power_of_two < digest_as_u128 {
+            power_of_two = power_of_two*2_u128;
+            if digest_as_u128 & power_of_two == 0{
+                trailing_zeros_count = trailing_zeros_count +1;
+            }
+            
+        };
+        return trailing_zeros_count;
     }
 }
 
@@ -334,5 +357,14 @@ mod tests {
         let first_result = channel.draw_random_bytes();
         let second_result = channel.draw_random_bytes();
         assert_ne!(first_result, second_result);
+    }
+
+    #[test]
+    pub fn test_can_return_trailing_zeros_of_digest(){
+        let initial_digest = 0xcafecafe;
+        let mut channel = ChannelTrait::new(initial_digest);
+        println!("channel digest: {}", channel.digest);
+        let trailing_zeros: u8 = channel.trailing_zeros();
+        assert_eq!(trailing_zeros, 0);
     }
 }
