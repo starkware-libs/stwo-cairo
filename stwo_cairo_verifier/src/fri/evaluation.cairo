@@ -124,34 +124,6 @@ fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation
     LineEvaluation { values, domain: LineDomainImpl::new(*domain.half_coset) }
 }
 
-
-pub fn project_to_fft_space(
-    queries: @Queries, evals: SparseCircleEvaluation, lambda: QM31
-) -> SparseCircleEvaluation {
-    let mut subcircle_evals = array![];
-    let half_domain_size = pow(2, *queries.log_domain_size) / 2;
-    let mut i = 0;
-    while i < queries.len() {
-        let mut j = 0;
-        let values = evals.subcircle_evals[i].values;
-        let mut new_values = array![];
-        while j < values.len() {
-            if *queries.positions[i] < half_domain_size {
-                new_values.append(*values[j] - lambda);
-            } else {
-                new_values.append(*values[j] + lambda);
-            }
-            j += 1;
-        };
-        subcircle_evals
-            .append(
-                CircleEvaluation { values: new_values, domain: *evals.subcircle_evals[i].domain }
-            );
-        i += 1;
-    };
-    SparseCircleEvaluation { subcircle_evals }
-}
-
 pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
     (v0 + v1, (v0 - v1) * itwid.into())
 }
@@ -250,39 +222,5 @@ fn test_fold_circle_into_line_1() {
     let alpha = qm31(260773061, 362745443, 1347591543, 1084609991);
     let result = sparse_circle_evaluation.fold(alpha);
     let expected_result = array![qm31(730692421, 1363821003, 2146256633, 106012305)];
-    assert_eq!(expected_result, result);
-}
-
-#[test]
-fn test_project_to_fft_space_1() {
-    let domain = CircleDomain { half_coset: CosetImpl::new(553648128, 0) };
-    let values = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
-    let sparse_circle_evaluation = SparseCircleEvaluation {
-        subcircle_evals: array![CircleEvaluation { values, domain }]
-    };
-    let queries = Queries { positions: array![2], log_domain_size: 5 };
-    let lambda = qm31(0, 0, 0, 0);
-    let result = project_to_fft_space(@queries, sparse_circle_evaluation.clone(), lambda);
-    assert_eq!(sparse_circle_evaluation, result);
-}
-
-#[test]
-fn test_project_to_fft_space_2() {
-    let domain = CircleDomain { half_coset: CosetImpl::new(553648128, 0) };
-    let values = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
-    let sparse_circle_evaluation = SparseCircleEvaluation {
-        subcircle_evals: array![CircleEvaluation { values, domain }]
-    };
-    let queries = Queries { positions: array![2], log_domain_size: 5 };
-    let lambda = qm31(1, 2, 3, 4);
-    let result = project_to_fft_space(@queries, sparse_circle_evaluation.clone(), lambda);
-
-    let expected_values = array![
-        qm31(807167737, 2147483645, 2147483644, 2147483643),
-        qm31(1359821400, 2147483645, 2147483644, 2147483643)
-    ];
-    let expected_result = SparseCircleEvaluation {
-        subcircle_evals: array![CircleEvaluation { values: expected_values, domain }]
-    };
     assert_eq!(expected_result, result);
 }

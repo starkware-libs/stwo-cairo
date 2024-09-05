@@ -12,8 +12,7 @@ use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl, LineDomainTrai
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use super::evaluation::{
     LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation,
-    SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl,
-    project_to_fft_space
+    SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
 };
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};

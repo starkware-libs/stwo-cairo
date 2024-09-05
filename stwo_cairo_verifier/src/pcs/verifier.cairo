@@ -11,8 +11,8 @@ use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::circle::CirclePoint;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait};
-use stwo_cairo_verifier::pcs::quotients::PointSample;
-
+use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
+use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -122,7 +122,8 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Verify merkle decommitments.
         assert_eq!(self.trees.len(), proof.queried_values.len());
         assert_eq!(self.trees.len(), proof.decommitments.len());
-        
+        let queried_snap = proof.queried_values.span();
+
         let mut i = 0;
         while i < self.trees.len() {
             //// Get FRI query domains.
@@ -134,7 +135,8 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 queries.insert(*log_size, NullableTrait::new(domain.flatten()));
                 i = i + 1;
             };
-            self.trees[i].verify(queries, proof.queried_values[i].clone(), proof.decommitments[i].clone()).unwrap();
+
+            self.trees[i].verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone()).unwrap();
             i = i + 1;
         };
 
@@ -166,7 +168,43 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-        
+
+        let mut i = 0;
+        let mut flattened_queried_values: Array<Span<M31>> = array![];
+        while i < queried_snap.len() {
+            let queried_values_i = queried_snap.at(i);
+            let mut j = 0;
+            while j < queried_values_i.len() {
+                flattened_queried_values.append(*queried_values_i.at(j));
+                j = j + 1;
+            };
+            i = i + 1;
+        };
+
+        // TODO: Make sure this channel is correct (no wrong appends in the middle).
+        let fri_query_domains = fri_verifier.column_query_positions(ref channel);
+        let column_log_sizes = self.column_log_sizes();
+        let mut flattened_column_log_sizes = array![];
+        let mut i = 0;
+        while i < self.column_log_sizes().len() {
+            let mut j = 0;
+            let column_log_sizes_i = column_log_sizes.at(i);
+            while j < column_log_sizes_i.len() {
+                flattened_column_log_sizes.append(column_log_sizes_i.at(j).clone());
+                j = j + 1;
+            };
+            i = i + 1;
+        };
+
+        let fri_answers: Array<SparseCircleEvaluation> = fri_answers(
+            flattened_column_log_sizes,
+            samples,
+            random_coeff,
+            fri_query_domains,
+            flattened_queried_values
+        ).unwrap();
+        fri_verifier.decommit(fri_answers);
+
         // TODO: code
         Result::Ok(())
     }
