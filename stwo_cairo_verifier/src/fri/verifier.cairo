@@ -9,6 +9,7 @@ use stwo_cairo_verifier::channel::Channel;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
 use stwo_cairo_verifier::poly::circle::CircleDomain;
 use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait};
+use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use super::evaluation::{
     LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation,
     SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl,
@@ -221,7 +222,7 @@ pub struct FriVerifier {
 }
 
 #[generate_trait]
-impl FriVerifierImpl of FriVerifierTrait {
+pub impl FriVerifierImpl of FriVerifierTrait {
     fn commit(
         mut channel: Channel, config: FriConfig, proof: FriProof, column_bounds: Array<u32>
     ) -> Result<FriVerifier, FriVerificationError> {
@@ -393,13 +394,15 @@ impl FriVerifierImpl of FriVerifierTrait {
     }
 
     // TODO: Return opening positions
-    fn column_query_positions(ref self: FriVerifier, ref channel: Channel) {
+    fn column_query_positions(ref self: FriVerifier, ref channel: Channel) -> Array<(core::felt252, SparseSubCircleDomain)> {
         let queries = QueriesImpl::generate(
             ref channel,
             *self.column_bounds[0] + self.config.log_blowup_factor,
             self.config.n_queries
         );
         self.queries = Option::Some(queries);
+
+        array![]
     }
 
     fn decommit(

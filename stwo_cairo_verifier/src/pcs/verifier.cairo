@@ -1,14 +1,16 @@
+use core::result::ResultTrait;
 use core::array::ToSpanTrait;
 use core::array::ArrayTrait;
+use core::nullable::{NullableTrait};
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
-use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
+use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use stwo_cairo_verifier::vcs::hasher::{PoseidonMerkleHasher};
-use stwo_cairo_verifier::fri::verifier::{FriConfig, FriProof};
+use stwo_cairo_verifier::fri::verifier::{FriConfig, FriProof, FriVerifierImpl};
 use stwo_cairo_verifier::channel::{ChannelTime, Channel, ChannelImpl};
 use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::circle::CirclePoint;
-
+use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait};
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -98,18 +100,42 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 let j_copy = i_copy.at(j);
                 while k < j_copy.len() {
                     flattened.append(j_copy.at(k).clone());
-
                     k = k + 1;
                 };
                 j = j + 1;
             };
             i = i + 1;
         };
+        let bounds = array![]; // TODO
 
         channel.mix_felts(flattened.span());
         let random_coeff = channel.draw_felt();
-
         let column_log_sizes = self.column_log_sizes();
+
+        // FRI commitment phase on OODS quotients.
+        let mut fri_verifier = FriVerifierImpl::commit(channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
+
+        channel.mix_nonce(proof.proof_of_work);
+
+        // Verify merkle decommitments.
+        assert_eq!(self.trees.len(), proof.queried_values.len());
+        assert_eq!(self.trees.len(), proof.decommitments.len());
+        
+        let mut i = 0;
+        while i < self.trees.len() {
+            //// Get FRI query domains.
+            let fri_query_domains = fri_verifier.column_query_positions(ref channel);
+            let mut queries: Felt252Dict<Nullable<Span<usize>>> = Default::default();
+            let mut i = 0;
+            while i < fri_query_domains.len() {
+                let (log_size, domain) = fri_query_domains[i];
+                queries.insert(*log_size, NullableTrait::new(domain.flatten()));
+                i = i + 1;
+            };
+            self.trees[i].verify(queries, proof.queried_values[i].clone(), proof.decommitments[i].clone());
+            i = i + 1;
+        };
+        
         // TODO: code
         Result::Ok(())
     }
@@ -125,7 +151,7 @@ pub struct PcsConfig {
 pub struct CommitmentSchemeProof {
     sampled_values: Array<Array<Array<QM31>>>,
     decommitments: Array<MerkleDecommitment>,
-    queried_values: Array<Array<Array<M31>>>,
+    queried_values: Array<Array<Span<M31>>>,
     proof_of_work: u64,
     fri_proof: FriProof
 }
@@ -268,7 +294,7 @@ mod tests {
                     column_witness: array![]
                 }
             ],
-            queried_values: array![array![array![m31(1323727772), m31(1323695004)]]],
+            queried_values: array![array![array![m31(1323727772), m31(1323695004)].span()]],
             proof_of_work: 2,
             fri_proof: FriProof {
                 inner_layers: array![
