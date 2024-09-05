@@ -11,6 +11,8 @@ use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::circle::CirclePoint;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait};
+use stwo_cairo_verifier::pcs::quotients::PointSample;
+
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -132,7 +134,36 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 queries.insert(*log_size, NullableTrait::new(domain.flatten()));
                 i = i + 1;
             };
-            self.trees[i].verify(queries, proof.queried_values[i].clone(), proof.decommitments[i].clone());
+            self.trees[i].verify(queries, proof.queried_values[i].clone(), proof.decommitments[i].clone()).unwrap();
+            i = i + 1;
+        };
+
+        // Answer FRI queries.
+        let snap_points = @sampled_points;
+        let snap_values = @proof.sampled_values;
+        let mut samples: Array<Array<PointSample>> =  array![];
+        let mut i = 0;
+        while i < snap_points.len() {
+            let mut j = 0;
+            let snap_points_i = snap_points.at(i);
+            let snap_values_i = snap_values.at(i);
+            while j < snap_points_i.len() {
+                let mut k = 0;
+                let snap_points_i_j = snap_points_i.at(j);
+                let snap_values_i_j = snap_values_i.at(j);
+                let mut col = array![];
+                while k < snap_points_i_j.len() {
+                    let snap_points_i_j_k = snap_points_i_j.at(k);
+                    let snap_values_i_j_k = snap_values_i_j.at(k);
+                    col.append(PointSample {
+                            point: snap_points_i_j_k.clone(),
+                            value: snap_values_i_j_k.clone()
+                        });
+                    k = k + 1;
+                };
+                samples.append(col);
+                j = j + 1;
+            };
             i = i + 1;
         };
         
