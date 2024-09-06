@@ -1,11 +1,7 @@
 use core::array::SpanTrait;
 use core::traits::PanicDestruct;
-use core::option::OptionTrait;
 use core::box::BoxTrait;
-use core::dict::Felt252DictEntryTrait;
-use core::dict::Felt252DictTrait;
-use core::iter::Iterator;
-
+use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use stwo_cairo_verifier::BaseField;
 
 #[generate_trait]

@@ -1,11 +1,11 @@
-use super::m31::{M31, m31};
+use super::m31::{M31};
 use super::cm31::{CM31, cm31, CM31Trait};
 use core::num::traits::zero::Zero;
 use core::num::traits::one::One;
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq, Eq)]
+#[derive(Copy, Drop, Debug, PartialEq)]
 pub struct QM31 {
     a: CM31,
     b: CM31,

@@ -1,4 +1,5 @@
 use stwo_cairo_verifier::fields::m31::{M31, m31};
+use core::num::traits::{WideMul, WrappingAdd};
 use super::utils::pow;
 
 pub const M31_CIRCLE_GEN: CirclePointM31 =
@@ -6,16 +7,16 @@ pub const M31_CIRCLE_GEN: CirclePointM31 =
 
 pub const CIRCLE_LOG_ORDER: u32 = 31;
 
-// `CIRCLE_ORDER` equals 2^31
+/// Equals `2^31`.
 pub const CIRCLE_ORDER: u32 = 2147483648;
 
-// `CIRCLE_ORDER_BIT_MASK` equals 2^31 - 1
+/// Equals `2^31 - 1`.
 pub const CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 
-// `U32_BIT_MASK` equals 2^32 - 1
+/// Equals `2^32 - 1`.
 pub const U32_BIT_MASK: u64 = 0xffffffff;
 
-#[derive(Drop, Copy, Debug, PartialEq, Eq)]
+#[derive(Drop, Copy, Debug, PartialEq)]
 pub struct CirclePointM31 {
     pub x: M31,
     pub y: M31,
@@ -49,7 +50,7 @@ impl CirclePointM31Add of Add<CirclePointM31> {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
+#[derive(Copy, Clone, Debug, PartialEq, Drop)]
 pub struct Coset {
     // This is an index in the range [0, 2^31)
     pub initial_index: usize,
@@ -66,10 +67,10 @@ pub impl CosetImpl of CosetTrait {
     }
 
     fn index_at(self: @Coset, index: usize) -> usize {
-        let index_times_step = (core::integer::u32_wide_mul(*self.step_size, index) & U32_BIT_MASK)
+        let index_times_step = ((*self.step_size).wide_mul(index) & U32_BIT_MASK)
             .try_into()
             .unwrap();
-        let result = core::integer::u32_wrapping_add(*self.initial_index, index_times_step);
+        let result = WrappingAdd::wrapping_add(*self.initial_index, index_times_step);
         result & CIRCLE_ORDER_BIT_MASK
     }
 
