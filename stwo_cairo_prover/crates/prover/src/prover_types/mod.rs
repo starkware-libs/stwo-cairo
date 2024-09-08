@@ -3,9 +3,9 @@ use std::simd::Simd;
 
 use itertools::all;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
-use stwo_prover::core::fields::m31::{self};
+use stwo_prover::core::fields::m31;
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct PackedUInt32 {
     pub(crate) simd: Simd<u32, N_LANES>,
 }
@@ -20,6 +20,13 @@ impl PackedUInt32 {
         // Safe because UInt32 is u32.
         Self {
             simd: Simd::from_array(arr),
+        }
+    }
+
+    pub fn from_m31_array(arr: [m31::M31; N_LANES]) -> Self {
+        // Safe because M32 is u32.
+        Self {
+            simd: Simd::from_array(arr.map(|v| v.0)),
         }
     }
 

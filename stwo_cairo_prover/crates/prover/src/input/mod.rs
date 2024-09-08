@@ -1,10 +1,13 @@
 use instructions::Instructions;
 use mem::Memory;
 
+use self::range_check_unit::RangeCheckUnitInput;
+
 mod decode;
 pub mod instructions;
 pub mod mem;
 pub mod plain;
+pub mod range_check_unit;
 pub mod vm_import;
 
 pub const N_REGISTERS: usize = 3;
@@ -15,6 +18,7 @@ pub struct CairoInput {
     pub instructions: Instructions,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
+    pub range_check9: RangeCheckUnitInput,
 
     // Builtins.
     pub range_check_builtin: SegmentAddrs,
