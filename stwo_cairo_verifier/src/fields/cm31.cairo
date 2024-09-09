@@ -116,8 +116,12 @@ pub impl CM31Neg of Neg<CM31> {
         CM31 { a: -a.a, b: -a.b }
     }
 }
+impl CM31PartialOrd of PartialOrd<CM31> {
+    fn lt(lhs: CM31, rhs: CM31) -> bool {
+        lhs.a < rhs.a || (lhs.a == rhs.a && lhs.b < rhs.b)
+    }
+}
 
-#[inline]
 pub fn cm31(a: u32, b: u32) -> CM31 {
     CM31 { a: m31(a), b: m31(b) }
 }
@@ -157,9 +161,7 @@ mod tests {
 
     #[test]
     fn test_batch_inverse_with_empty_array() {
-        let res = CM31Impl::batch_inverse(array![]);
-
-        assert!(res == array![]);
+        assert!(CM31Impl::batch_inverse(array![]) == array![]);
     }
 
     #[test]
@@ -182,15 +184,4 @@ mod tests {
 
         assert!(res == array![a.inverse(), b.inverse(), c.inverse(), d.inverse()]);
     }
-    // #[test]
-// fn test_batch_inverse_with_large_input() {
-//     let mut vals = array![];
-//     for i in 0_u32..50000 {
-//         vals.append(cm31(i, i + 1));
-//     };
-
-    //     let res = CM31Impl::batch_inverse(vals);
-
-    //     println!("works!");
-// }
 }
