@@ -1,4 +1,6 @@
 use core::num::traits::{One, Zero};
+use core::ops::{AddAssign, MulAssign, SubAssign};
+use stwo_cairo_verifier::circle::{CirclePointQM31Impl};
 use super::m31::{M31, m31, M31Trait};
 
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -14,21 +16,71 @@ pub impl CM31Impl of CM31Trait {
         let denom_inverse: M31 = (self.a * self.a + self.b * self.b).inverse();
         CM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+    /// Computes all `1/arr[i]` with a single call to `inverse()` using Montgomery batch inversion.
+    fn batch_inverse(arr: Array<CM31>) -> Array<CM31> {
+        // Construct array `1, z, zy, ..., zy..b`.
+        let mut prefix_product_rev = array![];
+        let mut cumulative_product: CM31 = One::one();
+
+        let mut i = arr.len();
+        while i != 0 {
+            i -= 1;
+            prefix_product_rev.append(cumulative_product);
+            cumulative_product *= *arr[i];
+        };
+
+        // Compute `1/zy..a`.
+        let mut cumulative_product_inv = cumulative_product.inverse();
+        // Compute all `1/a = zy..b/zy..a, 1/b = zy..c/zy..b, ...`.
+        let mut inverses = array![];
+
+        let mut i = prefix_product_rev.len();
+        for v in arr {
+            i -= 1;
+            inverses.append(cumulative_product_inv * *prefix_product_rev[i]);
+            cumulative_product_inv *= v;
+        };
+
+        inverses
+    }
+    // TODO(andrew): When associated types are supported, support `Mul<CM31, M31>`.
+    fn mul_m31(self: CM31, rhs: M31) -> CM31 {
+        CM31 { a: self.a * rhs, b: self.b * rhs }
+    }
+    // TODO(andrew): When associated types are supported, support `Sub<CM31, M31>`.
+    fn sub_m31(self: CM31, rhs: M31) -> CM31 {
+        CM31 { a: self.a - rhs, b: self.b }
+    }
 }
 
-pub impl CM31Add of core::traits::Add<CM31> {
+pub impl CM31Add of Add<CM31> {
     fn add(lhs: CM31, rhs: CM31) -> CM31 {
         CM31 { a: lhs.a + rhs.a, b: lhs.b + rhs.b }
     }
 }
-pub impl CM31Sub of core::traits::Sub<CM31> {
+pub impl CM31Sub of Sub<CM31> {
     fn sub(lhs: CM31, rhs: CM31) -> CM31 {
         CM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
     }
 }
-pub impl CM31Mul of core::traits::Mul<CM31> {
+pub impl CM31Mul of Mul<CM31> {
     fn mul(lhs: CM31, rhs: CM31) -> CM31 {
         CM31 { a: lhs.a * rhs.a - lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
+    }
+}
+pub impl CM31AddAssign of AddAssign<CM31, CM31> {
+    fn add_assign(ref self: CM31, rhs: CM31) {
+        self = self + rhs
+    }
+}
+pub impl CM31SubAssign of SubAssign<CM31, CM31> {
+    fn sub_assign(ref self: CM31, rhs: CM31) {
+        self = self - rhs
+    }
+}
+pub impl CM31MulAssign of MulAssign<CM31, CM31> {
+    fn mul_assign(ref self: CM31, rhs: CM31) {
+        self = self * rhs
     }
 }
 pub impl CM31Zero of Zero<CM31> {
@@ -54,6 +106,7 @@ pub impl CM31One of One<CM31> {
     }
 }
 pub impl M31IntoCM31 of core::traits::Into<M31, CM31> {
+    #[inline]
     fn into(self: M31) -> CM31 {
         CM31 { a: self, b: m31(0) }
     }
@@ -64,6 +117,7 @@ pub impl CM31Neg of Neg<CM31> {
     }
 }
 
+#[inline]
 pub fn cm31(a: u32, b: u32) -> CM31 {
     CM31 { a: m31(a), b: m31(b) }
 }
@@ -71,8 +125,9 @@ pub fn cm31(a: u32, b: u32) -> CM31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{cm31};
+    use core::num::traits::One;
     use super::super::m31::{m31, P};
+    use super::{cm31, CM31Impl};
 
     #[test]
     fn test_cm31() {
@@ -90,4 +145,52 @@ mod tests {
         assert_eq!(cm0 - cm1, cm31(P - 3, P - 3));
         assert_eq!(cm1 - m.into(), cm1 - cm);
     }
+
+    #[test]
+    fn test_inverse() {
+        let v = cm31(3, 7);
+
+        let v_inv = v.inverse();
+
+        assert!((v_inv * v).is_one());
+    }
+
+    #[test]
+    fn test_batch_inverse_with_empty_array() {
+        let res = CM31Impl::batch_inverse(array![]);
+
+        assert!(res == array![]);
+    }
+
+    #[test]
+    fn test_batch_inverse_with_single_value() {
+        let v = cm31(1, 2);
+
+        let res = CM31Impl::batch_inverse(array![v]);
+
+        assert!(res == array![v.inverse()]);
+    }
+
+    #[test]
+    fn test_batch_inverse() {
+        let a = cm31(1, 2);
+        let b = cm31(4, 5);
+        let c = cm31(0, 3);
+        let d = cm31(7, 5);
+
+        let res = CM31Impl::batch_inverse(array![a, b, c, d]);
+
+        assert!(res == array![a.inverse(), b.inverse(), c.inverse(), d.inverse()]);
+    }
+    // #[test]
+// fn test_batch_inverse_with_large_input() {
+//     let mut vals = array![];
+//     for i in 0_u32..50000 {
+//         vals.append(cm31(i, i + 1));
+//     };
+
+    //     let res = CM31Impl::batch_inverse(vals);
+
+    //     println!("works!");
+// }
 }
