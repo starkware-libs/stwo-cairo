@@ -16,7 +16,7 @@ use super::evaluation::{
 };
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
-use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array};
+use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};
 
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
@@ -400,21 +400,14 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             self.config.n_queries
         );
         self.queries = Option::Some(queries.clone());
+
         let mut column_log_sizes = array![];
         let mut i = 0;
         let column_bounds_snap = @self.column_bounds;
+
         while i < column_bounds_snap.len() {
             let v = *(column_bounds_snap.at(i)) + self.config.log_blowup_factor;
-            let mut found = false;
-            let mut j = 0;
-            let column_log_sizes_snap = @column_log_sizes;
-            while j < column_log_sizes_snap.len() {
-                if *column_log_sizes_snap.at(j) == v {
-                    found = true;
-                }
-                j = j + 1;
-            };
-            if (!found) {
+            if(!find(v, column_log_sizes.span())) {
                 column_log_sizes.append(v);
             }
             i = i + 1;
@@ -446,6 +439,7 @@ fn get_opening_positions(
     let mut positions: Array<(core::felt252, SparseSubCircleDomain)> = array![];
     let felt_prev: core::felt252 = (*prev_log_size).into();
     positions.append((felt_prev, prev_queries.opening_positions(FOLD_STEP)));
+
     let mut i = 1;
     while i < column_log_sizes.len() {
         let n_folds = *prev_log_size - *column_log_sizes.at(i);
@@ -454,6 +448,7 @@ fn get_opening_positions(
         positions.append((felt_column_log_sizes, queries.opening_positions(FOLD_STEP)));
         prev_log_size = column_log_sizes.at(i);
         prev_queries = queries;
+        i = i + 1;
     };
     positions
 }

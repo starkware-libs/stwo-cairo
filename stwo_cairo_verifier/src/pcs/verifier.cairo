@@ -128,6 +128,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
+
         // Sort and deduplicate
         let mut bounds = array![];
         let mut upper_bound = Option::None;
@@ -138,7 +139,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierImpl::commit(channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
-        println!("Llego1");
 
         channel.mix_nonce(proof.proof_of_work);
 
@@ -152,18 +152,16 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             //// Get FRI query domains.
             let fri_query_domains = fri_verifier.column_query_positions(ref channel);
             let mut queries: Felt252Dict<Nullable<Span<usize>>> = Default::default();
-            let mut i = 0;
-            while i < fri_query_domains.len() {
-                let (log_size, domain) = fri_query_domains[i];
+            let mut j = 0;
+            while j < fri_query_domains.len() {
+                let (log_size, domain) = fri_query_domains[j];
                 queries.insert(*log_size, NullableTrait::new(domain.flatten()));
-                i = i + 1;
+                j = j + 1;
             };
 
             self.trees[i].verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone()).unwrap();
-
             i = i + 1;
         };
-
         // Answer FRI queries.
         let snap_points = @sampled_points;
         let snap_values = @proof.sampled_values;
@@ -229,15 +227,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ).unwrap();
         fri_verifier.decommit(fri_answers);
 
-        // TODO: code
-
-        let bounds: Array<u32> = array![]; // lo va a hacer tom
-
-        // let fri_verifier = FriVerifier 
-
-        //Verify proof of work.
-        channel.mix_nonce(proof.proof_of_work);
-        
+        // TODO: code        
 
         Result::Ok(())
     }

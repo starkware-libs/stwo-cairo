@@ -16,9 +16,10 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
         let mut res = array![];
         let start = *self.coset_index * pow(2, *self.log_size); 
         let end = (*self.coset_index + 1) * pow(2, *self.log_size);
-        let i = start;
+        let mut i = start;
         while i < end {
             res.append(i);
+            i = i + 1;
         };
         res
     }
