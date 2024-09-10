@@ -8,7 +8,6 @@ use stwo_cairo_verifier::circle::{
     Coset, CosetImpl, CirclePoint, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER
 };
 
-
 #[derive(Debug, Copy, Drop, PartialEq, Eq)]
 pub struct CircleDomain {
     pub half_coset: Coset

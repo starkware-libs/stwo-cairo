@@ -1,9 +1,10 @@
 use super::utils::pow;
+use core::traits::Copy;
 
 
 /// Represents a circle domain relative to a larger circle domain. The `initial_index` is the bit
 /// reversed query index in the larger domain.
-#[derive(Drop, Debug)]
+#[derive(Drop, Debug, Copy)]
 pub struct SubCircleDomain {
     pub coset_index: usize,
     pub log_size: u32,

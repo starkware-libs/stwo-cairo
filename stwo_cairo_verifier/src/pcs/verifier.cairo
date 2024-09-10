@@ -2,7 +2,6 @@ use stwo_cairo_verifier::channel::ChannelTrait;
 use core::result::ResultTrait;
 use core::array::ToSpanTrait;
 use core::array::ArrayTrait;
-use core::nullable::{NullableTrait};
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use stwo_cairo_verifier::vcs::hasher::{PoseidonMerkleHasher};
@@ -14,6 +13,8 @@ use stwo_cairo_verifier::circle::CirclePoint;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait};
 use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
+use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
+use core::dict::Felt252DictEntryTrait;
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -147,16 +148,31 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         assert_eq!(self.trees.len(), proof.queried_values.len());
         assert_eq!(self.trees.len(), proof.decommitments.len());
         let queried_snap = proof.queried_values.span();
-        let fri_query_domains = fri_verifier.column_query_positions(ref channel);
-        let fri_query_domains_snap = @fri_query_domains;
+        let (mut fri_query_domains, column_log_sizes) = fri_verifier.column_query_positions(ref channel);
         let mut i = 0;
         while i < self.trees.len() {
             //// Get FRI query domains.
             let mut queries: Felt252Dict<Nullable<Span<usize>>> = Default::default();
             let mut j = 0;
-            while j < fri_query_domains_snap.len() {
-                let (log_size, domain) = fri_query_domains_snap.at(j);
-                queries.insert(*log_size, NullableTrait::new(domain.flatten()));
+            while j < column_log_sizes.len() {
+                let log_size = *column_log_sizes.at(j);
+
+                let (fri_query_domains_entry, nullable_domain) = fri_query_domains.entry(log_size.into());
+                let domain = match match_nullable(nullable_domain) {
+                    FromNullableResult::Null => panic!("No value found"),
+                    FromNullableResult::NotNull(value) => {
+                        let prev_fri_query_domain = value.unbox();
+                        let fri_query_domain_copy = SparseSubCircleDomain { 
+                            domains: prev_fri_query_domain.domains.clone(),
+                            large_domain_log_size: prev_fri_query_domain.large_domain_log_size
+                        };
+                        fri_query_domains = fri_query_domains_entry.finalize(NullableTrait::new(prev_fri_query_domain));
+    
+                        fri_query_domain_copy
+                    }
+                };
+
+                queries.insert(log_size.into(), NullableTrait::new(domain.flatten()));
                 j = j + 1;
             };
             self.trees[i].verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone()).unwrap();
@@ -204,6 +220,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // TODO: Make sure this channel is correct (no wrong appends in the middle).
+        let (mut fri_query_domains, _) = fri_verifier.column_query_positions(ref channel);
         let column_log_sizes = self.column_log_sizes();
         let mut flattened_column_log_sizes = array![];
         let mut i = 0;
@@ -220,19 +237,17 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         println!("flattened_column_log_sizes: {:?}\n", flattened_column_log_sizes);
         println!("samples: {:?}\n", samples);
         println!("random_coeff: {:?}\n", random_coeff);
-        println!("fri_query_domains: {:?}\n", fri_query_domains);
+        //println!("fri_query_domains: {:?}\n", fri_query_domains);
         println!("flattened_queried_values: {:?}\n", flattened_queried_values);
 
         let fri_answers: Array<SparseCircleEvaluation> = fri_answers(
             flattened_column_log_sizes,
             samples,
             random_coeff,
-            fri_query_domains,
+            ref fri_query_domains,
             flattened_queried_values
         ).unwrap();
-        fri_verifier.decommit(fri_answers);
-
-        // TODO: code        
+        fri_verifier.decommit(fri_answers);    
 
         Result::Ok(())
     }

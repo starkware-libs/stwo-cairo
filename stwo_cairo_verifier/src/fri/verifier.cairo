@@ -17,6 +17,8 @@ use super::evaluation::{
 use super::query::{Queries, QueriesImpl};
 use super::polynomial::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};
+use core::dict::Felt252Dict;
+
 
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
@@ -393,7 +395,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     }
 
     // TODO: Return opening positions
-    fn column_query_positions(ref self: FriVerifier, ref channel: Channel) -> Array<(core::felt252, SparseSubCircleDomain)> {
+    fn column_query_positions(ref self: FriVerifier, ref channel: Channel)
+     -> (Felt252Dict<Nullable<SparseSubCircleDomain>>, Span<u32>) {
         let queries = QueriesImpl::generate(
             ref channel,
             *self.column_bounds[0] + self.config.log_blowup_factor,
@@ -413,7 +416,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             i = i + 1;
         };
 
-        get_opening_positions(@queries, column_log_sizes)
+        (get_opening_positions(@queries, column_log_sizes.span()), column_log_sizes.span())
     }
 
     fn decommit(
@@ -431,21 +434,21 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
 fn get_opening_positions(
     queries: @Queries,
-    column_log_sizes: Array<u32>,
-) -> Array<(core::felt252, SparseSubCircleDomain)> {
+    column_log_sizes: Span<u32>,
+) -> Felt252Dict<Nullable<SparseSubCircleDomain>> {
     let mut prev_log_size = column_log_sizes[0];
     assert!(prev_log_size == queries.log_domain_size);
     let mut prev_queries = queries.clone();
-    let mut positions: Array<(core::felt252, SparseSubCircleDomain)> = array![];
+    let mut positions: Felt252Dict<Nullable<SparseSubCircleDomain>> = Default::default();
     let felt_prev: core::felt252 = (*prev_log_size).into();
-    positions.append((felt_prev, prev_queries.opening_positions(FOLD_STEP)));
+    positions.insert(felt_prev, NullableTrait::new(prev_queries.opening_positions(FOLD_STEP)));
 
     let mut i = 1;
     while i < column_log_sizes.len() {
         let n_folds = *prev_log_size - *column_log_sizes.at(i);
         let queries = prev_queries.fold(n_folds);
         let felt_column_log_sizes: core::felt252 = (*column_log_sizes.at(i)).into();
-        positions.append((felt_column_log_sizes, queries.opening_positions(FOLD_STEP)));
+        positions.insert(felt_column_log_sizes, NullableTrait::new(queries.opening_positions(FOLD_STEP)));
         prev_log_size = column_log_sizes.at(i);
         prev_queries = queries;
         i = i + 1;
@@ -511,7 +514,7 @@ mod tests {
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds).unwrap();
 
         let mut channel = ChannelTrait::new(0x00);
-        verifier.column_query_positions(ref channel);
+        let (_, _) = verifier.column_query_positions(ref channel);
 
         verifier.decommit(decommitted_values).unwrap();
     }

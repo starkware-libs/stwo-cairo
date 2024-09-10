@@ -1,3 +1,4 @@
+use core::dict::Felt252DictEntryTrait;
 use core::traits::TryInto;
 use core::option::OptionTrait;
 use core::array::ArrayTrait;
@@ -7,7 +8,8 @@ use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
-
+use core::dict::Felt252Dict;
+use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 
 #[derive(Drop, Copy, Debug)]
 pub struct PointSample {
@@ -19,7 +21,7 @@ pub fn fri_answers(
     column_log_sizes: Array<u32>,
     samples: Array<Array<PointSample>>,
     random_coeff: SecureField,
-    query_domain_per_log_size: Array<(core::felt252, SparseSubCircleDomain)>,
+    ref query_domain_per_log_size: Felt252Dict<Nullable<SparseSubCircleDomain>>,
     queried_values_per_column: Array<Span<M31>>
 ) -> Result<Array<SparseCircleEvaluation>, VerificationError> {
     let mut results = array![];
@@ -35,11 +37,26 @@ pub fn fri_answers(
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));
         } else {
+            let (query_domain_entry, query_domain_nullable) = query_domain_per_log_size.entry(last_maximum.unwrap().into());
+            let query_domain = match match_nullable(query_domain_nullable) {
+                FromNullableResult::Null => panic!("No value found"),
+                FromNullableResult::NotNull(value) => {
+                    let prev_query_domain = value.unbox();
+                    let query_domain_copy = SparseSubCircleDomain { 
+                        domains: prev_query_domain.domains.clone(),
+                        large_domain_log_size: prev_query_domain.large_domain_log_size
+                    };
+                    query_domain_per_log_size = query_domain_entry.finalize(NullableTrait::new(prev_query_domain));
+
+                    query_domain_copy
+                }
+            };
+
             match fri_answers_for_log_size(
                 last_maximum.unwrap(),
                 @samples_vec,
                 random_coeff,
-                query_domain_on(query_domain_per_log_size.span(), last_maximum.unwrap()).unwrap(),
+                @query_domain,
                 @queried_values_per_column_vec
             ) {
                     Result::Ok(result) => results.append(result),
@@ -70,23 +87,6 @@ pub fn fri_answers_for_log_size(
     queried_values_per_column: @Array<@Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
     Result::Err(VerificationError::Error)
-}
-
-fn query_domain_on(
-    query_domain_per_log_size: Span<(core::felt252, SparseSubCircleDomain)>,
-    log_size: u32,
-) -> Option<@SparseSubCircleDomain> {
-    let mut j = 0;
-    let mut result = Option::None;
-    while j < query_domain_per_log_size.len() {
-        let (log_size_index, value) = query_domain_per_log_size.at(j);
-        if *log_size_index == log_size.into() {
-            result = Option::Some(value);
-            break;
-        }
-        j = j + 1;
-    };
-    result
 }
 
 fn get_maximum(arr: @Array<u32>, upper_bound: Option<u32>) -> (Option<u32>, Option<u32>) {
