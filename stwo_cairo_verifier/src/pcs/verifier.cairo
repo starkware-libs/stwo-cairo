@@ -1,3 +1,4 @@
+use stwo_cairo_verifier::channel::ChannelTrait;
 use core::result::ResultTrait;
 use core::array::ToSpanTrait;
 use core::array::ArrayTrait;
@@ -229,6 +230,15 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         fri_verifier.decommit(fri_answers);
 
         // TODO: code
+
+        let bounds: Array<u32> = array![]; // lo va a hacer tom
+
+        // let fri_verifier = FriVerifier 
+
+        //Verify proof of work.
+        channel.mix_nonce(proof.proof_of_work);
+        
+
         Result::Ok(())
     }
 }
