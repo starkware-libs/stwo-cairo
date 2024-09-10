@@ -10,7 +10,7 @@ use stwo_cairo_verifier::channel::{ChannelTime, Channel, ChannelImpl};
 use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::circle::CirclePoint;
-use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait};
+use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait, get_sparse_sub_circle_domain_dict};
 use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
@@ -156,21 +156,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             let mut j = 0;
             while j < column_log_sizes.len() {
                 let log_size = *column_log_sizes.at(j);
-
-                let (fri_query_domains_entry, nullable_domain) = fri_query_domains.entry(log_size.into());
-                let domain = match match_nullable(nullable_domain) {
-                    FromNullableResult::Null => panic!("No value found"),
-                    FromNullableResult::NotNull(value) => {
-                        let prev_fri_query_domain = value.unbox();
-                        let fri_query_domain_copy = SparseSubCircleDomain { 
-                            domains: prev_fri_query_domain.domains.clone(),
-                            large_domain_log_size: prev_fri_query_domain.large_domain_log_size
-                        };
-                        fri_query_domains = fri_query_domains_entry.finalize(NullableTrait::new(prev_fri_query_domain));
-    
-                        fri_query_domain_copy
-                    }
-                };
+                let domain = get_sparse_sub_circle_domain_dict(ref fri_query_domains, log_size);
 
                 queries.insert(log_size.into(), NullableTrait::new(domain.flatten()));
                 j = j + 1;

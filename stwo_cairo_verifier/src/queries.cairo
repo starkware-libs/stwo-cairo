@@ -1,5 +1,7 @@
 use super::utils::pow;
 use core::traits::Copy;
+use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
+use core::dict::Felt252DictEntryTrait;
 
 
 /// Represents a circle domain relative to a larger circle domain. The `initial_index` is the bit
@@ -47,5 +49,24 @@ pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
             i = i + 1;
         };
         res.span()
+    }
+}
+
+
+pub fn get_sparse_sub_circle_domain_dict(ref dictionary: Felt252Dict<Nullable<SparseSubCircleDomain>>, key: u32)
+ -> SparseSubCircleDomain {
+    let (entry, nullable_value) = dictionary.entry(key.into());
+    match match_nullable(nullable_value) {
+        FromNullableResult::Null => panic!("No value found"),
+        FromNullableResult::NotNull(value) => {
+            let previous_value = value.unbox();
+            let copy = SparseSubCircleDomain { 
+                domains: previous_value.domains.clone(),
+                large_domain_log_size: previous_value.large_domain_log_size
+            };
+            dictionary = entry.finalize(NullableTrait::new(previous_value));
+
+            copy
+        }
     }
 }
