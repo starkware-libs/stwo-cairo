@@ -1,7 +1,8 @@
 use core::option::OptionTrait;
 use stwo_cairo_verifier::channel::ChannelTrait;
-use stwo_cairo_verifier::utils::pow;
+use stwo_cairo_verifier::utils::{pow, find};
 use stwo_cairo_verifier::channel::Channel;
+use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SubCircleDomain};
 
 
 #[derive(Drop, Clone, Debug, PartialEq, Eq)]
@@ -70,7 +71,34 @@ pub impl QueriesImpl of QueriesImplTrait {
         };
         Queries { positions: new_positions, log_domain_size: *self.log_domain_size - n_folds }
     }
+
+    fn opening_positions(self: @Queries, fri_step_size: u32) -> SparseSubCircleDomain {
+        assert!(fri_step_size > 0);
+        let mut domains = array![];
+        let snap_positions = self.positions;
+        let mut already_added = array![];
+        let mut i = 0;
+        while i < snap_positions.len() {
+            let v = *snap_positions.at(i);
+            if(!find(v, already_added.span())) {
+                already_added.append(v);
+                domains.append(SubCircleDomain {
+                    coset_index: v / pow(2, fri_step_size),
+                    log_size: fri_step_size
+                });
+            }
+            
+            i = i + 1;
+        };
+
+        SparseSubCircleDomain {
+            domains: domains,
+            large_domain_log_size: *self.log_domain_size,
+        }
+    }
 }
+
+
 
 // Returns the minimum element in `arr` that is larger than `lower_bound`
 fn get_minimum(arr: @Array<u32>, lower_bound: Option<u32>) -> Option<u32> {

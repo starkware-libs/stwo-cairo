@@ -137,6 +137,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierImpl::commit(channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
+        println!("Llego1");
 
         channel.mix_nonce(proof.proof_of_work);
 
@@ -158,6 +159,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
 
             self.trees[i].verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone()).unwrap();
+
             i = i + 1;
         };
 

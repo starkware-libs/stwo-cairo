@@ -139,6 +139,20 @@ pub fn qm31_zero_array(n: u32) -> Array<QM31> {
     result
 }
 
+pub fn find(n: u32, a: Span<u32>) -> bool {
+    let mut i = 0;
+    let mut res = false;
+    while i < a.len() {
+        if(*a[i] == n) {
+            res = true;
+            break;
+        }
+        i = i + 1;
+    };
+    res
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::{pow, bit_reverse_index, pow_qm31, qm31};
