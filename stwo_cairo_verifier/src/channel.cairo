@@ -12,7 +12,7 @@ const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
 pub const EXTENSION_FELTS_PER_HASH: usize = 2;
 pub const FELTS_PER_HASH: usize = 8;
 
-#[derive(Default, Drop, Copy)]
+#[derive(Default, Drop, Copy, Debug)]
 pub struct ChannelTime {
     pub n_challenges: usize,
     pub n_sent: usize,
@@ -30,7 +30,7 @@ impl ChannelTimeImpl of ChannelTimeTrait {
     }
 }
 
-#[derive(Drop, Copy)]
+#[derive(Drop, Copy, Debug)]
 pub struct Channel {
     pub digest: felt252,
     pub channel_time: ChannelTime,

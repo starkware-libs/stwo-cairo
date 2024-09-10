@@ -30,7 +30,7 @@ pub enum FriVerificationError {
     InnerLayerCommitmentInvalid
 }
 
-#[derive(Drop)]
+#[derive(Drop, Debug)]
 struct FriLayerVerifier {
     degree_bound: u32,
     domain: LineDomain,
@@ -188,14 +188,14 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     }
 }
 
-#[derive(Clone, Copy, Drop)]
+#[derive(Clone, Copy, Drop, Debug)]
 pub struct FriConfig {
     pub log_blowup_factor: u32,
     pub log_last_layer_degree_bound: usize,
     pub n_queries: usize,
 }
 
-#[derive(Drop, Clone)]
+#[derive(Drop, Clone, Debug)]
 pub struct FriLayerProof {
     pub evals_subset: Array<QM31>,
     pub decommitment: MerkleDecommitment::<PoseidonMerkleHasher>,
@@ -208,7 +208,7 @@ pub struct FriProof {
     pub last_layer_poly: LinePoly,
 }
 
-#[derive(Drop)]
+#[derive(Drop, Debug)]
 pub struct FriVerifier {
     config: FriConfig,
     circle_poly_alpha: QM31,
@@ -223,7 +223,7 @@ pub struct FriVerifier {
 #[generate_trait]
 pub impl FriVerifierImpl of FriVerifierTrait {
     fn commit(
-        mut channel: Channel, config: FriConfig, proof: FriProof, column_bounds: Array<u32>
+        ref channel: Channel, config: FriConfig, proof: FriProof, column_bounds: Array<u32>
     ) -> Result<FriVerifier, FriVerificationError> {
         let max_column_bound = column_bounds[0];
         let expected_query_log_domain_size = *max_column_bound + config.log_blowup_factor;
@@ -478,8 +478,8 @@ mod tests {
     fn valid_proof_with_constant_last_layer_passes_verification() {
         let (config, proof, bounds, queries, decommitted_values) = proof_with_constant_last_layer();
 
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds).unwrap();
 
         verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
     }
@@ -488,8 +488,8 @@ mod tests {
     fn valid_proof_passes_verification() {
         let (config, proof, bounds, queries, decommitted_values) = proof_with_linear_last_layer();
 
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds).unwrap();
 
         verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
     }
@@ -498,8 +498,8 @@ mod tests {
     fn valid_mixed_degree_proof_passes_verification() {
         let (config, proof, bounds, queries, decommitted_values) = proof_with_mixed_degree_1();
 
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds).unwrap();
 
         verifier.decommit_on_queries(@queries, decommitted_values).unwrap();
     }
@@ -508,7 +508,7 @@ mod tests {
     fn valid_mixed_degree_end_to_end_proof_passes_verification() {
         let (config, proof, bounds, decommitted_values) = proof_with_mixed_degree_2();
         let mut channel = ChannelTrait::new(0x00);
-        let mut verifier = FriVerifierImpl::commit(channel, config, proof, bounds).unwrap();
+        let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds).unwrap();
 
         let mut channel = ChannelTrait::new(0x00);
         verifier.column_query_positions(ref channel);
@@ -523,8 +523,8 @@ mod tests {
         let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound -= 1;
 
-        let channel = ChannelTrait::new(0x00);
-        let result = FriVerifierImpl::commit(channel, invalid_config, proof, bounds);
+        let mut channel = ChannelTrait::new(0x00);
+        let result = FriVerifierImpl::commit(ref channel, invalid_config, proof, bounds);
 
         match result {
             Result::Ok(_) => { panic!("Verifier should return InvalidNumFriLayers"); },
@@ -539,8 +539,8 @@ mod tests {
         let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound += 1;
 
-        let channel = ChannelTrait::new(0x00);
-        let result = FriVerifierImpl::commit(channel, invalid_config, proof, bounds);
+        let mut channel = ChannelTrait::new(0x00);
+        let result = FriVerifierImpl::commit(ref channel, invalid_config, proof, bounds);
 
         match result {
             Result::Ok(_) => { panic!("Verifier should return InvalidNumFriLayers"); },
@@ -588,8 +588,8 @@ mod tests {
             }
         };
 
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, invalid_proof, bounds.clone())
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(ref channel, config, invalid_proof, bounds.clone())
             .unwrap();
         let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
 
@@ -642,8 +642,8 @@ mod tests {
                 inner_layers: invalid_inner_layers, last_layer_poly: proof.last_layer_poly.clone()
             }
         };
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, invalid_proof, bounds).unwrap();
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(ref channel, config, invalid_proof, bounds).unwrap();
 
         let verification_result = verifier.decommit_on_queries(@queries, decommitted_values);
 
@@ -665,8 +665,8 @@ mod tests {
                     coeffs: array![qm31(1, 0, 0, 0), qm31(1, 0, 0, 0)], ..proof.last_layer_poly
                 };
 
-        let channel = ChannelTrait::new(0x00);
-        let verifier = FriVerifierImpl::commit(channel, config, proof, bounds);
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds);
         match verifier {
             Result::Ok(_) => { panic!("Verifier should return LastLayerDegreeInvalid"); },
             Result::Err(error) => {
@@ -684,8 +684,8 @@ mod tests {
         let mut invalid_queries = queries;
         invalid_queries.log_domain_size -= 1;
 
-        let channel = ChannelTrait::new(0x00);
-        let verifier_result = FriVerifierImpl::commit(channel, config, proof, bounds);
+        let mut channel = ChannelTrait::new(0x00);
+        let verifier_result = FriVerifierImpl::commit(ref channel, config, proof, bounds);
         match verifier_result {
             Result::Ok(verifier) => {
                 verifier.decommit_on_queries(@invalid_queries, decommitted_values).unwrap();

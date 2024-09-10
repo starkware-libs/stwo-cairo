@@ -112,6 +112,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         channel.mix_felts(flattened.span());
         let random_coeff = channel.draw_felt();
+
         let column_log_sizes = self.column_log_sizes();
 
         let mut vec_to_sort = array![];
@@ -138,7 +139,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // FRI commitment phase on OODS quotients.
-        let mut fri_verifier = FriVerifierImpl::commit(channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
+        let mut fri_verifier = FriVerifierImpl::commit(ref channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
 
         channel.mix_nonce(proof.proof_of_work);
 
@@ -146,19 +147,18 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         assert_eq!(self.trees.len(), proof.queried_values.len());
         assert_eq!(self.trees.len(), proof.decommitments.len());
         let queried_snap = proof.queried_values.span();
-
+        let fri_query_domains = fri_verifier.column_query_positions(ref channel);
+        let fri_query_domains_snap = @fri_query_domains;
         let mut i = 0;
         while i < self.trees.len() {
             //// Get FRI query domains.
-            let fri_query_domains = fri_verifier.column_query_positions(ref channel);
             let mut queries: Felt252Dict<Nullable<Span<usize>>> = Default::default();
             let mut j = 0;
-            while j < fri_query_domains.len() {
-                let (log_size, domain) = fri_query_domains[j];
+            while j < fri_query_domains_snap.len() {
+                let (log_size, domain) = fri_query_domains_snap.at(j);
                 queries.insert(*log_size, NullableTrait::new(domain.flatten()));
                 j = j + 1;
             };
-
             self.trees[i].verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone()).unwrap();
             i = i + 1;
         };
@@ -204,7 +204,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // TODO: Make sure this channel is correct (no wrong appends in the middle).
-        let fri_query_domains = fri_verifier.column_query_positions(ref channel);
         let column_log_sizes = self.column_log_sizes();
         let mut flattened_column_log_sizes = array![];
         let mut i = 0;
@@ -217,6 +216,12 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
+
+        println!("flattened_column_log_sizes: {:?}\n", flattened_column_log_sizes);
+        println!("samples: {:?}\n", samples);
+        println!("random_coeff: {:?}\n", random_coeff);
+        println!("fri_query_domains: {:?}\n", fri_query_domains);
+        println!("flattened_queried_values: {:?}\n", flattened_queried_values);
 
         let fri_answers: Array<SparseCircleEvaluation> = fri_answers(
             flattened_column_log_sizes,
@@ -279,7 +284,6 @@ impl MerkleChannelTraitImpl of MerkleChannelTrait {
         channel.mix_digest(root)
     }
 }
-
 
 #[derive(Debug, Drop, PartialEq)]
 pub enum VerificationError {
@@ -440,6 +444,13 @@ mod tests {
             }
         };
 
+        let mut channel = Channel {
+            digest: 0x028f415beb869c1e81a7a773bac2943b9a7217814631ce58d1f361d44625aabd,
+            channel_time: ChannelTime {
+                n_challenges: 1, // Default
+                n_sent: 0 // Default
+            }
+        };
         assert!(commitment_scheme.verify_values(sample_points, proof, ref channel).is_ok());
     }
 }

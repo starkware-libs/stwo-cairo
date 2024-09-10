@@ -9,11 +9,12 @@ use core::dict::Felt252Dict;
 use core::dict::Felt252DictEntryTrait;
 use core::nullable::NullableTrait;
 use core::cmp::min;
-
+use core::fmt::{Debug, Formatter, Error};
 use stwo_cairo_verifier::BaseField;
 use stwo_cairo_verifier::fields::m31::m31;
 use stwo_cairo_verifier::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
+
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
@@ -26,6 +27,12 @@ pub struct MerkleDecommitment<impl H: MerkleHasher> {
     pub column_witness: Array<BaseField>,
 }
 impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
+impl MerkleDecommitmentDebug<impl H: MerkleHasher, +Debug<H::Hash>> of Debug<MerkleDecommitment<H>> {
+    fn fmt(self: @MerkleDecommitment<H>, ref f: Formatter) -> Result<(), Error> {
+        Result::Ok(())
+    }
+}
+
 impl MerkleDecommitmentClone<
     impl H: MerkleHasher, +Clone<Array<H::Hash>>, +Drop<Array<H::Hash>>
 > of Clone<MerkleDecommitment<H>> {

@@ -1,7 +1,7 @@
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::{m31};
 
-#[derive(Drop, Clone)]
+#[derive(Drop, Clone, Debug)]
 pub struct LinePoly {
     pub coeffs: Array<QM31>,
     pub log_size: u32,

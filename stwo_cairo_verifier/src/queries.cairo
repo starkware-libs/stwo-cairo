@@ -3,7 +3,7 @@ use super::utils::pow;
 
 /// Represents a circle domain relative to a larger circle domain. The `initial_index` is the bit
 /// reversed query index in the larger domain.
-#[derive(Drop)]
+#[derive(Drop, Debug)]
 pub struct SubCircleDomain {
     pub coset_index: usize,
     pub log_size: u32,
@@ -25,7 +25,7 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
     }
 }
 
-#[derive(Drop)]
+#[derive(Drop, Debug)]
 pub struct SparseSubCircleDomain {
     pub domains: Array<SubCircleDomain>,
     pub large_domain_log_size: u32,

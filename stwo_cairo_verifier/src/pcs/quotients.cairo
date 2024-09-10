@@ -9,7 +9,7 @@ use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 
 
-#[derive(Drop, Copy)]
+#[derive(Drop, Copy, Debug)]
 pub struct PointSample {
     pub point: CirclePoint<SecureField>,
     pub value: SecureField,
