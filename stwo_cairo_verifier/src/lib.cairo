@@ -7,6 +7,7 @@ mod pcs;
 mod fri;
 mod poly;
 mod queries;
+mod sort;
 
 pub use fields::{BaseField, SecureField};
 

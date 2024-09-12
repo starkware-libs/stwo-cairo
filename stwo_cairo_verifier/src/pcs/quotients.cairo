@@ -8,6 +8,7 @@ use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
+use stwo_cairo_verifier::sort::{LowerThan, LowerThanCompare, get_maximum};
 
 #[derive(Drop, Copy, Debug)]
 pub struct PointSample {
@@ -15,18 +16,6 @@ pub struct PointSample {
     pub value: SecureField,
 }
 
-trait Compare<T> {
-    fn compare(self: @T, a: u32, b: u32) -> bool;
-}
-
-#[derive(Drop)]
-struct LowerThan {}
-
-impl LowerThanCompare of Compare<LowerThan> {
-    fn compare(self: @LowerThan, a: u32, b: u32) -> bool {
-        return a < b;
-    }
-}
 
 pub fn fri_answers(
     column_log_sizes: Array<u32>,
@@ -86,29 +75,4 @@ pub fn fri_answers_for_log_size(
     queried_values_per_column: @Array<@Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
     Result::Err(VerificationError::Error)
-}
-
-fn get_maximum<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_bound: Option<u32>, comparer: @T) -> (Option<u32>, Option<u32>) {
-    let mut maximum = Option::None;
-    let mut index = Option::None;
-
-    let mut i = 0;
-    while i < arr.len() {
-        let upper_bound_condition = if let Option::Some(upper_bound) = upper_bound {
-            comparer.compare(upper_bound, *arr[i])
-        } else {
-            true
-        };
-        let lower_bound_condition = if let Option::Some(maximum) = maximum {
-            comparer.compare(*arr[i], maximum)
-        } else {
-            true
-        };
-        if upper_bound_condition && lower_bound_condition {
-            maximum = Option::Some(*arr[i]);
-            index = Option::Some(i);
-        }
-        i += 1;
-    };
-    (maximum, index)
 }
