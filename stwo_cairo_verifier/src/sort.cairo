@@ -32,17 +32,17 @@ pub fn iterate_sorted<T, +Compare<T>>(arr: Span<u32>, ref bound: Option<u32>, co
 
     let mut i = 0;
     while i < arr.len() {
-        let upper_bound_condition = if let Option::Some(bound) = bound {
+        let bound_condition = if let Option::Some(bound) = bound {
             comparer.compare(bound, *arr[i])
         } else {
             true
         };
-        let lower_bound_condition = if let Option::Some(candidate_value) = candidate_value {
+        let is_better_than_candidate = if let Option::Some(candidate_value) = candidate_value {
             comparer.compare(*arr[i], candidate_value)
         } else {
             true
         };
-        if upper_bound_condition && lower_bound_condition {
+        if bound_condition && is_better_than_candidate {
             candidate_value = Option::Some(*arr[i]);
             candidate_index = Option::Some(i);
         }
