@@ -25,15 +25,15 @@ impl GreaterThanCompare of Compare<GreaterThan> {
 }
 
 // Returns the element in `arr` that is nearest to `bound` according to the comparer criterion
-pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: Span<u32>, upper_bound: Option<u32>, comparer: @T)
+pub fn iterate_sorted<T, +Compare<T>>(arr: Span<u32>, ref bound: Option<u32>, comparer: @T)
  -> Option<(u32, u32)> {
     let mut candidate_value = Option::None;
     let mut candidate_index = Option::None;
 
     let mut i = 0;
     while i < arr.len() {
-        let upper_bound_condition = if let Option::Some(upper_bound) = upper_bound {
-            comparer.compare(upper_bound, *arr[i])
+        let upper_bound_condition = if let Option::Some(bound) = bound {
+            comparer.compare(bound, *arr[i])
         } else {
             true
         };
@@ -52,6 +52,7 @@ pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: Span<u32>, upper_bound:
     if(candidate_value.is_none()) {
         Option::None
     } else {
+        bound = candidate_value;
         Option::Some((candidate_value.unwrap(), candidate_index.unwrap()))
     }
 }
@@ -63,10 +64,9 @@ fn test_sort_lowest_to_greatest() {
 
     let mut sorted_array = array![];
 
-    let mut upper_bound = Option::None;
-    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), upper_bound, @LowerThan{}) {
+    let mut bound = Option::None;
+    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), ref bound, @LowerThan{}) {
         sorted_array.append(value);
-        upper_bound = Option::Some(value);
     };
 
     assert_eq!(expected_array, sorted_array);
@@ -79,10 +79,9 @@ fn test_sort_greatest_to_lowest() {
 
     let mut sorted_array = array![];
 
-    let mut upper_bound = Option::None;
-    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), upper_bound, @GreaterThan{}) {
+    let mut bound = Option::None;
+    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), ref bound, @GreaterThan{}) {
         sorted_array.append(value);
-        upper_bound = Option::Some(value);
     };
 
     assert_eq!(expected_array, sorted_array);
@@ -95,10 +94,9 @@ fn test_sort_indexes_are_correct() {
 
     let mut sorted_indexes = array![];
 
-    let mut upper_bound = Option::None;
-    while let Option::Some((value, index)) = iterate_sorted(my_array.span(), upper_bound, @LowerThan{}) {
+    let mut bound = Option::None;
+    while let Option::Some((value, index)) = iterate_sorted(my_array.span(), ref bound, @LowerThan{}) {
         sorted_indexes.append(index);
-        upper_bound = Option::Some(value);
     };
 
     assert_eq!(expected_indexes, sorted_indexes);

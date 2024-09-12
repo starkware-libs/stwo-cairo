@@ -135,7 +135,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Sort and deduplicate
         let mut bounds = array![];
         let mut upper_bound = Option::None;
-        while let Option::Some((x, _)) = iterate_sorted(vec_to_sort.span(), upper_bound, @GreaterThan {}) {
+        while let Option::Some((x, _)) = iterate_sorted(vec_to_sort.span(), ref upper_bound, @GreaterThan {}) {
             bounds.append(x);
             upper_bound = Option::Some(x);
         };
