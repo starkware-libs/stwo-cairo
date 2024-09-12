@@ -22,6 +22,16 @@ pub struct PointSample {
     pub value: SecureField,
 }
 
+pub struct ColumnSampleBatch{
+    pub point: CirclePoint<SecureField>,
+    pub columns_and_values: Array<(usize, SecureField)>
+}
+
+#[generate_trait]
+impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
+    // !todo: Code
+}
+
 
 pub fn fri_answers(
     column_log_sizes: Array<u32>,
@@ -81,6 +91,64 @@ pub fn fri_answers_for_log_size(
     queried_values_per_column: @Array<@Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
+    //TODO: Build this circledomain using the coset.odds method in the rust implementation.
+    //let commitment_domain = CanonicCoset::new(log_size).circle_domain(); 
+
+    // implementar columnsamplebatch que tiene un circlePoint y un vec de vec de PointSample
+    // let sample_batches = ColumnSampleBatch{ point: CirclePoint<QM31>::zero(), columns_and_values: ArrayTrait::new()}; 
+
+
+
+    // for queried_values in queried_values_per_column {
+    //     if queried_values.len() != query_domain.flatten().len() {
+    //         return Err(VerificationError::InvalidStructure(
+    //             "Insufficient number of queried values".to_string(),
+    //         ));
+    //     }
+    // }
+    // let mut queried_values_per_column = queried_values_per_column
+    //     .iter()
+    //     .map(|q| q.iter())
+    //     .collect_vec();
+
+    // let mut evals = Vec::new();
+    // for subdomain in query_domain.iter() {
+    //     let domain = subdomain.to_circle_domain(&commitment_domain);
+    //     let quotient_constants = quotient_constants(&sample_batches, random_coeff, domain);
+    //     let mut column_evals = Vec::new();
+    //     for queried_values in queried_values_per_column.iter_mut() {
+    //         let eval = CircleEvaluation::new(
+    //             domain,
+    //             queried_values.take(domain.size()).copied().collect_vec(),
+    //         );
+    //         column_evals.push(eval);
+    //     }
+
+    //     let mut values = Vec::new();
+    //     for row in 0..domain.size() {
+    //         let domain_point = domain.at(bit_reverse_index(row, log_size));
+    //         let value = accumulate_row_quotients(
+    //             &sample_batches,
+    //             &column_evals.iter().collect_vec(),
+    //             &quotient_constants,
+    //             row,
+    //             domain_point,
+    //         );
+    //         values.push(value);
+    //     }
+    //     let eval = CircleEvaluation::new(domain, values);
+    //     evals.push(eval);
+    // }
+
+    // let res = SparseCircleEvaluation::new(evals);
+    // if !queried_values_per_column.iter().all(|x| x.is_empty()) {
+    //     return Err(VerificationError::InvalidStructure(
+    //         "Too many queried values".to_string(),
+    //     ));
+    // }
+    // Ok(res)
+
+
 //     return Result::Ok(SparseCircleEvaluation { subcircle_evals: array![
 //         CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
 //                           values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
@@ -88,7 +156,7 @@ pub fn fri_answers_for_log_size(
 //                           values: array![qm31(1489324268, 1315746611, 1235430137, 1650466882), qm31(158201991, 1003575152, 1730507932, 1741921065)]}
 //       ] 
 // });
-     Result::Err(VerificationError::Error)
+    Result::Err(VerificationError::Error)
 }
 
 
