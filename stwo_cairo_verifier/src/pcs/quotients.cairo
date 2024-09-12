@@ -8,7 +8,7 @@ use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
-use stwo_cairo_verifier::sort::{LowerThan, LowerThanCompare, get_maximum};
+use stwo_cairo_verifier::sort::{LowerThan, LowerThanCompare, iterate_sorted};
 
 #[derive(Drop, Copy, Debug)]
 pub struct PointSample {
@@ -32,8 +32,7 @@ pub fn fri_answers(
 
     let mut upper_bound = Option::None;
     let mut last_maximum = Option::None;
-    let comparer: LowerThan = LowerThan {};
-    while let (Option::Some(maximum), Option::Some(i)) = get_maximum(@column_log_sizes, upper_bound, @comparer) {
+    while let (Option::Some(maximum), Option::Some(i)) = iterate_sorted(@column_log_sizes, upper_bound, @LowerThan {}) {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));
