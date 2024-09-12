@@ -32,7 +32,7 @@ pub fn fri_answers(
 
     let mut upper_bound = Option::None;
     let mut last_maximum = Option::None;
-    while let (Option::Some(maximum), Option::Some(i)) = iterate_sorted(@column_log_sizes, upper_bound, @GreaterThan {}) {
+    while let Option::Some((maximum, i)) = iterate_sorted(@column_log_sizes, upper_bound, @GreaterThan {}) {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));
