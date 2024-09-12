@@ -15,6 +15,7 @@ use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use core::dict::Felt252DictEntryTrait;
+use stwo_cairo_verifier::sort::{GreaterThan, GreaterThanCompare, iterate_sorted};
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -134,7 +135,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Sort and deduplicate
         let mut bounds = array![];
         let mut upper_bound = Option::None;
-        while let Option::Some(x) = get_maximum(@vec_to_sort, upper_bound) {
+        while let (Option::Some(x), _) = iterate_sorted(@vec_to_sort, upper_bound, @GreaterThan {}) {
             bounds.append(x);
             upper_bound = Option::Some(x);
         };
@@ -237,28 +238,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         Result::Ok(())
     }
-}
-
-fn get_maximum(arr: @Array<u32>, upper_bound: Option<u32>) -> Option<u32> {
-    let mut maximum = Option::None;
-    let mut i = 0;
-    while i < arr.len() {
-        let upper_bound_condition = if let Option::Some(upper_bound) = upper_bound {
-            upper_bound > *arr[i]
-        } else {
-            true
-        };
-        let lower_bound_condition = if let Option::Some(maximum) = maximum {
-            *arr[i] > maximum
-        } else {
-            true
-        };
-        if upper_bound_condition && lower_bound_condition {
-            maximum = Option::Some(*arr[i]);
-        }
-        i += 1;
-    };
-    maximum
 }
 
 #[derive(Drop)]

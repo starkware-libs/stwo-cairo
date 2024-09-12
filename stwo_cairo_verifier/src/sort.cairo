@@ -12,6 +12,16 @@ pub impl LowerThanCompare of Compare<LowerThan> {
     }
 }
 
+#[derive(Drop)]
+pub struct GreaterThan {}
+
+pub impl GreaterThanCompare of Compare<GreaterThan> {
+    fn compare(self: @GreaterThan, a: u32, b: u32) -> bool {
+        return a < b;
+    }
+}
+
+
 pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_bound: Option<u32>, comparer: @T) -> (Option<u32>, Option<u32>) {
     let mut maximum = Option::None;
     let mut index = Option::None;
