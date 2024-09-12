@@ -1,3 +1,5 @@
+use core::array::ToSpanTrait;
+use core::array::ArrayTrait;
 use core::option::OptionTrait;
 
 trait Compare<T> {
@@ -23,7 +25,7 @@ impl GreaterThanCompare of Compare<GreaterThan> {
 }
 
 // Returns the element in `arr` that is nearest to `bound` according to the comparer criterion
-pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_bound: Option<u32>, comparer: @T)
+pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: Span<u32>, upper_bound: Option<u32>, comparer: @T)
  -> Option<(u32, u32)> {
     let mut candidate_value = Option::None;
     let mut candidate_index = Option::None;
@@ -62,7 +64,7 @@ fn test_sort_lowest_to_greatest() {
     let mut sorted_array = array![];
 
     let mut upper_bound = Option::None;
-    while let Option::Some((value, _index)) = iterate_sorted(@my_array, upper_bound, @LowerThan{}) {
+    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), upper_bound, @LowerThan{}) {
         sorted_array.append(value);
         upper_bound = Option::Some(value);
     };
@@ -78,7 +80,7 @@ fn test_sort_greatest_to_lowest() {
     let mut sorted_array = array![];
 
     let mut upper_bound = Option::None;
-    while let Option::Some((value, _index)) = iterate_sorted(@my_array, upper_bound, @GreaterThan{}) {
+    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), upper_bound, @GreaterThan{}) {
         sorted_array.append(value);
         upper_bound = Option::Some(value);
     };
@@ -94,7 +96,7 @@ fn test_sort_indexes_are_correct() {
     let mut sorted_indexes = array![];
 
     let mut upper_bound = Option::None;
-    while let Option::Some((value, index)) = iterate_sorted(@my_array, upper_bound, @LowerThan{}) {
+    while let Option::Some((value, index)) = iterate_sorted(my_array.span(), upper_bound, @LowerThan{}) {
         sorted_indexes.append(index);
         upper_bound = Option::Some(value);
     };

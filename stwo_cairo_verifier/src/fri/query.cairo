@@ -40,10 +40,9 @@ pub impl QueriesImpl of QueriesImplTrait {
         };
 
         // Sort and deduplicate
-        let nonsorted_positions = @nonsorted_positions;
         let mut positions = array![];
         let mut lower_bound = Option::None;
-        while let Option::Some((x, _)) = iterate_sorted(nonsorted_positions, lower_bound, @LowerThan {}) {
+        while let Option::Some((x, _)) = iterate_sorted(nonsorted_positions.span(), lower_bound, @LowerThan {}) {
             positions.append(x);
             lower_bound = Option::Some(x);
         };
