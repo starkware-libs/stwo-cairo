@@ -110,6 +110,12 @@ impl CirclePointQM31Add of Add<CirclePointQM31> {
     }
 }
 
+impl CirclePointQM31PartialOrd of PartialOrd<CirclePointQM31> {
+    fn lt(lhs: CirclePointQM31, rhs: CirclePointQM31) -> bool {
+        lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y)
+    }
+}
+
 /// Integer i that represent the circle point `i * M31_CIRCLE_GEN`.
 ///
 /// Treated as an additive ring modulo `1 << M31_CIRCLE_LOG_ORDER`.
@@ -322,7 +328,7 @@ mod tests {
     use stwo_cairo_verifier::fields::m31::m31;
     use super::{
         M31_CIRCLE_GEN, M31_CIRCLE_ORDER, CirclePointM31, CirclePointM31Impl, Coset, CosetImpl,
-        CirclePointIndexImpl
+        CirclePointIndexImpl, CanonicCosetImpl
     };
 
     #[test]
@@ -447,6 +453,21 @@ mod tests {
         let result = coset.size();
 
         assert_eq!(result, 32);
+    }
+
+    #[test]
+    fn test_canonic_coset() {
+        let log_size = 5;
+
+        let coset = CanonicCosetImpl::new(log_size).coset;
+
+        assert!(
+            coset == Coset {
+                initial_index: CirclePointIndexImpl::new(33554432),
+                step_size: CirclePointIndexImpl::new(67108864),
+                log_size: 5
+            }
+        );
     }
 }
 

@@ -115,8 +115,15 @@ impl M31IntoFelt252 of Into<M31, felt252> {
         self.inner.into()
     }
 }
+impl M31PartialOrd of PartialOrd<M31> {
+    fn ge(lhs: M31, rhs: M31) -> bool {
+        lhs.inner >= rhs.inner
+    }
+    fn lt(lhs: M31, rhs: M31) -> bool {
+        lhs.inner < rhs.inner
+    }
+}
 
-#[inline]
 pub fn m31(val: u32) -> M31 {
     M31Impl::reduce_u32(val)
 }

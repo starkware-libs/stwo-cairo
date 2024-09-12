@@ -115,11 +115,15 @@ pub impl QM31Neg of Neg<QM31> {
         QM31 { a: -a.a, b: -a.b }
     }
 }
+impl QM31PartialOrd of PartialOrd<QM31> {
+    fn lt(lhs: QM31, rhs: QM31) -> bool {
+        lhs.a < rhs.a || (lhs.a == rhs.a && lhs.b < rhs.b)
+    }
+}
 
 pub fn qm31(a: u32, b: u32, c: u32, d: u32) -> QM31 {
     QM31 { a: cm31(a, b), b: cm31(c, d) }
 }
-
 
 #[cfg(test)]
 mod tests {
