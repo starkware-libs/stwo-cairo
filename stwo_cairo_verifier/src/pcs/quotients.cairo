@@ -15,6 +15,19 @@ pub struct PointSample {
     pub value: SecureField,
 }
 
+trait Compare<T> {
+    fn compare(self: @T, a: u32, b: u32) -> bool;
+}
+
+#[derive(Drop)]
+struct LowerThan {}
+
+impl LowerThanCompare of Compare<LowerThan> {
+    fn compare(self: @LowerThan, a: u32, b: u32) -> bool {
+        return a < b;
+    }
+}
+
 pub fn fri_answers(
     column_log_sizes: Array<u32>,
     samples: Array<Array<PointSample>>,
@@ -30,13 +43,14 @@ pub fn fri_answers(
 
     let mut upper_bound = Option::None;
     let mut last_maximum = Option::None;
-    while let (Option::Some(maximum), Option::Some(i)) = get_maximum(@column_log_sizes, upper_bound) {
+    let comparer: LowerThan = LowerThan {};
+    while let (Option::Some(maximum), Option::Some(i)) = get_maximum(@column_log_sizes, upper_bound, @comparer) {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));
         } else {
             let query_domain = get_sparse_sub_circle_domain_dict(ref query_domain_per_log_size, last_maximum.unwrap());
-            
+
             match fri_answers_for_log_size(
                 last_maximum.unwrap(),
                 @samples_vec,
@@ -74,19 +88,19 @@ pub fn fri_answers_for_log_size(
     Result::Err(VerificationError::Error)
 }
 
-fn get_maximum(arr: @Array<u32>, upper_bound: Option<u32>) -> (Option<u32>, Option<u32>) {
+fn get_maximum<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_bound: Option<u32>, comparer: @T) -> (Option<u32>, Option<u32>) {
     let mut maximum = Option::None;
     let mut index = Option::None;
 
     let mut i = 0;
     while i < arr.len() {
         let upper_bound_condition = if let Option::Some(upper_bound) = upper_bound {
-            upper_bound > *arr[i]
+            comparer.compare(upper_bound, *arr[i])
         } else {
             true
         };
         let lower_bound_condition = if let Option::Some(maximum) = maximum {
-            *arr[i] > maximum
+            comparer.compare(*arr[i], maximum)
         } else {
             true
         };
