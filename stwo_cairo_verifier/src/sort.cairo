@@ -23,8 +23,8 @@ pub impl GreaterThanCompare of Compare<GreaterThan> {
 
 // Returns the element in `arr` that is nearest to `bound` according to the comparer criterion
 pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_bound: Option<u32>, comparer: @T) -> (Option<u32>, Option<u32>) {
-    let mut maximum = Option::None;
-    let mut index = Option::None;
+    let mut candidate_value = Option::None;
+    let mut candidate_index = Option::None;
 
     let mut i = 0;
     while i < arr.len() {
@@ -33,16 +33,16 @@ pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_boun
         } else {
             true
         };
-        let lower_bound_condition = if let Option::Some(maximum) = maximum {
-            comparer.compare(*arr[i], maximum)
+        let lower_bound_condition = if let Option::Some(candidate_value) = candidate_value {
+            comparer.compare(*arr[i], candidate_value)
         } else {
             true
         };
         if upper_bound_condition && lower_bound_condition {
-            maximum = Option::Some(*arr[i]);
-            index = Option::Some(i);
+            candidate_value = Option::Some(*arr[i]);
+            candidate_index = Option::Some(i);
         }
         i += 1;
     };
-    (maximum, index)
+    (candidate_value, candidate_index)
 }
