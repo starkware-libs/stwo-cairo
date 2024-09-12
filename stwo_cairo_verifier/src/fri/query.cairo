@@ -3,6 +3,7 @@ use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::utils::{pow, find};
 use stwo_cairo_verifier::channel::Channel;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SubCircleDomain};
+use stwo_cairo_verifier::sort::{LowerThan, LowerThanCompare, iterate_sorted};
 
 
 #[derive(Drop, Clone, Debug, PartialEq, Eq)]
@@ -42,7 +43,7 @@ pub impl QueriesImpl of QueriesImplTrait {
         let nonsorted_positions = @nonsorted_positions;
         let mut positions = array![];
         let mut lower_bound = Option::None;
-        while let Option::Some(x) = get_minimum(nonsorted_positions, lower_bound) {
+        while let (Option::Some(x), _) = iterate_sorted(nonsorted_positions, lower_bound, @LowerThan {}) {
             positions.append(x);
             lower_bound = Option::Some(x);
         };
@@ -98,30 +99,6 @@ pub impl QueriesImpl of QueriesImplTrait {
     }
 }
 
-
-
-// Returns the minimum element in `arr` that is larger than `lower_bound`
-fn get_minimum(arr: @Array<u32>, lower_bound: Option<u32>) -> Option<u32> {
-    let mut minimum = Option::None;
-    let mut i = 0;
-    while i < arr.len() {
-        let lower_bound_condition = if let Option::Some(lower_bound) = lower_bound {
-            lower_bound < *arr[i]
-        } else {
-            true
-        };
-        let upper_bound_condition = if let Option::Some(minimum) = minimum {
-            *arr[i] < minimum
-        } else {
-            true
-        };
-        if lower_bound_condition && upper_bound_condition {
-            minimum = Option::Some(*arr[i]);
-        }
-        i += 1;
-    };
-    minimum
-}
 
 #[test]
 fn test_fold_1() {

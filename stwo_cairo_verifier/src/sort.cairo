@@ -21,7 +21,7 @@ pub impl GreaterThanCompare of Compare<GreaterThan> {
     }
 }
 
-
+// Returns the element in `arr` that is nearest to `bound` according to the comparer criterion
 pub fn iterate_sorted<T, impl TCompare: Compare<T>>(arr: @Array<u32>, upper_bound: Option<u32>, comparer: @T) -> (Option<u32>, Option<u32>) {
     let mut maximum = Option::None;
     let mut index = Option::None;
