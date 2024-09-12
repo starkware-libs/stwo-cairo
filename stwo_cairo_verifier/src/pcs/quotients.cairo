@@ -57,6 +57,7 @@ pub fn fri_answers(
             samples_vec = array![samples.at(i)];
             queried_values_per_column_vec = array![queried_values_per_column.at(i)];
         }
+        upper_bound = Option::Some(maximum);
     };
     if fails.is_some() {
         Result::Err(fails.unwrap())
