@@ -3,7 +3,7 @@ use stwo_cairo_verifier::channel::ChannelTrait;
 use stwo_cairo_verifier::utils::{pow, find};
 use stwo_cairo_verifier::channel::Channel;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SubCircleDomain};
-use stwo_cairo_verifier::sort::{LowerThan, LowerThanCompare, iterate_sorted};
+use stwo_cairo_verifier::sort::{LowerThan, iterate_sorted};
 
 
 #[derive(Drop, Clone, Debug, PartialEq, Eq)]

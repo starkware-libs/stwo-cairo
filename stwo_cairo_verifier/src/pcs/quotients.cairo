@@ -8,7 +8,7 @@ use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
-use stwo_cairo_verifier::sort::{GreaterThan, GreaterThanCompare, iterate_sorted};
+use stwo_cairo_verifier::sort::{GreaterThan, iterate_sorted};
 
 #[derive(Drop, Copy, Debug)]
 pub struct PointSample {

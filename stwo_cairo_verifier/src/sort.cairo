@@ -6,7 +6,7 @@ trait Compare<T> {
 #[derive(Drop)]
 pub struct LowerThan {}
 
-pub impl LowerThanCompare of Compare<LowerThan> {
+impl LowerThanCompare of Compare<LowerThan> {
     fn compare(self: @LowerThan, a: u32, b: u32) -> bool {
         return a < b;
     }
@@ -15,7 +15,7 @@ pub impl LowerThanCompare of Compare<LowerThan> {
 #[derive(Drop)]
 pub struct GreaterThan {}
 
-pub impl GreaterThanCompare of Compare<GreaterThan> {
+impl GreaterThanCompare of Compare<GreaterThan> {
     fn compare(self: @GreaterThan, a: u32, b: u32) -> bool {
         return a < b;
     }

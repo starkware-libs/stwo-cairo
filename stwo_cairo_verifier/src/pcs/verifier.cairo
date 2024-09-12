@@ -15,7 +15,7 @@ use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use core::dict::Felt252DictEntryTrait;
-use stwo_cairo_verifier::sort::{GreaterThan, GreaterThanCompare, iterate_sorted};
+use stwo_cairo_verifier::sort::{GreaterThan, iterate_sorted};
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
