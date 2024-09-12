@@ -1,7 +1,7 @@
 use core::array::SpanTrait;
-use core::traits::PanicDestruct;
 use core::box::BoxTrait;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
+use core::traits::PanicDestruct;
 use stwo_cairo_verifier::BaseField;
 
 #[generate_trait]
@@ -93,9 +93,24 @@ pub fn pow(base: u32, mut exponent: u32) -> u32 {
     result
 }
 
+/// Reverses the first `n_bits` many bits of `index`.
+///
+/// `index` should be in the range `[0..2^n_bits)`.
+// TODO(andrew): Can consider byte lookup table if this is expensive.
+pub fn bit_reverse_index(mut index: u32, mut n_bits: u32) -> usize {
+    assert!(n_bits < 32);
+    let mut res = 0;
+    while n_bits != 0 {
+        res = res * 2 + (index & 1);
+        index /= 2;
+        n_bits -= 1;
+    };
+    res
+}
+
 #[cfg(test)]
 mod tests {
-    use super::pow;
+    use super::{pow, bit_reverse_index};
 
     #[test]
     fn test_pow() {
@@ -104,6 +119,12 @@ mod tests {
         assert_eq!(1024, pow(2, 10));
         assert_eq!(4096, pow(2, 12));
         assert_eq!(1048576, pow(2, 20));
+    }
+
+    #[test]
+    fn test_bit_rev() {
+        assert_eq!(0b0001, bit_reverse_index(0b1000, 4));
+        assert_eq!(0b1011_0000, bit_reverse_index(0b0000_1101, 8));
     }
 }
 

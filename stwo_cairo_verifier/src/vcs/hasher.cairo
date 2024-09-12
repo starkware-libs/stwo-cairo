@@ -63,8 +63,8 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
 
 #[cfg(test)]
 mod tests {
-    use super::PoseidonMerkleHasher;
     use stwo_cairo_verifier::fields::m31::{m31};
+    use super::PoseidonMerkleHasher;
 
     #[test]
     fn test_m31() {
