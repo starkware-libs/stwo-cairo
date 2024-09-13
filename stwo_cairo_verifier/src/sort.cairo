@@ -27,30 +27,31 @@ impl GreaterThanCompare<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of Compare<T, Gre
 #[derive(Drop)]
 pub struct SortedIterator<T, C> {
     comparer: C,
+    array: Span<T>,
     current_bound: Option<T>,
 }
 
 trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>> {
-    fn new() -> SortedIterator<T, C>;
+    fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, C>;
 
-    fn next(ref self: SortedIterator<T, C>, array: Span<T>) -> Option<(T, u32)> {
+    fn next(ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
         let mut candidate_value = Option::None;
         let mut candidate_index = Option::None;
     
         let mut i = 0;
-        while i < array.len() {
+        while i < self.array.len() {
             let bound_condition = if let Option::Some(current_bound) = self.current_bound {
-                self.comparer.compare(current_bound, *array[i])
+                self.comparer.compare(current_bound, *self.array[i])
             } else {
                 true
             };
             let is_better_than_candidate = if let Option::Some(candidate_value) = candidate_value {
-                self.comparer.compare(*array[i], candidate_value)
+                self.comparer.compare(*self.array[i], candidate_value)
             } else {
                 true
             };
             if bound_condition && is_better_than_candidate {
-                candidate_value = Option::Some(*array[i]);
+                candidate_value = Option::Some(*self.array[i]);
                 candidate_index = Option::Some(i);
             }
             i += 1;
@@ -66,14 +67,14 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, 
 }
 
 pub impl MaximumToMinimumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, GreaterThan> {
-    fn new() -> SortedIterator<T, GreaterThan> {
-        SortedIterator { comparer: GreaterThan {}, current_bound: Option::None }
+    fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, GreaterThan> {
+        SortedIterator { comparer: GreaterThan {}, array: array_to_iterate, current_bound: Option::None }
     }
 }
 
 pub impl MinimumToMaximumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, LowerThan> {
-    fn new() -> SortedIterator<T, LowerThan> {
-        SortedIterator { comparer: LowerThan {}, current_bound: Option::None }
+    fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, LowerThan> {
+        SortedIterator { comparer: LowerThan {}, array: array_to_iterate, current_bound: Option::None }
     }
 }
 
@@ -85,8 +86,8 @@ fn test_sort_lowest_to_greatest() {
 
     let mut sorted_array = array![];
 
-    let mut iterator = MinimumToMaximumSortedIterator::new();
-    while let Option::Some((value, _index)) = iterator.next(my_array.span()) {
+    let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
+    while let Option::Some((value, _index)) = iterator.next() {
         sorted_array.append(value);
     };
 
@@ -100,8 +101,8 @@ fn test_sort_greatest_to_lowest() {
 
     let mut sorted_array = array![];
 
-    let mut iterator = MaximumToMinimumSortedIterator::new();
-    while let Option::Some((value, _index)) = iterator.next(my_array.span()) {
+    let mut iterator = MaximumToMinimumSortedIterator::iterate(my_array.span());
+    while let Option::Some((value, _index)) = iterator.next() {
         sorted_array.append(value);
     };
 
@@ -115,8 +116,8 @@ fn test_sort_indexes_are_correct() {
 
     let mut sorted_indexes = array![];
 
-    let mut iterator = MinimumToMaximumSortedIterator::new();
-    while let Option::Some((_value, index)) = iterator.next(my_array.span()) {
+    let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
+    while let Option::Some((_value, index)) = iterator.next() {
         sorted_indexes.append(index);
     };
 
