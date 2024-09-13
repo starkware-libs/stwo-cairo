@@ -32,7 +32,7 @@ pub fn fri_answers(
 
     let mut iterator = MaximumToMinimumSortedIterator::new();
     let mut last_maximum = Option::None;
-    while let Option::Some((maximum, i)) = iterator.iterate(column_log_sizes.span()) {
+    while let Option::Some((maximum, i)) = iterator.next(column_log_sizes.span()) {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));

@@ -33,7 +33,7 @@ pub struct SortedIterator<T, C> {
 trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>> {
     fn new() -> SortedIterator<T, C>;
 
-    fn iterate(ref self: SortedIterator<T, C>, array: Span<T>) -> Option<(T, u32)> {
+    fn next(ref self: SortedIterator<T, C>, array: Span<T>) -> Option<(T, u32)> {
         let mut candidate_value = Option::None;
         let mut candidate_index = Option::None;
     
@@ -86,7 +86,7 @@ fn test_sort_lowest_to_greatest() {
     let mut sorted_array = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::new();
-    while let Option::Some((value, _index)) = iterator.iterate(my_array.span()) {
+    while let Option::Some((value, _index)) = iterator.next(my_array.span()) {
         sorted_array.append(value);
     };
 
@@ -101,7 +101,7 @@ fn test_sort_greatest_to_lowest() {
     let mut sorted_array = array![];
 
     let mut iterator = MaximumToMinimumSortedIterator::new();
-    while let Option::Some((value, _index)) = iterator.iterate(my_array.span()) {
+    while let Option::Some((value, _index)) = iterator.next(my_array.span()) {
         sorted_array.append(value);
     };
 
@@ -116,7 +116,7 @@ fn test_sort_indexes_are_correct() {
     let mut sorted_indexes = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::new();
-    while let Option::Some((_value, index)) = iterator.iterate(my_array.span()) {
+    while let Option::Some((_value, index)) = iterator.next(my_array.span()) {
         sorted_indexes.append(index);
     };
 

@@ -42,7 +42,7 @@ pub impl QueriesImpl of QueriesImplTrait {
         // Sort and deduplicate
         let mut positions = array![];
         let mut iterator = MinimumToMaximumSortedIterator::new();
-        while let Option::Some((x, _)) = iterator.iterate(nonsorted_positions.span()) {
+        while let Option::Some((x, _)) = iterator.next(nonsorted_positions.span()) {
             positions.append(x);
         };
 
