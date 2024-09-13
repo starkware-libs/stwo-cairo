@@ -104,6 +104,17 @@ pub impl CosetImpl of CosetTrait {
     fn size(self: @Coset) -> usize {
         pow(2, *self.log_size)
     }
+
+    fn odds(log_size: u32) -> Coset{
+        //CIRCLE_LOG_ORDER
+        let subgroup_generator_index = Self::subgroup_generator_index(log_size);
+        Self::new(subgroup_generator_index, log_size)
+    }
+
+    fn subgroup_generator_index(log_size: u32) -> u32 {
+        assert!(log_size <= CIRCLE_LOG_ORDER);
+        pow(2, CIRCLE_LOG_ORDER - log_size)
+    }
 }
 
 

@@ -1,7 +1,7 @@
 use core::traits::TryInto;
 use core::option::OptionTrait;
 use core::array::ArrayTrait;
-use stwo_cairo_verifier::circle::{Coset, CirclePoint};
+use stwo_cairo_verifier::circle::{Coset, CosetImpl,  CirclePoint};
 use stwo_cairo_verifier::SecureField;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain};
@@ -92,7 +92,7 @@ pub fn fri_answers_for_log_size(
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
     //TODO: Build this circledomain using the coset.odds method in the rust implementation.
-    //let commitment_domain = CanonicCoset::new(log_size).circle_domain(); 
+    let commitment_domain = CircleDomain{half_coset: CosetImpl::odds(log_size)};
 
     // implementar columnsamplebatch que tiene un circlePoint y un vec de vec de PointSample
     // let sample_batches = ColumnSampleBatch{ point: CirclePoint<QM31>::zero(), columns_and_values: ArrayTrait::new()}; 
