@@ -95,7 +95,6 @@ pub fn fri_answers_for_log_size(
     let commitment_domain = CircleDomain{half_coset: CosetImpl::odds(log_size)};
 
     // implementar columnsamplebatch que tiene un circlePoint y un vec de vec de PointSample
-    // let sample_batches = ColumnSampleBatch{ point: CirclePoint<QM31>::zero(), columns_and_values: ArrayTrait::new()}; 
 
 
 
