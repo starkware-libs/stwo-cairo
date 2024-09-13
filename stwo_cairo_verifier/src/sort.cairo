@@ -2,15 +2,15 @@ use core::array::ToSpanTrait;
 use core::array::ArrayTrait;
 use core::option::OptionTrait;
 
-trait Compare<T> {
-    fn compare(self: @T, a: u32, b: u32) -> bool;
+trait Compare<C, T> {
+    fn compare(self: @C, a: T, b: T) -> bool;
 }
 
 #[derive(Drop, Copy)]
 pub struct LowerThan {}
 
-impl LowerThanCompare of Compare<LowerThan> {
-    fn compare(self: @LowerThan, a: u32, b: u32) -> bool {
+impl LowerThanCompare<T, +PartialOrd<T>> of Compare<LowerThan, T> {
+    fn compare(self: @LowerThan, a: T, b: T) -> bool {
         return a < b;
     }
 }
@@ -18,8 +18,8 @@ impl LowerThanCompare of Compare<LowerThan> {
 #[derive(Drop, Copy)]
 pub struct GreaterThan {}
 
-impl GreaterThanCompare of Compare<GreaterThan> {
-    fn compare(self: @GreaterThan, a: u32, b: u32) -> bool {
+impl GreaterThanCompare<T, +PartialOrd<T>> of Compare<GreaterThan, T> {
+    fn compare(self: @GreaterThan, a: T, b: T) -> bool {
         return a > b;
     }
 }
@@ -34,8 +34,8 @@ trait SortedIteratorTrait<C, T> {
     fn iterate(ref self: SortedIterator<C, T>, array: Span<T>) -> Option<(T, u32)>;
 }
 
-impl SortedIteratorImpl<C, +Drop<C>, +Compare<C>, +Copy<C>> of SortedIteratorTrait<C, u32> {
-    fn iterate(ref self: SortedIterator<C, u32>, array: Span<u32>) -> Option<(u32, u32)> {
+impl SortedIteratorImpl<T, +PartialOrd<T>, +Copy<T>, +Drop<T>, C, +Drop<C>, +Compare<C, T>, +Copy<C>> of SortedIteratorTrait<C, T> {
+    fn iterate(ref self: SortedIterator<C, T>, array: Span<T>) -> Option<(T, u32)> {
         let mut candidate_value = Option::None;
         let mut candidate_index = Option::None;
     
@@ -68,7 +68,7 @@ impl SortedIteratorImpl<C, +Drop<C>, +Compare<C>, +Copy<C>> of SortedIteratorTra
 }
 
 // Returns the element in `arr` that is nearest to `bound` according to the comparer criterion
-pub fn iterate_sorted<T, +Compare<T>>(arr: Span<u32>, ref bound: Option<u32>, comparer: @T)
+pub fn iterate_sorted<C, +Compare<C, u32>>(arr: Span<u32>, ref bound: Option<u32>, comparer: @C)
  -> Option<(u32, u32)> {
     let mut candidate_value = Option::None;
     let mut candidate_index = Option::None;
