@@ -157,12 +157,12 @@ fn test_sort_indexes_are_correct() {
 
 #[test]
 fn test_sort_greatest_to_lowest_iterator() {
-    let my_array = array![3, 5, 2, 4];
-    let expected_array = array![5, 4, 3, 2];
+    let my_array: Array<u32> = array![3, 5, 2, 4];
+    let expected_array: Array<u32> = array![5, 4, 3, 2];
 
     let mut sorted_array = array![];
 
-    let mut iterator: SortedIterator<u32, GreaterThan> = MaximumToMinimumSortedIterator::new();
+    let mut iterator = MaximumToMinimumSortedIterator::new();
     while let Option::Some((value, _index)) = iterator.iterate(my_array.span()) {
         sorted_array.append(value);
     };
