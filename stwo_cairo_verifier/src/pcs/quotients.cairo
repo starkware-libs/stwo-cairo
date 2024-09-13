@@ -8,7 +8,7 @@ use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
-use stwo_cairo_verifier::sort::{GreaterThan, iterate_sorted};
+use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
 
 #[derive(Drop, Copy, Debug)]
 pub struct PointSample {
@@ -30,9 +30,9 @@ pub fn fri_answers(
     let mut samples_vec = array![];
     let mut queried_values_per_column_vec = array![];
 
-    let mut upper_bound = Option::None;
+    let mut iterator = MaximumToMinimumSortedIterator::new();
     let mut last_maximum = Option::None;
-    while let Option::Some((maximum, i)) = iterate_sorted(column_log_sizes.span(), ref upper_bound, @GreaterThan {}) {
+    while let Option::Some((maximum, i)) = iterator.iterate(column_log_sizes.span()) {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));
@@ -57,7 +57,6 @@ pub fn fri_answers(
             samples_vec = array![samples.at(i)];
             queried_values_per_column_vec = array![queried_values_per_column.at(i)];
         }
-        upper_bound = Option::Some(maximum);
     };
     if fails.is_some() {
         Result::Err(fails.unwrap())

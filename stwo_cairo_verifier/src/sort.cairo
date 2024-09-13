@@ -65,50 +65,18 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, 
     }
 }
 
-impl MaximumToMinimumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, GreaterThan> {
+pub impl MaximumToMinimumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, GreaterThan> {
     fn new() -> SortedIterator<T, GreaterThan> {
         SortedIterator { comparer: GreaterThan {}, current_bound: Option::None }
     }
 }
 
-impl MinimumToMaximumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, LowerThan> {
+pub impl MinimumToMaximumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, LowerThan> {
     fn new() -> SortedIterator<T, LowerThan> {
         SortedIterator { comparer: LowerThan {}, current_bound: Option::None }
     }
 }
 
-// Returns the element in `arr` that is nearest to `bound` according to the comparer criterion
-pub fn iterate_sorted<C, +Compare<u32, C>>(arr: Span<u32>, ref bound: Option<u32>, comparer: @C)
- -> Option<(u32, u32)> {
-    let mut candidate_value = Option::None;
-    let mut candidate_index = Option::None;
-
-    let mut i = 0;
-    while i < arr.len() {
-        let bound_condition = if let Option::Some(bound) = bound {
-            comparer.compare(bound, *arr[i])
-        } else {
-            true
-        };
-        let is_better_than_candidate = if let Option::Some(candidate_value) = candidate_value {
-            comparer.compare(*arr[i], candidate_value)
-        } else {
-            true
-        };
-        if bound_condition && is_better_than_candidate {
-            candidate_value = Option::Some(*arr[i]);
-            candidate_index = Option::Some(i);
-        }
-        i += 1;
-    };
-
-    if(candidate_value.is_none()) {
-        Option::None
-    } else {
-        bound = candidate_value;
-        Option::Some((candidate_value.unwrap(), candidate_index.unwrap()))
-    }
-}
 
 #[test]
 fn test_sort_lowest_to_greatest() {
