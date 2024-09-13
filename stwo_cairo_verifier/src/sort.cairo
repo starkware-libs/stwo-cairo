@@ -112,13 +112,13 @@ pub fn iterate_sorted<C, +Compare<u32, C>>(arr: Span<u32>, ref bound: Option<u32
 
 #[test]
 fn test_sort_lowest_to_greatest() {
-    let my_array = array![3, 5, 2, 4];
-    let expected_array = array![2, 3, 4, 5];
+    let my_array: Array<u32> = array![3, 5, 2, 4];
+    let expected_array: Array<u32> = array![2, 3, 4, 5];
 
     let mut sorted_array = array![];
 
-    let mut bound = Option::None;
-    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), ref bound, @LowerThan{}) {
+    let mut iterator = MinimumToMaximumSortedIterator::new();
+    while let Option::Some((value, _index)) = iterator.iterate(my_array.span()) {
         sorted_array.append(value);
     };
 
@@ -127,13 +127,13 @@ fn test_sort_lowest_to_greatest() {
 
 #[test]
 fn test_sort_greatest_to_lowest() {
-    let my_array = array![3, 5, 2, 4];
-    let expected_array = array![5, 4, 3, 2];
+    let my_array: Array<u32> = array![3, 5, 2, 4];
+    let expected_array: Array<u32> = array![5, 4, 3, 2];
 
     let mut sorted_array = array![];
 
-    let mut bound = Option::None;
-    while let Option::Some((value, _index)) = iterate_sorted(my_array.span(), ref bound, @GreaterThan{}) {
+    let mut iterator = MaximumToMinimumSortedIterator::new();
+    while let Option::Some((value, _index)) = iterator.iterate(my_array.span()) {
         sorted_array.append(value);
     };
 
@@ -142,13 +142,13 @@ fn test_sort_greatest_to_lowest() {
 
 #[test]
 fn test_sort_indexes_are_correct() {
-    let my_array = array![3, 5, 2, 4];
-    let expected_indexes = array![2, 0, 3, 1];
+    let my_array: Array<u32> = array![3, 5, 2, 4];
+    let expected_indexes: Array<u32> = array![2, 0, 3, 1];
 
     let mut sorted_indexes = array![];
 
-    let mut bound = Option::None;
-    while let Option::Some((value, index)) = iterate_sorted(my_array.span(), ref bound, @LowerThan{}) {
+    let mut iterator = MinimumToMaximumSortedIterator::new();
+    while let Option::Some((_value, index)) = iterator.iterate(my_array.span()) {
         sorted_indexes.append(index);
     };
 
