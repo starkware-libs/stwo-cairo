@@ -46,9 +46,9 @@ pub fn fri_answers(
     let mut samples_vec = array![];
     let mut queried_values_per_column_vec = array![];
 
-    let mut upper_bound = Option::None;
     let mut last_maximum = Option::None;
-    while let (Option::Some(maximum), Option::Some(i)) = iterate_sorted(@column_log_sizes, upper_bound, @GreaterThan {}) {
+    let mut iterator = MaximumToMinimumSortedIterator::iterate(column_log_sizes.span());
+    while let Option::Some((maximum, i)) = iterator.next() {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
             queried_values_per_column_vec.append(queried_values_per_column.at(i));
@@ -73,7 +73,6 @@ pub fn fri_answers(
             samples_vec = array![samples.at(i)];
             queried_values_per_column_vec = array![queried_values_per_column.at(i)];
         }
-        upper_bound = Option::Some(maximum);
     };
     if fails.is_some() {
         Result::Err(fails.unwrap())

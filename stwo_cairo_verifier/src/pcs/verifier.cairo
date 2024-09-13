@@ -15,7 +15,7 @@ use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use core::dict::Felt252DictEntryTrait;
-use stwo_cairo_verifier::sort::{GreaterThan, iterate_sorted};
+use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -132,12 +132,10 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             i = i + 1;
         };
 
-        // Sort and deduplicate
         let mut bounds = array![];
-        let mut upper_bound = Option::None;
-        while let (Option::Some(x), _) = iterate_sorted(@vec_to_sort, upper_bound, @GreaterThan {}) {
+        let mut iterator = MaximumToMinimumSortedIterator::iterate(vec_to_sort.span());
+        while let Option::Some((x, _)) = iterator.next() {
             bounds.append(x);
-            upper_bound = Option::Some(x);
         };
 
         // FRI commitment phase on OODS quotients.
