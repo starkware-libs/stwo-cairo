@@ -132,7 +132,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             i = i + 1;
         };
 
-        // Sort and deduplicate
         let mut bounds = array![];
         let mut iterator = MaximumToMinimumSortedIterator::iterate(vec_to_sort.span());
         while let Option::Some((x, _)) = iterator.next() {
