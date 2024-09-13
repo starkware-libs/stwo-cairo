@@ -34,7 +34,7 @@ trait SortedIteratorTrait<C, T> {
     fn iterate(ref self: SortedIterator<C, T>, array: Span<T>) -> Option<(T, u32)>;
 }
 
-impl SortedIteratorImpl<T, +PartialOrd<T>, +Copy<T>, +Drop<T>, C, +Drop<C>, +Compare<C, T>, +Copy<C>> of SortedIteratorTrait<C, T> {
+impl SortedIteratorImpl<T, +PartialOrd<T>, +Copy<T>, +Drop<T>, C, +Compare<C, T>, +Drop<C>, +Copy<C>> of SortedIteratorTrait<C, T> {
     fn iterate(ref self: SortedIterator<C, T>, array: Span<T>) -> Option<(T, u32)> {
         let mut candidate_value = Option::None;
         let mut candidate_index = Option::None;
