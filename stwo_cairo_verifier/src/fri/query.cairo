@@ -41,7 +41,7 @@ pub impl QueriesImpl of QueriesImplTrait {
 
         let mut positions = array![];
         let mut iterator = MinimumToMaximumSortedIterator::iterate(nonsorted_positions.span());
-        while let Option::Some((x, _)) = iterator.next() {
+        while let Option::Some((x, _)) = iterator.next_deduplicated() {
             positions.append(x);
         };
 

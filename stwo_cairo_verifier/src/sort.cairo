@@ -34,10 +34,9 @@ pub struct SortedIterator<T, C> {
 trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>> {
     fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, C>;
 
-    fn next(ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
+    fn next_deduplicated(ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
         let mut candidate_value = Option::None;
         let mut candidate_index = Option::None;
-    
         let mut i = 0;
         while i < self.array.len() {
             let is_better_than_last = if let Option::Some(last) = self.last {
@@ -87,7 +86,7 @@ fn test_sort_lowest_to_greatest() {
     let mut sorted_array = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((value, _index)) = iterator.next() {
+    while let Option::Some((value, _index)) = iterator.next_deduplicated() {
         sorted_array.append(value);
     };
 
@@ -102,7 +101,7 @@ fn test_sort_greatest_to_lowest() {
     let mut sorted_array = array![];
 
     let mut iterator = MaximumToMinimumSortedIterator::iterate(my_array.span());
-    while let Option::Some((value, _index)) = iterator.next() {
+    while let Option::Some((value, _index)) = iterator.next_deduplicated() {
         sorted_array.append(value);
     };
 
@@ -117,7 +116,7 @@ fn test_sort_indexes_are_correct() {
     let mut sorted_indexes = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((_value, index)) = iterator.next() {
+    while let Option::Some((_value, index)) = iterator.next_deduplicated() {
         sorted_indexes.append(index);
     };
 
