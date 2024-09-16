@@ -174,7 +174,7 @@ fn test_sort_with_duplicates() {
 }
 
 #[test]
-fn test_sort_with_duplicates2() {
+fn test_sort_indexes_with_duplicates() {
     let my_array: Array<u32> = array![3, 5, 2, 3, 4, 3];
     let expected_indexes: Array<u32> = array![2, 0, 3, 5, 4, 1];
 
