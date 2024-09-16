@@ -34,11 +34,11 @@ pub struct SortedIterator<T, C> {
 trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>> {
     fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, C>;
 
-    fn next_deduplicated(ref self: SortedIterator<T, C>) -> Option<(T, u32)> { 
+    fn next_deduplicated(ref self: SortedIterator<T, C>) -> Option<(u32, T)> { 
         next_deduplicated::<T,C>(ref self)
     }
 
-    fn next(ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
+    fn next(ref self: SortedIterator<T, C>) -> Option<(u32, T)> {
         if self.last_index.is_some() {    
             let last_index = self.last_index.unwrap();
             let last_value = *self.array[last_index];
@@ -55,7 +55,7 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T
             };
 
             if is_repeated {
-                return Option::Some((last_value, self.last_index.unwrap()));
+                return Option::Some((self.last_index.unwrap(), last_value));
             }
         }
         next_deduplicated::<T, C>(ref self)
@@ -63,9 +63,9 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T
 }
 
 fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>>
-        (ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
-    let mut candidate_value = Option::None;
+        (ref self: SortedIterator<T, C>) -> Option<(u32, T)> {
     let mut candidate_index = Option::None;
+    let mut candidate_value = Option::None;
 
     let last_value = if let Option::Some(last_index) = self.last_index {
         Option::Some(*self.array[last_index])
@@ -86,8 +86,8 @@ fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +C
             true
         };
         if is_better_than_last && is_nearer_than_candidate {
-            candidate_value = Option::Some(*self.array[i]);
             candidate_index = Option::Some(i);
+            candidate_value = Option::Some(*self.array[i]);
         }
         i += 1;
     };
@@ -96,7 +96,7 @@ fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +C
         Option::None
     } else {
         self.last_index = candidate_index;
-        Option::Some((candidate_value.unwrap(), candidate_index.unwrap()))
+        Option::Some((candidate_index.unwrap(), candidate_value.unwrap()))
     }   
 }
 
@@ -121,7 +121,7 @@ fn test_sort_lowest_to_greatest() {
     let mut sorted_array = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((value, _index)) = iterator.next_deduplicated() {
+    while let Option::Some((_index, value)) = iterator.next_deduplicated() {
         sorted_array.append(value);
     };
 
@@ -136,7 +136,7 @@ fn test_sort_greatest_to_lowest() {
     let mut sorted_array = array![];
 
     let mut iterator = MaximumToMinimumSortedIterator::iterate(my_array.span());
-    while let Option::Some((value, _index)) = iterator.next_deduplicated() {
+    while let Option::Some((_index, value)) = iterator.next_deduplicated() {
         sorted_array.append(value);
     };
 
@@ -151,7 +151,7 @@ fn test_sort_indexes_are_correct() {
     let mut sorted_indexes = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((_value, index)) = iterator.next_deduplicated() {
+    while let Option::Some((index, _value)) = iterator.next_deduplicated() {
         sorted_indexes.append(index);
     };
 
@@ -161,19 +161,19 @@ fn test_sort_indexes_are_correct() {
 #[test]
 fn test_sort_with_duplicates() {
     let my_array: Array<u32> = array![3, 5, 2, 3, 4, 3, 4];
-    let expected_array: Array<u32> = array![2, 3, 3, 3, 4, 4, 5];
     let expected_indexes: Array<u32> = array![2, 0, 3, 5, 4, 6, 1];
+    let expected_array: Array<u32> = array![2, 3, 3, 3, 4, 4, 5];
 
-    let mut sorted_array = array![];
     let mut sorted_indexes = array![];
+    let mut sorted_array = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((value, index)) = iterator.next() {
+    while let Option::Some((index, value)) = iterator.next() {
         sorted_array.append(value);
         sorted_indexes.append(index);
     };
 
-    assert_eq!(expected_array, sorted_array);
     assert_eq!(expected_indexes, sorted_indexes);
+    assert_eq!(expected_array, sorted_array);
 }
 
