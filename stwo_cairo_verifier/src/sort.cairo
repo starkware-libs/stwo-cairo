@@ -45,12 +45,12 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, 
             } else {
                 true
             };
-            let is_more_near_than_candidate = if let Option::Some(candidate_value) = candidate_value {
+            let is_nearer_than_candidate = if let Option::Some(candidate_value) = candidate_value {
                 self.comparer.compare(*self.array[i], candidate_value)
             } else {
                 true
             };
-            if is_better_than_last && is_more_near_than_candidate {
+            if is_better_than_last && is_nearer_than_candidate {
                 candidate_value = Option::Some(*self.array[i]);
                 candidate_index = Option::Some(i);
             }
