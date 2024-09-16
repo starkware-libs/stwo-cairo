@@ -4,12 +4,12 @@ use core::array::ArrayTrait;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl,  CirclePoint};
 use stwo_cairo_verifier::SecureField;
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain, SparseSubCircleDomainImpl};
+use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain, SubCircleDomainImpl, SparseSubCircleDomainImpl};
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
 use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
-use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation,SparseCircleEvaluation};
-
+use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation, CircleEvaluationImpl, SparseCircleEvaluationImpl};
+use stwo_cairo_verifier::utils::bit_reverse_index;
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::m31;
@@ -22,7 +22,8 @@ pub struct PointSample {
     pub value: SecureField,
 }
 
-pub struct ColumnSampleBatch{
+#[derive(Drop)]
+pub struct ColumnSampleBatch {
     pub point: CirclePoint<SecureField>,
     pub columns_and_values: Array<(usize, SecureField)>
 }
@@ -60,7 +61,7 @@ pub fn fri_answers(
                 @samples_vec,
                 random_coeff,
                 @query_domain,
-                queried_values_per_column_vec.clone()
+                queried_values_per_column_vec.span()
             ) {
                     Result::Ok(result) => results.append(result),
                     Result::Err(error) => {
@@ -81,19 +82,42 @@ pub fn fri_answers(
     }
 }
 
+#[derive(Drop)]
+struct QuotientConstants {
+
+}
+
+fn quotient_constants(
+    sample_batches: Span<ColumnSampleBatch>,
+    random_coeff: QM31,
+    domain: CircleDomain 
+) -> QuotientConstants {
+    QuotientConstants {}
+}
+
+fn accumulate_row_quotients(
+    sample_batches: Span<ColumnSampleBatch>,
+    columns: Span<CircleEvaluation>,
+    quotient_constants: @QuotientConstants,
+    row: usize,
+    domain_point: CirclePoint<M31>,
+) -> QM31 {
+    qm31(0, 0, 0, 0)
+}
 
 pub fn fri_answers_for_log_size(
     log_size: u32,
     samples: @Array<@Array<PointSample>>,
     random_coeff: SecureField,
     query_domain: @SparseSubCircleDomain,
-    queried_values_per_column: Array<Span<M31>>,
+    queried_values_per_column: Span<Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
     //TODO: Build this circledomain using the coset.odds method in the rust implementation.
     let commitment_domain = CircleDomain{half_coset: CosetImpl::odds(log_size)};
 
-    // implementar columnsamplebatch que tiene un circlePoint y un vec de vec de PointSample
+    let sample_batches = array![].span();
+    
 
     let mut i = 0;
     let mut invalid_structure_error = false;
@@ -109,38 +133,53 @@ pub fn fri_answers_for_log_size(
         return Result::Err(VerificationError::InvalidStructure);
     }
 
-    //let mut evals = array![];
+    let mut evals = array![];
+    let mut i = 0;
     while i < query_domain.domains.len() {
         let subdomain = query_domain.domains[i];
-    //     let domain = subdomain.to_circle_domain(&commitment_domain);
-    //     let quotient_constants = quotient_constants(&sample_batches, random_coeff, domain);
-    //     let mut column_evals = Vec::new();
-    //     for queried_values in queried_values_per_column.iter_mut() {
-    //         let eval = CircleEvaluation::new(
-    //             domain,
-    //             queried_values.take(domain.size()).copied().collect_vec(),
-    //         );
-    //         column_evals.push(eval);
-    //     }
+        let domain = subdomain.to_circle_domain(commitment_domain);
+        let quotient_constants = quotient_constants(sample_batches, random_coeff, domain);
+        let mut column_evals = array![];
+        let mut j = 0;
+        while j < queried_values_per_column.len() {
+            let queried_values = queried_values_per_column[j];
+            let mut values = array![];
+            let mut k = 0;
+            while k < domain.size() {
+                // TODO: generalize circle evaluation instead, we're casting to QM31 but not necessary yet.
+                values.append(qm31(0, 0, 0, *queried_values[i * domain.size() + k].inner));
+                k = k + 1;
+            };
 
-    //     let mut values = Vec::new();
-    //     for row in 0..domain.size() {
-    //         let domain_point = domain.at(bit_reverse_index(row, log_size));
-    //         let value = accumulate_row_quotients(
-    //             &sample_batches,
-    //             &column_evals.iter().collect_vec(),
-    //             &quotient_constants,
-    //             row,
-    //             domain_point,
-    //         );
-    //         values.push(value);
-    //     }
-    //     let eval = CircleEvaluation::new(domain, values);
-    //     evals.push(eval);
+            let eval = CircleEvaluationImpl::new(
+                domain,
+                values,
+            );
+            column_evals.append(eval);
+        };
+
+        let mut values = array![];
+        let mut row = 0;
+        while row < domain.size() {
+            let domain_point = domain.at(bit_reverse_index(row, log_size));
+            let value = accumulate_row_quotients(
+                sample_batches,
+                column_evals.span(),
+                @quotient_constants,
+                row,
+                domain_point,
+            );
+            values.append(value);
+            row = row + 1;
+        };
+        let eval = CircleEvaluationImpl::new(domain, values);
+        evals.append(eval);
         i = i + 1;
     };
 
-    // let res = SparseCircleEvaluation::new(evals);
+    let res = SparseCircleEvaluationImpl::new(evals);
+
+    // TODO: return correct error
     // if !queried_values_per_column.iter().all(|x| x.is_empty()) {
     //     return Err(VerificationError::InvalidStructure(
     //         "Too many queried values".to_string(),
@@ -148,15 +187,7 @@ pub fn fri_answers_for_log_size(
     // }
     // Ok(res)
 
-
-//     return Result::Ok(SparseCircleEvaluation { subcircle_evals: array![
-//         CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
-//                           values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
-//         CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 2122317824, step_size: 2147483648, log_size: 0 } }, 
-//                           values: array![qm31(1489324268, 1315746611, 1235430137, 1650466882), qm31(158201991, 1003575152, 1730507932, 1741921065)]}
-//       ] 
-// });
-    Result::Err(VerificationError::Error)
+    Result::Ok(res)
 }
 
 
@@ -206,7 +237,7 @@ mod tests {
             @samples,
             random_coeff,
             @query_domain_per_log_size,
-            queried_values_per_column,
+            queried_values_per_column.span(),
         ).unwrap();
 
         assert_eq!(expected_result, function_result);

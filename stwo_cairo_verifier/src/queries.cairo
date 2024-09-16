@@ -1,7 +1,9 @@
-use super::utils::pow;
+use super::utils::{pow, bit_reverse_index};
 use core::traits::Copy;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use core::dict::Felt252DictEntryTrait;
+use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
+use stwo_cairo_verifier::circle::{Coset, CosetImpl};
 
 
 /// Represents a circle domain relative to a larger circle domain. The `initial_index` is the bit
@@ -25,6 +27,14 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
             i = i + 1;
         };
         res
+    }
+
+    fn to_circle_domain(self: @SubCircleDomain, query_domain: CircleDomain) -> CircleDomain {
+        let index = *self.coset_index * pow(2, *self.log_size);
+        let query = bit_reverse_index(index, query_domain.log_size());
+        let initial_index = query_domain.index_at(query);
+        let half_coset = CosetImpl::new(initial_index, *self.log_size - 1);
+        CircleDomainImpl::new(half_coset)
     }
 }
 
