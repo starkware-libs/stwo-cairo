@@ -53,6 +53,7 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T
                 }
                 i += 1;
             };
+            
             if repeated.is_some() {
                 return Option::Some((last_value, repeated.unwrap()));
             }
