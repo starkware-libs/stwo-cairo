@@ -162,29 +162,18 @@ fn test_sort_indexes_are_correct() {
 fn test_sort_with_duplicates() {
     let my_array: Array<u32> = array![3, 5, 2, 3, 4, 3, 4];
     let expected_array: Array<u32> = array![2, 3, 3, 3, 4, 4, 5];
+    let expected_indexes: Array<u32> = array![2, 0, 3, 5, 4, 6, 1];
 
     let mut sorted_array = array![];
-
-    let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((value, _index)) = iterator.next() {
-        sorted_array.append(value);
-    };
-
-    assert_eq!(expected_array, sorted_array);
-}
-
-#[test]
-fn test_sort_indexes_with_duplicates() {
-    let my_array: Array<u32> = array![3, 5, 2, 3, 4, 3];
-    let expected_indexes: Array<u32> = array![2, 0, 3, 5, 4, 1];
-
     let mut sorted_indexes = array![];
 
     let mut iterator = MinimumToMaximumSortedIterator::iterate(my_array.span());
-    while let Option::Some((_value, index)) = iterator.next() {
+    while let Option::Some((value, index)) = iterator.next() {
+        sorted_array.append(value);
         sorted_indexes.append(index);
     };
 
+    assert_eq!(expected_array, sorted_array);
     assert_eq!(expected_indexes, sorted_indexes);
 }
 
