@@ -7,7 +7,7 @@ use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain};
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
-use stwo_cairo_verifier::sort::{GreaterThan, iterate_sorted};
+use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
 use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation,SparseCircleEvaluation};
 
 
