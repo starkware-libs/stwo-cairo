@@ -156,6 +156,7 @@ pub fn fri_answers_for_log_size(
                 values,
             );
             column_evals.append(eval);
+            j = j + 1;
         };
 
         let mut values = array![];
