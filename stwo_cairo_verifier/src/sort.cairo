@@ -67,7 +67,7 @@ fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +C
     let mut candidate_value = Option::None;
     let mut candidate_index = Option::None;
 
-    let last = if let Option::Some(last_index) = self.last_index {
+    let last_value = if let Option::Some(last_index) = self.last_index {
         Option::Some(*self.array[last_index])
     } else {
         Option::None
@@ -75,8 +75,8 @@ fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +C
 
     let mut i = 0;
     while i < self.array.len() {
-        let is_better_than_last = if let Option::Some(last) = last {
-            self.comparer.compare(last, *self.array[i])
+        let is_better_than_last = if let Option::Some(last_value) = last_value {
+            self.comparer.compare(last_value, *self.array[i])
         } else {
             true
         };
