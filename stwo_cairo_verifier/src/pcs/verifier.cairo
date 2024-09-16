@@ -134,7 +134,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         let mut bounds = array![];
         let mut iterator = MaximumToMinimumSortedIterator::iterate(vec_to_sort.span());
-        while let Option::Some((x, _)) = iterator.next() {
+        while let Option::Some((_, x)) = iterator.next_deduplicated() {
             bounds.append(x);
         };
 
@@ -265,6 +265,7 @@ impl MerkleChannelTraitImpl of MerkleChannelTrait {
 
 #[derive(Debug, Drop, PartialEq)]
 pub enum VerificationError {
+    InvalidStructure,
     Error,
 }
 

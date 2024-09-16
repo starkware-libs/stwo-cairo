@@ -15,8 +15,16 @@ pub struct CircleDomain {
 
 #[generate_trait]
 pub impl CircleDomainImpl of CircleDomainTrait {
+    fn new(half_coset: Coset) -> CircleDomain {
+        CircleDomain { half_coset }
+    }
+
     fn log_size(self: @CircleDomain) -> usize {
         *self.half_coset.log_size + 1
+    }
+
+    fn size(self: @CircleDomain) -> usize {
+        pow(2, self.log_size())
     }
 
     fn index_at(self: @CircleDomain, index: usize) -> usize {

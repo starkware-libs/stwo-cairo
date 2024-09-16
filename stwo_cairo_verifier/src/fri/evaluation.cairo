@@ -22,6 +22,13 @@ pub struct CircleEvaluation {
     pub domain: CircleDomain,
 }
 
+#[generate_trait]
+pub impl CircleEvaluationImpl of CircleEvaluationTrait {
+    fn new(domain: CircleDomain, values: Array<QM31>) -> CircleEvaluation {
+        CircleEvaluation { values: values, domain: domain }
+    }
+}
+
 #[derive(Drop)]
 pub struct SparseLineEvaluation {
     pub subline_evals: Array<LineEvaluation>,
@@ -72,6 +79,10 @@ fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
 
 #[generate_trait]
 pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
+    fn new(subcircle_evals: Array<CircleEvaluation>) -> SparseCircleEvaluation {
+        SparseCircleEvaluation { subcircle_evals: subcircle_evals }
+    }
+    
     fn accumulate(
         self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31
     ) -> SparseCircleEvaluation {
