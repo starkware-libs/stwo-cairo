@@ -61,7 +61,8 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T
     }
 }
 
-fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>>(ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
+fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>>
+        (ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
     let mut candidate_value = Option::None;
     let mut candidate_index = Option::None;
 
