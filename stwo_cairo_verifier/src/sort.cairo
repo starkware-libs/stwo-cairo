@@ -42,20 +42,20 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T
         if self.last_index.is_some() {    
             let last_index: u32 = self.last_index.unwrap();
             let last_value = *self.array[last_index];
-            let mut repeated = Option::None;
+            let mut is_repeated = false;
 
             let mut i: u32 = last_index + 1;
             while i < self.array.len() {
                 if *self.array[i] == last_value {
                     self.last_index = Option::Some(i);
-                    repeated = Option::Some(i);
+                    is_repeated = true;
                     break;
                 }
                 i += 1;
             };
-            
-            if repeated.is_some() {
-                return Option::Some((last_value, repeated.unwrap()));
+
+            if is_repeated {
+                return Option::Some((last_value, self.last_index.unwrap()));
             }
         }
         next_deduplicated::<T, C>(ref self)
