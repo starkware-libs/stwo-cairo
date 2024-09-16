@@ -4,7 +4,7 @@ use core::array::ArrayTrait;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl,  CirclePoint};
 use stwo_cairo_verifier::SecureField;
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain};
+use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain, SparseSubCircleDomainImpl};
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
 use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
@@ -51,7 +51,7 @@ pub fn fri_answers(
     while let Option::Some((maximum, i)) = iterator.next() {
         if last_maximum.is_some() && maximum == last_maximum.unwrap() {
             samples_vec.append(samples.at(i));
-            queried_values_per_column_vec.append(queried_values_per_column.at(i));
+            queried_values_per_column_vec.append(*queried_values_per_column.at(i));
         } else {
             let query_domain = get_sparse_sub_circle_domain_dict(ref query_domain_per_log_size, last_maximum.unwrap());
 
@@ -60,7 +60,7 @@ pub fn fri_answers(
                 @samples_vec,
                 random_coeff,
                 @query_domain,
-                @queried_values_per_column_vec
+                queried_values_per_column_vec.clone()
             ) {
                     Result::Ok(result) => results.append(result),
                     Result::Err(error) => {
@@ -71,7 +71,7 @@ pub fn fri_answers(
                 
             last_maximum = Option::Some(maximum);
             samples_vec = array![samples.at(i)];
-            queried_values_per_column_vec = array![queried_values_per_column.at(i)];
+            queried_values_per_column_vec = array![queried_values_per_column.at(i).clone()];
         }
     };
     if fails.is_some() {
@@ -87,7 +87,7 @@ pub fn fri_answers_for_log_size(
     samples: @Array<@Array<PointSample>>,
     random_coeff: SecureField,
     query_domain: @SparseSubCircleDomain,
-    queried_values_per_column: @Array<@Span<M31>>,
+    queried_values_per_column: Array<Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
     //TODO: Build this circledomain using the coset.odds method in the rust implementation.
@@ -95,22 +95,23 @@ pub fn fri_answers_for_log_size(
 
     // implementar columnsamplebatch que tiene un circlePoint y un vec de vec de PointSample
 
+    let mut i = 0;
+    let mut invalid_structure_error = false;
+    while i < queried_values_per_column.len() {
+        if (*queried_values_per_column[i]).len() != query_domain.flatten().len() {
+            invalid_structure_error = true;
+            break;
+        }
+        i = i + 1;
+    };
 
+    if(invalid_structure_error) {
+        return Result::Err(VerificationError::InvalidStructure);
+    }
 
-    // for queried_values in queried_values_per_column {
-    //     if queried_values.len() != query_domain.flatten().len() {
-    //         return Err(VerificationError::InvalidStructure(
-    //             "Insufficient number of queried values".to_string(),
-    //         ));
-    //     }
-    // }
-    // let mut queried_values_per_column = queried_values_per_column
-    //     .iter()
-    //     .map(|q| q.iter())
-    //     .collect_vec();
-
-    // let mut evals = Vec::new();
-    // for subdomain in query_domain.iter() {
+    //let mut evals = array![];
+    while i < query_domain.domains.len() {
+        let subdomain = query_domain.domains[i];
     //     let domain = subdomain.to_circle_domain(&commitment_domain);
     //     let quotient_constants = quotient_constants(&sample_batches, random_coeff, domain);
     //     let mut column_evals = Vec::new();
@@ -136,7 +137,8 @@ pub fn fri_answers_for_log_size(
     //     }
     //     let eval = CircleEvaluation::new(domain, values);
     //     evals.push(eval);
-    // }
+        i = i + 1;
+    };
 
     // let res = SparseCircleEvaluation::new(evals);
     // if !queried_values_per_column.iter().all(|x| x.is_empty()) {
@@ -187,10 +189,10 @@ mod tests {
                                       value: qm31(498615358, 1652904678, 568903503, 193392082) }]];
         let random_coeff = qm31(934912220, 2101060572, 478944000, 1026736704);
         let query_domain_per_log_size = SparseSubCircleDomain{domains: array![SubCircleDomain { coset_index: 32, log_size: 1 }, SubCircleDomain { coset_index: 63, log_size: 1 }], large_domain_log_size: 7};
-        let queried_values_per_column = array![@array![m31(1720115923), m31(275996517), m31(1084325550), m31(1934680704)].span(),
-                                         @array![m31(1270808745), m31(836361095), m31(1701916643), m31(1812027089)].span(),
-                                         @array![m31(1631066942), m31(97828054), m31(774575764), m31(1860917732)].span(), 
-                                         @array![m31(1389614630), m31(525640714), m31(1095538838), m31(1384646193)].span()];
+        let queried_values_per_column = array![array![m31(1720115923), m31(275996517), m31(1084325550), m31(1934680704)].span(),
+                                         array![m31(1270808745), m31(836361095), m31(1701916643), m31(1812027089)].span(),
+                                         array![m31(1631066942), m31(97828054), m31(774575764), m31(1860917732)].span(), 
+                                         array![m31(1389614630), m31(525640714), m31(1095538838), m31(1384646193)].span()];
         let expected_result = SparseCircleEvaluation { subcircle_evals: array![
                                                                             CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
                                                                                               values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
@@ -204,7 +206,7 @@ mod tests {
             @samples,
             random_coeff,
             @query_domain_per_log_size,
-            @queried_values_per_column,
+            queried_values_per_column,
         ).unwrap();
 
         assert_eq!(expected_result, function_result);

@@ -265,6 +265,7 @@ impl MerkleChannelTraitImpl of MerkleChannelTrait {
 
 #[derive(Debug, Drop, PartialEq)]
 pub enum VerificationError {
+    InvalidStructure,
     Error,
 }
 
