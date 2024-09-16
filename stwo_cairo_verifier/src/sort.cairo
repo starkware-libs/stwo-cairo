@@ -28,7 +28,7 @@ impl GreaterThanCompare<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of Compare<T, Gre
 pub struct SortedIterator<T, C> {
     comparer: C,
     array: Span<T>,
-    last: Option<T>,
+    last_index: Option<u32>,
 }
 
 trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>> {
@@ -37,9 +37,16 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, 
     fn next_deduplicated(ref self: SortedIterator<T, C>) -> Option<(T, u32)> {
         let mut candidate_value = Option::None;
         let mut candidate_index = Option::None;
+
+        let last = if let Option::Some(last_index) = self.last_index {
+            Option::Some(*self.array[last_index])
+        } else {
+            Option::None
+        };
+
         let mut i = 0;
         while i < self.array.len() {
-            let is_better_than_last = if let Option::Some(last) = self.last {
+            let is_better_than_last = if let Option::Some(last) = last {
                 self.comparer.compare(last, *self.array[i])
             } else {
                 true
@@ -59,7 +66,7 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, 
         if candidate_value.is_none() {
             Option::None
         } else {
-            self.last = candidate_value;
+            self.last_index = candidate_index;
             Option::Some((candidate_value.unwrap(), candidate_index.unwrap()))
         }    
     }
@@ -67,13 +74,13 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +Copy<T>, +Drop<T>, +Compare<T, 
 
 pub impl MaximumToMinimumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, GreaterThan> {
     fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, GreaterThan> {
-        SortedIterator { comparer: GreaterThan {}, array: array_to_iterate, last: Option::None }
+        SortedIterator { comparer: GreaterThan {}, array: array_to_iterate, last_index: Option::None }
     }
 }
 
 pub impl MinimumToMaximumSortedIterator<T, +PartialOrd<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, LowerThan> {
     fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, LowerThan> {
-        SortedIterator { comparer: LowerThan {}, array: array_to_iterate, last: Option::None }
+        SortedIterator { comparer: LowerThan {}, array: array_to_iterate, last_index: Option::None }
     }
 }
 
