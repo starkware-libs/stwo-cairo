@@ -5,10 +5,10 @@ use core::num::traits::one::One;
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq, Eq)]
+    #[derive(Copy, Drop, Debug, PartialEq, Eq)]
 pub struct QM31 {
-    a: CM31,
-    b: CM31,
+    pub a: CM31,
+    pub b: CM31,
 }
 
 #[generate_trait]
@@ -29,6 +29,9 @@ pub impl QM31Impl of QM31Trait {
         let denom = self.a * self.a - (b2 + b2 + ib2);
         let denom_inverse = denom.inverse();
         QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
+    }
+    fn complex_conjugate(self: QM31) -> QM31 {
+        QM31 { a: self.a, b: -self.b }
     }
 }
 

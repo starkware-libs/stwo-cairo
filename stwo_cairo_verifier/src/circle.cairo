@@ -1,5 +1,5 @@
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::qm31::QM31;
+use stwo_cairo_verifier::fields::qm31::{QM31,QM31Trait};
 use super::utils::pow;
 use core::num::traits::zero::Zero;
 use core::num::traits::one::One;
@@ -59,6 +59,16 @@ pub trait CirclePointTrait<F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>, +Ze
 pub impl CirclePointM31Impl of CirclePointTrait<M31> {}
 
 pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
+
+trait ComplexConjugate {
+    fn complex_conjugate(self: CirclePoint<QM31>) -> CirclePoint<QM31>;
+}
+
+pub impl ComplexConjugateImpl of ComplexConjugate {
+    fn complex_conjugate(self: CirclePoint<QM31>) -> CirclePoint<QM31> {
+        CirclePoint { x: self.x.complex_conjugate(), y: -self.y.complex_conjugate() }
+    }
+}
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
 pub struct Coset {

@@ -1,7 +1,7 @@
 use core::traits::TryInto;
 use core::option::OptionTrait;
 use core::array::ArrayTrait;
-use stwo_cairo_verifier::circle::{Coset, CosetImpl,  CirclePoint};
+use stwo_cairo_verifier::circle::{Coset, CosetImpl,  CirclePoint, ComplexConjugateImpl};
 use stwo_cairo_verifier::SecureField;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::queries::{SparseSubCircleDomain, get_sparse_sub_circle_domain_dict, SubCircleDomain, SubCircleDomainImpl, SparseSubCircleDomainImpl};
@@ -11,11 +11,12 @@ use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
 use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation, CircleEvaluationImpl, SparseCircleEvaluationImpl};
 use stwo_cairo_verifier::utils::{bit_reverse_index, get_unique_elements};
 
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31, QM31One, QM31Trait};
 use stwo_cairo_verifier::fields::cm31::CM31;
 use stwo_cairo_verifier::fields::m31::m31;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
 use core::result::ResultTrait;
+use stwo_cairo_verifier::utils::pow_qm31;
 
 #[derive(Drop, Copy, Debug)]
 pub struct PointSample {
@@ -33,7 +34,7 @@ pub struct ColumnSampleBatch {
 impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
     fn new_vec(samples: Span<Span<PointSample>>) -> Array<ColumnSampleBatch>{
         let points = Self::find_all_unique_points(samples);
-        
+
         let mut column_sample_batches: Array<ColumnSampleBatch> = array![];
 
         let mut i = 0;
@@ -158,11 +159,118 @@ fn quotient_constants(
     random_coeff: QM31,
     domain: CircleDomain 
 ) -> QuotientConstants {
-    QuotientConstants {
-        line_coeffs: array![],
-        batch_random_coeffs: array![],
-        denominator_inverses: array![]
-    }
+    let line_coeffs = column_line_coeffs(sample_batches, random_coeff);
+    let batch_random_coeffs = batch_random_coeffs(sample_batches, random_coeff);
+    let denominator_inverses = denominator_inverses(sample_batches, domain);
+    QuotientConstants { line_coeffs: line_coeffs, batch_random_coeffs: array![], denominator_inverses: array![] }
+}
+
+pub fn column_line_coeffs(
+    sample_batches: Span<ColumnSampleBatch>,
+    random_coeff: SecureField,
+) -> Array<Array<(SecureField, SecureField, SecureField)>> {
+    let mut column_line_coeffs = array![];
+    let mut i = 0;
+    while i < sample_batches.len() {
+        let sample_batch = sample_batches[i];
+        let mut alpha = QM31One::one();
+        let mut array = array![];
+        let mut j = 0;
+        while j < sample_batch.columns_and_values.len() {
+            let (_column, sampled_value) = *sample_batch.columns_and_values[j];
+            alpha = alpha * random_coeff;
+            let mut sample = PointSample {
+                point: *sample_batch.point,
+                value: sampled_value,
+            };
+            let value = complex_conjugate_line_coeffs(ref sample, alpha);
+
+            array.append(value);
+            j = j + 1;
+        };
+
+        column_line_coeffs.append(array);
+        i = i + 1;
+    };
+    column_line_coeffs
+}
+
+fn batch_random_coeffs(
+    sample_batches: Span<ColumnSampleBatch>,
+    random_coeff: SecureField,
+) -> Array<SecureField> {
+    let mut batch_random_coeffs = array![];
+    let mut i = 0;
+    while i < sample_batches.len() {
+        let sample_batch = sample_batches[i];
+        let element = pow_qm31(random_coeff, sample_batch.columns_and_values.len());
+        batch_random_coeffs.append(element);
+        i = i + 1;
+    };
+    batch_random_coeffs
+}
+
+fn denominator_inverses(
+    sample_batches: Span<ColumnSampleBatch>,
+    domain: CircleDomain,
+) -> Array<Array<CM31>> {
+    let mut flat_denominators = array![];
+    // We want a P to be on a line that passes through a point Pr + uPi in QM31^2, and its conjugate
+    // Pr - uPi. Thus, Pr - P is parallel to Pi. Or, (Pr - P).x * Pi.y - (Pr - P).y * Pi.x = 0.
+    let mut i = 0;
+    while i < sample_batches.len() {
+        let sample_batch = sample_batches[i];
+        // Extract Pr, Pi.
+        let prx = sample_batch.point.x.a;
+        let pry = sample_batch.point.y.a;
+        let pix = sample_batch.point.x.b;
+        let piy = sample_batch.point.y.b;
+        let mut row = 0;
+        while row < domain.size() {
+            let domain_point = domain.at(row);
+            let first_substraction = CM31 { a: *prx.a - domain_point.x, b: *prx.b };
+            let second_substraction = CM31 { a: *pry.a - domain_point.y, b: *pry.b };
+            flat_denominators.append(first_substraction * *piy - second_substraction * *pix);
+        };
+    };
+
+    let mut flat_denominator_inverses: Array<CM31> = array![];
+    // CM31::batch_inverse(ref flat_denominators, ref flat_denominator_inverses);
+
+    let mut result: Array<Array<CM31>> = array![];
+    let mut i = 0;
+    let mut flat_denominator_inverses = flat_denominator_inverses.span();
+    while i < flat_denominator_inverses.len() {
+        let mut denominator_inverses: Array<CM31> = array![];
+        let mut j = 0;
+        while j < domain.size() {
+            let flat_denominator_inverse = *flat_denominator_inverses[j];
+            denominator_inverses.append(flat_denominator_inverse);
+            j = j + 1;
+        };
+        //let denominator_inverses_bit_reversed = bit_reverse(denominator_inverses);
+
+        result.append(denominator_inverses);
+        i = i + 1;
+    };
+    result
+}
+
+pub fn complex_conjugate_line_coeffs(
+    ref sample: PointSample,
+    alpha: SecureField,
+) -> (SecureField, SecureField, SecureField) {
+    // TODO(AlonH): This assertion will fail at a probability of 1 to 2^62. Use a better solution.
+    assert_ne!(
+        sample.point.y,
+        sample.point.y.complex_conjugate(),
+        "Cannot evaluate a line with a single point ({:?}).",
+        sample.point
+    );
+    let a: QM31 = sample.value.complex_conjugate() - sample.value;
+    let c: QM31 = sample.point.complex_conjugate().y - sample.point.y;
+    let b = sample.value * c - a * sample.point.y;
+    (alpha * a, alpha * b, alpha * c)
 }
 
 fn accumulate_row_quotients(
@@ -293,13 +401,13 @@ mod tests {
         let samples = array![array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
                                                            y: qm31(326786628, 606109638, 1064549171, 242662007)},
                                       value: qm31(734531923, 1747759514, 825724491, 1380781623)}].span(),
-                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053), 
+                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
                                                            y: qm31(326786628, 606109638, 1064549171, 242662007) },
-                                      value: qm31(409142122, 1541525101, 867367418, 349409006) }].span(), 
-                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053), 
+                                      value: qm31(409142122, 1541525101, 867367418, 349409006) }].span(),
+                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
                                                            y: qm31(326786628, 606109638, 1064549171, 242662007) },
                                       value: qm31(143298682, 126098004,1036758723, 1444867) }].span(),
-                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053), 
+                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
                                                            y: qm31(326786628, 606109638, 1064549171, 242662007) },
                                       value: qm31(498615358, 1652904678, 568903503, 193392082) }].span()];
         let random_coeff = qm31(934912220, 2101060572, 478944000, 1026736704);
