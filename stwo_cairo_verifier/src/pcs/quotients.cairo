@@ -649,6 +649,7 @@ mod tests {
 
         assert_eq!(expected_value, value);
     }
+
     #[test]
     fn test_quotient_constants() {
         let sample_batches = [

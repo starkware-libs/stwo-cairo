@@ -48,14 +48,13 @@ pub trait CommitmentSchemeVerifierTrait {
 
 impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn new(config: PcsConfig) -> CommitmentSchemeVerifier {
-        // TODO: code
         CommitmentSchemeVerifier { trees: array![], config: config }
     }
 
     fn column_log_sizes(self: @CommitmentSchemeVerifier) -> Array<Array<u32>> {
-        let mut i = 0;
-
         let mut result = array![];
+
+        let mut i = 0;
         while i < self.trees.len() {
             result.append(self.trees.at(i).column_log_sizes.clone());
             i = i + 1;
@@ -71,7 +70,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         channel: Channel
     ) -> Channel {
         let channel_copy = channel.clone();
-        // TODO: code
+
         MerkleChannelTraitImpl::mix_root(channel_copy, commitment);
         let log_blowup_factor = self.config.fri_config.log_blowup_factor;
         let mut extended_log_sizes: Array<u32> = ArrayTrait::new();
@@ -96,47 +95,23 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
-        let sampled_values_copy = proof.sampled_values.clone();
-        let mut flattened = array![];
-        let mut i: u32 = 0;
-        while i < sampled_values_copy.len() {
-            let mut j: u32 = 0;
-            let i_copy = sampled_values_copy.at(i);
-            while j < i_copy.len() {
-                let mut k: u32 = 0;
-                let j_copy = i_copy.at(j);
-                while k < j_copy.len() {
-                    flattened.append(j_copy.at(k).clone());
-                    k = k + 1;
-                };
-                j = j + 1;
-            };
-            i = i + 1;
-        };
+        let flattened = flat_3d_array(proof.sampled_values.span());
         channel.mix_felts(flattened.span());
+
         let random_coeff = channel.draw_felt();
 
         let column_log_sizes = self.column_log_sizes();
-        println!("column_log_sizes {:?}", column_log_sizes);
-        let mut vec_to_sort = array![];
-        let mut i = 0;
-        while i < column_log_sizes.len() {
-            let i_c_copy: @Array<u32> = column_log_sizes.at(i);
 
-            let mut j = 0;
-            while j < i_c_copy.len() {
-                let log_size: @u32 = i_c_copy.at(j);
-                vec_to_sort.append(*log_size - *self.config.fri_config.log_blowup_factor);
-                j = j + 1;
-            };
-            i = i + 1;
-        };
+        let vec_to_sort = substract_map_2d_array(
+            column_log_sizes.span(), *self.config.fri_config.log_blowup_factor
+        );
+
         let mut bounds = array![];
         let mut iterator = MaximumToMinimumSortedIterator::iterate(vec_to_sort.span());
         while let Option::Some((_, x)) = iterator.next_deduplicated() {
             bounds.append(x);
         };
-        println!("llegue");
+
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierImpl::commit(
             ref channel, *self.config.fri_config, proof.fri_proof, bounds
@@ -144,7 +119,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             .unwrap();
 
         channel.mix_nonce(proof.proof_of_work);
-        println!("llegue proof of work");
+
         // TODO: waiting for trailing_zeros fix
         // let proof_of_work_bits: u32 = *self.config.pow_bits;
         // if channel.trailing_zeros() < proof_of_work_bits {
@@ -175,8 +150,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 .unwrap();
             i = i + 1;
         };
-
-        println!("llegue antes fri queries");
         // Answer FRI queries.
         let snap_points = @sampled_points;
         let snap_values = @proof.sampled_values;
@@ -209,7 +182,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-        println!("llegue antes flattened");
+
         let mut i = 0;
         let mut flattened_queried_values: Array<Span<M31>> = array![];
         while i < queried_snap.len() {
@@ -221,7 +194,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-        println!("llegue flattened queried values");
+
         // TODO: Make sure this channel is correct (no wrong appends in the middle).
         let column_log_sizes = self.column_log_sizes();
         let mut flattened_column_log_sizes = array![];
@@ -250,6 +223,55 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             Result::Err(fri_error) => Result::Err(VerificationError::Fri(fri_error))
         }
     }
+}
+
+fn flat_3d_array<T, +Copy<T>, +Drop<T>>(array: Span<Array<Array<T>>>) -> Array<T> {
+    let mut flattened = array![];
+
+    let mut i = 0;
+    while i < array.len() {
+        let middle_array = array.at(i).span();
+
+        let mut j = 0;
+        while j < middle_array.len() {
+            let inner_array = middle_array.at(j).span();
+
+            let mut k = 0;
+            while k < inner_array.len() {
+                let element = inner_array.at(k).clone();
+                flattened.append(element);
+
+                k = k + 1;
+            };
+
+            j = j + 1;
+        };
+
+        i = i + 1;
+    };
+
+    flattened
+}
+
+fn substract_map_2d_array<T, +Sub<T>, +Copy<T>, +Drop<T>>(
+    array: Span<Array<T>>, substracting: T
+) -> Array<T> {
+    let mut mapped_array = array![];
+
+    let mut i = 0;
+    while i < array.len() {
+        let inner_array = array.at(i).span();
+
+        let mut j = 0;
+        while j < inner_array.len() {
+            let minuend = inner_array.at(j);
+            mapped_array.append(*minuend - substracting);
+            j = j + 1;
+        };
+        i = i + 1;
+    };
+
+    mapped_array
 }
 
 #[derive(Drop)]
