@@ -9,7 +9,7 @@ use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
 use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
 use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation,SparseCircleEvaluation};
-
+use stwo_cairo_verifier::utils::get_unique_elements;
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::m31;
@@ -22,6 +22,7 @@ pub struct PointSample {
     pub value: SecureField,
 }
 
+#[derive(Drop)]
 pub struct ColumnSampleBatch{
     pub point: CirclePoint<SecureField>,
     pub columns_and_values: Array<(usize, SecureField)>
@@ -29,7 +30,69 @@ pub struct ColumnSampleBatch{
 
 #[generate_trait]
 impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
-    // !todo: Code
+    // !todo: polinomiopolinomio polinomio
+    fn new_vec(samples: Span<Span<PointSample>>) -> Array<ColumnSampleBatch>{
+        let points = Self::find_all_unique_points(samples);
+
+        let mut column_sample_batches: Array<ColumnSampleBatch> = array![];
+
+        let mut i = 0;
+        while i < points.len(){
+            let point = points[i].clone();
+
+            column_sample_batches.append(Self::new_from_point_and_samples(@point, samples));
+
+            i = i+1;
+        };
+        
+        column_sample_batches
+        
+    }
+
+    fn new_from_point_and_samples(point: @CirclePoint<SecureField>, samples: Span<Span<PointSample>>) -> ColumnSampleBatch{
+        let mut columns_and_values: Array<(usize, SecureField)> = array![];
+        
+        let mut i = 0;
+        while i<samples.len(){
+            let mut j = 0;
+            let sample: Span<PointSample> = *samples.at(i);
+            while j < sample.len(){
+
+                if point == sample.at(j).point{
+                    columns_and_values.append((i, *sample.at(j).value));
+                }
+
+                j = j+1;
+            };
+
+            i = i+1;
+        };
+
+        ColumnSampleBatch{
+            point: *point,
+            columns_and_values: columns_and_values
+        }
+    }
+
+    fn find_all_unique_points(samples:  Span<Span<PointSample>>) -> Array<CirclePoint<SecureField>>{
+        let mut points: Array<CirclePoint<SecureField>> = array![];
+
+        // Extract all CirclePoints from array of PointSamples
+        let mut i = 0;
+        while i < samples.len(){
+            let mut j = 0;
+            let column: Span<PointSample> = *samples[i];
+            while j < column.len(){
+                let point_sample = column[j];
+                points.append(*point_sample.point);
+                j = j+1;
+            };
+            i = i+1
+        };
+
+        get_unique_elements(@points)
+
+    }
 }
 
 
@@ -94,6 +157,7 @@ pub fn fri_answers_for_log_size(
     let commitment_domain = CircleDomain{half_coset: CosetImpl::odds(log_size)};
 
     // implementar columnsamplebatch que tiene un circlePoint y un vec de vec de PointSample
+    //let sample_batches = ColumnSampleBatch::new_vec(samples);
 
 
 
