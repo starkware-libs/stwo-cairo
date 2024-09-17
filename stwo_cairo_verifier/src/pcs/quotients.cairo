@@ -151,7 +151,7 @@ struct QuotientConstants {
     /// [self::batch_random_coeffs].
     pub batch_random_coeffs: Array<QM31>,
     /// The inverses of the denominators of the quotients.
-    pub denominator_inverses: Array<Array<QM31>> // TODO(agus): This could be a CM31.
+    pub denominator_inverses: Array<Array<CM31>>
 }
 
 fn quotient_constants(
@@ -162,7 +162,11 @@ fn quotient_constants(
     let line_coeffs = column_line_coeffs(sample_batches, random_coeff);
     let batch_random_coeffs = batch_random_coeffs(sample_batches, random_coeff);
     let denominator_inverses = denominator_inverses(sample_batches, domain);
-    QuotientConstants { line_coeffs: line_coeffs, batch_random_coeffs: array![], denominator_inverses: array![] }
+    QuotientConstants { 
+        line_coeffs: line_coeffs,
+        batch_random_coeffs: batch_random_coeffs,
+        denominator_inverses: denominator_inverses
+    }
 }
 
 pub fn column_line_coeffs(
@@ -333,7 +337,9 @@ fn accumulate_row_quotients(
             j = j + 1;
         };
         i = i + 1;
-        row_accumulator = row_accumulator * *batch_coeff + numerator * *denominator_inverses[row];
+        let denominator_inverse = *denominator_inverses[row];
+        let multiplication = QM31 { a: numerator.a * denominator_inverse, b: numerator.b * denominator_inverse };
+        row_accumulator = row_accumulator * *batch_coeff + multiplication;
     };
     row_accumulator
 }
