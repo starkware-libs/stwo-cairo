@@ -152,10 +152,39 @@ pub fn find(n: u32, a: Span<u32>) -> bool {
     res
 }
 
+pub fn get_unique_elements<T, +PartialEq<T>, +Drop<T>, +Copy<T>>(vector: @Array<T>) -> Array<T>{
+    let mut uniques: Array<T> = array![];
+
+    let mut i = 0;
+    while i < vector.len(){
+        if !contains_element(@uniques, vector[i]){
+            uniques.append(*vector[i]);
+        }
+        i = i+1
+    };
+
+    uniques
+}
+
+
+pub fn contains_element<T, +PartialEq<T>>(vector: @Array<T>, element: @T) -> bool{
+    let mut contains = false;
+
+    let mut i = 0;
+    while i < vector.len(){
+        if vector[i] == element{
+            contains = true;
+            break;
+        }
+        i = i+1;
+    };
+    contains
+}
+
 
 #[cfg(test)]
 mod tests {
-    use super::{pow, bit_reverse_index, pow_qm31, qm31};
+    use super::{pow, bit_reverse_index, pow_qm31, qm31, get_unique_elements};
 
     #[test]
     fn test_pow() {
@@ -210,6 +239,24 @@ mod tests {
         let result = pow_qm31(qm31(1, 2, 3, 4), 37);
         let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
         assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_can_get_unique_elements_of_array(){
+        let vector_1 = array![1,1,2,2,3,3,4,4,5,5];
+        let expected_vector_1 = array![1,2,3,4,5];
+        let vector_2 = array![1,1,1,1,1,1,1,1];
+        let expected_vector_2 = array![1];
+        let vector_3 = array![1,2,3,4,5];
+        let expected_vector_3 = array![1,2,3,4,5];
+
+        let return_vector_1 = get_unique_elements(@vector_1);
+        let return_vector_2 = get_unique_elements(@vector_2);
+        let return_vector_3 = get_unique_elements(@vector_3);
+
+        assert_eq!(expected_vector_1, return_vector_1);
+        assert_eq!(expected_vector_2, return_vector_2);
+        assert_eq!(expected_vector_3, return_vector_3);
     }
 }
 
