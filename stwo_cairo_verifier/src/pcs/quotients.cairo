@@ -271,14 +271,6 @@ pub fn fri_answers_for_log_size(
 
     let res = SparseCircleEvaluationImpl::new(evals);
 
-    // TODO: return correct error
-    // if !queried_values_per_column.iter().all(|x| x.is_empty()) {
-    //     return Err(VerificationError::InvalidStructure(
-    //         "Too many queried values".to_string(),
-    //     ));
-    // }
-    // Ok(res)
-
     Result::Ok(res)
 }
 
