@@ -248,12 +248,37 @@ fn denominator_inverses(
             denominator_inverses.append(flat_denominator_inverse);
             j = j + 1;
         };
-        //let denominator_inverses_bit_reversed = bit_reverse(denominator_inverses);
+        let denominator_inverses_bit_reversed = bit_reverse(denominator_inverses.span());
 
-        result.append(denominator_inverses);
+        result.append(denominator_inverses_bit_reversed);
         i = i + 1;
     };
     result
+}
+
+fn bit_reverse(v: Span<CM31>) -> Array<CM31> {
+    let n = v.len();
+    //assert!(n.is_power_of_two());
+    let log_n = ilog2(n);
+
+    let mut result = array![];
+    let mut i = 0;
+    while i < n {
+        let j = bit_reverse_index(i, log_n);
+        result.append(*v[j]);
+        i = i + 1;
+    };
+    result
+}
+
+fn ilog2(n: u32) -> u32 {
+    let mut log = 0;
+    let mut current = n;
+    while current > 1 {
+        current = current / 2;
+        log = log + 1;
+    };
+    log
 }
 
 fn batch_inverse(array_to_inverse: Span<CM31>, ref result: Array<CM31>) {
