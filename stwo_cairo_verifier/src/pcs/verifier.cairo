@@ -142,6 +142,10 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let mut fri_verifier = FriVerifierImpl::commit(ref channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
 
         channel.mix_nonce(proof.proof_of_work);
+        let proof_of_work_bits: u32 = *self.config.pow_bits;
+        if channel.trailing_zeros() < proof_of_work_bits {
+            return Result::Err(VerificationError::ProofOfWork);
+        }
 
         // Verify merkle decommitments.
         assert_eq!(self.trees.len(), proof.queried_values.len());
@@ -232,7 +236,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             ref fri_query_domains,
             flattened_queried_values
         ).unwrap();
-        fri_verifier.decommit(fri_answers);    
+        fri_verifier.decommit(fri_answers);
 
         Result::Ok(())
     }
@@ -267,6 +271,7 @@ impl MerkleChannelTraitImpl of MerkleChannelTrait {
 pub enum VerificationError {
     InvalidStructure,
     Error,
+    ProofOfWork,
 }
 
 #[cfg(test)]

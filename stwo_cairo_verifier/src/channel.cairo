@@ -140,14 +140,14 @@ pub impl ChannelImpl of ChannelTrait {
         bytes
     }
 
-    fn trailing_zeros(self: Channel) -> u8{
+    fn trailing_zeros(self: Channel) -> u32{
         let digest: felt252 = self.digest;
         let mut digest_as_u128: u128 = digest.try_into().unwrap();
         
         return Self::count_trailing_zeros(@digest_as_u128);
     }
 
-    fn count_trailing_zeros(n: @u128) -> u8 {
+    fn count_trailing_zeros(n: @u128) -> u32 {
         let mut count = 0;
         let mut value = n.clone();
         while value > 0 {
@@ -363,7 +363,7 @@ mod tests {
     pub fn test_can_return_trailing_zeros_of_digest(){
         let initial_digest = 0xcafecafe;
         let mut channel = ChannelTrait::new(initial_digest);
-        let trailing_zeros: u8 = channel.trailing_zeros();
+        let trailing_zeros: u32 = channel.trailing_zeros();
         assert_eq!(trailing_zeros, 1);
     }
 
