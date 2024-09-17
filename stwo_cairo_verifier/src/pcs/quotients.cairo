@@ -12,7 +12,7 @@ use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluat
 use stwo_cairo_verifier::utils::{bit_reverse_index, get_unique_elements};
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31, QM31One, QM31Trait};
-use stwo_cairo_verifier::fields::cm31::CM31;
+use stwo_cairo_verifier::fields::cm31::{CM31, CM31Trait};
 use stwo_cairo_verifier::fields::m31::m31;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
 use core::result::ResultTrait;
@@ -235,7 +235,7 @@ fn denominator_inverses(
     };
 
     let mut flat_denominator_inverses: Array<CM31> = array![];
-    // CM31::batch_inverse(ref flat_denominators, ref flat_denominator_inverses);
+    batch_inverse(flat_denominators.span(), ref flat_denominator_inverses);
 
     let mut result: Array<Array<CM31>> = array![];
     let mut i = 0;
@@ -254,6 +254,14 @@ fn denominator_inverses(
         i = i + 1;
     };
     result
+}
+
+fn batch_inverse(array_to_inverse: Span<CM31>, ref result: Array<CM31>) {
+    let mut i = 0;
+    while i < array_to_inverse.len() {
+        result.append((*array_to_inverse[i]).inverse());
+        i = i + 1;
+    }
 }
 
 pub fn complex_conjugate_line_coeffs(
