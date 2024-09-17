@@ -12,6 +12,7 @@ use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluat
 use stwo_cairo_verifier::utils::bit_reverse_index;
 
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+use stwo_cairo_verifier::fields::cm31::CM31;
 use stwo_cairo_verifier::fields::m31::m31;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
 use core::result::ResultTrait;
@@ -84,7 +85,12 @@ pub fn fri_answers(
 
 #[derive(Drop)]
 struct QuotientConstants {
-
+    pub line_coeffs: Array<Array<(QM31, QM31, QM31)>>,
+    /// The random coefficients used to linearly combine the batched quotients For more details see
+    /// [self::batch_random_coeffs].
+    pub batch_random_coeffs: Array<QM31>,
+    /// The inverses of the denominators of the quotients.
+    pub denominator_inverses: Array<Array<QM31>> // TODO(agus): This could be a CM31.
 }
 
 fn quotient_constants(
@@ -92,7 +98,11 @@ fn quotient_constants(
     random_coeff: QM31,
     domain: CircleDomain 
 ) -> QuotientConstants {
-    QuotientConstants {}
+    QuotientConstants {
+        line_coeffs: array![],
+        batch_random_coeffs: array![],
+        denominator_inverses: array![]
+    }
 }
 
 fn accumulate_row_quotients(
@@ -102,7 +112,29 @@ fn accumulate_row_quotients(
     row: usize,
     domain_point: CirclePoint<M31>,
 ) -> QM31 {
-    qm31(0, 0, 0, 0)
+    let mut row_accumulator = qm31(0, 0, 0, 0);
+    let mut i = 0;
+    while i < sample_batches.len() {
+        let sample_batch = sample_batches.at(i);
+        let line_coeffs = quotient_constants.line_coeffs.at(i);
+        let batch_coeff = quotient_constants.batch_random_coeffs.at(i);
+        let denominator_inverses = quotient_constants.denominator_inverses.at(i);
+        let mut numerator = qm31(0, 0, 0, 0);
+        let mut j = 0;
+        while j < line_coeffs.len() {
+            let (column_index, _) = sample_batch.columns_and_values[j];
+            let (a, b, c) = line_coeffs[j];
+            let column = columns.at(*column_index);
+            let value = *column.values[row] *  *c;
+            let y = qm31(0, 0, 0, domain_point.y.inner);
+            let linear_term = *a * y + *b;
+            numerator = numerator + (value - linear_term);
+            j = j + 1;
+        };
+        i = i + 1;
+        row_accumulator = row_accumulator * *batch_coeff + numerator * *denominator_inverses[row];
+    };
+    row_accumulator
 }
 
 pub fn fri_answers_for_log_size(
