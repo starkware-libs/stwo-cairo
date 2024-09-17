@@ -96,6 +96,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let sampled_values_copy = proof.sampled_values.clone();
         let mut flattened = array![];
 
+        
         let mut i: u32 = 0;
         while i < sampled_values_copy.len() {
             let mut j: u32 = 0;
@@ -111,7 +112,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-
+        
         channel.mix_felts(flattened.span());
         let random_coeff = channel.draw_felt();
 
@@ -131,7 +132,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-
         let mut bounds = array![];
         let mut iterator = MaximumToMinimumSortedIterator::iterate(vec_to_sort.span());
         while let Option::Some((_, x)) = iterator.next_deduplicated() {

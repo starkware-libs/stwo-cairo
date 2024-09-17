@@ -142,16 +142,16 @@ pub impl ChannelImpl of ChannelTrait {
 
     fn trailing_zeros(self: Channel) -> u32{
         let digest: felt252 = self.digest;
-        let mut digest_as_u128: u128 = digest.try_into().unwrap();
+        let mut digest_as_u256: u256 = digest.try_into().unwrap();
         
-        return Self::count_trailing_zeros(@digest_as_u128);
+        return Self::count_trailing_zeros(@digest_as_u256);
     }
 
-    fn count_trailing_zeros(n: @u128) -> u32 {
+    fn count_trailing_zeros(n: @u256) -> u32 {
         let mut count = 0;
         let mut value = n.clone();
         while value > 0 {
-            if value & 1_u128 == 1 {
+            if value & 1_u256 == 1 {
                 break;
             }
             count += 1;
@@ -370,7 +370,7 @@ mod tests {
     #[test]
     pub fn test_can_return_trailing_zeros_of_integer(){
 
-        let mut  value = 1024_u128;
+        let mut  value = 1024_u256;
         let mut tz = ChannelTrait::count_trailing_zeros(@value);
         assert_eq!(tz, 10);
 
