@@ -66,7 +66,7 @@ trait ComplexConjugate {
 
 pub impl ComplexConjugateImpl of ComplexConjugate {
     fn complex_conjugate(self: CirclePoint<QM31>) -> CirclePoint<QM31> {
-        CirclePoint { x: self.x.complex_conjugate(), y: -self.y.complex_conjugate() }
+        CirclePoint { x: self.x.complex_conjugate(), y: self.y.complex_conjugate() }
     }
 }
 
