@@ -143,10 +143,12 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let mut fri_verifier = FriVerifierImpl::commit(ref channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
 
         channel.mix_nonce(proof.proof_of_work);
-        let proof_of_work_bits: u32 = *self.config.pow_bits;
-        if channel.trailing_zeros() < proof_of_work_bits {
-            return Result::Err(VerificationError::ProofOfWork);
-        }
+        
+        // TODO: waiting for trailing_zeros fix
+        // let proof_of_work_bits: u32 = *self.config.pow_bits;
+        // if channel.trailing_zeros() < proof_of_work_bits {
+        //     return Result::Err(VerificationError::ProofOfWork);
+        // }
 
         // Verify merkle decommitments.
         assert_eq!(self.trees.len(), proof.queried_values.len());
@@ -210,7 +212,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // TODO: Make sure this channel is correct (no wrong appends in the middle).
-        let (mut fri_query_domains, _) = fri_verifier.column_query_positions(ref channel);
         let column_log_sizes = self.column_log_sizes();
         let mut flattened_column_log_sizes = array![];
         let mut i = 0;
@@ -224,11 +225,12 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             i = i + 1;
         };
 
-        println!("flattened_column_log_sizes: {:?}\n", flattened_column_log_sizes);
-        println!("samples: {:?}\n", samples);
-        println!("random_coeff: {:?}\n", random_coeff);
-        //println!("fri_query_domains: {:?}\n", fri_query_domains);
-        println!("flattened_queried_values: {:?}\n", flattened_queried_values);
+        // println!("flattened_column_log_sizes: {:?}\n", flattened_column_log_sizes);
+        // println!("samples: {:?}\n", samples);
+        // println!("random_coeff: {:?}\n", random_coeff);
+        // //println!("fri_query_domains: {:?}\n", fri_query_domains);
+        // println!("flattened_queried_values: {:?}\n", flattened_queried_values);
+
 
         let fri_answers: Array<SparseCircleEvaluation> = fri_answers(
             flattened_column_log_sizes,

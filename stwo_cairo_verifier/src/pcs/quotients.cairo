@@ -109,17 +109,23 @@ pub fn fri_answers(
     let mut samples_vec = array![];
     let mut queried_values_per_column_vec = array![];
 
-    let mut last_maximum = Option::None;
     let mut iterator = MaximumToMinimumSortedIterator::iterate(column_log_sizes.span());
-    while let Option::Some((i, maximum)) = iterator.next() {
-        if last_maximum.is_some() && maximum == last_maximum.unwrap() {
+
+    let (i, current_log_size) = iterator.next().unwrap();
+    samples_vec.append(samples.at(i).span());
+    queried_values_per_column_vec.append(*queried_values_per_column.at(i));
+    let mut last_log_size = current_log_size;
+
+    while let Option::Some((i, current_log_size)) = iterator.next() {
+
+        if current_log_size == last_log_size {
             samples_vec.append(samples.at(i).span());
             queried_values_per_column_vec.append(*queried_values_per_column.at(i));
         } else {
-            let query_domain = get_sparse_sub_circle_domain_dict(ref query_domain_per_log_size, last_maximum.unwrap());
+            let query_domain = get_sparse_sub_circle_domain_dict(ref query_domain_per_log_size, last_log_size);
 
             match fri_answers_for_log_size(
-                last_maximum.unwrap(),
+                last_log_size,
                 samples_vec.span(),
                 random_coeff,
                 @query_domain,
@@ -132,11 +138,26 @@ pub fn fri_answers(
                     }
             }
                 
-            last_maximum = Option::Some(maximum);
+            last_log_size = current_log_size;
             samples_vec = array![samples.at(i).span()];
             queried_values_per_column_vec = array![queried_values_per_column.at(i).clone()];
         }
     };
+
+    let query_domain = get_sparse_sub_circle_domain_dict(ref query_domain_per_log_size, last_log_size);
+    match fri_answers_for_log_size(
+        last_log_size,
+        samples_vec.span(),
+        random_coeff,
+        @query_domain,
+        queried_values_per_column_vec.span()
+    ) {
+            Result::Ok(result) => results.append(result),
+            Result::Err(error) => {
+                fails = Option::Some(error);
+            }
+    }
+
     if fails.is_some() {
         Result::Err(fails.unwrap())
     } else {
