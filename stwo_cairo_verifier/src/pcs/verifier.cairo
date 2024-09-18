@@ -16,6 +16,7 @@ use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use core::dict::Felt252DictEntryTrait;
 use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
+use stwo_cairo_verifier::fri::verifier::FriVerificationError;
 
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
@@ -236,9 +237,11 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             ref fri_query_domains,
             flattened_queried_values
         ).unwrap();
-        fri_verifier.decommit(fri_answers);
-
-        Result::Ok(())
+        
+        match fri_verifier.decommit(fri_answers) {
+            Result::Ok(()) => Result::Ok(()),
+            Result::Err(fri_error) => Result::Err(VerificationError::Fri(fri_error))
+        }
     }
 }
 
@@ -272,6 +275,7 @@ pub enum VerificationError {
     InvalidStructure,
     Error,
     ProofOfWork,
+    Fri: FriVerificationError,
 }
 
 #[cfg(test)]
