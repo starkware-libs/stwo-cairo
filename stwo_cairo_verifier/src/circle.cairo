@@ -125,6 +125,10 @@ pub impl CosetImpl of CosetTrait {
         assert!(log_size <= CIRCLE_LOG_ORDER);
         pow(2, CIRCLE_LOG_ORDER - log_size)
     }
+
+    fn half_odds(log_size: u32) -> Coset {
+        Self::new(Self::subgroup_generator_index(log_size + 2), log_size)
+    }
 }
 
 

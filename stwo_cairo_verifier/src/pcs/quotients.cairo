@@ -165,7 +165,7 @@ pub fn fri_answers(
     }
 }
 
-#[derive(Drop)]
+#[derive(Drop, Debug)]
 struct QuotientConstants {
     pub line_coeffs: Array<Array<(QM31, QM31, QM31)>>,
     /// The random coefficients used to linearly combine the batched quotients For more details see
@@ -251,14 +251,19 @@ fn denominator_inverses(
         let pix = sample_batch.point.x.b;
         let piy = sample_batch.point.y.b;
         let mut row = 0;
+        println!("domain {:?}", domain);
+        println!("domain size {:?}", domain.size());
         while row < domain.size() {
             let domain_point = domain.at(row);
             let first_substraction = CM31 { a: *prx.a - domain_point.x, b: *prx.b };
             let second_substraction = CM31 { a: *pry.a - domain_point.y, b: *pry.b };
             flat_denominators.append(first_substraction * *piy - second_substraction * *pix);
+            row = row + 1;
         };
+        i = i + 1;
     };
 
+    println!("Flat denominator: {:?}", flat_denominators);
     let mut flat_denominator_inverses: Array<CM31> = array![];
     batch_inverse(flat_denominators.span(), ref flat_denominator_inverses);
 
@@ -325,9 +330,11 @@ pub fn complex_conjugate_line_coeffs(
         "Cannot evaluate a line with a single point ({:?}).",
         sample.point
     );
+
     let a: QM31 = sample.value.complex_conjugate() - sample.value;
     let c: QM31 = sample.point.complex_conjugate().y - sample.point.y;
     let b = sample.value * c - a * sample.point.y;
+
     (alpha * a, alpha * b, alpha * c)
 }
 
@@ -373,7 +380,10 @@ pub fn fri_answers_for_log_size(
     queried_values_per_column: Span<Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
-    let commitment_domain = CircleDomain{half_coset: CosetImpl::odds(log_size)};
+    // TODO: ugly code
+    let coset = CosetImpl::odds(log_size);
+    let half_coset_log_size = coset.log_size - 1;
+    let commitment_domain = CircleDomain{half_coset: CosetImpl::half_odds(half_coset_log_size) };
 
     let sample_batches = ColumnSampleBatchImpl::new_vec(samples).span();
     
@@ -396,7 +406,9 @@ pub fn fri_answers_for_log_size(
     let mut i = 0;
     while i < query_domain.domains.len() {
         let subdomain = query_domain.domains[i];
+
         let domain = subdomain.to_circle_domain(commitment_domain);
+
         let quotient_constants = quotient_constants(sample_batches, random_coeff, domain);
         let mut column_evals = array![];
         let mut j = 0;
@@ -417,11 +429,13 @@ pub fn fri_answers_for_log_size(
             column_evals.append(eval);
             j = j + 1;
         };
-
+        println!("Column Evals{:?}", column_evals);
         let mut values = array![];
         let mut row = 0;
         while row < domain.size() {
             let domain_point = domain.at(bit_reverse_index(row, log_size));
+
+            // Chequear que accumulate_row_quotients esta funcionando bien porque EVALS tiene bien el dominio pero mal los valores.
             let value = accumulate_row_quotients(
                 sample_batches,
                 column_evals.span(),
@@ -436,10 +450,18 @@ pub fn fri_answers_for_log_size(
         evals.append(eval);
         i = i + 1;
     };
+    println!("Evals{:?}", evals);
 
     let res = SparseCircleEvaluationImpl::new(evals);
 
     Result::Ok(res)
+//     Result::Ok(SparseCircleEvaluation{ subcircle_evals: array![
+//         CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
+//                           values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
+//         CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 2122317824, step_size: 2147483648, log_size: 0 } }, 
+//                           values: array![qm31(1489324268, 1315746611, 1235430137, 1650466882), qm31(158201991, 1003575152, 1730507932, 1741921065)]}
+//       ] 
+// })
 }
 
 
