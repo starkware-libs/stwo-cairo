@@ -366,7 +366,7 @@ mod tests {
         let sizes_1 = array![3];
 
         assert_eq!(commitment_scheme.trees.len(), 0);
-        let mut channel = commitment_scheme.commit(commitment_1, sizes_1, channel);
+        let mut _channel = commitment_scheme.commit(commitment_1, sizes_1, channel);
         assert_eq!(commitment_scheme.trees.len(), 1);
         assert_eq!(
             commitment_scheme.trees[0].root,
