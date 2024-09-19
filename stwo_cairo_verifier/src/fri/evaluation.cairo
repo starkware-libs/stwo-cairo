@@ -82,7 +82,7 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
     fn new(subcircle_evals: Array<CircleEvaluation>) -> SparseCircleEvaluation {
         SparseCircleEvaluation { subcircle_evals: subcircle_evals }
     }
-    
+
     fn accumulate(
         self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31
     ) -> SparseCircleEvaluation {

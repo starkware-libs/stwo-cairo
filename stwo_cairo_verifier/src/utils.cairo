@@ -143,7 +143,7 @@ pub fn find(n: u32, a: Span<u32>) -> bool {
     let mut i = 0;
     let mut res = false;
     while i < a.len() {
-        if(*a[i] == n) {
+        if (*a[i] == n) {
             res = true;
             break;
         }
@@ -152,31 +152,31 @@ pub fn find(n: u32, a: Span<u32>) -> bool {
     res
 }
 
-pub fn get_unique_elements<T, +PartialEq<T>, +Drop<T>, +Copy<T>>(vector: @Array<T>) -> Array<T>{
+pub fn get_unique_elements<T, +PartialEq<T>, +Drop<T>, +Copy<T>>(vector: @Array<T>) -> Array<T> {
     let mut uniques: Array<T> = array![];
 
     let mut i = 0;
-    while i < vector.len(){
-        if !contains_element(@uniques, vector[i]){
+    while i < vector.len() {
+        if !contains_element(@uniques, vector[i]) {
             uniques.append(*vector[i]);
         }
-        i = i+1
+        i = i + 1
     };
 
     uniques
 }
 
 
-pub fn contains_element<T, +PartialEq<T>>(vector: @Array<T>, element: @T) -> bool{
+pub fn contains_element<T, +PartialEq<T>>(vector: @Array<T>, element: @T) -> bool {
     let mut contains = false;
 
     let mut i = 0;
-    while i < vector.len(){
-        if vector[i] == element{
+    while i < vector.len() {
+        if vector[i] == element {
             contains = true;
             break;
         }
-        i = i+1;
+        i = i + 1;
     };
     contains
 }
@@ -242,13 +242,13 @@ mod tests {
     }
 
     #[test]
-    fn test_can_get_unique_elements_of_array(){
-        let vector_1 = array![1,1,2,2,3,3,4,4,5,5];
-        let expected_vector_1 = array![1,2,3,4,5];
-        let vector_2 = array![1,1,1,1,1,1,1,1];
+    fn test_can_get_unique_elements_of_array() {
+        let vector_1 = array![1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
+        let expected_vector_1 = array![1, 2, 3, 4, 5];
+        let vector_2 = array![1, 1, 1, 1, 1, 1, 1, 1];
         let expected_vector_2 = array![1];
-        let vector_3 = array![1,2,3,4,5];
-        let expected_vector_3 = array![1,2,3,4,5];
+        let vector_3 = array![1, 2, 3, 4, 5];
+        let expected_vector_3 = array![1, 2, 3, 4, 5];
 
         let return_vector_1 = get_unique_elements(@vector_1);
         let return_vector_2 = get_unique_elements(@vector_2);

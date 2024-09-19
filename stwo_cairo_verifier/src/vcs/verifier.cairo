@@ -27,7 +27,9 @@ pub struct MerkleDecommitment<impl H: MerkleHasher> {
     pub column_witness: Array<BaseField>,
 }
 impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
-impl MerkleDecommitmentDebug<impl H: MerkleHasher, +Debug<H::Hash>> of Debug<MerkleDecommitment<H>> {
+impl MerkleDecommitmentDebug<
+    impl H: MerkleHasher, +Debug<H::Hash>
+> of Debug<MerkleDecommitment<H>> {
     fn fmt(self: @MerkleDecommitment<H>, ref f: Formatter) -> Result<(), Error> {
         Result::Ok(())
     }

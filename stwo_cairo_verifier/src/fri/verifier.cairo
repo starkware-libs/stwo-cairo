@@ -395,8 +395,9 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     }
 
     // TODO: Return opening positions
-    fn column_query_positions(ref self: FriVerifier, ref channel: Channel)
-     -> (Felt252Dict<Nullable<SparseSubCircleDomain>>, Span<u32>) {
+    fn column_query_positions(
+        ref self: FriVerifier, ref channel: Channel
+    ) -> (Felt252Dict<Nullable<SparseSubCircleDomain>>, Span<u32>) {
         let queries = QueriesImpl::generate(
             ref channel,
             *self.column_bounds[0] + self.config.log_blowup_factor,
@@ -410,7 +411,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         while i < column_bounds_snap.len() {
             let v = *(column_bounds_snap.at(i)) + self.config.log_blowup_factor;
-            if(!find(v, column_log_sizes.span())) {
+            if (!find(v, column_log_sizes.span())) {
                 column_log_sizes.append(v);
             }
             i = i + 1;
@@ -433,8 +434,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 }
 
 fn get_opening_positions(
-    queries: @Queries,
-    column_log_sizes: Span<u32>,
+    queries: @Queries, column_log_sizes: Span<u32>,
 ) -> Felt252Dict<Nullable<SparseSubCircleDomain>> {
     let mut prev_log_size = column_log_sizes[0];
     assert!(prev_log_size == queries.log_domain_size);
@@ -448,7 +448,10 @@ fn get_opening_positions(
         let n_folds = *prev_log_size - *column_log_sizes.at(i);
         let queries = prev_queries.fold(n_folds);
         let felt_column_log_sizes: core::felt252 = (*column_log_sizes.at(i)).into();
-        positions.insert(felt_column_log_sizes, NullableTrait::new(queries.opening_positions(FOLD_STEP)));
+        positions
+            .insert(
+                felt_column_log_sizes, NullableTrait::new(queries.opening_positions(FOLD_STEP))
+            );
         prev_log_size = column_log_sizes.at(i);
         prev_queries = queries;
         i = i + 1;

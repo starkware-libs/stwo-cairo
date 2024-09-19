@@ -31,15 +31,23 @@ pub struct SortedIterator<T, C> {
     last_index: Option<u32>,
 }
 
-trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>> {
+trait SortedIteratorTrait<
+    T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>
+> {
     fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, C>;
 
-    fn next_deduplicated(ref self: SortedIterator<T, C>) -> Option<(u32, T)> { 
-        next_deduplicated::<T,C>(ref self)
+    fn next_deduplicated(
+        ref self: SortedIterator<T, C>
+    ) -> Option<(u32, T)> {
+        next_deduplicated::<T, C>(ref self)
     }
 
-    fn next(ref self: SortedIterator<T, C>) -> Option<(u32, T)> {
-        if self.last_index.is_some() {    
+    fn next(
+        ref self: SortedIterator<T, C>
+    ) -> Option<
+        (u32, T)
+    > {
+        if self.last_index.is_some() {
             let last_index = self.last_index.unwrap();
             let last_value = *self.array[last_index];
             let mut is_repeated = false;
@@ -62,8 +70,11 @@ trait SortedIteratorTrait<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T
     }
 }
 
-fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>>
-        (ref self: SortedIterator<T, C>) -> Option<(u32, T)> {
+fn next_deduplicated<
+    T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +Compare<T, C>, +Drop<C>, +Copy<C>
+>(
+    ref self: SortedIterator<T, C>
+) -> Option<(u32, T)> {
     let mut candidate_index = Option::None;
     let mut candidate_value = Option::None;
 
@@ -97,16 +108,22 @@ fn next_deduplicated<T, C, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>, +C
     } else {
         self.last_index = candidate_index;
         Option::Some((candidate_index.unwrap(), candidate_value.unwrap()))
-    }   
-}
-
-pub impl MaximumToMinimumSortedIterator<T, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, GreaterThan> {
-    fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, GreaterThan> {
-        SortedIterator { comparer: GreaterThan {}, array: array_to_iterate, last_index: Option::None }
     }
 }
 
-pub impl MinimumToMaximumSortedIterator<T, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>> of SortedIteratorTrait<T, LowerThan> {
+pub impl MaximumToMinimumSortedIterator<
+    T, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>
+> of SortedIteratorTrait<T, GreaterThan> {
+    fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, GreaterThan> {
+        SortedIterator {
+            comparer: GreaterThan {}, array: array_to_iterate, last_index: Option::None
+        }
+    }
+}
+
+pub impl MinimumToMaximumSortedIterator<
+    T, +PartialOrd<T>, +PartialEq<T>, +Copy<T>, +Drop<T>
+> of SortedIteratorTrait<T, LowerThan> {
     fn iterate(array_to_iterate: Span<T>) -> SortedIterator<T, LowerThan> {
         SortedIterator { comparer: LowerThan {}, array: array_to_iterate, last_index: Option::None }
     }

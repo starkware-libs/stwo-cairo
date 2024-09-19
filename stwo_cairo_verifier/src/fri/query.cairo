@@ -78,21 +78,20 @@ pub impl QueriesImpl of QueriesImplTrait {
         let mut i = 0;
         while i < snap_positions.len() {
             let v = *snap_positions.at(i);
-            if(!find(v, already_added.span())) {
+            if (!find(v, already_added.span())) {
                 already_added.append(v);
-                domains.append(SubCircleDomain {
-                    coset_index: v / pow(2, fri_step_size),
-                    log_size: fri_step_size
-                });
+                domains
+                    .append(
+                        SubCircleDomain {
+                            coset_index: v / pow(2, fri_step_size), log_size: fri_step_size
+                        }
+                    );
             }
-            
+
             i = i + 1;
         };
 
-        SparseSubCircleDomain {
-            domains: domains,
-            large_domain_log_size: *self.log_domain_size,
-        }
+        SparseSubCircleDomain { domains: domains, large_domain_log_size: *self.log_domain_size, }
     }
 }
 

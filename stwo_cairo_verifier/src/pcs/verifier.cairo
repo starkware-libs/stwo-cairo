@@ -10,7 +10,9 @@ use stwo_cairo_verifier::channel::{ChannelTime, Channel, ChannelImpl};
 use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::circle::CirclePoint;
-use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SparseSubCircleDomainTrait, get_sparse_sub_circle_domain_dict};
+use stwo_cairo_verifier::queries::{
+    SparseSubCircleDomain, SparseSubCircleDomainTrait, get_sparse_sub_circle_domain_dict
+};
 use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
 use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
@@ -97,7 +99,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let sampled_values_copy = proof.sampled_values.clone();
         let mut flattened = array![];
 
-        
         let mut i: u32 = 0;
         while i < sampled_values_copy.len() {
             let mut j: u32 = 0;
@@ -113,7 +114,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-        
+
         channel.mix_felts(flattened.span());
         let random_coeff = channel.draw_felt();
 
@@ -126,7 +127,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
             let mut j = 0;
             while j < i_c_copy.len() {
-
                 let log_size: @u32 = i_c_copy.at(j);
                 vec_to_sort.append(*log_size - *self.config.fri_config.log_blowup_factor);
                 j = j + 1;
@@ -140,10 +140,13 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // FRI commitment phase on OODS quotients.
-        let mut fri_verifier = FriVerifierImpl::commit(ref channel, *self.config.fri_config, proof.fri_proof, bounds).unwrap();
+        let mut fri_verifier = FriVerifierImpl::commit(
+            ref channel, *self.config.fri_config, proof.fri_proof, bounds
+        )
+            .unwrap();
 
         channel.mix_nonce(proof.proof_of_work);
-        
+
         // TODO: waiting for trailing_zeros fix
         // let proof_of_work_bits: u32 = *self.config.pow_bits;
         // if channel.trailing_zeros() < proof_of_work_bits {
@@ -154,7 +157,8 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         assert_eq!(self.trees.len(), proof.queried_values.len());
         assert_eq!(self.trees.len(), proof.decommitments.len());
         let queried_snap = proof.queried_values.span();
-        let (mut fri_query_domains, column_log_sizes) = fri_verifier.column_query_positions(ref channel);
+        let (mut fri_query_domains, column_log_sizes) = fri_verifier
+            .column_query_positions(ref channel);
         let mut i = 0;
         while i < self.trees.len() {
             //// Get FRI query domains.
@@ -167,13 +171,16 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 queries.insert(log_size.into(), NullableTrait::new(domain.flatten()));
                 j = j + 1;
             };
-            self.trees[i].verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone()).unwrap();
+            self
+                .trees[i]
+                .verify(queries, queried_snap[i].clone(), proof.decommitments[i].clone())
+                .unwrap();
             i = i + 1;
         };
         // Answer FRI queries.
         let snap_points = @sampled_points;
         let snap_values = @proof.sampled_values;
-        let mut samples: Array<Array<PointSample>> =  array![];
+        let mut samples: Array<Array<PointSample>> = array![];
         let mut i = 0;
         while i < snap_points.len() {
             let mut j = 0;
@@ -187,10 +194,12 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 while k < snap_points_i_j.len() {
                     let snap_points_i_j_k = snap_points_i_j.at(k);
                     let snap_values_i_j_k = snap_values_i_j.at(k);
-                    col.append(PointSample {
-                            point: snap_points_i_j_k.clone(),
-                            value: snap_values_i_j_k.clone()
-                        });
+                    col
+                        .append(
+                            PointSample {
+                                point: snap_points_i_j_k.clone(), value: snap_values_i_j_k.clone()
+                            }
+                        );
                     k = k + 1;
                 };
                 samples.append(col);
@@ -231,8 +240,9 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             random_coeff,
             ref fri_query_domains,
             flattened_queried_values
-        ).unwrap();
-        
+        )
+            .unwrap();
+
         match fri_verifier.decommit(fri_answers) {
             Result::Ok(()) => Result::Ok(()),
             Result::Err(fri_error) => Result::Err(VerificationError::Fri(fri_error))
@@ -429,10 +439,9 @@ mod tests {
 
         let mut channel = Channel {
             digest: 0x028f415beb869c1e81a7a773bac2943b9a7217814631ce58d1f361d44625aabd,
-            channel_time: ChannelTime {
-                n_challenges: 1, // Default
-                n_sent: 0 // Default
-            }
+            channel_time: ChannelTime { n_challenges: 1, // Default
+             n_sent: 0 // Default
+             }
         };
         assert!(commitment_scheme.verify_values(sample_points, proof, ref channel).is_ok());
     }

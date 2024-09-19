@@ -1,5 +1,5 @@
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::qm31::{QM31,QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow;
 use core::num::traits::zero::Zero;
 use core::num::traits::one::One;
@@ -115,7 +115,7 @@ pub impl CosetImpl of CosetTrait {
         pow(2, *self.log_size)
     }
 
-    fn odds(log_size: u32) -> Coset{
+    fn odds(log_size: u32) -> Coset {
         //CIRCLE_LOG_ORDER
         let subgroup_generator_index = Self::subgroup_generator_index(log_size);
         Self::new(subgroup_generator_index, log_size)
