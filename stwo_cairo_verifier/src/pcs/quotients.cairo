@@ -650,37 +650,3 @@ mod tests {
         assert_eq!(expected_value, value);
     }
 }
-//parameters for fri answers for log size test
-// log size: 7
-// samples: [[PointSample { point: CirclePoint { x: (700515869 + 1711372691i) + (739886384 +
-// 2007341053i)u, y: (326786628 + 606109638i) + (1064549171 + 242662007i)u }, value: (734531923 +
-// 1747759514i) + (825724491 + 1380781623i)u }], [PointSample { point: CirclePoint { x: (700515869 +
-// 1711372691i) + (739886384 + 2007341053i)u, y: (326786628 + 606109638i) + (1064549171 +
-// 242662007i)u }, value: (409142122 + 1541525101i) + (867367418 + 349409006i)u }], [PointSample {
-// point: CirclePoint { x: (700515869 + 1711372691i) + (739886384 + 2007341053i)u, y: (326786628 +
-// 606109638i) + (1064549171 + 242662007i)u }, value: (1432986824 + 1260980040i) + (1036758723 +
-// 1444867187i)u }], [PointSample { point: CirclePoint { x: (700515869 + 1711372691i) + (739886384 +
-// 2007341053i)u, y: (326786628 + 606109638i) + (1064549171 + 242662007i)u }, value: (498615358 +
-// 1652904678i) + (568903503 + 1933920823i)u }]]
-// random_coeff: (934912220 + 2101060572i) + (478944000 + 1026736704i)u
-// query_domain_per_log_size: SparseSubCircleDomain { domains: [SubCircleDomain { coset_index: 32,
-// log_size: 1 }, SubCircleDomain { coset_index: 63, log_size: 1 }], large_domain_log_size: 7 }
-// queried_valued_per_column: [[M31(1720115923), M31(275996517), M31(1084325550), M31(1934680704)],
-// [M31(1270808745), M31(836361095), M31(1701916643), M31(1812027089)], [M31(1631066942),
-// M31(97828054), M31(774575764), M31(1860917732)], [M31(1389614630), M31(525640714),
-// M31(1095538838), M31(1384646193)]]
-
-// what it should return:
-//Ok(SparseCircleEvaluation { subcircle_evals: [CircleEvaluation { domain: CircleDomain {
-//half_coset: Coset { initial_index: CirclePointIndex(41943040), initial: CirclePoint { x:
-//M31(251924953), y: M31(636875771) }, step_size: CirclePointIndex(2147483648), step: CirclePoint {
-//x: M31(1), y: M31(0) }, log_size: 0 } }, values: [(908763622 + 1585299850i) + (463460326 +
-//1048007085i)u, (1123843977 + 425287367i) + (713867037 + 231900223i)u], _eval_order:
-//PhantomData<stwo_prover::core::poly::BitReversedOrder> }, CircleEvaluation { domain: CircleDomain
-//{ half_coset: Coset { initial_index: CirclePointIndex(2122317824), initial: CirclePoint { x:
-//M31(1357626641), y: M31(81378258) }, step_size: CirclePointIndex(2147483648), step: CirclePoint {
-//x: M31(1), y: M31(0) }, log_size: 0 } }, values: [(1489324268 + 1315746611i) + (1235430137 +
-//1650466882i)u, (158201991 + 1003575152i) + (1730507932 + 1741921065i)u], _eval_order:
-//PhantomData<stwo_prover::core::poly::BitReversedOrder> }] })
-
-
