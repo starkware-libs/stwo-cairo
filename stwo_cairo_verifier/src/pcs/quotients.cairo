@@ -470,28 +470,32 @@ mod tests {
                 PointSample {
                     point: CirclePoint {
                         x: qm31(700515869, 1711372691, 739886384, 2007341053),
-                        y: qm31(326786628, 606109638, 1064549171, 242662007)},
+                        y: qm31(326786628, 606109638, 1064549171, 242662007)
+                    },
                     value: qm31(734531923, 1747759514, 825724491, 1380781623)
                 }
-            ].span(),
+            ]
+                .span(),
             array![
                 PointSample {
                     point: CirclePoint {
                         x: qm31(700515869, 1711372691, 739886384, 2007341053),
                         y: qm31(326786628, 606109638, 1064549171, 242662007)
                     },
-                    value: qm31(409142122, 1541525101, 867367418, 349409006) 
+                    value: qm31(409142122, 1541525101, 867367418, 349409006)
                 }
-            ].span(),
+            ]
+                .span(),
             array![
                 PointSample {
                     point: CirclePoint {
                         x: qm31(700515869, 1711372691, 739886384, 2007341053),
                         y: qm31(326786628, 606109638, 1064549171, 242662007)
                     },
-                    value: qm31(143298682, 126098004,1036758723, 1444867)
+                    value: qm31(143298682, 126098004, 1036758723, 1444867)
                 }
-            ].span(),
+            ]
+                .span(),
             array![
                 PointSample {
                     point: CirclePoint {
@@ -500,10 +504,11 @@ mod tests {
                     },
                     value: qm31(498615358, 1652904678, 568903503, 193392082)
                 }
-            ].span()
+            ]
+                .span()
         ];
         let random_coeff = qm31(934912220, 2101060572, 478944000, 1026736704);
-        let query_domain_per_log_size = SparseSubCircleDomain{
+        let query_domain_per_log_size = SparseSubCircleDomain {
             domains: array![
                 SubCircleDomain { coset_index: 32, log_size: 1 },
                 SubCircleDomain { coset_index: 63, log_size: 1 }
@@ -513,19 +518,34 @@ mod tests {
         let queried_values_per_column = array![
             array![m31(1720115923), m31(275996517), m31(1084325550), m31(1934680704)].span(),
             array![m31(1270808745), m31(836361095), m31(1701916643), m31(1812027089)].span(),
-            array![m31(1631066942), m31(97828054), m31(774575764), m31(1860917732)].span(), 
+            array![m31(1631066942), m31(97828054), m31(774575764), m31(1860917732)].span(),
             array![m31(1389614630), m31(525640714), m31(1095538838), m31(1384646193)].span()
         ];
-        let expected_result = SparseCircleEvaluation { 
+        let expected_result = SparseCircleEvaluation {
             subcircle_evals: array![
                 CircleEvaluation {
-                    domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
-                    values: array![qm31(1255812410, 1189322949, 2112256284, 1834720365), qm31(134480063, 958891485, 1923691913, 677650541)]}, 
+                    domain: CircleDomain {
+                        half_coset: Coset {
+                            initial_index: 41943040, step_size: 2147483648, log_size: 0
+                        }
+                    },
+                    values: array![
+                        qm31(1255812410, 1189322949, 2112256284, 1834720365),
+                        qm31(134480063, 958891485, 1923691913, 677650541)
+                    ]
+                },
                 CircleEvaluation {
-                    domain: CircleDomain { half_coset: Coset { initial_index: 2122317824, step_size: 2147483648, log_size: 0 } }, 
-                    values: array![qm31(471782716, 1002934656, 859085131, 2054815470), qm31(1035455203, 618088306, 1666304490, 1639966873)]
+                    domain: CircleDomain {
+                        half_coset: Coset {
+                            initial_index: 2122317824, step_size: 2147483648, log_size: 0
+                        }
+                    },
+                    values: array![
+                        qm31(471782716, 1002934656, 859085131, 2054815470),
+                        qm31(1035455203, 618088306, 1666304490, 1639966873)
+                    ]
                 }
-            ] 
+            ]
         };
 
         let function_result = fri_answers_for_log_size(
@@ -662,4 +682,5 @@ mod tests {
 //x: M31(1), y: M31(0) }, log_size: 0 } }, values: [(1489324268 + 1315746611i) + (1235430137 +
 //1650466882i)u, (158201991 + 1003575152i) + (1730507932 + 1741921065i)u], _eval_order:
 //PhantomData<stwo_prover::core::poly::BitReversedOrder> }] })
+
 
