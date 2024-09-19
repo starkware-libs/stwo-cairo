@@ -380,11 +380,10 @@ pub fn fri_answers_for_log_size(
     queried_values_per_column: Span<Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
-    let commitment_domain = CircleDomain{half_coset: CosetImpl::half_odds(log_size - 1)};
+    let commitment_domain = CircleDomainImpl::new_with_log_size(log_size);
 
     let sample_batches = ColumnSampleBatchImpl::new_vec(samples).span();
     
-
     let mut i = 0;
     let mut invalid_structure_error = false;
     while i < queried_values_per_column.len() {

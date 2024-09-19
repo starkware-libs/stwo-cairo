@@ -38,6 +38,10 @@ pub impl CircleDomainImpl of CircleDomainTrait {
     fn at(self: @CircleDomain, index: usize) -> CirclePoint<M31> {
         M31_CIRCLE_GEN.mul(self.index_at(index).into())
     }
+
+    fn new_with_log_size(log_size: u32) -> CircleDomain {
+        CircleDomain { half_coset: CosetImpl::half_odds(log_size - 1) }
+    }
 }
 
 #[test]
