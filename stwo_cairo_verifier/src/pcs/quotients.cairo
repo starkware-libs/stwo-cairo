@@ -251,8 +251,6 @@ fn denominator_inverses(
         let pix = sample_batch.point.x.b;
         let piy = sample_batch.point.y.b;
         let mut row = 0;
-        println!("domain {:?}", domain);
-        println!("domain size {:?}", domain.size());
         while row < domain.size() {
             let domain_point = domain.at(row);
             let first_substraction = CM31 { a: *prx.a - domain_point.x, b: *prx.b };
@@ -263,24 +261,26 @@ fn denominator_inverses(
         i = i + 1;
     };
 
-    println!("Flat denominator: {:?}", flat_denominators);
     let mut flat_denominator_inverses: Array<CM31> = array![];
     batch_inverse(flat_denominators.span(), ref flat_denominator_inverses);
 
     let mut result: Array<Array<CM31>> = array![];
     let mut i = 0;
-    let mut flat_denominator_inverses = flat_denominator_inverses.span();
-    while i < flat_denominator_inverses.len() {
-        let mut denominator_inverses: Array<CM31> = array![];
-        let mut j = 0;
-        while j < domain.size() {
-            let flat_denominator_inverse = *flat_denominator_inverses[j];
-            denominator_inverses.append(flat_denominator_inverse);
-            j = j + 1;
-        };
-        let denominator_inverses_bit_reversed = bit_reverse(denominator_inverses.span());
+    let mut j = 1;
 
-        result.append(denominator_inverses_bit_reversed);
+    let mut flat_denominator_inverses = flat_denominator_inverses.span();
+    let mut denominator_inverses: Array<CM31> = array![];
+    while i < flat_denominator_inverses.len() {
+        let flat_denominator_inverse = *flat_denominator_inverses[i];
+        denominator_inverses.append(flat_denominator_inverse);
+        if j == domain.size() {
+            let denominator_inverses_bit_reversed = bit_reverse(denominator_inverses.span());
+            result.append(denominator_inverses_bit_reversed);
+            denominator_inverses = array![];
+            j = 1;
+        } else {
+            j = j + 1;
+        }
         i = i + 1;
     };
     result
@@ -425,7 +425,6 @@ pub fn fri_answers_for_log_size(
             column_evals.append(eval);
             j = j + 1;
         };
-        println!("Column Evals{:?}", column_evals);
         let mut values = array![];
         let mut row = 0;
         while row < domain.size() {
@@ -446,7 +445,6 @@ pub fn fri_answers_for_log_size(
         evals.append(eval);
         i = i + 1;
     };
-    println!("Evals{:?}", evals);
 
     let res = SparseCircleEvaluationImpl::new(evals);
 
