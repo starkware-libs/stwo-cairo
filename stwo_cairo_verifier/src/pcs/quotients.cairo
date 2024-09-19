@@ -469,31 +469,68 @@ mod tests {
     #[test]
     fn test_fri_answers_for_log_size_returns_correct_value() {
         let log_size = 7;
-        let samples = array![array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
-                                                           y: qm31(326786628, 606109638, 1064549171, 242662007)},
-                                      value: qm31(734531923, 1747759514, 825724491, 1380781623)}].span(),
-                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
-                                                           y: qm31(326786628, 606109638, 1064549171, 242662007) },
-                                      value: qm31(409142122, 1541525101, 867367418, 349409006) }].span(),
-                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
-                                                           y: qm31(326786628, 606109638, 1064549171, 242662007) },
-                                      value: qm31(143298682, 126098004,1036758723, 1444867) }].span(),
-                       array![PointSample { point: CirclePoint { x: qm31(700515869, 1711372691, 739886384, 2007341053),
-                                                           y: qm31(326786628, 606109638, 1064549171, 242662007) },
-                                      value: qm31(498615358, 1652904678, 568903503, 193392082) }].span()];
+        let samples = array![
+            array![
+                PointSample {
+                    point: CirclePoint {
+                        x: qm31(700515869, 1711372691, 739886384, 2007341053),
+                        y: qm31(326786628, 606109638, 1064549171, 242662007)},
+                    value: qm31(734531923, 1747759514, 825724491, 1380781623)
+                }
+            ].span(),
+            array![
+                PointSample {
+                    point: CirclePoint {
+                        x: qm31(700515869, 1711372691, 739886384, 2007341053),
+                        y: qm31(326786628, 606109638, 1064549171, 242662007)
+                    },
+                    value: qm31(409142122, 1541525101, 867367418, 349409006) 
+                }
+            ].span(),
+            array![
+                PointSample {
+                    point: CirclePoint {
+                        x: qm31(700515869, 1711372691, 739886384, 2007341053),
+                        y: qm31(326786628, 606109638, 1064549171, 242662007)
+                    },
+                    value: qm31(143298682, 126098004,1036758723, 1444867)
+                }
+            ].span(),
+            array![
+                PointSample {
+                    point: CirclePoint {
+                        x: qm31(700515869, 1711372691, 739886384, 2007341053),
+                        y: qm31(326786628, 606109638, 1064549171, 242662007)
+                    },
+                    value: qm31(498615358, 1652904678, 568903503, 193392082)
+                }
+            ].span()
+        ];
         let random_coeff = qm31(934912220, 2101060572, 478944000, 1026736704);
-        let query_domain_per_log_size = SparseSubCircleDomain{domains: array![SubCircleDomain { coset_index: 32, log_size: 1 }, SubCircleDomain { coset_index: 63, log_size: 1 }], large_domain_log_size: 7};
-        let queried_values_per_column = array![array![m31(1720115923), m31(275996517), m31(1084325550), m31(1934680704)].span(),
-                                         array![m31(1270808745), m31(836361095), m31(1701916643), m31(1812027089)].span(),
-                                         array![m31(1631066942), m31(97828054), m31(774575764), m31(1860917732)].span(), 
-                                         array![m31(1389614630), m31(525640714), m31(1095538838), m31(1384646193)].span()];
-        let expected_result = SparseCircleEvaluation { subcircle_evals: array![
-                                                                            CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
-                                                                                              values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
-                                                                            CircleEvaluation { domain: CircleDomain { half_coset: Coset { initial_index: 2122317824, step_size: 2147483648, log_size: 0 } }, 
-                                                                                              values: array![qm31(1489324268, 1315746611, 1235430137, 1650466882), qm31(158201991, 1003575152, 1730507932, 1741921065)]}
-                                                                          ] 
-                                                        };
+        let query_domain_per_log_size = SparseSubCircleDomain{
+            domains: array![
+                SubCircleDomain { coset_index: 32, log_size: 1 },
+                SubCircleDomain { coset_index: 63, log_size: 1 }
+            ],
+            large_domain_log_size: 7
+        };
+        let queried_values_per_column = array![
+            array![m31(1720115923), m31(275996517), m31(1084325550), m31(1934680704)].span(),
+            array![m31(1270808745), m31(836361095), m31(1701916643), m31(1812027089)].span(),
+            array![m31(1631066942), m31(97828054), m31(774575764), m31(1860917732)].span(), 
+            array![m31(1389614630), m31(525640714), m31(1095538838), m31(1384646193)].span()
+        ];
+        let expected_result = SparseCircleEvaluation { 
+            subcircle_evals: array![
+                CircleEvaluation {
+                    domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
+                    values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
+                CircleEvaluation {
+                    domain: CircleDomain { half_coset: Coset { initial_index: 2122317824, step_size: 2147483648, log_size: 0 } }, 
+                    values: array![qm31(1489324268, 1315746611, 1235430137, 1650466882), qm31(158201991, 1003575152, 1730507932, 1741921065)]
+                }
+            ] 
+        };
 
         let function_result = fri_answers_for_log_size(
             log_size,
