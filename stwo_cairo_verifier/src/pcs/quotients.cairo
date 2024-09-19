@@ -380,10 +380,7 @@ pub fn fri_answers_for_log_size(
     queried_values_per_column: Span<Span<M31>>,
 ) -> Result<SparseCircleEvaluation, VerificationError> {
 
-    // TODO: ugly code
-    let coset = CosetImpl::odds(log_size);
-    let half_coset_log_size = coset.log_size - 1;
-    let commitment_domain = CircleDomain{half_coset: CosetImpl::half_odds(half_coset_log_size) };
+    let commitment_domain = CircleDomain{half_coset: CosetImpl::half_odds(log_size - 1)};
 
     let sample_batches = ColumnSampleBatchImpl::new_vec(samples).span();
     
