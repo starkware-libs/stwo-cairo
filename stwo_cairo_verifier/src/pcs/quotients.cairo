@@ -433,7 +433,6 @@ pub fn fri_answers_for_log_size(
         while row < domain.size() {
             let domain_point = domain.at(bit_reverse_index(row, log_size));
 
-            // Chequear que accumulate_row_quotients esta funcionando bien porque EVALS tiene bien el dominio pero mal los valores.
             let value = accumulate_row_quotients(
                 sample_batches,
                 column_evals.span(),
