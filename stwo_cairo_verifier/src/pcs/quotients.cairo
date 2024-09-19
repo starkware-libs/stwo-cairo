@@ -524,10 +524,10 @@ mod tests {
             subcircle_evals: array![
                 CircleEvaluation {
                     domain: CircleDomain { half_coset: Coset { initial_index: 41943040, step_size: 2147483648, log_size: 0 } },
-                    values: array![qm31(908763622, 1585299850, 463460326, 1048007085), qm31(1123843977, 425287367, 713867037, 231900223)]}, 
+                    values: array![qm31(1255812410, 1189322949, 2112256284, 1834720365), qm31(134480063, 958891485, 1923691913, 677650541)]}, 
                 CircleEvaluation {
                     domain: CircleDomain { half_coset: Coset { initial_index: 2122317824, step_size: 2147483648, log_size: 0 } }, 
-                    values: array![qm31(1489324268, 1315746611, 1235430137, 1650466882), qm31(158201991, 1003575152, 1730507932, 1741921065)]
+                    values: array![qm31(471782716, 1002934656, 859085131, 2054815470), qm31(1035455203, 618088306, 1666304490, 1639966873)]
                 }
             ] 
         };
