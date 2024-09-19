@@ -225,13 +225,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             i = i + 1;
         };
 
-        // println!("flattened_column_log_sizes: {:?}\n", flattened_column_log_sizes);
-        // println!("samples: {:?}\n", samples);
-        // println!("random_coeff: {:?}\n", random_coeff);
-        // //println!("fri_query_domains: {:?}\n", fri_query_domains);
-        // println!("flattened_queried_values: {:?}\n", flattened_queried_values);
-
-
         let fri_answers: Array<SparseCircleEvaluation> = fri_answers(
             flattened_column_log_sizes,
             samples,

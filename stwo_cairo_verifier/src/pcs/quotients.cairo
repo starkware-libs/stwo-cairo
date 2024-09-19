@@ -358,10 +358,13 @@ fn accumulate_row_quotients(
             let (column_index, _) = sample_batch.columns_and_values[j];
             let (a, b, c) = line_coeffs[j];
             let column = columns.at(*column_index);
-            let value = *column.values[row] *  *c;
-            let y = qm31(0, 0, 0, domain_point.y.inner);
+            let column_values = *column.values[row];
+            
+            let value = column_values *  *c;
+            let y = qm31(domain_point.y.inner, 0, 0, 0);
             let linear_term = *a * y + *b;
             numerator = numerator + (value - linear_term);
+
             j = j + 1;
         };
         i = i + 1;
@@ -414,7 +417,7 @@ pub fn fri_answers_for_log_size(
             let mut k = 0;
             while k < domain.size() {
                 // TODO: generalize circle evaluation instead, we're casting to QM31 but not necessary yet.
-                values.append(qm31(0, 0, 0, *queried_values[i * domain.size() + k].inner));
+                values.append(qm31(*queried_values[i * domain.size() + k].inner, 0, 0, 0));
                 k = k + 1;
             };
 
