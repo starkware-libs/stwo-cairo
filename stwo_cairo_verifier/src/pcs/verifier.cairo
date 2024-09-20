@@ -445,4 +445,94 @@ mod tests {
         };
         assert!(commitment_scheme.verify_values(sample_points, proof, ref channel).is_ok());
     }
+
+    #[test]
+    fn test_pcs_verifier_verify_values_with_two_columns() {
+        let config = PcsConfig {
+            pow_bits: 10,
+            fri_config: FriConfig {
+                log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1
+            },
+        };
+
+        let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+        let sample_points = array![
+            array![
+                array![
+                    CirclePoint::<
+                        QM31
+                    > {
+                        x: qm31(356457033, 539869277, 1638539218, 1613878625),
+                        y: qm31(639930869, 2131654109, 1818864611, 630128131)
+                    },
+                    CirclePoint::<
+                        QM31
+                    > {
+                        x: qm31(356457033, 539869277, 1638539218, 1613878625),
+                        y: qm31(639930869, 2131654109, 1818864611, 630128131)
+                    },
+                ]
+            ]
+        ];
+
+        let proof = CommitmentSchemeProof {
+            sampled_values: array![
+                array![array![qm31(559256455, 986819756, 561539378, 1752458196)],
+                       array![qm31(559256455, 986819756, 561539378, 1752458196)]]
+            ],
+            decommitments: array![
+                MerkleDecommitment {
+                    hash_witness: array![
+                        0x0088cdeb082e837ba81e9ce5f293e6d56c58a24988c3acb1482a2ad04d8bb1a8,
+                        0x00c9c615e229eb375ef28d7ef29d4506811892b15eac2b450b1d8f13f1cd39d8,
+                        0x0715458f765d9d7068ffd3b5600e9c92ed2815bb4eee448b1f99ea961f740d34,
+                        0x0165db01d03ac7d360b17d3cfbf1ca0f2260706582e3c1ddefbcc3f2657acd85
+                    ],
+                    column_witness: array![]
+                }
+            ],
+            queried_values: array![array![array![m31(731175456), m31(140407102)].span()],
+                                   array![array![m31(731175456), m31(140407102)].span()]],
+            proof_of_work: 4,
+            fri_proof: FriProof {
+                inner_layers: array![
+                    FriLayerProof {
+                        evals_subset: array![qm31(1004118346, 1000509807, 1653523982, 1428430565)],
+                        decommitment: MerkleDecommitment {
+                            hash_witness: array![
+                                0x002b7d8ecfbd1adc96f20a436d796b48a9c15e27bc5e93d8100a2719b0471268,
+                                0x05ab4820bfbadd0a81d6683800674c61377fac610cb7551d369f211831da8b57,
+                                0x04f6d5c5405ac31c42399882d8cd66fb5b41a1f28268b6440f772881e1f4bc08
+                            ],
+                            column_witness: array![]
+                        },
+                        commitment: 0x0717a053c4ee81421414f5dbd8ccb8791c7a2dc92738882282b49abbb4e36ef8
+                    },
+                    FriLayerProof {
+                        evals_subset: array![qm31(906335630, 1881205341, 387775203, 822761293)],
+                        decommitment: MerkleDecommitment {
+                            hash_witness: array![
+                                0x04bcd7cbdf860b26bf3830bc1bd4529bcadd6717d7441daf9f3138c8dd2fa211,
+                                0x04eefde96cc5a781e9e7ae174f286d4fcb834ccdb30f1c152c3f2e6d16ed823c,
+                            ],
+                            column_witness: array![]
+                        },
+                        commitment: 0x0043f9df4c8647865883a3db137a891c7745517dcab180a22e88a9f0062bfbc8
+                    }
+                ],
+                last_layer_poly: LinePoly {
+                    coeffs: array![qm31(1343873773, 1040148734, 1229933415, 444417470)], log_size: 0
+                }
+            }
+        };
+
+        let mut channel = Channel {
+            digest: 0x02c7c944d236c3a1b2d11eb8e32bb747e7eff599dafb90fed0ffb265617a8900,
+            channel_time: ChannelTime { n_challenges: 1, // Default
+             n_sent: 0 // Default
+             }
+        };
+        assert!(commitment_scheme.verify_values(sample_points, proof, ref channel).is_ok());
+    }
+    
 }
