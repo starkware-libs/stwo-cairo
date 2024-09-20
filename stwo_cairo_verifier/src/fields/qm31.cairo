@@ -1,4 +1,4 @@
-use super::m31::{M31, m31};
+use super::m31::{M31, m31, M31Impl};
 use super::cm31::{CM31, cm31, CM31Trait};
 use core::num::traits::zero::Zero;
 use core::num::traits::one::One;
@@ -17,6 +17,16 @@ pub impl QM31Impl of QM31Trait {
     fn from_array(arr: [M31; 4]) -> QM31 {
         let [a, b, c, d] = arr;
         QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
+    }
+
+    fn from_u32(arr: [u32; 4]) -> QM31 {
+        let [a, b, c, d] = arr;
+        let a_mod_p = M31Impl::reduce_u32(a);
+        let b_mod_p = M31Impl::reduce_u32(b);
+        let c_mod_p = M31Impl::reduce_u32(c);
+        let d_mod_p = M31Impl::reduce_u32(d);
+
+        QM31 { a: CM31 { a: a_mod_p, b: b_mod_p }, b: CM31 { a: c_mod_p, b: d_mod_p } }
     }
     #[inline]
     fn to_array(self: QM31) -> [M31; 4] {
@@ -96,7 +106,8 @@ pub fn qm31(a: u32, b: u32, c: u32, d: u32) -> QM31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{QM31, qm31, QM31Trait};
+    use super::{QM31, qm31, QM31Trait, QM31Impl};
+    use super::{CM31, cm31}; //::{cm31, CM31};
     use super::super::m31::{m31, P, M31Trait};
 
     #[test]
@@ -116,5 +127,16 @@ mod tests {
         assert_eq!(qm1 - m.into(), qm1 - qm);
         assert_eq!(qm0_x_qm1 * qm1.inverse(), qm31(1, 2, 3, 4));
         assert_eq!(qm1 * m.inverse().into(), qm1 * qm.inverse());
+    }
+
+    #[test]
+    fn test_qm31_from_u32() {
+        let arr = [2147483648, 2, 3, 4];
+        let felt = QM31Impl::from_u32(arr);
+        let expected_felt = QM31 {
+            a: CM31 { a: m31(1), b: m31(2) }, b: CM31 { a: m31(3), b: m31(4) }
+        };
+
+        assert_eq!(felt, expected_felt)
     }
 }

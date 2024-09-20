@@ -479,8 +479,10 @@ mod tests {
                     > {
                         x: qm31(356457033, 539869277, 1638539218, 1613878625),
                         y: qm31(639930869, 2131654109, 1818864611, 630128131)
-                    }],
-                    array![CirclePoint::<
+                    }
+                ],
+                array![
+                    CirclePoint::<
                         QM31
                     > {
                         x: qm31(356457033, 539869277, 1638539218, 1613878625),
@@ -492,8 +494,10 @@ mod tests {
 
         let proof = CommitmentSchemeProof {
             sampled_values: array![
-                array![array![qm31(559256455, 986819756, 561539378, 1752458196)],
-                       array![qm31(559256455, 986819756, 561539378, 1752458196)]]
+                array![
+                    array![qm31(559256455, 986819756, 561539378, 1752458196)],
+                    array![qm31(559256455, 986819756, 561539378, 1752458196)]
+                ]
             ],
             decommitments: array![
                 MerkleDecommitment {
@@ -506,8 +510,12 @@ mod tests {
                     column_witness: array![]
                 }
             ],
-            queried_values: array![array![array![m31(731175456), m31(140407102)].span(),
-                                          array![m31(731175456), m31(140407102)].span()]],
+            queried_values: array![
+                array![
+                    array![m31(731175456), m31(140407102)].span(),
+                    array![m31(731175456), m31(140407102)].span()
+                ]
+            ],
             proof_of_work: 4,
             fri_proof: FriProof {
                 inner_layers: array![
@@ -549,5 +557,4 @@ mod tests {
         };
         assert!(commitment_scheme.verify_values(sample_points, proof, ref channel).is_ok());
     }
-    
 }

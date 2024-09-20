@@ -649,4 +649,24 @@ mod tests {
 
         assert_eq!(expected_value, value);
     }
+// #[test]
+// fn test_quotient_constants() {
+//     let sample_batches =  [ColumnSampleBatch {  point: CirclePoint { x:
+//     QM31::from_u32_unchecked(478987295, 1892749366, 1041705156, 734603160), y:
+//     QM31::from_u32_unchecked(855835286, 1816058390, 2087312229, 2034210977)},
+//                                                 columns_and_values: array![(0,
+//                                                 QM31::from_u32_unchecked(1159180964, 498831197,
+//                                                 853501574, 2131270475)),
+//                                                                      (1 as usize,
+//                                                                      
+//                                                                      QM31::from_u32_unchecked(461926993,
+//                                                                      1498415928, 1292401553,
+//                                                                      1569729215)), (2 as usize,
+//                                                                      QM31::from_u32_unchecked(2073387488,
+//                                                                      1303901204, 1363303627,
+//                                                                      1291773740)), (3 as usize,
+//                                                                      QM31::from_u32_unchecked(1511996702,
+//                                                                      1722347683, 320749805,
+//                                                                      1676284013))] }];
+// }
 }
