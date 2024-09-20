@@ -98,7 +98,6 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     ) -> Result<(), VerificationError> {
         let sampled_values_copy = proof.sampled_values.clone();
         let mut flattened = array![];
-
         let mut i: u32 = 0;
         while i < sampled_values_copy.len() {
             let mut j: u32 = 0;
@@ -114,12 +113,11 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-
         channel.mix_felts(flattened.span());
         let random_coeff = channel.draw_felt();
 
         let column_log_sizes = self.column_log_sizes();
-
+        println!("column_log_sizes {:?}", column_log_sizes);
         let mut vec_to_sort = array![];
         let mut i = 0;
         while i < column_log_sizes.len() {
@@ -138,7 +136,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         while let Option::Some((_, x)) = iterator.next_deduplicated() {
             bounds.append(x);
         };
-
+        println!("llegue");
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierImpl::commit(
             ref channel, *self.config.fri_config, proof.fri_proof, bounds
@@ -146,7 +144,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             .unwrap();
 
         channel.mix_nonce(proof.proof_of_work);
-
+        println!("llegue proof of work");
         // TODO: waiting for trailing_zeros fix
         // let proof_of_work_bits: u32 = *self.config.pow_bits;
         // if channel.trailing_zeros() < proof_of_work_bits {
@@ -177,15 +175,19 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                 .unwrap();
             i = i + 1;
         };
+
+        println!("llegue antes fri queries");
         // Answer FRI queries.
         let snap_points = @sampled_points;
         let snap_values = @proof.sampled_values;
+        assert_eq!(snap_points.len(), snap_values.len());
         let mut samples: Array<Array<PointSample>> = array![];
         let mut i = 0;
         while i < snap_points.len() {
             let mut j = 0;
             let snap_points_i = snap_points.at(i);
             let snap_values_i = snap_values.at(i);
+            assert_eq!(snap_points_i.len(), snap_values_i.len());
             while j < snap_points_i.len() {
                 let mut k = 0;
                 let snap_points_i_j = snap_points_i.at(j);
@@ -207,7 +209,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-
+        println!("llegue antes flattened");
         let mut i = 0;
         let mut flattened_queried_values: Array<Span<M31>> = array![];
         while i < queried_snap.len() {
@@ -219,7 +221,7 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             };
             i = i + 1;
         };
-
+        println!("llegue flattened queried values");
         // TODO: Make sure this channel is correct (no wrong appends in the middle).
         let column_log_sizes = self.column_log_sizes();
         let mut flattened_column_log_sizes = array![];
@@ -456,6 +458,19 @@ mod tests {
         };
 
         let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+        let commitment_1 = 0x02be650f83421e25718bc944a3e5ca0b52100be1cb6306cfecc0551b01ee24f1;
+        let sizes_1 = array![3, 3];
+        let channel = Channel {
+            digest: 0x00, // Default
+            channel_time: ChannelTime { n_challenges: 0, // Default
+             n_sent: 0 // Default
+             }
+        };
+
+        assert_eq!(commitment_scheme.trees.len(), 0);
+        let mut _channel = commitment_scheme.commit(commitment_1, sizes_1, channel);
+
         let sample_points = array![
             array![
                 array![
@@ -464,8 +479,8 @@ mod tests {
                     > {
                         x: qm31(356457033, 539869277, 1638539218, 1613878625),
                         y: qm31(639930869, 2131654109, 1818864611, 630128131)
-                    },
-                    CirclePoint::<
+                    }],
+                    array![CirclePoint::<
                         QM31
                     > {
                         x: qm31(356457033, 539869277, 1638539218, 1613878625),
@@ -491,8 +506,8 @@ mod tests {
                     column_witness: array![]
                 }
             ],
-            queried_values: array![array![array![m31(731175456), m31(140407102)].span()],
-                                   array![array![m31(731175456), m31(140407102)].span()]],
+            queried_values: array![array![array![m31(731175456), m31(140407102)].span(),
+                                          array![m31(731175456), m31(140407102)].span()]],
             proof_of_work: 4,
             fri_proof: FriProof {
                 inner_layers: array![
