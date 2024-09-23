@@ -18,7 +18,6 @@ use super::component::{
 };
 use super::MemoryLookupElements;
 use crate::components::range_check_unit::RangeCheckElements;
-use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
@@ -35,7 +34,7 @@ impl MemoryClaimProver {
             .map(|addr| mem.get(addr as u32).as_u256())
             .collect_vec();
 
-        let size = values.len().next_power_of_two().max(MIN_SIMD_TRACE_LENGTH);
+        let size = values.len().next_power_of_two();
         assert!(size <= MEMORY_ADDRESS_BOUND);
         values.resize(size, MemoryValue::U64(0).as_u256());
 
