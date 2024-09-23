@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
+use std::time::SystemTime;
 
 use cairo_vm::air_public_input::PublicInputError;
 use cairo_vm::cairo_run;
@@ -12,13 +13,13 @@ use cairo_vm::vm::errors::vm_errors::VirtualMachineError;
 use cairo_vm::vm::runners::cairo_pie::CairoPie;
 use cairo_vm::vm::runners::cairo_runner::RunResources;
 use clap::{Parser, ValueHint};
-use stwo_cairo_prover::input::plain::input_from_finished_runner;
+use stwo_cairo_prover::input::plain::{input_from_finished_runner, print_now};
 use stwo_cairo_prover::input::CairoInput;
 use thiserror::Error;
 
-// TODO(yg): copied from cairo-vm as it's private. Make it public and use directly?
-// TODO(yg): if not, remove all that's not needed for our use case.
-/// Command line arguments for stwo_vm_runner
+// TODO(yg): copied from cairo-vm as it's private. Consider making it public and use directly.
+// TODO(yg): Or - remove all that's not needed for our use case.
+/// Command line arguments for stwo_vm_runner.
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -91,41 +92,58 @@ enum Error {
 
 fn main() -> ExitCode {
     match run(std::env::args()) {
-        Ok(_) => ExitCode::SUCCESS,
+        Ok(_) => {
+            println!("yg success");
+            ExitCode::SUCCESS
+        }
         // TODO(yg): log?
-        Err(_) => ExitCode::FAILURE,
+        Err(_) => {
+            println!("yg failure");
+            ExitCode::FAILURE
+        }
     }
 }
 
+// TODO(yg): revert unwraps to `?`s.
 fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
+    print_now("beginning");
     // TODO(yg): this is copied from cairo-vm-cli/src/main.rs:run in cairo-vm repo. consider using
     // directly (currently private)
-    let args = Args::try_parse_from(args)?;
+    let args = Args::try_parse_from(args).unwrap();
 
     let trace_enabled = args.trace_file.is_some() || args.air_public_input.is_some();
 
     let cairo_run_config = cairo_run::CairoRunConfig {
         entrypoint: &args.entrypoint,
         trace_enabled,
-        relocate_mem: args.memory_file.is_some() || args.air_public_input.is_some(),
+        // TODO(yg): revert and support `input_from_finished_runner` without relocation of memory?
+        // relocate_mem: args.memory_file.is_some() || args.air_public_input.is_some(),
+        relocate_mem: true,
         layout: LayoutName::all_cairo,
         proof_mode: args.proof_mode,
         secure_run: args.secure_run,
         allow_missing_builtins: args.allow_missing_builtins,
         ..Default::default()
     };
+    println!(
+        "yg cairo_run_config.relocate_mem: {}",
+        cairo_run_config.relocate_mem
+    );
 
     // TODO(yg): Do we need the else?
     let cairo_runner = match {
         if args.run_from_cairo_pie {
-            let pie = CairoPie::read_zip_file(&args.filename)?;
+            let pie = CairoPie::read_zip_file(&args.filename).unwrap();
             let mut hint_processor = BuiltinHintProcessor::new(
                 Default::default(),
                 RunResources::new(pie.execution_resources.n_steps),
             );
-            cairo_run::cairo_run_pie(&pie, &cairo_run_config, &mut hint_processor)
+            println!("yg run - if");
+            let x = cairo_run::cairo_run_pie(&pie, &cairo_run_config, &mut hint_processor);
+            println!("yg run - if 2, {}", x.is_err());
+            x
         } else {
-            let program_content = std::fs::read(args.filename).map_err(Error::IO)?;
+            let program_content = std::fs::read(args.filename).map_err(Error::IO).unwrap();
             let mut hint_processor = BuiltinHintProcessor::new_empty();
             cairo_run::cairo_run(&program_content, &cairo_run_config, &mut hint_processor)
         }
@@ -136,12 +154,18 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
             return Err(Error::Runner(error));
         }
     };
+    // println!(
+    //     "yg cairo_runner.relocated_trace: {:?}, cairo_runner.relocated_memory: {:?}",
+    //     cairo_runner.relocated_trace, cairo_runner.relocated_memory
+    // );
+    print_now("middle");
 
     // TODO(yg): split here to 2 parts - one is running the cairo-vm and getting cairo_runner.
     // Second is adapter.
 
     let cairo_input = input_from_finished_runner(cairo_runner);
-    // TODO(yg): serialize (here or in an outer function.
+    print_now("end");
+    // TODO(yg): serialize (here or in an outer function).
 
     Ok(cairo_input)
 }

@@ -6,7 +6,8 @@ edition = "2021"
 [dependencies]
 bytemuck.workspace = true
 cairo-lang-casm = "2.7.1"
-cairo-vm = "1.0.1"
+cairo-vm = { version = "1.0.1", features = ["mod_builtin"]}
+chrono.workspace = "0.4.38"
 hex = "0.4.3"
 itertools.workspace = true
 num-traits = "0.2.17"

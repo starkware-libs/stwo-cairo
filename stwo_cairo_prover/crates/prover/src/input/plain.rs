@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::time::SystemTime;
 
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
@@ -45,6 +46,13 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
     input_from_finished_runner(runner)
 }
 
+use chrono::offset::Local;
+use chrono::DateTime;
+pub fn print_now(description: &str) {
+    let now: DateTime<Local> = SystemTime::now().into();
+    println!("yg time {description}: {}", now.format("%d/%m/%Y %T"));
+}
+
 pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
     let program_len = runner.get_program().iter_data().count();
     runner.relocate(true).expect("Relocation failed");
@@ -58,6 +66,7 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
                 val: bytemuck::cast_slice(&v.to_bytes_le()).try_into().unwrap(),
             })
         });
+    print_now("input_from_finished_runner mid");
     let trace = runner.relocated_trace.unwrap();
     let trace = trace.iter().map(|t| TraceEntry {
         pc: t.pc as u64,
