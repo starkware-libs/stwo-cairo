@@ -168,7 +168,7 @@ pub fn fri_answers(
     }
 }
 
-#[derive(Drop, Debug)]
+#[derive(Drop, Debug, PartialEq)]
 struct QuotientConstants {
     pub line_coeffs: Array<Array<(QM31, QM31, QM31)>>,
     /// The random coefficients used to linearly combine the batched quotients For more details see
@@ -447,12 +447,12 @@ pub fn fri_answers_for_log_size(
 mod tests {
     use super::{
         PointSample, ColumnSampleBatch, QuotientConstants, fri_answers_for_log_size,
-        accumulate_row_quotients
+        accumulate_row_quotients, quotient_constants
     };
     use stwo_cairo_verifier::circle::{Coset, CirclePoint};
     use stwo_cairo_verifier::fields::m31::M31;
-    use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
-    use stwo_cairo_verifier::fields::cm31::CM31;
+    use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, qm31};
+    use stwo_cairo_verifier::fields::cm31::{CM31, cm31};
     use stwo_cairo_verifier::queries::{
         SparseSubCircleDomain, SubCircleDomain, get_sparse_sub_circle_domain_dict
     };
@@ -649,24 +649,65 @@ mod tests {
 
         assert_eq!(expected_value, value);
     }
-// #[test]
-// fn test_quotient_constants() {
-//     let sample_batches =  [ColumnSampleBatch {  point: CirclePoint { x:
-//     QM31::from_u32_unchecked(478987295, 1892749366, 1041705156, 734603160), y:
-//     QM31::from_u32_unchecked(855835286, 1816058390, 2087312229, 2034210977)},
-//                                                 columns_and_values: array![(0,
-//                                                 QM31::from_u32_unchecked(1159180964, 498831197,
-//                                                 853501574, 2131270475)),
-//                                                                      (1 as usize,
-//                                                                      
-//                                                                      QM31::from_u32_unchecked(461926993,
-//                                                                      1498415928, 1292401553,
-//                                                                      1569729215)), (2 as usize,
-//                                                                      QM31::from_u32_unchecked(2073387488,
-//                                                                      1303901204, 1363303627,
-//                                                                      1291773740)), (3 as usize,
-//                                                                      QM31::from_u32_unchecked(1511996702,
-//                                                                      1722347683, 320749805,
-//                                                                      1676284013))] }];
-// }
+    #[test]
+    fn test_quotient_constants() {
+        let sample_batches = [
+            ColumnSampleBatch {
+                point: CirclePoint {
+                    x: QM31Impl::from_u32([478987295, 1892749366, 1041705156, 734603160]),
+                    y: QM31Impl::from_u32([855835286, 1816058390, 2087312229, 2034210977])
+                },
+                columns_and_values: array![
+                    (0, QM31Impl::from_u32([1159180964, 498831197, 853501574, 2131270475])),
+                    (1_usize, QM31Impl::from_u32([461926993, 1498415928, 1292401553, 1569729215])),
+                    (2_usize, QM31Impl::from_u32([2073387488, 1303901204, 1363303627, 1291773740])),
+                    (3_usize, QM31Impl::from_u32([1511996702, 1722347683, 320749805, 1676284013]))
+                ]
+            }
+        ];
+
+        let random_coeff = QM31Impl::from_u32([1689258934, 1422683827, 1856124372, 664104211]);
+
+        let domain = CircleDomain {
+            half_coset: Coset { initial_index: 2144337920, step_size: 2147483648, log_size: 0 }
+        };
+
+        let expected_quotient_constants = QuotientConstants {
+            line_coeffs: array![
+                array![
+                    (
+                        QM31Impl::from_u32([432693940, 1265371650, 1788372859, 32743362]),
+                        QM31Impl::from_u32([740022067, 1828847387, 480616807, 946591083]),
+                        QM31Impl::from_u32([74835563, 1390010471, 1767788446, 871386546])
+                    ),
+                    (
+                        QM31Impl::from_u32([731757088, 913403584, 2013953972, 603575554]),
+                        QM31Impl::from_u32([994968803, 1844772598, 1483039442, 547141274]),
+                        QM31Impl::from_u32([673079002, 375483644, 1307564793, 1400371585])
+                    ),
+                    (
+                        QM31Impl::from_u32([1512644828, 1662277349, 1117673702, 939594879]),
+                        QM31Impl::from_u32([1195380490, 2065441791, 1218901271, 475165293]),
+                        QM31Impl::from_u32([1331932632, 94871924, 1416393384, 154396007])
+                    ),
+                    (
+                        QM31Impl::from_u32([2057814550, 1288575716, 509907469, 1830914603]),
+                        QM31Impl::from_u32([849427172, 643221092, 845090609, 947363699]),
+                        QM31Impl::from_u32([1009445954, 1218901255, 256642735, 116257086])
+                    )
+                ]
+            ],
+            batch_random_coeffs: array![
+                QM31Impl::from_u32([1924323306, 2026860081, 194249121, 141153899])
+            ],
+            denominator_inverses: array![
+                array![cm31(401605339, 549491085), cm31(1178077834, 1286521859)]
+            ]
+        };
+
+        let function_accumulate_quotients = quotient_constants(
+            sample_batches.span(), random_coeff, domain
+        );
+        assert_eq!(expected_quotient_constants, function_accumulate_quotients);
+    }
 }
