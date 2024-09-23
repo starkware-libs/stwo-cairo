@@ -17,4 +17,4 @@ lto = true
 
 # TODO(yg): remove
 [patch.crates-io]
-cairo-vm = { path = "/home/yuval/workspace/cairo-vm/vm", features = ["mod_builtin"] }
+cairo-vm = { path = "/home/yuval/workspace/cairo-vm/vm", features = ["mod_builtin"], version="1.0.2" }
