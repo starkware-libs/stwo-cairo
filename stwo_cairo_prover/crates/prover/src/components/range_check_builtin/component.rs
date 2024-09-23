@@ -5,6 +5,7 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
@@ -71,14 +72,9 @@ impl FrameworkEval for RangeCheckBuiltinEval {
         }
 
         // Compute lookup for memory.
-        let mut logup =
-            LogupAtRow::<1, _>::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size);
-        logup.push_lookup(
-            &mut eval,
-            E::EF::one(),
-            &values,
-            &self.memory_lookup_elements,
-        );
+        let mut logup = LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size);
+        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
+        logup.write_frac(&mut eval, frac);
 
         // Add constraints for the last 2 bit value.
         let last_value_felt = values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1];
@@ -104,8 +100,8 @@ pub struct RangeCheckBuiltinClaim {
 
 impl RangeCheckBuiltinClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_nonce(self.memory_segment.begin_addr as u64);
-        channel.mix_nonce(self.memory_segment.end_addr as u64);
+        channel.mix_u64(self.memory_segment.begin_addr as u64);
+        channel.mix_u64(self.memory_segment.end_addr as u64);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {

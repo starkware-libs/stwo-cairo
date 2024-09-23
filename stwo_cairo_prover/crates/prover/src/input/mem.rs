@@ -5,7 +5,6 @@ use itertools::Itertools;
 
 use super::range_check_unit::RangeCheckUnitInput;
 use super::vm_import::MemEntry;
-use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::felt::split_f252;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
@@ -110,7 +109,7 @@ impl Memory {
             .map(|addr| self.get(addr as u32))
             .collect_vec();
 
-        let size = values.len().next_power_of_two().max(MIN_SIMD_TRACE_LENGTH);
+        let size = values.len().next_power_of_two();
         values.resize(size, MemoryValue::U64(0));
         values.into_iter()
     }
