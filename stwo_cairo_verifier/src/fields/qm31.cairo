@@ -30,6 +30,10 @@ pub impl QM31Impl of QM31Trait {
         let denom_inverse = denom.inverse();
         QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+
+    fn complex_conjugate(self: QM31) -> QM31 {
+        QM31 { a: self.a, b: -self.b }
+    }
 }
 
 pub impl QM31Add of core::traits::Add<QM31> {
