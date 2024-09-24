@@ -11,7 +11,9 @@ use stwo_cairo_verifier::fields::m31::M31Trait;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
 use stwo_cairo_verifier::fri::query::{Queries, QueriesImpl};
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
-use stwo_cairo_verifier::poly::circle::{CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
+use stwo_cairo_verifier::poly::circle::{
+    CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
+};
 use stwo_cairo_verifier::fri::folding::fold_line;
 
 /// A univariate polynomial represented by its coefficients in the line part of the FFT-basis

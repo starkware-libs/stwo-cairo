@@ -1,5 +1,5 @@
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::qm31::{QM31,QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow;
 use core::num::traits::zero::Zero;
 use core::num::traits::one::One;

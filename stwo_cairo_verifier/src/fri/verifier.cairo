@@ -7,8 +7,13 @@ use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::channel::Channel;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
-use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
-use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait, LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl};
+use stwo_cairo_verifier::poly::circle::{
+    CircleDomain, CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
+};
+use stwo_cairo_verifier::poly::line::{
+    LineDomain, LineDomainImpl, LineDomainTrait, LineEvaluation, LineEvaluationImpl,
+    SparseLineEvaluation, SparseLineEvaluationImpl
+};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use super::query::{Queries, QueriesImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
