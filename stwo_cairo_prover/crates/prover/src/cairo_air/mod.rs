@@ -391,6 +391,7 @@ mod tests {
 
     use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
     use crate::input::plain::input_from_plain_casm;
+    use crate::input::vm_import::tests::small_cairo_input;
 
     fn test_input() -> CairoInput {
         let u128_max = u128::MAX;
@@ -417,8 +418,14 @@ mod tests {
     }
 
     #[test]
-    fn test_cairo_air() {
+    fn test_basic_cairo_air() {
         let cairo_proof = prove_cairo(test_input());
+        verify_cairo(cairo_proof).unwrap();
+    }
+
+    #[test]
+    fn test_full_cairo_air() {
+        let cairo_proof = prove_cairo(small_cairo_input());
         verify_cairo(cairo_proof).unwrap();
     }
 }
