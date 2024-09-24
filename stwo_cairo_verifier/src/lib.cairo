@@ -1,9 +1,9 @@
 mod channel;
 mod circle;
 mod fields;
+mod poly;
 mod utils;
 mod vcs;
-mod poly;
 
 pub use fields::{BaseField, SecureField};
 
