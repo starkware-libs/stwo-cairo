@@ -8,12 +8,8 @@ use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::channel::Channel;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
-use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait};
+use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait, LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
-use super::evaluation::{
-    LineEvaluation, LineEvaluationImpl, SparseLineEvaluation,
-    SparseLineEvaluationImpl,
-};
 use super::query::{Queries, QueriesImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};

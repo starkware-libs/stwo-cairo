@@ -1,12 +1,18 @@
-use stwo_cairo_verifier::fields::SecureField;
-use stwo_cairo_verifier::poly::utils::fold;
-use stwo_cairo_verifier::circle::CirclePointTrait;
 use core::option::OptionTrait;
 use core::clone::Clone;
 use core::result::ResultTrait;
+use stwo_cairo_verifier::fields::SecureField;
+use stwo_cairo_verifier::poly::utils::fold;
+use stwo_cairo_verifier::circle::CirclePointTrait;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
-use stwo_cairo_verifier::utils::pow;
+use stwo_cairo_verifier::utils::{pow, bit_reverse_index};
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
+use stwo_cairo_verifier::fields::m31::M31Trait;
+use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
+use stwo_cairo_verifier::fri::query::{Queries, QueriesImpl};
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+use stwo_cairo_verifier::poly::circle::{CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
+use stwo_cairo_verifier::fri::folding::fold_line;
 
 /// A univariate polynomial represented by its coefficients in the line part of the FFT-basis
 /// in bit reversed order.
@@ -68,6 +74,39 @@ pub impl LineDomainImpl of LineDomainTrait {
 }
 
 
+#[derive(Drop)]
+pub struct LineEvaluation {
+    pub values: Array<QM31>,
+    pub domain: LineDomain
+}
+
+
+#[derive(Drop)]
+pub struct SparseLineEvaluation {
+    pub subline_evals: Array<LineEvaluation>,
+}
+
+#[generate_trait]
+pub impl LineEvaluationImpl of LineEvaluationTrait {
+    fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
+        assert_eq!(values.len(), domain.size());
+        LineEvaluation { values: values, domain: domain }
+    }
+}
+
+#[generate_trait]
+pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
+    fn fold(self: @SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
+        let mut i = 0;
+        let mut res: Array<QM31> = array![];
+        while i < self.subline_evals.len() {
+            let line_evaluation = fold_line(self.subline_evals[i], alpha);
+            res.append(*line_evaluation.values.at(0));
+            i += 1;
+        };
+        return res;
+    }
+}
 
 #[cfg(test)]
 mod tests {

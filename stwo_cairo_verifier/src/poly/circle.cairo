@@ -8,7 +8,7 @@ use stwo_cairo_verifier::utils::pow;
 use stwo_cairo_verifier::circle::{
     Coset, CosetImpl, CirclePoint, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER
 };
-use stwo_cairo_verifier::fri::evaluation::fold_circle_into_line;
+use stwo_cairo_verifier::fri::folding::fold_circle_into_line;
 
 #[derive(Debug, Copy, Drop, PartialEq, Eq)]
 pub struct CircleDomain {
