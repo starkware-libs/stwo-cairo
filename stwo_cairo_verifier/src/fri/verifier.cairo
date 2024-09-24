@@ -15,7 +15,7 @@ use super::evaluation::{
     SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
 };
 use super::query::{Queries, QueriesImpl};
-use super::polynomial::{LinePoly, LinePolyImpl};
+use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};
 use core::dict::Felt252Dict;
 
@@ -472,7 +472,7 @@ mod tests {
     use stwo_cairo_verifier::circle::Coset;
     use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation};
     use stwo_cairo_verifier::fri::query::Queries;
-    use stwo_cairo_verifier::fri::polynomial::LinePoly;
+    use stwo_cairo_verifier::poly::line::LinePoly;
     use super::{
         FriProof, FriLayerProof, FriConfig, FriVerifier, FriVerifierImpl, FriLayerVerifier,
         FriLayerVerifierImpl, FriVerificationError

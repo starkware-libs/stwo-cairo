@@ -1,2 +1,2 @@
 pub mod component;
-pub mod simd_trace;
+pub mod prover;

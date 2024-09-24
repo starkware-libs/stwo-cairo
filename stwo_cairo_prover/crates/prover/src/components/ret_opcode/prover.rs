@@ -9,12 +9,13 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
+use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
@@ -33,7 +34,7 @@ impl RetOpcodeClaimProver {
         assert!(!inputs.is_empty());
 
         // TODO(spapini): Split to multiple components.
-        let size = inputs.len().next_power_of_two().max(64);
+        let size = inputs.len().next_power_of_two().max(MIN_SIMD_TRACE_LENGTH);
         inputs.resize(size, inputs[0].clone());
 
         let inputs = inputs
@@ -55,7 +56,7 @@ impl RetOpcodeClaimProver {
     }
     pub fn write_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memory_trace_generator: &mut MemoryClaimProver,
     ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
@@ -65,7 +66,6 @@ impl RetOpcodeClaimProver {
         });
         tree_builder.extend_evals(trace);
         let claim = RetOpcodeClaim {
-            log_size: self.inputs.len().ilog2() + LOG_N_LANES,
             n_rets: self.inputs.len() * N_LANES,
         };
         (claim, interaction_prover)
@@ -100,7 +100,7 @@ impl RetOpcodeInteractionProver {
 
     pub fn write_interaction_trace(
         &self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleHasher>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &MemoryLookupElements,
     ) -> RetOpcodeInteractionClaim {
         let log_size = self.memory_inputs[0].len().ilog2() + LOG_N_LANES;

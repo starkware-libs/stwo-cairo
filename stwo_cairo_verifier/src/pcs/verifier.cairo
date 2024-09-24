@@ -313,7 +313,7 @@ mod tests {
         CommitmentSchemeVerifier, PcsConfig, CommitmentSchemeVerifierImpl, CommitmentSchemeProof
     };
     use stwo_cairo_verifier::fri::verifier::{FriConfig, FriProof, FriLayerProof};
-    use stwo_cairo_verifier::fri::polynomial::LinePoly;
+    use stwo_cairo_verifier::poly::line::LinePoly;
     use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment};
     use stwo_cairo_verifier::channel::{ChannelTime, Channel};
     use stwo_cairo_verifier::circle::CirclePoint;
