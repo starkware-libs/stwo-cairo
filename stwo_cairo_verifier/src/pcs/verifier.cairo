@@ -14,7 +14,7 @@ use stwo_cairo_verifier::queries::{
     SparseSubCircleDomain, SparseSubCircleDomainTrait, get_sparse_sub_circle_domain_dict
 };
 use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
-use stwo_cairo_verifier::fri::evaluation::SparseCircleEvaluation;
+use stwo_cairo_verifier::poly::circle::SparseCircleEvaluation;
 use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use core::dict::Felt252DictEntryTrait;
 use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;

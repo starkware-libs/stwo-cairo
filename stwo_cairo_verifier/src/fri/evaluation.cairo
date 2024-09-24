@@ -8,6 +8,7 @@ use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::utils::{bit_reverse_index, pow};
 use super::verifier::{FOLD_STEP, CIRCLE_TO_LINE_FOLD_STEP};
+use stwo_cairo_verifier::poly::circle::{CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
 
 
 #[derive(Drop)]
@@ -16,28 +17,13 @@ pub struct LineEvaluation {
     pub domain: LineDomain
 }
 
-#[derive(Debug, Drop, Clone, PartialEq, Eq)]
-pub struct CircleEvaluation {
-    pub values: Array<QM31>,
-    pub domain: CircleDomain,
-}
-
-#[generate_trait]
-pub impl CircleEvaluationImpl of CircleEvaluationTrait {
-    fn new(domain: CircleDomain, values: Array<QM31>) -> CircleEvaluation {
-        CircleEvaluation { values: values, domain: domain }
-    }
-}
 
 #[derive(Drop)]
 pub struct SparseLineEvaluation {
     pub subline_evals: Array<LineEvaluation>,
 }
 
-#[derive(Drop, Clone, Debug, PartialEq)]
-pub struct SparseCircleEvaluation {
-    pub subcircle_evals: Array<CircleEvaluation>
-}
+
 
 #[generate_trait]
 pub impl LineEvaluationImpl of LineEvaluationTrait {
@@ -77,49 +63,8 @@ fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
     LineEvaluationImpl::new(domain.double(), values)
 }
 
-#[generate_trait]
-pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
-    fn new(subcircle_evals: Array<CircleEvaluation>) -> SparseCircleEvaluation {
-        SparseCircleEvaluation { subcircle_evals: subcircle_evals }
-    }
 
-    fn accumulate(
-        self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31
-    ) -> SparseCircleEvaluation {
-        assert_eq!(self.subcircle_evals.len(), rhs.subcircle_evals.len());
-        let mut subcircle_evals = array![];
-        let mut i = 0;
-        while i < self.subcircle_evals.len() {
-            let lhs = self.subcircle_evals[i];
-            let rhs = rhs.subcircle_evals[i];
-            let mut values = array![];
-            assert_eq!(lhs.values.len(), rhs.values.len());
-            let mut j = 0;
-            while j < lhs.values.len() {
-                values.append(*lhs.values[j] * alpha + *rhs.values[j]);
-                j += 1;
-            };
-            subcircle_evals.append(CircleEvaluation { domain: *lhs.domain, values });
-            i += 1;
-        };
-
-        SparseCircleEvaluation { subcircle_evals }
-    }
-
-    fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
-        let mut i = 0;
-        let mut res: Array<QM31> = array![];
-        while i < self.subcircle_evals.len() {
-            let circle_evaluation = fold_circle_into_line(self.subcircle_evals[i], alpha);
-            res.append(*circle_evaluation.values.at(0));
-            i += 1;
-        };
-        return res;
-    }
-}
-
-
-fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation {
+pub fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values = array![];
     let mut i = 0;
@@ -139,56 +84,23 @@ pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
     (v0 + v1, (v0 - v1) * itwid.into())
 }
 
-#[test]
-fn test_accumulate_1() {
-    let alpha = qm31(984186742, 463356387, 533637878, 1417871498);
-    let lhs = SparseCircleEvaluation {
-        subcircle_evals: array![
-            CircleEvaluation {
-                values: array![qm31(28672, 0, 0, 0), qm31(36864, 0, 0, 0)],
-                domain: CircleDomain { half_coset: CosetImpl::new(16777216, 0) }
-            },
-            CircleEvaluation {
-                values: array![qm31(28672, 0, 0, 0), qm31(36864, 0, 0, 0)],
-                domain: CircleDomain { half_coset: CosetImpl::new(2030043136, 0) }
-            },
-            CircleEvaluation {
-                values: array![qm31(2147454975, 0, 0, 0), qm31(2147446783, 0, 0, 0)],
-                domain: CircleDomain { half_coset: CosetImpl::new(2097152000, 0) }
-            },
-        ]
-    };
-    let rhs = lhs.clone();
-    let result = lhs.accumulate(@rhs, alpha);
 
-    let expected_result = SparseCircleEvaluation {
-        subcircle_evals: array![
-            CircleEvaluation {
-                values: array![
-                    qm31(667173716, 1020487722, 1791736788, 1346152946),
-                    qm31(1471361534, 84922130, 1076528072, 810417939)
-                ],
-                domain: CircleDomain { half_coset: CosetImpl::new(16777216, 0) }
-            },
-            CircleEvaluation {
-                values: array![
-                    qm31(667173716, 1020487722, 1791736788, 1346152946),
-                    qm31(1471361534, 84922130, 1076528072, 810417939)
-                ],
-                domain: CircleDomain { half_coset: CosetImpl::new(2030043136, 0) }
-            },
-            CircleEvaluation {
-                values: array![
-                    qm31(1480309931, 1126995925, 355746859, 801330701),
-                    qm31(676122113, 2062561517, 1070955575, 1337065708)
-                ],
-                domain: CircleDomain { half_coset: CosetImpl::new(2097152000, 0) }
-            },
-        ]
-    };
+mod test{
 
-    assert_eq!(expected_result, result);
-}
+use super::{LineEvaluation, SparseLineEvaluation, SparseLineEvaluationImpl};
+
+use stwo_cairo_verifier::fields::m31::M31Trait;
+use stwo_cairo_verifier::circle::{Coset, CosetImpl};
+use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
+use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
+use stwo_cairo_verifier::fri::query::{Queries, QueriesImpl};
+
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+use stwo_cairo_verifier::fields::m31::M31;
+use stwo_cairo_verifier::utils::{bit_reverse_index, pow};
+use stwo_cairo_verifier::fri::verifier::{FOLD_STEP, CIRCLE_TO_LINE_FOLD_STEP};
+use stwo_cairo_verifier::poly::circle::{CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
+
 
 #[test]
 fn test_fold_line_1() {
@@ -227,11 +139,12 @@ fn test_fold_line_2() {
 fn test_fold_circle_into_line_1() {
     let domain = CircleDomain { half_coset: CosetImpl::new(553648128, 0) };
     let values = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
-    let sparse_circle_evaluation = SparseCircleEvaluation {
+    let sparse_circle_evaluation: SparseCircleEvaluation = SparseCircleEvaluation {
         subcircle_evals: array![CircleEvaluation { values, domain }]
     };
     let alpha = qm31(260773061, 362745443, 1347591543, 1084609991);
     let result = sparse_circle_evaluation.fold(alpha);
     let expected_result = array![qm31(730692421, 1363821003, 2146256633, 106012305)];
     assert_eq!(expected_result, result);
+}
 }

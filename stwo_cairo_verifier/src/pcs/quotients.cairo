@@ -11,7 +11,7 @@ use stwo_cairo_verifier::queries::{
 use stwo_cairo_verifier::pcs::verifier::VerificationError;
 use core::dict::Felt252Dict;
 use stwo_cairo_verifier::sort::MaximumToMinimumSortedIterator;
-use stwo_cairo_verifier::fri::evaluation::{
+use stwo_cairo_verifier::poly::circle::{
     CircleEvaluation, SparseCircleEvaluation, CircleEvaluationImpl, SparseCircleEvaluationImpl
 };
 use stwo_cairo_verifier::utils::{bit_reverse_index, get_unique_elements};
@@ -457,7 +457,7 @@ mod tests {
         SparseSubCircleDomain, SubCircleDomain, get_sparse_sub_circle_domain_dict
     };
     use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation};
+    use stwo_cairo_verifier::poly::circle::{CircleEvaluation, SparseCircleEvaluation};
     use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
     use core::result::ResultTrait;
     use stwo_cairo_verifier::pcs::verifier::VerificationError;

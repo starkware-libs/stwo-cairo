@@ -7,12 +7,12 @@ use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::channel::Channel;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
-use stwo_cairo_verifier::poly::circle::CircleDomain;
+use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl};
 use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use super::evaluation::{
-    LineEvaluation, LineEvaluationImpl, CircleEvaluation, SparseLineEvaluation,
-    SparseLineEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
+    LineEvaluation, LineEvaluationImpl, SparseLineEvaluation,
+    SparseLineEvaluationImpl,
 };
 use super::query::{Queries, QueriesImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
@@ -468,9 +468,8 @@ mod tests {
     use stwo_cairo_verifier::channel::ChannelTrait;
     use stwo_cairo_verifier::fields::qm31::qm31;
     use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
-    use stwo_cairo_verifier::poly::circle::CircleDomain;
     use stwo_cairo_verifier::circle::Coset;
-    use stwo_cairo_verifier::fri::evaluation::{CircleEvaluation, SparseCircleEvaluation};
+    use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleEvaluation, SparseCircleEvaluation};
     use stwo_cairo_verifier::fri::query::Queries;
     use stwo_cairo_verifier::poly::line::LinePoly;
     use super::{
