@@ -15,7 +15,6 @@ use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTIO
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
-use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
@@ -34,7 +33,7 @@ impl RetOpcodeClaimProver {
         assert!(!inputs.is_empty());
 
         // TODO(spapini): Split to multiple components.
-        let size = inputs.len().next_power_of_two().max(MIN_SIMD_TRACE_LENGTH);
+        let size = inputs.len().next_power_of_two();
         inputs.resize(size, inputs[0].clone());
 
         let inputs = inputs

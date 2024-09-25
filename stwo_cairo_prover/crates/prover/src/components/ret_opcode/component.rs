@@ -5,6 +5,7 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::component::N_M31_IN_FELT252;
@@ -46,7 +47,7 @@ impl FrameworkEval for RetOpcodeEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<1, E>::new(1, self.claimed_sum, self.log_size);
+        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, self.log_size);
 
         // PC Column
         let mut values = [E::F::zero(); N_M31_IN_FELT252 + 1];
@@ -54,7 +55,8 @@ impl FrameworkEval for RetOpcodeEval {
         for i in 0..N_M31_IN_FELT252 {
             values[i + 1] = E::F::from(M31::from(RET_INSTRUCTION[i]));
         }
-        logup.push_lookup(&mut eval, E::EF::one(), &values, &self.lookup_elements);
+        let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
+        logup.write_frac(&mut eval, frac);
         for i in 0..N_M31_IN_FELT252 {
             values[i + 1] = E::F::from(M31::from(0));
         }
@@ -69,7 +71,8 @@ impl FrameworkEval for RetOpcodeEval {
         values[0] = fp - E::F::one();
         values[1] = fp_minus_one_0;
         values[2] = fp_minus_one_1;
-        logup.push_lookup(&mut eval, E::EF::one(), &values, &self.lookup_elements);
+        let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
+        logup.write_frac(&mut eval, frac);
 
         // FP - 2
         let fp_minus_two_0 = eval.next_trace_mask();
@@ -77,7 +80,8 @@ impl FrameworkEval for RetOpcodeEval {
         values[0] = fp - E::F::from(M31::from(2));
         values[1] = fp_minus_two_0;
         values[2] = fp_minus_two_1;
-        logup.push_lookup(&mut eval, E::EF::one(), &values, &self.lookup_elements);
+        let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
+        logup.write_frac(&mut eval, frac);
 
         logup.finalize(&mut eval);
         eval
@@ -90,7 +94,7 @@ pub struct RetOpcodeClaim {
 }
 impl RetOpcodeClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_nonce(self.n_rets as u64);
+        channel.mix_u64(self.n_rets as u64);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {

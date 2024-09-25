@@ -19,7 +19,6 @@ use super::component::{
 };
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
-use crate::components::MIN_SIMD_TRACE_LENGTH;
 use crate::input::SegmentAddrs;
 
 // Memory addresses for the RangeCheckBuiltin segment.
@@ -43,10 +42,7 @@ impl RangeCheckBuiltinClaimProver {
     ) -> (RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionProver) {
         let mut addresses = self.memory_segment.addresses();
         // TODO(spapini): Split to multiple components.
-        let size = addresses
-            .len()
-            .next_power_of_two()
-            .max(MIN_SIMD_TRACE_LENGTH);
+        let size = addresses.len().next_power_of_two();
         // TODO(AlonH): Addresses should be increasing.
         addresses.resize(size, addresses[0]);
 

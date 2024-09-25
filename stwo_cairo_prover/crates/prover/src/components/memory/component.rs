@@ -4,6 +4,7 @@ use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, Framework
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use super::MemoryLookupElements;
@@ -57,26 +58,24 @@ impl FrameworkEval for MemoryEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<1, E>::new(1, self.claimed_sum, self.log_size());
+        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, self.log_size());
 
         let address_and_value: [E::F; N_M31_IN_FELT252 + 1] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        logup.push_lookup(
-            &mut eval,
-            (-multiplicity).into(),
-            &address_and_value,
-            &self.lookup_elements,
+        let frac = Fraction::new(
+            E::EF::from(-multiplicity),
+            self.lookup_elements.combine(&address_and_value),
         );
+        logup.write_frac(&mut eval, frac);
 
         // Range check elements.
         for value_limb in address_and_value.iter().skip(MEMORY_ADDRESS_SIZE) {
-            logup.push_lookup(
-                &mut eval,
+            let frac = Fraction::new(
                 E::EF::one(),
-                &[*value_limb],
-                &self.range9_lookup_elements,
+                self.range9_lookup_elements.combine(&[*value_limb]),
             );
+            logup.write_frac(&mut eval, frac);
         }
 
         logup.finalize(&mut eval);
@@ -98,7 +97,7 @@ impl MemoryClaim {
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_nonce(self.log_address_bound as u64);
+        channel.mix_u64(self.log_address_bound as u64);
     }
 }
 
