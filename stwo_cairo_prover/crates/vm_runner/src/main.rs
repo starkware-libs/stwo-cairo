@@ -18,7 +18,7 @@ use stwo_cairo_prover::input::CairoInput;
 use thiserror::Error;
 
 // TODO(yg): copied from cairo-vm as it's private. Consider making it public and use directly.
-// TODO(yg): Or - remove all that's not needed for our use case.
+// TODO(yg): Or - remove all that's not needed for our use case, and doc.
 /// Command line arguments for stwo_vm_runner.
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -33,7 +33,6 @@ struct Args {
     entrypoint: String,
     #[structopt(long = "memory_file")]
     memory_file: Option<PathBuf>,
-    // TODO(yg): deleted layout here - make sure it isn't needed.
     #[structopt(long = "proof_mode")]
     proof_mode: bool,
     #[structopt(long = "secure_run")]
@@ -54,9 +53,6 @@ struct Args {
     cairo_pie_output: Option<String>,
     #[structopt(long = "allow_missing_builtins")]
     allow_missing_builtins: Option<bool>,
-    #[structopt(long = "tracer")]
-    #[cfg(feature = "with_tracer")]
-    tracer: bool,
     #[structopt(
         long = "run_from_cairo_pie",
         // We need to add these air_private_input & air_public_input or else
@@ -66,8 +62,6 @@ struct Args {
     run_from_cairo_pie: bool,
 }
 
-// TODO(yg): copied from cairo-vm repo, cairo-vm-cli/src/main.rs. either make it public and use, or
-// remove all that's irrelevant.
 #[derive(Debug, Error)]
 enum Error {
     #[error("Invalid arguments")]
@@ -76,49 +70,36 @@ enum Error {
     IO(#[from] std::io::Error),
     #[error("The cairo program execution failed")]
     Runner(#[from] CairoRunError),
-    #[error(transparent)]
-    EncodeTrace(#[from] EncodeTraceError),
-    #[error(transparent)]
-    VirtualMachine(#[from] VirtualMachineError),
-    #[error(transparent)]
-    Trace(#[from] TraceError),
-    #[error(transparent)]
-    PublicInput(#[from] PublicInputError),
-    // TODO(yg): do we need the `with_tracer`?
-    #[error(transparent)]
-    #[cfg(feature = "with_tracer")]
-    TraceDataError(#[from] TraceDataError),
 }
 
 fn main() -> ExitCode {
     match run(std::env::args()) {
         Ok(_) => {
-            println!("yg success");
+            println!("VM runner succeeded");
             ExitCode::SUCCESS
         }
-        // TODO(yg): log?
-        Err(_) => {
-            println!("yg failure");
+        Err(error) => {
+            println!("VM runner failed: {error}");
             ExitCode::FAILURE
         }
     }
 }
 
-// TODO(yg): revert unwraps to `?`s.
 fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
     print_now("beginning");
-    let args = Args::try_parse_from(args).unwrap();
+    let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args)?;
     print_now("middle");
-    let cairo_input = adapt(cairo_runner);
+    let cairo_input = adapt_vm_output_to_stwo(cairo_runner);
     print_now("end");
-    // TODO(yg): serialize (here or in an outer function).
+    // TODO(yuval): serialize (here or in an outer function).
 
     Ok(cairo_input)
 }
 
+// This function's logic is copied-then-modified from cairo-vm-cli/src/main.rs:run in cairo-vm repo.
+/// Runs the Cairo VM according to the given arguments (which are subset of the cairo-vm arguments).
 fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
-    // TODO(yg): this is copied-and-modified from cairo-vm-cli/src/main.rs:run in cairo-vm repo.
     let cairo_run_config = cairo_run::CairoRunConfig {
         entrypoint: &args.entrypoint,
         trace_enabled: true,
@@ -130,10 +111,9 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
         ..Default::default()
     };
 
-    // TODO(yg): Do we need the else?
     let cairo_runner = match {
         if args.run_from_cairo_pie {
-            let pie = CairoPie::read_zip_file(&args.filename).unwrap();
+            let pie = CairoPie::read_zip_file(&args.filename)?;
             let mut hint_processor = BuiltinHintProcessor::new(
                 Default::default(),
                 RunResources::new(pie.execution_resources.n_steps),
@@ -143,9 +123,7 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
             print_now(&format!("if - after cairo_run_pie, {}", x.is_err()));
             x
         } else {
-            let program_content = std::fs::read(args.filename.clone())
-                .map_err(Error::IO)
-                .unwrap();
+            let program_content = std::fs::read(args.filename.clone()).map_err(Error::IO)?;
             let mut hint_processor = BuiltinHintProcessor::new_empty();
             cairo_run::cairo_run(&program_content, &cairo_run_config, &mut hint_processor)
         }
@@ -160,6 +138,8 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
     Ok(cairo_runner)
 }
 
-fn adapt(runner: CairoRunner) -> CairoInput {
+/// Adapts the Cairo VM output to the input of Stwo.
+/// Assumes memory and trace are already relocated. Otherwise panics.
+fn adapt_vm_output_to_stwo(runner: CairoRunner) -> CairoInput {
     input_from_finished_runner(runner)
 }

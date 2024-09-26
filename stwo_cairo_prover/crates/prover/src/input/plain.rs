@@ -48,6 +48,7 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
     input_from_finished_runner(runner)
 }
 
+// TODO(yg): remove.
 use chrono::offset::Local;
 use chrono::DateTime;
 pub fn print_now(description: &str) {
