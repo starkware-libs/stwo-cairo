@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
+use std::vec::IntoIter;
 
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
@@ -43,6 +44,7 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
             &mut BuiltinHintProcessor::new_empty(),
         )
         .expect("Run failed");
+    runner.relocate(true).unwrap();
     input_from_finished_runner(runner)
 }
 
@@ -53,9 +55,10 @@ pub fn print_now(description: &str) {
     println!("yg time {description}: {}", now.format("%d/%m/%Y %T"));
 }
 
-pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
+// TODO(yuval): consider returning a result instead of panicking...
+/// Assumes memory and trace are already relocated. Otherwise panics.
+pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
     let program_len = runner.get_program().iter_data().count();
-    runner.relocate(true).expect("Relocation failed");
     let mem = runner
         .relocated_memory
         .iter()
@@ -68,11 +71,7 @@ pub fn input_from_finished_runner(mut runner: CairoRunner) -> CairoInput {
         });
     print_now("input_from_finished_runner mid");
     let trace = runner.relocated_trace.unwrap();
-    let trace = trace.iter().map(|t| TraceEntry {
-        pc: t.pc as u64,
-        ap: t.ap as u64,
-        fp: t.fp as u64,
-    });
+    let trace = trace.iter().map(|t| t.clone().into());
 
     let mut range_check9 = RangeCheckUnitInput::new();
     let mem_config = MemConfig::default();

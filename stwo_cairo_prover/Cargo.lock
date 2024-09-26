@@ -327,6 +327,7 @@ dependencies = [
  "anyhow",
  "bincode",
  "bitvec",
+ "chrono",
  "generic-array",
  "hashbrown",
  "hex",

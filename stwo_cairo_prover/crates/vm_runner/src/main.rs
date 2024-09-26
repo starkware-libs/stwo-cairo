@@ -11,7 +11,7 @@ use cairo_vm::vm::errors::cairo_run_errors::CairoRunError;
 use cairo_vm::vm::errors::trace_errors::TraceError;
 use cairo_vm::vm::errors::vm_errors::VirtualMachineError;
 use cairo_vm::vm::runners::cairo_pie::CairoPie;
-use cairo_vm::vm::runners::cairo_runner::RunResources;
+use cairo_vm::vm::runners::cairo_runner::{CairoRunner, RunResources};
 use clap::{Parser, ValueHint};
 use stwo_cairo_prover::input::plain::{input_from_finished_runner, print_now};
 use stwo_cairo_prover::input::CairoInput;
@@ -107,17 +107,21 @@ fn main() -> ExitCode {
 // TODO(yg): revert unwraps to `?`s.
 fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
     print_now("beginning");
-    // TODO(yg): this is copied from cairo-vm-cli/src/main.rs:run in cairo-vm repo. consider using
-    // directly (currently private)
     let args = Args::try_parse_from(args).unwrap();
+    let cairo_runner = run_vm(&args)?;
+    print_now("middle");
+    let cairo_input = adapt(cairo_runner);
+    print_now("end");
+    // TODO(yg): serialize (here or in an outer function).
 
-    let trace_enabled = args.trace_file.is_some() || args.air_public_input.is_some();
+    Ok(cairo_input)
+}
 
+fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
+    // TODO(yg): this is copied-and-modified from cairo-vm-cli/src/main.rs:run in cairo-vm repo.
     let cairo_run_config = cairo_run::CairoRunConfig {
         entrypoint: &args.entrypoint,
-        trace_enabled,
-        // TODO(yg): revert and support `input_from_finished_runner` without relocation of memory?
-        // relocate_mem: args.memory_file.is_some() || args.air_public_input.is_some(),
+        trace_enabled: true,
         relocate_mem: true,
         layout: LayoutName::all_cairo,
         proof_mode: args.proof_mode,
@@ -125,10 +129,6 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
         allow_missing_builtins: args.allow_missing_builtins,
         ..Default::default()
     };
-    println!(
-        "yg cairo_run_config.relocate_mem: {}",
-        cairo_run_config.relocate_mem
-    );
 
     // TODO(yg): Do we need the else?
     let cairo_runner = match {
@@ -138,12 +138,14 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
                 Default::default(),
                 RunResources::new(pie.execution_resources.n_steps),
             );
-            println!("yg run - if");
+            print_now("if - before cairo_run_pie");
             let x = cairo_run::cairo_run_pie(&pie, &cairo_run_config, &mut hint_processor);
-            println!("yg run - if 2, {}", x.is_err());
+            print_now(&format!("if - after cairo_run_pie, {}", x.is_err()));
             x
         } else {
-            let program_content = std::fs::read(args.filename).map_err(Error::IO).unwrap();
+            let program_content = std::fs::read(args.filename.clone())
+                .map_err(Error::IO)
+                .unwrap();
             let mut hint_processor = BuiltinHintProcessor::new_empty();
             cairo_run::cairo_run(&program_content, &cairo_run_config, &mut hint_processor)
         }
@@ -154,18 +156,10 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
             return Err(Error::Runner(error));
         }
     };
-    // println!(
-    //     "yg cairo_runner.relocated_trace: {:?}, cairo_runner.relocated_memory: {:?}",
-    //     cairo_runner.relocated_trace, cairo_runner.relocated_memory
-    // );
-    print_now("middle");
 
-    // TODO(yg): split here to 2 parts - one is running the cairo-vm and getting cairo_runner.
-    // Second is adapter.
+    Ok(cairo_runner)
+}
 
-    let cairo_input = input_from_finished_runner(cairo_runner);
-    print_now("end");
-    // TODO(yg): serialize (here or in an outer function).
-
-    Ok(cairo_input)
+fn adapt(runner: CairoRunner) -> CairoInput {
+    input_from_finished_runner(runner)
 }
