@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 use super::decode::Instruction;
 use super::mem::{Memory, MemoryValue};
 use super::vm_import::TraceEntry;
 
 // TODO(spapini): Move this:
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct VmState {
     pub pc: u32,
     pub ap: u32,
