@@ -11,7 +11,7 @@ use stwo_prover::core::pcs::{
     CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
 };
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-use stwo_prover::core::prover::{prove, verify, StarkProof, VerificationError};
+use stwo_prover::core::prover::{prove, verify, ProvingError, StarkProof, VerificationError};
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use thiserror::Error;
@@ -231,7 +231,7 @@ impl CairoComponents {
 }
 
 const LOG_MAX_ROWS: u32 = 20;
-pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
+pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let config = PcsConfig::default();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
@@ -333,13 +333,13 @@ pub fn prove_cairo(input: CairoInput) -> CairoProof<Blake2sMerkleHasher> {
     let components = component_builder.provers();
 
     // Prove stark.
-    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme).unwrap();
+    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
 
-    CairoProof {
+    Ok(CairoProof {
         claim,
         interaction_claim,
         stark_proof: proof,
-    }
+    })
 }
 
 pub fn verify_cairo(
@@ -419,13 +419,13 @@ mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo(test_input());
+        let cairo_proof = prove_cairo(test_input()).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 
     #[test]
     fn test_full_cairo_air() {
-        let cairo_proof = prove_cairo(small_cairo_input());
+        let cairo_proof = prove_cairo(small_cairo_input()).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 }
