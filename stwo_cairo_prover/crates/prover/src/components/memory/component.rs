@@ -1,4 +1,5 @@
 use num_traits::One;
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
@@ -84,7 +85,7 @@ impl FrameworkEval for MemoryEval {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct MemoryClaim {
     pub log_address_bound: u32,
 }
@@ -101,7 +102,7 @@ impl MemoryClaim {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct MemoryInteractionClaim {
     pub claimed_sum: SecureField,
 }

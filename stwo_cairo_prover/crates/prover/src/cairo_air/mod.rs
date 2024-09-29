@@ -1,5 +1,6 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -44,12 +45,14 @@ const RC9_LOG_REPS: u32 = 1;
 const RC9_LOG_HEIGHT: u32 = RC9_LOG_MAX - RC9_LOG_REPS;
 const RC9_REPS: usize = 1 << RC9_LOG_REPS;
 
+#[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct CairoClaim {
     // Common claim values.
     pub public_memory: Vec<(u32, [u32; 8])>,
@@ -95,6 +98,7 @@ impl CairoInteractionElements {
     }
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct CairoInteractionClaim {
     pub ret: Vec<RetOpcodeInteractionClaim>,
     pub range_check_builtin: RangeCheckBuiltinInteractionClaim,

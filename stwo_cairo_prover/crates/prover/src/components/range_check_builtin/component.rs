@@ -1,4 +1,5 @@
 use num_traits::{One, Zero};
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
@@ -93,7 +94,7 @@ impl FrameworkEval for RangeCheckBuiltinEval {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RangeCheckBuiltinClaim {
     pub memory_segment: SegmentAddrs,
 }
@@ -113,7 +114,7 @@ impl RangeCheckBuiltinClaim {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RangeCheckBuiltinInteractionClaim {
     pub log_size: u32,
     pub claimed_sum: SecureField,
