@@ -97,6 +97,19 @@ pub fn pow(base: u32, mut exponent: u32) -> u32 {
     result
 }
 
+pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
+    assert!(bits < 32);
+    let mut result = 0;
+    let mut pow_of_two = 1;
+    while bits > 0 {
+        result *= 2;
+        result = result | ((index / pow_of_two) & 1);
+        pow_of_two *= 2;
+        bits -= 1;
+    };
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::pow;
