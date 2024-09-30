@@ -30,6 +30,10 @@ pub impl QM31Impl of QM31Trait {
         let denom_inverse = denom.inverse();
         QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+
+    fn complex_conjugate(self: QM31) -> QM31 {
+        QM31 { a: self.a, b: -self.b }
+    }
 }
 
 pub impl QM31Add of core::traits::Add<QM31> {
@@ -37,17 +41,20 @@ pub impl QM31Add of core::traits::Add<QM31> {
         QM31 { a: lhs.a + rhs.a, b: lhs.b + rhs.b }
     }
 }
+
 pub impl QM31Sub of core::traits::Sub<QM31> {
     fn sub(lhs: QM31, rhs: QM31) -> QM31 {
         QM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
     }
 }
+
 pub impl QM31Mul of core::traits::Mul<QM31> {
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
         QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
+
 pub impl QM31Zero of Zero<QM31> {
     fn zero() -> QM31 {
         QM31 { a: Zero::zero(), b: Zero::zero() }
@@ -70,11 +77,13 @@ pub impl QM31One of One<QM31> {
         (*self).a.is_non_one() || (*self).b.is_non_zero()
     }
 }
+
 pub impl M31IntoQM31 of core::traits::Into<M31, QM31> {
     fn into(self: M31) -> QM31 {
         QM31 { a: self.into(), b: Zero::zero() }
     }
 }
+
 pub impl CM31IntoQM31 of core::traits::Into<CM31, QM31> {
     fn into(self: CM31) -> QM31 {
         QM31 { a: self, b: Zero::zero() }
