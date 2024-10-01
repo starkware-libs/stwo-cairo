@@ -36,6 +36,10 @@ pub impl QM31Impl of QM31Trait {
             b: CM31 { a: self.b.a * multiplier, b: self.b.b * multiplier }
         }
     }
+
+    fn complex_conjugate(self: QM31) -> QM31 {
+        QM31 { a: self.a, b: -self.b }
+    }
 }
 
 pub impl QM31Add of core::traits::Add<QM31> {
