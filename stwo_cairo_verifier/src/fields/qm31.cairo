@@ -30,6 +30,12 @@ pub impl QM31Impl of QM31Trait {
         let denom_inverse = denom.inverse();
         QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+    fn mul_m31(self: QM31, multiplier: M31) -> QM31 {
+        QM31 {
+            a: CM31 { a: self.a.a * multiplier, b: self.a.b * multiplier },
+            b: CM31 { a: self.b.a * multiplier, b: self.b.b * multiplier }
+        }
+    }
 }
 
 pub impl QM31Add of core::traits::Add<QM31> {
@@ -113,5 +119,6 @@ mod tests {
         assert_eq!(qm1 - m.into(), qm1 - qm);
         assert_eq!(qm0_x_qm1 * qm1.inverse(), qm31(1, 2, 3, 4));
         assert_eq!(qm1 * m.inverse().into(), qm1 * qm.inverse());
+        assert_eq!(qm1.mul_m31(m), qm1 * m.into());
     }
 }
