@@ -1,4 +1,4 @@
-use stwo_cairo_verifier::fields::m31::{M31, m31};
+use stwo_cairo_verifier::fields::m31::{M31, m31, M31One};
 use super::utils::pow;
 
 pub const M31_CIRCLE_GEN: CirclePointM31 =
@@ -26,6 +26,27 @@ pub impl CirclePointM31Impl of CirclePointM31Trait {
     // Returns the neutral element of the circle.
     fn zero() -> CirclePointM31 {
         CirclePointM31 { x: m31(1), y: m31(0) }
+    }
+
+    /// Applies the circle's x-coordinate doubling map.
+    fn double_x(x: M31) -> M31 {
+        let sqx = x * x;
+        sqx + sqx - M31One::one()
+    }
+
+    /// Returns the log order of a point.
+    ///
+    /// All points have an order of the form `2^k`.
+    fn log_order(self: @CirclePointM31) -> u32 {
+        // we only need the x-coordinate to check order since the only point
+        // with x=1 is the circle's identity
+        let mut res = 0;
+        let mut cur = self.x.clone();
+        while cur != M31One::one() {
+            cur = Self::double_x(cur);
+            res += 1;
+        };
+        res
     }
 
     fn mul(self: @CirclePointM31, mut scalar: u32) -> CirclePointM31 {
