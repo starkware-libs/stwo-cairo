@@ -5,6 +5,7 @@ mod poly;
 mod utils;
 mod vcs;
 mod fri;
+mod queries;
 
 pub use fields::{BaseField, SecureField};
 
