@@ -113,6 +113,19 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     result
 }
 
+pub fn find(n: u32, a: Span<u32>) -> bool {
+    let mut i = 0;
+    let mut res = false;
+    while i < a.len() {
+        if (*a[i] == n) {
+            res = true;
+            break;
+        }
+        i = i + 1;
+    };
+    res
+}
+
 #[cfg(test)]
 mod tests {
     use super::{pow, bit_reverse_index};
