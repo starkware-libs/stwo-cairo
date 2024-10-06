@@ -1,0 +1,13 @@
+[package]
+name = "adapted_stwo"
+version = "0.1.0"
+edition = "2021"
+
+# TODO(yuval): pin serde/thiserror versions in workspace.
+[dependencies]
+clap.workspace = true
+serde = "1.0.207"
+stwo_cairo_prover = { path = "../prover", version = "~0.1.0" }
+# TODO(ShaharS): take stwo version from the source repository.
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "e04fd5b" }
+thiserror = "1.0.63"
