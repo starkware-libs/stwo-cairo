@@ -47,14 +47,6 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
     input_from_finished_runner(runner)
 }
 
-// TODO(yg): remove.
-use chrono::offset::Local;
-use chrono::DateTime;
-pub fn print_now(description: &str) {
-    let now: DateTime<Local> = SystemTime::now().into();
-    println!("yg time {description}: {}", now.format("%d/%m/%Y %T"));
-}
-
 // TODO(yuval): consider returning a result instead of panicking...
 /// Assumes memory and trace are already relocated. Otherwise panics.
 pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {

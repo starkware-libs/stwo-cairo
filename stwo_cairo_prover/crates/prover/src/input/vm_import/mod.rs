@@ -4,6 +4,7 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
+use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::{PrivateInput, PublicInput};
 use thiserror::Error;
 
@@ -72,14 +73,13 @@ pub fn import_from_vm_output(
 #[repr(C)]
 #[derive(Copy, Clone, Default, Pod, Zeroable)]
 pub struct TraceEntry {
-    // TODO(yg): why u64 when usize is used in the vm?
     pub ap: u64,
     pub fp: u64,
     pub pc: u64,
 }
 
-impl From<cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry> for TraceEntry {
-    fn from(value: cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry) -> Self {
+impl From<RelocatedTraceEntry> for TraceEntry {
+    fn from(value: RelocatedTraceEntry) -> Self {
         Self {
             ap: value.ap as u64,
             fp: value.fp as u64,
