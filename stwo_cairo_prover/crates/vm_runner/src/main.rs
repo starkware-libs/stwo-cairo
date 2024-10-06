@@ -8,12 +8,11 @@ use cairo_vm::vm::errors::cairo_run_errors::CairoRunError;
 use cairo_vm::vm::runners::cairo_pie::CairoPie;
 use cairo_vm::vm::runners::cairo_runner::{CairoRunner, RunResources};
 use clap::{Parser, ValueHint};
-use stwo_cairo_prover::input::plain::{input_from_finished_runner, print_now};
+use stwo_cairo_prover::input::plain::input_from_finished_runner;
 use stwo_cairo_prover::input::CairoInput;
 use thiserror::Error;
 
-// TODO(yg): copied from cairo-vm as it's private. Consider making it public and use directly.
-// TODO(yg): Or - remove all that's not needed for our use case, and doc.
+// This struct is copied-then-modified from cairo-vm repo.
 /// Command line arguments for stwo_vm_runner.
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -81,12 +80,9 @@ fn main() -> ExitCode {
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
-    print_now("yg beginning");
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args)?;
-    print_now("yg middle");
     let cairo_input = adapt_vm_output_to_stwo(cairo_runner);
-    print_now("yg end");
     // TODO(yuval): serialize (here or in an outer function).
 
     Ok(cairo_input)
@@ -112,10 +108,7 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
             Default::default(),
             RunResources::new(pie.execution_resources.n_steps),
         );
-        print_now("if - before cairo_run_pie");
-        let x = cairo_run::cairo_run_pie(&pie, &cairo_run_config, &mut hint_processor);
-        print_now(&format!("if - after cairo_run_pie, {}", x.is_err()));
-        x
+        cairo_run::cairo_run_pie(&pie, &cairo_run_config, &mut hint_processor)
     } else {
         let program_content = std::fs::read(args.filename.clone()).map_err(Error::IO)?;
         let mut hint_processor = BuiltinHintProcessor::new_empty();

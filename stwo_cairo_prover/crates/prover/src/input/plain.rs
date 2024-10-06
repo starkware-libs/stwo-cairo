@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::time::SystemTime;
 
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
@@ -34,8 +33,8 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
     )
     .expect("Program creation failed");
 
-    let mut runner =
-        CairoRunner::new(&program, LayoutName::plain, true, true).expect("Runner creation failed");
+    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
+        .expect("Runner creation failed");
     runner.initialize(true).expect("Initialization failed");
     runner
         .run_until_pc(
@@ -45,14 +44,6 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
         .expect("Run failed");
     runner.relocate(true).unwrap();
     input_from_finished_runner(runner)
-}
-
-// TODO(yg): remove.
-use chrono::offset::Local;
-use chrono::DateTime;
-pub fn print_now(description: &str) {
-    let now: DateTime<Local> = SystemTime::now().into();
-    println!("yg time {description}: {}", now.format("%d/%m/%Y %T"));
 }
 
 // TODO(yuval): consider returning a result instead of panicking...
@@ -69,7 +60,6 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
                 val: bytemuck::cast_slice(&v.to_bytes_le()).try_into().unwrap(),
             })
         });
-    print_now("input_from_finished_runner mid");
     let trace = runner.relocated_trace.unwrap();
     let trace = trace.iter().map(|t| t.clone().into());
 
