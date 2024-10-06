@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::time::SystemTime;
 
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
@@ -34,8 +33,8 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
     )
     .expect("Program creation failed");
 
-    let mut runner =
-        CairoRunner::new(&program, LayoutName::plain, true, true).expect("Runner creation failed");
+    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
+        .expect("Runner creation failed");
     runner.initialize(true).expect("Initialization failed");
     runner
         .run_until_pc(
