@@ -1,4 +1,5 @@
 use num_traits::{One, Zero};
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
@@ -88,7 +89,7 @@ impl FrameworkEval for RetOpcodeEval {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RetOpcodeClaim {
     pub n_rets: usize,
 }
@@ -105,7 +106,7 @@ impl RetOpcodeClaim {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RetOpcodeInteractionClaim {
     pub log_size: u32,
     pub claimed_sum: SecureField,

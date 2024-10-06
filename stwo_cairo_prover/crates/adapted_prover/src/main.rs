@@ -13,7 +13,7 @@ use thiserror::Error;
 /// Example command line:
 ///     ```
 ///     cargo run -r --bin adapted_stwo -- --pub_json absolute/path/to/pub.json
-///     --priv_json absolute/path/to/priv.json
+///     --priv_json absolute/path/to/priv.json --proof_path path/to/proof
 ///     ```
 #[derive(Parser, Debug)]
 struct Args {
@@ -21,6 +21,8 @@ struct Args {
     pub_json: PathBuf,
     #[structopt(long = "priv_json")]
     priv_json: PathBuf,
+    #[structopt(long = "proof_path")]
+    proof_path: PathBuf,
 }
 
 #[derive(Debug, Error)]
@@ -31,6 +33,10 @@ enum Error {
     VmImport(#[from] VmImportError),
     #[error("Proving failed: {0}")]
     Proving(#[from] ProvingError),
+    #[error("Serialization failed: {0}")]
+    Serde(#[from] serde_json::error::Error),
+    #[error("IO failed: {0}")]
+    IO(#[from] std::io::Error),
 }
 
 fn main() -> ExitCode {
@@ -52,6 +58,11 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let vm_output: CairoInput =
         import_from_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
 
-    // TODO(yuval): serialize the output to a file.
-    Ok(prove_cairo(vm_output)?)
+    let proof = prove_cairo(vm_output)?;
+
+    // TODO(yuval): This is just some serialization for the sake of serialization. Find the right
+    // way to serialize the proof.
+    std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
+
+    Ok(proof)
 }
