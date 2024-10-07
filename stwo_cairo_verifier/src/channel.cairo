@@ -6,8 +6,10 @@ use stwo_cairo_verifier::{BaseField, SecureField};
 use stwo_cairo_verifier::fields::qm31::QM31Trait;
 use stwo_cairo_verifier::utils::pack4;
 
-const M31_SHIFT: felt252 = 0x80000000; // 2**31.
-const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
+/// Equals `2^31`.
+const M31_SHIFT: felt252 = 0x80000000;
+/// Equals `2^31`.
+const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
 pub const EXTENSION_FELTS_PER_HASH: usize = 2;
 pub const FELTS_PER_HASH: usize = 8;
 
@@ -155,7 +157,7 @@ fn extract_m31<const N: usize>(ref num: u256) -> BaseField {
 
 #[cfg(test)]
 mod tests {
-    use super::{Channel, ChannelTrait};
+    use super::ChannelTrait;
     use stwo_cairo_verifier::fields::qm31::qm31;
 
     #[test]

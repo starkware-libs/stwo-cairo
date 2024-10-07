@@ -2,8 +2,6 @@ use core::array::ArrayTrait;
 use core::option::OptionTrait;
 use core::poseidon::poseidon_hash_span;
 use stwo_cairo_verifier::BaseField;
-use core::hash::HashStateTrait;
-use core::poseidon::{hades_permutation, HashState};
 
 // A Merkle node hash is a hash of:
 //   [left_child_hash, right_child_hash], column0_value, column1_value, ...
