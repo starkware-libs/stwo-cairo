@@ -353,7 +353,7 @@ impl Instructions {
 /// refers to the flag combination in little endian. For example, jnz_imm at index 1 (100 in little
 /// endian) is for: fp (1=true), not taken (0=false), no ap++ (0=false).
 /// Note: for the flag "fp/ap", true means fp-based and false means ap-based.
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct InstructionCounts {
     pub ret: usize,
     pub add_ap: usize,
