@@ -16,6 +16,7 @@ use stwo_prover::core::prover::{prove, verify, ProvingError, StarkProof, Verific
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use thiserror::Error;
+use tracing::{span, Level};
 
 use crate::components::memory::component::{
     MemoryClaim, MemoryComponent, MemoryEval, MemoryInteractionClaim,
@@ -236,6 +237,7 @@ impl CairoComponents {
 
 const LOG_MAX_ROWS: u32 = 20;
 pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
+    let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
