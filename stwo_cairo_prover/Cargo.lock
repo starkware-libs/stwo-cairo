@@ -7,11 +7,14 @@ name = "adapted_stwo"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "log",
  "serde",
  "serde_json",
  "stwo-prover",
  "stwo_cairo_prover",
+ "stwo_cairo_utils",
  "thiserror",
+ "tracing",
 ]
 
 [[package]]
@@ -1339,6 +1342,7 @@ dependencies = [
  "sonic-rs",
  "stwo-prover",
  "thiserror",
+ "tracing",
 ]
 
 [[package]]
