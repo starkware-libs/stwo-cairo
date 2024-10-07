@@ -13,7 +13,7 @@ pub mod vm_import;
 
 pub const N_REGISTERS: usize = 3;
 
-// Externally provided inputs.
+/// Externally provided inputs.
 #[derive(Debug)]
 pub struct CairoInput {
     pub instructions: Instructions,
@@ -21,7 +21,7 @@ pub struct CairoInput {
     pub public_mem_addresses: Vec<u32>,
     pub range_check9: RangeCheckUnitInput,
 
-    // Builtins.
+    /// Builtins.
     pub range_check_builtin: SegmentAddrs,
 }
 

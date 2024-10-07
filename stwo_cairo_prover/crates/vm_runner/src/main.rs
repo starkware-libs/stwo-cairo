@@ -56,16 +56,22 @@ struct Args {
         conflicts_with_all = ["proof_mode", "air_private_input", "air_public_input"]
     )]
     run_from_cairo_pie: bool,
+    // TODO(yg): conflicts_with etc.?
+    /// The path to output the component-counts. If None, it will not be output.
+    #[clap(long = "component_counts_file", value_parser)]
+    component_counts_file: Option<PathBuf>,
 }
 
 #[derive(Debug, Error)]
 enum Error {
-    #[error("Invalid arguments")]
+    #[error("Invalid arguments: {0}")]
     Cli(#[from] clap::Error),
-    #[error("Failed to interact with the file system")]
+    #[error("Failed to interact with the file system: {0}")]
     IO(#[from] std::io::Error),
-    #[error("The cairo program execution failed")]
+    #[error("The cairo program execution failed: {0}")]
     Runner(#[from] CairoRunError),
+    #[error("Serialization failed: {0}")]
+    Serde(#[from] serde_json::error::Error),
 }
 
 fn main() -> ExitCode {
@@ -88,7 +94,18 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args)?;
     let cairo_input = adapt_vm_output_to_stwo(cairo_runner);
-    // TODO(yuval): serialize (here or in an outer function).
+
+    if let Some(component_counts_path) = args.component_counts_file {
+        // TODO(yg): in the other PR - "instructions" should be renamed to "components" (whereas in
+        // the PIE, the execution resources are actually instruction-counts).
+        // TODO(yg): rebase on yuval/rename_instruction_counts.
+        let component_counts = cairo_input.instructions.counts();
+
+        std::fs::write(
+            component_counts_path,
+            serde_json::to_string(&component_counts)?,
+        )?;
+    }
 
     Ok(cairo_input)
 }
