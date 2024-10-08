@@ -22,8 +22,8 @@ mod tests {
         .instructions;
 
         let inp = input_from_plain_casm(instructions);
-        let instruction_counts = inp.instructions.counts();
-        assert_eq!(instruction_counts.jmp_abs[0], 1);
-        println!("Instruction counts: {instruction_counts:#?}");
+        let component_counts = inp.components_usage.counts();
+        assert_eq!(component_counts.jmp_abs[0], 1);
+        println!("Component counts: {component_counts:#?}");
     }
 }
