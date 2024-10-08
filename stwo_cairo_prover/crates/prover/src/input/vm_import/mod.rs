@@ -9,7 +9,7 @@ use json::{PrivateInput, PublicInput};
 use thiserror::Error;
 use tracing::{span, Level};
 
-use super::instructions::Instructions;
+use super::components_usage::ComponentsUsage;
 use super::mem::MemConfig;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
@@ -50,7 +50,7 @@ pub fn import_from_vm_output(
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
     let mem = MemoryBuilder::from_iter(mem_config, &mut range_check9, MemEntryIter(&mut mem_file));
-    let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
+    let components_usage = ComponentsUsage::from_iter(TraceIter(&mut trace_file), &mem);
 
     let public_mem_addresses = pub_data
         .public_memory
@@ -59,7 +59,7 @@ pub fn import_from_vm_output(
         .collect();
 
     Ok(CairoInput {
-        instructions,
+        components_usage,
         mem,
         public_mem_addresses,
         range_check9,
@@ -131,7 +131,7 @@ pub mod tests {
     use std::path::PathBuf;
 
     use super::*;
-    use crate::input::instructions::InstructionCounts;
+    use crate::input::components_usage::ComponentCounts;
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -157,8 +157,8 @@ pub mod tests {
     fn test_read_from_large_files() {
         let input = large_cairo_input();
         assert_eq!(
-            input.instructions.counts(),
-            InstructionCounts {
+            input.components_usage.counts(),
+            ComponentCounts {
                 ret: 49472,
                 add_ap: 36895,
                 jmp_rel_imm: [31873866, 0],
@@ -172,15 +172,15 @@ pub mod tests {
                 generic: 362623
             }
         );
-        println!("Instruction counts: {:#?}", input.instructions.counts());
+        println!("Component counts: {:#?}", input.components_usage.counts());
     }
 
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
         assert_eq!(
-            input.instructions.counts(),
-            InstructionCounts {
+            input.components_usage.counts(),
+            ComponentCounts {
                 ret: 462,
                 add_ap: 2,
                 jmp_rel_imm: [124627, 0],
@@ -194,6 +194,6 @@ pub mod tests {
                 generic: 951
             }
         );
-        println!("Instruction counts: {:#?}", input.instructions.counts());
+        println!("Component counts: {:#?}", input.components_usage.counts());
     }
 }
