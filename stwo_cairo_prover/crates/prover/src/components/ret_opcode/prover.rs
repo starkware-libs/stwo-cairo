@@ -15,7 +15,7 @@ use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTIO
 use crate::components::memory::component::N_M31_IN_FELT252;
 use crate::components::memory::prover::MemoryClaimProver;
 use crate::components::memory::MemoryLookupElements;
-use crate::input::instructions::VmState;
+use crate::input::components_usage::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
 
