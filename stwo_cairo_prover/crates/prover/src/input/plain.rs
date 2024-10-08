@@ -6,7 +6,7 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
-use super::instructions::Instructions;
+use super::components_usage::CasmComponentsUsage;
 use super::mem::{MemConfig, MemoryBuilder};
 use super::range_check_unit::RangeCheckUnitInput;
 use super::vm_import::MemEntry;
@@ -66,12 +66,12 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
     let mut range_check9 = RangeCheckUnitInput::new();
     let mem_config = MemConfig::default();
     let mem = MemoryBuilder::from_iter(mem_config, &mut range_check9, mem);
-    let instructions = Instructions::from_iter(trace, &mem);
+    let components_usage = CasmComponentsUsage::from_iter(trace, &mem);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
-        instructions,
+        components_usage,
         mem,
         public_mem_addresses,
         range_check9,

@@ -22,14 +22,16 @@ impl From<TraceEntry> for VmState {
 }
 
 // TODO(yuval/alonT): consider making the indexing mechanism more explicit in the code).
-/// The instructions usage in the input, split to Stwo opcodes.
+/// The Stwo components usage for the CASM opcodes in the input (does not include builtins).
+/// That is - this structs contains for each opcode, all its uses, including the details (VmState).
 ///
-/// For each opcode with flags, the array describes the different flag combinations. The index
-/// refers to the flag combination in bit-reverse/little-endian. For example, jnz_imm at index 1
-/// (100 in bit-reverse/little-endian) is for: fp (1=true), not taken (0=false), no ap++ (0=false).
-/// Note: for the flag "fp/ap", true means fp-based and false means ap-based.
+/// For each CASM opcode with flags, the array describes the different flag combinations. The index
+/// refers to the flag combination in bit-reverse/little-endian, and each one matches a specific
+/// Stwo component. For example, jnz_imm at index 1 (100 in bit-reverse/little-endian) is for: fp
+/// (1=true), not taken (0=false), no ap++ (0=false). Note: for the flag "fp/ap", true means
+/// fp-based and false means ap-based.
 #[derive(Debug, Default)]
-pub struct Instructions {
+pub struct CasmComponentsUsage {
     pub initial_state: VmState,
     pub final_state: VmState,
 
@@ -69,7 +71,7 @@ pub struct Instructions {
 
     pub generic: Vec<VmState>,
 }
-impl Instructions {
+impl CasmComponentsUsage {
     pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &Memory) -> Self {
         let mut res = Self::default();
 
@@ -331,8 +333,8 @@ impl Instructions {
         }
     }
 
-    pub fn counts(&self) -> InstructionCounts {
-        InstructionCounts {
+    pub fn counts(&self) -> CasmComponentCounts {
+        CasmComponentCounts {
             ret: self.ret.len(),
             add_ap: self.add_ap.len(),
             jmp_rel_imm: self.jmp_rel_imm.each_ref().map(Vec::len),
@@ -348,11 +350,12 @@ impl Instructions {
     }
 }
 
-/// The counts of the instructions usage in the input, split to Stwo opcodes.
+/// The counts of the Stwo component usage for the CASM opcodes in the input (does not include
+/// builtins). That is - this structs contains for each opcode, the number of times it was used.
 ///
-/// See the documentation of `Instructions` for more details about the indexing mechanism.
+/// See the documentation of `CasmComponentsUsage` for more details about the indexing mechanism.
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
-pub struct InstructionCounts {
+pub struct CasmComponentCounts {
     pub ret: usize,
     pub add_ap: usize,
 
@@ -360,15 +363,15 @@ pub struct InstructionCounts {
     /// Flags: ap++?.
     pub jmp_rel_imm: [usize; 2],
 
-    // jump abs [fp/ap + offset].
-    // Flags: fp/ap, ap++?.
+    /// jump abs [fp/ap + offset].
+    /// Flags: fp/ap, ap++?.
     pub jmp_abs: [usize; 4],
 
     /// call rel imm.
     pub call_rel_imm: usize,
 
-    // call abs [fp/ap + offset].
-    // Flags: fp/ap.
+    /// call abs [fp/ap + offset].
+    /// Flags: fp/ap.
     pub call_abs: [usize; 2],
 
     /// jump rel imm if [fp/ap + offset] != 0.

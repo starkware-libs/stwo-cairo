@@ -1,11 +1,11 @@
-use instructions::Instructions;
+use components_usage::CasmComponentsUsage;
 use mem::Memory;
 use serde::{Deserialize, Serialize};
 
 use self::range_check_unit::RangeCheckUnitInput;
 
+pub mod components_usage;
 mod decode;
-pub mod instructions;
 pub mod mem;
 pub mod plain;
 pub mod range_check_unit;
@@ -16,7 +16,7 @@ pub const N_REGISTERS: usize = 3;
 // Externally provided inputs.
 #[derive(Debug)]
 pub struct CairoInput {
-    pub instructions: Instructions,
+    pub components_usage: CasmComponentsUsage,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
     pub range_check9: RangeCheckUnitInput,
