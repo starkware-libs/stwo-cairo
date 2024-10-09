@@ -5,8 +5,10 @@ use core::box::BoxTrait;
 use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
 use core::iter::Iterator;
-
+use core::num::traits::BitSize;
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::BaseField;
+use core::traits::DivRem;
 
 #[generate_trait]
 pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {
@@ -97,9 +99,63 @@ pub fn pow(base: u32, mut exponent: u32) -> u32 {
     result
 }
 
+pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
+    assert!(bits <= BitSize::<usize>::bits());
+
+    let NZ2: NonZero<usize> = 2;
+
+    let mut result = 0;
+    while bits > 0 {
+        let (next_index, bit) = DivRem::div_rem(index, NZ2);
+        result = (result * 2) | bit;
+        index = next_index;
+        bits -= 1;
+    };
+    result
+}
+
+pub fn find(n: u32, a: Span<u32>) -> bool {
+    let mut i = 0;
+    let mut res = false;
+    while i < a.len() {
+        if (*a[i] == n) {
+            res = true;
+            break;
+        }
+        i = i + 1;
+    };
+    res
+}
+
+pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
+    let mut result = qm31(1, 0, 0, 0);
+    let mut base_power = base;
+    loop {
+        if exponent & 1 == 1 {
+            result = result * base_power;
+        }
+        exponent = exponent / 2;
+        if exponent == 0 {
+            break;
+        }
+        base_power = base_power * base_power;
+    };
+    result
+}
+
+pub fn qm31_zero_array(n: u32) -> Array<QM31> {
+    let mut result = array![];
+    let mut i = 0;
+    while i < n {
+        result.append(qm31(0, 0, 0, 0));
+        i += 1;
+    };
+    result
+}
+
 #[cfg(test)]
 mod tests {
-    use super::pow;
+    use super::{pow, pow_qm31, qm31, bit_reverse_index};
 
     #[test]
     fn test_pow() {
@@ -108,6 +164,53 @@ mod tests {
         assert_eq!(1024, pow(2, 10));
         assert_eq!(4096, pow(2, 12));
         assert_eq!(1048576, pow(2, 20));
+    }
+
+    #[test]
+    fn test_bit_reverse() {
+        // 1 bit
+        assert_eq!(0, bit_reverse_index(0, 1));
+        assert_eq!(1, bit_reverse_index(1, 1));
+
+        // 2 bits
+        assert_eq!(0, bit_reverse_index(0, 2));
+        assert_eq!(2, bit_reverse_index(1, 2));
+        assert_eq!(1, bit_reverse_index(2, 2));
+        assert_eq!(3, bit_reverse_index(3, 2));
+
+        // 3 bits
+        assert_eq!(0, bit_reverse_index(0, 3));
+        assert_eq!(4, bit_reverse_index(1, 3));
+        assert_eq!(2, bit_reverse_index(2, 3));
+        assert_eq!(6, bit_reverse_index(3, 3));
+
+        // 16 bits
+        assert_eq!(24415, bit_reverse_index(64250, 16));
+
+        // 31 bits
+        assert_eq!(16448250, bit_reverse_index(800042880, 31));
+    }
+
+
+    #[test]
+    fn test_pow_qm31_1() {
+        let result = pow_qm31(qm31(1, 2, 3, 4), 0);
+        let expected_result = qm31(1, 0, 0, 0);
+        assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_pow_qm31_2() {
+        let result = pow_qm31(qm31(1, 2, 3, 4), 1);
+        let expected_result = qm31(1, 2, 3, 4);
+        assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_pow_qm31_3() {
+        let result = pow_qm31(qm31(1, 2, 3, 4), 37);
+        let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
+        assert_eq!(expected_result, result)
     }
 }
 
