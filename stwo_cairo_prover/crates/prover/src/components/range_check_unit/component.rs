@@ -1,4 +1,5 @@
 use num_traits::{One, Zero};
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
@@ -52,7 +53,7 @@ impl<const N_REPETITIONS: usize> FrameworkEval for RangeCheckUnitEval<N_REPETITI
 /// Range check unit component claim.
 /// `log_rc_height` is the log of the number of rows in the range check table, meaning that that
 /// range checked is 0..(N_REPETITIONS * 2^log_rc_height).
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RangeCheckClaim<const N_REPETITIONS: usize> {
     pub log_rc_height: u32,
 }
@@ -70,7 +71,7 @@ impl<const N_REPETITIONS: usize> RangeCheckClaim<N_REPETITIONS> {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RangeCheckInteractionClaim<const N_REPETITIONS: usize> {
     pub claimed_sum: SecureField,
 }

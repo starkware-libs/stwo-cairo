@@ -21,7 +21,6 @@ use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
 
-
 #[derive(Debug, Drop, PartialEq)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,

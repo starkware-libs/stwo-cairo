@@ -1,0 +1,16 @@
+[package]
+name = "stwo_vm_runner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cairo-vm.workspace = true
+itertools.workspace = true
+num-traits.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+clap.workspace = true
+stwo_cairo_prover = { path = "../prover", version = "~0.1.0" }
+# Pin wasm-bindgen version to the version pinned by lambdaclass/cairo-vm/vm
+# TODO(yuval): remove the pin once the pinning in lambdaclass/cairo-vm/vm is removed.
+wasm-bindgen = { version = "= 0.2.92" }
