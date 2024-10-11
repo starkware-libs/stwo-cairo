@@ -4,6 +4,7 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
+use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::{PrivateInput, PublicInput};
 use thiserror::Error;
 
@@ -75,6 +76,16 @@ pub struct TraceEntry {
     pub ap: u64,
     pub fp: u64,
     pub pc: u64,
+}
+
+impl From<RelocatedTraceEntry> for TraceEntry {
+    fn from(value: RelocatedTraceEntry) -> Self {
+        Self {
+            ap: value.ap as u64,
+            fp: value.fp as u64,
+            pc: value.pc as u64,
+        }
+    }
 }
 
 pub struct TraceIter<'a, R: Read>(pub &'a mut R);
