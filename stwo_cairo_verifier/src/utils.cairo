@@ -191,7 +191,6 @@ mod tests {
         assert_eq!(16448250, bit_reverse_index(800042880, 31));
     }
 
-
     #[test]
     fn test_pow_qm31_1() {
         let result = pow_qm31(qm31(1, 2, 3, 4), 0);
