@@ -5,17 +5,16 @@ edition = "2021"
 
 [dependencies]
 bytemuck.workspace = true
-cairo-lang-casm = "2.7.1"
-cairo-vm = "1.0.1"
-hex = "0.4.3"
+cairo-lang-casm.workspace = true
+cairo-vm.workspace = true
+hex.workspace = true
 itertools.workspace = true
-num-traits = "0.2.17"
-serde = "1.0.207"
-sonic-rs = "0.3.10"
-# TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "e04fd5b" }
-thiserror = "1.0.63"
+num-traits.workspace = true
+serde.workspace = true
+sonic-rs.workspace = true
+stwo-prover.workspace = true
+thiserror.workspace = true
 
 [dev-dependencies]
-cairo-lang-casm = "2.7.1"
-rand = "0.8.5"
+cairo-lang-casm.workspace = true
+rand.workspace = true
