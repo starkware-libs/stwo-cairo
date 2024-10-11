@@ -1,5 +1,6 @@
 use instructions::Instructions;
 use mem::Memory;
+use serde::{Deserialize, Serialize};
 
 use self::range_check_unit::RangeCheckUnitInput;
 
@@ -24,7 +25,7 @@ pub struct CairoInput {
     pub range_check_builtin: SegmentAddrs,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SegmentAddrs {
     pub begin_addr: u32,
     pub end_addr: u32,
