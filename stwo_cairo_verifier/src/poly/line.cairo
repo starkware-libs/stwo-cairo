@@ -6,7 +6,7 @@ use stwo_cairo_verifier::fields::SecureField;
 use stwo_cairo_verifier::fields::m31::{M31, m31, M31Trait};
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31, QM31Zero};
 use stwo_cairo_verifier::utils::pow;
-use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointM31Trait, M31_CIRCLE_GEN};
+use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointTrait, M31_CIRCLE_GEN};
 use stwo_cairo_verifier::fri::fold_line;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -68,7 +68,8 @@ pub impl LineDomainImpl of LineDomainTrait {
             // Let our coset be `E = c + <G>` with `|E| > 2` then:
             // 1. if `ord(c) <= ord(G)` the coset contains two points at x=0
             // 2. if `ord(c) = 2 * ord(G)` then `c` and `-c` are in our coset
-            let coset_step = M31_CIRCLE_GEN.mul(coset.step_size);
+            let mut scalar = coset.step_size.into();
+            let coset_step = M31_CIRCLE_GEN.mul(ref scalar);
             assert!(
                 coset.at(0).log_order() >= coset_step.log_order() + 2,
                 "coset x-coordinates not unique"
