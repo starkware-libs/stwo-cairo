@@ -159,7 +159,6 @@ pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::{Queries, QueriesImpl};

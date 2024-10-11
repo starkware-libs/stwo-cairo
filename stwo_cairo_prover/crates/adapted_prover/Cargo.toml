@@ -1,0 +1,12 @@
+[package]
+name = "adapted_stwo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+stwo_cairo_prover = { path = "../prover", version = "~0.1.0" }
+stwo-prover.workspace = true
+thiserror.workspace = true
