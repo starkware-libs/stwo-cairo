@@ -10,7 +10,9 @@ use cairo_vm::vm::runners::cairo_runner::{CairoRunner, RunResources};
 use clap::{Parser, ValueHint};
 use stwo_cairo_prover::input::plain::input_from_finished_runner;
 use stwo_cairo_prover::input::CairoInput;
+use stwo_cairo_utils::logging_utils::init_logging;
 use thiserror::Error;
+use tracing::{span, Level};
 
 // This struct is copied-then-modified from cairo-vm repo.
 /// Command line arguments for stwo_vm_runner.
@@ -67,19 +69,22 @@ enum Error {
 }
 
 fn main() -> ExitCode {
+    // TODO(yuval): allow control on log levels through args.
+    init_logging(log::LevelFilter::Info);
     match run(std::env::args()) {
         Ok(_) => {
-            println!("VM runner succeeded");
+            log::info!("VM runner succeeded");
             ExitCode::SUCCESS
         }
         Err(error) => {
-            println!("VM runner failed: {error}");
+            log::info!("VM runner failed: {error}");
             ExitCode::FAILURE
         }
     }
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
+    let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args)?;
     let cairo_input = adapt_vm_output_to_stwo(cairo_runner);
@@ -91,6 +96,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
 // This function's logic is copied-then-modified from cairo-vm-cli/src/main.rs:run in cairo-vm repo.
 /// Runs the Cairo VM according to the given arguments (which are subset of the cairo-vm arguments).
 fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
+    let _span = span!(tracing::Level::INFO, "run_vm").entered();
     let cairo_run_config = cairo_run::CairoRunConfig {
         entrypoint: &args.entrypoint,
         trace_enabled: true,
@@ -129,5 +135,6 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
 /// Adapts the Cairo VM output to the input of Stwo.
 /// Assumes memory and trace are already relocated. Otherwise panics.
 fn adapt_vm_output_to_stwo(runner: CairoRunner) -> CairoInput {
+    let _span = tracing::info_span!("adapt_vm_output_to_stwo").entered();
     input_from_finished_runner(runner)
 }
