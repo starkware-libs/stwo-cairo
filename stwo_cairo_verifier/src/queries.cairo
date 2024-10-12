@@ -9,7 +9,7 @@ use stwo_cairo_verifier::sort::MinimumToMaximumSortedIterator;
 
 
 /// An ordered set of query indices over a bit reversed [CircleDomain].
-#[derive(Drop, Clone, Debug, PartialEq, Eq)]
+#[derive(Drop, Clone, Debug, PartialEq)]
 pub struct Queries {
     pub positions: Array<usize>,
     pub log_domain_size: u32,
