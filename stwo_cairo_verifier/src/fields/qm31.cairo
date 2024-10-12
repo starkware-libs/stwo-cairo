@@ -3,6 +3,9 @@ use core::num::traits::zero::Zero;
 use super::cm31::{CM31, cm31, CM31Trait};
 use super::m31::{M31, M31Impl};
 
+/// Equals `(2^31 - 1)^4`.
+pub const P4: u128 = 21267647892944572736998860269687930881;
+
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
 #[derive(Copy, Drop, Debug, PartialEq)]
