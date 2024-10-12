@@ -241,12 +241,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         let mut inner_layers = array![];
         let mut layer_bound = *max_column_bound - CIRCLE_TO_LINE_FOLD_STEP;
-        let mut layer_domain = LineDomain {
-            coset: CosetImpl::new(
-                pow(2, 31 - layer_bound - config.log_blowup_factor - 2),
-                layer_bound + config.log_blowup_factor
-            )
-        };
+        let mut layer_domain = LineDomainImpl::new(CosetImpl::half_odds(layer_bound + config.log_blowup_factor));
 
         let mut layer_index = 0;
         let mut invalid_fri_layers_number = false;
@@ -532,7 +527,7 @@ pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
 #[cfg(test)]
 mod test {
     use stwo_cairo_verifier::channel::ChannelTrait;
-    use stwo_cairo_verifier::circle::{Coset, CosetImpl};
+    use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointIndexImpl};
     use stwo_cairo_verifier::fields::qm31::qm31;
     use stwo_cairo_verifier::poly::circle::{
         CircleDomain, CircleEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
@@ -548,7 +543,7 @@ mod test {
 
     #[test]
     fn test_fold_line_1() {
-        let domain = LineDomainImpl::new(CosetImpl::new(67108864, 1));
+        let domain = LineDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(67108864), 1));
         let values = array![
             qm31(440443058, 1252794525, 1129773609, 1309365757),
             qm31(974589897, 1592795796, 649052897, 863407657)
@@ -565,7 +560,7 @@ mod test {
 
     #[test]
     fn test_fold_line_2() {
-        let domain = LineDomainImpl::new(CosetImpl::new(553648128, 1));
+        let domain = LineDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(553648128), 1));
         let values = array![
             qm31(730692421, 1363821003, 2146256633, 106012305),
             qm31(1387266930, 149259209, 1148988082, 1930518101)
@@ -582,7 +577,7 @@ mod test {
 
     #[test]
     fn test_fold_circle_into_line_1() {
-        let domain = CircleDomain { half_coset: CosetImpl::new(553648128, 0) };
+        let domain = CircleDomain { half_coset: CosetImpl::new(CirclePointIndexImpl::new(553648128), 0) };
         let values = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
         let sparse_circle_evaluation: SparseCircleEvaluation = SparseCircleEvaluation {
             subcircle_evals: array![CircleEvaluationImpl::new(domain, values)]
@@ -856,7 +851,7 @@ mod test {
 
         let queries = Queries { positions: array![5], log_domain_size: 4 };
         let domain = CircleDomain {
-            half_coset: Coset { initial_index: 603979776, step_size: 2147483648, log_size: 0 }
+            half_coset: Coset { initial_index: CirclePointIndexImpl::new(603979776), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0 }
         };
         let decommitted_values = array![
             SparseCircleEvaluation {
@@ -902,7 +897,7 @@ mod test {
 
         let queries = Queries { positions: array![5], log_domain_size: 4 };
         let domain = CircleDomain {
-            half_coset: Coset { initial_index: 603979776, step_size: 2147483648, log_size: 0 }
+            half_coset: Coset { initial_index: CirclePointIndexImpl::new(603979776), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0 }
         };
         let decommitted_values = array![
             SparseCircleEvaluation {
@@ -981,7 +976,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 545259520, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(545259520), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(1464849549, 0, 0, 0), qm31(35402781, 0, 0, 0),],
@@ -1073,7 +1068,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1619001344, step_size: 2147483648, log_size: 0
+                                initial_index: CirclePointIndexImpl::new(1619001344), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0
                             }
                         },
                         array![qm31(83295654, 0, 0, 0), qm31(666640840, 0, 0, 0)]
@@ -1081,7 +1076,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1652555776, step_size: 2147483648, log_size: 0
+                                initial_index: CirclePointIndexImpl::new(1652555776), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0
                             }
                         },
                         array![qm31(1598588979, 0, 0, 0), qm31(1615371031, 0, 0, 0)]
@@ -1093,7 +1088,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1090519040, step_size: 2147483648, log_size: 0
+                                initial_index: CirclePointIndexImpl::new(1090519040), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0
                             }
                         },
                         array![qm31(985597997, 0, 0, 0), qm31(139496415, 0, 0, 0)]
@@ -1101,7 +1096,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1157627904, step_size: 2147483648, log_size: 0
+                                initial_index: CirclePointIndexImpl::new(1157627904), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0
                             }
                         },
                         array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0)]
@@ -1113,7 +1108,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 33554432, step_size: 2147483648, log_size: 0
+                                initial_index: CirclePointIndexImpl::new(33554432), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0
                             }
                         },
                         array![qm31(1645691043, 0, 0, 0), qm31(2009531552, 0, 0, 0)]
@@ -1121,7 +1116,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 167772160, step_size: 2147483648, log_size: 0
+                                initial_index: CirclePointIndexImpl::new(167772160), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0
                             }
                         },
                         array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0)]
@@ -1217,7 +1212,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 209715200, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(209715200), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(1784241578, 0, 0, 0), qm31(714402375, 0, 0, 0),],
@@ -1225,7 +1220,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 578813952, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(578813952), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(673384396, 0, 0, 0), qm31(475618425, 0, 0, 0),],
@@ -1233,7 +1228,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 981467136, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(981467136), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(315059915, 0, 0, 0), qm31(558088919, 0, 0, 0),],
@@ -1245,7 +1240,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 419430400, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(419430400), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(142767236, 0, 0, 0), qm31(537984732, 0, 0, 0),],
@@ -1253,7 +1248,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1157627904, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(1157627904), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0),],
@@ -1261,7 +1256,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1962934272, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(1962934272), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(2124636505, 0, 0, 0), qm31(1506525049, 0, 0, 0),],
@@ -1273,7 +1268,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 838860800, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(838860800), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(1014591066, 0, 0, 0), qm31(1931899148, 0, 0, 0),],
@@ -1281,7 +1276,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 167772160, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(167772160), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0),],
@@ -1289,7 +1284,7 @@ mod test {
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
-                                initial_index: 1778384896, step_size: 2147483648, log_size: 0,
+                                initial_index: CirclePointIndexImpl::new(1778384896), step_size: CirclePointIndexImpl::new(2147483648), log_size: 0,
                             },
                         },
                         array![qm31(509977960, 0, 0, 0), qm31(1887908506, 0, 0, 0),],

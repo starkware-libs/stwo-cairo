@@ -1,4 +1,4 @@
-use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointTrait, M31_CIRCLE_GEN};
+use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointIndexImpl, CirclePointTrait};
 use stwo_cairo_verifier::fields::SecureField;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Zero};
@@ -64,10 +64,8 @@ pub impl LineDomainImpl of LineDomainTrait {
             // Let our coset be `E = c + <G>` with `|E| > 2` then:
             // 1. if `ord(c) <= ord(G)` the coset contains two points at x=0
             // 2. if `ord(c) = 2 * ord(G)` then `c` and `-c` are in our coset
-            let mut scalar = coset.step_size.into();
-            let coset_step = M31_CIRCLE_GEN.mul(ref scalar);
             assert!(
-                coset.at(0).log_order() >= coset_step.log_order() + 2,
+                coset.initial_index.to_point().log_order() >= coset.log_size + 2,
                 "coset x-coordinates not unique"
             );
         }
@@ -134,19 +132,16 @@ pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::circle::{CosetImpl, CIRCLE_LOG_ORDER};
+    use stwo_cairo_verifier::circle::{CosetImpl, CirclePointIndexImpl};
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::qm31;
-    use stwo_cairo_verifier::utils::pow;
     use super::{LinePoly, LinePolyTrait, LineDomainImpl};
 
     #[test]
     #[should_panic]
     fn bad_line_domain() {
         // This coset doesn't have points with unique x-coordinates.
-        let LOG_SIZE = 2;
-        let initial_index = pow(2, CIRCLE_LOG_ORDER - (LOG_SIZE + 1));
-        let coset = CosetImpl::new(initial_index, LOG_SIZE);
+        let coset = CosetImpl::odds(2);
 
         LineDomainImpl::new(coset);
     }
@@ -154,7 +149,7 @@ mod tests {
     #[test]
     fn line_domain_of_size_two_works() {
         let LOG_SIZE: u32 = 1;
-        let coset = CosetImpl::new(0, LOG_SIZE);
+        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), LOG_SIZE);
 
         LineDomainImpl::new(coset);
     }
@@ -162,7 +157,7 @@ mod tests {
     #[test]
     fn line_domain_of_size_one_works() {
         let LOG_SIZE: u32 = 0;
-        let coset = CosetImpl::new(0, LOG_SIZE);
+        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), LOG_SIZE);
 
         LineDomainImpl::new(coset);
     }
