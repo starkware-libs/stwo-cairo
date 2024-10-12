@@ -1,11 +1,8 @@
-use super::utils::{pow, bit_reverse_index, find};
-use core::traits::Copy;
-use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
-use core::dict::Felt252DictEntryTrait;
-use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
-use stwo_cairo_verifier::circle::{Coset, CosetImpl};
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
+use stwo_cairo_verifier::circle::CosetImpl;
+use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
 use stwo_cairo_verifier::sort::MinimumToMaximumSortedIterator;
+use super::utils::{pow, bit_reverse_index, find};
 
 
 /// An ordered set of query indices over a bit reversed [CircleDomain].
@@ -161,8 +158,8 @@ pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
 
 #[cfg(test)]
 mod test {
+    use stwo_cairo_verifier::channel::ChannelTrait;
     use super::{Queries, QueriesImpl};
-    use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 
     #[test]
     fn test_fold_1() {
