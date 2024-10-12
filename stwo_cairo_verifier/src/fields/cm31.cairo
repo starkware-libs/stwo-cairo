@@ -1,7 +1,7 @@
 use core::num::traits::{One, Zero};
 use super::m31::{M31, m31, M31Trait};
 
-#[derive(Copy, Drop, Debug, PartialEq, Eq)]
+#[derive(Copy, Drop, Debug, PartialEq)]
 pub struct CM31 {
     pub a: M31,
     pub b: M31,

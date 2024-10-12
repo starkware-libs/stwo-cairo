@@ -15,7 +15,7 @@ use core::num::traits::ops::wrapping::WrappingSub;
 ///
 /// Valid domains are a disjoint union of two conjugate cosets: `+-C + <G_n>`.
 /// The ordering defined on this domain is `C + iG_n`, and then `-C - iG_n`.
-#[derive(Debug, Copy, Drop, PartialEq, Eq)]
+#[derive(Debug, Copy, Drop, PartialEq)]
 pub struct CircleDomain {
     pub half_coset: Coset
 }
@@ -61,7 +61,7 @@ pub impl CircleDomainImpl of CircleDomainTrait {
 /// An evaluation defined on a [CircleDomain].
 ///
 /// The values are ordered according to the [CircleDomain] ordering.
-#[derive(Debug, Drop, Clone, PartialEq, Eq)]
+#[derive(Debug, Drop, Clone, PartialEq)]
 pub struct CircleEvaluation {
     pub values: Array<QM31>,
     pub domain: CircleDomain,
