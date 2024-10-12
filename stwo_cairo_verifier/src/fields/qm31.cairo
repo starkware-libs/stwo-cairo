@@ -1,7 +1,7 @@
-use super::m31::{M31, m31, M31Impl};
-use super::cm31::{CM31, cm31, CM31Trait};
-use core::num::traits::zero::Zero;
 use core::num::traits::one::One;
+use core::num::traits::zero::Zero;
+use super::cm31::{CM31, cm31, CM31Trait};
+use super::m31::{M31, M31Impl};
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
@@ -113,9 +113,9 @@ pub fn qm31(a: u32, b: u32, c: u32, d: u32) -> QM31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{QM31, qm31, QM31Trait, QM31Impl};
-    use super::{CM31, cm31};
+    use super::CM31;
     use super::super::m31::{m31, P, M31Trait};
+    use super::{QM31, qm31, QM31Trait, QM31Impl};
 
     #[test]
     fn test_QM31() {

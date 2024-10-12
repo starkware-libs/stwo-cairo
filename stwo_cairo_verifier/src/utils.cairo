@@ -1,15 +1,13 @@
 use core::array::SpanTrait;
-use core::dict::Felt252Dict;
-use core::traits::PanicDestruct;
-use core::option::OptionTrait;
 use core::box::BoxTrait;
+use core::dict::Felt252Dict;
 use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
-use core::iter::Iterator;
 use core::num::traits::BitSize;
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
-use stwo_cairo_verifier::BaseField;
 use core::traits::DivRem;
+use core::traits::PanicDestruct;
+use stwo_cairo_verifier::BaseField;
+use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 
 #[generate_trait]
 pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {

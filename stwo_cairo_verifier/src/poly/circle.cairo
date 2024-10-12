@@ -1,15 +1,12 @@
+use core::num::traits::ops::wrapping::WrappingSub;
 use stwo_cairo_verifier::circle::CirclePointTrait;
-use core::option::OptionTrait;
-use core::clone::Clone;
-use core::result::ResultTrait;
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
-use stwo_cairo_verifier::fields::m31::{M31, m31};
-use stwo_cairo_verifier::utils::pow;
 use stwo_cairo_verifier::circle::{
     Coset, CosetImpl, CirclePoint, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER
 };
+use stwo_cairo_verifier::fields::m31::M31;
+use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::fri::fold_circle_into_line;
-use core::num::traits::ops::wrapping::WrappingSub;
+use stwo_cairo_verifier::utils::pow;
 
 /// A valid domain for circle polynomial interpolation and evaluation.
 ///
@@ -127,13 +124,13 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        CircleDomain, CircleDomainTrait, CircleEvaluation, CircleEvaluationImpl,
-        SparseCircleEvaluation, SparseCircleEvaluationImplTrait
-    };
     use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePoint};
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::qm31;
+    use super::{
+        CircleDomain, CircleDomainTrait, CircleEvaluationImpl, SparseCircleEvaluation,
+        SparseCircleEvaluationImplTrait
+    };
 
     #[test]
     fn test_circle_domain_at_1() {

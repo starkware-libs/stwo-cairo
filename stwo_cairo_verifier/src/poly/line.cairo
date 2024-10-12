@@ -1,13 +1,9 @@
-use core::option::OptionTrait;
-use core::clone::Clone;
-use core::result::ResultTrait;
-use stwo_cairo_verifier::poly::utils::fold;
-use stwo_cairo_verifier::fields::SecureField;
-use stwo_cairo_verifier::fields::m31::{M31, m31, M31Trait};
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31, QM31Zero};
-use stwo_cairo_verifier::utils::pow;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointTrait, M31_CIRCLE_GEN};
+use stwo_cairo_verifier::fields::SecureField;
+use stwo_cairo_verifier::fields::m31::{M31, m31};
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Zero};
 use stwo_cairo_verifier::fri::fold_line;
+use stwo_cairo_verifier::poly::utils::fold;
 
 /// A univariate polynomial defined on a [LineDomain].
 #[derive(Debug, Drop, Clone)]
@@ -138,11 +134,11 @@ pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
 
 #[cfg(test)]
 mod tests {
-    use super::{LinePoly, LinePolyTrait, LineDomain, LineDomainImpl};
-    use stwo_cairo_verifier::fields::qm31::qm31;
+    use stwo_cairo_verifier::circle::{CosetImpl, CIRCLE_LOG_ORDER};
     use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::circle::{Coset, CosetImpl, CIRCLE_LOG_ORDER};
+    use stwo_cairo_verifier::fields::qm31::qm31;
     use stwo_cairo_verifier::utils::pow;
+    use super::{LinePoly, LinePolyTrait, LineDomainImpl};
 
     #[test]
     #[should_panic]

@@ -71,8 +71,8 @@ pub fn cm31(a: u32, b: u32) -> CM31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{cm31};
     use super::super::m31::{m31, P};
+    use super::{cm31};
 
     #[test]
     fn test_cm31() {
