@@ -6,7 +6,7 @@ pub const P: u32 = 0x7fffffff;
 const P32NZ: NonZero<u32> = 0x7fffffff;
 const P64NZ: NonZero<u64> = 0x7fffffff;
 
-#[derive(Copy, Drop, Debug, PartialEq, Eq)]
+#[derive(Copy, Drop, Debug, PartialEq)]
 pub struct M31 {
     pub inner: u32
 }

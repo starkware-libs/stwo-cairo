@@ -32,7 +32,7 @@ pub const CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 pub const U32_BIT_MASK: u64 = 0xffffffff;
 
 /// A point on the complex circle. Treated as an additive group.
-#[derive(Drop, Copy, Debug, PartialEq, Eq)]
+#[derive(Drop, Copy, Debug, PartialEq)]
 pub struct CirclePoint<F> {
     pub x: F,
     pub y: F
@@ -106,7 +106,7 @@ pub impl ComplexConjugateImpl of ComplexConjugateTrait {
 }
 
 /// Represents the coset `initial + <step>`.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Drop)]
+#[derive(Copy, Clone, Debug, PartialEq, Drop)]
 pub struct Coset {
     // This is an index in the range [0, 2^31)
     pub initial_index: usize,
