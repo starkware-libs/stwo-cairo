@@ -1,23 +1,23 @@
 use core::dict::Felt252Dict;
-use stwo_cairo_verifier::fields::m31::M31Trait;
-use stwo_cairo_verifier::circle::{Coset, CosetImpl};
-use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31, QM31Trait};
-use stwo_cairo_verifier::queries::SparseSubCircleDomain;
+use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
+use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};
-use stwo_cairo_verifier::poly::line::{
-    LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl
-};
+use stwo_cairo_verifier::fields::m31::M31Trait;
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Trait};
+use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
 use stwo_cairo_verifier::poly::circle::{
     CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
 };
-use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
-use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
+use stwo_cairo_verifier::poly::line::{
+    LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl
+};
+use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
-use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
+use stwo_cairo_verifier::queries::SparseSubCircleDomain;
+use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
+use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};
+use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
+use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
@@ -531,27 +531,20 @@ pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
 
 #[cfg(test)]
 mod test {
+    use stwo_cairo_verifier::channel::ChannelTrait;
+    use stwo_cairo_verifier::circle::{Coset, CosetImpl};
+    use stwo_cairo_verifier::fields::qm31::qm31;
+    use stwo_cairo_verifier::poly::circle::{
+        CircleDomain, CircleEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
+    };
+    use stwo_cairo_verifier::poly::line::LineDomainImpl;
+    use stwo_cairo_verifier::poly::line::LinePoly;
     use stwo_cairo_verifier::poly::line::{
         LineEvaluation, SparseLineEvaluation, SparseLineEvaluationImpl
     };
-    use stwo_cairo_verifier::fields::m31::M31Trait;
-    use stwo_cairo_verifier::circle::{Coset, CosetImpl};
-    use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
-    use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
-    use stwo_cairo_verifier::fields::m31::M31;
-    use stwo_cairo_verifier::utils::{bit_reverse_index, pow};
-    use stwo_cairo_verifier::poly::circle::{
-        CircleEvaluation, CircleEvaluationTrait, CircleDomain, CircleEvaluationImpl,
-        SparseCircleEvaluation, SparseCircleEvaluationImpl
-    };
     use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-    use stwo_cairo_verifier::channel::ChannelTrait;
-    use stwo_cairo_verifier::poly::line::LinePoly;
     use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
-    use super::{
-        FOLD_STEP, CIRCLE_TO_LINE_FOLD_STEP, FriConfig, FriProof, FriVerifierImpl,
-        FriVerificationError, FriLayerProof
-    };
+    use super::{FriConfig, FriProof, FriVerifierImpl, FriVerificationError, FriLayerProof};
 
     #[test]
     fn test_fold_line_1() {

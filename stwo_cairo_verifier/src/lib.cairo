@@ -1,12 +1,12 @@
 mod channel;
 mod circle;
 mod fields;
+mod fri;
 mod poly;
+mod queries;
+mod sort;
 mod utils;
 mod vcs;
-mod fri;
-mod sort;
-mod queries;
 
 pub use fields::{BaseField, SecureField};
 
