@@ -3,6 +3,8 @@ use core::box::BoxTrait;
 use core::dict::Felt252Dict;
 use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
+use core::iter::IntoIterator;
+use core::iter::Iterator;
 use core::num::traits::BitSize;
 use core::traits::DivRem;
 use core::traits::PanicDestruct;
@@ -42,8 +44,67 @@ pub impl ArrayImpl<T, +Copy<T>, +Drop<T>> of ArrayExTrait<T> {
         };
         res
     }
+
     fn max<+PartialOrd<T>>(mut self: @Array<T>) -> Option<@T> {
         self.span().max()
+    }
+
+    /// Sorts an array in ascending order. Uses quicksort algorithm.
+    fn sort_ascending<+PartialOrd<T>>(self: Array<T>) -> Array<T> {
+        if self.len() <= 1 {
+            return self;
+        }
+
+        let mut lhs = array![];
+        let mut rhs = array![];
+        let mut iter = self.into_iter();
+        let pivot = iter.next().unwrap();
+
+        for v in iter {
+            if v > pivot {
+                rhs.append(v);
+            } else {
+                lhs.append(v);
+            }
+        };
+
+        let mut res = lhs.sort_ascending();
+        res.append(pivot);
+
+        for v in rhs.sort_ascending() {
+            res.append(v);
+        };
+
+        res
+    }
+
+    /// Removes consecutive repeated elements.
+    ///
+    /// If the vector is sorted, this removes all duplicates.
+    fn dedup<+PartialEq<T>>(self: Array<T>) -> Array<T> {
+        if self.len() == 0 {
+            return array![];
+        }
+
+        let mut iter = self.into_iter();
+        let mut last_value = iter.next().unwrap();
+        let mut res = array![last_value];
+        for value in iter {
+            if value != last_value {
+                res.append(value);
+                last_value = value;
+            }
+        };
+
+        res
+    }
+
+    fn new_repeated(n: usize, v: T) -> Array<T> {
+        let mut res = array![];
+        for _ in 0..n {
+            res.append(v);
+        };
+        res
     }
 }
 
@@ -142,19 +203,9 @@ pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
     result
 }
 
-pub fn qm31_zero_array(n: u32) -> Array<QM31> {
-    let mut result = array![];
-    let mut i = 0;
-    while i < n {
-        result.append(qm31(0, 0, 0, 0));
-        i += 1;
-    };
-    result
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{pow, pow_qm31, qm31, bit_reverse_index};
+    use super::{pow, pow_qm31, qm31, bit_reverse_index, ArrayImpl};
 
     #[test]
     fn test_pow() {
@@ -209,6 +260,21 @@ mod tests {
         let result = pow_qm31(qm31(1, 2, 3, 4), 37);
         let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
         assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_sort_ascending() {
+        assert_eq!(array![6_usize, 5, 1, 4, 2, 3].sort_ascending(), array![1, 2, 3, 4, 5, 6]);
+    }
+
+    #[test]
+    fn test_dedup() {
+        assert_eq!(array![1_usize, 1, 1, 2, 2, 3, 4, 5, 5, 5].dedup(), array![1, 2, 3, 4, 5]);
+    }
+
+    #[test]
+    fn test_array_new_repeated() {
+        assert_eq!(ArrayImpl::new_repeated(5, 3_usize), array![3, 3, 3, 3, 3]);
     }
 }
 

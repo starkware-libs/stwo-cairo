@@ -3,7 +3,7 @@ use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::m31::M31Trait;
-use stwo_cairo_verifier::fields::qm31::{QM31, QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Zero, QM31Trait};
 use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
 use stwo_cairo_verifier::poly::circle::{
     CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
@@ -15,7 +15,7 @@ use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-use stwo_cairo_verifier::utils::{bit_reverse_index, pow, pow_qm31, qm31_zero_array, find};
+use stwo_cairo_verifier::utils::{bit_reverse_index, ArrayImpl, pow, pow_qm31, find};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -48,7 +48,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         let commitment = self.proof.commitment;
 
-        let sparse_evaluation = @self.extract_evaluation(queries, evals_at_queries)?;
+        let sparse_evaluation = self.extract_evaluation(queries, evals_at_queries)?;
         let mut column_0: Array<M31> = array![];
         let mut column_1: Array<M31> = array![];
         let mut column_2: Array<M31> = array![];
@@ -335,7 +335,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
 
         let mut layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
-        let mut layer_query_evals = qm31_zero_array(layer_queries.len());
+        let mut layer_query_evals = ArrayImpl::new_repeated(layer_queries.len(), QM31Zero::zero());
 
         let mut inner_layers_index = 0;
         let mut column_bound_index = 0;
@@ -398,23 +398,23 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_last_layer(
         self: @FriVerifier, queries: Queries, query_evals: Array<QM31>,
     ) -> Result<(), FriVerificationError> {
-        let mut failed = false;
-        let mut i = 0;
-        while i < queries.positions.len() {
-            let query = queries.positions[i];
-            let domain = self.last_layer_domain;
-            let x = self.last_layer_domain.at(bit_reverse_index(*query, domain.log_size()));
+        let FriVerifier { last_layer_domain, last_layer_poly, .. } = self;
 
-            if *query_evals[i] != self.last_layer_poly.eval_at_point(x.into()) {
-                failed = true;
-                break;
+        let mut i = 0;
+        loop {
+            if i == queries.positions.len() {
+                break Result::Ok(());
             }
+
+            let query = *queries.positions[i];
+            let query_eval = *query_evals[i];
+            let x = last_layer_domain.at(bit_reverse_index(query, last_layer_domain.log_size()));
+
+            if query_eval != last_layer_poly.eval_at_point(x.into()) {
+                break Result::Err(FriVerificationError::LastLayerEvaluationsInvalid);
+            }
+
             i += 1;
-        };
-        if failed {
-            return Result::Err(FriVerificationError::LastLayerEvaluationsInvalid);
-        } else {
-            Result::Ok(())
         }
     }
 
@@ -483,43 +483,41 @@ fn get_opening_positions(
 /// element and `pi(x) = 2x^2 - 1` be the circle's x-coordinate doubling map. This function
 /// returns `f' = f0 + alpha * f1` evaluated on `pi(E)` such that `2f(x) = f0(pi(x)) + x *
 /// f1(pi(x))`.
-pub fn fold_line(eval: @LineEvaluation, alpha: QM31) -> LineEvaluation {
+pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values = array![];
-    let mut i = 0;
-    while i < eval.values.len() / 2 {
-        let x = domain.at(bit_reverse_index(i * pow(2, FOLD_STEP), domain.log_size()));
-        let f_x = eval.values[2 * i];
-        let f_neg_x = eval.values[2 * i + 1];
-        let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
-        values.append(f0 + alpha * f1);
-        i += 1;
-    };
+    for i in 0
+        ..eval.values.len()
+            / 2 {
+                let x = domain.at(bit_reverse_index(i * pow(2, FOLD_STEP), domain.log_size()));
+                let f_x = eval.values[2 * i];
+                let f_neg_x = eval.values[2 * i + 1];
+                let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
+                values.append(f0 + alpha * f1);
+            };
     LineEvaluationImpl::new(domain.double(), values)
 }
 
-/// Folds and accumulates a degree `d` circle polynomial into a degree `d/2` univariate
-/// polynomial.
+/// Folds and accumulates a degree `d` circle polynomial into a degree `d/2` univariate polynomial.
 ///
-/// Let `src` be the evaluation of a circle polynomial `f` on a
-/// [`CircleDomain`] `E`. This function computes evaluations of `f' = f0
-/// + alpha * f1` on the x-coordinates of `E` such that `2f(p) = f0(px) + py * f1(px)`. The
-/// evaluations of `f'` are accumulated into `dst` by the formula `dst = dst * alpha^2 +
-/// f'`.
-pub fn fold_circle_into_line(eval: @CircleEvaluation, alpha: QM31) -> LineEvaluation {
+/// Let `src` be the evaluation of a circle polynomial `f` on a [`CircleDomain`] `E`. This function
+/// computes evaluations of `f' = f0 + alpha * f1` on the x-coordinates of `E` such that `2f(p) =
+/// f0(px) + py * f1(px)`. The evaluations of `f'` are accumulated into `dst` by the formula
+/// `dst = dst * alpha^2 + f'`.
+pub fn fold_circle_into_line(eval: CircleEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
+    let fold_factor = pow(2, CIRCLE_TO_LINE_FOLD_STEP);
     let mut values = array![];
-    let mut i = 0;
-    while i < eval.values.len() / 2 {
-        let p = domain
-            .at(bit_reverse_index(i * pow(2, CIRCLE_TO_LINE_FOLD_STEP), domain.log_size()));
-        let f_p = eval.values[2 * i];
-        let f_neg_p = eval.values[2 * i + 1];
-        let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
-        values.append(f0 + alpha * f1);
-        i += 1;
-    };
-    LineEvaluation { values, domain: LineDomainImpl::new(*domain.half_coset) }
+    for i in 0
+        ..eval.bit_reversed_values.len()
+            / 2 {
+                let p = domain.at(bit_reverse_index(i * fold_factor, domain.log_size()));
+                let f_p = eval.bit_reversed_values[2 * i];
+                let f_neg_p = eval.bit_reversed_values[2 * i + 1];
+                let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
+                values.append(f0 + alpha * f1);
+            };
+    LineEvaluation { values, domain: LineDomainImpl::new(domain.half_coset) }
 }
 
 pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
@@ -639,11 +637,10 @@ mod test {
     #[test]
     fn proof_with_removed_layer_fails_verification() {
         let (config, proof, bounds, _queries, _decommitted_values) = proof_with_mixed_degree_1();
-
         let mut invalid_config = config;
         invalid_config.log_last_layer_degree_bound -= 1;
-
         let mut channel = ChannelTrait::new(0x00);
+
         let result = FriVerifierImpl::commit(ref channel, invalid_config, proof, bounds);
 
         match result {

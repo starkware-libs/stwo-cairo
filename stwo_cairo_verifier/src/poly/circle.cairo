@@ -55,25 +55,21 @@ pub impl CircleDomainImpl of CircleDomainTrait {
 /// The values are ordered according to the [CircleDomain] ordering.
 #[derive(Debug, Drop, Clone, PartialEq)]
 pub struct CircleEvaluation {
-    pub values: Array<QM31>,
+    pub bit_reversed_values: Array<QM31>,
     pub domain: CircleDomain,
-    _eval_order: BitReversedOrder
 }
-
-#[derive(Debug, Drop, Clone, PartialEq)]
-struct BitReversedOrder {}
 
 #[generate_trait]
 pub impl CircleEvaluationImpl of CircleEvaluationTrait {
-    fn new(domain: CircleDomain, values: Array<QM31>) -> CircleEvaluation {
-        CircleEvaluation { values: values, domain: domain, _eval_order: BitReversedOrder {} }
+    fn new(domain: CircleDomain, bit_reversed_values: Array<QM31>) -> CircleEvaluation {
+        CircleEvaluation { bit_reversed_values, domain }
     }
 }
 
 /// Holds a foldable subset of circle polynomial evaluations.
 #[derive(Drop, Clone, Debug, PartialEq)]
 pub struct SparseCircleEvaluation {
-    pub subcircle_evals: Array<CircleEvaluation>
+    pub subcircle_evals: Array<CircleEvaluation>,
 }
 
 #[generate_trait]
@@ -92,10 +88,10 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
             let lhs = self.subcircle_evals[i];
             let rhs = rhs.subcircle_evals[i];
             let mut values = array![];
-            assert_eq!(lhs.values.len(), rhs.values.len());
+            assert_eq!(lhs.bit_reversed_values.len(), rhs.bit_reversed_values.len());
             let mut j = 0;
-            while j < lhs.values.len() {
-                values.append(*lhs.values[j] * alpha + *rhs.values[j]);
+            while j < lhs.bit_reversed_values.len() {
+                values.append(*lhs.bit_reversed_values[j] * alpha + *rhs.bit_reversed_values[j]);
                 j += 1;
             };
             subcircle_evals.append(CircleEvaluationImpl::new(*lhs.domain, values));
@@ -105,15 +101,13 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
         SparseCircleEvaluation { subcircle_evals }
     }
 
-    fn fold(self: @SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
-        let mut i = 0;
-        let mut res: Array<QM31> = array![];
-        while i < self.subcircle_evals.len() {
-            let circle_evaluation = fold_circle_into_line(self.subcircle_evals[i], alpha);
-            res.append(*circle_evaluation.values.at(0));
-            i += 1;
-        };
-        return res;
+    fn fold(self: SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
+        let mut res = array![];
+        for eval in self
+            .subcircle_evals {
+                res.append(*fold_circle_into_line(eval, alpha).values[0])
+            };
+        res
     }
 }
 

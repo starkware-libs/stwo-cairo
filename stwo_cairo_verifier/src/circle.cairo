@@ -247,16 +247,15 @@ mod tests {
 
     #[test]
     fn test_add_1() {
-        let i = CirclePoint { x: m31(0), y: m31(1) };
-        let result = i + i;
-
-        assert_eq!(result, CirclePoint { x: -m31(1), y: m31(0) });
+        let g4 = CirclePoint { x: m31(0), y: m31(1) };
+        assert_eq!(g4 + g4, CirclePoint { x: -m31(1), y: m31(0) });
     }
 
     #[test]
     fn test_add_2() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
         let point_2 = CirclePoint { x: m31(1737427771), y: m31(309481134) };
+
         let result = point_1 + point_2;
 
         assert_eq!(result, CirclePoint { x: m31(1476625263), y: m31(1040927458) });
@@ -273,6 +272,7 @@ mod tests {
     fn test_zero_2() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
         let point_2 = CirclePointM31Impl::zero();
+
         let result = point_1 + point_2;
 
         assert_eq!(result, point_1.clone());
@@ -281,6 +281,7 @@ mod tests {
     #[test]
     fn test_mul_1() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
+
         let result = point_1.mul(5);
 
         assert_eq!(result, point_1 + point_1 + point_1 + point_1 + point_1);
@@ -289,6 +290,7 @@ mod tests {
     #[test]
     fn test_mul_2() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
+
         let result = point_1.mul(8);
 
         assert_eq!(
@@ -299,6 +301,7 @@ mod tests {
     #[test]
     fn test_mul_3() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
+
         let result = point_1.mul(418776494);
 
         assert_eq!(result, CirclePoint { x: m31(1987283985), y: m31(1500510905) });
@@ -307,6 +310,7 @@ mod tests {
     #[test]
     fn test_generator_order() {
         let half_order = M31_CIRCLE_ORDER / 2;
+
         let mut result = M31_CIRCLE_GEN.mul(half_order.into());
 
         // Assert `M31_CIRCLE_GEN^{2^30}` equals `-1`.
@@ -327,6 +331,7 @@ mod tests {
             log_size: 5,
             step_size: CirclePointIndexImpl::new(67108864)
         };
+
         let result = coset.index_at(8);
 
         assert_eq!(result, CirclePointIndexImpl::new(553648128));
@@ -353,6 +358,7 @@ mod tests {
             step_size: CirclePointIndexImpl::new(67108864),
             log_size: 5
         };
+
         let result = coset.double();
 
         assert_eq!(
@@ -372,6 +378,7 @@ mod tests {
             step_size: CirclePointIndexImpl::new(67108864),
             log_size: 5
         };
+
         let result = coset.at(17);
 
         assert_eq!(result, CirclePoint { x: m31(7144319), y: m31(1742797653) });
@@ -384,6 +391,7 @@ mod tests {
             step_size: CirclePointIndexImpl::new(67108864),
             log_size: 5
         };
+
         let result = coset.size();
 
         assert_eq!(result, 32);
