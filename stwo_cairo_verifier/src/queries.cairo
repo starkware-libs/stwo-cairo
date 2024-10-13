@@ -1,8 +1,7 @@
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
-use stwo_cairo_verifier::sort::MinimumToMaximumSortedIterator;
-use super::utils::{pow, bit_reverse_index, find};
+use super::utils::{pow, bit_reverse_index, find, ArrayImpl};
 
 
 /// An ordered set of query indices over a bit reversed [CircleDomain].
@@ -16,7 +15,7 @@ pub struct Queries {
 pub impl QueriesImpl of QueriesImplTrait {
     /// Randomizes a set of query indices uniformly over the range [0, 2^`log_query_size`).
     fn generate(ref channel: Channel, log_domain_size: u32, n_queries: usize) -> Queries {
-        let mut nonsorted_positions = array![];
+        let mut unsorted_positions = array![];
         let max_query = pow(2, log_domain_size) - 1;
         let mut finished = false;
         loop {
@@ -27,9 +26,9 @@ pub impl QueriesImpl of QueriesImplTrait {
                 let b1: u32 = (*random_bytes[i + 1]).into();
                 let b2: u32 = (*random_bytes[i + 2]).into();
                 let b3: u32 = (*random_bytes[i + 3]).into();
-                nonsorted_positions
-                    .append((b0 + 256 * b1 + 65536 * b2 + 16777216 * b3) & max_query);
-                if nonsorted_positions.len() == n_queries {
+                let position = (((b3 * 0x100 + b2) * 0x100 + b1) * 0x100 + b0) & max_query;
+                unsorted_positions.append(position);
+                if unsorted_positions.len() == n_queries {
                     finished = true;
                     break;
                 }
@@ -40,13 +39,7 @@ pub impl QueriesImpl of QueriesImplTrait {
             }
         };
 
-        let mut positions = array![];
-        let mut iterator = MinimumToMaximumSortedIterator::iterate(nonsorted_positions.span());
-        while let Option::Some((_, x)) = iterator.next_deduplicated() {
-            positions.append(x);
-        };
-
-        Queries { positions, log_domain_size }
+        Queries { positions: unsorted_positions.sort_ascending().dedup(), log_domain_size }
     }
 
     fn len(self: @Queries) -> usize {
@@ -98,7 +91,7 @@ pub impl QueriesImpl of QueriesImplTrait {
     }
 }
 
-/// Represents a circle domain relative to a larger circle domain. The `initial_index` is the bit
+/// Represents a circle domain relative to a larger circle domain. The `coset_index` is the bit
 /// reversed query index in the larger domain.
 #[derive(Drop, Debug, Copy)]
 pub struct SubCircleDomain {
@@ -111,13 +104,12 @@ pub struct SubCircleDomain {
 pub impl SubCircleDomainImpl of SubCircleDomainTrait {
     /// Calculates the decommitment positions needed for each query given the fri step size.
     fn to_decommitment_positions(self: @SubCircleDomain) -> Array<usize> {
+        let sub_circle_size = pow(2, *self.log_size);
+        let start = *self.coset_index * sub_circle_size;
+        let end = start + sub_circle_size;
         let mut res = array![];
-        let start = *self.coset_index * pow(2, *self.log_size);
-        let end = (*self.coset_index + 1) * pow(2, *self.log_size);
-        let mut i = start;
-        while i < end {
+        for i in start..end {
             res.append(i);
-            i = i + 1;
         };
         res
     }
@@ -142,16 +134,13 @@ pub struct SparseSubCircleDomain {
 pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
     fn flatten(self: @SparseSubCircleDomain) -> Array<usize> {
         let mut res = array![];
-        let mut i = 0;
-        while i < self.domains.len() {
-            let positions = self.domains[i].to_decommitment_positions();
-            let mut j = 0;
-            while j < positions.len() {
-                res.append(*positions[j]);
-                j = j + 1;
+        for domain in self
+            .domains
+            .span() {
+                for position in domain.to_decommitment_positions() {
+                    res.append(position);
+                };
             };
-            i = i + 1;
-        };
         res
     }
 }

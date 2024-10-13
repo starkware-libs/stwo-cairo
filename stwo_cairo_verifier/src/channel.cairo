@@ -129,13 +129,12 @@ pub impl ChannelImpl of ChannelTrait {
     fn draw_random_bytes(ref self: Channel) -> Array<u8> {
         let mut cur: u256 = self.draw_felt252().into();
         let mut bytes = array![];
-        let mut i: usize = 0;
-        while i < 31 {
-            let (q, r) = DivRem::div_rem(cur, 256);
-            bytes.append(r.try_into().unwrap());
-            cur = q;
-            i += 1;
-        };
+        for _ in 0_usize
+            ..31 {
+                let (q, r) = DivRem::div_rem(cur, 256);
+                bytes.append(r.try_into().unwrap());
+                cur = q;
+            };
         bytes
     }
 }
@@ -224,9 +223,7 @@ mod tests {
         let initial_digest = 0;
         let mut channel = ChannelTrait::new(initial_digest);
 
-        let mut n: usize = 10;
-        while n > 0 {
-            n -= 1;
+        for _ in 0_usize..10 {
             channel.draw_felt();
         };
 

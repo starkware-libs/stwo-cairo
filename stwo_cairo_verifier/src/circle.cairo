@@ -156,7 +156,7 @@ pub impl CosetImpl of CosetTrait {
     }
 
     /// Creates a coset of the form `G_4n + <G_n>`.
-    /// 
+    ///
     /// For example, for `n=8`, we get the point indices `[1,5,9,13,17,21,25,29]`.
     /// Its conjugate will be `[3,7,11,15,19,23,27,31]`.
     fn half_odds(log_size: u32) -> Coset {
@@ -240,20 +240,22 @@ mod tests {
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::{QM31One, qm31};
     use stwo_cairo_verifier::utils::pow;
-    use super::{M31_CIRCLE_GEN, CirclePointQM31Impl, QM31_CIRCLE_GEN, M31_CIRCLE_ORDER, CirclePoint, CirclePointM31Impl, CirclePointIndexImpl, Coset, CosetImpl, QM31_CIRCLE_ORDER};
+    use super::{
+        M31_CIRCLE_GEN, CirclePointQM31Impl, QM31_CIRCLE_GEN, M31_CIRCLE_ORDER, CirclePoint,
+        CirclePointM31Impl, CirclePointIndexImpl, Coset, CosetImpl, QM31_CIRCLE_ORDER
+    };
 
     #[test]
     fn test_add_1() {
-        let i = CirclePoint { x: m31(0), y: m31(1) };
-        let result = i + i;
-
-        assert_eq!(result, CirclePoint { x: -m31(1), y: m31(0) });
+        let g4 = CirclePoint { x: m31(0), y: m31(1) };
+        assert_eq!(g4 + g4, CirclePoint { x: -m31(1), y: m31(0) });
     }
 
     #[test]
     fn test_add_2() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
         let point_2 = CirclePoint { x: m31(1737427771), y: m31(309481134) };
+
         let result = point_1 + point_2;
 
         assert_eq!(result, CirclePoint { x: m31(1476625263), y: m31(1040927458) });
@@ -270,6 +272,7 @@ mod tests {
     fn test_zero_2() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
         let point_2 = CirclePointM31Impl::zero();
+
         let result = point_1 + point_2;
 
         assert_eq!(result, point_1.clone());
@@ -278,6 +281,7 @@ mod tests {
     #[test]
     fn test_mul_1() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
+
         let result = point_1.mul(5);
 
         assert_eq!(result, point_1 + point_1 + point_1 + point_1 + point_1);
@@ -286,6 +290,7 @@ mod tests {
     #[test]
     fn test_mul_2() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
+
         let result = point_1.mul(8);
 
         assert_eq!(
@@ -296,6 +301,7 @@ mod tests {
     #[test]
     fn test_mul_3() {
         let point_1 = CirclePoint { x: m31(750649172), y: m31(1991648574) };
+
         let result = point_1.mul(418776494);
 
         assert_eq!(result, CirclePoint { x: m31(1987283985), y: m31(1500510905) });
@@ -304,6 +310,7 @@ mod tests {
     #[test]
     fn test_generator_order() {
         let half_order = M31_CIRCLE_ORDER / 2;
+
         let mut result = M31_CIRCLE_GEN.mul(half_order.into());
 
         // Assert `M31_CIRCLE_GEN^{2^30}` equals `-1`.
@@ -319,7 +326,12 @@ mod tests {
 
     #[test]
     fn test_coset_index_at() {
-        let coset = Coset { initial_index: CirclePointIndexImpl::new(16777216), log_size: 5, step_size: CirclePointIndexImpl::new(67108864) };
+        let coset = Coset {
+            initial_index: CirclePointIndexImpl::new(16777216),
+            log_size: 5,
+            step_size: CirclePointIndexImpl::new(67108864)
+        };
+
         let result = coset.index_at(8);
 
         assert_eq!(result, CirclePointIndexImpl::new(553648128));
@@ -329,20 +341,44 @@ mod tests {
     fn test_coset_constructor() {
         let result = CosetImpl::new(CirclePointIndexImpl::new(16777216), 5);
 
-        assert_eq!(result, Coset { initial_index: CirclePointIndexImpl::new(16777216), log_size: 5, step_size: CirclePointIndexImpl::new(67108864) });
+        assert_eq!(
+            result,
+            Coset {
+                initial_index: CirclePointIndexImpl::new(16777216),
+                log_size: 5,
+                step_size: CirclePointIndexImpl::new(67108864)
+            }
+        );
     }
 
     #[test]
     fn test_coset_double() {
-        let coset = Coset { initial_index: CirclePointIndexImpl::new(16777216), step_size: CirclePointIndexImpl::new(67108864), log_size: 5 };
+        let coset = Coset {
+            initial_index: CirclePointIndexImpl::new(16777216),
+            step_size: CirclePointIndexImpl::new(67108864),
+            log_size: 5
+        };
+
         let result = coset.double();
 
-        assert_eq!(result, Coset { initial_index: CirclePointIndexImpl::new(33554432), step_size: CirclePointIndexImpl::new(134217728), log_size: 4 });
+        assert_eq!(
+            result,
+            Coset {
+                initial_index: CirclePointIndexImpl::new(33554432),
+                step_size: CirclePointIndexImpl::new(134217728),
+                log_size: 4
+            }
+        );
     }
 
     #[test]
     fn test_coset_at() {
-        let coset = Coset { initial_index: CirclePointIndexImpl::new(16777216), step_size: CirclePointIndexImpl::new(67108864), log_size: 5 };
+        let coset = Coset {
+            initial_index: CirclePointIndexImpl::new(16777216),
+            step_size: CirclePointIndexImpl::new(67108864),
+            log_size: 5
+        };
+
         let result = coset.at(17);
 
         assert_eq!(result, CirclePoint { x: m31(7144319), y: m31(1742797653) });
@@ -350,7 +386,12 @@ mod tests {
 
     #[test]
     fn test_coset_size() {
-        let coset = Coset { initial_index: CirclePointIndexImpl::new(16777216), step_size: CirclePointIndexImpl::new(67108864), log_size: 5 };
+        let coset = Coset {
+            initial_index: CirclePointIndexImpl::new(16777216),
+            step_size: CirclePointIndexImpl::new(67108864),
+            log_size: 5
+        };
+
         let result = coset.size();
 
         assert_eq!(result, 32);
@@ -358,7 +399,10 @@ mod tests {
 
     #[test]
     fn test_qm31_circle_gen() {
-        assert_eq!(QM31_CIRCLE_GEN.mul(QM31_CIRCLE_ORDER / 2), CirclePoint { x: -qm31(1, 0, 0, 0), y: qm31(0, 0, 0, 0) });
+        assert_eq!(
+            QM31_CIRCLE_GEN.mul(QM31_CIRCLE_ORDER / 2),
+            CirclePoint { x: -qm31(1, 0, 0, 0), y: qm31(0, 0, 0, 0) }
+        );
     }
 }
 

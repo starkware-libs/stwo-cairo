@@ -4,7 +4,6 @@ mod fields;
 mod fri;
 mod poly;
 mod queries;
-mod sort;
 mod utils;
 mod vcs;
 
