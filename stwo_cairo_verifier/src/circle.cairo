@@ -103,6 +103,12 @@ pub impl CirclePointM31Impl of CirclePointTrait<M31> {}
 
 pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
 
+impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
+    fn lt(lhs: CirclePoint<QM31>, rhs: CirclePoint<QM31>) -> bool {
+        lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y)
+    }
+}
+
 #[generate_trait]
 pub impl ComplexConjugateImpl of ComplexConjugateTrait {
     fn complex_conjugate(self: CirclePoint<QM31>) -> CirclePoint<QM31> {
