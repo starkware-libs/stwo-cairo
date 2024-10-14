@@ -122,6 +122,10 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
         let half_coset = CosetImpl::new(initial_index, *self.log_size - 1);
         CircleDomainImpl::new(half_coset)
     }
+
+    fn size(self: @SubCircleDomain) -> usize {
+        pow(2, *self.log_size).into()
+    }
 }
 
 #[derive(Drop, Debug)]
@@ -142,6 +146,15 @@ pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
                 };
             };
         res
+    }
+
+    /// Returns the number of points in the domain.
+    fn size(self: @SparseSubCircleDomain) -> usize {
+        let mut size = 0;
+        for domain in self.domains.span() {
+            size += domain.size();
+        };
+        size
     }
 }
 
