@@ -50,9 +50,58 @@ pub impl CircleDomainImpl of CircleDomainTrait {
     }
 }
 
-/// An evaluation defined on a [CircleDomain].
+/// A coset of the form `G_{2n} + <G_n>`, where `G_n` is the generator of the subgroup of order `n`.
 ///
-/// The values are ordered according to the [CircleDomain] ordering.
+/// The ordering on this coset is `G_{2n} + i * G_n`. These cosets can be used as a
+/// [`CircleDomain`], and be interpolated on. Note that this changes the ordering on the coset to be
+/// like [`CircleDomain`], which is `G_{2n} + i * G_{n/2}` and then `-G_{2n} -i * G_{n/2}`. For
+/// example, the `X`s below are a canonic coset with `n = 8`.
+///
+/// ```text
+///    X O X
+///  O       O
+/// X         X
+/// O         O
+/// X         X
+///  O       O
+///    X O X
+/// ```
+#[derive(Copy, Debug, PartialEq, Drop)]
+pub struct CanonicCoset {
+    pub coset: Coset,
+}
+
+#[generate_trait]
+pub impl CanonicCosetImpl of CanonicCosetTrait {
+    fn new(log_size: u32) -> CanonicCoset {
+        assert!(log_size > 0);
+        CanonicCoset { coset: CosetImpl::odds(log_size), }
+    }
+
+    /// Gets the full coset represented `G_{2n} + <G_n>`.
+    fn coset(self: @CanonicCoset) -> @Coset {
+        self.coset
+    }
+
+    /// Gets half of the coset (its conjugate complements to the whole coset), `G_{2n} + <G_{n/2}>`.
+    fn half_coset(self: @CanonicCoset) -> Coset {
+        assert!(*self.coset.log_size > 0);
+        Coset {
+            initial_index: *self.coset.initial_index,
+            step_size: *self.coset.step_size + *self.coset.step_size,
+            log_size: *self.coset.log_size - 1,
+        }
+    }
+
+    /// Gets the [`CircleDomain`] representing the same point set (in another order).
+    fn circle_domain(self: @CanonicCoset) -> CircleDomain {
+        CircleDomainImpl::new(self.half_coset())
+    }
+}
+
+/// An evaluation defined on a [`CircleDomain`].
+///
+/// The values are ordered according to the [`CircleDomain`] ordering.
 #[derive(Debug, Drop, Clone, PartialEq)]
 pub struct CircleEvaluation {
     pub bit_reversed_values: Array<QM31>,
