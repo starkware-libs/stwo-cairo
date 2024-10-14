@@ -1,4 +1,4 @@
-#![feature(array_methods, portable_simd, iter_array_chunks)]
+#![feature(array_methods, portable_simd, iter_array_chunks, const_for)]
 pub mod cairo_air;
 pub mod components;
 pub mod felt;

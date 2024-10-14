@@ -115,6 +115,17 @@ pub fn sparse_representation<const N: usize>(trailing_sum: [u32; N], mut dense: 
         .unwrap()
 }
 
+// TODO(Ohad): optimize.
+pub fn packed_sparse_representation<const N: usize>(
+    trailing_sums: [u32; N],
+    vec_row: u32,
+) -> [PackedM31; N] {
+    let sparse_reps: [[M31; N]; N_LANES] = std::array::from_fn(|i| {
+        sparse_representation(trailing_sums, (vec_row << (LOG_N_LANES)) + i as u32)
+    });
+    std::array::from_fn(|i| PackedM31::from_array(std::array::from_fn(|j| sparse_reps[j][i])))
+}
+
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;
