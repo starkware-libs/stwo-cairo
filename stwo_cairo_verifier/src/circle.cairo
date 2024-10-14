@@ -1,9 +1,10 @@
-use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
+use core::num::traits::one::One;
+use core::num::traits::zero::Zero;
+use core::num::traits::{WrappingAdd, WideMul};
 use stwo_cairo_verifier::fields::cm31::CM31;
+use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
 use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31, QM31Trait};
 use super::utils::pow;
-use core::num::traits::zero::Zero;
-use core::num::traits::one::One;
 
 pub const M31_CIRCLE_GEN: CirclePoint<M31> =
     CirclePoint { x: M31 { inner: 2 }, y: M31 { inner: 1268011823 }, };
@@ -123,10 +124,10 @@ pub impl CosetImpl of CosetTrait {
     }
 
     fn index_at(self: @Coset, index: usize) -> usize {
-        let index_times_step = (core::integer::u32_wide_mul(*self.step_size, index) & U32_BIT_MASK)
+        let index_times_step = ((*self.step_size).wide_mul(index) & U32_BIT_MASK)
             .try_into()
             .unwrap();
-        let result = core::integer::u32_wrapping_add(*self.initial_index, index_times_step);
+        let result = (*self.initial_index).wrapping_add(index_times_step);
         result & CIRCLE_ORDER_BIT_MASK
     }
 
@@ -178,14 +179,14 @@ pub impl CosetImpl of CosetTrait {
 
 #[cfg(test)]
 mod tests {
-    use super::{M31_CIRCLE_GEN, CIRCLE_ORDER, CirclePoint, CirclePointM31Impl, Coset, CosetImpl};
-    use core::option::OptionTrait;
     use core::array::ArrayTrait;
+    use core::option::OptionTrait;
     use core::traits::TryInto;
-    use super::{CirclePointQM31Impl, QM31_CIRCLE_GEN};
-    use stwo_cairo_verifier::fields::m31::{m31, M31};
-    use stwo_cairo_verifier::fields::qm31::{qm31, QM31, QM31One};
+    use stwo_cairo_verifier::fields::m31::m31;
+    use stwo_cairo_verifier::fields::qm31::QM31One;
     use stwo_cairo_verifier::utils::pow;
+    use super::{CirclePointQM31Impl, QM31_CIRCLE_GEN};
+    use super::{M31_CIRCLE_GEN, CIRCLE_ORDER, CirclePoint, CirclePointM31Impl, Coset, CosetImpl};
 
     #[test]
     fn test_add_1() {

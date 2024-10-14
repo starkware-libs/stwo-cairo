@@ -1,17 +1,17 @@
-use core::dict::Felt252DictTrait;
-use core::result::ResultTrait;
-use stwo_cairo_verifier::utils::SpanExTrait;
-use core::option::OptionTrait;
 use core::array::ArrayTrait;
 use core::array::SpanTrait;
 use core::array::ToSpanTrait;
+use core::cmp::min;
 use core::dict::Felt252Dict;
 use core::dict::Felt252DictEntryTrait;
-use core::nullable::NullableTrait;
-use core::cmp::min;
+use core::dict::Felt252DictTrait;
 use core::fmt::{Debug, Formatter, Error};
+use core::nullable::NullableTrait;
+use core::option::OptionTrait;
+use core::result::ResultTrait;
 use stwo_cairo_verifier::BaseField;
 use stwo_cairo_verifier::fields::m31::m31;
+use stwo_cairo_verifier::utils::SpanExTrait;
 use stwo_cairo_verifier::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
 
