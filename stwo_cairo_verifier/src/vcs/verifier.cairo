@@ -77,7 +77,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     /// Returns `Ok(())` if the decommitment is successfully verified.
     fn verify(
         self: @MerkleVerifier<H>,
-        queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+        queries_per_log_size: Felt252Dict<Nullable<Array<usize>>>,
         queried_values: Array<Span<BaseField>>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError>;
@@ -89,7 +89,7 @@ impl MerkleVerifierImpl<
 > of MerkleVerifierTrait<H> {
     fn verify(
         self: @MerkleVerifier<H>,
-        mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+        mut queries_per_log_size: Felt252Dict<Nullable<Array<usize>>>,
         queried_values: Array<Span<BaseField>>,
         mut decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError> {
@@ -127,7 +127,8 @@ impl MerkleVerifierImpl<
             let mut col_query_index: u32 = 0;
             let mut layer_column_queries = queries_per_log_size
                 .replace(layer_log_size.into(), Default::default(),)
-                .deref_or(array![].span());
+                .deref_or(array![])
+                .span();
 
             // Merge previous layer queries and column queries.
             let res = loop {
@@ -309,8 +310,8 @@ fn test_verifier() {
         ]
     };
     let mut queries_per_log_size = Default::default();
-    queries_per_log_size.insert(3, NullableTrait::new(array![2, 5, 7].span()));
-    queries_per_log_size.insert(4, NullableTrait::new(array![7, 11, 14].span()));
+    queries_per_log_size.insert(3, NullableTrait::new(array![2, 5, 7]));
+    queries_per_log_size.insert(4, NullableTrait::new(array![7, 11, 14]));
     let queried_values = array![
         array![m31(720125469), m31(997644238), m31(194302184)].span(),
         array![m31(122725140), m31(840979908), m31(658446453)].span(),
