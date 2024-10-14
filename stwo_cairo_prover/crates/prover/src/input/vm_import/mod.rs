@@ -151,6 +151,7 @@ pub mod tests {
     }
 
     // Slow test. Run only in release.
+    #[cfg_attr(not(feature = "slow-tests"), ignore)]
     #[test]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
