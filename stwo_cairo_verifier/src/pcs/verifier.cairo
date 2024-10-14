@@ -98,6 +98,12 @@ impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         channel.mix_nonce(proof.proof_of_work);
 
+        // TODO: implement
+        // let proof_of_work_bits: u32 = *self.config.pow_bits;
+        // if channel.trailing_zeros() < proof_of_work_bits {
+        //     return Result::Err(VerificationError::ProofOfWork);
+        // }
+
         // Verify merkle decommitments.
         assert_eq!(self.trees.len(), proof.queried_values.len());
         assert_eq!(self.trees.len(), proof.decommitments.len());
