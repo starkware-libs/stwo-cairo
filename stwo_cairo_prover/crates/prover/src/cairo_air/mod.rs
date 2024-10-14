@@ -427,6 +427,7 @@ mod tests {
         verify_cairo(cairo_proof).unwrap();
     }
 
+    #[cfg_attr(not(feature = "slow-tests"), ignore)]
     #[test]
     fn test_full_cairo_air() {
         let cairo_proof = prove_cairo(small_cairo_input()).unwrap();
