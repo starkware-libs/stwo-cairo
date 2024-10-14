@@ -1,3 +1,4 @@
+use core::to_byte_array::AppendFormattedToByteArray;
 use core::array::SpanTrait;
 use core::poseidon::{poseidon_hash_span, hades_permutation};
 use core::traits::DivRem;
@@ -11,10 +12,10 @@ const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
 pub const EXTENSION_FELTS_PER_HASH: usize = 2;
 pub const FELTS_PER_HASH: usize = 8;
 
-#[derive(Default, Drop)]
+#[derive(Default, Drop, Copy, Debug)]
 pub struct ChannelTime {
-    n_challenges: usize,
-    n_sent: usize,
+    pub n_challenges: usize,
+    pub n_sent: usize,
 }
 
 #[generate_trait]
@@ -29,10 +30,10 @@ impl ChannelTimeImpl of ChannelTimeTrait {
     }
 }
 
-#[derive(Drop)]
+#[derive(Drop, Copy, Debug)]
 pub struct Channel {
-    digest: felt252,
-    channel_time: ChannelTime,
+    pub digest: felt252,
+    pub channel_time: ChannelTime,
 }
 
 #[generate_trait]
