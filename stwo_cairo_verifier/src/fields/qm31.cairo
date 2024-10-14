@@ -427,7 +427,10 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
 #[cfg(test)]
 mod tests {
     use super::super::m31::{m31, P, M31Trait};
-    use super::{QM31, qm31, QM31Trait, QM31Impl, UnreducedQM31, UnreducedQM31Impl, QM31IntoPackedUnreducedQM31, PackedUnreducedQM31Impl};
+    use super::{
+        QM31, qm31, QM31Trait, QM31Impl, UnreducedQM31, UnreducedQM31Impl,
+        QM31IntoPackedUnreducedQM31, PackedUnreducedQM31Impl
+    };
 
     #[test]
     fn test_QM31() {
