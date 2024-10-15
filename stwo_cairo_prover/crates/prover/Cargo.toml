@@ -18,3 +18,4 @@ thiserror.workspace = true
 [dev-dependencies]
 cairo-lang-casm.workspace = true
 rand.workspace = true
+
