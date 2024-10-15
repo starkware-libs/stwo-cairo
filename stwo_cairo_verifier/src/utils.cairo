@@ -1,4 +1,5 @@
 use core::array::SpanTrait;
+use core::dict::Felt252Dict;
 use core::traits::PanicDestruct;
 use core::option::OptionTrait;
 use core::box::BoxTrait;
