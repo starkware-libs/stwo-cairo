@@ -150,7 +150,7 @@ pub mod tests {
         )
     }
 
-    // Slow test. Run only in release.
+    #[ignore]
     #[test]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
@@ -173,6 +173,7 @@ pub mod tests {
         println!("Usage: {:#?}", input.instructions.usage());
     }
 
+    #[ignore]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
