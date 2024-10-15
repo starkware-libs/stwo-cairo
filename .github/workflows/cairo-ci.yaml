@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          lfs: true
+          lfs: false
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
