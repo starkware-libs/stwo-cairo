@@ -12,9 +12,9 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
-use crate::components::memory::component::N_M31_IN_FELT252;
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
+use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::MemoryLookupElements;
 use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;

@@ -182,7 +182,7 @@ mod tests {
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::components::memory::component::N_M31_IN_FELT252;
+    use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
     use crate::input::mem::{MemConfig, MemoryBuilder};
     use crate::input::range_check_unit::RangeCheckUnitInput;
 
