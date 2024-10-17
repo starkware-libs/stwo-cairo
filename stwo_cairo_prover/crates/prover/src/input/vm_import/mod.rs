@@ -47,8 +47,9 @@ pub fn import_from_vm_output(
     let mut range_check9 = RangeCheckUnitInput::new();
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
-    let mem = MemoryBuilder::from_iter(mem_config, &mut range_check9, MemEntryIter(&mut mem_file));
-    let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mem);
+    let mut mem =
+        MemoryBuilder::from_iter(mem_config, &mut range_check9, MemEntryIter(&mut mem_file));
+    let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mut mem);
 
     let public_mem_addresses = pub_data
         .public_memory
@@ -58,7 +59,7 @@ pub fn import_from_vm_output(
 
     Ok(CairoInput {
         instructions,
-        mem,
+        mem: mem.build(),
         public_mem_addresses,
         range_check9,
         range_check_builtin: SegmentAddrs {
