@@ -19,11 +19,11 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::components::memory::component::{
+use crate::components::memory::id_to_f252::component::{
     MemoryClaim, MemoryComponent, MemoryEval, MemoryInteractionClaim,
 };
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::MemoryLookupElements;
 use crate::components::range_check_builtin::component::{
     RangeCheckBuiltinClaim, RangeCheckBuiltinComponent, RangeCheckBuiltinEval,
     RangeCheckBuiltinInteractionClaim,
