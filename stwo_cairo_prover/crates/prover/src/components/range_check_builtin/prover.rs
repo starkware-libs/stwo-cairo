@@ -17,8 +17,8 @@ use super::component::{
     RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionClaim, N_RANGE_CHECK_COLUMNS,
     N_VALUES_FELTS,
 };
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::MemoryLookupElements;
 use crate::input::SegmentAddrs;
 
 // Memory addresses for the RangeCheckBuiltin segment.
@@ -178,7 +178,9 @@ mod tests {
     use stwo_prover::core::pcs::TreeVec;
 
     use super::*;
-    use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+    use crate::components::memory::id_to_f252::{
+        MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT,
+    };
     use crate::components::range_check_builtin::component::RangeCheckBuiltinEval;
     use crate::felt::split_f252;
     use crate::prover_types::PackedUInt32;
