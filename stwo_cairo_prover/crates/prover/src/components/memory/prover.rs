@@ -36,7 +36,7 @@ impl MemoryClaimProver {
 
         let size = values.len().next_power_of_two();
         assert!(size <= MEMORY_ADDRESS_BOUND);
-        values.resize(size, MemoryValue::U64(0).as_u256());
+        values.resize(size, MemoryValue::Small(0).as_u256());
 
         let values = values
             .into_iter()
