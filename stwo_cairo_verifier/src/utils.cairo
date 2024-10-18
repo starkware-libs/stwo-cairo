@@ -9,6 +9,7 @@ use core::num::traits::BitSize;
 use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
 use stwo_cairo_verifier::BaseField;
 use core::traits::DivRem;
+use stwo_cairo_verifier::fields::cm31::CM31;
 
 #[generate_trait]
 pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {
@@ -114,6 +115,30 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     result
 }
 
+pub fn bit_reverse(v: Span<CM31>) -> Array<CM31> {
+    let n = v.len();
+    let log_n = ilog2(n);
+
+    let mut result = array![];
+    let mut i = 0;
+    while i < n {
+        let j = bit_reverse_index(i, log_n);
+        result.append(*v[j]);
+        i = i + 1;
+    };
+    result
+}
+
+fn ilog2(n: u32) -> u32 {
+    let mut log = 0;
+    let mut current = n;
+    while current > 1 {
+        current = current / 2;
+        log = log + 1;
+    };
+    log
+}
+
 pub fn find(n: u32, a: Span<u32>) -> bool {
     let mut i = 0;
     let mut res = false;
@@ -125,6 +150,34 @@ pub fn find(n: u32, a: Span<u32>) -> bool {
         i = i + 1;
     };
     res
+}
+
+pub fn get_unique_elements<T, +PartialEq<T>, +Drop<T>, +Copy<T>>(vector: @Array<T>) -> Array<T> {
+    let mut uniques: Array<T> = array![];
+
+    let mut i = 0;
+    while i < vector.len() {
+        if !contains_element(@uniques, vector[i]) {
+            uniques.append(*vector[i]);
+        }
+        i = i + 1
+    };
+
+    uniques
+}
+
+pub fn contains_element<T, +PartialEq<T>>(vector: @Array<T>, element: @T) -> bool {
+    let mut contains = false;
+
+    let mut i = 0;
+    while i < vector.len() {
+        if vector[i] == element {
+            contains = true;
+            break;
+        }
+        i = i + 1;
+    };
+    contains
 }
 
 pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
@@ -153,9 +206,62 @@ pub fn qm31_zero_array(n: u32) -> Array<QM31> {
     result
 }
 
+pub fn flat_3d_array<T, +Copy<T>, +Drop<T>>(array: Span<Array<Array<T>>>) -> Array<T> {
+    let mut flattened = array![];
+
+    let mut i = 0;
+    while i < array.len() {
+        let middle_array = array.at(i).span();
+
+        let mut j = 0;
+        while j < middle_array.len() {
+            let inner_array = middle_array.at(j).span();
+
+            let mut k = 0;
+            while k < inner_array.len() {
+                let element = inner_array.at(k).clone();
+                flattened.append(element);
+
+                k = k + 1;
+            };
+
+            j = j + 1;
+        };
+
+        i = i + 1;
+    };
+
+    flattened
+}
+
+pub fn substract_map_2d_array<T, +Sub<T>, +Copy<T>, +Drop<T>>(
+    array: Span<Array<T>>, substracting: T
+) -> Array<T> {
+    let mut mapped_array = array![];
+
+    let mut i = 0;
+    while i < array.len() {
+        let inner_array = array.at(i).span();
+
+        let mut j = 0;
+        while j < inner_array.len() {
+            let minuend = inner_array.at(j);
+            mapped_array.append(*minuend - substracting);
+            j = j + 1;
+        };
+        i = i + 1;
+    };
+
+    mapped_array
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{pow, pow_qm31, qm31, bit_reverse_index};
+    use super::{
+        pow, pow_qm31, qm31, bit_reverse_index, bit_reverse, get_unique_elements, flat_3d_array,
+        substract_map_2d_array
+    };
+    use stwo_cairo_verifier::fields::cm31::cm31;
 
     #[test]
     fn test_pow() {
@@ -167,7 +273,7 @@ mod tests {
     }
 
     #[test]
-    fn test_bit_reverse() {
+    fn test_bit_reverse_index() {
         // 1 bit
         assert_eq!(0, bit_reverse_index(0, 1));
         assert_eq!(1, bit_reverse_index(1, 1));
@@ -192,6 +298,45 @@ mod tests {
     }
 
     #[test]
+    fn test_bit_reverse() {
+        // 1 bit
+        let array_to_bit_reverse = array![cm31(0, 0), cm31(1, 0)];
+        assert_eq!(array![cm31(0, 0), cm31(1, 0)], bit_reverse(array_to_bit_reverse.span()));
+
+        // 2 bits
+        let array_to_bit_reverse = array![cm31(0, 0), cm31(1, 0), cm31(2, 0), cm31(3, 0)];
+        assert_eq!(
+            array![cm31(0, 0), cm31(2, 0), cm31(1, 0), cm31(3, 0)],
+            bit_reverse(array_to_bit_reverse.span())
+        );
+
+        // 3 bits
+        let array_to_bit_reverse = array![
+            cm31(0, 0),
+            cm31(1, 0),
+            cm31(2, 0),
+            cm31(3, 0),
+            cm31(4, 0),
+            cm31(5, 0),
+            cm31(6, 0),
+            cm31(7, 0)
+        ];
+        assert_eq!(
+            bit_reverse(array_to_bit_reverse.span()),
+            array![
+                cm31(0, 0),
+                cm31(4, 0),
+                cm31(2, 0),
+                cm31(6, 0),
+                cm31(1, 0),
+                cm31(5, 0),
+                cm31(3, 0),
+                cm31(7, 0)
+            ]
+        );
+    }
+
+    #[test]
     fn test_pow_qm31_1() {
         let result = pow_qm31(qm31(1, 2, 3, 4), 0);
         let expected_result = qm31(1, 0, 0, 0);
@@ -210,6 +355,45 @@ mod tests {
         let result = pow_qm31(qm31(1, 2, 3, 4), 37);
         let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
         assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_can_get_unique_elements_of_array() {
+        let vector_1 = array![1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
+        let expected_vector_1 = array![1, 2, 3, 4, 5];
+        let vector_2 = array![1, 1, 1, 1, 1, 1, 1, 1];
+        let expected_vector_2 = array![1];
+        let vector_3 = array![1, 2, 3, 4, 5];
+        let expected_vector_3 = array![1, 2, 3, 4, 5];
+
+        let return_vector_1 = get_unique_elements(@vector_1);
+        let return_vector_2 = get_unique_elements(@vector_2);
+        let return_vector_3 = get_unique_elements(@vector_3);
+
+        assert_eq!(expected_vector_1, return_vector_1);
+        assert_eq!(expected_vector_2, return_vector_2);
+        assert_eq!(expected_vector_3, return_vector_3);
+    }
+
+    #[test]
+    fn test_flat_3d_array() {
+        let array_3d = array![
+            array![array![1, 2], array![3, 4], array![5, 6]],
+            array![array![7, 8], array![9, 10], array![11, 12]]
+        ];
+
+        assert_eq!(flat_3d_array(array_3d.span()), array![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    }
+
+    #[test]
+    fn test_substract_a_value_from_2d_array() {
+        let array_2d = array![
+            array![1, 2], array![3, 4], array![5, 6], array![7, 8], array![9, 10], array![11, 12]
+        ];
+
+        assert_eq!(
+            substract_map_2d_array(array_2d.span(), 1), array![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        );
     }
 }
 
