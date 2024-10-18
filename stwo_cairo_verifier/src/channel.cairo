@@ -1,3 +1,4 @@
+use core::to_byte_array::AppendFormattedToByteArray;
 use core::array::SpanTrait;
 use core::poseidon::{poseidon_hash_span, hades_permutation};
 use core::traits::DivRem;
@@ -11,10 +12,10 @@ const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31.
 pub const EXTENSION_FELTS_PER_HASH: usize = 2;
 pub const FELTS_PER_HASH: usize = 8;
 
-#[derive(Default, Drop)]
+#[derive(Default, Drop, Copy, Debug)]
 pub struct ChannelTime {
-    n_challenges: usize,
-    n_sent: usize,
+    pub n_challenges: usize,
+    pub n_sent: usize,
 }
 
 #[generate_trait]
@@ -29,10 +30,10 @@ impl ChannelTimeImpl of ChannelTimeTrait {
     }
 }
 
-#[derive(Drop)]
+#[derive(Drop, Copy, Debug)]
 pub struct Channel {
-    digest: felt252,
-    channel_time: ChannelTime,
+    pub digest: felt252,
+    pub channel_time: ChannelTime,
 }
 
 #[generate_trait]
@@ -137,6 +138,27 @@ pub impl ChannelImpl of ChannelTrait {
             i += 1;
         };
         bytes
+    }
+
+    fn trailing_zeros(self: Channel) -> u32 {
+        let digest: felt252 = self.digest;
+        let mut digest_as_u256: u256 = digest.try_into().unwrap();
+
+        return Self::count_trailing_zeros(@digest_as_u256);
+    }
+
+    fn count_trailing_zeros(n: @u256) -> u32 {
+        let mut count = 0;
+        let mut value = n.clone();
+        while value > 0 {
+            if value & 1_u256 == 1 {
+                break;
+            }
+            count += 1;
+            value = value / 2;
+        };
+
+        return count;
     }
 }
 
@@ -334,5 +356,32 @@ mod tests {
         let first_result = channel.draw_random_bytes();
         let second_result = channel.draw_random_bytes();
         assert_ne!(first_result, second_result);
+    }
+
+    #[test]
+    pub fn test_can_return_trailing_zeros_of_digest() {
+        let initial_digest = 0xcafecafe;
+        let mut channel = ChannelTrait::new(initial_digest);
+        let trailing_zeros: u32 = channel.trailing_zeros();
+        assert_eq!(trailing_zeros, 1);
+    }
+
+    #[test]
+    pub fn test_can_return_trailing_zeros_of_integer() {
+        let mut value = 1024_u256;
+        let mut tz = ChannelTrait::count_trailing_zeros(@value);
+        assert_eq!(tz, 10);
+
+        value = 16;
+        let mut tz = ChannelTrait::count_trailing_zeros(@value);
+        assert_eq!(tz, 4);
+
+        value = 3405695742;
+        let mut tz = ChannelTrait::count_trailing_zeros(@value);
+        assert_eq!(tz, 1);
+
+        value = 11111;
+        let mut tz = ChannelTrait::count_trailing_zeros(@value);
+        assert_eq!(tz, 0);
     }
 }
