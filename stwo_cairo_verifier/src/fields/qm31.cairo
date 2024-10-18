@@ -19,19 +19,11 @@ pub impl QM31Impl of QM31Trait {
         QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
     }
 
-    fn from_u32(arr: [u32; 4]) -> QM31 {
-        let [a, b, c, d] = arr;
-        let a_mod_p = M31Impl::reduce_u32(a);
-        let b_mod_p = M31Impl::reduce_u32(b);
-        let c_mod_p = M31Impl::reduce_u32(c);
-        let d_mod_p = M31Impl::reduce_u32(d);
-
-        QM31 { a: CM31 { a: a_mod_p, b: b_mod_p }, b: CM31 { a: c_mod_p, b: d_mod_p } }
-    }
     #[inline]
     fn to_array(self: QM31) -> [M31; 4] {
         [self.a.a, self.a.b, self.b.a, self.b.b]
     }
+
     fn inverse(self: QM31) -> QM31 {
         assert_ne!(self, Zero::zero());
         let b2 = self.b * self.b;
@@ -40,6 +32,7 @@ pub impl QM31Impl of QM31Trait {
         let denom_inverse = denom.inverse();
         QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+
     fn mul_m31(self: QM31, multiplier: M31) -> QM31 {
         QM31 {
             a: CM31 { a: self.a.a * multiplier, b: self.a.b * multiplier },
@@ -135,16 +128,5 @@ mod tests {
         assert_eq!(qm0_x_qm1 * qm1.inverse(), qm31(1, 2, 3, 4));
         assert_eq!(qm1 * m.inverse().into(), qm1 * qm.inverse());
         assert_eq!(qm1.mul_m31(m), qm1 * m.into());
-    }
-
-    #[test]
-    fn test_qm31_from_u32() {
-        let arr = [2147483648, 2, 3, 4];
-        let felt = QM31Impl::from_u32(arr);
-        let expected_felt = QM31 {
-            a: CM31 { a: m31(1), b: m31(2) }, b: CM31 { a: m31(3), b: m31(4) }
-        };
-
-        assert_eq!(felt, expected_felt)
     }
 }
