@@ -75,6 +75,10 @@ impl Memory {
         }
     }
 
+    pub fn get_id(&self, addr: u32) -> u32 {
+        self.address_to_id[addr as usize].0
+    }
+
     pub fn get_inst(&self, addr: u32) -> Option<u64> {
         self.inst_cache.get(&addr).copied()
     }
