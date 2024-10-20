@@ -4,7 +4,6 @@ use core::poseidon::{poseidon_hash_span, hades_permutation};
 use core::traits::DivRem;
 use stwo_cairo_verifier::fields::qm31::QM31Trait;
 use stwo_cairo_verifier::utils::pack4;
-
 use stwo_cairo_verifier::{BaseField, SecureField};
 
 /// Equals `2^31`.

@@ -3,8 +3,7 @@ use core::box::BoxTrait;
 use core::dict::Felt252Dict;
 use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
-use core::iter::IntoIterator;
-use core::iter::Iterator;
+use core::iter::{Iterator, IntoIterator};
 use core::num::traits::BitSize;
 use core::traits::DivRem;
 use core::traits::PanicDestruct;
@@ -31,7 +30,7 @@ pub impl OptBoxImpl<T> of OptBoxTrait<T> {
 }
 
 #[generate_trait]
-pub impl ArrayImpl<T, +Copy<T>, +Drop<T>> of ArrayExTrait<T> {
+pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
     fn pop_n(ref self: Array<T>, mut n: usize) -> Array<T> {
         let mut res = array![];
         while n != 0 {
@@ -45,12 +44,12 @@ pub impl ArrayImpl<T, +Copy<T>, +Drop<T>> of ArrayExTrait<T> {
         res
     }
 
-    fn max<+PartialOrd<T>>(mut self: @Array<T>) -> Option<@T> {
+    fn max<+Copy<T>, +PartialOrd<T>>(mut self: @Array<T>) -> Option<@T> {
         self.span().max()
     }
 
     /// Sorts an array in ascending order. Uses quicksort algorithm.
-    fn sort_ascending<+PartialOrd<T>>(self: Array<T>) -> Array<T> {
+    fn sort_ascending<+Clone<T>, +PartialOrd<T>>(self: Array<T>) -> Array<T> {
         if self.len() <= 1 {
             return self;
         }
@@ -61,7 +60,7 @@ pub impl ArrayImpl<T, +Copy<T>, +Drop<T>> of ArrayExTrait<T> {
         let pivot = iter.next().unwrap();
 
         for v in iter {
-            if v > pivot {
+            if v.clone() > pivot.clone() {
                 rhs.append(v);
             } else {
                 lhs.append(v);
@@ -87,22 +86,22 @@ pub impl ArrayImpl<T, +Copy<T>, +Drop<T>> of ArrayExTrait<T> {
         }
 
         let mut iter = self.into_iter();
-        let mut last_value = iter.next().unwrap();
-        let mut res = array![last_value];
+        let mut res = array![iter.next().unwrap()];
+        let mut last_value = res[0];
         for value in iter {
-            if value != last_value {
+            if @value != last_value {
+                last_value = @value;
                 res.append(value);
-                last_value = value;
             }
         };
 
         res
     }
 
-    fn new_repeated(n: usize, v: T) -> Array<T> {
+    fn new_repeated<+Clone<T>>(n: usize, v: T) -> Array<T> {
         let mut res = array![];
         for _ in 0..n {
-            res.append(v);
+            res.append(v.clone());
         };
         res
     }

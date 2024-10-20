@@ -104,7 +104,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Verify proof of work.
         channel.mix_nonce(proof_of_work);
 
-        if channel.trailing_zeros() < *self.config.pow_bits {
+        if !channel.check_proof_of_work(*self.config.pow_bits) {
             return Result::Err(VerificationError::ProofOfWork);
         }
 
