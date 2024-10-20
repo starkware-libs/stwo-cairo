@@ -9,9 +9,8 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::components::memory::id_to_f252::{
-    IdToF252LookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT,
-};
+use crate::components::memory::addr_to_id::N_ADDRESS_FELTS;
+use crate::components::memory::id_to_f252::{IdToF252LookupElements, N_BITS_PER_FELT};
 use crate::components::LOOKUP_INTERACTION_PHASE;
 use crate::input::SegmentAddrs;
 
