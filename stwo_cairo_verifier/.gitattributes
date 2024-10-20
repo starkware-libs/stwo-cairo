@@ -1,0 +1,2 @@
+# Excluded proof files from GitHub stats and hide in diffs.
+tests/proofs/* linguist-generated

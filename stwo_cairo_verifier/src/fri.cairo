@@ -22,7 +22,7 @@ use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, Mer
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
 
-#[derive(Debug, Clone, Drop, PartialEq)]
+#[derive(Debug, Drop, PartialEq)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
@@ -196,14 +196,13 @@ pub struct FriConfig {
     pub n_queries: usize,
 }
 
-
 /// Stores a subset of evaluations in a fri layer with their corresponding merkle decommitments.
 ///
 /// The subset corresponds to the set of evaluations needed by a FRI verifier.
 #[derive(Drop, Clone, Debug)]
 pub struct FriLayerProof {
     pub evals_subset: Array<QM31>,
-    pub decommitment: MerkleDecommitment::<PoseidonMerkleHasher>,
+    pub decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
     pub commitment: felt252,
 }
 
@@ -316,7 +315,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_on_queries(
         self: @FriVerifier, queries: @Queries, decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(), FriVerificationError> {
-        assert_eq!(queries.log_domain_size, self.expected_query_log_domain_size);
+        assert!(queries.log_domain_size == self.expected_query_log_domain_size);
 
         let (last_layer_queries, last_layer_query_evals) = self
             .decommit_inner_layers(queries, @decommitted_values)?;

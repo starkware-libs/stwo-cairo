@@ -90,11 +90,9 @@ impl MerkleVerifierImpl<
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         queried_values: @Array<Array<BaseField>>,
-        mut decommitment: MerkleDecommitment<H>,
+        decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError> {
-        let MerkleDecommitment { hash_witness: mut hash_witness,
-        column_witness: mut column_witness, } =
-            decommitment;
+        let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
         let mut layer_log_size = *self.column_log_sizes.max().unwrap();
         let mut cols_by_size = Self::cols_by_size(self);
@@ -271,7 +269,7 @@ fn fetch_prev_node_hash<H, +Copy<H>, +Drop<H>>(
     Option::None
 }
 
-#[derive(Copy, Drop, Debug)]
+#[derive(Drop, Debug)]
 pub enum MerkleVerificationError {
     WitnessTooShort,
     WitnessTooLong,

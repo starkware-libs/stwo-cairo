@@ -11,7 +11,7 @@ pub struct CM31 {
 #[generate_trait]
 pub impl CM31Impl of CM31Trait {
     fn inverse(self: CM31) -> CM31 {
-        assert_ne!(self, Zero::zero());
+        assert!(self.is_non_zero());
         let denom_inverse: M31 = (self.a * self.a + self.b * self.b).inverse();
         CM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
