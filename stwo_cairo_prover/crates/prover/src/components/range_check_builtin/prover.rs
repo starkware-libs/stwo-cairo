@@ -180,9 +180,8 @@ mod tests {
     use stwo_prover::core::pcs::TreeVec;
 
     use super::*;
-    use crate::components::memory::id_to_f252::{
-        IdToF252LookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT,
-    };
+    use crate::components::memory::addr_to_id::N_ADDRESS_FELTS;
+    use crate::components::memory::id_to_f252::{IdToF252LookupElements, N_BITS_PER_FELT};
     use crate::components::range_check_builtin::component::RangeCheckBuiltinEval;
     use crate::felt::split_f252;
     use crate::prover_types::PackedUInt32;
