@@ -1,5 +1,6 @@
 use stwo_cairo_verifier::circle::{
-    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl
+    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl,
+    CirclePointTrait
 };
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::QM31;
@@ -96,6 +97,18 @@ pub impl CanonicCosetImpl of CanonicCosetTrait {
     /// Gets the [`CircleDomain`] representing the same point set (in another order).
     fn circle_domain(self: @CanonicCoset) -> CircleDomain {
         CircleDomainImpl::new(self.half_coset())
+    }
+
+    /// Evaluates the coset's vanishing polynomial at point `p`.
+    fn eval_vanishing(self: @CanonicCoset, p: CirclePoint<QM31>) -> QM31 {
+        let mut x = p.x;
+
+        // The formula for the x coordinate of the double of a point.
+        for _ in 1..*self.coset.log_size {
+            x = CirclePointTrait::double_x(x);
+        };
+
+        x
     }
 }
 
