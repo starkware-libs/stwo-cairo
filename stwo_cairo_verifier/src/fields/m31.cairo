@@ -49,7 +49,7 @@ pub impl M31Impl of M31Trait {
     }
 
     fn inverse(self: M31) -> M31 {
-        assert_ne!(self, core::num::traits::Zero::zero());
+        assert!(self.is_non_zero());
         let t0 = Self::sqn(self, 2) * self;
         let t1 = Self::sqn(t0, 1) * t0;
         let t2 = Self::sqn(t1, 3) * t0;
