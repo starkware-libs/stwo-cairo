@@ -1,6 +1,6 @@
+use core::num::traits::{WideMul, CheckedSub};
 use core::option::OptionTrait;
 use core::traits::TryInto;
-use core::result::ResultTrait;
 
 pub const P: u32 = 0x7fffffff;
 const P32NZ: NonZero<u32> = 0x7fffffff;
@@ -45,7 +45,7 @@ pub impl M31Impl of M31Trait {
 pub impl M31Add of core::traits::Add<M31> {
     fn add(lhs: M31, rhs: M31) -> M31 {
         let res = lhs.inner + rhs.inner;
-        let res = core::integer::u32_overflowing_sub(res, P).unwrap_or(res);
+        let res = res.checked_sub(P).unwrap_or(res);
         M31 { inner: res }
     }
 }
@@ -56,7 +56,7 @@ pub impl M31Sub of core::traits::Sub<M31> {
 }
 pub impl M31Mul of core::traits::Mul<M31> {
     fn mul(lhs: M31, rhs: M31) -> M31 {
-        M31Impl::reduce_u64(core::integer::u32_wide_mul(lhs.inner, rhs.inner))
+        M31Impl::reduce_u64(lhs.inner.wide_mul(rhs.inner))
     }
 }
 pub impl M31Zero of core::num::traits::Zero<M31> {
@@ -102,7 +102,7 @@ pub fn m31(val: u32) -> M31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{m31, P, M31, M31Trait};
+    use super::{m31, P, M31Trait};
     const POW2_15: u32 = 0b1000000000000000;
     const POW2_16: u32 = 0b10000000000000000;
 

@@ -1,5 +1,5 @@
-use core::array::ToSpanTrait;
 use core::array::ArrayTrait;
+use core::array::ToSpanTrait;
 use core::option::OptionTrait;
 
 trait Compare<T, C> {
