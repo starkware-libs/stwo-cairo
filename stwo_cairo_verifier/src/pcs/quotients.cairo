@@ -3,7 +3,6 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
-use stwo_cairo_verifier::VerificationError;
 use stwo_cairo_verifier::circle::{
     CosetImpl, CirclePointIndexImpl, CirclePoint, M31_CIRCLE_LOG_ORDER
 };
@@ -20,6 +19,7 @@ use stwo_cairo_verifier::queries::{
     SparseSubCircleDomain, SparseSubCircleDomainImpl, SubCircleDomainImpl
 };
 use stwo_cairo_verifier::utils::{bit_reverse_index, pack4, ArrayImpl as ArrayUtilImpl};
+use stwo_cairo_verifier::verifier::VerificationError;
 
 pub fn fri_answers(
     log_size_per_column: @Array<u32>,
@@ -29,8 +29,8 @@ pub fn fri_answers(
     queried_values_per_column: @Array<Array<M31>>,
 ) -> Result<Array<SparseCircleEvaluation>, VerificationError> {
     let n_columns = log_size_per_column.len();
-    assert!(n_columns == samples_per_column.len());
-    assert!(n_columns == queried_values_per_column.len());
+    assert_eq!(n_columns, samples_per_column.len());
+    assert_eq!(n_columns, queried_values_per_column.len());
 
     // Group columns by log size.
     let mut log_size_00_columns = array![];

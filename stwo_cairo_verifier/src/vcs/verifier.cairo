@@ -78,9 +78,10 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     fn verify(
         self: @MerkleVerifier<H>,
         queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: Array<Span<BaseField>>,
+        queried_values: @Array<Array<BaseField>>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError>;
+
     fn cols_by_size(self: @MerkleVerifier<H>) -> Felt252Dict<Nullable<Array<u32>>>;
 }
 
@@ -90,15 +91,11 @@ impl MerkleVerifierImpl<
     fn verify(
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: Array<Span<BaseField>>,
-        mut decommitment: MerkleDecommitment<H>,
+        queried_values: @Array<Array<BaseField>>,
+        decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError> {
-        let MerkleDecommitment::<
-            H
-        > { hash_witness: mut hash_witness, column_witness: mut column_witness, } =
-            decommitment;
+        let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
-        let queried_values = @queried_values;
         let mut layer_log_size = *self.column_log_sizes.max().unwrap();
         let mut cols_by_size = Self::cols_by_size(self);
 
@@ -118,7 +115,7 @@ impl MerkleVerifierImpl<
             let mut layer_queried_values = array![];
 
             while let Option::Some(column_index) = layer_cols.pop_front() {
-                layer_queried_values.append(*queried_values[column_index]);
+                layer_queried_values.append(queried_values[column_index].span());
             };
 
             let layer_queried_values = @layer_queried_values;
@@ -312,18 +309,18 @@ fn test_verifier() {
     queries_per_log_size.insert(3, NullableTrait::new(array![2, 5, 7].span()));
     queries_per_log_size.insert(4, NullableTrait::new(array![7, 11, 14].span()));
     let queried_values = array![
-        array![m31(720125469), m31(997644238), m31(194302184)].span(),
-        array![m31(122725140), m31(840979908), m31(658446453)].span(),
-        array![m31(968171809), m31(100529415), m31(1057594968)].span(),
-        array![m31(1012109813), m31(428994537), m31(992269493)].span(),
-        array![m31(766295003), m31(28706943), m31(967997322)].span(),
-        array![m31(552345729), m31(696999129), m31(287489501)].span(),
-        array![m31(364669117), m31(933029034), m31(285391207)].span(),
-        array![m31(996158769), m31(69309287), m31(420798739)].span(),
-        array![m31(650584843), m31(942699537), m31(310081088)].span(),
-        array![m31(71167745), m31(330264928), m31(409791388)].span()
+        array![m31(720125469), m31(997644238), m31(194302184)],
+        array![m31(122725140), m31(840979908), m31(658446453)],
+        array![m31(968171809), m31(100529415), m31(1057594968)],
+        array![m31(1012109813), m31(428994537), m31(992269493)],
+        array![m31(766295003), m31(28706943), m31(967997322)],
+        array![m31(552345729), m31(696999129), m31(287489501)],
+        array![m31(364669117), m31(933029034), m31(285391207)],
+        array![m31(996158769), m31(69309287), m31(420798739)],
+        array![m31(650584843), m31(942699537), m31(310081088)],
+        array![m31(71167745), m31(330264928), m31(409791388)]
     ];
     MerkleVerifier { root, column_log_sizes, }
-        .verify(queries_per_log_size, queried_values, decommitment,)
+        .verify(queries_per_log_size, @queried_values, decommitment,)
         .expect('verification failed');
 }
