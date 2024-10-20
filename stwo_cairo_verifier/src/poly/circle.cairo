@@ -1,7 +1,5 @@
-use core::num::traits::ops::wrapping::WrappingSub;
-use stwo_cairo_verifier::circle::CirclePointTrait;
 use stwo_cairo_verifier::circle::{
-    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, M31_CIRCLE_GEN, CIRCLE_ORDER
+    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl
 };
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::QM31;
@@ -26,32 +24,29 @@ pub impl CircleDomainImpl of CircleDomainTrait {
     }
 
     /// Returns the size of the domain.
+    #[inline]
     fn size(self: @CircleDomain) -> usize {
         pow(2, self.log_size())
     }
 
     /// Returns the log size of the domain.
+    #[inline]
     fn log_size(self: @CircleDomain) -> usize {
         *self.half_coset.log_size + 1
     }
 
-    /// Returns the circle point index of the `i`th domain element.
-    fn index_at(self: @CircleDomain, index: usize) -> usize {
+    /// Returns the [`CirclePointIndex`] of the `i`th domain element.
+    fn index_at(self: @CircleDomain, index: usize) -> CirclePointIndex {
         if index < self.half_coset.size() {
             self.half_coset.index_at(index)
         } else {
-            CIRCLE_ORDER.wrapping_sub(self.half_coset.index_at(index - self.half_coset.size()))
+            -self.half_coset.index_at(index - self.half_coset.size())
         }
     }
 
-    /// Returns the `i` th domain element.
+    #[inline]
     fn at(self: @CircleDomain, index: usize) -> CirclePoint<M31> {
-        let mut scalar = self.index_at(index).into();
-        M31_CIRCLE_GEN.mul(ref scalar)
-    }
-
-    fn new_with_log_size(log_size: u32) -> CircleDomain {
-        CircleDomain { half_coset: CosetImpl::half_odds(log_size - 1) }
+        self.index_at(index).to_point()
     }
 }
 
@@ -124,7 +119,7 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePoint};
+    use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePoint, CirclePointIndexImpl};
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::qm31;
     use super::{
@@ -134,7 +129,11 @@ mod tests {
 
     #[test]
     fn test_circle_domain_at_1() {
-        let half_coset = Coset { initial_index: 16777216, step_size: 67108864, log_size: 5 };
+        let half_coset = Coset {
+            initial_index: CirclePointIndexImpl::new(16777216),
+            step_size: CirclePointIndexImpl::new(67108864),
+            log_size: 5
+        };
         let domain = CircleDomain { half_coset };
         let index = 17;
         let result = domain.at(index);
@@ -144,7 +143,11 @@ mod tests {
 
     #[test]
     fn test_circle_domain_at_2() {
-        let half_coset = Coset { initial_index: 16777216, step_size: 67108864, log_size: 5 };
+        let half_coset = Coset {
+            initial_index: CirclePointIndexImpl::new(16777216),
+            step_size: CirclePointIndexImpl::new(67108864),
+            log_size: 5
+        };
         let domain = CircleDomain { half_coset };
         let index = 37;
         let result = domain.at(index);
@@ -158,15 +161,21 @@ mod tests {
         let lhs = SparseCircleEvaluation {
             subcircle_evals: array![
                 CircleEvaluationImpl::new(
-                    CircleDomain { half_coset: CosetImpl::new(16777216, 0) },
+                    CircleDomain {
+                        half_coset: CosetImpl::new(CirclePointIndexImpl::new(16777216), 0)
+                    },
                     array![qm31(28672, 0, 0, 0), qm31(36864, 0, 0, 0)]
                 ),
                 CircleEvaluationImpl::new(
-                    CircleDomain { half_coset: CosetImpl::new(2030043136, 0) },
+                    CircleDomain {
+                        half_coset: CosetImpl::new(CirclePointIndexImpl::new(2030043136), 0)
+                    },
                     array![qm31(28672, 0, 0, 0), qm31(36864, 0, 0, 0)]
                 ),
                 CircleEvaluationImpl::new(
-                    CircleDomain { half_coset: CosetImpl::new(2097152000, 0) },
+                    CircleDomain {
+                        half_coset: CosetImpl::new(CirclePointIndexImpl::new(2097152000), 0)
+                    },
                     array![qm31(2147454975, 0, 0, 0), qm31(2147446783, 0, 0, 0)]
                 ),
             ]
@@ -179,21 +188,27 @@ mod tests {
             SparseCircleEvaluation {
                 subcircle_evals: array![
                     CircleEvaluationImpl::new(
-                        CircleDomain { half_coset: CosetImpl::new(16777216, 0) },
+                        CircleDomain {
+                            half_coset: CosetImpl::new(CirclePointIndexImpl::new(16777216), 0)
+                        },
                         array![
                             qm31(667173716, 1020487722, 1791736788, 1346152946),
                             qm31(1471361534, 84922130, 1076528072, 810417939)
                         ]
                     ),
                     CircleEvaluationImpl::new(
-                        CircleDomain { half_coset: CosetImpl::new(2030043136, 0) },
+                        CircleDomain {
+                            half_coset: CosetImpl::new(CirclePointIndexImpl::new(2030043136), 0)
+                        },
                         array![
                             qm31(667173716, 1020487722, 1791736788, 1346152946),
                             qm31(1471361534, 84922130, 1076528072, 810417939)
                         ]
                     ),
                     CircleEvaluationImpl::new(
-                        CircleDomain { half_coset: CosetImpl::new(2097152000, 0) },
+                        CircleDomain {
+                            half_coset: CosetImpl::new(CirclePointIndexImpl::new(2097152000), 0)
+                        },
                         array![
                             qm31(1480309931, 1126995925, 355746859, 801330701),
                             qm31(676122113, 2062561517, 1070955575, 1337065708)
