@@ -1,6 +1,7 @@
 use std::ops::Add;
 use std::simd::Simd;
 
+use bytemuck::Zeroable;
 use itertools::all;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::fields::m31;
@@ -58,6 +59,14 @@ impl Add for PackedUInt32 {
     fn add(self, rhs: Self) -> Self::Output {
         Self {
             simd: self.simd + rhs.simd,
+        }
+    }
+}
+
+unsafe impl Zeroable for PackedUInt32 {
+    fn zeroed() -> Self {
+        Self {
+            simd: unsafe { core::mem::zeroed() },
         }
     }
 }
