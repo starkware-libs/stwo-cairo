@@ -1,27 +1,20 @@
-mod channel;
-mod circle;
-mod fields;
-mod fri;
-mod pcs;
-mod poly;
-mod queries;
-mod utils;
-mod vcs;
+pub mod channel;
+pub mod circle;
+pub mod fields;
+pub mod fri;
+pub mod pcs;
+pub mod poly;
+pub mod queries;
+pub mod utils;
+pub mod vcs;
+pub mod verifier;
 
 pub use fields::{BaseField, SecureField};
 
-fn main() {}
+/// An array in which each element relates (by index) to a column in the trace.
+pub type ColumnArray<T> = Array<T>;
 
-#[derive(Clone, Drop)]
-pub enum VerificationError {
-    /// Proof has invalid structure.
-    InvalidStructure: felt252,
-    /// Lookup values do not match.
-    InvalidLookup: felt252,
-    /// Merkle proof invalid.
-    Merkle: vcs::verifier::MerkleVerificationError,
-    /// Proof of work verification failed.
-    ProofOfWork,
-    // OodsNotMatching,
-// Fri(#[from] FriVerificationError),
-}
+/// An array in which each element relates (by index) to a commitment tree.
+pub type TreeArray<T> = Array<T>;
+
+fn main() {}
