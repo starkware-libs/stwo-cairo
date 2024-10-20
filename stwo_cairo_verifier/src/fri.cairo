@@ -1,3 +1,4 @@
+use core::dict::Felt252Dict;
 use stwo_cairo_verifier::fields::m31::M31Trait;
 use stwo_cairo_verifier::circle::{Coset, CosetImpl};
 use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
