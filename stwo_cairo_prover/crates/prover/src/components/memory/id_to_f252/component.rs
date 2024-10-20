@@ -8,16 +8,14 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use super::MemoryLookupElements;
+use super::IdToF252LookupElements;
 use crate::components::range_check_unit::RangeCheckElements;
 
+pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
 pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + 1;
 // TODO(AlonH): Make memory size configurable.
-pub const N_MEMORY_COLUMNS: usize = N_M31_IN_FELT252 + 2;
-pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 20;
-pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
-pub const MEMORY_ADDRESS_SIZE: usize = 1;
+pub const N_ID_TO_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252 + 1;
 
 pub type MemoryComponent = FrameworkComponent<MemoryEval>;
 
@@ -26,22 +24,22 @@ pub type MemoryComponent = FrameworkComponent<MemoryEval>;
 #[derive(Clone)]
 pub struct MemoryEval {
     pub log_n_rows: u32,
-    pub lookup_elements: MemoryLookupElements,
+    pub lookup_elements: IdToF252LookupElements,
     pub range9_lookup_elements: RangeCheckElements,
     pub claimed_sum: QM31,
 }
 impl MemoryEval {
     pub const fn n_columns(&self) -> usize {
-        N_M31_IN_FELT252 + 2
+        N_ID_TO_VALUE_COLUMNS
     }
     pub fn new(
         claim: MemoryClaim,
-        lookup_elements: MemoryLookupElements,
+        lookup_elements: IdToF252LookupElements,
         range9_lookup_elements: RangeCheckElements,
         interaction_claim: MemoryInteractionClaim,
     ) -> Self {
         Self {
-            log_n_rows: claim.log_address_bound,
+            log_n_rows: claim.log_size,
             lookup_elements,
             range9_lookup_elements,
             claimed_sum: interaction_claim.claimed_sum,
@@ -62,17 +60,17 @@ impl FrameworkEval for MemoryEval {
         let [is_first] = eval.next_interaction_mask(2, [0]);
         let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
 
-        let address_and_value: [E::F; N_M31_IN_FELT252 + 1] =
+        let id_and_value: [E::F; MEMORY_ID_SIZE + N_M31_IN_FELT252] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
         let frac = Fraction::new(
             E::EF::from(-multiplicity),
-            self.lookup_elements.combine(&address_and_value),
+            self.lookup_elements.combine(&id_and_value),
         );
         logup.write_frac(&mut eval, frac);
 
         // Range check elements.
-        for value_limb in address_and_value.iter().skip(MEMORY_ADDRESS_SIZE) {
+        for value_limb in id_and_value.iter().skip(MEMORY_ID_SIZE) {
             let frac = Fraction::new(
                 E::EF::one(),
                 self.range9_lookup_elements.combine(&[value_limb.clone()]),
@@ -88,14 +86,14 @@ impl FrameworkEval for MemoryEval {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct MemoryClaim {
-    pub log_address_bound: u32,
+    pub log_size: u32,
 }
 impl MemoryClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let interaction_0_log_size = vec![self.log_address_bound; N_M31_IN_FELT252 + 2];
+        let interaction_0_log_size = vec![self.log_size; N_ID_TO_VALUE_COLUMNS];
         let interaction_1_log_size =
-            vec![self.log_address_bound; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 + 1)];
-        let fixed_column_log_sizes = vec![self.log_address_bound];
+            vec![self.log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 + 1)];
+        let fixed_column_log_sizes = vec![self.log_size];
         TreeVec::new(vec![
             interaction_0_log_size,
             interaction_1_log_size,
@@ -104,7 +102,7 @@ impl MemoryClaim {
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_address_bound as u64);
+        channel.mix_u64(self.log_size as u64);
     }
 }
 
