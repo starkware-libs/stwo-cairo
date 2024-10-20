@@ -117,13 +117,10 @@ pub struct SparseLineEvaluation {
 
 #[generate_trait]
 pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
-    fn fold(self: @SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
-        let mut i = 0;
-        let mut res: Array<QM31> = array![];
-        while i < self.subline_evals.len() {
-            let line_evaluation = fold_line(self.subline_evals[i], alpha);
-            res.append(*line_evaluation.values.at(0));
-            i += 1;
+    fn fold(self: SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
+        let mut res = array![];
+        for eval in self.subline_evals {
+            res.append(*fold_line(eval, alpha).values[0]);
         };
         res
     }
@@ -142,23 +139,18 @@ mod tests {
     fn bad_line_domain() {
         // This coset doesn't have points with unique x-coordinates.
         let coset = CosetImpl::odds(2);
-
         LineDomainImpl::new(coset);
     }
 
     #[test]
     fn line_domain_of_size_two_works() {
-        let LOG_SIZE: u32 = 1;
-        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), LOG_SIZE);
-
+        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), 1);
         LineDomainImpl::new(coset);
     }
 
     #[test]
     fn line_domain_of_size_one_works() {
-        let LOG_SIZE: u32 = 0;
-        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), LOG_SIZE);
-
+        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), 0);
         LineDomainImpl::new(coset);
     }
 
@@ -172,9 +164,10 @@ mod tests {
             log_size: 1
         };
         let x = m31(590768354);
+
         let result = line_poly.eval_at_point(x.into());
-        let expected_result = qm31(515899232, 1030391528, 1006544539, 11142505);
-        assert_eq!(expected_result, result);
+
+        assert_eq!(result, qm31(515899232, 1030391528, 1006544539, 11142505));
     }
 
     #[test]
@@ -183,9 +176,10 @@ mod tests {
             coeffs: array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8)], log_size: 1
         };
         let x = m31(10);
+
         let result = line_poly.eval_at_point(x.into());
-        let expected_result = qm31(51, 62, 73, 84);
-        assert_eq!(expected_result, result);
+
+        assert_eq!(result, qm31(51, 62, 73, 84));
     }
 
     #[test]
@@ -207,7 +201,6 @@ mod tests {
 
         let result = poly.eval_at_point(x);
 
-        let expected_result = qm31(1857853974, 839310133, 939318020, 651207981);
-        assert_eq!(expected_result, result);
+        assert_eq!(result, qm31(1857853974, 839310133, 939318020, 651207981));
     }
 }
