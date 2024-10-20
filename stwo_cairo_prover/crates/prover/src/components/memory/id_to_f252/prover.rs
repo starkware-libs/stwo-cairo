@@ -13,10 +13,11 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{
-    MemoryClaim, MemoryInteractionClaim, MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_SIZE,
-    MULTIPLICITY_COLUMN_OFFSET, N_M31_IN_FELT252,
+    MemoryClaim, MemoryInteractionClaim, MEMORY_ID_SIZE, MULTIPLICITY_COLUMN_OFFSET,
+    N_ID_TO_VALUE_COLUMNS, N_M31_IN_FELT252,
 };
-use super::MemoryLookupElements;
+use super::IdToF252LookupElements;
+use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
@@ -36,7 +37,7 @@ impl MemoryClaimProver {
 
         let size = values.len().next_power_of_two();
         assert!(size <= MEMORY_ADDRESS_BOUND);
-        values.resize(size, MemoryValue::Small(0).as_u256());
+        values.resize(size, MemoryValue::F252([0; 8]).as_u256());
 
         let values = values
             .into_iter()
@@ -65,15 +66,15 @@ impl MemoryClaimProver {
     }
 
     pub fn add_inputs_simd(&mut self, inputs: &PackedM31) {
-        let addresses = inputs.to_array();
-        for address in addresses {
-            self.add_inputs(address);
+        let memory_ids = inputs.to_array();
+        for memory_id in memory_ids {
+            self.add_inputs(memory_id);
         }
     }
 
-    pub fn add_inputs(&mut self, addr: M31) {
-        let addr = addr.0 as usize;
-        self.multiplicities[addr / N_LANES].simd[addr % N_LANES] += 1;
+    pub fn add_inputs(&mut self, memory_id: M31) {
+        let memory_id = memory_id.0 as usize;
+        self.multiplicities[memory_id / N_LANES].simd[memory_id % N_LANES] += 1;
     }
 
     pub fn write_trace(
@@ -81,7 +82,7 @@ impl MemoryClaimProver {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (MemoryClaim, InteractionClaimProver) {
         let size = self.values.len() * N_LANES;
-        let mut trace = (0..N_M31_IN_FELT252 + 2)
+        let mut trace = (0..N_ID_TO_VALUE_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
             .collect_vec();
 
@@ -102,7 +103,12 @@ impl MemoryClaimProver {
         }
 
         // Lookup data.
-        let addresses_and_values = std::array::from_fn(|i| trace[i].data.clone());
+        let ids_and_values = trace[0..MULTIPLICITY_COLUMN_OFFSET]
+            .iter()
+            .map(|col| col.data.clone())
+            .collect_vec()
+            .try_into()
+            .unwrap();
         let multiplicities = trace[MULTIPLICITY_COLUMN_OFFSET].data.clone();
 
         // Extend trace.
@@ -115,9 +121,11 @@ impl MemoryClaimProver {
         tree_builder.extend_evals(trace);
 
         (
-            MemoryClaim { log_address_bound },
+            MemoryClaim {
+                log_size: log_address_bound,
+            },
             InteractionClaimProver {
-                addresses_and_values,
+                ids_and_values,
                 multiplicities,
             },
         )
@@ -126,13 +134,13 @@ impl MemoryClaimProver {
 
 #[derive(Debug)]
 pub struct InteractionClaimProver {
-    pub addresses_and_values: [Vec<PackedM31>; N_M31_IN_FELT252 + 1],
+    pub ids_and_values: [Vec<PackedM31>; N_M31_IN_FELT252 + 1],
     pub multiplicities: Vec<PackedM31>,
 }
 impl InteractionClaimProver {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
-            addresses_and_values: std::array::from_fn(|_| Vec::with_capacity(capacity)),
+            ids_and_values: std::array::from_fn(|_| Vec::with_capacity(capacity)),
             multiplicities: Vec::with_capacity(capacity),
         }
     }
@@ -140,23 +148,23 @@ impl InteractionClaimProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &MemoryLookupElements,
+        lookup_elements: &IdToF252LookupElements,
         range9_lookup_elements: &RangeCheckElements,
     ) -> MemoryInteractionClaim {
-        let log_size = self.addresses_and_values[0].len().ilog2() + LOG_N_LANES;
+        let log_size = self.ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
         let mut col_gen = logup_gen.new_col();
 
         // Lookup values columns.
         for vec_row in 0..1 << (log_size - LOG_N_LANES) {
             let values: [PackedM31; N_M31_IN_FELT252 + 1] =
-                std::array::from_fn(|i| self.addresses_and_values[i][vec_row]);
+                std::array::from_fn(|i| self.ids_and_values[i][vec_row]);
             let denom: PackedQM31 = lookup_elements.combine(&values);
             col_gen.write_frac(vec_row, (-self.multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
 
-        for value_col in self.addresses_and_values.iter().skip(MEMORY_ADDRESS_SIZE) {
+        for value_col in self.ids_and_values.iter().skip(MEMORY_ID_SIZE) {
             let mut col_gen = logup_gen.new_col();
             for (vec_row, value) in value_col.iter().enumerate() {
                 // TOOD(alont) Add 2-batching.
@@ -182,15 +190,15 @@ mod tests {
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::components::memory::component::N_M31_IN_FELT252;
+    use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
     use crate::input::mem::{MemConfig, MemoryBuilder};
     use crate::input::range_check_unit::RangeCheckUnitInput;
 
     #[test]
     fn test_deduce_output_simd() {
         // Set up data.
-        let addr = [0, 1, 2, 3, 4, 5, 6, 7, 15, 16, 17, 18, 0, 0, 0, 0];
-        let input = PackedM31::from_array(addr.map(M31::from_u32_unchecked));
+        let memory_ids = [0, 1, 2, 3, 4, 5, 6, 7, 15, 16, 17, 18, 0, 0, 0, 0];
+        let input = PackedM31::from_array(memory_ids.map(M31::from_u32_unchecked));
         let expected_output = input
             .to_array()
             .map(|v| std::array::from_fn(|i| if i == 0 { v } else { M31::zero() }));
@@ -198,7 +206,7 @@ mod tests {
         // Create memory.
         let mut range_check9 = RangeCheckUnitInput::new();
         let mut mem = MemoryBuilder::new(MemConfig::default(), &mut range_check9);
-        for a in &addr {
+        for a in &memory_ids {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));
         }

@@ -12,9 +12,9 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
-use crate::components::memory::component::N_M31_IN_FELT252;
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
+use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
@@ -100,7 +100,7 @@ impl RetOpcodeInteractionProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &MemoryLookupElements,
+        lookup_elements: &IdToF252LookupElements,
     ) -> RetOpcodeInteractionClaim {
         let log_size = self.memory_inputs[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);

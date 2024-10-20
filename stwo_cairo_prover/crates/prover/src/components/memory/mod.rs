@@ -1,11 +1,4 @@
-use component::N_MEMORY_COLUMNS;
-use stwo_prover::constraint_framework::logup::LookupElements;
+pub mod id_to_f252;
 
-pub mod component;
-pub mod prover;
-
-const N_LOGUP_POWERS: usize = N_MEMORY_COLUMNS - 1;
-pub type MemoryLookupElements = LookupElements<N_LOGUP_POWERS>;
-
-pub const N_ADDRESS_FELTS: usize = 1;
-pub const N_BITS_PER_FELT: usize = 9;
+pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 20;
+pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;

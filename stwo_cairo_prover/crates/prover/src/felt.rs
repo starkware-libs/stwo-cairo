@@ -4,8 +4,8 @@ use std::simd::u32x16;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::fields::m31::M31;
 
-use crate::components::memory::component::N_M31_IN_FELT252;
-use crate::components::memory::N_BITS_PER_FELT;
+use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
+use crate::components::memory::id_to_f252::N_BITS_PER_FELT;
 use crate::components::range_check_builtin::component::N_VALUES_FELTS;
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
