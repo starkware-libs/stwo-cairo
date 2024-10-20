@@ -10,7 +10,7 @@ use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
-use crate::components::memory::id_to_f252::MemoryLookupElements;
+use crate::components::memory::id_to_f252::IdToF252LookupElements;
 
 pub const RET_N_TRACE_CELLS: usize = 7;
 pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
@@ -21,13 +21,13 @@ pub type RetOpcodeComponent = FrameworkComponent<RetOpcodeEval>;
 #[derive(Clone)]
 pub struct RetOpcodeEval {
     pub log_size: u32,
-    pub lookup_elements: MemoryLookupElements,
+    pub lookup_elements: IdToF252LookupElements,
     pub claimed_sum: SecureField,
 }
 impl RetOpcodeEval {
     pub fn new(
         ret_claim: RetOpcodeClaim,
-        memory_lookup_elements: MemoryLookupElements,
+        memory_lookup_elements: IdToF252LookupElements,
         interaction_claim: RetOpcodeInteractionClaim,
     ) -> Self {
         Self {
