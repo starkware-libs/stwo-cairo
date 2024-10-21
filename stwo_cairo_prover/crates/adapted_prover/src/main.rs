@@ -5,9 +5,11 @@ use clap::Parser;
 use stwo_cairo_prover::cairo_air::{prove_cairo, CairoProof};
 use stwo_cairo_prover::input::vm_import::{import_from_vm_output, VmImportError};
 use stwo_cairo_prover::input::CairoInput;
+use stwo_cairo_utils::logging_utils::init_logging;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 use thiserror::Error;
+use tracing::{span, Level};
 
 /// Command line arguments for adapted_stwo.
 /// Example command line:
@@ -40,19 +42,22 @@ enum Error {
 }
 
 fn main() -> ExitCode {
+    // TODO(yuval): allow control on log levels through args.
+    init_logging(log::LevelFilter::Info);
     match run(std::env::args()) {
         Ok(_) => {
-            println!("Adapted prover succeeded");
+            log::info!("Adapted prover succeeded");
             ExitCode::SUCCESS
         }
         Err(error) => {
-            println!("Adapted prover failed: {error}");
+            log::info!("Adapted prover failed: {error}");
             ExitCode::FAILURE
         }
     }
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHasher>, Error> {
+    let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
     let vm_output: CairoInput =
