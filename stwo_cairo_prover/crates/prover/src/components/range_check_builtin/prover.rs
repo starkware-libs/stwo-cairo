@@ -162,7 +162,8 @@ pub fn gen_interaction_trace(
     }
     col_gen.finalize_col();
 
-    logup_gen.finalize()
+    let (trace, [claimed_sum]) = logup_gen.finalize_at([(1 << log_size) - 1]);
+    (trace, claimed_sum)
 }
 
 #[cfg(test)]
@@ -172,6 +173,7 @@ mod tests {
 
     use itertools::zip_eq;
     use rand::Rng;
+    use stwo_prover::constraint_framework::constant_columns::gen_is_first;
     use stwo_prover::constraint_framework::FrameworkEval;
     use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::channel::Blake2sChannel;
@@ -310,7 +312,9 @@ mod tests {
         let (interaction_trace, claimed_sum) =
             gen_interaction_trace(&interaction_prover, log_size, &memory_lookup_elements);
 
-        let trace = TreeVec::new(vec![trace, interaction_trace]);
+        let constant_trace = vec![gen_is_first::<SimdBackend>(log_size)];
+
+        let trace = TreeVec::new(vec![trace, interaction_trace, constant_trace]);
         let trace_polys = trace.map_cols(|c| c.interpolate());
 
         let component = RangeCheckBuiltinEval {
