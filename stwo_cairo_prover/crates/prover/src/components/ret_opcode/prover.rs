@@ -118,7 +118,7 @@ impl RetOpcodeInteractionProver {
             }
             col_gen.finalize_col();
         }
-        let (trace, claimed_sum) = logup_gen.finalize();
+        let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
         RetOpcodeInteractionClaim {

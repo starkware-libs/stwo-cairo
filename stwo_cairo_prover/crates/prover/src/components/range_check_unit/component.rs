@@ -29,7 +29,8 @@ impl<const N_REPETITIONS: usize> FrameworkEval for RangeCheckUnitEval<N_REPETITI
         self.log_n_rows + 1
     }
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, self.log_size());
+        let [is_first] = eval.next_interaction_mask(2, [0]);
+        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
         let rc_value = eval.next_trace_mask();
         let mut frac = Fraction::new(E::EF::zero(), E::EF::one());
         for repetition in 0..N_REPETITIONS {
@@ -37,7 +38,7 @@ impl<const N_REPETITIONS: usize> FrameworkEval for RangeCheckUnitEval<N_REPETITI
             frac = frac
                 + Fraction::new(
                     E::EF::from(-multiplicity),
-                    self.lookup_elements.combine(&[rc_value
+                    self.lookup_elements.combine(&[rc_value.clone()
                         + E::F::from(BaseField::from_u32_unchecked(
                             (repetition as u32) << self.log_n_rows,
                         ))]),
@@ -62,6 +63,7 @@ impl<const N_REPETITIONS: usize> RangeCheckClaim<N_REPETITIONS> {
         TreeVec::new(vec![
             vec![self.log_rc_height; 1 + N_REPETITIONS],
             vec![self.log_rc_height; SECURE_EXTENSION_DEGREE],
+            vec![self.log_rc_height; 1],
         ])
     }
 
