@@ -1,3 +1,5 @@
+use std::vec;
+
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
