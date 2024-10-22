@@ -1,10 +1,17 @@
 use std::iter::zip;
 use std::simd::Simd;
 
+use stwo_prover::constraint_framework::logup::LookupElements;
+pub mod component;
+pub mod component_prover;
+
+// TODO(Ohad): figure out n_alpha_powers.
+pub type RangeCheckLookupElements = LookupElements<3>;
+
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::MODULUS_BITS;
 
-const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
+pub const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
     Simd::from_array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
 
 /// Partitions a number into 'N' bit segments.
