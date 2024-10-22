@@ -61,7 +61,8 @@ impl FrameworkEval for RangeCheckBuiltinEval {
 
     fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
         let mut eval = eval;
-        let mut values = [E::F::zero(); N_ADDRESS_FELTS + N_VALUES_FELTS];
+        let mut values: [_; N_ADDRESS_FELTS + N_VALUES_FELTS] =
+            std::array::from_fn(|_| E::F::zero());
 
         // Memory address.
         // TODO(ShaharS): Use a constant column instead of taking the next_trace_mask().
@@ -73,19 +74,21 @@ impl FrameworkEval for RangeCheckBuiltinEval {
         }
 
         // Compute lookup for memory.
-        let mut logup = LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, self.log_size);
+        let [is_first] = eval.next_interaction_mask(2, [0]);
+        let mut logup = LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, None, is_first);
         let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
         logup.write_frac(&mut eval, frac);
 
         // Add constraints for the last 2 bit value.
-        let last_value_felt = values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1];
+        let last_value_felt = values[N_ADDRESS_FELTS + N_VALUES_FELTS - 1].clone();
         let intermediate_value = eval.next_trace_mask();
         eval.add_constraint(
-            intermediate_value - (last_value_felt * (last_value_felt - E::F::one())),
+            intermediate_value.clone()
+                - (last_value_felt.clone() * (last_value_felt.clone() - E::F::one())),
         );
         eval.add_constraint(
             intermediate_value
-                * (last_value_felt - E::F::from(M31::from(2)))
+                * (last_value_felt.clone() - E::F::from(M31::from(2)))
                 * (last_value_felt - E::F::from(M31::from(3))),
         );
 
@@ -110,7 +113,12 @@ impl RangeCheckBuiltinClaim {
         let log_size = n_values.next_power_of_two().ilog2();
         let trace_log_sizes = vec![log_size; N_RANGE_CHECK_COLUMNS];
         let interaction_trace_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE];
-        TreeVec::new(vec![trace_log_sizes, interaction_trace_log_sizes])
+        let fixed_column_log_sizes = vec![log_size];
+        TreeVec::new(vec![
+            trace_log_sizes,
+            interaction_trace_log_sizes,
+            fixed_column_log_sizes,
+        ])
     }
 }
 

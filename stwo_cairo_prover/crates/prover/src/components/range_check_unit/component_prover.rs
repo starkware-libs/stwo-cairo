@@ -165,7 +165,7 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
         lookup_elements: &RangeCheckElements,
     ) -> RangeCheckInteractionClaim<N_REPETITIONS> {
         let logup_gen = self.generate_interaction_trace(lookup_elements);
-        let (trace, claimed_sum) = logup_gen.finalize();
+        let (trace, [claimed_sum]) = logup_gen.finalize_at([(1 << RC_LOG_HEIGHT) - 1]);
         tree_builder.extend_evals(trace);
 
         RangeCheckInteractionClaim::<N_REPETITIONS> { claimed_sum }
@@ -176,6 +176,7 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
 mod tests {
     use itertools::Itertools;
     use rand::Rng;
+    use stwo_prover::constraint_framework::constant_columns::gen_is_first;
     use stwo_prover::constraint_framework::{FrameworkEval, TraceLocationAllocator};
     use stwo_prover::core::backend::simd::column::BaseColumn;
     use stwo_prover::core::backend::simd::SimdBackend;
@@ -253,6 +254,12 @@ mod tests {
         let lookup_elements = RangeCheckElements::draw(channel);
         let interaction_claim =
             interaction_claim_prover.write_interaction_trace(&mut tree_builder, &lookup_elements);
+        tree_builder.commit(channel);
+
+        // Constant trace.
+        let constant_trace = gen_is_first::<SimdBackend>(LOG_HEIGHT);
+        let mut tree_builder = commitment_scheme.tree_builder();
+        tree_builder.extend_evals([constant_trace]);
         tree_builder.commit(channel);
 
         let tree_span_provider = &mut TraceLocationAllocator::default();

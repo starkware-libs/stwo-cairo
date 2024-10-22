@@ -59,7 +59,8 @@ impl FrameworkEval for MemoryEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, self.log_size());
+        let [is_first] = eval.next_interaction_mask(2, [0]);
+        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
 
         let address_and_value: [E::F; N_M31_IN_FELT252 + 1] =
             std::array::from_fn(|_| eval.next_trace_mask());
@@ -74,7 +75,7 @@ impl FrameworkEval for MemoryEval {
         for value_limb in address_and_value.iter().skip(MEMORY_ADDRESS_SIZE) {
             let frac = Fraction::new(
                 E::EF::one(),
-                self.range9_lookup_elements.combine(&[*value_limb]),
+                self.range9_lookup_elements.combine(&[value_limb.clone()]),
             );
             logup.write_frac(&mut eval, frac);
         }
@@ -94,7 +95,12 @@ impl MemoryClaim {
         let interaction_0_log_size = vec![self.log_address_bound; N_M31_IN_FELT252 + 2];
         let interaction_1_log_size =
             vec![self.log_address_bound; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 + 1)];
-        TreeVec::new(vec![interaction_0_log_size, interaction_1_log_size])
+        let fixed_column_log_sizes = vec![self.log_address_bound];
+        TreeVec::new(vec![
+            interaction_0_log_size,
+            interaction_1_log_size,
+            fixed_column_log_sizes,
+        ])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
