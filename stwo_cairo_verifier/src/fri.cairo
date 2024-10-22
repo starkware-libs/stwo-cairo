@@ -176,7 +176,9 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
             let subline_initial_index = bit_reverse_index(subline_start, self.domain.log_size());
             let subline_initial = self.domain.coset.index_at(subline_initial_index);
-            let subline_domain = LineDomainImpl::new(CosetImpl::new(subline_initial, FOLD_STEP));
+            let subline_domain = LineDomainImpl::new_unchecked(
+                CosetImpl::new(subline_initial, FOLD_STEP)
+            );
 
             all_subline_evals.append(LineEvaluationImpl::new(subline_domain, subline_evals));
         };
@@ -238,7 +240,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         let mut inner_layers = array![];
         let mut layer_bound = *max_column_bound - CIRCLE_TO_LINE_FOLD_STEP;
-        let mut layer_domain = LineDomainImpl::new(
+        let mut layer_domain = LineDomainImpl::new_unchecked(
             CosetImpl::half_odds(layer_bound + config.log_blowup_factor)
         );
 
@@ -316,7 +318,6 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         self: @FriVerifier, queries: @Queries, decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(), FriVerificationError> {
         assert!(queries.log_domain_size == self.expected_query_log_domain_size);
-
         let (last_layer_queries, last_layer_query_evals) = self
             .decommit_inner_layers(queries, @decommitted_values)?;
         self.decommit_last_layer(last_layer_queries, last_layer_query_evals)
@@ -397,6 +398,11 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ) -> Result<(), FriVerificationError> {
         let FriVerifier { last_layer_domain, last_layer_poly, .. } = self;
 
+        let domain_log_size = last_layer_domain.log_size();
+        // TODO(andrew): Note depending on the proof parameters, doing FFT on the last layer poly vs
+        // pointwize evaluation is less efficient.
+        let last_layer_evals = last_layer_poly.evaluate(*last_layer_domain).values;
+
         let mut i = 0;
         loop {
             if i == queries.positions.len() {
@@ -404,10 +410,11 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             }
 
             let query = *queries.positions[i];
-            let query_eval = *query_evals[i];
-            let x = last_layer_domain.at(bit_reverse_index(query, last_layer_domain.log_size()));
+            // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
+            // the FFT return evals in bit-reversed order to prevent this unnessesary bit-reverse.
+            let last_layer_eval_i = bit_reverse_index(query, domain_log_size);
 
-            if query_eval != last_layer_poly.eval_at_point(x.into()) {
+            if query_evals[i] != last_layer_evals[last_layer_eval_i] {
                 break Result::Err(FriVerificationError::LastLayerEvaluationsInvalid);
             }
 
@@ -514,7 +521,7 @@ pub fn fold_circle_into_line(eval: CircleEvaluation, alpha: QM31) -> LineEvaluat
                 let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
                 values.append(f0 + alpha * f1);
             };
-    LineEvaluation { values, domain: LineDomainImpl::new(domain.half_coset) }
+    LineEvaluation { values, domain: LineDomainImpl::new_unchecked(domain.half_coset) }
 }
 
 pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
@@ -540,7 +547,9 @@ mod test {
 
     #[test]
     fn test_fold_line_1() {
-        let domain = LineDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(67108864), 1));
+        let domain = LineDomainImpl::new_unchecked(
+            CosetImpl::new(CirclePointIndexImpl::new(67108864), 1)
+        );
         let values = array![
             qm31(440443058, 1252794525, 1129773609, 1309365757),
             qm31(974589897, 1592795796, 649052897, 863407657)
@@ -557,7 +566,9 @@ mod test {
 
     #[test]
     fn test_fold_line_2() {
-        let domain = LineDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(553648128), 1));
+        let domain = LineDomainImpl::new_unchecked(
+            CosetImpl::new(CirclePointIndexImpl::new(553648128), 1)
+        );
         let values = array![
             qm31(730692421, 1363821003, 2146256633, 106012305),
             qm31(1387266930, 149259209, 1148988082, 1930518101)
