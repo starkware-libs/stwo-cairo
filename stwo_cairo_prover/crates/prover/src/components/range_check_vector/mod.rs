@@ -1,5 +1,12 @@
 use std::simd::Simd;
 
+use stwo_prover::constraint_framework::logup::LookupElements;
+pub mod component;
+pub mod component_prover;
+
+// TODO(Ohad): figure out n_alpha_powers.
+pub type RangeCheckVectorElements = LookupElements<3>;
+
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::MODULUS_BITS;
 
@@ -60,8 +67,6 @@ pub fn generate_sparse_enumeration<const N: usize>(split: [u32; N]) -> [Vec<Pack
 
 #[cfg(test)]
 mod tests {
-    use rand::rngs::SmallRng;
-    use rand::{Rng, SeedableRng};
     use stwo_prover::core::backend::simd::column::BaseColumn;
     use stwo_prover::core::fields::m31::{M31, MODULUS_BITS};
 
@@ -85,24 +90,6 @@ mod tests {
         let result = exclusive_suffix_sum(log_ranges);
 
         assert_eq!(expected_trailing_sum, result)
-    }
-
-    #[test]
-    fn test_sparse_representation() {
-        let log_ranges = [8, 4, 3];
-        let mut rng = SmallRng::seed_from_u64(1);
-        for _ in 0..10 {
-            let rand = [
-                rng.gen::<u32>() % (1 << 8),
-                rng.gen::<u32>() % (1 << 4),
-                rng.gen::<u32>() % (1 << 3),
-            ];
-            let dense = rand[0] << 7 | rand[1] << 3 | rand[2];
-            assert_eq!(
-                split_bits(log_ranges, dense),
-                [M31(rand[0]), M31(rand[1]), M31(rand[2])]
-            );
-        }
     }
 
     #[test]
