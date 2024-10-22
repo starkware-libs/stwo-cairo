@@ -7,6 +7,7 @@ use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::{PrivateInput, PublicInput};
 use thiserror::Error;
+use tracing::{span, Level};
 
 use super::instructions::Instructions;
 use super::mem::MemConfig;
@@ -29,6 +30,7 @@ pub fn import_from_vm_output(
     pub_json: &Path,
     priv_json: &Path,
 ) -> Result<CairoInput, VmImportError> {
+    let _span = span!(Level::INFO, "import_from_vm_output").entered();
     let pub_data: PublicInput = sonic_rs::from_str(&std::fs::read_to_string(pub_json)?)?;
     let priv_data: PrivateInput = sonic_rs::from_str(&std::fs::read_to_string(priv_json)?)?;
 
