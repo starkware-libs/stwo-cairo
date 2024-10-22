@@ -21,6 +21,13 @@ impl From<TraceEntry> for VmState {
     }
 }
 
+// TODO(yuval/alonT): consider making the indexing mechanism more explicit in the code).
+/// The instructions usage in the input, split to Stwo opcodes.
+///
+/// For each opcode with flags, the array describes the different flag combinations. The index
+/// refers to the flag combination in bit-reverse/little-endian. For example, jnz_imm at index 1
+/// (100 in bit-reverse/little-endian) is for: fp (1=true), not taken (0=false), no ap++ (0=false).
+/// Note: for the flag "fp/ap", true means fp-based and false means ap-based.
 #[derive(Debug, Default)]
 pub struct Instructions {
     pub initial_state: VmState,
@@ -36,28 +43,28 @@ pub struct Instructions {
     /// Flags: ap++?.
     pub jmp_rel_imm: [Vec<VmState>; 2],
 
-    /// jump abs [ap/fp + offset].
-    /// Flags: ap/fp, ap++?.
+    /// jump abs [fp/ap + offset].
+    /// Flags: fp/ap, ap++?.
     pub jmp_abs: [Vec<VmState>; 4],
 
     /// call rel imm.
     pub call_rel_imm: Vec<VmState>,
 
-    /// call abs [ap/fp + offset].
-    /// Flags: ap/fp.
+    /// call abs [fp/ap + offset].
+    /// Flags: fp/ap.
     pub call_abs: [Vec<VmState>; 2],
 
-    /// jump rel imm if [ap/fp + offset] != 0.
-    /// Flags: ap/fp, taken?, ap++?.
+    /// jump rel imm if [fp/ap + offset] != 0.
+    /// Flags: fp/ap, taken?, ap++?.
     pub jnz_imm: [Vec<VmState>; 8],
 
-    /// - [ap/fp + offset0] = [ap/fp + offset2]
+    /// - [fp/ap + offset0] = [fp/ap + offset2]
     pub mov_mem: Vec<VmState>,
 
-    /// - [ap/fp + offset0] = [[ap/fp + offset1] + offset2]
+    /// - [fp/ap + offset0] = [[fp/ap + offset1] + offset2]
     pub deref: Vec<VmState>,
 
-    /// - [ap/fp + offset0] = imm
+    /// - [fp/ap + offset0] = imm
     pub push_imm: Vec<VmState>,
 
     pub generic: Vec<VmState>,
@@ -324,8 +331,8 @@ impl Instructions {
         }
     }
 
-    pub fn usage(&self) -> InstructionUsage {
-        InstructionUsage {
+    pub fn counts(&self) -> InstructionCounts {
+        InstructionCounts {
             ret: self.ret.len(),
             add_ap: self.add_ap.len(),
             jmp_rel_imm: self.jmp_rel_imm.each_ref().map(Vec::len),
@@ -341,8 +348,11 @@ impl Instructions {
     }
 }
 
+/// The counts of the instructions usage in the input, split to Stwo opcodes.
+///
+/// See the documentation of `Instructions` for more details about the indexing mechanism.
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
-pub struct InstructionUsage {
+pub struct InstructionCounts {
     pub ret: usize,
     pub add_ap: usize,
 
@@ -350,28 +360,28 @@ pub struct InstructionUsage {
     /// Flags: ap++?.
     pub jmp_rel_imm: [usize; 2],
 
-    // jump abs [ap/fp + offset].
-    // Flags: ap/fp, ap++?.
+    // jump abs [fp/ap + offset].
+    // Flags: fp/ap, ap++?.
     pub jmp_abs: [usize; 4],
 
     /// call rel imm.
     pub call_rel_imm: usize,
 
-    // call abs [ap/fp + offset].
-    // Flags: ap/fp.
+    // call abs [fp/ap + offset].
+    // Flags: fp/ap.
     pub call_abs: [usize; 2],
 
-    /// jump rel imm if [ap/fp + offset] != 0.
-    /// Flags: ap/fp, taken?, ap++?.
+    /// jump rel imm if [fp/ap + offset] != 0.
+    /// Flags: fp/ap, taken?, ap++?.
     pub jnz_imm: [usize; 8],
 
-    /// - [ap/fp + offset0] = [ap/fp + offset2]
+    /// - [fp/ap + offset0] = [fp/ap + offset2]
     pub mov_mem: usize,
 
-    /// - [ap/fp + offset0] = [[ap/fp + offset1] + offset2]
+    /// - [fp/ap + offset0] = [[fp/ap + offset1] + offset2]
     pub deref: usize,
 
-    /// - [ap/fp + offset0] = imm
+    /// - [fp/ap + offset0] = imm
     pub push_imm: usize,
 
     pub generic: usize,

@@ -131,7 +131,7 @@ pub mod tests {
     use std::path::PathBuf;
 
     use super::*;
-    use crate::input::instructions::InstructionUsage;
+    use crate::input::instructions::InstructionCounts;
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -157,8 +157,8 @@ pub mod tests {
     fn test_read_from_large_files() {
         let input = large_cairo_input();
         assert_eq!(
-            input.instructions.usage(),
-            InstructionUsage {
+            input.instructions.counts(),
+            InstructionCounts {
                 ret: 49472,
                 add_ap: 36895,
                 jmp_rel_imm: [31873866, 0],
@@ -172,7 +172,7 @@ pub mod tests {
                 generic: 362623
             }
         );
-        println!("Usage: {:#?}", input.instructions.usage());
+        println!("Instruction counts: {:#?}", input.instructions.counts());
     }
 
     #[ignore]
@@ -180,8 +180,8 @@ pub mod tests {
     fn test_read_from_small_files() {
         let input = small_cairo_input();
         assert_eq!(
-            input.instructions.usage(),
-            InstructionUsage {
+            input.instructions.counts(),
+            InstructionCounts {
                 ret: 462,
                 add_ap: 2,
                 jmp_rel_imm: [124627, 0],
@@ -195,6 +195,6 @@ pub mod tests {
                 generic: 951
             }
         );
-        println!("Usage: {:#?}", input.instructions.usage());
+        println!("Instruction counts: {:#?}", input.instructions.counts());
     }
 }
