@@ -15,7 +15,7 @@ use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-use stwo_cairo_verifier::utils::{bit_reverse_index, ArrayImpl, pow, pow_qm31, find};
+use stwo_cairo_verifier::utils::{bit_reverse_index, OptionImpl, ArrayImpl, SpanExTrait, pow, find};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -159,7 +159,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
                     evals_at_queries_index += 1;
                     j += 1;
                 } else {
-                    if (proof_evals_index < (*self.proof.evals_subset).len()) {
+                    if (proof_evals_index < (**self.proof.evals_subset).len()) {
                         subline_evals.append((*self.proof.evals_subset)[proof_evals_index].clone());
                         proof_evals_index += 1;
                     } else {
@@ -183,7 +183,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             all_subline_evals.append(LineEvaluationImpl::new(subline_domain, subline_evals));
         };
 
-        if error || proof_evals_index != (*self.proof.evals_subset).len() {
+        if error || proof_evals_index != (**self.proof.evals_subset).len() {
             return Result::Err(FriVerificationError::InnerLayerEvaluationsInvalid);
         }
 
@@ -203,14 +203,14 @@ pub struct FriConfig {
 /// The subset corresponds to the set of evaluations needed by a FRI verifier.
 #[derive(Drop, Clone, Debug)]
 pub struct FriLayerProof {
-    pub evals_subset: Array<QM31>,
+    pub evals_subset: Span<QM31>,
     pub decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
     pub commitment: felt252,
 }
 
 #[derive(Drop)]
 pub struct FriProof {
-    pub inner_layers: Array<FriLayerProof>,
+    pub inner_layers: Span<FriLayerProof>,
     pub last_layer_poly: LinePoly,
 }
 
@@ -305,12 +305,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn decommit(
         self: @FriVerifier, decommitted_values: Array<SparseCircleEvaluation>,
     ) -> Result<(), FriVerificationError> {
-        let queries = if let Option::Some(queries_snapshot) = self.queries {
-            Option::Some(queries_snapshot)
-        } else {
-            Option::None
-        }
-            .expect('queries not sampled');
+        let queries = self.queries.as_snap().expect('queries not sampled');
         self.decommit_on_queries(queries, decommitted_values)
     }
 
@@ -319,7 +314,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ) -> Result<(), FriVerificationError> {
         assert!(queries.log_domain_size == self.expected_query_log_domain_size);
         let (last_layer_queries, last_layer_query_evals) = self
-            .decommit_inner_layers(queries, @decommitted_values)?;
+            .decommit_inner_layers(queries, decommitted_values)?;
         self.decommit_last_layer(last_layer_queries, last_layer_query_evals)
     }
 
@@ -327,69 +322,57 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// Returns the queries and query evaluations needed for verifying the last FRI layer.
     fn decommit_inner_layers(
-        self: @FriVerifier, queries: @Queries, decommitted_values: @Array<SparseCircleEvaluation>
+        self: @FriVerifier, queries: @Queries, mut decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         let circle_poly_alpha = self.circle_poly_alpha;
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
 
+        let mut inner_layers = self.inner_layers.span();
+        let mut column_bounds = self.column_bounds.span();
         let mut layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
         let mut layer_query_evals = ArrayImpl::new_repeated(layer_queries.len(), QM31Zero::zero());
 
-        let mut inner_layers_index = 0;
-        let mut column_bound_index = 0;
         loop {
-            if inner_layers_index == self.inner_layers.len() {
-                // TODO: remove clones
-                break Result::Ok((layer_queries.clone(), layer_query_evals.clone()));
-            }
+            let layer = match inner_layers.pop_front() {
+                Option::Some(layer) => layer,
+                Option::None => { break Result::Ok(()); }
+            };
 
-            let current_layer = self.inner_layers[inner_layers_index];
-            if column_bound_index < self.column_bounds.len()
-                && *self.column_bounds[column_bound_index]
-                - CIRCLE_TO_LINE_FOLD_STEP == *current_layer.degree_bound {
-                let mut n_columns_in_layer = 1;
-                // TODO: remove clone?
-                let mut combined_sparse_evals = decommitted_values[column_bound_index].clone();
+            let circle_poly_degree_bound = *layer.degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
 
-                column_bound_index += 1;
+            while let Option::Some(_) = column_bounds.next_if_eq(@circle_poly_degree_bound) {
+                let sparse_evaluation = decommitted_values.pop_front().unwrap();
+                let mut folded_evals = sparse_evaluation.fold(*circle_poly_alpha);
 
-                while column_bound_index < self.column_bounds.len()
-                    && *self.column_bounds[column_bound_index]
-                    - CIRCLE_TO_LINE_FOLD_STEP == *current_layer.degree_bound {
-                    combined_sparse_evals = combined_sparse_evals
-                        .accumulate(decommitted_values[column_bound_index], circle_poly_alpha_sq);
-                    column_bound_index += 1;
-                    n_columns_in_layer += 1;
-                };
-
-                let folded_evals = combined_sparse_evals.fold(*circle_poly_alpha);
-                let prev_layer_combination_factor = pow_qm31(
-                    circle_poly_alpha_sq, n_columns_in_layer
-                );
-
-                let mut k = 0;
-                let mut new_layer_query_evals: Array<QM31> = array![];
+                let n = folded_evals.len();
                 assert!(folded_evals.len() == layer_query_evals.len());
-                while k < folded_evals.len() {
-                    new_layer_query_evals
-                        .append(
-                            *layer_query_evals[k] * prev_layer_combination_factor + *folded_evals[k]
-                        );
-                    k += 1;
-                };
-                layer_query_evals = new_layer_query_evals;
-            }
+                let mut next_layer_query_evals = array![];
+                for _ in 0
+                    ..n {
+                        let layer_eval = layer_query_evals.pop_front().unwrap();
+                        let folded_eval = folded_evals.pop_front().unwrap();
+                        next_layer_query_evals
+                            .append(layer_eval * circle_poly_alpha_sq + folded_eval);
+                    };
+                layer_query_evals = next_layer_query_evals;
+            };
 
-            let result = current_layer.verify_and_fold(@layer_queries, @layer_query_evals);
-            if result.is_err() {
-                break result;
-            } else {
-                let (new_layer_queries, new_layer_query_evals) = result.unwrap();
-                layer_queries = new_layer_queries;
-                layer_query_evals = new_layer_query_evals;
-            }
-            inner_layers_index += 1;
-        }
+            match layer.verify_and_fold(@layer_queries, @layer_query_evals) {
+                Result::Ok((
+                    next_layer_queries, next_layer_query_evals
+                )) => {
+                    layer_queries = next_layer_queries;
+                    layer_query_evals = next_layer_query_evals;
+                },
+                Result::Err(err) => { break Result::Err(err); },
+            };
+        }?;
+
+        // Check all values have been consumed.
+        assert!(column_bounds.is_empty());
+        assert!(decommitted_values.is_empty());
+
+        Result::Ok((layer_queries, layer_query_evals))
     }
 
     /// Verifies the last layer.
@@ -686,14 +669,14 @@ mod test {
             // Modify the second layer
             let mut invalid_evals_subset = array![];
             let mut i = 1;
-            while i < inner_layers[1].evals_subset.len() {
+            while i < (*inner_layers[1].evals_subset).len() {
                 invalid_evals_subset.append(inner_layers[1].evals_subset[i].clone());
                 i += 1;
             };
             invalid_inner_layers
                 .append(
                     FriLayerProof {
-                        evals_subset: invalid_evals_subset,
+                        evals_subset: invalid_evals_subset.span(),
                         decommitment: inner_layers[1].decommitment.clone(),
                         commitment: *inner_layers[1].commitment
                     }
@@ -707,7 +690,8 @@ mod test {
             };
 
             FriProof {
-                inner_layers: invalid_inner_layers, last_layer_poly: proof.last_layer_poly.clone()
+                inner_layers: invalid_inner_layers.span(),
+                last_layer_poly: proof.last_layer_poly.clone()
             }
         };
 
@@ -741,14 +725,14 @@ mod test {
                 *inner_layers[1].evals_subset[0] + qm31(1, 0, 0, 0)
             ];
             let mut i = 1;
-            while i < inner_layers[1].evals_subset.len() {
+            while i < (*inner_layers[1].evals_subset).len() {
                 invalid_evals_subset.append(inner_layers[1].evals_subset[i].clone());
                 i += 1;
             };
             invalid_inner_layers
                 .append(
                     FriLayerProof {
-                        evals_subset: invalid_evals_subset,
+                        evals_subset: invalid_evals_subset.span(),
                         decommitment: inner_layers[1].decommitment.clone(),
                         commitment: *inner_layers[1].commitment
                     }
@@ -762,7 +746,8 @@ mod test {
             };
 
             FriProof {
-                inner_layers: invalid_inner_layers, last_layer_poly: proof.last_layer_poly.clone()
+                inner_layers: invalid_inner_layers.span(),
+                last_layer_poly: proof.last_layer_poly.clone()
             }
         };
         let mut channel = ChannelTrait::new(0x00);
@@ -829,7 +814,7 @@ mod test {
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
-                    evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
+                    evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)].span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
@@ -840,7 +825,8 @@ mod test {
                     commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
                 },
                 FriLayerProof {
-                    evals_subset: array![qm31(1396531676, 750161390, 1275165237, 1824394799)],
+                    evals_subset: array![qm31(1396531676, 750161390, 1275165237, 1824394799)]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x0539eb6bd5d99019f938130703ddfd97aaa9f46dea9714f9ed75528babb4db55
@@ -849,7 +835,8 @@ mod test {
                     },
                     commitment: 0x078189f0ad5c044994f4b3100183203ed10545891f2459770dde4af4b9c2def7
                 }
-            ],
+            ]
+                .span(),
             last_layer_poly: LinePoly {
                 coeffs: array![qm31(1030963115, 122157260, 1848484002, 1387601044)], log_size: 0
             }
@@ -885,7 +872,7 @@ mod test {
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
-                    evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)],
+                    evals_subset: array![qm31(1654551922, 1975507039, 724492960, 302041406)].span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
@@ -895,7 +882,8 @@ mod test {
                     },
                     commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
                 },
-            ],
+            ]
+                .span(),
             last_layer_poly: LinePoly {
                 coeffs: array![
                     qm31(1166420758, 1481024254, 705780805, 948549530),
@@ -934,7 +922,7 @@ mod test {
         let proof = FriProof {
             inner_layers: array![
                 FriLayerProof {
-                    evals_subset: array![qm31(421951112, 668736057, 785571716, 551382471),],
+                    evals_subset: array![qm31(421951112, 668736057, 785571716, 551382471)].span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x07434e99a997fed5183f02e248b2d77ce047e45a63418dd8039630b139d72487,
@@ -948,7 +936,8 @@ mod test {
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
                 FriLayerProof {
-                    evals_subset: array![qm31(1535376180, 1101522806, 788857635, 1882322924),],
+                    evals_subset: array![qm31(1535376180, 1101522806, 788857635, 1882322924)]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x036ecb4e522350744312fa6da1ed85f6b7975885983a1baf9563feae7b7f799a,
@@ -961,7 +950,7 @@ mod test {
                     commitment: 0x046198bc34caa0b046234fa46ef591327a6864cb8a373bc13ce2cc9b3d5f3720,
                 },
                 FriLayerProof {
-                    evals_subset: array![qm31(419894864, 130791138, 1485752547, 11937027),],
+                    evals_subset: array![qm31(419894864, 130791138, 1485752547, 11937027)].span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x0454d5cffc792c2308fb8dcf992c255f0535048b7bfbe9d08c1c3ae92178cd16,
@@ -972,7 +961,8 @@ mod test {
                     },
                     commitment: 0x0344b5796a1b37e154053d94532921bd1dc9db98b454d0a7537974e2b9fc17b5,
                 },
-            ],
+            ]
+                .span(),
             last_layer_poly: LinePoly {
                 coeffs: array![
                     qm31(1449311934, 1632038525, 278574869, 690369710),
@@ -1016,7 +1006,8 @@ mod test {
                     evals_subset: array![
                         qm31(1332072020, 1609661801, 1897498023, 686558487),
                         qm31(886239056, 1157828441, 2019876782, 1060063104)
-                    ],
+                    ]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x07434e99a997fed5183f02e248b2d77ce047e45a63418dd8039630b139d72487,
@@ -1036,7 +1027,8 @@ mod test {
                     evals_subset: array![
                         qm31(1263943078, 172354194, 2127081660, 1999316363),
                         qm31(1311532324, 582549508, 1702052122, 36581530)
-                    ],
+                    ]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x05b7057376e8da41e7d1da285482571944f47848332279ce0de6b5ceeb21cb22,
@@ -1054,7 +1046,8 @@ mod test {
                     evals_subset: array![
                         qm31(1660083285, 865580381, 2025493291, 1151079474),
                         qm31(24828450, 1304266370, 129024597, 1635057579)
-                    ],
+                    ]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x03c70415b07af713627bd1405e284be50c30ce6b628fb6a7d2accd3bb631c04c,
@@ -1066,7 +1059,8 @@ mod test {
                     },
                     commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e
                 }
-            ],
+            ]
+                .span(),
             last_layer_poly: LinePoly {
                 coeffs: array![
                     qm31(1365318542, 1863705492, 1698090260, 381798840),
@@ -1171,7 +1165,8 @@ mod test {
                         qm31(1398603058, 1957874897, 461138270, 1700080921),
                         qm31(393493522, 576752954, 1963336729, 1268892468),
                         qm31(97718382, 739321442, 646668452, 906233770),
-                    ],
+                    ]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x0220da6892f2906e76c2713dc027eba3b2df3dfc6c680d354061eb59372822d5,
@@ -1193,7 +1188,8 @@ mod test {
                         qm31(1943731343, 338094235, 1579129158, 1325042400),
                         qm31(1311532324, 582549508, 1702052122, 36581530),
                         qm31(1561129265, 1456838851, 1325040656, 1580898325),
-                    ],
+                    ]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x021bdc711e4823702cb7da701c301ebc832ffc967a21932d66f7998e9efbbf46,
@@ -1212,7 +1208,8 @@ mod test {
                         qm31(1219072197, 1782590850, 228657378, 784891462),
                         qm31(24828450, 1304266370, 129024597, 1635057579),
                         qm31(715531896, 1292811410, 725451910, 1608811481),
-                    ],
+                    ]
+                        .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x058978bedb6abe931a3de1cdff9bce0f7e7ac7b14c9c2107ea66679874a67e9a,
@@ -1223,7 +1220,8 @@ mod test {
                     },
                     commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e,
                 },
-            ],
+            ]
+                .span(),
             last_layer_poly: LinePoly {
                 coeffs: array![
                     qm31(1365318542, 1863705492, 1698090260, 381798840),
