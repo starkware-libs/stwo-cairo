@@ -64,28 +64,28 @@ impl Default for MemConfig {
 pub struct Memory {
     pub config: MemConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
-    pub u64_values: Vec<u64>,
+    pub inst_cache: HashMap<u32, u64>,
     pub f252_values: Vec<[u32; 8]>,
 }
 impl Memory {
     pub fn get(&self, addr: u32) -> MemoryValue {
         match self.address_to_id[addr as usize].decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(id),
-            MemoryValueId::U64(id) => MemoryValue::U64(self.u64_values[id]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id]),
         }
     }
+
+    pub fn get_inst(&self, addr: u32) -> Option<u64> {
+        self.inst_cache.get(&addr).copied()
+    }
+
     // TODO(spapini): Optimize. This should be SIMD.
     pub fn value_from_felt252(&self, value: [u32; 8]) -> MemoryValue {
         if value[7] == 0 {
             // Positive case.
-            if value[2..7] != [0; 5] {
-                // Over 64bit.
-                return MemoryValue::F252(value);
-            }
-            if value[1] != 0 || value[0] > self.config.small_max {
+            if value[1..7] != [0; 6] || value[0] > self.config.small_max {
                 // Not small.
-                return MemoryValue::U64((value[0] as u64) | ((value[1] as u64) << 32));
+                return MemoryValue::F252(value);
             }
             MemoryValue::Small(value[0] as i32)
         } else {
@@ -110,14 +110,13 @@ impl Memory {
             .collect_vec();
 
         let size = values.len().next_power_of_two();
-        values.resize(size, MemoryValue::U64(0));
+        values.resize(size, MemoryValue::F252([0; 8]));
         values.into_iter()
     }
 }
 
 pub struct MemoryBuilder<'a> {
     mem: Memory,
-    u64_id_cache: HashMap<u64, usize>,
     felt252_id_cache: HashMap<[u32; 8], usize>,
     range_check9: &'a mut RangeCheckUnitInput,
 }
@@ -127,10 +126,9 @@ impl<'a> MemoryBuilder<'a> {
             mem: Memory {
                 config,
                 address_to_id: Vec::new(),
-                u64_values: Vec::new(),
+                inst_cache: HashMap::new(),
                 f252_values: Vec::new(),
             },
-            u64_id_cache: HashMap::new(),
             felt252_id_cache: HashMap::new(),
             range_check9,
         }
@@ -139,7 +137,7 @@ impl<'a> MemoryBuilder<'a> {
         config: MemConfig,
         range_check9: &'a mut RangeCheckUnitInput,
         iter: I,
-    ) -> Memory {
+    ) -> MemoryBuilder<'_> {
         let mem_entries = iter.into_iter();
         let mut builder = Self::new(config, range_check9);
         for entry in mem_entries {
@@ -153,9 +151,20 @@ impl<'a> MemoryBuilder<'a> {
                 builder.range_check9.add_value(limb);
             }
         }
-
-        builder.build()
+        builder
     }
+
+    pub fn get_inst(&mut self, addr: u32) -> u64 {
+        let mut inst_cache = std::mem::take(&mut self.inst_cache);
+        let res = *inst_cache.entry(addr).or_insert_with(|| {
+            let value = self.mem.get(addr).as_u256();
+            assert_eq!(value[2..8], [0; 6]);
+            value[0] as u64 | ((value[1] as u64) << 32)
+        });
+        self.inst_cache = inst_cache;
+        res
+    }
+
     pub fn set(&mut self, addr: u64, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
@@ -163,14 +172,6 @@ impl<'a> MemoryBuilder<'a> {
         }
         let res = EncodedMemoryValueId::encode(match value {
             MemoryValue::Small(val) => MemoryValueId::Small(val),
-            MemoryValue::U64(val) => {
-                let len = self.u64_values.len();
-                let id = *self.u64_id_cache.entry(val).or_insert(len);
-                if id == len {
-                    self.u64_values.push(val);
-                };
-                MemoryValueId::U64(id)
-            }
             MemoryValue::F252(val) => {
                 let len = self.f252_values.len();
                 let id = *self.felt252_id_cache.entry(val).or_insert(len);
@@ -206,8 +207,7 @@ impl EncodedMemoryValueId {
             MemoryValueId::Small(id) => {
                 EncodedMemoryValueId((id + SMALL_VALUE_SHIFT as i32) as u32)
             }
-            MemoryValueId::U64(id) => EncodedMemoryValueId(id as u32 | 0x4000_0000),
-            MemoryValueId::F252(id) => EncodedMemoryValueId(id as u32 | 0x8000_0000),
+            MemoryValueId::F252(id) => EncodedMemoryValueId(id as u32 | 0x4000_0000),
         }
     }
     pub fn decode(&self) -> MemoryValueId {
@@ -215,8 +215,7 @@ impl EncodedMemoryValueId {
         let val = self.0 & 0x3FFF_FFFF;
         match tag {
             0 => MemoryValueId::Small(val as i32 - SMALL_VALUE_SHIFT as i32),
-            1 => MemoryValueId::U64(val as usize),
-            2 => MemoryValueId::F252(val as usize),
+            1 => MemoryValueId::F252(val as usize),
             _ => panic!("Invalid tag"),
         }
     }
@@ -230,31 +229,22 @@ impl Default for EncodedMemoryValueId {
 
 pub enum MemoryValueId {
     Small(i32),
-    U64(usize),
     F252(usize),
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum MemoryValue {
     Small(i32),
-    U64(u64),
     F252([u32; 8]),
 }
 impl MemoryValue {
     pub fn as_small(&self) -> i32 {
         match self {
             MemoryValue::Small(x) => *x,
-            MemoryValue::U64(x) => (*x).try_into().unwrap(),
             MemoryValue::F252(_) => panic!("Cannot convert F252 to i32"),
         }
     }
-    pub fn as_u64(&self) -> u64 {
-        match self {
-            MemoryValue::Small(x) => (*x).try_into().unwrap(),
-            MemoryValue::U64(x) => *x,
-            MemoryValue::F252(_) => panic!("Cannot convert F252 to u64"),
-        }
-    }
+
     pub fn as_u256(&self) -> [u32; 8] {
         match *self {
             MemoryValue::Small(x) => {
@@ -267,12 +257,6 @@ impl MemoryValue {
                     res[0] = 0xFFFF_FFFF - (-x - 2) as u32;
                     res
                 }
-            }
-            MemoryValue::U64(x) => {
-                let mut res = [0; 8];
-                res[0] = x as u32;
-                res[1] = (x >> 32) as u32;
-                res
             }
             MemoryValue::F252(x) => x,
         }
@@ -329,13 +313,10 @@ mod tests {
         );
         assert_eq!(memory.get(0), MemoryValue::F252([1; 8]));
         assert_eq!(memory.get(1), MemoryValue::Small(6));
-        assert_eq!(memory.get(2), MemoryValue::U64((2 << 32) | 1));
-        assert_eq!(memory.get(5), MemoryValue::U64(1 << 24));
         assert_eq!(memory.get(8), MemoryValue::Small(-1));
         assert_eq!(memory.get(9), MemoryValue::Small(-2));
         // Duplicates.
         assert_eq!(memory.get(100), MemoryValue::F252([1; 8]));
-        assert_eq!(memory.get(105), MemoryValue::U64(1 << 24));
         assert_eq!(memory.address_to_id[0], memory.address_to_id[100]);
         assert_eq!(memory.address_to_id[5], memory.address_to_id[105]);
     }
@@ -344,7 +325,6 @@ mod tests {
     fn test_mem_value_casts() {
         let small = MemoryValue::Small(1);
         assert_eq!(small.as_small(), 1);
-        assert_eq!(small.as_u64(), 1);
         assert_eq!(small.as_u256(), [1, 0, 0, 0, 0, 0, 0, 0]);
 
         let small_negative = MemoryValue::Small(-5);
@@ -353,11 +333,6 @@ mod tests {
             small_negative.as_u256().as_slice(),
             [&[0xFFFFFFFC], &P_MIN_2[1..]].concat().as_slice()
         );
-
-        let u64 = MemoryValue::U64(1);
-        assert_eq!(u64.as_small(), 1);
-        assert_eq!(u64.as_u64(), 1);
-        assert_eq!(u64.as_u256(), [1, 0, 0, 0, 0, 0, 0, 0]);
 
         let f252 = MemoryValue::F252([1; 8]);
         assert_eq!(f252.as_u256(), [1; 8]);

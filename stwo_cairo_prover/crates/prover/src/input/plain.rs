@@ -65,14 +65,14 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
 
     let mut range_check9 = RangeCheckUnitInput::new();
     let mem_config = MemConfig::default();
-    let mem = MemoryBuilder::from_iter(mem_config, &mut range_check9, mem);
-    let instructions = Instructions::from_iter(trace, &mem);
+    let mut mem = MemoryBuilder::from_iter(mem_config, &mut range_check9, mem);
+    let instructions = Instructions::from_iter(trace, &mut mem);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
         instructions,
-        mem,
+        mem: mem.build(),
         public_mem_addresses,
         range_check9,
         range_check_builtin: SegmentAddrs {
