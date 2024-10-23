@@ -30,6 +30,17 @@ pub impl OptBoxImpl<T> of OptBoxTrait<T> {
 }
 
 #[generate_trait]
+pub impl OptionImpl<T> of OptionExTrait<T> {
+    /// Converts from `@Option<T>` to `Option<@T>`.
+    fn as_snap(self: @Option<T>) -> Option<@T> {
+        match self {
+            Option::Some(x) => Option::Some(x),
+            Option::None => Option::None,
+        }
+    }
+}
+
+#[generate_trait]
 pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
     fn pop_n(ref self: Array<T>, mut n: usize) -> Array<T> {
         let mut res = array![];
