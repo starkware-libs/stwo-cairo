@@ -7,6 +7,7 @@ use stwo_cairo_verifier::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17, M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5
 };
+use stwo_cairo_verifier::fields::Field;
 use stwo_cairo_verifier::fields::cm31::CM31;
 use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
 use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31One, QM31, QM31Trait};
