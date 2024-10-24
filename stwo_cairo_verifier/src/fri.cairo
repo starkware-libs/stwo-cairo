@@ -15,7 +15,7 @@ use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-use stwo_cairo_verifier::utils::{bit_reverse_index, ArrayImpl, pow, pow_qm31, find};
+use stwo_cairo_verifier::utils::{bit_reverse_index, OptionImpl, ArrayImpl, SpanExTrait, pow, find};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -305,12 +305,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn decommit(
         self: @FriVerifier, decommitted_values: Array<SparseCircleEvaluation>,
     ) -> Result<(), FriVerificationError> {
-        let queries = if let Option::Some(queries_snapshot) = self.queries {
-            Option::Some(queries_snapshot)
-        } else {
-            Option::None
-        }
-            .expect('queries not sampled');
+        let queries = self.queries.as_snap().expect('queries not sampled');
         self.decommit_on_queries(queries, decommitted_values)
     }
 
@@ -319,7 +314,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ) -> Result<(), FriVerificationError> {
         assert!(queries.log_domain_size == self.expected_query_log_domain_size);
         let (last_layer_queries, last_layer_query_evals) = self
-            .decommit_inner_layers(queries, @decommitted_values)?;
+            .decommit_inner_layers(queries, decommitted_values)?;
         self.decommit_last_layer(last_layer_queries, last_layer_query_evals)
     }
 
@@ -327,69 +322,57 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// Returns the queries and query evaluations needed for verifying the last FRI layer.
     fn decommit_inner_layers(
-        self: @FriVerifier, queries: @Queries, decommitted_values: @Array<SparseCircleEvaluation>
+        self: @FriVerifier, queries: @Queries, mut decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         let circle_poly_alpha = self.circle_poly_alpha;
         let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
 
+        let mut inner_layers = self.inner_layers.span();
+        let mut column_bounds = self.column_bounds.span();
         let mut layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
         let mut layer_query_evals = ArrayImpl::new_repeated(layer_queries.len(), QM31Zero::zero());
 
-        let mut inner_layers_index = 0;
-        let mut column_bound_index = 0;
         loop {
-            if inner_layers_index == self.inner_layers.len() {
-                // TODO: remove clones
-                break Result::Ok((layer_queries.clone(), layer_query_evals.clone()));
-            }
+            let layer = match inner_layers.pop_front() {
+                Option::Some(layer) => layer,
+                Option::None => { break Result::Ok(()); }
+            };
 
-            let current_layer = self.inner_layers[inner_layers_index];
-            if column_bound_index < self.column_bounds.len()
-                && *self.column_bounds[column_bound_index]
-                - CIRCLE_TO_LINE_FOLD_STEP == *current_layer.degree_bound {
-                let mut n_columns_in_layer = 1;
-                // TODO: remove clone?
-                let mut combined_sparse_evals = decommitted_values[column_bound_index].clone();
+            let circle_poly_degree_bound = *layer.degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
 
-                column_bound_index += 1;
+            while let Option::Some(_) = column_bounds.next_if_eq(@circle_poly_degree_bound) {
+                let sparse_evaluation = decommitted_values.pop_front().unwrap();
+                let mut folded_evals = sparse_evaluation.fold(*circle_poly_alpha);
 
-                while column_bound_index < self.column_bounds.len()
-                    && *self.column_bounds[column_bound_index]
-                    - CIRCLE_TO_LINE_FOLD_STEP == *current_layer.degree_bound {
-                    combined_sparse_evals = combined_sparse_evals
-                        .accumulate(decommitted_values[column_bound_index], circle_poly_alpha_sq);
-                    column_bound_index += 1;
-                    n_columns_in_layer += 1;
-                };
-
-                let folded_evals = combined_sparse_evals.fold(*circle_poly_alpha);
-                let prev_layer_combination_factor = pow_qm31(
-                    circle_poly_alpha_sq, n_columns_in_layer
-                );
-
-                let mut k = 0;
-                let mut new_layer_query_evals: Array<QM31> = array![];
+                let n = folded_evals.len();
                 assert!(folded_evals.len() == layer_query_evals.len());
-                while k < folded_evals.len() {
-                    new_layer_query_evals
-                        .append(
-                            *layer_query_evals[k] * prev_layer_combination_factor + *folded_evals[k]
-                        );
-                    k += 1;
-                };
-                layer_query_evals = new_layer_query_evals;
-            }
+                let mut next_layer_query_evals = array![];
+                for _ in 0
+                    ..n {
+                        let layer_eval = layer_query_evals.pop_front().unwrap();
+                        let folded_eval = folded_evals.pop_front().unwrap();
+                        next_layer_query_evals
+                            .append(layer_eval * circle_poly_alpha_sq + folded_eval);
+                    };
+                layer_query_evals = next_layer_query_evals;
+            };
 
-            let result = current_layer.verify_and_fold(@layer_queries, @layer_query_evals);
-            if result.is_err() {
-                break result;
-            } else {
-                let (new_layer_queries, new_layer_query_evals) = result.unwrap();
-                layer_queries = new_layer_queries;
-                layer_query_evals = new_layer_query_evals;
-            }
-            inner_layers_index += 1;
-        }
+            match layer.verify_and_fold(@layer_queries, @layer_query_evals) {
+                Result::Ok((
+                    next_layer_queries, next_layer_query_evals
+                )) => {
+                    layer_queries = next_layer_queries;
+                    layer_query_evals = next_layer_query_evals;
+                },
+                Result::Err(err) => { break Result::Err(err); },
+            };
+        }?;
+
+        // Check all values have been consumed.
+        assert!(column_bounds.is_empty());
+        assert!(decommitted_values.is_empty());
+
+        Result::Ok((layer_queries, layer_query_evals))
     }
 
     /// Verifies the last layer.
