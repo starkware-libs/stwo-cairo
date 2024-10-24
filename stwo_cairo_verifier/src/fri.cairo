@@ -1,8 +1,8 @@
 use core::dict::Felt252Dict;
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
+use stwo_cairo_verifier::fields::Field;
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::m31::M31Trait;
 use stwo_cairo_verifier::fields::qm31::{QM31_EXTENSION_DEGREE, QM31, QM31Zero, QM31Trait};
 use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
 use stwo_cairo_verifier::poly::circle::{
