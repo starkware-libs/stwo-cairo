@@ -6,6 +6,7 @@ use core::num::traits::{One, Zero};
 use stwo_cairo_verifier::circle::{
     CosetImpl, CirclePointIndexImpl, CirclePoint, M31_CIRCLE_LOG_ORDER
 };
+use stwo_cairo_verifier::fields::FieldBatchInverse;
 use stwo_cairo_verifier::fields::cm31::{CM31, CM31Impl};
 use stwo_cairo_verifier::fields::m31::{M31, UnreducedM31};
 use stwo_cairo_verifier::fields::qm31::{
@@ -391,7 +392,7 @@ fn quotient_denominator_inverses(
                 };
         };
 
-    CM31Impl::batch_inverse(flat_denominators)
+    FieldBatchInverse::batch_inverse(flat_denominators)
 }
 
 /// A batch of column samplings at a point.
