@@ -30,7 +30,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A, ref channel: Channel, proof: StarkProof, ref commitment_scheme: CommitmentSchemeVerifier
 ) -> Result<(), VerificationError> {
     let random_coeff = channel.draw_felt();
-    
+
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
