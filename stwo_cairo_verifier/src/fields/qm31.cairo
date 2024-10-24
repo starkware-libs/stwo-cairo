@@ -1,7 +1,8 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::cm31::{CM31, cm31, CM31Trait};
+use super::Field;
+use super::cm31::{CM31, cm31};
 use super::m31::{M31, M31Impl, UnreducedM31};
 
 /// Equals `(2^31 - 1)^4`.
@@ -17,6 +18,17 @@ pub struct QM31 {
     pub b: CM31,
 }
 
+impl QM31Field of Field<QM31> {
+    fn inverse(self: QM31) -> QM31 {
+        assert!(self.is_non_zero());
+        let b2 = self.b * self.b;
+        let ib2 = CM31 { a: -b2.b, b: b2.a };
+        let denom = self.a * self.a - (b2 + b2 + ib2);
+        let denom_inverse = denom.inverse();
+        QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
+    }
+}
+
 #[generate_trait]
 pub impl QM31Impl of QM31Trait {
     #[inline]
@@ -28,15 +40,6 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn to_array(self: QM31) -> [M31; 4] {
         [self.a.a, self.a.b, self.b.a, self.b.b]
-    }
-
-    fn inverse(self: QM31) -> QM31 {
-        assert!(self.is_non_zero());
-        let b2 = self.b * self.b;
-        let ib2 = CM31 { a: -b2.b, b: b2.a };
-        let denom = self.a * self.a - (b2 + b2 + ib2);
-        let denom_inverse = denom.inverse();
-        QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
 
     #[inline]
@@ -422,7 +425,8 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
 
 #[cfg(test)]
 mod tests {
-    use super::super::m31::{m31, P, M31Trait};
+    use super::super::Field;
+    use super::super::m31::{m31, P};
     use super::{
         QM31, qm31, QM31Trait, QM31Impl, QM31IntoPackedUnreducedQM31, PackedUnreducedQM31Impl
     };

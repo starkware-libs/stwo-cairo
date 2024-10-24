@@ -42,7 +42,7 @@ pub impl OptionImpl<T> of OptionExTrait<T> {
 
 #[generate_trait]
 pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
-    fn pop_n(ref self: Array<T>, mut n: usize) -> Array<T> {
+    fn pop_front_n(ref self: Array<T>, mut n: usize) -> Array<T> {
         let mut res = array![];
         while n != 0 {
             if let Option::Some(value) = self.pop_front() {
