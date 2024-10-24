@@ -3,7 +3,7 @@ use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::m31::M31Trait;
-use stwo_cairo_verifier::fields::qm31::{QM31, QM31Zero, QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31_EXTENSION_DEGREE, QM31, QM31Zero, QM31Trait};
 use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
 use stwo_cairo_verifier::poly::circle::{
     CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
@@ -19,8 +19,17 @@ use stwo_cairo_verifier::utils::{bit_reverse_index, OptionImpl, ArrayImpl, SpanE
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
+/// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
+
+/// Equals `2^CIRCLE_TO_LINE_FOLD_STEP`.
+pub const CIRCLE_TO_LINE_FOLD_FACTOR: usize = 2;
+
+/// Fold step size for univariate polynomials.
 pub const FOLD_STEP: u32 = 1;
+
+/// Equals `2^FOLD_STEP`.
+pub const FOLD_FACTOR: usize = 2;
 
 #[derive(Debug, Drop, PartialEq)]
 pub enum FriVerificationError {
@@ -46,72 +55,62 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     fn verify_and_fold(
         self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-        let commitment = self.proof.commitment;
-
         let sparse_evaluation = self.extract_evaluation(queries, evals_at_queries)?;
-        let mut column_0: Array<M31> = array![];
-        let mut column_1: Array<M31> = array![];
-        let mut column_2: Array<M31> = array![];
-        let mut column_3: Array<M31> = array![];
-        let mut i = 0;
-        while i < (sparse_evaluation).subline_evals.len() {
-            let mut j = 0;
-            let subline_eval = sparse_evaluation.subline_evals[i];
-            while j < (sparse_evaluation.subline_evals[i]).values.len() {
-                let [x0, x1, x2, x3] = (*subline_eval.values[j]).to_array();
 
-                column_0.append(x0);
-                column_1.append(x1);
-                column_2.append(x2);
-                column_3.append(x3);
-                j += 1;
+        let mut column_0 = array![];
+        let mut column_1 = array![];
+        let mut column_2 = array![];
+        let mut column_3 = array![];
+
+        for subline_eval in sparse_evaluation
+            .subline_evals
+            .span() {
+                for eval in subline_eval
+                    .values
+                    .span() {
+                        let [x0, x1, x2, x3] = (*eval).to_array();
+                        column_0.append(x0);
+                        column_1.append(x1);
+                        column_2.append(x2);
+                        column_3.append(x3);
+                    };
             };
-            i += 1;
-        };
+
         let actual_decommitment_array = array![column_0, column_1, column_2, column_3];
 
         let folded_queries = queries.fold(FOLD_STEP);
-        let folded_queries_snapshot = @folded_queries;
-
         let mut decommitment_positions = array![];
-        let mut i = 0;
-        while i < folded_queries_snapshot.len() {
-            let start = *folded_queries_snapshot.positions[i] * pow(2, FOLD_STEP);
-            let end = start + pow(2, FOLD_STEP);
-            let mut j = start;
-            while j < end {
-                decommitment_positions.append(j);
-                j += 1;
-            };
-            i += 1;
-        };
 
+        for folded_query_position in folded_queries
+            .positions
+            .span() {
+                let start = *folded_query_position * FOLD_FACTOR;
+                let end = start + FOLD_FACTOR;
+                for i in start..end {
+                    decommitment_positions.append(i);
+                };
+            };
+
+        let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
-            root: *commitment.clone(),
-            column_log_sizes: array![
-                // TODO: adapt to handle other secure_extension_degree
-                self.domain.log_size(),
-                self.domain.log_size(),
-                self.domain.log_size(),
-                self.domain.log_size()
-            ]
+            root: **self.proof.commitment,
+            column_log_sizes: ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, column_log_size),
         };
 
         let mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
         queries_per_log_size
-            .insert(
-                self.domain.log_size().into(), NullableTrait::new(decommitment_positions.span())
-            );
+            .insert(column_log_size.into(), NullableTrait::new(decommitment_positions.span()));
 
-        let decommitment = self.proof.decommitment.clone();
-        let result = merkle_verifier
-            .verify(queries_per_log_size, @actual_decommitment_array, decommitment.clone());
+        let decommitment = (*self.proof.decommitment).clone();
+
+        if let Result::Err(_) = merkle_verifier
+            .verify(queries_per_log_size, @actual_decommitment_array, decommitment) {
+            return Result::Err(FriVerificationError::InnerLayerCommitmentInvalid);
+        }
 
         let evals_at_folded_queries = sparse_evaluation.fold(*self.folding_alpha);
-        match result {
-            Result::Ok(()) => Result::Ok((folded_queries, evals_at_folded_queries)),
-            Result::Err(_) => Result::Err(FriVerificationError::InnerLayerCommitmentInvalid)
-        }
+
+        Result::Ok((folded_queries, evals_at_folded_queries))
     }
 
     /// Returns the evaluations needed for decommitment.
@@ -137,15 +136,15 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             i += 1;
             while i < queries.positions.len()
                 && (*queries.positions[i
-                    - 1] / pow(2, FOLD_STEP)) == (*queries.positions[i] / pow(2, FOLD_STEP)) {
+                    - 1] / FOLD_FACTOR) == (*queries.positions[i] / FOLD_FACTOR) {
                 i = i + 1;
             };
             let end_subline_index = i;
 
             // These are the values whose evaluations are required.
-            let subline_start = (*queries.positions[start_subline_index] / pow(2, FOLD_STEP))
-                * pow(2, FOLD_STEP);
-            let subline_end = subline_start + pow(2, FOLD_STEP);
+            let subline_start = (*queries.positions[start_subline_index] / FOLD_FACTOR)
+                * FOLD_FACTOR;
+            let subline_end = subline_start + FOLD_FACTOR;
 
             let mut subline_evals: Array<QM31> = array![];
 
@@ -324,8 +323,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_inner_layers(
         self: @FriVerifier, queries: @Queries, mut decommitted_values: Array<SparseCircleEvaluation>
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-        let circle_poly_alpha = self.circle_poly_alpha;
-        let circle_poly_alpha_sq = *circle_poly_alpha * *circle_poly_alpha;
+        let circle_poly_alpha = *self.circle_poly_alpha;
+        let circle_poly_alpha_pow_fold_factor = circle_poly_alpha * circle_poly_alpha;
 
         let mut inner_layers = self.inner_layers.span();
         let mut column_bounds = self.column_bounds.span();
@@ -342,12 +341,13 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
             while let Option::Some(_) = column_bounds.next_if_eq(@circle_poly_degree_bound) {
                 let sparse_evaluation = decommitted_values.pop_front().unwrap();
-                let mut folded_evals = sparse_evaluation.fold(*circle_poly_alpha);
+                let mut folded_evals = sparse_evaluation.fold(circle_poly_alpha);
 
                 let mut next_layer_query_evals = array![];
                 while let Option::Some(layer_eval) = layer_query_evals.pop_front() {
                     let folded_eval = folded_evals.pop_front().unwrap();
-                    next_layer_query_evals.append(layer_eval * circle_poly_alpha_sq + folded_eval);
+                    next_layer_query_evals
+                        .append(layer_eval * circle_poly_alpha_pow_fold_factor + folded_eval);
                 };
                 assert!(folded_evals.is_empty());
                 layer_query_evals = next_layer_query_evals;
@@ -472,7 +472,7 @@ pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
     for i in 0
         ..eval.values.len()
             / 2 {
-                let x = domain.at(bit_reverse_index(i * pow(2, FOLD_STEP), domain.log_size()));
+                let x = domain.at(bit_reverse_index(i * FOLD_FACTOR, domain.log_size()));
                 let f_x = eval.values[2 * i];
                 let f_neg_x = eval.values[2 * i + 1];
                 let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
@@ -489,12 +489,12 @@ pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
 /// `dst = dst * alpha^2 + f'`.
 pub fn fold_circle_into_line(eval: CircleEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
-    let fold_factor = pow(2, CIRCLE_TO_LINE_FOLD_STEP);
     let mut values = array![];
     for i in 0
         ..eval.bit_reversed_values.len()
             / 2 {
-                let p = domain.at(bit_reverse_index(i * fold_factor, domain.log_size()));
+                let p = domain
+                    .at(bit_reverse_index(i * CIRCLE_TO_LINE_FOLD_FACTOR, domain.log_size()));
                 let f_p = eval.bit_reversed_values[2 * i];
                 let f_neg_p = eval.bit_reversed_values[2 * i + 1];
                 let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
