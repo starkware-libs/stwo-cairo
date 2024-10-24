@@ -68,6 +68,7 @@ pub impl QueriesImpl of QueriesImplTrait {
 
     fn opening_positions(self: @Queries, fri_step_size: u32) -> SparseSubCircleDomain {
         assert!(fri_step_size > 0);
+        let fold_factor = pow(2, fri_step_size);
         let mut domains = array![];
         let snap_positions = self.positions;
         let mut already_added = array![];
@@ -78,9 +79,7 @@ pub impl QueriesImpl of QueriesImplTrait {
                 already_added.append(v);
                 domains
                     .append(
-                        SubCircleDomain {
-                            coset_index: v / pow(2, fri_step_size), log_size: fri_step_size
-                        }
+                        SubCircleDomain { coset_index: v / fold_factor, log_size: fri_step_size }
                     );
             }
 
