@@ -1,6 +1,7 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::m31::{M31, M31Impl, m31, M31Trait};
+use super::m31::{M31, M31Impl, m31};
+use super::{Invertible, BatchInvertible};
 
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct CM31 {
@@ -8,42 +9,18 @@ pub struct CM31 {
     pub b: M31,
 }
 
-#[generate_trait]
-pub impl CM31Impl of CM31Trait {
+pub impl CM31InvertibleImpl of Invertible<CM31> {
     fn inverse(self: CM31) -> CM31 {
         assert!(self.is_non_zero());
         let denom_inverse: M31 = (self.a * self.a + self.b * self.b).inverse();
         CM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
+}
 
-    /// Computes all `1/arr[i]` with a single call to `inverse()` using Montgomery batch inversion.
-    fn batch_inverse(arr: Array<CM31>) -> Array<CM31> {
-        // Construct array `1, z, zy, ..., zy..b`.
-        let mut prefix_product_rev = array![];
-        let mut cumulative_product: CM31 = One::one();
+pub impl CM31BatchInvertibleImpl of BatchInvertible<CM31> {}
 
-        let mut i = arr.len();
-        while i != 0 {
-            i -= 1;
-            prefix_product_rev.append(cumulative_product);
-            cumulative_product *= *arr[i];
-        };
-
-        // Compute `1/zy..a`.
-        let mut cumulative_product_inv = cumulative_product.inverse();
-        // Compute all `1/a = zy..b/zy..a, 1/b = zy..c/zy..b, ...`.
-        let mut inverses = array![];
-
-        let mut i = prefix_product_rev.len();
-        for v in arr {
-            i -= 1;
-            inverses.append(cumulative_product_inv * *prefix_product_rev[i]);
-            cumulative_product_inv *= v;
-        };
-
-        inverses
-    }
-
+#[generate_trait]
+pub impl CM31Impl of CM31Trait {
     // TODO(andrew): When associated types are supported, support `Mul<CM31, M31>`.
     #[inline]
     fn mul_m31(self: CM31, rhs: M31) -> CM31 {
