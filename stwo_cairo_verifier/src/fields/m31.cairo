@@ -2,6 +2,7 @@ use core::num::traits::{WideMul, CheckedSub};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::option::OptionTrait;
 use core::traits::TryInto;
+use super::{Field, FieldBatchInverse};
 
 /// Equals `2^31 - 1`.
 pub const P: u32 = 0x7fffffff;
@@ -19,6 +20,21 @@ const P128NZ: NonZero<u128> = 0x7fffffff;
 pub struct M31 {
     pub inner: u32
 }
+
+pub impl M31FieldImpl of Field<M31> {
+    fn inverse(self: M31) -> M31 {
+        assert!(self.is_non_zero());
+        let t0 = sqn(self, 2) * self;
+        let t1 = sqn(t0, 1) * t0;
+        let t2 = sqn(t1, 3) * t0;
+        let t3 = sqn(t2, 1) * t0;
+        let t4 = sqn(t3, 8) * t3;
+        let t5 = sqn(t4, 8) * t3;
+        sqn(t5, 7) * t2
+    }
+}
+
+pub impl M31FieldBatchInverseImpl of FieldBatchInverse<M31> {}
 
 #[generate_trait]
 pub impl M31Impl of M31Trait {
@@ -38,25 +54,6 @@ pub impl M31Impl of M31Trait {
     fn reduce_u128(val: u128) -> M31 {
         let (_, res) = core::integer::u128_safe_divmod(val, P128NZ);
         M31 { inner: res.try_into().unwrap() }
-    }
-
-    #[inline]
-    fn sqn(v: M31, n: usize) -> M31 {
-        if n == 0 {
-            return v;
-        }
-        Self::sqn(v * v, n - 1)
-    }
-
-    fn inverse(self: M31) -> M31 {
-        assert!(self.is_non_zero());
-        let t0 = Self::sqn(self, 2) * self;
-        let t1 = Self::sqn(t0, 1) * t0;
-        let t2 = Self::sqn(t1, 3) * t0;
-        let t3 = Self::sqn(t2, 1) * t0;
-        let t4 = Self::sqn(t3, 8) * t3;
-        let t5 = Self::sqn(t4, 8) * t3;
-        Self::sqn(t5, 7) * t2
     }
 }
 pub impl M31Add of core::traits::Add<M31> {
@@ -192,9 +189,19 @@ impl M31IntoUnreducedM31 of Into<M31, UnreducedM31> {
     }
 }
 
+/// Returns `v^(2^n)`.
+fn sqn(v: M31, n: usize) -> M31 {
+    if n == 0 {
+        return v;
+    }
+    sqn(v * v, n - 1)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{m31, P, M31Trait};
+    use super::super::Field;
+    use super::{m31, P, M31FieldImpl};
+
     const POW2_15: u32 = 0b1000000000000000;
     const POW2_16: u32 = 0b10000000000000000;
 
