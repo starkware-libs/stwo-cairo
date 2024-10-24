@@ -1,1 +1,5 @@
 target
+snfoundry_trace
+.snfoundry_cache
+.snfoundry_versioned_programs
+profile.pb.gz

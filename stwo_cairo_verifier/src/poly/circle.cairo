@@ -1,5 +1,6 @@
 use stwo_cairo_verifier::circle::{
-    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl
+    Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl,
+    CirclePointTrait
 };
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::QM31;
@@ -97,6 +98,18 @@ pub impl CanonicCosetImpl of CanonicCosetTrait {
     fn circle_domain(self: @CanonicCoset) -> CircleDomain {
         CircleDomainImpl::new(self.half_coset())
     }
+
+    /// Evaluates the coset's vanishing polynomial at point `p`.
+    fn eval_vanishing(self: @CanonicCoset, p: CirclePoint<QM31>) -> QM31 {
+        let mut x = p.x;
+
+        // The formula for the x coordinate of the double of a point.
+        for _ in 1..*self.coset.log_size {
+            x = CirclePointTrait::double_x(x);
+        };
+
+        x
+    }
 }
 
 /// An evaluation defined on a [`CircleDomain`].
@@ -130,14 +143,14 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
     fn accumulate(
         self: @SparseCircleEvaluation, rhs: @SparseCircleEvaluation, alpha: QM31
     ) -> SparseCircleEvaluation {
-        assert_eq!(self.subcircle_evals.len(), rhs.subcircle_evals.len());
+        assert!(self.subcircle_evals.len() == rhs.subcircle_evals.len());
         let mut subcircle_evals = array![];
         let mut i = 0;
         while i < self.subcircle_evals.len() {
             let lhs = self.subcircle_evals[i];
             let rhs = rhs.subcircle_evals[i];
             let mut values = array![];
-            assert_eq!(lhs.bit_reversed_values.len(), rhs.bit_reversed_values.len());
+            assert!(lhs.bit_reversed_values.len() == rhs.bit_reversed_values.len());
             let mut j = 0;
             while j < lhs.bit_reversed_values.len() {
                 values.append(*lhs.bit_reversed_values[j] * alpha + *rhs.bit_reversed_values[j]);

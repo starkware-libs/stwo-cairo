@@ -104,7 +104,7 @@ pub struct LineEvaluation {
 pub impl LineEvaluationImpl of LineEvaluationTrait {
     /// Creates new [LineEvaluation] from a set of polynomial evaluations over a [LineDomain].
     fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
-        assert_eq!(values.len(), domain.size());
+        assert!(values.len() == domain.size());
         LineEvaluation { values: values, domain: domain }
     }
 }

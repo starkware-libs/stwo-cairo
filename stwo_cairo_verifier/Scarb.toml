@@ -13,3 +13,10 @@ sort-module-level-items = true
 
 [dev-dependencies]
 cairo_test = "2.8.0"
+# snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.32.0" }
+# # TODO(andrew): Remove once get scarb >=2.8.3 working.
+# assert_macros = "2.8.0"
+
+
+# [scripts]
+# test = "snforge test --max-n-steps 100000000"

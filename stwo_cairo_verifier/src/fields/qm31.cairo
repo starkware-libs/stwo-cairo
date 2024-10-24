@@ -7,6 +7,8 @@ use super::m31::{M31, M31Impl, UnreducedM31};
 /// Equals `(2^31 - 1)^4`.
 pub const P4: u128 = 21267647892944572736998860269687930881;
 
+pub const QM31_EXTENSION_DEGREE: usize = 4;
+
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -29,7 +31,7 @@ pub impl QM31Impl of QM31Trait {
     }
 
     fn inverse(self: QM31) -> QM31 {
-        assert_ne!(self, Zero::zero());
+        assert!(self.is_non_zero());
         let b2 = self.b * self.b;
         let ib2 = CM31 { a: -b2.b, b: b2.a };
         let denom = self.a * self.a - (b2 + b2 + ib2);
@@ -130,6 +132,13 @@ pub impl QM31Impl of QM31Trait {
             d: PP16 + aa_t_bb_b + ab_t_ba_b
         }
     }
+
+    /// Returns the combined value, given the values of its composing base field polynomials at that
+    /// point.
+    fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
+        let [e0, e1, e2, e3] = evals;
+        e0 + e1 * qm31(0, 1, 0, 0) + e2 * qm31(0, 0, 1, 0) + e3 * qm31(0, 0, 0, 1)
+    }
 }
 
 pub impl QM31Add of core::traits::Add<QM31> {
@@ -150,6 +159,14 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
         QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
+    }
+}
+
+pub impl QM31Div of core::traits::Div<QM31> {
+    #[inline]
+    fn div(lhs: QM31, rhs: QM31) -> QM31 {
+        // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
+        lhs * rhs.inverse()
     }
 }
 
