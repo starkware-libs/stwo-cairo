@@ -169,7 +169,7 @@ impl MerkleVerifierImpl<
                     col_query_index += 1;
                     res
                 } else {
-                    column_witness.pop_n(n_columns_in_layer)
+                    column_witness.pop_front_n(n_columns_in_layer)
                 };
 
                 if column_values.len() != n_columns_in_layer {
