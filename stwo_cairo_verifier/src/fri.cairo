@@ -75,6 +75,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
                         column_3.append(x3);
                     };
             };
+
         let actual_decommitment_array = array![column_0, column_1, column_2, column_3];
 
         let folded_queries = queries.fold(FOLD_STEP);
