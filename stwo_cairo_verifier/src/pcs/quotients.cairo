@@ -510,9 +510,7 @@ mod tests {
     use core::array::ArrayImpl;
     use core::dict::Felt252Dict;
     use core::nullable::{NullableTrait};
-    use stwo_cairo_verifier::circle::{
-        QM31_CIRCLE_GEN, CosetImpl, CirclePointIndexImpl, CirclePointTrait
-    };
+    use stwo_cairo_verifier::circle::{QM31_CIRCLE_GEN, CosetImpl, CirclePointIndexImpl};
     use stwo_cairo_verifier::fields::cm31::cm31;
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::{qm31, PackedUnreducedQM31Impl};
@@ -534,9 +532,12 @@ mod tests {
     fn test_fri_answers_for_log_size() {
         let log_size = 5;
         let commitment_domain = CanonicCosetImpl::new(log_size).circle_domain();
-        let sample0 = PointSample { point: QM31_CIRCLE_GEN, value: qm31(0, 1, 2, 3) };
-        let sample1 = PointSample { point: QM31_CIRCLE_GEN.mul(2), value: qm31(1, 2, 3, 4) };
-        let sample2 = PointSample { point: QM31_CIRCLE_GEN.mul(3), value: qm31(2, 3, 4, 5) };
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = p0 + QM31_CIRCLE_GEN;
+        let p2 = p1 + QM31_CIRCLE_GEN;
+        let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
+        let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
+        let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
         let col0_samples = array![sample0, sample1, sample2];
         let col1_samples = array![sample0];
         let col2_samples = array![sample0, sample2];
@@ -588,8 +589,10 @@ mod tests {
         let log_size_per_column = array![col0_log_size, col1_log_size];
         let col0_commitment_domain = CanonicCosetImpl::new(col0_log_size).circle_domain();
         let col1_commitment_domain = CanonicCosetImpl::new(col1_log_size).circle_domain();
-        let sample0 = PointSample { point: QM31_CIRCLE_GEN, value: qm31(0, 1, 2, 3) };
-        let sample1 = PointSample { point: QM31_CIRCLE_GEN.mul(2), value: qm31(1, 2, 3, 4) };
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
+        let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
+        let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
         let col0_samples = array![sample0, sample1];
         let col1_samples = array![sample0];
         let samples_per_column = array![col0_samples, col1_samples];
@@ -662,9 +665,11 @@ mod tests {
     #[test]
     fn test_quotient_denominator_inverses() {
         let domain = CircleDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(1), 0));
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
         let samples = array![
-            ColumnSampleBatch { point: QM31_CIRCLE_GEN, columns_and_values: array![] },
-            ColumnSampleBatch { point: QM31_CIRCLE_GEN.mul(2), columns_and_values: array![] },
+            ColumnSampleBatch { point: p0, columns_and_values: array![] },
+            ColumnSampleBatch { point: p1, columns_and_values: array![] },
         ];
 
         let denominator_inverses = quotient_denominator_inverses(@samples, domain);
@@ -681,9 +686,12 @@ mod tests {
 
     #[test]
     fn test_column_sample_batch_group_by_point() {
-        let sample0 = PointSample { point: QM31_CIRCLE_GEN, value: qm31(0, 1, 2, 3) };
-        let sample1 = PointSample { point: QM31_CIRCLE_GEN.mul(2), value: qm31(1, 2, 3, 4) };
-        let sample2 = PointSample { point: QM31_CIRCLE_GEN.mul(3), value: qm31(2, 3, 4, 5) };
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = p0 + QM31_CIRCLE_GEN;
+        let p2 = p1 + QM31_CIRCLE_GEN;
+        let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
+        let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
+        let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
         let col0_samples = array![sample0, sample1, sample2];
         let col1_samples = array![sample0];
         let col2_samples = array![sample0, sample2];
@@ -717,13 +725,11 @@ mod tests {
         let column1_query_values = array![m31(1), m31(9)];
         let column0_query_values = array![m31(5), m31(3)];
         let queried_values_per_column = array![@column0_query_values, @column1_query_values];
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
         let sample_batches = array![
-            ColumnSampleBatch {
-                point: QM31_CIRCLE_GEN, columns_and_values: array![(0, @qm31(0, 1, 2, 3))]
-            },
-            ColumnSampleBatch {
-                point: QM31_CIRCLE_GEN.mul(2), columns_and_values: array![(1, @qm31(1, 2, 3, 4))]
-            }
+            ColumnSampleBatch { point: p0, columns_and_values: array![(0, @qm31(0, 1, 2, 3))] },
+            ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] }
         ];
         let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, alpha);
         let denominator_inverses = quotient_denominator_inverses(@sample_batches, domain);
@@ -750,13 +756,11 @@ mod tests {
         let column1_query_values = array![m31(1), m31(9), m31(2), m31(5)];
         let column0_query_values = array![m31(5), m31(3), m31(3), m31(1)];
         let queried_values_per_column = array![@column0_query_values, @column1_query_values];
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
         let sample_batches = array![
-            ColumnSampleBatch {
-                point: QM31_CIRCLE_GEN, columns_and_values: array![(0, @qm31(0, 1, 2, 3))]
-            },
-            ColumnSampleBatch {
-                point: QM31_CIRCLE_GEN.mul(2), columns_and_values: array![(1, @qm31(1, 2, 3, 4))]
-            }
+            ColumnSampleBatch { point: p0, columns_and_values: array![(0, @qm31(0, 1, 2, 3))] },
+            ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] }
         ];
         let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, alpha);
         let denominator_inverses = quotient_denominator_inverses(@sample_batches, domain);
@@ -796,9 +800,12 @@ mod tests {
         let query_domain = SparseSubCircleDomain {
             domains: query_subdomains, large_domain_log_size: log_size
         };
-        let sample0 = PointSample { point: QM31_CIRCLE_GEN, value: qm31(0, 1, 2, 3) };
-        let sample1 = PointSample { point: QM31_CIRCLE_GEN.mul(2), value: qm31(1, 2, 3, 4) };
-        let sample2 = PointSample { point: QM31_CIRCLE_GEN.mul(3), value: qm31(2, 3, 4, 5) };
+        let p0 = QM31_CIRCLE_GEN;
+        let p1 = p0 + QM31_CIRCLE_GEN;
+        let p2 = p1 + QM31_CIRCLE_GEN;
+        let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
+        let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
+        let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
         let col0_samples = array![sample0, sample1, sample2];
         let col1_samples = array![sample0];
         let col2_samples = array![sample0, sample2];
