@@ -19,10 +19,15 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::components::memory::id_to_f252::component::{
-    MemoryClaim, MemoryComponent, MemoryEval, MemoryInteractionClaim,
+use crate::components::memory::addr_to_id::component::{
+    AddrToIdClaim, AddrToIdComponent, AddrToIdEval, AddrToIdInteractionClaim,
 };
-use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::addr_to_id::prover::AddrToIdClaimProver;
+use crate::components::memory::addr_to_id::AddrToIdLookupElements;
+use crate::components::memory::id_to_f252::component::{
+    IdToF252Claim, IdToF252Component, IdToF252Eval, IdToF252InteractionClaim,
+};
+use crate::components::memory::id_to_f252::prover::IdToF252ClaimProver;
 use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::components::range_check_builtin::component::{
     RangeCheckBuiltinClaim, RangeCheckBuiltinComponent, RangeCheckBuiltinEval,
@@ -63,7 +68,8 @@ pub struct CairoClaim {
 
     pub ret: Vec<RetOpcodeClaim>,
     pub range_check_builtin: RangeCheckBuiltinClaim,
-    pub memory: MemoryClaim,
+    pub memory_addr_to_id: AddrToIdClaim,
+    pub memory_id_to_value: IdToF252Claim,
     pub range_check9: RangeCheckClaim<RC9_REPS>,
     // ...
 }
@@ -73,28 +79,32 @@ impl CairoClaim {
         // TODO(spapini): Add common values.
         self.ret.iter().for_each(|c| c.mix_into(channel));
         self.range_check_builtin.mix_into(channel);
-        self.memory.mix_into(channel);
+        self.memory_addr_to_id.mix_into(channel);
+        self.memory_id_to_value.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
             [self.range_check_builtin.log_sizes()],
-            [self.memory.log_sizes()],
+            [self.memory_addr_to_id.log_sizes()],
+            [self.memory_id_to_value.log_sizes()],
             [self.range_check9.log_sizes()]
         ))
     }
 }
 
 pub struct CairoInteractionElements {
-    memory_lookup: IdToF252LookupElements,
+    memory_addr_to_id_lookup: AddrToIdLookupElements,
+    memory_id_to_value_lookup: IdToF252LookupElements,
     range9_lookup: RangeCheckElements,
     // ...
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
-            memory_lookup: IdToF252LookupElements::draw(channel),
+            memory_addr_to_id_lookup: AddrToIdLookupElements::draw(channel),
+            memory_id_to_value_lookup: IdToF252LookupElements::draw(channel),
             range9_lookup: RangeCheckElements::draw(channel),
         }
     }
@@ -104,7 +114,8 @@ impl CairoInteractionElements {
 pub struct CairoInteractionClaim {
     pub ret: Vec<RetOpcodeInteractionClaim>,
     pub range_check_builtin: RangeCheckBuiltinInteractionClaim,
-    pub memory: MemoryInteractionClaim,
+    pub memory_addr_to_id: AddrToIdInteractionClaim,
+    pub memory_id_to_value: IdToF252InteractionClaim,
     pub range_check9: RangeCheckInteractionClaim<RC9_REPS>,
     // ...
 }
@@ -113,7 +124,8 @@ impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.iter().for_each(|c| c.mix_into(channel));
         self.range_check_builtin.mix_into(channel);
-        self.memory.mix_into(channel);
+        self.memory_addr_to_id.mix_into(channel);
+        self.memory_id_to_value.mix_into(channel);
     }
 }
 
@@ -130,7 +142,7 @@ pub fn lookup_sum_valid(
         .iter()
         .map(|(addr, val)| {
             elements
-                .memory_lookup
+                .memory_id_to_value_lookup
                 .combine::<M31, QM31>(
                     &[
                         [M31::from_u32_unchecked(*addr)].as_slice(),
@@ -145,14 +157,16 @@ pub fn lookup_sum_valid(
     sum += interaction_claim.range_check9.claimed_sum;
     sum += interaction_claim.ret[0].claimed_sum;
     sum += interaction_claim.range_check_builtin.claimed_sum;
-    sum += interaction_claim.memory.claimed_sum;
+    sum += interaction_claim.memory_addr_to_id.claimed_sum;
+    sum += interaction_claim.memory_id_to_value.claimed_sum;
     sum == SecureField::zero()
 }
 
 pub struct CairoComponents {
     ret: Vec<RetOpcodeComponent>,
     range_check_builtin: RangeCheckBuiltinComponent,
-    memory: MemoryComponent,
+    memory_addr_to_id: AddrToIdComponent,
+    memory_id_to_value: IdToF252Component,
     range_check9: RangeCheckUnitComponent<RC9_REPS>,
     // ...
 }
@@ -174,7 +188,7 @@ impl CairoComponents {
                     tree_span_provider,
                     RetOpcodeEval::new(
                         claim.clone(),
-                        interaction_elements.memory_lookup.clone(),
+                        interaction_elements.memory_id_to_value_lookup.clone(),
                         interaction_claim.clone(),
                     ),
                 )
@@ -184,17 +198,25 @@ impl CairoComponents {
             tree_span_provider,
             RangeCheckBuiltinEval::new(
                 cairo_claim.range_check_builtin.clone(),
-                interaction_elements.memory_lookup.clone(),
+                interaction_elements.memory_id_to_value_lookup.clone(),
                 interaction_claim.range_check_builtin.clone(),
             ),
         );
-        let memory_component = MemoryComponent::new(
+        let memory_addr_to_id_component = AddrToIdComponent::new(
             tree_span_provider,
-            MemoryEval::new(
-                cairo_claim.memory.clone(),
-                interaction_elements.memory_lookup.clone(),
+            AddrToIdEval::new(
+                cairo_claim.memory_addr_to_id.clone(),
+                interaction_elements.memory_addr_to_id_lookup.clone(),
+                interaction_claim.memory_addr_to_id.clone(),
+            ),
+        );
+        let memory_id_to_value_component = IdToF252Component::new(
+            tree_span_provider,
+            IdToF252Eval::new(
+                cairo_claim.memory_id_to_value.clone(),
+                interaction_elements.memory_id_to_value_lookup.clone(),
                 interaction_elements.range9_lookup.clone(),
-                interaction_claim.memory.clone(),
+                interaction_claim.memory_id_to_value.clone(),
             ),
         );
         let range_check9_component = RangeCheckUnitComponent::new(
@@ -208,7 +230,8 @@ impl CairoComponents {
         Self {
             ret: ret_components,
             range_check_builtin: range_check_builtin_component,
-            memory: memory_component,
+            memory_addr_to_id: memory_addr_to_id_component,
+            memory_id_to_value: memory_id_to_value_component,
             range_check9: range_check9_component,
         }
     }
@@ -219,7 +242,8 @@ impl CairoComponents {
             vec.push(ret);
         }
         vec.push(&self.range_check_builtin);
-        vec.push(&self.memory);
+        vec.push(&self.memory_addr_to_id);
+        vec.push(&self.memory_id_to_value);
         vec.push(&self.range_check9);
         vec
     }
@@ -230,7 +254,8 @@ impl CairoComponents {
             vec.push(ret);
         }
         vec.push(&self.range_check_builtin);
-        vec.push(&self.memory);
+        vec.push(&self.memory_addr_to_id);
+        vec.push(&self.memory_id_to_value);
         vec.push(&self.range_check9);
         vec
     }
@@ -265,7 +290,8 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
     let range_check_builtin_trace_generator =
         RangeCheckBuiltinClaimProver::new(input.range_check_builtin);
-    let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
+    let mut memory_addr_to_id_trace_generator = AddrToIdClaimProver::new(&input.mem);
+    let mut memory_id_to_value_trace_generator = IdToF252ClaimProver::new(&input.mem);
     let mut range_check9_trace_generator = RangeCheckClaimProver::<RC9_LOG_HEIGHT, RC9_REPS> {
         multiplicities: input
             .range_check9
@@ -273,19 +299,22 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     };
 
     // Add public memory.
+    // TODO(ShaharS): fix the use of public memory to support memory ids.
     for addr in &input.public_mem_addresses {
-        memory_trace_generator.add_inputs(M31::from_u32_unchecked(*addr));
+        memory_id_to_value_trace_generator.add_inputs(M31::from_u32_unchecked(*addr));
     }
 
     let mut tree_builder = commitment_scheme.tree_builder();
 
     let (ret_claim, ret_interaction_prover) =
-        ret_trace_generator.write_trace(&mut tree_builder, &mut memory_trace_generator);
+        ret_trace_generator.write_trace(&mut tree_builder, &mut memory_id_to_value_trace_generator);
     let (range_check_builtin_claim, range_check_builtin_interaction_prover) =
         range_check_builtin_trace_generator
-            .write_trace(&mut tree_builder, &mut memory_trace_generator);
-    let (memory_claim, memory_interaction_prover) =
-        memory_trace_generator.write_trace(&mut tree_builder);
+            .write_trace(&mut tree_builder, &mut memory_id_to_value_trace_generator);
+    let (memory_addr_to_id_claim, memory_addr_to_id_interaction_prover) =
+        memory_addr_to_id_trace_generator.write_trace(&mut tree_builder);
+    let (memory_id_to_value_claim, memory_id_to_value_interaction_prover) =
+        memory_id_to_value_trace_generator.write_trace(&mut tree_builder);
     let (range_check9_claim, range_check9_interaction_prover) =
         range_check9_trace_generator.write_trace(&mut tree_builder);
 
@@ -296,7 +325,8 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         final_state: input.instructions.final_state,
         ret: vec![ret_claim],
         range_check_builtin: range_check_builtin_claim.clone(),
-        memory: memory_claim.clone(),
+        memory_addr_to_id: memory_addr_to_id_claim.clone(),
+        memory_id_to_value: memory_id_to_value_claim.clone(),
         range_check9: range_check9_claim.clone(),
     };
     claim.mix_into(channel);
@@ -307,15 +337,26 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
 
     // Interaction trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-    let ret_interaction_claim = ret_interaction_prover
-        .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
-    let range_check_builtin_interaction_claim = range_check_builtin_interaction_prover
-        .write_interaction_trace(&mut tree_builder, &interaction_elements.memory_lookup);
-    let memory_interaction_claim = memory_interaction_prover.write_interaction_trace(
+    let ret_interaction_claim = ret_interaction_prover.write_interaction_trace(
         &mut tree_builder,
-        &interaction_elements.memory_lookup,
-        &interaction_elements.range9_lookup,
+        &interaction_elements.memory_id_to_value_lookup,
     );
+    let range_check_builtin_interaction_claim = range_check_builtin_interaction_prover
+        .write_interaction_trace(
+            &mut tree_builder,
+            &interaction_elements.memory_id_to_value_lookup,
+        );
+    let memory_addr_to_id_interaction_claim = memory_addr_to_id_interaction_prover
+        .write_interaction_trace(
+            &mut tree_builder,
+            &interaction_elements.memory_addr_to_id_lookup,
+        );
+    let memory_id_to_value_interaction_claim = memory_id_to_value_interaction_prover
+        .write_interaction_trace(
+            &mut tree_builder,
+            &interaction_elements.memory_id_to_value_lookup,
+            &interaction_elements.range9_lookup,
+        );
 
     let range_check9_interaction_claim = range_check9_interaction_prover
         .write_interaction_trace(&mut tree_builder, &interaction_elements.range9_lookup);
@@ -324,7 +365,8 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let interaction_claim = CairoInteractionClaim {
         ret: vec![ret_interaction_claim.clone()],
         range_check_builtin: range_check_builtin_interaction_claim.clone(),
-        memory: memory_interaction_claim.clone(),
+        memory_addr_to_id: memory_addr_to_id_interaction_claim.clone(),
+        memory_id_to_value: memory_id_to_value_interaction_claim.clone(),
         range_check9: range_check9_interaction_claim.clone(),
     };
     debug_assert!(lookup_sum_valid(
@@ -344,13 +386,17 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         .collect_vec();
     let range_check_builtin_constant_trace =
         gen_is_first::<SimdBackend>(claim.range_check_builtin.log_sizes()[2][0]);
-    let memory_constant_trace = gen_is_first::<SimdBackend>(claim.memory.log_sizes()[2][0]);
+    let memory_addr_to_id_constant_trace =
+        gen_is_first::<SimdBackend>(claim.memory_addr_to_id.log_sizes()[2][0]);
+    let memory_id_to_value_constant_trace =
+        gen_is_first::<SimdBackend>(claim.memory_id_to_value.log_sizes()[2][0]);
     let range_check9_constant_trace = gen_is_first::<SimdBackend>(RC9_LOG_HEIGHT);
     tree_builder.extend_evals(
         [
             ret_constant_traces,
             vec![range_check_builtin_constant_trace],
-            vec![memory_constant_trace],
+            vec![memory_addr_to_id_constant_trace],
+            vec![memory_id_to_value_constant_trace],
             vec![range_check9_constant_trace],
         ]
         .into_iter()

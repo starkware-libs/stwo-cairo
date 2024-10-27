@@ -13,7 +13,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
 use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
-use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::prover::IdToF252ClaimProver;
 use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::input::instructions::VmState;
 
@@ -56,7 +56,7 @@ impl RetOpcodeClaimProver {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_trace_generator: &mut MemoryClaimProver,
+        memory_trace_generator: &mut IdToF252ClaimProver,
     ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
         interaction_prover.memory_inputs.iter().for_each(|c| {
@@ -130,7 +130,7 @@ impl RetOpcodeInteractionProver {
 
 fn write_trace_simd(
     inputs: &[PackedRetInput],
-    memory_trace_generator: &MemoryClaimProver,
+    memory_trace_generator: &IdToF252ClaimProver,
 ) -> (
     Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
     RetOpcodeInteractionProver,
@@ -175,7 +175,7 @@ fn write_trace_row(
     ret_opcode_input: &PackedRetInput,
     row_index: usize,
     lookup_data: &mut RetOpcodeInteractionProver,
-    memory_trace_generator: &MemoryClaimProver,
+    memory_trace_generator: &IdToF252ClaimProver,
 ) {
     let col0 = ret_opcode_input.pc;
     dst[0].data[row_index] = col0;
