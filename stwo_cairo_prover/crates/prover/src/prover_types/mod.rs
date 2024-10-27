@@ -160,3 +160,83 @@ impl PackedCasmState {
         Self { pc, ap, fp }
     }
 }
+
+pub const FELT252_N_WORDS: usize = 28;
+pub const FELT252_BITS_PER_WORD: usize = 9;
+
+// TODO(Ohad): impl ops.
+pub struct PackedFelt252 {
+    pub limbs: [Simd<u64, N_LANES>; 4],
+}
+
+impl PackedFelt252 {
+    pub fn get_m31(&self, index: usize) -> PackedM31 {
+        const MASK: u64 = (1 << FELT252_BITS_PER_WORD) - 1;
+        let shift = FELT252_BITS_PER_WORD * index;
+        let low_limb = shift / 64;
+        let shift_low = shift as u64 & 0x3F;
+        let high_limb = (shift + FELT252_BITS_PER_WORD - 1) / 64;
+        let value: Simd<u32, N_LANES> = if low_limb == high_limb {
+            ((self.limbs[low_limb] >> shift_low) & Simd::splat(MASK)).cast()
+        } else {
+            (((self.limbs[low_limb] >> (shift_low)) | (self.limbs[high_limb] << (64 - shift_low)))
+                & Simd::splat(MASK))
+            .cast()
+        };
+        // Safe because M31 is u32.
+        unsafe { PackedM31::from_simd_unchecked(value) }
+    }
+
+    pub fn from_m31(felt: PackedM31) -> Self {
+        Self {
+            limbs: [
+                felt.into_simd().cast(),
+                Simd::splat(0),
+                Simd::splat(0),
+                Simd::splat(0),
+            ],
+        }
+    }
+
+    pub fn from_m31_limbs(felts: [PackedM31; FELT252_N_WORDS]) -> Self {
+        let mut limbs = [Simd::splat(0); 4];
+        for (index, felt) in felts.iter().enumerate() {
+            let shift = FELT252_BITS_PER_WORD * index;
+            let low_limb = shift / 64;
+            let shift_low = shift as u64 & 0x3F;
+            let high_limb = (shift + FELT252_BITS_PER_WORD - 1) / 64;
+            let value: Simd<u64, N_LANES> = felt.into_simd().cast();
+            limbs[low_limb] |= value << shift_low;
+            if low_limb != high_limb {
+                limbs[high_limb] |= value >> (64 - shift_low);
+            }
+        }
+        Self { limbs }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::core::backend::simd::m31::PackedM31;
+    use stwo_prover::core::fields::m31::M31;
+
+    use super::FELT252_N_WORDS;
+    use crate::components::memory::N_BITS_PER_FELT;
+
+    #[test]
+    fn test_from_and_to_limbs() {
+        let mut rng = SmallRng::seed_from_u64(0);
+        let limbs: [PackedM31; FELT252_N_WORDS] = std::array::from_fn(|_| {
+            PackedM31::from_array(std::array::from_fn(|_| {
+                M31(rng.gen::<u32>() & ((1 << N_BITS_PER_FELT) - 1))
+            }))
+        });
+
+        let felt252 = super::PackedFelt252::from_m31_limbs(limbs);
+        for (i, limb) in limbs.iter().enumerate() {
+            assert_eq!(felt252.get_m31(i).to_array(), limb.to_array());
+        }
+    }
+}
