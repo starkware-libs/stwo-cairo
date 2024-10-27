@@ -1,6 +1,7 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_prover::constraint_framework::constant_columns::gen_is_first;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -334,6 +335,29 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     interaction_claim.mix_into(channel);
     tree_builder.commit(channel);
 
+    // Fixed trace.
+    let mut tree_builder = commitment_scheme.tree_builder();
+    let ret_constant_traces = claim
+        .ret
+        .iter()
+        .map(|ret_claim| gen_is_first::<SimdBackend>(ret_claim.log_sizes()[2][0]))
+        .collect_vec();
+    let range_check_builtin_constant_trace =
+        gen_is_first::<SimdBackend>(claim.range_check_builtin.log_sizes()[2][0]);
+    let memory_constant_trace = gen_is_first::<SimdBackend>(claim.memory.log_sizes()[2][0]);
+    let range_check9_constant_trace = gen_is_first::<SimdBackend>(RC9_LOG_HEIGHT);
+    tree_builder.extend_evals(
+        [
+            ret_constant_traces,
+            vec![range_check_builtin_constant_trace],
+            vec![memory_constant_trace],
+            vec![range_check9_constant_trace],
+        ]
+        .into_iter()
+        .flatten(),
+    );
+    tree_builder.commit(channel);
+
     // Component provers.
     let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_builder.provers();
@@ -369,6 +393,9 @@ pub fn verify_cairo(
     }
     interaction_claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &claim.log_sizes()[1], channel);
+
+    // Fixed trace.
+    commitment_scheme_verifier.commit(stark_proof.commitments[2], &claim.log_sizes()[2], channel);
 
     let component_generator =
         CairoComponents::new(&claim, &interaction_elements, &interaction_claim);

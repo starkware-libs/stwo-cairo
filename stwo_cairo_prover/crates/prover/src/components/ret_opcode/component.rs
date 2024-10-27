@@ -48,10 +48,11 @@ impl FrameworkEval for RetOpcodeEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, self.log_size);
+        let [is_first] = eval.next_interaction_mask(2, [0]);
+        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
 
         // PC Column
-        let mut values = [E::F::zero(); N_M31_IN_FELT252 + 1];
+        let mut values: [_; N_M31_IN_FELT252 + 1] = std::array::from_fn(|_| E::F::zero());
         values[0] = eval.next_trace_mask();
         for i in 0..N_M31_IN_FELT252 {
             values[i + 1] = E::F::from(M31::from(RET_INSTRUCTION[i]));
@@ -69,7 +70,7 @@ impl FrameworkEval for RetOpcodeEval {
         // FP - 1
         let fp_minus_one_0 = eval.next_trace_mask();
         let fp_minus_one_1 = eval.next_trace_mask();
-        values[0] = fp - E::F::one();
+        values[0] = fp.clone() - E::F::one();
         values[1] = fp_minus_one_0;
         values[2] = fp_minus_one_1;
         let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
@@ -102,7 +103,12 @@ impl RetOpcodeClaim {
         let log_size = self.n_rets.next_power_of_two().ilog2();
         let interaction_0_log_sizes = vec![log_size; RET_N_TRACE_CELLS];
         let interaction_1_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
-        TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
+        let fixed_log_sizes = vec![log_size];
+        TreeVec::new(vec![
+            interaction_0_log_sizes,
+            interaction_1_log_sizes,
+            fixed_log_sizes,
+        ])
     }
 }
 
