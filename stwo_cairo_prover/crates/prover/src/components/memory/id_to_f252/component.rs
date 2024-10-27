@@ -18,26 +18,26 @@ pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 // TODO(AlonH): Make memory size configurable.
 pub const N_ID_TO_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
 
-pub type MemoryComponent = FrameworkComponent<MemoryEval>;
+pub type IdToF252Component = FrameworkComponent<IdToF252Eval>;
 
-/// Addresses are continuous and start from 0.
+/// IDs are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
 #[derive(Clone)]
-pub struct MemoryEval {
+pub struct IdToF252Eval {
     pub log_n_rows: u32,
     pub lookup_elements: IdToF252LookupElements,
     pub range9_lookup_elements: RangeCheckElements,
     pub claimed_sum: QM31,
 }
-impl MemoryEval {
+impl IdToF252Eval {
     pub const fn n_columns(&self) -> usize {
         N_ID_TO_VALUE_COLUMNS
     }
     pub fn new(
-        claim: MemoryClaim,
+        claim: IdToF252Claim,
         lookup_elements: IdToF252LookupElements,
         range9_lookup_elements: RangeCheckElements,
-        interaction_claim: MemoryInteractionClaim,
+        interaction_claim: IdToF252InteractionClaim,
     ) -> Self {
         Self {
             log_n_rows: claim.log_size,
@@ -48,7 +48,7 @@ impl MemoryEval {
     }
 }
 
-impl FrameworkEval for MemoryEval {
+impl FrameworkEval for IdToF252Eval {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }
@@ -86,10 +86,10 @@ impl FrameworkEval for MemoryEval {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct MemoryClaim {
+pub struct IdToF252Claim {
     pub log_size: u32,
 }
-impl MemoryClaim {
+impl IdToF252Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_size; N_ID_TO_VALUE_COLUMNS];
         let interaction_1_log_size =
@@ -108,10 +108,10 @@ impl MemoryClaim {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct MemoryInteractionClaim {
+pub struct IdToF252InteractionClaim {
     pub claimed_sum: SecureField,
 }
-impl MemoryInteractionClaim {
+impl IdToF252InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
     }

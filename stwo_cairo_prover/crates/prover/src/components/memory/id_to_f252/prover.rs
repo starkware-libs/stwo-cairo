@@ -13,7 +13,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{
-    MemoryClaim, MemoryInteractionClaim, MEMORY_ID_SIZE, MULTIPLICITY_COLUMN_OFFSET,
+    IdToF252Claim, IdToF252InteractionClaim, MEMORY_ID_SIZE, MULTIPLICITY_COLUMN_OFFSET,
     N_ID_TO_VALUE_COLUMNS, N_M31_IN_FELT252,
 };
 use super::IdToF252LookupElements;
@@ -23,12 +23,12 @@ use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 use crate::prover_types::PackedUInt32;
 
-pub struct MemoryClaimProver {
+pub struct IdToF252ClaimProver {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
     pub multiplicities: Vec<PackedUInt32>,
 }
-impl MemoryClaimProver {
-    pub fn new(mem: Memory) -> Self {
+impl IdToF252ClaimProver {
+    pub fn new(mem: &Memory) -> Self {
         // TODO(spapini): Split to multiple components.
         // TODO(spapini): More repetitions, for efficiency.
         let mut values = (0..mem.address_to_id.len())
@@ -80,7 +80,7 @@ impl MemoryClaimProver {
     pub fn write_trace(
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-    ) -> (MemoryClaim, InteractionClaimProver) {
+    ) -> (IdToF252Claim, IdToF252InteractionClaimProver) {
         let size = self.values.len() * N_LANES;
         let mut trace = (0..N_ID_TO_VALUE_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
@@ -121,10 +121,10 @@ impl MemoryClaimProver {
         tree_builder.extend_evals(trace);
 
         (
-            MemoryClaim {
+            IdToF252Claim {
                 log_size: log_address_bound,
             },
-            InteractionClaimProver {
+            IdToF252InteractionClaimProver {
                 ids_and_values,
                 multiplicities,
             },
@@ -133,11 +133,11 @@ impl MemoryClaimProver {
 }
 
 #[derive(Debug)]
-pub struct InteractionClaimProver {
+pub struct IdToF252InteractionClaimProver {
     pub ids_and_values: [Vec<PackedM31>; N_M31_IN_FELT252 + 1],
     pub multiplicities: Vec<PackedM31>,
 }
-impl InteractionClaimProver {
+impl IdToF252InteractionClaimProver {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             ids_and_values: std::array::from_fn(|_| Vec::with_capacity(capacity)),
@@ -150,7 +150,7 @@ impl InteractionClaimProver {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &IdToF252LookupElements,
         range9_lookup_elements: &RangeCheckElements,
-    ) -> MemoryInteractionClaim {
+    ) -> IdToF252InteractionClaim {
         let log_size = self.ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
         let mut col_gen = logup_gen.new_col();
@@ -179,7 +179,7 @@ impl InteractionClaimProver {
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
-        MemoryInteractionClaim { claimed_sum }
+        IdToF252InteractionClaim { claimed_sum }
     }
 }
 
@@ -210,7 +210,7 @@ mod tests {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));
         }
-        let generator = super::MemoryClaimProver::new(mem.build());
+        let generator = super::IdToF252ClaimProver::new(&mem.build());
         let output = generator.deduce_output(input);
 
         for (i, expected) in expected_output.into_iter().enumerate() {

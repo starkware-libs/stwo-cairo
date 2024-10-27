@@ -17,7 +17,7 @@ use super::component::{
     RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionClaim, N_RANGE_CHECK_COLUMNS,
     N_VALUES_FELTS,
 };
-use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::prover::IdToF252ClaimProver;
 use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::input::SegmentAddrs;
 
@@ -38,7 +38,7 @@ impl RangeCheckBuiltinClaimProver {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_trace_generator: &mut MemoryClaimProver,
+        memory_trace_generator: &mut IdToF252ClaimProver,
     ) -> (RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionProver) {
         let mut addresses = self.memory_segment.addresses();
         // TODO(spapini): Split to multiple components.
@@ -97,7 +97,7 @@ impl RangeCheckBuiltinInteractionProver {
 
 pub fn write_trace_simd(
     inputs: &[RangeCheckBuiltinInput],
-    memory_trace_generator: &MemoryClaimProver,
+    memory_trace_generator: &IdToF252ClaimProver,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     RangeCheckBuiltinInteractionProver,
@@ -211,7 +211,7 @@ mod tests {
                 })
             })
             .collect_vec();
-        let memory_trace_generator = MemoryClaimProver {
+        let memory_trace_generator = IdToF252ClaimProver {
             values: values.clone(),
             multiplicities: vec![PackedUInt32::broadcast(0); 1 << (log_size - LOG_N_LANES)],
         };
@@ -301,7 +301,7 @@ mod tests {
                 })
             })
             .collect_vec();
-        let memory_trace_generator = MemoryClaimProver {
+        let memory_trace_generator = IdToF252ClaimProver {
             values: values.clone(),
             multiplicities: vec![PackedUInt32::broadcast(0); 1 << (mem_log_size - LOG_N_LANES)],
         };

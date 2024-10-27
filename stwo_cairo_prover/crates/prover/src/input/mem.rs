@@ -75,7 +75,7 @@ impl Memory {
         }
     }
 
-    pub fn get_id(&self, addr: u32) -> u32 {
+    pub fn get_raw_id(&self, addr: u32) -> u32 {
         self.address_to_id[addr as usize].0
     }
 
