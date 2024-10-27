@@ -2,11 +2,11 @@ use core::iter::{Iterator, IntoIterator};
 use stwo_cairo_verifier::circle::{
     CirclePoint, Coset, CosetImpl, CirclePointIndexImpl, CirclePointTrait
 };
+use stwo_cairo_verifier::fields::FieldBatchInverse;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
 use stwo_cairo_verifier::fields::{SecureField, BaseField};
-use stwo_cairo_verifier::fri::fold_line;
-use stwo_cairo_verifier::poly::utils::fold;
+use stwo_cairo_verifier::poly::utils::{fold, butterfly, ibutterfly};
 use stwo_cairo_verifier::utils::pow;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -154,12 +154,6 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     res
 }
 
-#[inline]
-fn butterfly(v0: QM31, v1: QM31, twid: M31) -> (QM31, QM31) {
-    let tmp = v1.mul_m31(twid);
-    (v0 + tmp, v0 - tmp)
-}
-
 /// Domain comprising of the x-coordinates of points in a [Coset].
 ///
 /// For use with univariate polynomials.
@@ -243,11 +237,31 @@ pub struct SparseLineEvaluation {
 
 #[generate_trait]
 pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
+    /// Folds degree `d` polynomials into degree `d/2` polynomials.
+    ///
+    /// Let `eval_i` be the evaluation of polynomial `f_i` on [`LineDomain`] `E_i` and
+    /// `pi(x) = 2x^2 - 1` be the circle's x-coordinate doubling map. This function returns
+    /// all `f_i' = f_i0 + alpha * f_i1` evaluated on `pi(E_i)` (`E_i` has a two points)
+    /// such that `2f_i(x) = f_i0(pi(x)) + x * f_i1(pi(x))`.
     fn fold(self: SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
-        let mut res = array![];
-        for eval in self.subline_evals {
-            res.append(*fold_line(eval, alpha).values[0]);
+        let mut domain_initials = array![];
+
+        for eval in self.subline_evals.span() {
+            domain_initials.append(eval.domain.at(0));
         };
+
+        let mut domain_initials_inv = FieldBatchInverse::batch_inverse(domain_initials);
+        let mut res = array![];
+
+        for eval in self
+            .subline_evals {
+                let x_inv = domain_initials_inv.pop_front().unwrap();
+                let f_i_at_x = *eval.values[0];
+                let f_i_at_neg_x = *eval.values[1];
+                let (f_i0, f_i1) = ibutterfly(f_i_at_x, f_i_at_neg_x, x_inv);
+                res.append(f_i0 + alpha * f_i1);
+            };
+
         res
     }
 }

@@ -229,6 +229,28 @@ pub impl U128TrailingZerosImpl of U128TrailingZerosTrait {
     }
 }
 
+// #[generate_trait]
+// impl UsizeImpl of UsizeExTrait {
+//     #[inline]
+//     fn next_multiple_of(self: usize, rhs: usize) -> usize {
+//         let r = self % rhs;
+//         if r == 0 {
+//             return self;
+//         }
+//         self + (rhs - r)
+//     }
+
+//     /// Calculates the largest value less than or equal to `self` that is a multiple of `rhs`.
+//     #[inline]
+//     fn prev_multiple_of(self: usize, rhs: usize) -> usize {
+//         let r = self % rhs;
+//         if r == 0 {
+//             return self;
+//         }
+//         self - r
+//     }
+// }
+
 #[cfg(test)]
 mod tests {
     use super::{pow, pow_qm31, qm31, bit_reverse_index, ArrayImpl};
