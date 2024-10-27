@@ -18,14 +18,14 @@ use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::mem::Memory;
 use crate::prover_types::PackedUInt32;
 
-pub struct MemoryAddrToIdClaimProver {
+pub struct AddrToIdClaimProver {
     pub ids: Vec<PackedBaseField>,
     pub multiplicities: Vec<PackedUInt32>,
 }
-impl MemoryAddrToIdClaimProver {
-    pub fn new(mem: Memory) -> Self {
+impl AddrToIdClaimProver {
+    pub fn new(mem: &Memory) -> Self {
         let mut ids = (0..mem.address_to_id.len())
-            .map(|addr| BaseField::from_u32_unchecked(mem.get_id(addr as u32)))
+            .map(|addr| BaseField::from_u32_unchecked(mem.get_raw_id(addr as u32)))
             .collect_vec();
         let size = ids.len().next_power_of_two();
         assert!(size <= MEMORY_ADDRESS_BOUND);
