@@ -22,6 +22,7 @@ pub trait MerkleHasher {
 const M31_ELEMENETS_IN_HASH: usize = 8;
 const M31_ELEMENETS_IN_HASH_MINUS1: usize = M31_ELEMENETS_IN_HASH - 1;
 const M31_IN_HASH_SHIFT: felt252 = 0x80000000; // 2**31.
+const M31_IN_HASH_SHIFT_POW_4: felt252 = 0x10000000000000000000000000000000; // (2**32)**4.
 pub impl PoseidonMerkleHasher of MerkleHasher {
     type Hash = felt252;
 
@@ -34,19 +35,22 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             hash_array.append(y);
         }
 
-        // Pad column_values to a multiple of 8.
+        // Most often a node has no column values.
+        // TODO(andrew): Consider handing also common `len == QM31_EXTENSION_DEGREE`.
+        if column_values.len() == 0 {
+            return poseidon_hash_span(hash_array.span());
+        }
+
         let mut pad_len = M31_ELEMENETS_IN_HASH_MINUS1
             - ((column_values.len() + M31_ELEMENETS_IN_HASH_MINUS1) % M31_ELEMENETS_IN_HASH);
-        while pad_len > 0 {
+        while pad_len != 0 {
             column_values.append(core::num::traits::Zero::zero());
-            pad_len = M31_ELEMENETS_IN_HASH_MINUS1
-                - ((column_values.len() + M31_ELEMENETS_IN_HASH_MINUS1) % M31_ELEMENETS_IN_HASH);
+            pad_len -= 1;
         };
 
         while !column_values.is_empty() {
-            let mut word = 0;
             // Hash M31_ELEMENETS_IN_HASH = 8 M31 elements into a single field element.
-            word = word * M31_IN_HASH_SHIFT + column_values.pop_front().unwrap().inner.into();
+            let mut word = column_values.pop_front().unwrap().inner.into();
             word = word * M31_IN_HASH_SHIFT + column_values.pop_front().unwrap().inner.into();
             word = word * M31_IN_HASH_SHIFT + column_values.pop_front().unwrap().inner.into();
             word = word * M31_IN_HASH_SHIFT + column_values.pop_front().unwrap().inner.into();

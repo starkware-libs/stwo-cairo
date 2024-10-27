@@ -1,13 +1,9 @@
 use core::dict::Felt252Dict;
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
-use stwo_cairo_verifier::fields::Field;
-use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::{QM31_EXTENSION_DEGREE, QM31, QM31Zero, QM31Trait};
 use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
-use stwo_cairo_verifier::poly::circle::{
-    CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
-};
+use stwo_cairo_verifier::poly::circle::{SparseCircleEvaluation, SparseCircleEvaluationImpl};
 use stwo_cairo_verifier::poly::line::{
     LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl
 };
@@ -341,7 +337,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
             while let Option::Some(_) = column_bounds.next_if_eq(@circle_poly_degree_bound) {
                 let sparse_evaluation = decommitted_values.pop_front().unwrap();
-                let mut folded_evals = sparse_evaluation.fold(circle_poly_alpha);
+                let mut folded_evals = sparse_evaluation.fold_to_line(circle_poly_alpha);
 
                 let mut next_layer_query_evals = array![];
                 while let Option::Some(layer_eval) = layer_query_evals.pop_front() {
@@ -460,52 +456,26 @@ fn get_opening_positions(
     positions
 }
 
-/// Folds a degree `d` polynomial into a degree `d/2` polynomial.
-///
-/// Let `eval` be a polynomial evaluated on line domain `E`, `alpha` be a random field
-/// element and `pi(x) = 2x^2 - 1` be the circle's x-coordinate doubling map. This function
-/// returns `f' = f0 + alpha * f1` evaluated on `pi(E)` such that `2f(x) = f0(pi(x)) + x *
-/// f1(pi(x))`.
-pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
-    let domain = eval.domain;
-    let mut values = array![];
-    for i in 0
-        ..eval.values.len()
-            / 2 {
-                let x = domain.at(bit_reverse_index(i * FOLD_FACTOR, domain.log_size()));
-                let f_x = eval.values[2 * i];
-                let f_neg_x = eval.values[2 * i + 1];
-                let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
-                values.append(f0 + alpha * f1);
-            };
-    LineEvaluationImpl::new(domain.double(), values)
-}
-
-/// Folds and accumulates a degree `d` circle polynomial into a degree `d/2` univariate polynomial.
-///
-/// Let `src` be the evaluation of a circle polynomial `f` on a [`CircleDomain`] `E`. This function
-/// computes evaluations of `f' = f0 + alpha * f1` on the x-coordinates of `E` such that `2f(p) =
-/// f0(px) + py * f1(px)`. The evaluations of `f'` are accumulated into `dst` by the formula
-/// `dst = dst * alpha^2 + f'`.
-pub fn fold_circle_into_line(eval: CircleEvaluation, alpha: QM31) -> LineEvaluation {
-    let domain = eval.domain;
-    let mut values = array![];
-    for i in 0
-        ..eval.bit_reversed_values.len()
-            / 2 {
-                let p = domain
-                    .at(bit_reverse_index(i * CIRCLE_TO_LINE_FOLD_FACTOR, domain.log_size()));
-                let f_p = eval.bit_reversed_values[2 * i];
-                let f_neg_p = eval.bit_reversed_values[2 * i + 1];
-                let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
-                values.append(f0 + alpha * f1);
-            };
-    LineEvaluation { values, domain: LineDomainImpl::new_unchecked(domain.half_coset) }
-}
-
-pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
-    (v0 + v1, (v0 - v1).mul_m31(itwid))
-}
+// /// Folds a degree `d` polynomial into a degree `d/2` polynomial.
+// ///
+// /// Let `eval` be a polynomial evaluated on line domain `E`, `alpha` be a random field
+// /// element and `pi(x) = 2x^2 - 1` be the circle's x-coordinate doubling map. This function
+// /// returns `f' = f0 + alpha * f1` evaluated on `pi(E)` such that `2f(x) = f0(pi(x)) + x *
+// /// f1(pi(x))`.
+// pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
+//     let domain = eval.domain;
+//     let mut values = array![];
+//     for i in 0
+//         ..eval.values.len()
+//             / 2 {
+//                 let x = domain.at(bit_reverse_index(i * FOLD_FACTOR, domain.log_size()));
+//                 let f_x = eval.values[2 * i];
+//                 let f_neg_x = eval.values[2 * i + 1];
+//                 let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
+//                 values.append(f0 + alpha * f1);
+//             };
+//     LineEvaluationImpl::new(domain.double(), values)
+// }
 
 #[cfg(test)]
 mod test {
@@ -568,7 +538,7 @@ mod test {
             subcircle_evals: array![CircleEvaluationImpl::new(domain, values)]
         };
         let alpha = qm31(260773061, 362745443, 1347591543, 1084609991);
-        let result = sparse_circle_evaluation.fold(alpha);
+        let result = sparse_circle_evaluation.fold_to_line(alpha);
         let expected_result = array![qm31(730692421, 1363821003, 2146256633, 106012305)];
         assert_eq!(expected_result, result);
     }

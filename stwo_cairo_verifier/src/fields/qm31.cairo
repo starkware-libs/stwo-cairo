@@ -152,6 +152,7 @@ pub impl QM31Add of core::traits::Add<QM31> {
 }
 
 pub impl QM31Sub of core::traits::Sub<QM31> {
+    #[inline]
     fn sub(lhs: QM31, rhs: QM31) -> QM31 {
         QM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
     }

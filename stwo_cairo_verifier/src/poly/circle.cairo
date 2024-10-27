@@ -2,9 +2,10 @@ use stwo_cairo_verifier::circle::{
     Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl,
     CirclePointTrait
 };
+use stwo_cairo_verifier::fields::FieldBatchInverse;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::QM31;
-use stwo_cairo_verifier::fri::fold_circle_into_line;
+use stwo_cairo_verifier::poly::utils::ibutterfly;
 use stwo_cairo_verifier::utils::pow;
 
 /// A valid domain for circle polynomial interpolation and evaluation.
@@ -163,15 +164,57 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
         SparseCircleEvaluation { subcircle_evals }
     }
 
-    fn fold(self: SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
+    /// Folds degree `d` circle polynomials into degree `d/2` univariate polynomials.
+    ///
+    /// Let `eval_i` be the evaluation of circle polynomial `f_i` on [`CircleDomain`] `E_i`.
+    /// This function returns all `f_i' = f_i0 + alpha * f_i1` evaluated on the x-coordinate
+    /// of `E_i` (Note `E_i = {(x, y), (x, -y)}`) such that `2f_i(p) = f_i0(px) + py * f_i1(px)`.
+    fn fold_to_line(self: SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
+        let mut domain_initial_ys = array![];
+
+        for eval in self.subcircle_evals.span() {
+            domain_initial_ys.append(eval.domain.at(0).y);
+        };
+
+        let mut domain_initial_ys_inv = FieldBatchInverse::batch_inverse(domain_initial_ys);
         let mut res = array![];
+
         for eval in self
             .subcircle_evals {
-                res.append(*fold_circle_into_line(eval, alpha).values[0])
+                let y_inv = domain_initial_ys_inv.pop_front().unwrap();
+                let f_i_at_p = *eval.bit_reversed_values[0];
+                let f_i_at_neg_p = *eval.bit_reversed_values[1];
+                let (f_i0, f_i1) = ibutterfly(f_i_at_p, f_i_at_neg_p, y_inv);
+                res.append(f_i0 + alpha * f_i1);
             };
+
         res
     }
 }
+
+// /// Folds and accumulates a degree `d` circle polynomial into a degree `d/2` univariate
+// polynomial.
+// ///
+// /// Let `src` be the evaluation of a circle polynomial `f` on a [`CircleDomain`] `E`. This
+// function /// computes evaluations of `f' = f0 + alpha * f1` on the x-coordinates of `E` such that
+// `2f(p) =
+// /// f0(px) + py * f1(px)`. The evaluations of `f'` are accumulated into `dst` by the formula
+// /// `dst = dst * alpha^2 + f'`.
+// pub fn fold_circle_into_line(eval: CircleEvaluation, alpha: QM31) -> LineEvaluation {
+//     let domain = eval.domain;
+//     let mut values = array![];
+//     for i in 0
+//         ..eval.bit_reversed_values.len()
+//             / 2 {
+//                 let p = domain
+//                     .at(bit_reverse_index(i * CIRCLE_TO_LINE_FOLD_FACTOR, domain.log_size()));
+//                 let f_p = eval.bit_reversed_values[2 * i];
+//                 let f_neg_p = eval.bit_reversed_values[2 * i + 1];
+//                 let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
+//                 values.append(f0 + alpha * f1);
+//             };
+//     LineEvaluation { values, domain: LineDomainImpl::new_unchecked(domain.half_coset) }
+// }
 
 #[cfg(test)]
 mod tests {
