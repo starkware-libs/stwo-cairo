@@ -6,6 +6,8 @@ use itertools::all;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::fields::m31::{self, M31};
 
+use crate::input::instructions::VmState;
+
 // TODO(Ohad): implement rest of logic.
 pub struct PackedBool(pub u16);
 
@@ -141,5 +143,20 @@ impl Mul for PackedUInt32 {
         Self {
             simd: self.simd * rhs.simd,
         }
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PackedCasmState {
+    pub pc: PackedM31,
+    pub ap: PackedM31,
+    pub fp: PackedM31,
+}
+impl PackedCasmState {
+    pub fn from_vm_state_array(arr: [VmState; N_LANES]) -> Self {
+        let pc = PackedM31::from_array(std::array::from_fn(|i| M31(arr[i].pc)));
+        let ap = PackedM31::from_array(std::array::from_fn(|i| M31(arr[i].ap)));
+        let fp = PackedM31::from_array(std::array::from_fn(|i| M31(arr[i].fp)));
+        Self { pc, ap, fp }
     }
 }
