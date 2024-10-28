@@ -38,7 +38,7 @@ use crate::components::ret_opcode::component::{
 };
 use crate::components::ret_opcode::prover::RetOpcodeClaimProver;
 use crate::felt::split_f252;
-use crate::input::instructions::VmState;
+use crate::input::casm_components_usage::VmState;
 use crate::input::CairoInput;
 
 const RC9_LOG_MAX: u32 = 9;
@@ -261,7 +261,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
 
     // Base trace.
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
-    let ret_trace_generator = RetOpcodeClaimProver::new(input.instructions.ret);
+    let ret_trace_generator = RetOpcodeClaimProver::new(input.components_usage.ret);
     let range_check_builtin_trace_generator =
         RangeCheckBuiltinClaimProver::new(input.range_check_builtin);
     let mut memory_trace_generator = MemoryClaimProver::new(input.mem);
@@ -291,8 +291,8 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     // Commit to the claim and the trace.
     let claim = CairoClaim {
         public_memory,
-        initial_state: input.instructions.initial_state,
-        final_state: input.instructions.final_state,
+        initial_state: input.components_usage.initial_state,
+        final_state: input.components_usage.final_state,
         ret: vec![ret_claim],
         range_check_builtin: range_check_builtin_claim.clone(),
         memory: memory_claim.clone(),
