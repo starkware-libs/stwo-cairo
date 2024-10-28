@@ -8,7 +8,7 @@ use core::dict::Felt252DictTrait;
 use core::fmt::{Debug, Formatter, Error};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
-use stwo_cairo_verifier::BaseField;
+use stwo_cairo_verifier::{BaseField, ColumnArray};
 use stwo_cairo_verifier::utils::SpanExTrait;
 use stwo_cairo_verifier::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
@@ -23,6 +23,7 @@ pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// the verifier.
     pub column_witness: Array<BaseField>,
 }
+
 impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
 
 impl MerkleDecommitmentDebug<
@@ -30,6 +31,24 @@ impl MerkleDecommitmentDebug<
 > of Debug<MerkleDecommitment<H>> {
     fn fmt(self: @MerkleDecommitment<H>, ref f: Formatter) -> Result<(), Error> {
         Result::Ok(())
+    }
+}
+
+impl MerkleDecommitmentSerde<
+    impl H: MerkleHasher, +Serde<H::Hash>, +Drop<H::Hash>
+> of Serde<MerkleDecommitment<H>> {
+    fn serialize(self: @MerkleDecommitment<H>, ref output: Array<felt252>) {
+        self.hash_witness.serialize(ref output);
+        self.column_witness.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<MerkleDecommitment<H>> {
+        Option::Some(
+            MerkleDecommitment {
+                hash_witness: Serde::deserialize(ref serialized)?,
+                column_witness: Serde::deserialize(ref serialized)?,
+            }
+        )
     }
 }
 
@@ -89,7 +108,7 @@ impl MerkleVerifierImpl<
     fn verify(
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: @Array<Array<BaseField>>,
+        queried_values: @ColumnArray<Array<BaseField>>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
@@ -208,6 +227,7 @@ impl MerkleVerifierImpl<
         Result::Ok(())
     }
 
+    #[inline(never)]
     fn cols_by_size(self: @MerkleVerifier<H>) -> Felt252Dict<Nullable<Array<u32>>> {
         let mut column_log_sizes = self.column_log_sizes.span();
         let mut res_dict = Default::default();

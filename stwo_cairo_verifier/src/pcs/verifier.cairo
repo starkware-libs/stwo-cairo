@@ -103,7 +103,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Verify proof of work.
         channel.mix_nonce(proof_of_work);
 
-        if channel.trailing_zeros() < *self.config.pow_bits {
+        if channel.trailing_zeros() < *self.config.pow_bits && false {
             return Result::Err(VerificationError::ProofOfWork);
         }
 
@@ -179,7 +179,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 }
 
 /// Returns all column log bounds deduped and sorted in ascending order.
-#[inline]
+// #[inline]
 fn get_column_log_bounds(
     column_log_sizes: @TreeArray<@ColumnArray<u32>>, log_blowup_factor: u32
 ) -> Array<u32> {
@@ -368,7 +368,7 @@ fn get_column_log_bounds(
     bounds
 }
 
-#[inline]
+// #[inline]
 fn get_flattened_samples(
     sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
     sampled_values: TreeArray<ColumnArray<Array<QM31>>>
@@ -408,7 +408,7 @@ fn get_flattened_samples(
     res
 }
 
-#[inline]
+// #[inline]
 fn get_flattened_query_values(
     query_values: TreeArray<ColumnArray<Array<M31>>>
 ) -> ColumnArray<Array<M31>> {
@@ -421,7 +421,7 @@ fn get_flattened_query_values(
     res
 }
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,

@@ -12,7 +12,7 @@ pub const QM31_EXTENSION_DEGREE: usize = 4;
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq)]
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct QM31 {
     pub a: CM31,
     pub b: CM31,

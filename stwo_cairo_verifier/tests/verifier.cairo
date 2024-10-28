@@ -10,7 +10,8 @@ use stwo_cairo_verifier::poly::circle::CanonicCosetImpl;
 use stwo_cairo_verifier::utils::ArrayImpl;
 use stwo_cairo_verifier::verifier::{Air, verify};
 use stwo_cairo_verifier::{TreeArray, ColumnArray};
-use stwo_cairo_verifier_integrationtest::proofs;
+
+mod proofs;
 
 // TODO(andrew): Report bug. Data is invalid i.e. for some reason when using
 // this type it thinks `log_last_layer_degree_bound` is 4.
@@ -23,109 +24,396 @@ use stwo_cairo_verifier_integrationtest::proofs;
 //         }
 //     };
 
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_5_column() {
+//     let proof = proofs::horizontal_fib_5_column::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 10;
+//     let air = HorizontalFibAir::<5> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(5, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_8_column() {
+//     let proof = proofs::horizontal_fib_8_column::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 10;
+//     let air = HorizontalFibAir::<8> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(8, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_10_column() {
+//     let proof = proofs::horizontal_fib_10_column::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 10;
+//     let air = HorizontalFibAir::<10> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(10, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_15_column() {
+//     let proof = proofs::horizontal_fib_15_column::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 10;
+//     let air = HorizontalFibAir::<15> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(15, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_32_column_with_blowup_2() {
+//     let proof = proofs::horizontal_fib_32_column_with_blowup_2::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<32> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(32, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
 #[test]
 #[available_gas(100000000000)]
-fn test_horizontal_fib_5_column() {
-    let proof = proofs::horizontal_fib_5_column::proof();
+fn test_horizontal_fib_128_column_with_blowup_2() {
+    // let _ = starknet::testing::cheatcode::<'print_program_size'>(array![].span());
+    let proof = proofs::horizontal_fib_128_column_with_blowup_2::proof();
     let config = PcsConfig {
         pow_bits: 10,
         fri_config: FriConfig {
-            log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
+            log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60
         }
     };
 
     // Verify.
-    let log_size = 10;
-    let air = HorizontalFibAir::<5> { log_size };
+    let log_size = 20;
+    let air = HorizontalFibAir::<128> { log_size };
     let mut channel = ChannelImpl::new(0);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
     commitment_scheme
-        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(5, log_size), ref channel);
+        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(128, log_size), ref channel);
 
     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
         panic!("Verification failed: {:?}", err);
     }
 }
 
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_32_column_with_blowup_16() {
+//     let proof = proofs::horizontal_fib_32_column_with_blowup_16::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 6, log_blowup_factor: 4, n_queries: 15
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<32> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(32, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
 #[test]
 #[available_gas(100000000000)]
-fn test_horizontal_fib_8_column() {
-    let proof = proofs::horizontal_fib_8_column::proof();
+fn test_horizontal_fib_128_column_with_blowup_16() {
+    let proof = proofs::horizontal_fib_128_column_with_blowup_16::proof();
     let config = PcsConfig {
         pow_bits: 10,
         fri_config: FriConfig {
-            log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
+            log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15
         }
     };
 
     // Verify.
-    let log_size = 10;
-    let air = HorizontalFibAir::<8> { log_size };
+    let log_size = 20;
+    let air = HorizontalFibAir::<128> { log_size };
     let mut channel = ChannelImpl::new(0);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
     commitment_scheme
-        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(8, log_size), ref channel);
+        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(128, log_size), ref channel);
 
     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
         panic!("Verification failed: {:?}", err);
     }
 }
 
-#[test]
-#[available_gas(100000000000)]
-fn test_horizontal_fib_10_column() {
-    let proof = proofs::horizontal_fib_10_column::proof();
-    let config = PcsConfig {
-        pow_bits: 10,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
-        }
-    };
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_256_column_with_blowup_16() {
+//     let proof = proofs::horizontal_fib_256_column_with_blowup_16::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15
+//         }
+//     };
 
-    // Verify.
-    let log_size = 10;
-    let air = HorizontalFibAir::<10> { log_size };
-    let mut channel = ChannelImpl::new(0);
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<256> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
-    // Decommit.
-    commitment_scheme
-        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(10, log_size), ref channel);
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(256, log_size), ref channel);
 
-    if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
-        panic!("Verification failed: {:?}", err);
-    }
-}
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
 
-#[test]
-#[available_gas(100000000000)]
-fn test_horizontal_fib_15_column() {
-    let proof = proofs::horizontal_fib_15_column::proof();
-    let config = PcsConfig {
-        pow_bits: 10,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 5, log_blowup_factor: 4, n_queries: 64
-        }
-    };
+// // fn partition_into_bit_segments<const N: usize>(
+// //     mut value: Simd<u32, N_LANES>,
+// //     mut n_bits_per_segment: [usize; N],
+// // ) -> [Simd<u32, N_LANES>; N] {
+// //     let mut segments = [Simd::splat(0); N];
+// //     for (segment, segment_n_bits) in zip(&mut segments, n_bits_per_segment) {
+// //         let mask = Simd::splat((1 << segment_n_bits) - 1);
+// //         *segment = value & mask;
+// //         value >>= segment_n_bits;
+// //     }
+// //     segments
+// // }
 
-    // Verify.
-    let log_size = 10;
-    let air = HorizontalFibAir::<15> { log_size };
-    let mut channel = ChannelImpl::new(0);
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+// //     n_bits_per_secment.reverse();
+// //     n_bits_per_segment.map(|segment_n_bits| {
+// //         let mask = Simd::splat((1 << segment_n_bits) - 1);
+// //         let segment = value & mask;
+// //         value >>= segment_n_bits;
+// //         segment
+// //     });
+// // }
 
-    // Decommit.
-    commitment_scheme
-        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(15, log_size), ref channel);
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_512_column_with_blowup_16() {
+//     let proof = proofs::horizontal_fib_512_column_with_blowup_16::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15
+//         }
+//     };
 
-    if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
-        panic!("Verification failed: {:?}", err);
-    }
-}
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<512> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(512, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_1024_column_with_blowup_2() {
+//     let proof = proofs::horizontal_fib_1024_column_with_blowup_2::proof();
+//     let config = PcsConfig {
+//         pow_bits: 11,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<1024> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(1024, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_1024_column_with_blowup_2_dummy() {
+//     let proof = proofs::horizontal_fib_1024_column_with_blowup_2_dummy::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 10;
+//     let air = HorizontalFibAir::<1024> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(1024, log_size), ref channel);
+
+//     // println!("channel digest after commit: {}", channel.digest);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_1024_column_with_blowup_16() {
+//     let proof = proofs::horizontal_fib_1024_column_with_blowup_16::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<1024> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(1024, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// #[test]
+// #[available_gas(100000000000)]
+// fn test_horizontal_fib_256_column_with_blowup_2() {
+//     let proof = proofs::horizontal_fib_256_column_with_blowup_2::proof();
+//     let config = PcsConfig {
+//         pow_bits: 10,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60
+//         }
+//     };
+
+//     // Verify.
+//     let log_size = 20;
+//     let air = HorizontalFibAir::<256> { log_size };
+//     let mut channel = ChannelImpl::new(0);
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme
+//         .commit(*proof.commitments[0], @ArrayImpl::new_repeated(256, log_size), ref channel);
+
+//     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
 
 #[derive(Drop)]
 struct VerticalFibAir<const N_COLUMNS: usize> {

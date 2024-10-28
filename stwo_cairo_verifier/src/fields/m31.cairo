@@ -16,7 +16,7 @@ const P64NZ: NonZero<u64> = 0x7fffffff;
 /// Equals `2^31 - 1`.
 const P128NZ: NonZero<u128> = 0x7fffffff;
 
-#[derive(Copy, Drop, Debug, PartialEq)]
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct M31 {
     pub inner: u32
 }

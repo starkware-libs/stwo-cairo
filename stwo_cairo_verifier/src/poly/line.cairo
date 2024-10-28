@@ -154,6 +154,28 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     res
 }
 
+pub impl LinePolySerde of Serde<LinePoly> {
+    fn serialize(self: @LinePoly, ref output: Array<felt252>) {
+        self.coeffs.serialize(ref output);
+        self.log_size.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<LinePoly> {
+        let res = LinePoly {
+            coeffs: Serde::deserialize(ref serialized)?,
+            log_size: Serde::deserialize(ref serialized)?
+        };
+
+        // Check the sizes match.
+        if res.coeffs.len() != pow(2, res.log_size) {
+            return Option::None;
+        }
+
+        Option::Some(res)
+    }
+}
+
+
 /// Domain comprising of the x-coordinates of points in a [Coset].
 ///
 /// For use with univariate polynomials.
