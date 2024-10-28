@@ -29,6 +29,9 @@ pub trait Air<T> {
 pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A, ref channel: Channel, proof: StarkProof, ref commitment_scheme: CommitmentSchemeVerifier
 ) -> Result<(), VerificationError> {
+    // starknet::testing::cheatcode::<'andrew_test'>(array![].span());
+    // starknet::testing::cheatcode::<'andrewtest'>(array![].span());
+
     let random_coeff = channel.draw_felt();
 
     // Read composition polynomial commitment.
@@ -100,7 +103,7 @@ fn extract_composition_coordinate_eval(
 #[derive(Clone, Copy, Debug, Drop)]
 pub struct InvalidOodsSampleStructure {}
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct StarkProof {
     pub commitments: TreeArray<felt252>,
     pub commitment_scheme_proof: CommitmentSchemeProof,

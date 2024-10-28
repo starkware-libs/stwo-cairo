@@ -6,6 +6,9 @@ edition = "2024_07"
 [lib]
 casm = true
 
+[cairo]
+inlining-strategy = "avoid"
+
 [tool.fmt]
 sort-module-level-items = true
 

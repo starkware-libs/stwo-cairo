@@ -248,7 +248,7 @@ fn fri_answers_for_log_size(
     Result::Ok(SparseCircleEvaluationImpl::new(evals))
 }
 
-#[inline(always)]
+#[inline]
 fn accumulate_row_quotients(
     sample_batches: @Array<ColumnSampleBatch>,
     queried_values_per_column: @Array<@Array<M31>>,
