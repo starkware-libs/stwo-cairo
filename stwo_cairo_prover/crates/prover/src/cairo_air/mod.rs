@@ -35,10 +35,12 @@ use crate::components::range_check_builtin::component::{
 };
 use crate::components::range_check_builtin::prover::RangeCheckBuiltinClaimProver;
 use crate::components::range_check_vector::component::{
-    RangeCheckClaim, RangeCheckInteractionClaim, RangeCheckVectorEval,
+    RangeCheckClaim, RangeCheckInteractionClaim,
 };
 use crate::components::range_check_vector::component_prover::RangeCheckClaimGenerator;
-use crate::components::range_check_vector::RangeCheckLookupElements;
+use crate::components::range_check_vector::{
+    RangeCheck99Component, RangeCheck99Eval, RangeCheck99LookupElements,
+};
 use crate::components::ret_opcode::component::{
     RetOpcodeClaim, RetOpcodeComponent, RetOpcodeEval, RetOpcodeInteractionClaim,
 };
@@ -92,7 +94,7 @@ impl CairoClaim {
 pub struct CairoInteractionElements {
     memory_addr_to_id_lookup: AddrToIdLookupElements,
     memory_id_to_value_lookup: IdToF252LookupElements,
-    range9_9_lookup: RangeCheckLookupElements,
+    range9_9_lookup: RangeCheck99LookupElements,
     // ...
 }
 impl CairoInteractionElements {
@@ -100,7 +102,7 @@ impl CairoInteractionElements {
         CairoInteractionElements {
             memory_addr_to_id_lookup: AddrToIdLookupElements::draw(channel),
             memory_id_to_value_lookup: IdToF252LookupElements::draw(channel),
-            range9_9_lookup: RangeCheckLookupElements::draw(channel),
+            range9_9_lookup: RangeCheck99LookupElements::draw(channel),
         }
     }
 }
@@ -162,7 +164,7 @@ pub struct CairoComponents {
     range_check_builtin: RangeCheckBuiltinComponent,
     memory_addr_to_id: AddrToIdComponent,
     memory_id_to_value: IdToF252Component,
-    range_check9_9: FrameworkComponent<RangeCheckVectorEval<2>>,
+    range_check9_9: RangeCheck99Component,
     // ...
 }
 
@@ -216,11 +218,10 @@ impl CairoComponents {
         );
         let range_check9_9_component = FrameworkComponent::new(
             tree_span_provider,
-            RangeCheckVectorEval {
-                log_ranges: [9, 9],
-                lookup_elements: interaction_elements.range9_9_lookup.clone(),
-                claimed_sum: interaction_claim.range_check9_9.claimed_sum,
-            },
+            RangeCheck99Eval::new(
+                interaction_elements.range9_9_lookup.clone(),
+                interaction_claim.range_check9_9.claimed_sum,
+            ),
         );
         Self {
             ret: ret_components,

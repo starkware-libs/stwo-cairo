@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::LogupAtRow;
+use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -7,14 +7,12 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use super::RangeCheckLookupElements;
-
 const N_MULTIPLICITY_COLUMNS: usize = 1;
 
 #[derive(Clone)]
 pub struct RangeCheckVectorEval<const N: usize> {
     pub log_ranges: [u32; N],
-    pub lookup_elements: RangeCheckLookupElements,
+    pub lookup_elements: LookupElements<N>,
     pub claimed_sum: SecureField,
 }
 
