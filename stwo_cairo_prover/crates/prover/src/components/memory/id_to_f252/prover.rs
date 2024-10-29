@@ -1,7 +1,8 @@
 use std::simd::Simd;
 
-use itertools::{zip_eq, Itertools};
+use itertools::Itertools;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -21,11 +22,10 @@ use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
-use crate::prover_types::PackedUInt32;
 
 pub struct IdToF252ClaimProver {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
-    pub multiplicities: Vec<PackedUInt32>,
+    pub multiplicities: Vec<u32>,
 }
 impl IdToF252ClaimProver {
     pub fn new(mem: &Memory) -> Self {
@@ -47,7 +47,7 @@ impl IdToF252ClaimProver {
             })
             .collect_vec();
 
-        let multiplicities = vec![PackedUInt32::broadcast(0); values.len()];
+        let multiplicities = vec![0; size];
         Self {
             values,
             multiplicities,
@@ -74,7 +74,7 @@ impl IdToF252ClaimProver {
 
     pub fn add_inputs(&mut self, memory_id: M31) {
         let memory_id = memory_id.0 as usize;
-        self.multiplicities[memory_id / N_LANES].simd[memory_id % N_LANES] += 1;
+        self.multiplicities[memory_id] += 1;
     }
 
     pub fn write_trace(
@@ -89,7 +89,7 @@ impl IdToF252ClaimProver {
         let inc = PackedBaseField::from_array(std::array::from_fn(|i| {
             M31::from_u32_unchecked((i) as u32)
         }));
-        for (i, (values, multiplicity)) in zip_eq(&self.values, &self.multiplicities).enumerate() {
+        for (i, values) in self.values.iter().enumerate() {
             let values = split_f252_simd(*values);
             // TODO(AlonH): Either create a constant column for the addresses and remove it from
             // here or add constraints to the column here.
@@ -98,10 +98,13 @@ impl IdToF252ClaimProver {
             for (j, value) in values.iter().enumerate() {
                 trace[j + 1].data[i] = *value;
             }
-            assert!(multiplicity.in_m31_range());
-            trace[MULTIPLICITY_COLUMN_OFFSET].data[i] = multiplicity.as_m31_unchecked();
         }
-
+        trace[MULTIPLICITY_COLUMN_OFFSET] = BaseColumn::from_iter(
+            self.multiplicities
+                .clone()
+                .into_iter()
+                .map(BaseField::from_u32_unchecked),
+        );
         // Lookup data.
         let ids_and_values = trace[0..MULTIPLICITY_COLUMN_OFFSET]
             .iter()

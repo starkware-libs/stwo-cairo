@@ -47,21 +47,7 @@ mod tests {
             addr_to_id_gen.add_inputs(*addr);
         });
 
-        assert_eq!(
-            addr_to_id_gen
-                .multiplicities
-                .iter()
-                .flat_map(|m| m.as_array())
-                .collect_vec(),
-            expected_addr_mult
-        );
-        assert_eq!(
-            id_to_f252
-                .multiplicities
-                .iter()
-                .flat_map(|m| m.as_array())
-                .collect_vec(),
-            expected_f252_mult
-        );
+        assert_eq!(addr_to_id_gen.multiplicities, expected_addr_mult);
+        assert_eq!(id_to_f252.multiplicities, expected_f252_mult);
     }
 }
