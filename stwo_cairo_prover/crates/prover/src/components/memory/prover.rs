@@ -20,7 +20,7 @@ use super::MemoryLookupElements;
 use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
-use crate::prover_types::PackedUInt32;
+use crate::prover_types::simd::PackedUInt32;
 
 pub struct MemoryClaimProver {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
@@ -46,7 +46,7 @@ impl MemoryClaimProver {
             })
             .collect_vec();
 
-        let multiplicities = vec![PackedUInt32::broadcast(0); values.len()];
+        let multiplicities = vec![PackedUInt32::broadcast(0.into()); values.len()];
         Self {
             values,
             multiplicities,

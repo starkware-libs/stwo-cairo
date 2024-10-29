@@ -183,7 +183,7 @@ mod tests {
     use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
     use crate::components::range_check_builtin::component::RangeCheckBuiltinEval;
     use crate::felt::split_f252;
-    use crate::prover_types::PackedUInt32;
+    use crate::prover_types::simd::PackedUInt32;
 
     #[test]
     fn test_generate_trace() {
@@ -212,7 +212,7 @@ mod tests {
             .collect_vec();
         let memory_trace_generator = MemoryClaimProver {
             values: values.clone(),
-            multiplicities: vec![PackedUInt32::broadcast(0); 1 << (log_size - LOG_N_LANES)],
+            multiplicities: vec![PackedUInt32::broadcast(0.into()); 1 << (log_size - LOG_N_LANES)],
         };
         let (trace, interaction_prover) = write_trace_simd(&inputs, &memory_trace_generator);
 
@@ -302,7 +302,10 @@ mod tests {
             .collect_vec();
         let memory_trace_generator = MemoryClaimProver {
             values: values.clone(),
-            multiplicities: vec![PackedUInt32::broadcast(0); 1 << (mem_log_size - LOG_N_LANES)],
+            multiplicities: vec![
+                PackedUInt32::broadcast(0.into());
+                1 << (mem_log_size - LOG_N_LANES)
+            ],
         };
         let (trace, interaction_prover) = write_trace_simd(&inputs, &memory_trace_generator);
 

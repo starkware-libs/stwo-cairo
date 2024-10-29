@@ -13,7 +13,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RangeCheckClaim, RangeCheckInteractionClaim};
 use super::RangeCheckElements;
-use crate::prover_types::PackedUInt32;
+use crate::prover_types::simd::PackedUInt32;
 
 const TRACE_INDICES_OFFSET: usize = 0;
 const TRACE_MULTIPLICITIES_OFFSET: usize = 1;
@@ -31,7 +31,7 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
 {
     pub fn new() -> Self {
         let multiplicities: [Vec<PackedUInt32>; N_REPETITIONS] = std::array::from_fn(|_| {
-            vec![PackedUInt32::broadcast(0); 1 << (RC_LOG_HEIGHT - LOG_N_LANES) as usize]
+            vec![PackedUInt32::broadcast(0.into()); 1 << (RC_LOG_HEIGHT - LOG_N_LANES) as usize]
         });
         Self { multiplicities }
     }
@@ -91,7 +91,7 @@ impl<const RC_LOG_HEIGHT: u32, const N_REPETITIONS: usize>
             trace[TRACE_MULTIPLICITIES_OFFSET + i]
                 .data
                 .iter()
-                .map(|x| PackedUInt32::from_array(x.to_array().map(|c| c.0)))
+                .map(|x| PackedUInt32::from_array(x.to_array().map(|c| c.0.into())))
                 .collect_vec()
         });
 
