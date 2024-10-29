@@ -19,11 +19,11 @@ use super::{
 };
 
 // TODO(Ohad): rustdoc.
-pub struct RangeCheckClaimProver<const N: usize> {
+pub struct RangeCheckClaimGenerator<const N: usize> {
     log_ranges: [u32; N],
     pub multiplicities: Vec<Simd<u32, N_LANES>>,
 }
-impl<const N: usize> RangeCheckClaimProver<N> {
+impl<const N: usize> RangeCheckClaimGenerator<N> {
     pub fn new(log_ranges: [u32; N]) -> Self {
         let multiplicities = vec![
             Simd::<u32, N_LANES>::splat(0);
@@ -70,7 +70,7 @@ impl<const N: usize> RangeCheckClaimProver<N> {
     pub fn write_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-    ) -> (RangeCheckClaim<N>, RangeCheckInteractionClaimProver<N>) {
+    ) -> (RangeCheckClaim, RangeCheckInteractionClaimGenerator<N>) {
         let log_size = self.log_size();
 
         let fixed_columns = self.write_fixed_columns();
@@ -91,10 +91,10 @@ impl<const N: usize> RangeCheckClaimProver<N> {
         tree_builder.extend_evals(trace);
 
         let claim = RangeCheckClaim {
-            log_ranges: self.log_ranges,
+            log_ranges: self.log_ranges.to_vec(),
         };
 
-        let interaction_claim_prover = RangeCheckInteractionClaimProver {
+        let interaction_claim_prover = RangeCheckInteractionClaimGenerator {
             log_ranges: self.log_ranges,
             multiplicities: multiplicity_data,
         };
@@ -104,18 +104,11 @@ impl<const N: usize> RangeCheckClaimProver<N> {
 }
 
 #[derive(Debug)]
-pub struct RangeCheckInteractionClaimProver<const N: usize> {
+pub struct RangeCheckInteractionClaimGenerator<const N: usize> {
     pub log_ranges: [u32; N],
     pub multiplicities: Vec<PackedM31>,
 }
-impl<const N: usize> RangeCheckInteractionClaimProver<N> {
-    pub fn with_capacity(capacity: usize, log_ranges: [u32; N]) -> Self {
-        Self {
-            multiplicities: Vec::with_capacity(capacity),
-            log_ranges,
-        }
-    }
-
+impl<const N: usize> RangeCheckInteractionClaimGenerator<N> {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
@@ -163,7 +156,7 @@ mod tests {
     use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 
-    use super::RangeCheckClaimProver;
+    use super::RangeCheckClaimGenerator;
     use crate::components::range_check_vector::component::RangeCheckVectorEval;
     use crate::components::range_check_vector::{
         partition_into_bit_segments, RangeCheckLookupElements,
@@ -193,7 +186,7 @@ mod tests {
             std::array::from_fn(|i| unsafe { PackedM31::from_simd_unchecked(partitions[i]) })
         });
 
-        let mut claim_prover = RangeCheckClaimProver::new(log_ranges);
+        let mut claim_prover = RangeCheckClaimGenerator::new(log_ranges);
         inputs.into_iter().for_each(|input| {
             claim_prover.add_packed_m31(&input);
         });
