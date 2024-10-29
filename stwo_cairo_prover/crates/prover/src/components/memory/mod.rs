@@ -1,3 +1,4 @@
+pub mod addr_to_id;
 pub mod id_to_f252;
 
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 20;
