@@ -9,7 +9,7 @@ use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use super::IdToF252LookupElements;
-use crate::components::range_check_unit::RangeCheckElements;
+use crate::components::range_check_vector::RangeCheckLookupElements;
 
 pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
@@ -26,7 +26,7 @@ pub type IdToF252Component = FrameworkComponent<IdToF252Eval>;
 pub struct IdToF252Eval {
     pub log_n_rows: u32,
     pub lookup_elements: IdToF252LookupElements,
-    pub range9_lookup_elements: RangeCheckElements,
+    pub range9_9_lookup_elements: RangeCheckLookupElements,
     pub claimed_sum: QM31,
 }
 impl IdToF252Eval {
@@ -36,13 +36,13 @@ impl IdToF252Eval {
     pub fn new(
         claim: IdToF252Claim,
         lookup_elements: IdToF252LookupElements,
-        range9_lookup_elements: RangeCheckElements,
+        range9_9_lookup_elements: RangeCheckLookupElements,
         interaction_claim: IdToF252InteractionClaim,
     ) -> Self {
         Self {
             log_n_rows: claim.log_size,
             lookup_elements,
-            range9_lookup_elements,
+            range9_9_lookup_elements,
             claimed_sum: interaction_claim.claimed_sum,
         }
     }
@@ -71,10 +71,11 @@ impl FrameworkEval for IdToF252Eval {
         logup.write_frac(&mut eval, frac);
 
         // Range check elements.
-        for value_limb in id_and_value.iter().skip(MEMORY_ID_SIZE) {
+        for limb_pair in id_and_value[MEMORY_ID_SIZE..].chunks_exact(2) {
             let frac = Fraction::new(
                 E::EF::one(),
-                self.range9_lookup_elements.combine(&[value_limb.clone()]),
+                self.range9_9_lookup_elements
+                    .combine(&[limb_pair[0].clone(), limb_pair[1].clone()]),
             );
             logup.write_frac(&mut eval, frac);
         }
@@ -93,7 +94,7 @@ impl IdToF252Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_size; N_ID_TO_VALUE_COLUMNS];
         let interaction_1_log_size =
-            vec![self.log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 + 1)];
+            vec![self.log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 / 2 + 1)];
         let fixed_column_log_sizes = vec![self.log_size];
         TreeVec::new(vec![
             interaction_0_log_size,

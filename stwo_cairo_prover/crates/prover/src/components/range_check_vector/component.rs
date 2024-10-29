@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
 use stwo_prover::core::channel::Channel;
@@ -42,19 +43,20 @@ impl<const N: usize> FrameworkEval for RangeCheckVectorEval<N> {
     }
 }
 
-#[derive(Clone)]
-pub struct RangeCheckClaim<const N: usize> {
-    pub log_ranges: [u32; N],
+#[derive(Clone, Deserialize, Serialize)]
+pub struct RangeCheckClaim {
+    pub log_ranges: Vec<u32>,
 }
-impl<const N: usize> RangeCheckClaim<N> {
+impl RangeCheckClaim {
     fn log_size(&self) -> u32 {
         self.log_ranges.iter().sum()
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::new(vec![
-            vec![self.log_size(); N + N_MULTIPLICITY_COLUMNS],
+            vec![self.log_size(); self.log_ranges.len() + N_MULTIPLICITY_COLUMNS],
             vec![self.log_size(); SECURE_EXTENSION_DEGREE],
+            vec![self.log_size(); 1],
         ])
     }
 
@@ -65,7 +67,7 @@ impl<const N: usize> RangeCheckClaim<N> {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct RangeCheckInteractionClaim {
     pub claimed_sum: SecureField,
 }
