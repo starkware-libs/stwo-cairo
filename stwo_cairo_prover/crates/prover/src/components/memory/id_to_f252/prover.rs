@@ -20,7 +20,7 @@ use super::component::{
 };
 use super::IdToF252LookupElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
-use crate::components::range_check_vector::RangeCheckLookupElements;
+use crate::components::range_check_vector::RangeCheck99LookupElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 
@@ -153,7 +153,7 @@ impl IdToF252InteractionClaimProver {
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &IdToF252LookupElements,
-        range9_9_lookup_elements: &RangeCheckLookupElements,
+        range9_9_lookup_elements: &RangeCheck99LookupElements,
     ) -> IdToF252InteractionClaim {
         let log_size = self.ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);

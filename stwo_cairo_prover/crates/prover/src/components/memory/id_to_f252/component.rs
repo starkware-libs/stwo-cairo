@@ -10,7 +10,7 @@ use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use super::IdToF252LookupElements;
-use crate::components::range_check_vector::RangeCheckLookupElements;
+use crate::components::range_check_vector::RangeCheck99LookupElements;
 
 pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
@@ -27,7 +27,7 @@ pub type IdToF252Component = FrameworkComponent<IdToF252Eval>;
 pub struct IdToF252Eval {
     pub log_n_rows: u32,
     pub lookup_elements: IdToF252LookupElements,
-    pub range9_9_lookup_elements: RangeCheckLookupElements,
+    pub range9_9_lookup_elements: RangeCheck99LookupElements,
     pub claimed_sum: QM31,
 }
 impl IdToF252Eval {
@@ -37,7 +37,7 @@ impl IdToF252Eval {
     pub fn new(
         claim: IdToF252Claim,
         lookup_elements: IdToF252LookupElements,
-        range9_9_lookup_elements: RangeCheckLookupElements,
+        range9_9_lookup_elements: RangeCheck99LookupElements,
         interaction_claim: IdToF252InteractionClaim,
     ) -> Self {
         Self {
