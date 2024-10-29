@@ -9,7 +9,9 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+use crate::components::memory::id_to_f252::{
+    IdToF252LookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT,
+};
 use crate::components::LOOKUP_INTERACTION_PHASE;
 use crate::input::SegmentAddrs;
 
@@ -29,14 +31,14 @@ const _: () = assert!(
 pub struct RangeCheckBuiltinEval {
     pub log_size: u32,
     pub initial_memory_address: M31,
-    pub memory_lookup_elements: MemoryLookupElements,
+    pub memory_lookup_elements: IdToF252LookupElements,
     pub claimed_sum: SecureField,
 }
 
 impl RangeCheckBuiltinEval {
     pub fn new(
         claim: RangeCheckBuiltinClaim,
-        memory_lookup_elements: MemoryLookupElements,
+        memory_lookup_elements: IdToF252LookupElements,
         interaction_claim: RangeCheckBuiltinInteractionClaim,
     ) -> Self {
         let n_values = claim.memory_segment.end_addr - claim.memory_segment.begin_addr;

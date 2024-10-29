@@ -17,8 +17,8 @@ use super::component::{
     RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionClaim, N_RANGE_CHECK_COLUMNS,
     N_VALUES_FELTS,
 };
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::input::SegmentAddrs;
 
 // Memory addresses for the RangeCheckBuiltin segment.
@@ -82,7 +82,7 @@ impl RangeCheckBuiltinInteractionProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_lookup_elements: &MemoryLookupElements,
+        memory_lookup_elements: &IdToF252LookupElements,
     ) -> RangeCheckBuiltinInteractionClaim {
         let log_size = self.memory_addresses.len().ilog2() + LOG_N_LANES;
         let (trace, claimed_sum) = gen_interaction_trace(self, log_size, memory_lookup_elements);
@@ -143,7 +143,7 @@ pub fn write_trace_simd(
 pub fn gen_interaction_trace(
     interaction_prover: &RangeCheckBuiltinInteractionProver,
     log_size: u32,
-    memory_lookup_elements: &MemoryLookupElements,
+    memory_lookup_elements: &IdToF252LookupElements,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     SecureField,
@@ -180,7 +180,9 @@ mod tests {
     use stwo_prover::core::pcs::TreeVec;
 
     use super::*;
-    use crate::components::memory::{MemoryLookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT};
+    use crate::components::memory::id_to_f252::{
+        IdToF252LookupElements, N_ADDRESS_FELTS, N_BITS_PER_FELT,
+    };
     use crate::components::range_check_builtin::component::RangeCheckBuiltinEval;
     use crate::felt::split_f252;
     use crate::prover_types::PackedUInt32;
@@ -307,7 +309,7 @@ mod tests {
         let (trace, interaction_prover) = write_trace_simd(&inputs, &memory_trace_generator);
 
         let channel = &mut Blake2sChannel::default();
-        let memory_lookup_elements = MemoryLookupElements::draw(channel);
+        let memory_lookup_elements = IdToF252LookupElements::draw(channel);
 
         let (interaction_trace, claimed_sum) =
             gen_interaction_trace(&interaction_prover, log_size, &memory_lookup_elements);

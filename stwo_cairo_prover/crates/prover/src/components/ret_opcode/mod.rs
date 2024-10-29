@@ -1,7 +1,7 @@
 use num_traits::{One, Zero};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 
-use super::memory::component::N_M31_IN_FELT252;
+use super::memory::id_to_f252::component::N_M31_IN_FELT252;
 
 pub mod component;
 pub mod prover;

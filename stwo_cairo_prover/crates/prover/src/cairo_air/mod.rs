@@ -19,11 +19,11 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::components::memory::component::{
+use crate::components::memory::id_to_f252::component::{
     MemoryClaim, MemoryComponent, MemoryEval, MemoryInteractionClaim,
 };
-use crate::components::memory::prover::MemoryClaimProver;
-use crate::components::memory::MemoryLookupElements;
+use crate::components::memory::id_to_f252::prover::MemoryClaimProver;
+use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::components::range_check_builtin::component::{
     RangeCheckBuiltinClaim, RangeCheckBuiltinComponent, RangeCheckBuiltinEval,
     RangeCheckBuiltinInteractionClaim,
@@ -87,14 +87,14 @@ impl CairoClaim {
 }
 
 pub struct CairoInteractionElements {
-    memory_lookup: MemoryLookupElements,
+    memory_lookup: IdToF252LookupElements,
     range9_lookup: RangeCheckElements,
     // ...
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
-            memory_lookup: MemoryLookupElements::draw(channel),
+            memory_lookup: IdToF252LookupElements::draw(channel),
             range9_lookup: RangeCheckElements::draw(channel),
         }
     }
