@@ -1,3 +1,4 @@
+use std::iter::zip;
 use std::simd::Simd;
 
 use itertools::Itertools;
@@ -19,7 +20,7 @@ use super::component::{
 };
 use super::IdToF252LookupElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
-use crate::components::range_check_unit::RangeCheckElements;
+use crate::components::range_check_vector::RangeCheckLookupElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
 
@@ -152,7 +153,7 @@ impl IdToF252InteractionClaimProver {
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &IdToF252LookupElements,
-        range9_lookup_elements: &RangeCheckElements,
+        range9_9_lookup_elements: &RangeCheckLookupElements,
     ) -> IdToF252InteractionClaim {
         let log_size = self.ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -167,14 +168,14 @@ impl IdToF252InteractionClaimProver {
         }
         col_gen.finalize_col();
 
-        for value_col in self.ids_and_values.iter().skip(MEMORY_ID_SIZE) {
+        for (l, r) in self.ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
             let mut col_gen = logup_gen.new_col();
-            for (vec_row, value) in value_col.iter().enumerate() {
+            for (vec_row, (l1, l2)) in zip(l, r).enumerate() {
                 // TOOD(alont) Add 2-batching.
                 col_gen.write_frac(
                     vec_row,
                     PackedQM31::broadcast(M31(1).into()),
-                    range9_lookup_elements.combine(&[PackedQM31::from(*value)]),
+                    range9_9_lookup_elements.combine(&[*l1, *l2]),
                 );
             }
             col_gen.finalize_col();
