@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::decode::Instruction;
-use super::mem::{Memory, MemoryValue};
+use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
 // TODO(spapini): Move this:
@@ -70,7 +70,10 @@ pub struct Instructions {
     pub generic: Vec<VmState>,
 }
 impl Instructions {
-    pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &Memory) -> Self {
+    pub fn from_iter(
+        mut iter: impl Iterator<Item = TraceEntry>,
+        mem: &mut MemoryBuilder<'_>,
+    ) -> Self {
         let mut res = Self::default();
 
         let Some(first) = iter.next() else {
@@ -86,9 +89,9 @@ impl Instructions {
         res
     }
 
-    fn push_instr(&mut self, mem: &Memory, state: VmState) {
+    fn push_instr(&mut self, mem: &mut MemoryBuilder<'_>, state: VmState) {
         let VmState { ap, fp, pc } = state;
-        let instruction = mem.get(pc).as_u64();
+        let instruction = mem.get_inst(pc);
         let instruction = Instruction::decode(instruction);
         match instruction {
             // ret.
