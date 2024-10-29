@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
@@ -9,6 +9,8 @@ use stwo_prover::core::pcs::TreeVec;
 
 use super::AddrToIdLookupElements;
 pub const N_ADDR_TO_ID_COLUMNS: usize = 3;
+
+pub type AddrToIdComponent = FrameworkComponent<AddrToIdEval>;
 
 // TODO(ShaharS): Break to repititions in order to batch the logup.
 #[derive(Clone)]
@@ -70,7 +72,12 @@ impl AddrToIdClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_size; N_ADDR_TO_ID_COLUMNS];
         let interaction_1_log_size = vec![self.log_size; SECURE_EXTENSION_DEGREE];
-        TreeVec::new(vec![interaction_0_log_size, interaction_1_log_size])
+        let fixed_column_log_sizes = vec![self.log_size];
+        TreeVec::new(vec![
+            interaction_0_log_size,
+            interaction_1_log_size,
+            fixed_column_log_sizes,
+        ])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
