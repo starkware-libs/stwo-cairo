@@ -2,7 +2,7 @@ use std::iter::zip;
 use std::simd::Simd;
 
 use itertools::{chain, Itertools};
-use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::constraint_framework::logup::{LogupTraceGenerator, LookupElements};
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -13,10 +13,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RangeCheckClaim, RangeCheckInteractionClaim};
-use super::{
-    generate_partitioned_enumeration, partition_into_bit_segments, RangeCheckLookupElements,
-    SIMD_ENUMERATION_0,
-};
+use super::{generate_partitioned_enumeration, partition_into_bit_segments, SIMD_ENUMERATION_0};
 
 // TODO(Ohad): rustdoc.
 pub struct RangeCheckClaimGenerator<const N: usize> {
@@ -112,7 +109,7 @@ impl<const N: usize> RangeCheckInteractionClaimGenerator<N> {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &RangeCheckLookupElements,
+        lookup_elements: &LookupElements<N>,
     ) -> RangeCheckInteractionClaim {
         let log_size = self.log_ranges.iter().sum::<u32>();
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -147,6 +144,7 @@ mod tests {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
     use stwo_prover::constraint_framework::constant_columns::gen_is_first;
+    use stwo_prover::constraint_framework::logup::LookupElements;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
@@ -158,15 +156,14 @@ mod tests {
 
     use super::RangeCheckClaimGenerator;
     use crate::components::range_check_vector::component::RangeCheckVectorEval;
-    use crate::components::range_check_vector::{
-        partition_into_bit_segments, RangeCheckLookupElements,
-    };
+    use crate::components::range_check_vector::partition_into_bit_segments;
 
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);
         const LOG_HEIGHT: u32 = 9;
         const LOG_BLOWUP_FACTOR: u32 = 1;
+        const N_RANGES: usize = 3;
         let log_ranges = [4, 3, 2];
         let twiddles = SimdBackend::precompute_twiddles(
             CanonicCoset::new(LOG_HEIGHT + LOG_BLOWUP_FACTOR)
@@ -197,7 +194,7 @@ mod tests {
         tree_builder.commit(channel);
         let mut tree_builder = commitment_scheme.tree_builder();
 
-        let lookup_elements = RangeCheckLookupElements::draw(channel);
+        let lookup_elements = LookupElements::<N_RANGES>::draw(channel);
         let interaction_claim =
             interaction_claim_prover.write_interaction_trace(&mut tree_builder, &lookup_elements);
         tree_builder.commit(channel);
