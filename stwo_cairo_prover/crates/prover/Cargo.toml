@@ -15,6 +15,7 @@ sonic-rs.workspace = true
 stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+paste = "1.0"
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true

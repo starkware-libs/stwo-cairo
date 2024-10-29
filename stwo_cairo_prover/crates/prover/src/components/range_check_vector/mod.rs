@@ -1,6 +1,7 @@
 use std::iter::zip;
 use std::simd::Simd;
 
+use component::RangeCheckVectorEval;
 use stwo_prover::constraint_framework::logup::LookupElements;
 pub mod component;
 pub mod component_prover;
@@ -8,8 +9,10 @@ pub mod component_prover;
 // TODO(Ohad): figure out n_alpha_powers.
 pub type RangeCheckLookupElements = LookupElements<3>;
 
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::MODULUS_BITS;
+use stwo_prover::core::fields::qm31::QM31;
 
 pub const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
     Simd::from_array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
@@ -50,6 +53,58 @@ pub fn generate_partitioned_enumeration<const N: usize>(
     }
     res
 }
+
+#[macro_export]
+macro_rules! generate_range_check_component {
+    ($($log_range:expr),+) => {
+        // Generate type and struct names based on the log ranges provided
+        paste::paste! {
+            pub type [<RangeCheck $($log_range)* Component>] =
+                FrameworkComponent<[<RangeCheck $($log_range)* Eval>]>;
+
+            pub type [<RangeCheck $($log_range)* LookupElements>] =
+                LookupElements<{count_elements!($($log_range),*)}>;
+
+            pub struct [<RangeCheck $($log_range)* Eval>] {
+                eval: RangeCheckVectorEval<{count_elements!($($log_range),*)}>,
+            }
+
+            impl [<RangeCheck $($log_range)* Eval>] {
+                pub fn new(lookup_elements: LookupElements<{count_elements!($($log_range),*)}>,
+                            claimed_sum: QM31) -> Self {
+                    Self {
+                        eval: RangeCheckVectorEval {
+                            log_ranges: [$($log_range),*],
+                            lookup_elements,
+                            claimed_sum,
+                        },
+                    }
+                }
+            }
+
+            impl FrameworkEval for [<RangeCheck $($log_range)* Eval>] {
+                fn log_size(&self) -> u32 {
+                    self.eval.log_size()
+                }
+
+                fn max_constraint_log_degree_bound(&self) -> u32 {
+                    self.eval.max_constraint_log_degree_bound()
+                }
+
+                fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
+                    self.eval.evaluate(eval)
+                }
+            }
+        }
+    };
+}
+
+macro_rules! count_elements {
+    ($x:expr) => (1);
+    ($x:expr, $($xs:expr),*) => (1 + count_elements!($($xs),*));
+}
+
+generate_range_check_component!(9, 9);
 
 #[cfg(test)]
 mod tests {
