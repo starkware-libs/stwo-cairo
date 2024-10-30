@@ -1,7 +1,7 @@
-use bytemuck::Zeroable;
-use itertools::{zip_eq, Itertools};
+use itertools::Itertools;
 use num_traits::Zero;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedSecureField;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -16,11 +16,10 @@ use super::component::{AddrToIdClaim, AddrToIdInteractionClaim, N_ADDR_TO_ID_COL
 use super::AddrToIdLookupElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::mem::Memory;
-use crate::prover_types::PackedUInt32;
 
 pub struct AddrToIdClaimProver {
     pub ids: Vec<PackedBaseField>,
-    pub multiplicities: Vec<PackedUInt32>,
+    pub multiplicities: Vec<u32>,
 }
 impl AddrToIdClaimProver {
     pub fn new(mem: &Memory) -> Self {
@@ -37,7 +36,7 @@ impl AddrToIdClaimProver {
             .map(PackedBaseField::from_array)
             .collect_vec();
 
-        let multiplicities = vec![PackedUInt32::zeroed(); packed_ids.len()];
+        let multiplicities = vec![0; size];
         Self {
             ids: packed_ids,
             multiplicities,
@@ -61,7 +60,7 @@ impl AddrToIdClaimProver {
 
     pub fn add_inputs(&mut self, addr: BaseField) {
         let addr = addr.0 as usize;
-        self.multiplicities[addr / N_LANES].simd[addr % N_LANES] += 1;
+        self.multiplicities[addr] += 1;
     }
 
     pub fn write_trace(
@@ -77,12 +76,18 @@ impl AddrToIdClaimProver {
             BaseField::from_u32_unchecked((i) as u32)
         }));
 
-        for (i, (id, multiplicity)) in zip_eq(&self.ids, &self.multiplicities).enumerate() {
+        for (i, id) in self.ids.iter().enumerate() {
             trace[0].data[i] =
                 PackedM31::broadcast(BaseField::from_u32_unchecked((i * N_LANES) as u32)) + inc;
             trace[1].data[i] = *id;
-            trace[2].data[i] = multiplicity.as_m31_unchecked();
         }
+        // TODO(Ohad): try and avoid the clone.
+        trace[2] = BaseColumn::from_iter(
+            self.multiplicities
+                .clone()
+                .into_iter()
+                .map(BaseField::from_u32_unchecked),
+        );
 
         // Lookup data.
         let addresses = trace[0].data.clone();
