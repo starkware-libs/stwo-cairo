@@ -1,9 +1,9 @@
+use prover_types::simd::PackedUInt32;
 use stwo_prover::core::backend::simd::m31::{LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::M31;
 
 use super::mem::Memory;
 use crate::felt::split_f252;
-use crate::prover_types::PackedUInt32;
 
 #[derive(Debug)]
 pub struct RangeCheckUnitInput {
@@ -34,7 +34,7 @@ impl RangeCheckUnitInput {
         &self,
     ) -> [Vec<PackedUInt32>; N_REPETITIONS] {
         let mut multiplicities: [Vec<PackedUInt32>; N_REPETITIONS] = std::array::from_fn(|_| {
-            vec![PackedUInt32::broadcast(0); 1 << (LOG_HEIGHT - LOG_N_LANES) as usize]
+            vec![PackedUInt32::broadcast(0.into()); 1 << (LOG_HEIGHT - LOG_N_LANES) as usize]
         });
         for value in self.values.iter() {
             let (rep, num) = (value >> LOG_HEIGHT, value % (1 << LOG_HEIGHT));
@@ -53,8 +53,7 @@ impl Default for RangeCheckUnitInput {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::prover_types::PackedUInt32;
+    use prover_types::simd::PackedUInt32;
 
     #[test]
     fn test_to_2d_simd_vec() {

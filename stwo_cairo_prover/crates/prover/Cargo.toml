@@ -16,8 +16,8 @@ stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 paste.workspace = true
+prover_types = { path = "../prover_types" }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
 rand.workspace = true
-
