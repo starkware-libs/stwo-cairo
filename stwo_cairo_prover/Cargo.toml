@@ -26,7 +26,7 @@ stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "9cfd48a" 
 thiserror = "1.0.63"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
-
+paste = "1.0"
 
 [profile.bench]
 codegen-units = 1
