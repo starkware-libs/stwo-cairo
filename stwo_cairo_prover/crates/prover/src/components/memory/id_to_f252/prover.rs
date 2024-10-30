@@ -1,6 +1,7 @@
 use std::simd::Simd;
 
 use itertools::{zip_eq, Itertools};
+use prover_types::simd::PackedUInt32;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -21,7 +22,6 @@ use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_unit::RangeCheckElements;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
-use crate::prover_types::PackedUInt32;
 
 pub struct IdToF252ClaimProver {
     pub values: Vec<[Simd<u32, N_LANES>; 8]>,
@@ -47,7 +47,7 @@ impl IdToF252ClaimProver {
             })
             .collect_vec();
 
-        let multiplicities = vec![PackedUInt32::broadcast(0); values.len()];
+        let multiplicities = vec![PackedUInt32::broadcast(0.into()); values.len()];
         Self {
             values,
             multiplicities,

@@ -1,6 +1,7 @@
 use bytemuck::Zeroable;
 use itertools::{zip_eq, Itertools};
 use num_traits::Zero;
+use prover_types::simd::PackedUInt32;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedSecureField;
@@ -16,7 +17,6 @@ use super::component::{AddrToIdClaim, AddrToIdInteractionClaim, N_ADDR_TO_ID_COL
 use super::AddrToIdLookupElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::mem::Memory;
-use crate::prover_types::PackedUInt32;
 
 pub struct AddrToIdClaimProver {
     pub ids: Vec<PackedBaseField>,
