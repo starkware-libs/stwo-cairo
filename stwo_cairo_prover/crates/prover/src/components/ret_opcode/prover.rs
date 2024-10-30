@@ -11,24 +11,24 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use super::component::{RetOpcodeClaim, RetOpcodeInteractionClaim, RET_INSTRUCTION};
+use super::component::{Claim, InteractionClaim, RET_INSTRUCTION};
+use crate::components::memory::id_to_f252;
 use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
-use crate::components::memory::id_to_f252::prover::IdToF252ClaimProver;
-use crate::components::memory::id_to_f252::IdToF252LookupElements;
 use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
 
-pub struct PackedRetInput {
+// TODO(Ohad): take from prover_types and remove.
+pub struct PackedCasmState {
     pub pc: PackedM31,
     pub ap: PackedM31,
     pub fp: PackedM31,
 }
 
-pub struct RetOpcodeClaimProver {
-    pub inputs: Vec<PackedRetInput>,
+pub struct ClaimGenerator {
+    pub inputs: Vec<PackedCasmState>,
 }
-impl RetOpcodeClaimProver {
+impl ClaimGenerator {
     pub fn new(mut inputs: Vec<VmState>) -> Self {
         assert!(!inputs.is_empty());
 
@@ -39,7 +39,7 @@ impl RetOpcodeClaimProver {
         let inputs = inputs
             .into_iter()
             .array_chunks::<N_LANES>()
-            .map(|chunk| PackedRetInput {
+            .map(|chunk| PackedCasmState {
                 pc: PackedM31::from_array(std::array::from_fn(|i| {
                     M31::from_u32_unchecked(chunk[i].pc)
                 })),
@@ -56,22 +56,22 @@ impl RetOpcodeClaimProver {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_trace_generator: &mut IdToF252ClaimProver,
-    ) -> (RetOpcodeClaim, RetOpcodeInteractionProver) {
+        memory_trace_generator: &mut id_to_f252::ClaimGenerator,
+    ) -> (Claim, InteractionClaimGenerator) {
         let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
         interaction_prover.memory_inputs.iter().for_each(|c| {
             c.iter()
                 .for_each(|v| memory_trace_generator.add_inputs_simd(v))
         });
         tree_builder.extend_evals(trace);
-        let claim = RetOpcodeClaim {
+        let claim = Claim {
             n_rets: self.inputs.len() * N_LANES,
         };
         (claim, interaction_prover)
     }
 }
 
-pub struct RetOpcodeInteractionProver {
+pub struct InteractionClaimGenerator {
     pub memory_inputs: [Vec<PackedM31>; N_MEMORY_CALLS],
     pub memory_outputs: [Vec<[PackedM31; N_M31_IN_FELT252]>; N_MEMORY_CALLS],
     // Callee data.
@@ -81,7 +81,7 @@ pub struct RetOpcodeInteractionProver {
     // new_pc: Vec<PackedM31>,
     // new_fp: Vec<PackedM31>,
 }
-impl RetOpcodeInteractionProver {
+impl InteractionClaimGenerator {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             memory_inputs: [
@@ -100,8 +100,8 @@ impl RetOpcodeInteractionProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &IdToF252LookupElements,
-    ) -> RetOpcodeInteractionClaim {
+        lookup_elements: &id_to_f252::RelationElements,
+    ) -> InteractionClaim {
         let log_size = self.memory_inputs[0].len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
         for col_index in 0..N_MEMORY_CALLS {
@@ -121,7 +121,7 @@ impl RetOpcodeInteractionProver {
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
-        RetOpcodeInteractionClaim {
+        InteractionClaim {
             log_size,
             claimed_sum,
         }
@@ -129,17 +129,17 @@ impl RetOpcodeInteractionProver {
 }
 
 fn write_trace_simd(
-    inputs: &[PackedRetInput],
-    memory_trace_generator: &IdToF252ClaimProver,
+    inputs: &[PackedCasmState],
+    memory_trace_generator: &id_to_f252::ClaimGenerator,
 ) -> (
     Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-    RetOpcodeInteractionProver,
+    InteractionClaimGenerator,
 ) {
     let n_trace_columns = 7;
     let mut trace_values = (0..n_trace_columns)
         .map(|_| Col::<SimdBackend, M31>::zeros(inputs.len() * N_LANES))
         .collect_vec();
-    let mut sub_components_inputs = RetOpcodeInteractionProver::with_capacity(inputs.len());
+    let mut sub_components_inputs = InteractionClaimGenerator::with_capacity(inputs.len());
     inputs.iter().enumerate().for_each(|(i, input)| {
         write_trace_row(
             &mut trace_values,
@@ -172,10 +172,10 @@ fn write_trace_simd(
 // TODO(Ohad): redo when air team decides how it should look.
 fn write_trace_row(
     dst: &mut [Col<SimdBackend, M31>],
-    ret_opcode_input: &PackedRetInput,
+    ret_opcode_input: &PackedCasmState,
     row_index: usize,
-    lookup_data: &mut RetOpcodeInteractionProver,
-    memory_trace_generator: &IdToF252ClaimProver,
+    lookup_data: &mut InteractionClaimGenerator,
+    memory_trace_generator: &id_to_f252::ClaimGenerator,
 ) {
     let col0 = ret_opcode_input.pc;
     dst[0].data[row_index] = col0;

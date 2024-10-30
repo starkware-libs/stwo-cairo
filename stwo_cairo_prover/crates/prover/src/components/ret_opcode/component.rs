@@ -9,36 +9,36 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
+use crate::components::memory::id_to_f252;
 use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
-use crate::components::memory::id_to_f252::IdToF252LookupElements;
 
 pub const RET_N_TRACE_CELLS: usize = 7;
 pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
     510, 447, 511, 495, 511, 91, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ];
-pub type RetOpcodeComponent = FrameworkComponent<RetOpcodeEval>;
+pub type Component = FrameworkComponent<Eval>;
 
 #[derive(Clone)]
-pub struct RetOpcodeEval {
+pub struct Eval {
     pub log_size: u32,
-    pub lookup_elements: IdToF252LookupElements,
+    pub memory_lookup_elements: id_to_f252::RelationElements,
     pub claimed_sum: SecureField,
 }
-impl RetOpcodeEval {
+impl Eval {
     pub fn new(
-        ret_claim: RetOpcodeClaim,
-        memory_lookup_elements: IdToF252LookupElements,
-        interaction_claim: RetOpcodeInteractionClaim,
+        ret_claim: Claim,
+        memory_lookup_elements: id_to_f252::RelationElements,
+        interaction_claim: InteractionClaim,
     ) -> Self {
         Self {
             log_size: ret_claim.n_rets.next_power_of_two().ilog2(),
-            lookup_elements: memory_lookup_elements,
+            memory_lookup_elements,
             claimed_sum: interaction_claim.claimed_sum,
         }
     }
 }
 
-impl FrameworkEval for RetOpcodeEval {
+impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.log_size
     }
@@ -57,7 +57,7 @@ impl FrameworkEval for RetOpcodeEval {
         for i in 0..N_M31_IN_FELT252 {
             values[i + 1] = E::F::from(M31::from(RET_INSTRUCTION[i]));
         }
-        let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
+        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
         logup.write_frac(&mut eval, frac);
         for i in 0..N_M31_IN_FELT252 {
             values[i + 1] = E::F::from(M31::from(0));
@@ -73,7 +73,7 @@ impl FrameworkEval for RetOpcodeEval {
         values[0] = fp.clone() - E::F::one();
         values[1] = fp_minus_one_0;
         values[2] = fp_minus_one_1;
-        let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
+        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
         logup.write_frac(&mut eval, frac);
 
         // FP - 2
@@ -82,7 +82,7 @@ impl FrameworkEval for RetOpcodeEval {
         values[0] = fp - E::F::from(M31::from(2));
         values[1] = fp_minus_two_0;
         values[2] = fp_minus_two_1;
-        let frac = Fraction::new(E::EF::one(), self.lookup_elements.combine(&values));
+        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
         logup.write_frac(&mut eval, frac);
 
         logup.finalize(&mut eval);
@@ -91,10 +91,10 @@ impl FrameworkEval for RetOpcodeEval {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct RetOpcodeClaim {
+pub struct Claim {
     pub n_rets: usize,
 }
-impl RetOpcodeClaim {
+impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.n_rets as u64);
     }
@@ -113,11 +113,11 @@ impl RetOpcodeClaim {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct RetOpcodeInteractionClaim {
+pub struct InteractionClaim {
     pub log_size: u32,
     pub claimed_sum: SecureField,
 }
-impl RetOpcodeInteractionClaim {
+impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
     }

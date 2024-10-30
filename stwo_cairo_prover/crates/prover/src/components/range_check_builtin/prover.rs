@@ -13,22 +13,18 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::ColumnVec;
 
-use super::component::{
-    RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionClaim, N_RANGE_CHECK_COLUMNS,
-    N_VALUES_FELTS,
-};
-use crate::components::memory::id_to_f252::prover::IdToF252ClaimProver;
-use crate::components::memory::id_to_f252::IdToF252LookupElements;
+use super::component::{Claim, InteractionClaim, N_RANGE_CHECK_COLUMNS, N_VALUES_FELTS};
+use crate::components::memory::id_to_f252;
 use crate::input::SegmentAddrs;
 
 // Memory addresses for the RangeCheckBuiltin segment.
 pub type RangeCheckBuiltinInput = PackedM31;
 
-pub struct RangeCheckBuiltinClaimProver {
+pub struct ClaimGenerator {
     pub memory_segment: SegmentAddrs,
 }
 
-impl RangeCheckBuiltinClaimProver {
+impl ClaimGenerator {
     pub fn new(input: SegmentAddrs) -> Self {
         Self {
             memory_segment: input,
@@ -38,8 +34,8 @@ impl RangeCheckBuiltinClaimProver {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_trace_generator: &mut IdToF252ClaimProver,
-    ) -> (RangeCheckBuiltinClaim, RangeCheckBuiltinInteractionProver) {
+        memory_trace_generator: &mut id_to_f252::ClaimGenerator,
+    ) -> (Claim, InteractionClaimGenerator) {
         let mut addresses = self.memory_segment.addresses();
         // TODO(spapini): Split to multiple components.
         let size = addresses.len().next_power_of_two();
@@ -59,19 +55,19 @@ impl RangeCheckBuiltinClaimProver {
             .iter()
             .for_each(|v| memory_trace_generator.add_inputs_simd(v));
         tree_builder.extend_evals(trace);
-        let claim = RangeCheckBuiltinClaim {
+        let claim = Claim {
             memory_segment: self.memory_segment.clone(),
         };
         (claim, interaction_prover)
     }
 }
 
-pub struct RangeCheckBuiltinInteractionProver {
+pub struct InteractionClaimGenerator {
     pub memory_addresses: Vec<PackedM31>,
     pub memory_values: Vec<[PackedM31; N_VALUES_FELTS]>,
 }
 
-impl RangeCheckBuiltinInteractionProver {
+impl InteractionClaimGenerator {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             memory_addresses: Vec::with_capacity(capacity),
@@ -82,13 +78,13 @@ impl RangeCheckBuiltinInteractionProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memory_lookup_elements: &IdToF252LookupElements,
-    ) -> RangeCheckBuiltinInteractionClaim {
+        memory_lookup_elements: &id_to_f252::RelationElements,
+    ) -> InteractionClaim {
         let log_size = self.memory_addresses.len().ilog2() + LOG_N_LANES;
         let (trace, claimed_sum) = gen_interaction_trace(self, log_size, memory_lookup_elements);
         tree_builder.extend_evals(trace);
 
-        RangeCheckBuiltinInteractionClaim {
+        InteractionClaim {
             log_size,
             claimed_sum,
         }
@@ -97,13 +93,13 @@ impl RangeCheckBuiltinInteractionProver {
 
 pub fn write_trace_simd(
     inputs: &[RangeCheckBuiltinInput],
-    memory_trace_generator: &IdToF252ClaimProver,
+    memory_trace_generator: &id_to_f252::ClaimGenerator,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
-    RangeCheckBuiltinInteractionProver,
+    InteractionClaimGenerator,
 ) {
     let log_size = inputs.len().ilog2() + LOG_N_LANES;
-    let mut interaction_prover = RangeCheckBuiltinInteractionProver::with_capacity(inputs.len());
+    let mut interaction_prover = InteractionClaimGenerator::with_capacity(inputs.len());
     let mut trace = (0..N_RANGE_CHECK_COLUMNS)
         .map(|_| unsafe { Col::<SimdBackend, M31>::uninitialized(1 << log_size) })
         .collect_vec();
@@ -141,9 +137,9 @@ pub fn write_trace_simd(
 }
 
 pub fn gen_interaction_trace(
-    interaction_prover: &RangeCheckBuiltinInteractionProver,
+    interaction_prover: &InteractionClaimGenerator,
     log_size: u32,
-    memory_lookup_elements: &IdToF252LookupElements,
+    memory_lookup_elements: &id_to_f252::RelationElements,
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     SecureField,
@@ -181,8 +177,8 @@ mod tests {
 
     use super::*;
     use crate::components::memory::addr_to_id::N_ADDRESS_FELTS;
-    use crate::components::memory::id_to_f252::{IdToF252LookupElements, N_BITS_PER_FELT};
-    use crate::components::range_check_builtin::component::RangeCheckBuiltinEval;
+    use crate::components::memory::id_to_f252::N_BITS_PER_FELT;
+    use crate::components::range_check_builtin::component::Eval;
     use crate::felt::split_f252;
 
     #[test]
@@ -210,7 +206,7 @@ mod tests {
                 })
             })
             .collect_vec();
-        let memory_trace_generator = IdToF252ClaimProver {
+        let memory_trace_generator = id_to_f252::ClaimGenerator {
             values: values.clone(),
             multiplicities: vec![0; 1 << log_size],
         };
@@ -300,14 +296,14 @@ mod tests {
                 })
             })
             .collect_vec();
-        let memory_trace_generator = IdToF252ClaimProver {
+        let memory_trace_generator = id_to_f252::ClaimGenerator {
             values: values.clone(),
             multiplicities: vec![0; 1 << mem_log_size],
         };
         let (trace, interaction_prover) = write_trace_simd(&inputs, &memory_trace_generator);
 
         let channel = &mut Blake2sChannel::default();
-        let memory_lookup_elements = IdToF252LookupElements::draw(channel);
+        let memory_lookup_elements = id_to_f252::RelationElements::draw(channel);
 
         let (interaction_trace, claimed_sum) =
             gen_interaction_trace(&interaction_prover, log_size, &memory_lookup_elements);
@@ -317,7 +313,7 @@ mod tests {
         let trace = TreeVec::new(vec![trace, interaction_trace, constant_trace]);
         let trace_polys = trace.map_cols(|c| c.interpolate());
 
-        let component = RangeCheckBuiltinEval {
+        let component = Eval {
             log_size,
             initial_memory_address: M31::from(address_initial_offset),
             memory_lookup_elements,

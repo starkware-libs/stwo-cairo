@@ -9,8 +9,7 @@ mod tests {
     use itertools::Itertools;
     use stwo_prover::core::fields::m31::BaseField;
 
-    use super::addr_to_id::prover::AddrToIdClaimProver;
-    use super::id_to_f252::prover::IdToF252ClaimProver;
+    use crate::components::memory::addr_to_id;
     use crate::input::mem::{MemConfig, MemoryBuilder, MemoryValueId};
     use crate::input::range_check_unit::RangeCheckUnitInput;
     use crate::input::vm_import::MemEntry;
@@ -27,8 +26,8 @@ mod tests {
             }),
         )
         .build();
-        let mut addr_to_id_gen = AddrToIdClaimProver::new(&memory);
-        let mut id_to_f252 = IdToF252ClaimProver::new(&memory);
+        let mut addr_to_id_gen = addr_to_id::ClaimGenerator::new(&memory);
+        let mut id_to_f252 = addr_to_id::ClaimGenerator::new(&memory);
         let address_usages = [0, 1, 1, 2, 2, 2]
             .into_iter()
             .map(BaseField::from)
