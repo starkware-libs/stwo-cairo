@@ -10,7 +10,7 @@ use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::addr_to_id::N_ADDRESS_FELTS;
-use crate::components::memory::id_to_f252::{IdToF252LookupElements, N_BITS_PER_FELT};
+use crate::components::memory::id_to_f252::{self, N_BITS_PER_FELT};
 use crate::components::LOOKUP_INTERACTION_PHASE;
 use crate::input::SegmentAddrs;
 
@@ -20,25 +20,25 @@ pub const N_VALUES_FELTS: usize = RANGE_CHECK_BITS.div_ceil(N_BITS_PER_FELT);
 pub const N_RANGE_CHECK_COLUMNS: usize = N_ADDRESS_FELTS + N_VALUES_FELTS + N_INTERMEDIATE_COLUMNS;
 pub const LAST_VALUE_OFFSET: usize = N_ADDRESS_FELTS + N_VALUES_FELTS - 1;
 
-pub type RangeCheckBuiltinComponent = FrameworkComponent<RangeCheckBuiltinEval>;
+pub type Component = FrameworkComponent<Eval>;
 
 const _: () = assert!(
     RANGE_CHECK_BITS % N_BITS_PER_FELT == 2,
     "High non-zero element must be 2 bits"
 );
 
-pub struct RangeCheckBuiltinEval {
+pub struct Eval {
     pub log_size: u32,
     pub initial_memory_address: M31,
-    pub memory_lookup_elements: IdToF252LookupElements,
+    pub memory_lookup_elements: id_to_f252::RelationElements,
     pub claimed_sum: SecureField,
 }
 
-impl RangeCheckBuiltinEval {
+impl Eval {
     pub fn new(
-        claim: RangeCheckBuiltinClaim,
-        memory_lookup_elements: IdToF252LookupElements,
-        interaction_claim: RangeCheckBuiltinInteractionClaim,
+        claim: Claim,
+        memory_lookup_elements: id_to_f252::RelationElements,
+        interaction_claim: InteractionClaim,
     ) -> Self {
         let n_values = claim.memory_segment.end_addr - claim.memory_segment.begin_addr;
         let log_size = n_values.next_power_of_two().ilog2();
@@ -51,7 +51,7 @@ impl RangeCheckBuiltinEval {
     }
 }
 
-impl FrameworkEval for RangeCheckBuiltinEval {
+impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.log_size
     }
@@ -99,11 +99,11 @@ impl FrameworkEval for RangeCheckBuiltinEval {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct RangeCheckBuiltinClaim {
+pub struct Claim {
     pub memory_segment: SegmentAddrs,
 }
 
-impl RangeCheckBuiltinClaim {
+impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.memory_segment.begin_addr as u64);
         channel.mix_u64(self.memory_segment.end_addr as u64);
@@ -124,12 +124,12 @@ impl RangeCheckBuiltinClaim {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct RangeCheckBuiltinInteractionClaim {
+pub struct InteractionClaim {
     pub log_size: u32,
     pub claimed_sum: SecureField,
 }
 
-impl RangeCheckBuiltinInteractionClaim {
+impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
     }

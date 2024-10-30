@@ -9,10 +9,8 @@ pub mod component_prover;
 // TODO(Ohad): figure out n_alpha_powers.
 pub type RangeCheckLookupElements = LookupElements<3>;
 
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::MODULUS_BITS;
-use stwo_prover::core::fields::qm31::QM31;
 
 pub const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
     Simd::from_array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
@@ -57,42 +55,51 @@ pub fn generate_partitioned_enumeration<const N: usize>(
 #[macro_export]
 macro_rules! generate_range_check_component {
     ($($log_range:expr),+) => {
-        const N_RANGES:usize = count_elements!($($log_range),*);
         paste::paste! {
-            pub type [<RangeCheck $($log_range)* Component>] =
-                FrameworkComponent<[<RangeCheck $($log_range)* Eval>]>;
+            pub mod [<range_check_$($log_range)_*>]{
+                use stwo_prover::constraint_framework::FrameworkComponent;
+                use $crate::components::range_check_vector::RangeCheckVectorEval;
+                use stwo_prover::constraint_framework::logup::LookupElements;
+                use stwo_prover::core::fields::qm31::QM31;
+                use stwo_prover::constraint_framework::FrameworkEval;
+                use stwo_prover::constraint_framework::EvalAtRow;
 
-            pub type [<RangeCheck $($log_range)* LookupElements>] = LookupElements<N_RANGES>;
+                const N_RANGES:usize = count_elements!($($log_range),*);
+                pub type Component = FrameworkComponent<[<Eval>]>;
 
-            pub struct [<RangeCheck $($log_range)* Eval>] {
-                eval: RangeCheckVectorEval<N_RANGES>,
-            }
+                pub type RelationElements = LookupElements<N_RANGES>;
 
-            impl [<RangeCheck $($log_range)* Eval>] {
-                pub fn new(lookup_elements: [<RangeCheck $($log_range)* LookupElements>],
-                            claimed_sum: QM31) -> Self {
-                    Self {
-                        eval: RangeCheckVectorEval {
-                            log_ranges: [$($log_range),*],
-                            lookup_elements,
-                            claimed_sum,
-                        },
+                pub struct Eval {
+                    eval: RangeCheckVectorEval<N_RANGES>,
+                }
+
+                impl Eval {
+                    pub fn new(lookup_elements: RelationElements,
+                                claimed_sum: QM31) -> Self {
+                        Self {
+                            eval: RangeCheckVectorEval {
+                                log_ranges: [$($log_range),*],
+                                lookup_elements,
+                                claimed_sum,
+                            },
+                        }
                     }
                 }
-            }
 
-            impl FrameworkEval for [<RangeCheck $($log_range)* Eval>] {
-                fn log_size(&self) -> u32 {
-                    self.eval.log_size()
+                impl FrameworkEval for Eval {
+                    fn log_size(&self) -> u32 {
+                        self.eval.log_size()
+                    }
+
+                    fn max_constraint_log_degree_bound(&self) -> u32 {
+                        self.eval.max_constraint_log_degree_bound()
+                    }
+
+                    fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
+                        self.eval.evaluate(eval)
+                    }
                 }
 
-                fn max_constraint_log_degree_bound(&self) -> u32 {
-                    self.eval.max_constraint_log_degree_bound()
-                }
-
-                fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
-                    self.eval.evaluate(eval)
-                }
             }
         }
     };

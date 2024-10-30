@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::LogupAtRow;
+use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
@@ -7,28 +7,29 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use super::AddrToIdLookupElements;
 pub const N_ADDR_TO_ID_COLUMNS: usize = 3;
 
-pub type AddrToIdComponent = FrameworkComponent<AddrToIdEval>;
+pub type RelationElements = LookupElements<2>;
+
+pub type Component = FrameworkComponent<Eval>;
 
 // TODO(ShaharS): Break to repititions in order to batch the logup.
 #[derive(Clone)]
-pub struct AddrToIdEval {
+pub struct Eval {
     pub log_n_rows: u32,
-    pub lookup_elements: AddrToIdLookupElements,
+    pub lookup_elements: RelationElements,
     pub claimed_sum: QM31,
 }
-impl AddrToIdEval {
+impl Eval {
     // TODO(ShaharS): use Seq column for address, and also use repititions.
     pub const fn n_columns(&self) -> usize {
         N_ADDR_TO_ID_COLUMNS
     }
 
     pub fn new(
-        claim: AddrToIdClaim,
-        lookup_elements: AddrToIdLookupElements,
-        interaction_claim: AddrToIdInteractionClaim,
+        claim: Claim,
+        lookup_elements: RelationElements,
+        interaction_claim: InteractionClaim,
     ) -> Self {
         Self {
             log_n_rows: claim.log_size,
@@ -38,7 +39,7 @@ impl AddrToIdEval {
     }
 }
 
-impl FrameworkEval for AddrToIdEval {
+impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }
@@ -65,10 +66,10 @@ impl FrameworkEval for AddrToIdEval {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct AddrToIdClaim {
+pub struct Claim {
     pub log_size: u32,
 }
-impl AddrToIdClaim {
+impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_size; N_ADDR_TO_ID_COLUMNS];
         let interaction_1_log_size = vec![self.log_size; SECURE_EXTENSION_DEGREE];
@@ -86,10 +87,10 @@ impl AddrToIdClaim {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct AddrToIdInteractionClaim {
+pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }
-impl AddrToIdInteractionClaim {
+impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
     }
