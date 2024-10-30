@@ -1,5 +1,11 @@
 [workspace]
-members = ["crates/adapted_prover", "crates/prover", "crates/utils", "crates/vm_runner"]
+members = [
+    "crates/adapted_prover",
+    "crates/prover",
+    "crates/utils",
+    "crates/vm_runner",
+    "crates/prover_types",
+]
 resolver = "2"
 
 [workspace.package]
@@ -10,7 +16,9 @@ edition = "2021"
 bytemuck = { version = "1.16.3", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "3fb0344c", features = ["mod_builtin"]}
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "3fb0344c", features = [
+    "mod_builtin",
+] }
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = "0.11.3"
 hex = "0.4.3"
@@ -27,6 +35,8 @@ thiserror = "1.0.63"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 paste = "1.0"
+starknet-ff = "0.3.7"
+ruint = "1.12.3"
 
 [profile.bench]
 codegen-units = 1

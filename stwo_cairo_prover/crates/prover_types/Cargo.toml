@@ -1,0 +1,12 @@
+[package]
+name = "prover_types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stwo-prover.workspace = true
+starknet-ff.workspace = true
+ruint.workspace = true
+serde.workspace = true
+itertools.workspace = true
+bytemuck.workspace = true
