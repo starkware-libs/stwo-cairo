@@ -20,10 +20,6 @@ use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::components::memory::{addr_to_id, id_to_f252};
-use crate::components::range_check_vector::component::{
-    RangeCheckClaim, RangeCheckInteractionClaim,
-};
-use crate::components::range_check_vector::component_prover::RangeCheckClaimGenerator;
 use crate::components::range_check_vector::range_check_9_9;
 use crate::components::{range_check_builtin, ret_opcode};
 use crate::felt::split_f252;
@@ -48,7 +44,7 @@ pub struct CairoClaim {
     pub range_check_builtin: range_check_builtin::Claim,
     pub memory_addr_to_id: addr_to_id::Claim,
     pub memory_id_to_value: id_to_f252::Claim,
-    pub range_check9_9: RangeCheckClaim,
+    pub range_check9_9: range_check_9_9::Claim,
     // ...
 }
 
@@ -94,7 +90,7 @@ pub struct CairoInteractionClaim {
     pub range_check_builtin: range_check_builtin::InteractionClaim,
     pub memory_addr_to_id: addr_to_id::InteractionClaim,
     pub memory_id_to_value: id_to_f252::InteractionClaim,
-    pub range_check9_9: RangeCheckInteractionClaim,
+    pub range_check9_9: range_check_9_9::InteractionClaim,
     // ...
 }
 
@@ -269,7 +265,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         range_check_builtin::ClaimGenerator::new(input.range_check_builtin);
     let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
     let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
-    let mut range_check_9_9_trace_generator = RangeCheckClaimGenerator::new([9, 9]);
+    let mut range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
 
     // Assuming the values are pushed in the correct order.
     // TODO(Ohad): handle the inputs better and remove the assumption.
