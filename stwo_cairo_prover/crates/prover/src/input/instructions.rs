@@ -70,10 +70,7 @@ pub struct Instructions {
     pub generic: Vec<VmState>,
 }
 impl Instructions {
-    pub fn from_iter(
-        mut iter: impl Iterator<Item = TraceEntry>,
-        mem: &mut MemoryBuilder<'_>,
-    ) -> Self {
+    pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
         let mut res = Self::default();
 
         let Some(first) = iter.next() else {
@@ -89,7 +86,7 @@ impl Instructions {
         res
     }
 
-    fn push_instr(&mut self, mem: &mut MemoryBuilder<'_>, state: VmState) {
+    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState) {
         let VmState { ap, fp, pc } = state;
         let instruction = mem.get_inst(pc);
         let instruction = Instruction::decode(instruction);
