@@ -97,6 +97,33 @@ impl Not for Bool {
     }
 }
 
+impl BitAnd for Bool {
+    type Output = Bool;
+    fn bitand(self, other: Bool) -> Bool {
+        Bool {
+            value: self.value & other.value,
+        }
+    }
+}
+
+impl BitOr for Bool {
+    type Output = Bool;
+    fn bitor(self, other: Bool) -> Bool {
+        Bool {
+            value: self.value | other.value,
+        }
+    }
+}
+
+impl BitXor for Bool {
+    type Output = Bool;
+    fn bitxor(self, other: Bool) -> Bool {
+        Bool {
+            value: self.value ^ other.value,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
 pub struct UInt16 {
     pub value: u16,
@@ -582,8 +609,9 @@ impl<const B: usize, const L: usize> ProverType for BigUInt<B, L> {
     }
     fn r#type() -> String {
         match L {
-            4 => "BigUInt<256, 4>".to_string(),
-            8 => "BigUInt<512, 8>".to_string(),
+            6 => "BigUInt<384, 6>".to_string(),
+            7 => "BigUInt<448, 7>".to_string(),
+            12 => "BigUInt<768, 12>".to_string(),
             _ => panic!("Unsupported BigUInt size"),
         }
     }
