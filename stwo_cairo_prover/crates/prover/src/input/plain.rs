@@ -8,7 +8,6 @@ use itertools::Itertools;
 
 use super::instructions::Instructions;
 use super::mem::{MemConfig, MemoryBuilder};
-use super::range_check_unit::RangeCheckUnitInput;
 use super::vm_import::MemEntry;
 use super::{CairoInput, SegmentAddrs};
 
@@ -63,9 +62,8 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
     let trace = runner.relocated_trace.unwrap();
     let trace = trace.iter().map(|t| t.clone().into());
 
-    let mut range_check9 = RangeCheckUnitInput::new();
     let mem_config = MemConfig::default();
-    let mut mem = MemoryBuilder::from_iter(mem_config, &mut range_check9, mem);
+    let mut mem = MemoryBuilder::from_iter(mem_config, mem);
     let instructions = Instructions::from_iter(trace, &mut mem);
 
     // TODO(spapini): Add output builtin to public memory.
@@ -74,7 +72,6 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
         instructions,
         mem: mem.build(),
         public_mem_addresses,
-        range_check9,
         range_check_builtin: SegmentAddrs {
             begin_addr: 24,
             end_addr: 64,
