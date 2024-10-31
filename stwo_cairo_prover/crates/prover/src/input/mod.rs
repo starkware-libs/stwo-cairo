@@ -2,8 +2,6 @@ use instructions::Instructions;
 use mem::Memory;
 use serde::{Deserialize, Serialize};
 
-use self::range_check_unit::RangeCheckUnitInput;
-
 mod decode;
 pub mod instructions;
 pub mod mem;
@@ -19,7 +17,6 @@ pub struct CairoInput {
     pub instructions: Instructions,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
-    pub range_check9: RangeCheckUnitInput,
 
     // Builtins.
     pub range_check_builtin: SegmentAddrs,

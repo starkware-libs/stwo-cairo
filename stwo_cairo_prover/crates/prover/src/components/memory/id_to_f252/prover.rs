@@ -15,11 +15,12 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{
-    Claim, InteractionClaim, MEMORY_ID_SIZE, MULTIPLICITY_COLUMN_OFFSET, N_ID_TO_VALUE_COLUMNS,
-    N_M31_IN_FELT252,
+    Claim, InteractionClaim, MEMORY_ID_SIZE, MULTIPLICITY_COLUMN_OFFSET, N_COLUMNS,
+    N_ID_AND_VALUE_COLUMNS, N_M31_IN_FELT252,
 };
 use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
+use crate::components::range_check_vector::component_prover::RangeCheckClaimGenerator;
 use crate::components::range_check_vector::range_check_9_9;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{Memory, MemoryValue};
@@ -81,9 +82,10 @@ impl ClaimGenerator {
     pub fn write_trace(
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        range_check_9_9_trace_generator: &mut RangeCheckClaimGenerator<2>,
     ) -> (Claim, InteractionClaimGenerator) {
         let size = self.values.len() * N_LANES;
-        let mut trace = (0..N_ID_TO_VALUE_COLUMNS)
+        let mut trace = (0..N_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
             .collect_vec();
 
@@ -107,13 +109,21 @@ impl ClaimGenerator {
                 .map(BaseField::from_u32_unchecked),
         );
         // Lookup data.
-        let ids_and_values = trace[0..MULTIPLICITY_COLUMN_OFFSET]
+        let ids_and_values: [Vec<PackedM31>; N_ID_AND_VALUE_COLUMNS] = trace
+            [0..N_ID_AND_VALUE_COLUMNS]
             .iter()
             .map(|col| col.data.clone())
             .collect_vec()
             .try_into()
             .unwrap();
         let multiplicities = trace[MULTIPLICITY_COLUMN_OFFSET].data.clone();
+
+        // Add inputs to range check that all the values are 9-bit felts.
+        for [col0, col1] in ids_and_values[1..].iter().array_chunks::<2>() {
+            for (val0, val1) in col0.iter().zip_eq(col1.iter()) {
+                range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
+            }
+        }
 
         // Extend trace.
         let log_address_bound = size.checked_ilog2().unwrap();
@@ -138,7 +148,7 @@ impl ClaimGenerator {
 
 #[derive(Debug)]
 pub struct InteractionClaimGenerator {
-    pub ids_and_values: [Vec<PackedM31>; N_M31_IN_FELT252 + 1],
+    pub ids_and_values: [Vec<PackedM31>; N_ID_AND_VALUE_COLUMNS],
     pub multiplicities: Vec<PackedM31>,
 }
 impl InteractionClaimGenerator {
@@ -161,7 +171,7 @@ impl InteractionClaimGenerator {
 
         // Lookup values columns.
         for vec_row in 0..1 << (log_size - LOG_N_LANES) {
-            let values: [PackedM31; N_M31_IN_FELT252 + 1] =
+            let values: [PackedM31; N_ID_AND_VALUE_COLUMNS] =
                 std::array::from_fn(|i| self.ids_and_values[i][vec_row]);
             let denom: PackedQM31 = lookup_elements.combine(&values);
             col_gen.write_frac(vec_row, (-self.multiplicities[vec_row]).into(), denom);
@@ -196,7 +206,6 @@ mod tests {
 
     use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
     use crate::input::mem::{MemConfig, MemoryBuilder};
-    use crate::input::range_check_unit::RangeCheckUnitInput;
 
     #[test]
     fn test_deduce_output_simd() {
@@ -208,8 +217,7 @@ mod tests {
             .map(|v| std::array::from_fn(|i| if i == 0 { v } else { M31::zero() }));
 
         // Create memory.
-        let mut range_check9 = RangeCheckUnitInput::new();
-        let mut mem = MemoryBuilder::new(MemConfig::default(), &mut range_check9);
+        let mut mem = MemoryBuilder::new(MemConfig::default());
         for a in &memory_ids {
             let arr = std::array::from_fn(|i| if i == 0 { *a } else { 0 });
             mem.set(*a as u64, mem.value_from_felt252(arr));

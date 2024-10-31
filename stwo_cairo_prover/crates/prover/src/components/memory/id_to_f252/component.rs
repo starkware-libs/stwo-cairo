@@ -13,10 +13,11 @@ use crate::components::range_check_vector::range_check_9_9;
 
 pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
-pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252 + MEMORY_ID_SIZE;
+pub const N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
+pub const MULTIPLICITY_COLUMN_OFFSET: usize = N_ID_AND_VALUE_COLUMNS;
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 // TODO(AlonH): Make memory size configurable.
-pub const N_ID_TO_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
+pub const N_COLUMNS: usize = N_ID_AND_VALUE_COLUMNS + N_MULTIPLICITY_COLUMNS;
 
 pub type Component = FrameworkComponent<Eval>;
 
@@ -34,7 +35,7 @@ pub struct Eval {
 }
 impl Eval {
     pub const fn n_columns(&self) -> usize {
-        N_ID_TO_VALUE_COLUMNS
+        N_COLUMNS
     }
     pub fn new(
         claim: Claim,
@@ -95,7 +96,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let interaction_0_log_size = vec![self.log_size; N_ID_TO_VALUE_COLUMNS];
+        let interaction_0_log_size = vec![self.log_size; N_COLUMNS];
         let interaction_1_log_size =
             vec![self.log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 / 2 + 1)];
         let fixed_column_log_sizes = vec![self.log_size];

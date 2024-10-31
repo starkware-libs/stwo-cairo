@@ -11,15 +11,12 @@ mod tests {
 
     use crate::components::memory::addr_to_id;
     use crate::input::mem::{MemConfig, MemoryBuilder, MemoryValueId};
-    use crate::input::range_check_unit::RangeCheckUnitInput;
     use crate::input::vm_import::MemEntry;
 
     #[test]
     fn test_memory_trace_prover() {
-        let mut range_check9 = RangeCheckUnitInput::new();
         let memory = MemoryBuilder::from_iter(
             MemConfig::default(),
-            &mut range_check9,
             (0..10).map(|i| MemEntry {
                 addr: i,
                 val: [i as u32; 8],

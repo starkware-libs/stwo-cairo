@@ -3,9 +3,7 @@ use std::ops::{Deref, DerefMut};
 
 use itertools::Itertools;
 
-use super::range_check_unit::RangeCheckUnitInput;
 use super::vm_import::MemEntry;
-use crate::felt::split_f252;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 const P_MIN_1: [u32; 8] = [
@@ -119,13 +117,12 @@ impl Memory {
     }
 }
 
-pub struct MemoryBuilder<'a> {
+pub struct MemoryBuilder {
     mem: Memory,
     felt252_id_cache: HashMap<[u32; 8], usize>,
-    range_check9: &'a mut RangeCheckUnitInput,
 }
-impl<'a> MemoryBuilder<'a> {
-    pub fn new(config: MemConfig, range_check9: &'a mut RangeCheckUnitInput) -> Self {
+impl MemoryBuilder {
+    pub fn new(config: MemConfig) -> Self {
         Self {
             mem: Memory {
                 config,
@@ -134,27 +131,19 @@ impl<'a> MemoryBuilder<'a> {
                 f252_values: Vec::new(),
             },
             felt252_id_cache: HashMap::new(),
-            range_check9,
         }
     }
     pub fn from_iter<I: IntoIterator<Item = MemEntry>>(
         config: MemConfig,
-        range_check9: &'a mut RangeCheckUnitInput,
         iter: I,
-    ) -> MemoryBuilder<'_> {
+    ) -> MemoryBuilder {
         let mem_entries = iter.into_iter();
-        let mut builder = Self::new(config, range_check9);
+        let mut builder = Self::new(config);
         for entry in mem_entries {
             let value = builder.value_from_felt252(entry.val);
             builder.set(entry.addr, value);
         }
 
-        for value in builder.mem.iter_values() {
-            let value = split_f252(value.as_u256());
-            for limb in value {
-                builder.range_check9.add_value(limb);
-            }
-        }
         builder
     }
 
@@ -191,13 +180,13 @@ impl<'a> MemoryBuilder<'a> {
         self.mem
     }
 }
-impl Deref for MemoryBuilder<'_> {
+impl Deref for MemoryBuilder {
     type Target = Memory;
     fn deref(&self) -> &Self::Target {
         &self.mem
     }
 }
-impl DerefMut for MemoryBuilder<'_> {
+impl DerefMut for MemoryBuilder {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.mem
     }
@@ -309,12 +298,7 @@ mod tests {
                 val: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
             },
         ];
-        let mut range_check9 = RangeCheckUnitInput::new();
-        let memory = MemoryBuilder::from_iter(
-            MemConfig::default(),
-            &mut range_check9,
-            entries.iter().cloned(),
-        );
+        let memory = MemoryBuilder::from_iter(MemConfig::default(), entries.iter().cloned());
         assert_eq!(memory.get(0), MemoryValue::F252([1; 8]));
         assert_eq!(memory.get(1), MemoryValue::Small(6));
         assert_eq!(memory.get(8), MemoryValue::Small(-1));

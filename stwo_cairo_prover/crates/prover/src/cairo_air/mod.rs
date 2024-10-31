@@ -267,12 +267,6 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
     let mut range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
 
-    // Assuming the values are pushed in the correct order.
-    // TODO(Ohad): handle the inputs better and remove the assumption.
-    for (&l, &r) in input.range_check9.values.iter().tuples() {
-        range_check_9_9_trace_generator.add_m31([M31(l), M31(r)]);
-    }
-
     // Add public memory.
     // TODO(ShaharS): fix the use of public memory to support memory ids.
     for addr in &input.public_mem_addresses {
@@ -289,7 +283,8 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let (memory_addr_to_id_claim, memory_addr_to_id_interaction_prover) =
         memory_addr_to_id_trace_generator.write_trace(&mut tree_builder);
     let (memory_id_to_value_claim, memory_id_to_value_interaction_prover) =
-        memory_id_to_value_trace_generator.write_trace(&mut tree_builder);
+        memory_id_to_value_trace_generator
+            .write_trace(&mut tree_builder, &mut range_check_9_9_trace_generator);
     let (range_check9_9_claim, range_check9_9_interaction_prover) =
         range_check_9_9_trace_generator.write_trace(&mut tree_builder);
 
