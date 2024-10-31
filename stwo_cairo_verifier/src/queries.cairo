@@ -1,8 +1,9 @@
+use core::dict::{Felt252Dict, Felt252DictEntryTrait};
+use core::nullable::{NullableTrait, match_nullable, FromNullableResult};
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
 use super::utils::{pow, bit_reverse_index, find, ArrayImpl};
-
 
 /// An ordered set of query indices over a bit reversed [CircleDomain].
 #[derive(Drop, Clone, Debug, PartialEq)]
@@ -155,6 +156,25 @@ pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
             size += domain.size();
         };
         size
+    }
+}
+
+pub fn get_sparse_sub_circle_domain_dict(
+    ref dictionary: Felt252Dict<Nullable<SparseSubCircleDomain>>, key: u32
+) -> SparseSubCircleDomain {
+    let (entry, nullable_value) = dictionary.entry(key.into());
+    match match_nullable(nullable_value) {
+        FromNullableResult::Null => panic!("No value found"),
+        FromNullableResult::NotNull(value) => {
+            let previous_value = value.unbox();
+            let copy = SparseSubCircleDomain {
+                domains: previous_value.domains.clone(),
+                large_domain_log_size: previous_value.large_domain_log_size
+            };
+            dictionary = entry.finalize(NullableTrait::new(previous_value));
+
+            copy
+        }
     }
 }
 
