@@ -16,6 +16,9 @@ use super::component::{Claim, InteractionClaim, N_ADDR_TO_ID_COLUMNS};
 use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::mem::Memory;
+
+pub type InputType = PackedBaseField;
+
 pub struct ClaimGenerator {
     pub ids: Vec<PackedBaseField>,
     pub multiplicities: Vec<u32>,
@@ -50,14 +53,20 @@ impl ClaimGenerator {
         PackedBaseField::from_array(memory_ids)
     }
 
-    pub fn add_inputs_simd(&mut self, inputs: &PackedBaseField) {
-        let addresses = inputs.to_array();
-        for address in addresses {
-            self.add_inputs(address);
+    pub fn add_inputs(&mut self, inputs: &[PackedBaseField]) {
+        for input in inputs {
+            self.add_packed_m31(input);
         }
     }
 
-    pub fn add_inputs(&mut self, addr: BaseField) {
+    pub fn add_packed_m31(&mut self, inputs: &PackedBaseField) {
+        let addresses = inputs.to_array();
+        for address in addresses {
+            self.add_m31(address);
+        }
+    }
+
+    pub fn add_m31(&mut self, addr: BaseField) {
         let addr = addr.0 as usize;
         self.multiplicities[addr] += 1;
     }

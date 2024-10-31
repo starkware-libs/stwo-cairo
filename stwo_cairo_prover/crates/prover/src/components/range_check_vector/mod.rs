@@ -59,9 +59,10 @@ macro_rules! generate_range_check_component {
             pub mod [<range_check_$($log_range)_*>]{
                 use std::ops::{Deref, DerefMut};
                 use serde::{Deserialize, Serialize};
-                use stwo_prover::constraint_framework::logup::LookupElements;
                 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
                 use stwo_prover::constraint_framework::FrameworkEval;
+                use stwo_prover::constraint_framework::logup::LookupElements;
+                use stwo_prover::core::backend::simd::m31::PackedM31;
                 use stwo_prover::core::backend::simd::SimdBackend;
                 use stwo_prover::core::fields::qm31::QM31;
                 use stwo_prover::core::pcs::TreeBuilder;
@@ -130,6 +131,8 @@ macro_rules! generate_range_check_component {
                         self.eval.evaluate(eval)
                     }
                 }
+
+                pub type InputType = [PackedM31; N_RANGES];
 
                 pub struct ClaimGenerator(RangeCheckClaimGenerator::<N_RANGES>);
                 impl ClaimGenerator {
