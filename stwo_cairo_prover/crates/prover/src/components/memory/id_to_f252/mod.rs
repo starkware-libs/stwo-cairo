@@ -1,10 +1,7 @@
-use component::{MEMORY_ID_SIZE, N_M31_IN_FELT252};
-use stwo_prover::constraint_framework::logup::LookupElements;
-
 pub mod component;
 pub mod prover;
 
-const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
-pub type IdToF252LookupElements = LookupElements<N_LOGUP_POWERS>;
-
 pub const N_BITS_PER_FELT: usize = 9;
+
+pub use component::{Claim, Component, Eval, InteractionClaim, RelationElements};
+pub use prover::ClaimGenerator;

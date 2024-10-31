@@ -12,16 +12,15 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use super::component::{AddrToIdClaim, AddrToIdInteractionClaim, N_ADDR_TO_ID_COLUMNS};
-use super::AddrToIdLookupElements;
+use super::component::{Claim, InteractionClaim, N_ADDR_TO_ID_COLUMNS};
+use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::mem::Memory;
-
-pub struct AddrToIdClaimProver {
+pub struct ClaimGenerator {
     pub ids: Vec<PackedBaseField>,
     pub multiplicities: Vec<u32>,
 }
-impl AddrToIdClaimProver {
+impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
         let mut ids = (0..mem.address_to_id.len())
             .map(|addr| BaseField::from_u32_unchecked(mem.get_raw_id(addr as u32)))
@@ -66,7 +65,7 @@ impl AddrToIdClaimProver {
     pub fn write_trace(
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-    ) -> (AddrToIdClaim, AddrToIdInteractionClaimProver) {
+    ) -> (Claim, AddrToIdInteractionClaimProver) {
         let size = self.ids.len() * N_LANES;
         let mut trace = (0..N_ADDR_TO_ID_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
@@ -104,7 +103,7 @@ impl AddrToIdClaimProver {
         tree_builder.extend_evals(trace);
 
         (
-            AddrToIdClaim {
+            Claim {
                 log_size: log_address_bound,
             },
             AddrToIdInteractionClaimProver {
@@ -133,8 +132,8 @@ impl AddrToIdInteractionClaimProver {
     pub fn write_interaction_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &AddrToIdLookupElements,
-    ) -> AddrToIdInteractionClaim {
+        lookup_elements: &RelationElements,
+    ) -> InteractionClaim {
         let log_size = self.addresses.len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
@@ -150,6 +149,6 @@ impl AddrToIdInteractionClaimProver {
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
-        AddrToIdInteractionClaim { claimed_sum }
+        InteractionClaim { claimed_sum }
     }
 }

@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use num_traits::One;
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::LogupAtRow;
+use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
@@ -9,8 +9,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use super::IdToF252LookupElements;
-use crate::components::range_check_vector::RangeCheck99LookupElements;
+use crate::components::range_check_vector::range_check_9_9;
 
 pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
@@ -19,26 +18,29 @@ pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 // TODO(AlonH): Make memory size configurable.
 pub const N_ID_TO_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
 
-pub type IdToF252Component = FrameworkComponent<IdToF252Eval>;
+pub type Component = FrameworkComponent<Eval>;
+
+const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
+pub type RelationElements = LookupElements<N_LOGUP_POWERS>;
 
 /// IDs are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
 #[derive(Clone)]
-pub struct IdToF252Eval {
+pub struct Eval {
     pub log_n_rows: u32,
-    pub lookup_elements: IdToF252LookupElements,
-    pub range9_9_lookup_elements: RangeCheck99LookupElements,
+    pub lookup_elements: RelationElements,
+    pub range9_9_lookup_elements: range_check_9_9::RelationElements,
     pub claimed_sum: QM31,
 }
-impl IdToF252Eval {
+impl Eval {
     pub const fn n_columns(&self) -> usize {
         N_ID_TO_VALUE_COLUMNS
     }
     pub fn new(
-        claim: IdToF252Claim,
-        lookup_elements: IdToF252LookupElements,
-        range9_9_lookup_elements: RangeCheck99LookupElements,
-        interaction_claim: IdToF252InteractionClaim,
+        claim: Claim,
+        lookup_elements: RelationElements,
+        range9_9_lookup_elements: range_check_9_9::RelationElements,
+        interaction_claim: InteractionClaim,
     ) -> Self {
         Self {
             log_n_rows: claim.log_size,
@@ -49,7 +51,7 @@ impl IdToF252Eval {
     }
 }
 
-impl FrameworkEval for IdToF252Eval {
+impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.log_n_rows
     }
@@ -88,10 +90,10 @@ impl FrameworkEval for IdToF252Eval {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct IdToF252Claim {
+pub struct Claim {
     pub log_size: u32,
 }
-impl IdToF252Claim {
+impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let interaction_0_log_size = vec![self.log_size; N_ID_TO_VALUE_COLUMNS];
         let interaction_1_log_size =
@@ -110,10 +112,10 @@ impl IdToF252Claim {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct IdToF252InteractionClaim {
+pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }
-impl IdToF252InteractionClaim {
+impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
     }
