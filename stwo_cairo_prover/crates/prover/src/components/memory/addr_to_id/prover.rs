@@ -1,12 +1,11 @@
 use itertools::Itertools;
-use num_traits::Zero;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedSecureField;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{Col, Column};
-use stwo_prover::core::fields::m31::BaseField;
+use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -16,48 +15,54 @@ use super::component::{Claim, InteractionClaim, N_ADDR_TO_ID_COLUMNS};
 use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::mem::Memory;
+
+pub type InputType = PackedBaseField;
+pub type CpuInputType = BaseField;
+
 pub struct ClaimGenerator {
-    pub ids: Vec<PackedBaseField>,
+    pub ids: Vec<u32>,
     pub multiplicities: Vec<u32>,
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
         let mut ids = (0..mem.address_to_id.len())
-            .map(|addr| BaseField::from_u32_unchecked(mem.get_raw_id(addr as u32)))
+            .map(|addr| mem.get_raw_id(addr as u32))
             .collect_vec();
         let size = ids.len().next_power_of_two();
         assert!(size <= MEMORY_ADDRESS_BOUND);
-        ids.resize(size, BaseField::zero());
-
-        let packed_ids = ids
-            .into_iter()
-            .array_chunks::<N_LANES>()
-            .map(PackedBaseField::from_array)
-            .collect_vec();
+        ids.resize(size, 0);
 
         let multiplicities = vec![0; size];
         Self {
-            ids: packed_ids,
+            ids,
             multiplicities,
         }
     }
 
     pub fn deduce_output(&self, input: PackedBaseField) -> PackedBaseField {
-        let indices = input.to_array().map(|i| i.0 as usize);
-        let memory_ids = std::array::from_fn(|j| {
-            self.ids[indices[j] / N_LANES].to_array()[indices[j] % N_LANES]
-        });
+        let indices = input.to_array().map(|i| i.0);
+        let memory_ids = std::array::from_fn(|j| self.deduce_output_cpu(M31(indices[j])));
         PackedBaseField::from_array(memory_ids)
     }
 
-    pub fn add_inputs_simd(&mut self, inputs: &PackedBaseField) {
-        let addresses = inputs.to_array();
-        for address in addresses {
-            self.add_inputs(address);
+    pub fn deduce_output_cpu(&self, input: BaseField) -> M31 {
+        M31(self.ids[input.0 as usize])
+    }
+
+    pub fn add_inputs(&mut self, inputs: &[CpuInputType]) {
+        for input in inputs {
+            self.add_m31(*input);
         }
     }
 
-    pub fn add_inputs(&mut self, addr: BaseField) {
+    pub fn add_packed_m31(&mut self, inputs: &PackedBaseField) {
+        let addresses = inputs.to_array();
+        for address in addresses {
+            self.add_m31(address);
+        }
+    }
+
+    pub fn add_m31(&mut self, addr: BaseField) {
         let addr = addr.0 as usize;
         self.multiplicities[addr] += 1;
     }
@@ -66,7 +71,7 @@ impl ClaimGenerator {
         &mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (Claim, AddrToIdInteractionClaimProver) {
-        let size = self.ids.len() * N_LANES;
+        let size = self.ids.len();
         let mut trace = (0..N_ADDR_TO_ID_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
             .collect_vec();
@@ -75,7 +80,10 @@ impl ClaimGenerator {
             BaseField::from_u32_unchecked((i) as u32)
         }));
 
-        for (i, id) in self.ids.iter().enumerate() {
+        let packed_ids = self.ids.array_chunks::<N_LANES>().map(|c| {
+            PackedM31::from_array(std::array::from_fn(|i| M31(c[i])))
+        }).collect_vec();
+        for (i, id) in packed_ids.iter().enumerate() {
             trace[0].data[i] =
                 PackedM31::broadcast(BaseField::from_u32_unchecked((i * N_LANES) as u32)) + inc;
             trace[1].data[i] = *id;

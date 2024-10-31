@@ -5,10 +5,12 @@ use std::simd::Simd;
 
 use bytemuck::Zeroable;
 use itertools::all;
+use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::m31;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
+use crate::cpu::CasmState;
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -55,8 +57,10 @@ impl PackedUInt16 {
         unsafe { transmute(self.value.to_array()) }
     }
 
-    pub fn from_m31(_val: PackedM31) -> Self {
-        todo!()
+    pub fn from_m31(val: PackedM31) -> Self {
+        Self {
+            value: val.into_simd().cast(),
+        }
     }
 }
 
@@ -366,4 +370,28 @@ pub struct PackedCasmState {
     pub pc: PackedM31,
     pub ap: PackedM31,
     pub fp: PackedM31,
+}
+
+impl Pack for CasmState {
+    type SimdType = PackedCasmState;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedCasmState {
+            pc: PackedM31::from_array(std::array::from_fn(|i| inputs[i].pc)),
+            ap: PackedM31::from_array(std::array::from_fn(|i| inputs[i].ap)),
+            fp: PackedM31::from_array(std::array::from_fn(|i| inputs[i].fp)),
+        }
+    }
+}
+
+impl Unpack for PackedCasmState {
+    type CpuType = CasmState;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        std::array::from_fn(|i| CasmState {
+            pc: self.pc.to_array()[i],
+            ap: self.ap.to_array()[i],
+            fp: self.fp.to_array()[i],
+        })
+    }
 }

@@ -36,11 +36,11 @@ mod tests {
             let decoded_id = memory.address_to_id[addr.0 as usize].decode();
             match decoded_id {
                 MemoryValueId::F252(id) => {
-                    id_to_f252.add_inputs(BaseField::from_u32_unchecked(id as u32));
+                    id_to_f252.add_m31(BaseField::from_u32_unchecked(id));
                 }
                 MemoryValueId::Small(_id) => {}
             }
-            addr_to_id_gen.add_inputs(*addr);
+            addr_to_id_gen.add_m31(*addr);
         });
 
         assert_eq!(addr_to_id_gen.multiplicities, expected_addr_mult);

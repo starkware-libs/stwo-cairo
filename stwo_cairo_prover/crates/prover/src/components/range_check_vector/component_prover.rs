@@ -36,6 +36,12 @@ impl<const N: usize> RangeCheckClaimGenerator<N> {
         self.log_ranges.iter().sum()
     }
 
+    pub fn add_inputs(&mut self, inputs: &[[M31; N]]) {
+        for input in inputs {
+            self.add_m31(*input);
+        }
+    }
+
     // TODO(Ohad): test.
     pub fn add_m31(&mut self, input: [M31; N]) {
         let mut value = 0_u32;
@@ -201,8 +207,7 @@ mod tests {
         let mut tree_builder = commitment_scheme.tree_builder();
 
         let lookup_elements = LookupElements::<N_RANGES>::draw(channel);
-        let interaction_claim = interaction_claim_generator
-            .write_interaction_trace(&mut tree_builder, &lookup_elements);
+        let interaction_claim = interaction_claim_generator.write_interaction_trace(&mut tree_builder, &lookup_elements);
         tree_builder.commit(channel);
 
         let tree_span_provider = &mut TraceLocationAllocator::default();
