@@ -203,9 +203,60 @@ pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
     result
 }
 
+pub fn flat_3d_array<T, +Copy<T>, +Drop<T>>(array: Span<Array<Array<T>>>) -> Array<T> {
+    let mut flattened = array![];
+
+    let mut i = 0;
+    while i < array.len() {
+        let middle_array = array.at(i).span();
+
+        let mut j = 0;
+        while j < middle_array.len() {
+            let inner_array = middle_array.at(j).span();
+
+            let mut k = 0;
+            while k < inner_array.len() {
+                let element = inner_array.at(k).clone();
+                flattened.append(element);
+
+                k = k + 1;
+            };
+
+            j = j + 1;
+        };
+
+        i = i + 1;
+    };
+
+    flattened
+}
+
+pub fn substract_map_2d_array<T, +Sub<T>, +Copy<T>, +Drop<T>>(
+    array: Span<Array<T>>, substracting: T
+) -> Array<T> {
+    let mut mapped_array = array![];
+
+    let mut i = 0;
+    while i < array.len() {
+        let inner_array = array.at(i).span();
+
+        let mut j = 0;
+        while j < inner_array.len() {
+            let minuend = inner_array.at(j);
+            mapped_array.append(*minuend - substracting);
+            j = j + 1;
+        };
+        i = i + 1;
+    };
+
+    mapped_array
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{pow, pow_qm31, qm31, bit_reverse_index, ArrayImpl};
+    use super::{
+        pow, pow_qm31, qm31, bit_reverse_index, ArrayImpl, flat_3d_array, substract_map_2d_array
+    };
 
     #[test]
     fn test_pow() {
@@ -217,7 +268,7 @@ mod tests {
     }
 
     #[test]
-    fn test_bit_reverse() {
+    fn test_bit_reverse_index() {
         // 1 bit
         assert_eq!(0, bit_reverse_index(0, 1));
         assert_eq!(1, bit_reverse_index(1, 1));
@@ -260,6 +311,27 @@ mod tests {
         let result = pow_qm31(qm31(1, 2, 3, 4), 37);
         let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
         assert_eq!(expected_result, result)
+    }
+
+    #[test]
+    fn test_flat_3d_array() {
+        let array_3d = array![
+            array![array![1, 2], array![3, 4], array![5, 6]],
+            array![array![7, 8], array![9, 10], array![11, 12]]
+        ];
+
+        assert_eq!(flat_3d_array(array_3d.span()), array![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    }
+
+    #[test]
+    fn test_substract_a_value_from_2d_array() {
+        let array_2d = array![
+            array![1, 2], array![3, 4], array![5, 6], array![7, 8], array![9, 10], array![11, 12]
+        ];
+
+        assert_eq!(
+            substract_map_2d_array(array_2d.span(), 1), array![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        );
     }
 
     #[test]
