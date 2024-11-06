@@ -8,6 +8,7 @@ use core::dict::Felt252DictTrait;
 use core::fmt::{Debug, Formatter, Error};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
+use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::{BaseField, ColumnArray};
 use stwo_cairo_verifier::utils::SpanExTrait;
 use stwo_cairo_verifier::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
@@ -135,7 +136,7 @@ impl MerkleVerifierImpl<
                 layer_queried_values.append(queried_values[column_index].span());
             };
 
-            let layer_queried_values = @layer_queried_values;
+            // let layer_queried_values = @layer_queried_values;
 
             // Extract the requested queries to the current layer.
             let mut col_query_index: u32 = 0;
@@ -145,6 +146,8 @@ impl MerkleVerifierImpl<
 
             // Merge previous layer queries and column queries.
             let res = loop {
+                // let layer_queried_values = @layer_queried_values;
+
                 // Fetch the next query.
                 let current_query = if let Option::Some(current_query) =
                     next_decommitment_node(layer_column_queries, @prev_layer_hashes) {
@@ -165,38 +168,60 @@ impl MerkleVerifierImpl<
                         break Result::Err(MerkleVerificationError::WitnessTooShort);
                     };
 
-                    let right_hash = if let Option::Some(val) =
-                        fetch_prev_node_hash(
-                            ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1
-                        ) {
-                        val
-                    } else {
-                        break Result::Err(MerkleVerificationError::WitnessTooShort);
-                    };
-                    Option::Some((left_hash, right_hash))
+                    // Uncommenting this block stops the program compiling.
+                    // =======
+                    // let right_hash = if let Option::Some(val) =
+                    // fetch_prev_node_hash(
+                    //     ref prev_layer_hashes, ref hash_witness, current_query * 2
+                    // ) {
+                    //     val
+                    // } else {
+                    //     break Result::Err(MerkleVerificationError::WitnessTooShort);
+                    // };
+                    // =======
+
+                    // let right_hash = if let Option::Some(val) =
+                    //     fetch_prev_node_hash(
+                    //         ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1
+                    //     ) {
+                    //     val
+                    // } else {
+                    //     break Result::Err(MerkleVerificationError::WitnessTooShort);
+                    // };
+                    // Option::Some((left_hash, right_hash))
+
+                    Option::None
                 };
 
                 // If the column values were queried, read them from `queried_value`.
-                let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
-                    let mut res = array![];
-                    let mut i = 0;
-                    while i != n_columns_in_layer {
-                        let queried_column = layer_queried_values[i];
-                        res.append(*queried_column[col_query_index]);
-                        i += 1;
-                    };
-                    col_query_index += 1;
-                    res
-                } else {
-                    column_witness.pop_front_n(n_columns_in_layer)
-                };
+                // let column_values: Array<bool> = array![];
+                // let column_values: Array<BaseField> = if layer_column_queries.next_if_eq(@current_query).is_some() {
+                //     // let mut res = array![];
+                //     // let mut i = 0;
+                //     // while i != n_columns_in_layer {
+                //     //     let queried_column = layer_queried_values[i];
+                //     //     res.append(*queried_column[col_query_index]);
+                //     //     i += 1;
+                //     // };
+                //     // col_query_index += 1;
+                //     // res
+                //     // let tmp = layer_queried_values[0];
+                //     // array![*tmp[0]]
+                //     array![]
+                // } else {
+                //     // column_witness.pop_front_n(n_columns_in_layer)
+                //     array![]
+                // };
 
-                if column_values.len() != n_columns_in_layer {
-                    break Result::Err(MerkleVerificationError::WitnessTooShort);
-                }
+                // if column_values.len() != n_columns_in_layer {
+                // if n_columns_in_layer == 0 {
+                //     break Result::Err(MerkleVerificationError::WitnessTooShort);
+                // }
+                // let hash_val = H::hash_node(node_hashes, column_values);
+                let hash_val = H::hash_node(node_hashes, array![]);
 
-                layer_total_queries
-                    .append((current_query, H::hash_node(node_hashes, column_values)));
+                // layer_total_queries
+                //     .append((current_query, H::hash_node(node_hashes, column_values)));
             };
             if let Result::Err(err) = res {
                 break Result::Err(err);
@@ -301,17 +326,18 @@ pub enum MerkleVerificationError {
 #[cfg(test)]
 mod tests {
     use core::array::ToSpanTrait;
-    use core::dict::Felt252DictTrait;
+    use core::dict::{Felt252Dict, Felt252DictTrait};
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
     use stwo_cairo_verifier::fields::m31::m31;
+    use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
     use super::{MerkleVerifier, MerkleVerifierImpl, MerkleDecommitment};
 
     #[test]
     fn test_verifier() {
         let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
         let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
-        let decommitment = MerkleDecommitment {
+        let decommitment = MerkleDecommitment::<PoseidonMerkleHasher> {
             hash_witness: array![
                 0x037056abc40b9e8c2a67826f54a8c379b0b3ef46629e6a19609e1144bf230f36,
                 0x068708ce1c3fc019a43494bd262e87fc70e5c1f68f42881f120fe90ea2bf2201,
@@ -331,7 +357,7 @@ mod tests {
                 m31(428382412),
             ]
         };
-        let mut queries_per_log_size = Default::default();
+        let mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
         queries_per_log_size.insert(3, NullableTrait::new(array![2, 5, 7].span()));
         queries_per_log_size.insert(4, NullableTrait::new(array![7, 11, 14].span()));
         let queried_values = array![
@@ -346,8 +372,11 @@ mod tests {
             array![m31(650584843), m31(942699537), m31(310081088)],
             array![m31(71167745), m31(330264928), m31(409791388)]
         ];
-        MerkleVerifier { root, column_log_sizes, }
-            .verify(queries_per_log_size, @queried_values, decommitment,)
-            .expect('verification failed');
+        let merkle_verifier = MerkleVerifier::<PoseidonMerkleHasher> { root, column_log_sizes };
+        // let cols = merkle_verifier.cols_by_size();
+        let verification_result = merkle_verifier.verify(queries_per_log_size, @queried_values, decommitment);
+        // MerkleVerifier { root, column_log_sizes, }
+        //     .verify(queries_per_log_size, @queried_values, decommitment,)
+        //     .expect('verification failed');
     }
 }

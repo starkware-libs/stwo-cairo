@@ -232,6 +232,7 @@ fn fri_answers_for_log_size(
                         domain_size,
                         column_eval_offset,
                         domain_point,
+                        random_coeff,
                     );
                     values.append(value);
                 };
@@ -258,22 +259,28 @@ fn accumulate_row_quotients(
     domain_size: u32,
     queries_values_offset: u32,
     domain_point: CirclePoint<M31>,
+    random_coeff: QM31,
 ) -> QM31 {
     let n_batches = sample_batches.len();
     // TODO(andrew): Unnessesary asserts, remove.
-    assert!(n_batches == quotient_constants.line_coeffs.len());
+    assert!(n_batches == quotient_constants.all_alpha_mul_c.len());
     assert!(n_batches == quotient_constants.batch_random_coeffs.len());
     let column_row = queries_values_offset + row;
-    let domain_point_y: UnreducedM31 = domain_point.y.into();
+    let domain_point_y: M31 = domain_point.y;
 
     let mut row_accumulator: QM31 = Zero::zero();
 
     for batch_i in 0
         ..n_batches {
-            let line_coeffs = quotient_constants.line_coeffs[batch_i];
+            let batch_alpha_mul_a_sum = *quotient_constants.batch_alpha_mul_a_sum[batch_i];
+            let batch_alpha_mul_b_sum = *quotient_constants.batch_alpha_mul_b_sum[batch_i];
+            let linear_term = batch_alpha_mul_a_sum.mul_m31(domain_point_y) + batch_alpha_mul_b_sum;
+
+            let batch_alpha_mul_c = quotient_constants.all_alpha_mul_c[batch_i];
             let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
             let batch_size = sample_batch_columns_and_values.len();
-            assert!(batch_size == line_coeffs.len());
+            assert!(batch_size == batch_alpha_mul_c.len());
+
             let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Impl::large_zero();
 
             for sample_i in 0
@@ -281,8 +288,7 @@ fn accumulate_row_quotients(
                     let (column_index, _) = sample_batch_columns_and_values[sample_i];
                     let column = *queried_values_per_column.at(*column_index);
                     let column_value = *column.at(column_row);
-                    let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } =
-                        *line_coeffs[sample_i];
+                    let alpha_mul_c = *batch_alpha_mul_c[sample_i];
                     // The numerator is a line equation passing through
                     //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
                     // evaluated at (domain_point.y, value).
@@ -291,15 +297,20 @@ fn accumulate_row_quotients(
                     // had the values sample_value and conj(sample_value) at these points.
                     // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
                     // TODO(andrew): The whole `linear_term` can be moved out of the loop.
-                    let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
-                    numerator += alpha_mul_c.mul_m31(column_value.into()) - linear_term;
+                    numerator += alpha_mul_c.mul_m31(column_value.into());
                 };
 
+                
             let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
+            // println!("batch_i: {}", batch_i);
+            // println!("n_samples: {}", batch_size);
+            // println!("bc: {:?}", batch_coeff);
+            // println!("random_t_bc: {:?}", random_pow_batch_size / random_coeff);
             let denom_inv = *denominator_inverses[batch_i * domain_size + row];
             // Computes `row_accumulator * batch_coeff + numerator * denom_inv`.
+            let numerator: QM31 = numerator.reduce() - linear_term;
             row_accumulator =
-                QM31Impl::fma(row_accumulator, batch_coeff, numerator.reduce().mul_cm31(denom_inv));
+                QM31Impl::fma(row_accumulator, batch_coeff, numerator.mul_cm31(denom_inv));
         };
 
     row_accumulator
@@ -309,50 +320,65 @@ fn accumulate_row_quotients(
 #[derive(Debug, Drop)]
 pub struct QuotientConstants {
     /// The line coefficients for each quotient numerator term.
-    pub line_coeffs: Array<Array<ComplexConjugateLineCoeffs>>,
+    // pub line_coeffs: Array<Array<ComplexConjugateLineCoeffs>>,
     /// The random coefficients used to linearly combine the batched quotients.
     ///
     /// For each sample batch we compute random_coeff^(number of columns in the batch),
     /// which is used to linearly combine multiple batches together.
     pub batch_random_coeffs: Array<QM31>,
+    // =====
+    pub batch_alpha_mul_a_sum: Array<QM31>,
+    pub batch_alpha_mul_b_sum: Array<QM31>,
+    pub all_alpha_mul_c: Array<Array<PackedUnreducedQM31>>,
 }
 
 #[generate_trait]
 impl QuotientConstantsImpl of QuotientConstantsTrait {
     fn gen(sample_batches: @Array<ColumnSampleBatch>, random_coeff: QM31) -> QuotientConstants {
-        let mut line_coeffs = array![];
+        // let mut line_coeffs = array![];
         let mut batch_random_coeffs = array![];
+        let mut batch_alpha_mul_a_sum = array![];
+        let mut batch_alpha_mul_b_sum = array![];
+        let mut all_alpha_mul_c = array![];
 
         for sample_batch in sample_batches
             .span() {
                 // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
                 // Use a better solution.
+                let sample_point_y = *sample_batch.point.y;
+                let sample_point_y_neg_twice_imaginary = neg_twice_imaginary_part(@sample_point_y);
                 assert!(
-                    *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
+                    sample_point_y_neg_twice_imaginary.is_non_zero(),
                     "Cannot evaluate a line with a single point ({:?}).",
                     sample_batch.point
                 );
 
                 let mut alpha: QM31 = One::one();
-                let mut batch_line_coeffs = array![];
+                let mut alpha_mul_a_sum: QM31 = Zero::zero();
+                let mut alpha_mul_b_sum: QM31 = Zero::zero();
+                let mut batch_alpha_mul_c = array![];
 
                 for (_, column_value) in sample_batch
                     .columns_and_values
                     .span() {
                         alpha = alpha * random_coeff;
-                        batch_line_coeffs
-                            .append(
-                                ComplexConjugateLineCoeffsImpl::new(
-                                    sample_batch.point, **column_value, alpha
-                                )
-                            );
+                        let alpha_mul_a = alpha * neg_twice_imaginary_part(*column_value);
+                        let alpha_mul_c = alpha * sample_point_y_neg_twice_imaginary;
+                        // TODO: See if can simplify.
+                        let alpha_mul_b = QM31Impl::fms(**column_value, alpha_mul_c, alpha_mul_a * sample_point_y);
+                        alpha_mul_a_sum += alpha_mul_a;
+                        alpha_mul_b_sum += alpha_mul_b;
+                        batch_alpha_mul_c.append(alpha_mul_c.into());
                     };
 
                 batch_random_coeffs.append(alpha);
-                line_coeffs.append(batch_line_coeffs);
+                batch_alpha_mul_a_sum.append(alpha_mul_a_sum);
+                batch_alpha_mul_b_sum.append(alpha_mul_b_sum);
+                all_alpha_mul_c.append(batch_alpha_mul_c);
+                // line_coeffs.append(batch_line_coeffs);
             };
 
-        QuotientConstants { line_coeffs, batch_random_coeffs }
+        QuotientConstants { all_alpha_mul_c, batch_alpha_mul_a_sum, batch_alpha_mul_b_sum, batch_random_coeffs }
     }
 }
 
@@ -584,7 +610,7 @@ mod tests {
     }
 
     #[test]
-    fn test_fri_answers() {
+    fn test_fri_answers__YES() {
         let col0_log_size = 5;
         let col1_log_size = 7;
         let log_size_per_column = array![col0_log_size, col1_log_size];
@@ -744,7 +770,8 @@ mod tests {
             row,
             domain.size(),
             0,
-            domain.at(0)
+            domain.at(0),
+            alpha
         );
 
         assert!(res == qm31(545815778, 838613809, 1761463254, 2019099482));
@@ -776,7 +803,8 @@ mod tests {
             row,
             domain.size(),
             column_eval_offset,
-            domain.at(1)
+            domain.at(1),
+            alpha,
         );
 
         assert!(res == qm31(1352199520, 303329565, 518279043, 1496238271));

@@ -15,4 +15,4 @@ sort-module-level-items = true
 [dependencies]
 
 [dev-dependencies]
-cairo_test = "2.8.0"
+cairo_test = "2.8.4"
