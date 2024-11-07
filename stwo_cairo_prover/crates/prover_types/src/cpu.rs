@@ -609,7 +609,43 @@ impl<const B: usize, const L: usize> From<[u64; L]> for BigUInt<B, L> {
     }
 }
 
+// Length of each modulo builtin word in bits.
+pub const MOD_BUILTIN_WORD_BIT_LEN: usize = 96;
+
 impl<const B: usize, const L: usize> BigUInt<B, L> {
+    pub fn from_felt252_array(mod_words: Vec<Felt252>) -> Self {
+        // only takes MODULO_WORD_BIT_LEN from each Felt252
+        let needed_bits = mod_words.len() * MOD_BUILTIN_WORD_BIT_LEN;
+        assert!(needed_bits <= B, "BigUIntExpr can have at most {B} bits");
+        let needed_limbs_per252 = MOD_BUILTIN_WORD_BIT_LEN.div_ceil(64);
+        let inner_limbs_lengths = vec![64, 32];
+        let word_pieces = mod_words
+            .iter()
+            .flat_map(|f| {
+                f.limbs[..needed_limbs_per252]
+                    .iter()
+                    .copied()
+                    .zip(inner_limbs_lengths.clone())
+            })
+            .collect::<Vec<_>>();
+
+        let mut cum_len = 0;
+        let mut limbs = [0u64; L];
+        for (limb, len) in word_pieces.iter() {
+            let shift_low = cum_len & 0x3F;
+            let low_limb = cum_len / 64;
+            let high_limb = (cum_len + len - 1) / 64;
+            limbs[low_limb] |= limb << shift_low;
+            if high_limb != low_limb {
+                limbs[high_limb] |= limb >> (64 - shift_low);
+            }
+            cum_len += len;
+        }
+        assert!(cum_len <= B, "BigUInt is too big");
+
+        Self { limbs }
+    }
+
     pub fn get_u64(&self, index: usize) -> UInt64 {
         UInt64 {
             value: self.limbs[index],
