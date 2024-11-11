@@ -6,9 +6,10 @@ use std::simd::Simd;
 use bytemuck::Zeroable;
 use itertools::all;
 use stwo_prover::core::backend::simd::m31::PackedM31;
-use stwo_prover::core::fields::m31;
+use stwo_prover::core::fields::m31::{self, M31};
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
+use crate::cpu::CasmState;
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -366,4 +367,124 @@ pub struct PackedCasmState {
     pub pc: PackedM31,
     pub ap: PackedM31,
     pub fp: PackedM31,
+}
+
+impl Unpack for PackedCasmState {
+    type Output = CasmState;
+    fn unpack(self) -> [Self::Output; N_LANES] {
+        std::array::from_fn(|i| CasmState {
+            pc: self.pc.to_array()[i],
+            ap: self.ap.to_array()[i],
+            fp: self.fp.to_array()[i],
+        })
+    }
+}
+
+impl Pack for [CasmState; N_LANES] {
+    type Output = PackedCasmState;
+    fn pack(self) -> Self::Output {
+        PackedCasmState {
+            pc: PackedM31::from_array(self.map(|c| c.pc)),
+            ap: PackedM31::from_array(self.map(|c| c.ap)),
+            fp: PackedM31::from_array(self.map(|c| c.fp)),
+        }
+    }
+}
+
+pub trait Unpack {
+    type Output;
+    fn unpack(self) -> [Self::Output; N_LANES];
+}
+pub trait Pack {
+    type Output;
+    fn pack(self) -> Self::Output;
+}
+
+pub type VerifyInstructionInput = (M31, [M31; 3], [M31; 15]);
+pub type PackedVerifyInstructionInput = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
+
+impl Pack for [VerifyInstructionInput; N_LANES] {
+    type Output = PackedVerifyInstructionInput;
+
+    fn pack(self) -> Self::Output {
+        let zero = PackedM31::from_array(self.map(|(a, ..)| a));
+        let one = std::array::from_fn(|i| PackedM31::from_array(self.map(|(_, b, _)| b[i])));
+        let two = std::array::from_fn(|i| PackedM31::from_array(self.map(|(_, _, c)| c[i])));
+        (zero, one, two)
+    }
+}
+
+impl Unpack for PackedVerifyInstructionInput {
+    type Output = VerifyInstructionInput;
+
+    fn unpack(self) -> [Self::Output; N_LANES] {
+        std::array::from_fn(|i| {
+            (
+                self.0.to_array()[i],
+                std::array::from_fn(|j| self.1[j].to_array()[i]),
+                std::array::from_fn(|j| self.2[j].to_array()[i]),
+            )
+        })
+    }
+}
+
+impl Pack for [M31; N_LANES] {
+    type Output = PackedM31;
+
+    fn pack(self) -> Self::Output {
+        PackedM31::from_array(self)
+    }
+}
+
+impl Unpack for PackedM31 {
+    type Output = M31;
+
+    fn unpack(self) -> [Self::Output; N_LANES] {
+        self.to_array()
+    }
+}
+
+impl Pack for [[M31; 2]; N_LANES] {
+    type Output = [PackedM31; 2];
+
+    fn pack(self) -> Self::Output {
+        [
+            PackedM31::from_array(self.map(|[a, _]| a)),
+            PackedM31::from_array(self.map(|[_, b]| b)),
+        ]
+    }
+}
+
+impl Unpack for [PackedM31; 2] {
+    type Output = [M31; 2];
+
+    fn unpack(self) -> [Self::Output; N_LANES] {
+        std::array::from_fn(|i| [self[0].to_array()[i], self[1].to_array()[i]])
+    }
+}
+
+impl Pack for [[M31; 3]; N_LANES] {
+    type Output = [PackedM31; 3];
+
+    fn pack(self) -> Self::Output {
+        [
+            PackedM31::from_array(self.map(|[a, _, _]| a)),
+            PackedM31::from_array(self.map(|[_, b, _]| b)),
+            PackedM31::from_array(self.map(|[_, _, c]| c)),
+        ]
+    }
+}
+
+impl Unpack for [PackedM31; 3] {
+    type Output = [M31; 3];
+
+    fn unpack(self) -> [Self::Output; N_LANES] {
+        std::array::from_fn(|i| {
+            [
+                self[0].to_array()[i],
+                self[1].to_array()[i],
+                self[2].to_array()[i],
+            ]
+        })
+    }
 }
