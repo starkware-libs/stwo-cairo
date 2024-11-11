@@ -1186,6 +1186,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
+ "rand",
  "ruint",
  "serde",
  "starknet-ff",
