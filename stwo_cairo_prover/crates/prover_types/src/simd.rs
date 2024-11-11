@@ -6,9 +6,11 @@ use std::simd::Simd;
 use bytemuck::Zeroable;
 use itertools::all;
 use stwo_prover::core::backend::simd::m31::PackedM31;
-use stwo_prover::core::fields::m31;
+use stwo_prover::core::fields::m31::{self};
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
+use crate::base::{Pack, Unpack};
+use crate::cpu::CasmState;
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -366,4 +368,29 @@ pub struct PackedCasmState {
     pub pc: PackedM31,
     pub ap: PackedM31,
     pub fp: PackedM31,
+}
+
+// TODO(Ohad): when we have more than one struct, write a proc-macro.
+impl Pack for CasmState {
+    type SimdType = PackedCasmState;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedCasmState {
+            pc: PackedM31::from_array(inputs.map(|c| c.pc)),
+            ap: PackedM31::from_array(inputs.map(|c| c.ap)),
+            fp: PackedM31::from_array(inputs.map(|c| c.fp)),
+        }
+    }
+}
+
+impl Unpack for PackedCasmState {
+    type CpuType = CasmState;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        std::array::from_fn(|i| CasmState {
+            pc: self.pc.to_array()[i],
+            ap: self.ap.to_array()[i],
+            fp: self.fp.to_array()[i],
+        })
+    }
 }

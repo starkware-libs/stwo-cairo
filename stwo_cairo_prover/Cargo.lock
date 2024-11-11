@@ -1186,6 +1186,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
+ "rand",
  "ruint",
  "serde",
  "starknet-ff",
@@ -1592,7 +1593,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=9cfd48a#9cfd48af4e8ac5dd67643a92927c894066fa989c"
+source = "git+https://github.com/starkware-libs/stwo?rev=d777324#d77732451933bf9a608dceccdc48b06899fba98d"
 dependencies = [
  "blake2",
  "blake3",

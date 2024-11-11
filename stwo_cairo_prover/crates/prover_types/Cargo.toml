@@ -10,3 +10,6 @@ ruint.workspace = true
 serde.workspace = true
 itertools.workspace = true
 bytemuck.workspace = true
+
+[dev-dependencies]
+rand.workspace = true
