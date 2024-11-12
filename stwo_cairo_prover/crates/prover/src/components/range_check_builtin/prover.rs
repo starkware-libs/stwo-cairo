@@ -169,7 +169,7 @@ mod tests {
 
     use itertools::zip_eq;
     use rand::Rng;
-    use stwo_prover::constraint_framework::constant_columns::gen_is_first;
+    use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
     use stwo_prover::constraint_framework::FrameworkEval;
     use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::channel::Blake2sChannel;
@@ -310,7 +310,7 @@ mod tests {
 
         let constant_trace = vec![gen_is_first::<SimdBackend>(log_size)];
 
-        let trace = TreeVec::new(vec![trace, interaction_trace, constant_trace]);
+        let trace = TreeVec::new(vec![constant_trace, trace, interaction_trace]);
         let trace_polys = trace.map_cols(|c| c.interpolate());
 
         let component = Eval {
