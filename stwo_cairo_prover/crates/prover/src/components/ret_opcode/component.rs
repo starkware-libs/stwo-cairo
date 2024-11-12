@@ -1,7 +1,10 @@
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
+use stwo_prover::constraint_framework::{
+    EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX,
+};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -48,8 +51,9 @@ impl FrameworkEval for Eval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let [is_first] = eval.next_interaction_mask(2, [0]);
-        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
+        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
+        let mut logup =
+            LogupAtRow::<E>::new(INTERACTION_TRACE_IDX, self.claimed_sum, None, is_first);
 
         // PC Column
         let mut values: [_; N_M31_IN_FELT252 + 1] = std::array::from_fn(|_| E::F::zero());
@@ -101,13 +105,13 @@ impl Claim {
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = self.n_rets.next_power_of_two().ilog2();
-        let interaction_0_log_sizes = vec![log_size; RET_N_TRACE_CELLS];
-        let interaction_1_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
-        let fixed_log_sizes = vec![log_size];
+        let trace_log_sizes = vec![log_size; RET_N_TRACE_CELLS];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
+        let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
-            interaction_0_log_sizes,
-            interaction_1_log_sizes,
-            fixed_log_sizes,
+            preprocessed_log_sizes,
+            trace_log_sizes,
+            interaction_log_sizes,
         ])
     }
 }

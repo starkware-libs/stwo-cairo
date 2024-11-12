@@ -143,8 +143,8 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::constant_columns::gen_is_first;
     use stwo_prover::constraint_framework::logup::LookupElements;
+    use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
@@ -175,6 +175,12 @@ mod tests {
         let config = PcsConfig::default();
         let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
 
+        // Preprocessed trace.
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let range_check_constant_trace = gen_is_first::<SimdBackend>(LOG_HEIGHT);
+        tree_builder.extend_evals([range_check_constant_trace]);
+        tree_builder.commit(channel);
+
         let inputs: [[PackedM31; 3]; 30] = std::array::from_fn(|_| {
             let values = Simd::from_array(std::array::from_fn(|_| {
                 rng.gen::<u32>() & ((1 << LOG_HEIGHT) - 1)
@@ -197,12 +203,6 @@ mod tests {
         let lookup_elements = LookupElements::<N_RANGES>::draw(channel);
         let interaction_claim = interaction_claim_generator
             .write_interaction_trace(&mut tree_builder, &lookup_elements);
-        tree_builder.commit(channel);
-
-        // Fixed trace.
-        let mut tree_builder = commitment_scheme.tree_builder();
-        let range_check_constant_trace = gen_is_first::<SimdBackend>(LOG_HEIGHT);
-        tree_builder.extend_evals([range_check_constant_trace]);
         tree_builder.commit(channel);
 
         let tree_span_provider = &mut TraceLocationAllocator::default();

@@ -1,6 +1,7 @@
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
@@ -75,7 +76,7 @@ impl FrameworkEval for Eval {
         }
 
         // Compute lookup for memory.
-        let [is_first] = eval.next_interaction_mask(2, [0]);
+        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
         let mut logup = LogupAtRow::new(LOOKUP_INTERACTION_PHASE, self.claimed_sum, None, is_first);
         let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
         logup.write_frac(&mut eval, frac);
@@ -112,13 +113,14 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let n_values = self.memory_segment.end_addr - self.memory_segment.begin_addr;
         let log_size = n_values.next_power_of_two().ilog2();
+        let preprocessed_log_sizes = vec![log_size];
         let trace_log_sizes = vec![log_size; N_RANGE_CHECK_COLUMNS];
         let interaction_trace_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE];
-        let fixed_column_log_sizes = vec![log_size];
+
         TreeVec::new(vec![
+            preprocessed_log_sizes,
             trace_log_sizes,
             interaction_trace_log_sizes,
-            fixed_column_log_sizes,
         ])
     }
 }
