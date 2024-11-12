@@ -2,9 +2,10 @@ use stwo_cairo_verifier::circle::{
     Coset, CosetImpl, CirclePoint, CirclePointM31Impl, CirclePointIndex, CirclePointIndexImpl,
     CirclePointTrait
 };
+use stwo_cairo_verifier::fields::BatchInvertible;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::QM31;
-use stwo_cairo_verifier::fri::fold_circle_into_line;
+use stwo_cairo_verifier::poly::utils::ibutterfly;
 use stwo_cairo_verifier::utils::pow;
 
 /// A valid domain for circle polynomial interpolation and evaluation.
@@ -163,12 +164,27 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
         SparseCircleEvaluation { subcircle_evals }
     }
 
+    /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
+    /// degree `d/2` univariate polynomial.
     fn fold(self: SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
+        let mut domain_initial_ys = array![];
+
+        for eval in self.subcircle_evals.span() {
+            domain_initial_ys.append(eval.domain.at(0).y);
+        };
+
+        let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
         let mut res = array![];
+
         for eval in self
             .subcircle_evals {
-                res.append(*fold_circle_into_line(eval, alpha).values[0])
+                let y_inv = domain_initial_ys_inv.pop_front().unwrap();
+                let values: Box<[QM31; 2]> = *eval.bit_reversed_values.span().try_into().unwrap();
+                let [f_at_p, f_at_neg_p] = values.unbox();
+                let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, y_inv);
+                res.append(f0 + alpha * f1);
             };
+
         res
     }
 }
