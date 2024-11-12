@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
@@ -12,7 +14,19 @@ use stwo_prover::core::pcs::TreeVec;
 
 pub const N_ADDR_TO_ID_COLUMNS: usize = 3;
 
-pub type RelationElements = LookupElements<2>;
+#[derive(Clone)]
+pub struct RelationElements(LookupElements<2>);
+impl RelationElements {
+    pub fn draw(channel: &mut impl Channel) -> Self {
+        Self(LookupElements::<2>::draw(channel))
+    }
+}
+impl Deref for RelationElements {
+    type Target = LookupElements<2>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 pub type Component = FrameworkComponent<Eval>;
 
