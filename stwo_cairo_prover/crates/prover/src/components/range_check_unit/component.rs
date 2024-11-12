@@ -1,7 +1,10 @@
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::LogupAtRow;
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
+use stwo_prover::constraint_framework::{
+    EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX,
+};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -29,8 +32,9 @@ impl<const N_REPETITIONS: usize> FrameworkEval for RangeCheckUnitEval<N_REPETITI
         self.log_n_rows + 1
     }
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let [is_first] = eval.next_interaction_mask(2, [0]);
-        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
+        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
+        let mut logup =
+            LogupAtRow::<E>::new(INTERACTION_TRACE_IDX, self.claimed_sum, None, is_first);
         let rc_value = eval.next_trace_mask();
         let mut frac = Fraction::new(E::EF::zero(), E::EF::one());
         for repetition in 0..N_REPETITIONS {
@@ -61,9 +65,9 @@ pub struct RangeCheckClaim<const N_REPETITIONS: usize> {
 impl<const N_REPETITIONS: usize> RangeCheckClaim<N_REPETITIONS> {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::new(vec![
+            vec![self.log_rc_height; 1],
             vec![self.log_rc_height; 1 + N_REPETITIONS],
             vec![self.log_rc_height; SECURE_EXTENSION_DEGREE],
-            vec![self.log_rc_height; 1],
         ])
     }
 

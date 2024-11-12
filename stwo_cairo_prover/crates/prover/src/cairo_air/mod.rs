@@ -1,8 +1,8 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::constant_columns::gen_is_first;
-use stwo_prover::constraint_framework::TraceLocationAllocator;
+use stwo_prover::constraint_framework::preprocessed_columns::{gen_is_first, PreprocessedColumn};
+use stwo_prover::constraint_framework::{TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
@@ -58,13 +58,17 @@ impl CairoClaim {
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols(chain!(
+        let mut log_sizes = TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
             [self.range_check_builtin.log_sizes()],
             [self.memory_addr_to_id.log_sizes()],
             [self.memory_id_to_value.log_sizes()],
             [self.range_check9_9.log_sizes()]
-        ))
+        ));
+
+        // Overwrite the preprocessed trace log sizes.
+        log_sizes[PREPROCESSED_TRACE_IDX] = IS_FIRST_LOG_SIZES.to_vec();
+        log_sizes
     }
 }
 
@@ -151,7 +155,13 @@ impl CairoComponents {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
-        let tree_span_provider = &mut TraceLocationAllocator::default();
+        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columnds(
+            &IS_FIRST_LOG_SIZES
+                .iter()
+                .copied()
+                .map(PreprocessedColumn::IsFirst)
+                .collect_vec(),
+        );
 
         let ret_components = cairo_claim
             .ret
@@ -235,6 +245,8 @@ impl CairoComponents {
 }
 
 const LOG_MAX_ROWS: u32 = 20;
+
+const IS_FIRST_LOG_SIZES: [u32; 4] = [4, 6, 7, 18];
 pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
@@ -247,6 +259,17 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     // Setup protocol.
     let channel = &mut Blake2sChannel::default();
     let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
+
+    // Preprocessed trace.
+    let mut tree_builder = commitment_scheme.tree_builder();
+
+    tree_builder.extend_evals(
+        IS_FIRST_LOG_SIZES
+            .iter()
+            .cloned()
+            .map(gen_is_first::<SimdBackend>),
+    );
+    tree_builder.commit(channel);
 
     // Extract public memory.
     let public_memory = input
@@ -347,33 +370,6 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     interaction_claim.mix_into(channel);
     tree_builder.commit(channel);
 
-    // Fixed trace.
-    let mut tree_builder = commitment_scheme.tree_builder();
-    let ret_constant_traces = claim
-        .ret
-        .iter()
-        .map(|ret_claim| gen_is_first::<SimdBackend>(ret_claim.log_sizes()[2][0]))
-        .collect_vec();
-    let range_check_builtin_constant_trace =
-        gen_is_first::<SimdBackend>(claim.range_check_builtin.log_sizes()[2][0]);
-    let memory_addr_to_id_constant_trace =
-        gen_is_first::<SimdBackend>(claim.memory_addr_to_id.log_sizes()[2][0]);
-    let memory_id_to_value_constant_trace =
-        gen_is_first::<SimdBackend>(claim.memory_id_to_value.log_sizes()[2][0]);
-    let range_check9_9_constant_trace = gen_is_first::<SimdBackend>(18);
-    tree_builder.extend_evals(
-        [
-            ret_constant_traces,
-            vec![range_check_builtin_constant_trace],
-            vec![memory_addr_to_id_constant_trace],
-            vec![memory_id_to_value_constant_trace],
-            vec![range_check9_9_constant_trace],
-        ]
-        .into_iter()
-        .flatten(),
-    );
-    tree_builder.commit(channel);
-
     // Component provers.
     let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_builder.provers();
@@ -401,17 +397,19 @@ pub fn verify_cairo(
     let commitment_scheme_verifier =
         &mut CommitmentSchemeVerifier::<Blake2sMerkleChannel>::new(config);
 
+    let log_sizes = claim.log_sizes();
+
+    // Preproccessed trace.
+    commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
+
     claim.mix_into(channel);
-    commitment_scheme_verifier.commit(stark_proof.commitments[0], &claim.log_sizes()[0], channel);
+    commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
     let interaction_elements = CairoInteractionElements::draw(channel);
     if !lookup_sum_valid(&claim, &interaction_elements, &interaction_claim) {
         return Err(CairoVerificationError::InvalidLogupSum);
     }
     interaction_claim.mix_into(channel);
-    commitment_scheme_verifier.commit(stark_proof.commitments[1], &claim.log_sizes()[1], channel);
-
-    // Fixed trace.
-    commitment_scheme_verifier.commit(stark_proof.commitments[2], &claim.log_sizes()[2], channel);
+    commitment_scheme_verifier.commit(stark_proof.commitments[2], &log_sizes[2], channel);
 
     let component_generator =
         CairoComponents::new(&claim, &interaction_elements, &interaction_claim);

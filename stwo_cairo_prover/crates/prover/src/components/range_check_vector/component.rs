@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkEval, INTERACTION_TRACE_IDX};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
@@ -24,8 +25,9 @@ impl<const N: usize> FrameworkEval for RangeCheckVectorEval<N> {
         self.log_size() + 1
     }
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let [is_first] = eval.next_interaction_mask(2, [0]);
-        let mut logup = LogupAtRow::<E>::new(1, self.claimed_sum, None, is_first);
+        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
+        let mut logup =
+            LogupAtRow::<E>::new(INTERACTION_TRACE_IDX, self.claimed_sum, None, is_first);
         let rc_values: [E::F; N] = std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
         logup.write_frac(
@@ -52,9 +54,9 @@ impl RangeCheckClaim {
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::new(vec![
+            vec![self.log_size(); 1],
             vec![self.log_size(); self.log_ranges.len() + N_MULTIPLICITY_COLUMNS],
             vec![self.log_size(); SECURE_EXTENSION_DEGREE],
-            vec![self.log_size(); 1],
         ])
     }
 
