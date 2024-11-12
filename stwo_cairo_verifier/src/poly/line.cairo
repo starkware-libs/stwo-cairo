@@ -5,8 +5,8 @@ use stwo_cairo_verifier::circle::{
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
 use stwo_cairo_verifier::fields::{SecureField, BaseField};
-use stwo_cairo_verifier::fri::fold_line;
-use stwo_cairo_verifier::poly::utils::fold;
+use stwo_cairo_verifier::fields::FieldBatchInverse;
+use stwo_cairo_verifier::poly::utils::{fold, ibutterfly};
 use stwo_cairo_verifier::utils::pow;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -242,11 +242,26 @@ pub struct SparseLineEvaluation {
 
 #[generate_trait]
 pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
+    /// Folds evaluations of a degree `d` polynomial into evaluations of a degree `d/2` polynomial.
     fn fold(self: SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
-        let mut res = array![];
-        for eval in self.subline_evals {
-            res.append(*fold_line(eval, alpha).values[0]);
+        let mut domain_initials = array![];
+
+        for eval in self.subline_evals.span() {
+            domain_initials.append(eval.domain.at(0));
         };
+
+        let mut domain_initials_inv = FieldBatchInverse::batch_inverse(domain_initials);
+        let mut res = array![];
+
+        for eval in self
+            .subline_evals {
+                let x_inv = domain_initials_inv.pop_front().unwrap();
+                let f_at_x = *eval.values[0];
+                let f_at_neg_x = *eval.values[1];
+                let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
+                res.append(f0 + alpha * f1);
+            };
+
         res
     }
 }

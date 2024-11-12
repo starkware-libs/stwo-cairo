@@ -6,7 +6,7 @@ use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::{QM31_EXTENSION_DEGREE, QM31, QM31Zero, QM31Trait};
 use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
 use stwo_cairo_verifier::poly::circle::{
-    CircleEvaluation, SparseCircleEvaluation, SparseCircleEvaluationImpl
+    SparseCircleEvaluation, SparseCircleEvaluationImpl
 };
 use stwo_cairo_verifier::poly::line::{
     LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl
@@ -484,28 +484,6 @@ pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
     LineEvaluationImpl::new(domain.double(), values)
 }
 
-/// Folds and accumulates a degree `d` circle polynomial into a degree `d/2` univariate polynomial.
-///
-/// Let `src` be the evaluation of a circle polynomial `f` on a [`CircleDomain`] `E`. This function
-/// computes evaluations of `f' = f0 + alpha * f1` on the x-coordinates of `E` such that `2f(p) =
-/// f0(px) + py * f1(px)`. The evaluations of `f'` are accumulated into `dst` by the formula
-/// `dst = dst * alpha^2 + f'`.
-pub fn fold_circle_into_line(eval: CircleEvaluation, alpha: QM31) -> LineEvaluation {
-    let domain = eval.domain;
-    let mut values = array![];
-    for i in 0
-        ..eval.bit_reversed_values.len()
-            / 2 {
-                let p = domain
-                    .at(bit_reverse_index(i * CIRCLE_TO_LINE_FOLD_FACTOR, domain.log_size()));
-                let f_p = eval.bit_reversed_values[2 * i];
-                let f_neg_p = eval.bit_reversed_values[2 * i + 1];
-                let (f0, f1) = ibutterfly(*f_p, *f_neg_p, p.y.inverse());
-                values.append(f0 + alpha * f1);
-            };
-    LineEvaluation { values, domain: LineDomainImpl::new_unchecked(domain.half_coset) }
-}
-
 pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
     (v0 + v1, (v0 - v1).mul_m31(itwid))
 }
@@ -561,21 +539,6 @@ mod test {
         let result = sparse_line_evaluation.fold(alpha);
 
         assert_eq!(result, array![qm31(1379727866, 1083096056, 1409020369, 1977903500)]);
-    }
-
-    #[test]
-    fn test_fold_circle_into_line_1() {
-        let domain = CircleDomain {
-            half_coset: CosetImpl::new(CirclePointIndexImpl::new(553648128), 0)
-        };
-        let values = array![qm31(807167738, 0, 0, 0), qm31(1359821401, 0, 0, 0)];
-        let sparse_circle_evaluation: SparseCircleEvaluation = SparseCircleEvaluation {
-            subcircle_evals: array![CircleEvaluationImpl::new(domain, values)]
-        };
-        let alpha = qm31(260773061, 362745443, 1347591543, 1084609991);
-        let result = sparse_circle_evaluation.fold(alpha);
-        let expected_result = array![qm31(730692421, 1363821003, 2146256633, 106012305)];
-        assert_eq!(expected_result, result);
     }
 
     type ProofValues = (FriConfig, FriProof, Array<u32>, Queries, Array<SparseCircleEvaluation>);
