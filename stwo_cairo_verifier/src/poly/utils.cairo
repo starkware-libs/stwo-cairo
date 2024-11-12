@@ -1,4 +1,5 @@
-use stwo_cairo_verifier::fields::qm31::QM31Impl;
+use stwo_cairo_verifier::fields::m31::M31;
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl};
 use stwo_cairo_verifier::fields::{SecureField, BaseField};
 
 /// Folds values recursively in `O(n)` by a hierarchical application of folding factors.
@@ -33,4 +34,15 @@ pub fn fold(
     let lhs_val = fold(values, folding_factors, index, level + 1, n / 2);
     let rhs_val = fold(values, folding_factors, index + n / 2, level + 1, n / 2);
     return lhs_val + rhs_val.mul_m31(*folding_factors[level]);
+}
+
+#[inline]
+pub fn butterfly(v0: QM31, v1: QM31, twid: M31) -> (QM31, QM31) {
+    let tmp = v1.mul_m31(twid);
+    (v0 + tmp, v0 - tmp)
+}
+
+#[inline]
+pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
+    (v0 + v1, (v0 - v1).mul_m31(itwid))
 }
