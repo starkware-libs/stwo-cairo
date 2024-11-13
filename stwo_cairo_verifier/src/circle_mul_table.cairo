@@ -2,9 +2,7 @@ use stwo_cairo_verifier::circle::CirclePoint;
 use stwo_cairo_verifier::fields::m31::M31;
 
 /// Index `i` stores `M31_CIRCLE_GEN * i`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [
-    CirclePoint<M31>
-    ; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [CirclePoint<M31>; 64] = [
     CirclePoint { x: M31 { inner: 1 }, y: M31 { inner: 0 } },
     CirclePoint { x: M31 { inner: 2 }, y: M31 { inner: 1268011823 } },
     CirclePoint { x: M31 { inner: 7 }, y: M31 { inner: 777079998 } },
@@ -72,9 +70,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^6`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11: [
-    CirclePoint<M31>
-    ; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11: [CirclePoint<M31>; 64] = [
     CirclePoint { x: M31 { inner: 1 }, y: M31 { inner: 0 } },
     CirclePoint { x: M31 { inner: 2042371533 }, y: M31 { inner: 1362265296 } },
     CirclePoint { x: M31 { inner: 212706801 }, y: M31 { inner: 1223819887 } },
@@ -142,9 +138,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11: [
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^12`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17: [
-    CirclePoint<M31>
-    ; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17: [CirclePoint<M31>; 64] = [
     CirclePoint { x: M31 { inner: 1 }, y: M31 { inner: 0 } },
     CirclePoint { x: M31 { inner: 595037635 }, y: M31 { inner: 2111542451 } },
     CirclePoint { x: M31 { inner: 1799120754 }, y: M31 { inner: 343598868 } },
@@ -212,9 +206,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17: [
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^18`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23: [
-    CirclePoint<M31>
-    ; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23: [CirclePoint<M31>; 64] = [
     CirclePoint { x: M31 { inner: 1 }, y: M31 { inner: 0 } },
     CirclePoint { x: M31 { inner: 1420207432 }, y: M31 { inner: 2023238517 } },
     CirclePoint { x: M31 { inner: 2015554631 }, y: M31 { inner: 1088093947 } },
@@ -282,9 +274,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23: [
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^24`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29: [
-    CirclePoint<M31>
-    ; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29: [CirclePoint<M31>; 64] = [
     CirclePoint { x: M31 { inner: 1 }, y: M31 { inner: 0 } },
     CirclePoint { x: M31 { inner: 838195206 }, y: M31 { inner: 1774253895 } },
     CirclePoint { x: M31 { inner: 579625837 }, y: M31 { inner: 1690787918 } },
@@ -353,53 +343,48 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29: [
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::circle::{M31_CIRCLE_GEN, CirclePointM31Impl};
+    use stwo_cairo_verifier::circle::{CirclePointM31Impl, M31_CIRCLE_GEN};
     use super::{
-        M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
-        M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17, M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23,
-        M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
+        M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17,
+        M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
+        M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
     };
 
     #[test]
     fn test_constants_valid() {
         let step_1 = M31_CIRCLE_GEN;
         let mut acc = CirclePointM31Impl::zero();
-        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5
-            .span() {
-                assert_eq!(*p, acc);
-                acc = acc + step_1;
-            };
+        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5.span() {
+            assert_eq!(*p, acc);
+            acc = acc + step_1;
+        };
 
         let step_2_pow_6 = acc;
         let mut acc = CirclePointM31Impl::zero();
-        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11
-            .span() {
-                assert_eq!(*p, acc);
-                acc = acc + step_2_pow_6;
-            };
+        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11.span() {
+            assert_eq!(*p, acc);
+            acc = acc + step_2_pow_6;
+        };
 
         let step_2_pow_12 = acc;
         let mut acc = CirclePointM31Impl::zero();
-        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17
-            .span() {
-                assert_eq!(*p, acc);
-                acc = acc + step_2_pow_12;
-            };
+        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17.span() {
+            assert_eq!(*p, acc);
+            acc = acc + step_2_pow_12;
+        };
 
         let step_2_pow_18 = acc;
         let mut acc = CirclePointM31Impl::zero();
-        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23
-            .span() {
-                assert_eq!(*p, acc);
-                acc = acc + step_2_pow_18;
-            };
+        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23.span() {
+            assert_eq!(*p, acc);
+            acc = acc + step_2_pow_18;
+        };
 
         let step_2_pow_24 = acc;
         let mut acc = CirclePointM31Impl::zero();
-        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29
-            .span() {
-                assert_eq!(*p, acc);
-                acc = acc + step_2_pow_24;
-            };
+        for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29.span() {
+            assert_eq!(*p, acc);
+            acc = acc + step_2_pow_24;
+        };
     }
 }

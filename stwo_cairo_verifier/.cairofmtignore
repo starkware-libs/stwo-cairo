@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 tests/proofs
+=======
+tests/verifier/proofs
+>>>>>>> 7a66ae8 (Implement Serde on StarkProof)
