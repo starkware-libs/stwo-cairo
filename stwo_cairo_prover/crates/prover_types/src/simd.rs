@@ -1,5 +1,5 @@
 use std::mem::transmute;
-use std::ops::{Add, BitAnd, BitOr, BitXor, Rem, Shl, Shr};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Rem, Shl, Shr, Sub};
 use std::simd::num::SimdUint;
 use std::simd::Simd;
 
@@ -10,7 +10,7 @@ use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::m31;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
-use crate::cpu::CasmState;
+use crate::cpu::{CasmState, Felt252};
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -170,6 +170,24 @@ impl PackedUInt32 {
     // TODO(Ohad): remove.
     pub fn in_m31_range(&self) -> bool {
         all(self.as_array(), |v| v.value < m31::P)
+    }
+
+    pub fn from_m31(val: PackedM31) -> Self {
+        Self {
+            simd: val.into_simd(),
+        }
+    }
+
+    pub fn low(&self) -> PackedUInt16 {
+        PackedUInt16 {
+            value: (self.simd & Simd::splat(0xFFFF)).cast(),
+        }
+    }
+
+    pub fn high(&self) -> PackedUInt16 {
+        PackedUInt16 {
+            value: (self.simd >> 16).cast(),
+        }
     }
 }
 
@@ -337,7 +355,8 @@ impl BitXor for PackedUInt64 {
 
 pub const N_M31_IN_FELT252: usize = 28;
 
-// TODO(Ohad): implement ops and change to non-redundant representation.
+use num_traits::identities::Zero;
+// TODO(Ohad): Change to non-redundant representation.
 #[derive(Copy, Clone, Debug)]
 pub struct PackedFelt252 {
     pub value: [PackedM31; N_M31_IN_FELT252],
@@ -345,6 +364,67 @@ pub struct PackedFelt252 {
 impl PackedFelt252 {
     pub fn get_m31(&self, index: usize) -> PackedM31 {
         self.value[index]
+    }
+
+    pub fn from_limbs(limbs: [PackedM31; N_M31_IN_FELT252]) -> Self {
+        Self { value: limbs }
+    }
+
+    pub fn from_m31(val: PackedM31) -> Self {
+        Self {
+            value: std::array::from_fn(|i| if i == 0 { val } else { PackedM31::zero() }),
+        }
+    }
+
+    pub fn to_array(&self) -> [Felt252; N_LANES] {
+        let unpacked_limbs = self.value.unpack();
+        unpacked_limbs.map(|limbs| Felt252::from_limbs(&limbs))
+    }
+
+    pub fn from_array(arr: &[Felt252; N_LANES]) -> Self {
+        let limbs = arr.map(|felt| std::array::from_fn(|i| felt.get_m31(i)));
+        let limbs = <_ as Pack>::pack(limbs);
+        Self::from_limbs(limbs)
+    }
+}
+
+// TODO(Ohad): These are very slow, optimize.
+impl Add for PackedFelt252 {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let lhs = self.to_array();
+        let rhs = rhs.to_array();
+        let result = std::array::from_fn(|i| lhs[i] + rhs[i]);
+        Self::from_array(&result)
+    }
+}
+
+impl Sub for PackedFelt252 {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let lhs = self.to_array();
+        let rhs = rhs.to_array();
+        let result = std::array::from_fn(|i| lhs[i] - rhs[i]);
+        Self::from_array(&result)
+    }
+}
+
+impl Mul for PackedFelt252 {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let lhs = self.to_array();
+        let rhs = rhs.to_array();
+        let result = std::array::from_fn(|i| lhs[i] * rhs[i]);
+        Self::from_array(&result)
+    }
+}
+
+impl PartialEq for PackedFelt252 {
+    fn eq(&self, other: &Self) -> bool {
+        self.to_array() == other.to_array()
     }
 }
 
@@ -395,5 +475,41 @@ impl Unpack for PackedCasmState {
             ap: ap[i],
             fp: fp[i],
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+
+    use super::*;
+
+    #[test]
+    fn test_packed_f252_ops() {
+        let mut rng = SmallRng::seed_from_u64(0u64);
+        let mut rand_f252 = || -> Felt252 {
+            Felt252 {
+                limbs: [rng.gen(), rng.gen(), rng.gen(), 0],
+            }
+        };
+        let mut rand_packed_f252 = || -> PackedFelt252 {
+            PackedFelt252::from_array(&std::array::from_fn(|_| rand_f252()))
+        };
+        let a = rand_packed_f252();
+        let b = rand_packed_f252();
+        let unpacked_a = a.to_array();
+        let unpacked_b = b.to_array();
+        let expected_add = std::array::from_fn(|i| unpacked_a[i] + unpacked_b[i]);
+        let expected_sub = std::array::from_fn(|i| unpacked_a[i] - unpacked_b[i]);
+        let expected_mul = std::array::from_fn(|i| unpacked_a[i] * unpacked_b[i]);
+
+        let add = a + b;
+        let sub = a - b;
+        let mul = a * b;
+
+        assert_eq!(add.to_array(), expected_add);
+        assert_eq!(sub.to_array(), expected_sub);
+        assert_eq!(mul.to_array(), expected_mul);
     }
 }
