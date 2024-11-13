@@ -433,7 +433,7 @@ impl Felt252 {
         M31::from_u32_unchecked(value)
     }
 
-    pub fn from_limbs(felts: Vec<M31>) -> Self {
+    pub fn from_limbs(felts: &[M31]) -> Self {
         assert!(felts.len() <= FELT252_N_WORDS, "Invalid number of felts");
         let mut limbs = [0u64; 4];
         for (index, felt) in felts.iter().enumerate() {
