@@ -56,9 +56,10 @@ impl PackedUInt16 {
         // Safe because UInt16 is u16.
         unsafe { transmute(self.value.to_array()) }
     }
-
-    pub fn from_m31(_val: PackedM31) -> Self {
-        todo!()
+    pub fn from_m31(val: PackedM31) -> Self {
+        Self {
+            value: val.into_simd().cast(),
+        }
     }
 }
 
