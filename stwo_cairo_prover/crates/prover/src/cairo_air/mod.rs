@@ -207,6 +207,7 @@ impl CairoComponents {
             id_to_f252::SmallEval::new(
                 cairo_claim.memory_id_to_value.clone(),
                 interaction_elements.memory_id_to_value_lookup.clone(),
+                interaction_elements.range9_9_lookup.clone(),
                 interaction_claim.memory_id_to_value.clone(),
             ),
         );

@@ -102,6 +102,7 @@ impl FrameworkEval for BigEval {
 pub struct SmallEval {
     pub log_n_rows: u32,
     pub lookup_elements: RelationElements,
+    pub range_check_9_9_relation: range_check_9_9::RelationElements,
     pub claimed_sum: QM31,
 }
 impl SmallEval {
@@ -111,11 +112,13 @@ impl SmallEval {
     pub fn new(
         claim: Claim,
         lookup_elements: RelationElements,
+        range_check_9_9_relation: range_check_9_9::RelationElements,
         interaction_claim: InteractionClaim,
     ) -> Self {
         Self {
             log_n_rows: claim.small_log_size,
             lookup_elements,
+            range_check_9_9_relation,
             claimed_sum: interaction_claim.small_claimed_sum,
         }
     }
@@ -143,6 +146,16 @@ impl FrameworkEval for SmallEval {
         );
         logup.write_frac(&mut eval, frac);
 
+        // Range check elements.
+        for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
+            let frac = Fraction::new(
+                E::EF::one(),
+                self.range_check_9_9_relation
+                    .combine(&[l.clone(), r.clone()]),
+            );
+            logup.write_frac(&mut eval, frac);
+        }
+
         logup.finalize(&mut eval);
 
         eval
@@ -164,7 +177,7 @@ impl Claim {
         .collect();
         let interaction_log_sizes = chain!(
             vec![self.big_log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252 / 2 + 1)],
-            vec![self.small_log_size; SECURE_EXTENSION_DEGREE]
+            vec![self.small_log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252 / 2 + 1)]
         )
         .collect();
 

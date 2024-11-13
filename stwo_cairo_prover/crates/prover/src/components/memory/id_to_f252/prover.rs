@@ -218,7 +218,11 @@ impl ClaimGenerator {
                 range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
             }
         }
-        // TODO(Ohad): rangecheck the small values.
+        for (col0, col1) in small_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
+            for (val0, val1) in zip_eq(col0, col1) {
+                range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
+            }
+        }
 
         // Extend trace.
         let big_log_size = big_trace_size.checked_ilog2().unwrap();
@@ -316,6 +320,21 @@ impl InteractionClaimGenerator {
             col_gen.write_frac(vec_row, (-self.small_multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
+
+        // Every element is 9-bit.
+        for (l, r) in self.small_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
+            let mut col_gen = logup_gen.new_col();
+            for (vec_row, (l1, l2)) in zip(l, r).enumerate() {
+                // TOOD(alont) Add 2-batching.
+                col_gen.write_frac(
+                    vec_row,
+                    PackedQM31::broadcast(M31(1).into()),
+                    range9_9_lookup_elements.combine(&[*l1, *l2]),
+                );
+            }
+            col_gen.finalize_col();
+        }
+
         let (trace, small_claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
