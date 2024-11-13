@@ -2,10 +2,10 @@ use core::iter::Iterator;
 use stwo_cairo_verifier::circle::{
     CirclePoint, Coset, CosetImpl, CirclePointIndexImpl, CirclePointTrait
 };
+use stwo_cairo_verifier::fields::FieldBatchInverse;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
 use stwo_cairo_verifier::fields::{SecureField, BaseField};
-use stwo_cairo_verifier::fields::FieldBatchInverse;
 use stwo_cairo_verifier::poly::utils::{fold, ibutterfly};
 use stwo_cairo_verifier::utils::pow;
 

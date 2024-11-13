@@ -164,7 +164,7 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
         SparseCircleEvaluation { subcircle_evals }
     }
 
-    /// Folds evaluations of a degree `d` circle polynomial into evaluations of a 
+    /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
     /// degree `d/2` univariate polynomial.
     fn fold(self: SparseCircleEvaluation, alpha: QM31) -> Array<QM31> {
         let mut domain_initial_ys = array![];
