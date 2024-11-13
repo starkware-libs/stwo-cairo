@@ -14,7 +14,7 @@ use stwo_cairo_verifier::verifier::{FriVerificationErrorIntoVerificationError, V
 use stwo_cairo_verifier::{ColumnArray, TreeArray};
 use super::PcsConfig;
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
     /// Sampled mask values.
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
