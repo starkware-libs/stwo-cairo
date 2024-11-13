@@ -12,8 +12,8 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{Claim, InteractionClaim, RET_INSTRUCTION};
-use crate::components::memory::id_to_f252;
 use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
+use crate::components::memory::{self, id_to_f252};
 use crate::input::instructions::VmState;
 
 const N_MEMORY_CALLS: usize = 3;
@@ -56,13 +56,18 @@ impl ClaimGenerator {
     pub fn write_trace(
         &self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        memory_addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
         memory_trace_generator: &mut id_to_f252::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        let (trace, interaction_prover) = write_trace_simd(&self.inputs, memory_trace_generator);
-        interaction_prover.memory_inputs.iter().for_each(|c| {
-            c.iter()
-                .for_each(|v| memory_trace_generator.add_inputs_simd(v))
-        });
+        let (trace, interaction_prover) = write_trace_simd(
+            &self.inputs,
+            memory_addr_to_id_state,
+            memory_trace_generator,
+        );
+        // interaction_prover.memory_inputs.iter().for_each(|c| {
+        //     c.iter()
+        //         .for_each(|v| memory_trace_generator.add_packed_m31(v))
+        // });
         tree_builder.extend_evals(trace);
         let claim = Claim {
             n_rets: self.inputs.len() * N_LANES,
@@ -130,6 +135,7 @@ impl InteractionClaimGenerator {
 
 fn write_trace_simd(
     inputs: &[PackedCasmState],
+    memory_addr_to_id_state: &memory::addr_to_id::ClaimGenerator,
     memory_trace_generator: &id_to_f252::ClaimGenerator,
 ) -> (
     Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
@@ -146,6 +152,7 @@ fn write_trace_simd(
             input,
             i,
             &mut sub_components_inputs,
+            memory_addr_to_id_state,
             memory_trace_generator,
         );
     });
@@ -175,6 +182,7 @@ fn write_trace_row(
     ret_opcode_input: &PackedCasmState,
     row_index: usize,
     lookup_data: &mut InteractionClaimGenerator,
+    memory_addr_to_id_state: &memory::addr_to_id::ClaimGenerator,
     memory_trace_generator: &id_to_f252::ClaimGenerator,
 ) {
     let col0 = ret_opcode_input.pc;
@@ -186,8 +194,8 @@ fn write_trace_row(
     lookup_data.memory_inputs[0].push(col0);
     lookup_data.memory_inputs[1].push((col2) - (PackedM31::broadcast(M31::one())));
     lookup_data.memory_outputs[0].push(RET_INSTRUCTION.map(|v| PackedM31::broadcast(M31::from(v))));
-    let mem_fp_minus_one =
-        memory_trace_generator.deduce_output((col2) - (PackedM31::broadcast(M31::from(1))));
+    let id = memory_addr_to_id_state.deduce_output((col2) - (PackedM31::broadcast(M31::from(1))));
+    let mem_fp_minus_one = memory_trace_generator.deduce_output(id).value;
     lookup_data.memory_outputs[1].push(mem_fp_minus_one);
 
     let col3 = mem_fp_minus_one[0];
@@ -195,8 +203,8 @@ fn write_trace_row(
     let col4 = mem_fp_minus_one[1];
     dst[4].data[row_index] = col4;
     lookup_data.memory_inputs[2].push((col2) - (PackedM31::broadcast(M31::from(2))));
-    let mem_fp_minus_two =
-        memory_trace_generator.deduce_output((col2) - (PackedM31::broadcast(M31::from(2))));
+    let id = memory_addr_to_id_state.deduce_output((col2) - (PackedM31::broadcast(M31::from(2))));
+    let mem_fp_minus_two = memory_trace_generator.deduce_output(id).value;
     lookup_data.memory_outputs[2].push(mem_fp_minus_two);
     let col5 = mem_fp_minus_two[0];
     dst[5].data[row_index] = col5;
