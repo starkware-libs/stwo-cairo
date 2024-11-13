@@ -6,7 +6,9 @@ use stwo_prover::constraint_framework::{TraceLocationAllocator, PREPROCESSED_TRA
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::{Blake2sChannel, Channel};
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
+use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::{
     CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig, TreeVec,
 };
@@ -20,6 +22,7 @@ use tracing::{span, Level};
 use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5, range_check_9_9};
 use crate::components::{opcodes, ret_opcode, verifyinstruction};
+use crate::felt::split_f252;
 use crate::input::instructions::VmState;
 use crate::input::CairoInput;
 
@@ -30,10 +33,13 @@ pub struct CairoProof<H: MerkleHasher> {
     pub stark_proof: StarkProof<H>,
 }
 
+// (Address, Id, Value)
+pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
+
 #[derive(Serialize, Deserialize)]
 pub struct CairoClaim {
     // Common claim values.
-    pub public_memory: Vec<(u32, [u32; 8])>,
+    pub public_memory: PublicMemory,
     pub initial_state: VmState,
     pub final_state: VmState,
 
@@ -116,13 +122,36 @@ impl CairoInteractionClaim {
 }
 
 pub fn lookup_sum(
-    _claim: &CairoClaim,
-    _elements: &CairoInteractionElements,
+    claim: &CairoClaim,
+    elements: &CairoInteractionElements,
     interaction_claim: &CairoInteractionClaim,
 ) -> SecureField {
     let mut sum = QM31::zero();
-    // TODO(spapini): Optimized inverse.
-    // TODO(Ohad): Public memory.
+    // TODO(Ohad): Optimized inverse.
+    sum += claim
+        .public_memory
+        .iter()
+        .map(|(addr, id, val)| {
+            let addr_to_id = elements
+                .memory_addr_to_id_lookup
+                .combine::<M31, QM31>(&[
+                    M31::from_u32_unchecked(*addr),
+                    M31::from_u32_unchecked(*id),
+                ])
+                .inverse();
+            let id_to_value = elements
+                .memory_id_to_value_lookup
+                .combine::<M31, QM31>(
+                    &[
+                        [M31::from_u32_unchecked(*id)].as_slice(),
+                        split_f252(*val).as_slice(),
+                    ]
+                    .concat(),
+                )
+                .inverse();
+            addr_to_id + id_to_value
+        })
+        .sum::<SecureField>();
     sum += interaction_claim.range_check9_9.claimed_sum;
     sum += interaction_claim.memory_addr_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
@@ -314,7 +343,10 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         .public_mem_addresses
         .iter()
         .copied()
-        .map(|a| (a, input.mem.get(a).as_u256()))
+        .map(|addr| {
+            let id = input.mem.get_raw_id(addr);
+            (addr, id, input.mem.get(addr).as_u256())
+        })
         .collect_vec();
 
     // TODO: Table interaction.
@@ -330,6 +362,11 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let mut range_check_4_3_trace_generator = range_check_4_3::ClaimGenerator::new();
 
     // TODO(Ohad): Add public memory.
+    for &addr in &input.public_mem_addresses {
+        let id = memory_addr_to_id_trace_generator.ids[addr as usize];
+        memory_addr_to_id_trace_generator.add_m31(M31::from_u32_unchecked(addr));
+        memory_id_to_value_trace_generator.add_m31(M31::from_u32_unchecked(id));
+    }
 
     let mut tree_builder = commitment_scheme.tree_builder();
 
