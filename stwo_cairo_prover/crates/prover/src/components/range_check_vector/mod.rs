@@ -59,10 +59,12 @@ macro_rules! generate_range_check_component {
             pub mod [<range_check_$($log_range)_*>]{
                 use std::ops::{Deref, DerefMut};
                 use serde::{Deserialize, Serialize};
-                use stwo_prover::constraint_framework::logup::LookupElements;
                 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
                 use stwo_prover::constraint_framework::FrameworkEval;
+                use stwo_prover::constraint_framework::logup::LookupElements;
+                use stwo_prover::core::backend::simd::m31::PackedM31;
                 use stwo_prover::core::backend::simd::SimdBackend;
+                use stwo_prover::core::fields::m31::M31;
                 use stwo_prover::core::fields::qm31::QM31;
                 use stwo_prover::core::pcs::TreeBuilder;
                 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -131,6 +133,9 @@ macro_rules! generate_range_check_component {
                     }
                 }
 
+                pub type PackedInputType = [PackedM31; N_RANGES];
+                pub type InputType = [M31; N_RANGES];
+
                 pub struct ClaimGenerator(RangeCheckClaimGenerator::<N_RANGES>);
                 impl ClaimGenerator {
                     #[allow(clippy::new_without_default)]
@@ -189,6 +194,8 @@ macro_rules! count_elements {
 }
 
 generate_range_check_component!(9, 9);
+generate_range_check_component!(7, 2, 5);
+generate_range_check_component!(4, 3);
 
 #[cfg(test)]
 mod tests {
