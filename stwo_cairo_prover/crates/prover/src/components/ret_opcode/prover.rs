@@ -20,7 +20,7 @@ use stwo_prover::core::utils::{bit_reverse, bit_reverse_coset_to_circle_domain_o
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
 use super::component::{Claim, InteractionClaim, RelationElements};
-use crate::components::{memory, opcodes, pack_values, verifyinstruction};
+use crate::components::{memory, opcodes, verifyinstruction};
 use crate::input::instructions::VmState;
 
 pub type PackedInputType = PackedCasmState;

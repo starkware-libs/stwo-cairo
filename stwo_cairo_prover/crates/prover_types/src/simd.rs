@@ -397,3 +397,10 @@ impl Unpack for PackedCasmState {
         })
     }
 }
+
+pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
+    values
+        .array_chunks::<N_LANES>()
+        .map(|c| T::pack(*c))
+        .collect()
+}

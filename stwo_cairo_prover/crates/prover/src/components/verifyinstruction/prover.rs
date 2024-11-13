@@ -22,7 +22,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
-use crate::components::{memory, pack_values, verifyinstruction};
+use crate::components::{memory, verifyinstruction};
 
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
 pub type InputType = (M31, [M31; 3], [M31; 15]);
