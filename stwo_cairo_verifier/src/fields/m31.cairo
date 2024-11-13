@@ -1,4 +1,4 @@
-use core::num::traits::{WideMul, CheckedSub};
+use core::num::traits::{CheckedSub, WideMul};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::option::OptionTrait;
 use core::traits::TryInto;
@@ -16,9 +16,9 @@ const P64NZ: NonZero<u64> = 0x7fffffff;
 /// Equals `2^31 - 1`.
 const P128NZ: NonZero<u128> = 0x7fffffff;
 
-#[derive(Copy, Drop, Debug, PartialEq)]
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct M31 {
-    pub inner: u32
+    pub inner: u32,
 }
 
 pub impl M31FieldImpl of Field<M31> {
@@ -200,7 +200,7 @@ fn sqn(v: M31, n: usize) -> M31 {
 #[cfg(test)]
 mod tests {
     use super::super::Field;
-    use super::{m31, P, M31FieldImpl};
+    use super::{M31FieldImpl, P, m31};
 
     const POW2_15: u32 = 0b1000000000000000;
     const POW2_16: u32 = 0b10000000000000000;

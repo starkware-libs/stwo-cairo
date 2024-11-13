@@ -1,12 +1,12 @@
-use core::iter::{Iterator, IntoIterator};
+use core::iter::{IntoIterator, Iterator};
 use stwo_cairo_verifier::circle::{
-    CirclePoint, Coset, CosetImpl, CirclePointIndexImpl, CirclePointTrait
+    CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl,
 };
 use stwo_cairo_verifier::fields::FieldBatchInverse;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
-use stwo_cairo_verifier::fields::{SecureField, BaseField};
-use stwo_cairo_verifier::poly::utils::{fold, ibutterfly};
+use stwo_cairo_verifier::fields::{BaseField, SecureField};
+use stwo_cairo_verifier::poly::utils::{butterfly, fold, ibutterfly};
 use stwo_cairo_verifier::utils::pow;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -38,13 +38,11 @@ pub impl LinePolyImpl of LinePolyTrait {
     // Note there are tradeoffs depending on the blowup factor last FRI layer degree bound.
     fn eval_at_point(self: @LinePoly, mut x: BaseField) -> SecureField {
         let mut doublings = array![];
-        for _ in 0
-            ..*self
-                .log_size {
-                    doublings.append(x);
-                    let x_square = x * x;
-                    x = x_square + x_square - m31(1);
-                };
+        for _ in 0..*self.log_size {
+            doublings.append(x);
+            let x_square = x * x;
+            x = x_square + x_square - m31(1);
+        };
 
         fold(self.coeffs, @doublings, 0, 0, self.coeffs.len())
     }
@@ -100,7 +98,7 @@ pub fn repeat_value(values: Span<QM31>, duplicity: usize) -> Array<QM31> {
 /// Panics if the number of values doesn't match the size of the domain.
 #[inline]
 fn line_fft(
-    mut values: Array<QM31>, mut domain: LineDomain, n_skipped_layers: usize
+    mut values: Array<QM31>, mut domain: LineDomain, n_skipped_layers: usize,
 ) -> Array<QM31> {
     let n = values.len();
     assert!(values.len() == domain.size());
@@ -119,21 +117,20 @@ fn line_fft(
         let stride = chunk_size / 2;
         let values_span = values.span();
         let mut next_values = array![];
-        for chunk_i in 0
-            ..n_chunks {
-                let chunk_offset = chunk_i * chunk_size;
-                let mut chunk_l_vals = values_span.slice(chunk_offset, stride).into_iter();
-                let mut chunk_r_vals = values_span.slice(chunk_offset + stride, stride).into_iter();
-                let mut next_r_values = array![];
-                for twiddle in twiddles {
-                    let v0 = *chunk_l_vals.next().unwrap();
-                    let v1 = *chunk_r_vals.next().unwrap();
-                    let (v0, v1) = butterfly(v0, v1, *twiddle);
-                    next_values.append(v0);
-                    next_r_values.append(v1);
-                };
-                next_values.append_span(next_r_values.span());
+        for chunk_i in 0..n_chunks {
+            let chunk_offset = chunk_i * chunk_size;
+            let mut chunk_l_vals = values_span.slice(chunk_offset, stride).into_iter();
+            let mut chunk_r_vals = values_span.slice(chunk_offset + stride, stride).into_iter();
+            let mut next_r_values = array![];
+            for twiddle in twiddles {
+                let v0 = *chunk_l_vals.next().unwrap();
+                let v1 = *chunk_r_vals.next().unwrap();
+                let (v0, v1) = butterfly(v0, v1, *twiddle);
+                next_values.append(v0);
+                next_r_values.append(v1);
             };
+            next_values.append_span(next_r_values.span());
+        };
         values = next_values;
     };
 
@@ -145,7 +142,7 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     let mut iter = LineDomainIterator {
         cur: self.coset.initial_index.to_point(),
         step: self.coset.step_size.to_point(),
-        remaining: self.size() / 2
+        remaining: self.size() / 2,
     };
     let mut res = array![];
     while let Option::Some(v) = iter.next() {
@@ -154,10 +151,25 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     res
 }
 
-#[inline]
-fn butterfly(v0: QM31, v1: QM31, twid: M31) -> (QM31, QM31) {
-    let tmp = v1.mul_m31(twid);
-    (v0 + tmp, v0 - tmp)
+pub impl LinePolySerde of Serde<LinePoly> {
+    fn serialize(self: @LinePoly, ref output: Array<felt252>) {
+        self.coeffs.serialize(ref output);
+        self.log_size.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<LinePoly> {
+        let res = LinePoly {
+            coeffs: Serde::deserialize(ref serialized)?,
+            log_size: Serde::deserialize(ref serialized)?,
+        };
+
+        // Check the sizes match.
+        if res.coeffs.len() != pow(2, res.log_size) {
+            return Option::None;
+        }
+
+        Option::Some(res)
+    }
 }
 
 /// Domain comprising of the x-coordinates of points in a [Coset].
@@ -182,7 +194,7 @@ pub impl LineDomainImpl of LineDomainTrait {
             // 2. if `ord(c) = 2 * ord(G)` then `c` and `-c` are in our coset
             assert!(
                 coset.initial_index.to_point().log_order() >= coset.log_size + 2,
-                "coset x-coordinates not unique"
+                "coset x-coordinates not unique",
             );
         }
         LineDomain { coset: coset }
@@ -223,7 +235,7 @@ pub impl LineDomainImpl of LineDomainTrait {
 pub struct LineEvaluation {
     /// Evaluations in natural order.
     pub values: Array<QM31>,
-    pub domain: LineDomain
+    pub domain: LineDomain,
 }
 
 #[generate_trait]
@@ -254,14 +266,13 @@ pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
         let mut domain_initials_inv = FieldBatchInverse::batch_inverse(domain_initials);
         let mut res = array![];
 
-        for eval in self
-            .subline_evals {
-                let x_inv = domain_initials_inv.pop_front().unwrap();
-                let values: Box<[QM31; 2]> = *eval.values.span().try_into().unwrap();
-                let [f_at_x, f_at_neg_x] = values.unbox();
-                let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
-                res.append(f0 + alpha * f1);
-            };
+        for eval in self.subline_evals {
+            let x_inv = domain_initials_inv.pop_front().unwrap();
+            let values: Box<[QM31; 2]> = *eval.values.span().try_into().unwrap();
+            let [f_at_x, f_at_neg_x] = values.unbox();
+            let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
+            res.append(f0 + alpha * f1);
+        };
 
         res
     }
@@ -292,10 +303,10 @@ impl LineDomainIteratorImpl of Iterator<LineDomainIterator> {
 #[cfg(test)]
 mod tests {
     use core::iter::{IntoIterator, Iterator};
-    use stwo_cairo_verifier::circle::{CosetImpl, CirclePointIndexImpl};
+    use stwo_cairo_verifier::circle::{CirclePointIndexImpl, CosetImpl};
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::qm31;
-    use super::{LinePoly, LinePolyTrait, LineDomain, LineDomainImpl, LineDomainIterator};
+    use super::{LineDomain, LineDomainImpl, LineDomainIterator, LinePoly, LinePolyTrait};
 
     #[test]
     fn line_domain_of_size_two_works() {
@@ -314,9 +325,9 @@ mod tests {
         let line_poly = LinePoly {
             coeffs: array![
                 qm31(1080276375, 1725024947, 477465525, 102017026),
-                qm31(1080276375, 1725024947, 477465525, 102017026)
+                qm31(1080276375, 1725024947, 477465525, 102017026),
             ],
-            log_size: 1
+            log_size: 1,
         };
         let x = m31(590768354);
 
@@ -328,7 +339,7 @@ mod tests {
     #[test]
     fn test_eval_at_point_2() {
         let line_poly = LinePoly {
-            coeffs: array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8)], log_size: 1
+            coeffs: array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8)], log_size: 1,
         };
         let x = m31(10);
 
@@ -350,7 +361,7 @@ mod tests {
                 qm31(7, 2, 0, 1),
                 qm31(8, 1, 1, 5),
             ],
-            log_size: 3
+            log_size: 3,
         };
         let x = m31(10);
 
@@ -380,10 +391,9 @@ mod tests {
         let result = poly.evaluate(domain);
         let mut result_iter = result.values.into_iter();
 
-        for x in domain
-            .into_iter() {
-                assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-            }
+        for x in domain.into_iter() {
+            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
+        }
     }
 
     #[test]
@@ -407,10 +417,9 @@ mod tests {
         let result = poly.evaluate(domain);
         let mut result_iter = result.values.into_iter();
 
-        for x in domain
-            .into_iter() {
-                assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-            }
+        for x in domain.into_iter() {
+            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
+        }
     }
 
     impl LineDomainIntoIterator of IntoIterator<LineDomain> {
