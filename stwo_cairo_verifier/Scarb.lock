@@ -2,5 +2,21 @@
 version = 1
 
 [[package]]
+name = "snforge_scarb_plugin"
+version = "0.32.0"
+source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.32.0#3817c903b640201c72e743b9bbe70a97149828a2"
+
+[[package]]
+name = "snforge_std"
+version = "0.32.0"
+source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.32.0#3817c903b640201c72e743b9bbe70a97149828a2"
+dependencies = [
+ "snforge_scarb_plugin",
+]
+
+[[package]]
 name = "stwo_cairo_verifier"
 version = "0.1.0"
+dependencies = [
+ "snforge_std",
+]

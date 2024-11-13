@@ -1,6 +1,6 @@
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl};
-use stwo_cairo_verifier::fields::{SecureField, BaseField};
+use stwo_cairo_verifier::fields::{BaseField, SecureField};
 
 /// Folds values recursively in `O(n)` by a hierarchical application of folding factors.
 ///
@@ -25,7 +25,7 @@ pub fn fold(
     folding_factors: @Array<BaseField>,
     index: usize,
     level: usize,
-    n: usize
+    n: usize,
 ) -> SecureField {
     if n == 1 {
         return *values[index];
