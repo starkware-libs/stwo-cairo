@@ -13,7 +13,57 @@ use stwo_cairo_verifier::{ColumnArray, TreeArray};
 
 mod proofs;
 
-// TODO(andrew): Add tests.
+#[test]
+#[available_gas(100000000000)]
+fn test_horizontal_fib_128_column_with_blowup_2() {
+    let proof = proofs::horizontal_fib_128_column_with_blowup_2::proof();
+    let config = PcsConfig {
+        pow_bits: 10,
+        fri_config: FriConfig {
+            log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60,
+        },
+    };
+
+    // Verify.
+    let log_size = 20;
+    let air = HorizontalFibAir::<128> { log_size };
+    let mut channel = ChannelImpl::new(0);
+    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+    // Decommit.
+    commitment_scheme
+        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(128, log_size), ref channel);
+
+    if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+        panic!("Verification failed: {:?}", err);
+    }
+}
+
+#[test]
+#[available_gas(100000000000)]
+fn test_horizontal_fib_128_column_with_blowup_16() {
+    let proof = proofs::horizontal_fib_128_column_with_blowup_16::proof();
+    let config = PcsConfig {
+        pow_bits: 10,
+        fri_config: FriConfig {
+            log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15,
+        },
+    };
+
+    // Verify.
+    let log_size = 20;
+    let air = HorizontalFibAir::<128> { log_size };
+    let mut channel = ChannelImpl::new(0);
+    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+    // Decommit.
+    commitment_scheme
+        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(128, log_size), ref channel);
+
+    if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+        panic!("Verification failed: {:?}", err);
+    }
+}
 
 #[derive(Drop)]
 struct HorizontalFibAir<const N_COLUMNS: usize> {

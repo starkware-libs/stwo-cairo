@@ -103,7 +103,7 @@ fn extract_composition_coordinate_eval(
 #[derive(Clone, Copy, Debug, Drop)]
 pub struct InvalidOodsSampleStructure {}
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct StarkProof {
     pub commitments: TreeArray<felt252>,
     pub commitment_scheme_proof: CommitmentSchemeProof,

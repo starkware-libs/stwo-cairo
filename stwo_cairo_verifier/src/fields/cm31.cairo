@@ -3,7 +3,7 @@ use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::m31::{M31, M31Impl, m31};
 use super::{Field, FieldBatchInverse};
 
-#[derive(Copy, Drop, Debug, PartialEq)]
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct CM31 {
     pub a: M31,
     pub b: M31,

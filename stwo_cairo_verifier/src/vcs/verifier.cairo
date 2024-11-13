@@ -8,10 +8,10 @@ use core::dict::Felt252DictTrait;
 use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
-use stwo_cairo_verifier::BaseField;
 use stwo_cairo_verifier::utils::SpanExTrait;
 use stwo_cairo_verifier::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
+use stwo_cairo_verifier::{BaseField, ColumnArray};
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
@@ -23,6 +23,7 @@ pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// the verifier.
     pub column_witness: Array<BaseField>,
 }
+
 impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
 
 impl MerkleDecommitmentDebug<
@@ -40,6 +41,24 @@ impl MerkleDecommitmentClone<
         MerkleDecommitment::<
             H,
         > { hash_witness: self.hash_witness.clone(), column_witness: self.column_witness.clone() }
+    }
+}
+
+impl MerkleDecommitmentSerde<
+    impl H: MerkleHasher, +Serde<H::Hash>, +Drop<H::Hash>,
+> of Serde<MerkleDecommitment<H>> {
+    fn serialize(self: @MerkleDecommitment<H>, ref output: Array<felt252>) {
+        self.hash_witness.serialize(ref output);
+        self.column_witness.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<MerkleDecommitment<H>> {
+        Option::Some(
+            MerkleDecommitment {
+                hash_witness: Serde::deserialize(ref serialized)?,
+                column_witness: Serde::deserialize(ref serialized)?,
+            },
+        )
     }
 }
 
@@ -76,7 +95,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     fn verify(
         self: @MerkleVerifier<H>,
         queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: @Array<Array<BaseField>>,
+        queried_values: @ColumnArray<Array<BaseField>>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError>;
 

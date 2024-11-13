@@ -258,7 +258,7 @@ fn get_flattened_query_values(
     res
 }
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
