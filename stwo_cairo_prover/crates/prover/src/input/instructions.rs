@@ -1,4 +1,6 @@
+use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
+use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
@@ -17,6 +19,16 @@ impl From<TraceEntry> for VmState {
             pc: entry.pc as u32,
             ap: entry.ap as u32,
             fp: entry.fp as u32,
+        }
+    }
+}
+
+impl From<VmState> for CasmState {
+    fn from(state: VmState) -> Self {
+        Self {
+            pc: M31(state.pc),
+            ap: M31(state.ap),
+            fp: M31(state.fp),
         }
     }
 }

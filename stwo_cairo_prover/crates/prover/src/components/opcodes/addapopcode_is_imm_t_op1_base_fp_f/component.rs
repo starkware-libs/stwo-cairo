@@ -3,9 +3,11 @@
 use std::ops::{Mul, Sub};
 
 use num_traits::{One, Zero};
+use prover_types::simd::LOG_N_LANES;
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
-use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
+use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
@@ -46,10 +48,15 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_size = self.n_calls.next_power_of_two().ilog2();
-        let interaction_0_log_sizes = vec![log_size; 9];
-        let interaction_1_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 8];
-        TreeVec::new(vec![interaction_0_log_sizes, interaction_1_log_sizes])
+        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
+        let preprocessed_log_sizes = vec![log_size];
+        let trace_log_sizes = vec![log_size; 9];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE* 3];
+        TreeVec::new(vec![
+            preprocessed_log_sizes,
+            trace_log_sizes,
+            interaction_log_sizes,
+        ])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -76,7 +83,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.n_calls.next_power_of_two().ilog2()
+        std::cmp::max(self.claim.n_calls.next_power_of_two().ilog2(), LOG_N_LANES)
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -89,25 +96,25 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
-        let M31_134217728 = E::F::from(M31::from(134217728));
+        // let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_136 = E::F::from(M31::from(136));
-        let M31_2 = E::F::from(M31::from(2));
+        // let M31_2 = E::F::from(M31::from(2));
         let M31_256 = E::F::from(M31::from(256));
-        let M31_262144 = E::F::from(M31::from(262144));
+        // let M31_262144 = E::F::from(M31::from(262144));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_32769 = E::F::from(M31::from(32769));
         let M31_511 = E::F::from(M31::from(511));
-        let M31_512 = E::F::from(M31::from(512));
-        let [is_first] = eval.next_interaction_mask(2, [0]);
+        // let M31_512 = E::F::from(M31::from(512));
+        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
         let mut logup = LogupAtRow::<E>::new(
-            1,
+            INTERACTION_TRACE_IDX,
             self.interaction_claim.total_sum,
             self.interaction_claim.claimed_sum,
             is_first,
         );
         let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
+        let _input_ap_col1 = eval.next_trace_mask();
+        let _input_fp_col2 = eval.next_trace_mask();
         let op1_id_col3 = eval.next_trace_mask();
         let msb_col4 = eval.next_trace_mask();
         let mid_limbs_set_col5 = eval.next_trace_mask();
@@ -197,29 +204,29 @@ impl FrameworkEval for Eval {
         );
         logup.write_frac(&mut eval, frac);
 
-        let frac = Fraction::new(
-            E::EF::one(),
-            self.opcodes_lookup_elements.combine(&[
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
-            -E::EF::one(),
-            self.opcodes_lookup_elements.combine(&[
-                (input_pc_col0.clone() + M31_2.clone()),
-                (input_ap_col1.clone()
-                    + ((((op1_limb_0_col6.clone()
-                        + (op1_limb_1_col7.clone() * M31_512.clone()))
-                        + (op1_limb_2_col8.clone() * M31_262144.clone()))
-                        - msb_col4.clone())
-                        - (M31_134217728.clone() * mid_limbs_set_col5.clone()))),
-                input_fp_col2.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+        // let frac = Fraction::new(
+        //     E::EF::one(),
+        //     self.opcodes_lookup_elements.combine(&[
+        //         input_pc_col0.clone(),
+        //         input_ap_col1.clone(),
+        //         input_fp_col2.clone(),
+        //     ]),
+        // );
+        // logup.write_frac(&mut eval, frac);
+        // let frac = Fraction::new(
+        //     -E::EF::one(),
+        //     self.opcodes_lookup_elements.combine(&[
+        //         (input_pc_col0.clone() + M31_2.clone()),
+        //         (input_ap_col1.clone()
+        //             + ((((op1_limb_0_col6.clone()
+        //                 + (op1_limb_1_col7.clone() * M31_512.clone()))
+        //                 + (op1_limb_2_col8.clone() * M31_262144.clone()))
+        //                 - msb_col4.clone())
+        //                 - (M31_134217728.clone() * mid_limbs_set_col5.clone()))),
+        //         input_fp_col2.clone(),
+        //     ]),
+        // );
+        // logup.write_frac(&mut eval, frac);
         logup.finalize(&mut eval);
 
         eval

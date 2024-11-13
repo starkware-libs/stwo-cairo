@@ -20,10 +20,9 @@ use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::components::memory::{addr_to_id, id_to_f252};
+use crate::components::opcodes::{addapopcode_is_imm_t_op1_base_fp_f, jumpopcode_is_rel_t_is_imm_t_is_double_deref_f, ret_opcode};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5, range_check_9_9};
-use crate::components::{
-    addapopcode_is_imm_t_op1_base_fp_f, opcodes, ret_opcode, verifyinstruction,
-};
+use crate::components::{opcodes, verifyinstruction};
 use crate::felt::split_f252;
 use crate::input::instructions::VmState;
 use crate::input::CairoInput;
@@ -44,6 +43,7 @@ pub struct CairoClaim {
 
     pub ret: Vec<ret_opcode::Claim>,
     pub add_ap_imm: addapopcode_is_imm_t_op1_base_fp_f::Claim,
+    pub jmp_rel_imm: jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Claim,
     pub memory_addr_to_id: addr_to_id::Claim,
     pub memory_id_to_value: id_to_f252::Claim,
     pub verify_instruction: verifyinstruction::Claim,
@@ -64,6 +64,8 @@ impl CairoClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let mut log_sizes = TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
+            [self.add_ap_imm.log_sizes()],
+            [self.jmp_rel_imm.log_sizes()],
             [self.memory_addr_to_id.log_sizes()],
             [self.memory_id_to_value.log_sizes()],
             [self.verify_instruction.log_sizes()],
@@ -105,6 +107,7 @@ impl CairoInteractionElements {
 pub struct CairoInteractionClaim {
     pub ret: Vec<ret_opcode::InteractionClaim>,
     pub add_ap_im: addapopcode_is_imm_t_op1_base_fp_f::InteractionClaim,
+    pub jmp_rel_imm: jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaim,
     pub memory_addr_to_id: addr_to_id::InteractionClaim,
     pub memory_id_to_value: id_to_f252::InteractionClaim,
     pub range_check9_9: range_check_9_9::InteractionClaim,
@@ -162,12 +165,18 @@ pub fn lookup_sum(
     sum += interaction_claim.ret[0].claimed_sum.0;
     sum += interaction_claim.verify_instruction.claimed_sum.0;
     sum += interaction_claim.add_ap_im.claimed_sum.unwrap().0;
+    sum += if let Some(claimed_sum) = &interaction_claim.jmp_rel_imm.claimed_sum {
+        claimed_sum.0
+    } else {
+        interaction_claim.jmp_rel_imm.total_sum
+    };
     sum
 }
 
 pub struct CairoComponents {
     ret: Vec<ret_opcode::Component>,
     add_ap_imm: addapopcode_is_imm_t_op1_base_fp_f::Component,
+    jmp_rel_imm: jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Component,
     memory_addr_to_id: addr_to_id::Component,
     memory_id_to_value: (id_to_f252::BigComponent, id_to_f252::SmallComponent),
     verify_instruction: verifyinstruction::Component,
@@ -217,6 +226,37 @@ impl CairoComponents {
                 )
             })
             .collect_vec();
+        let addapopcode_is_imm_t_op1_base_fp_f_component =
+            addapopcode_is_imm_t_op1_base_fp_f::Component::new(
+                tree_span_provider,
+                addapopcode_is_imm_t_op1_base_fp_f::Eval {
+                    claim: cairo_claim.add_ap_imm,
+                    interaction_claim: interaction_claim.add_ap_im,
+                    memoryaddresstoid_lookup_elements: interaction_elements
+                        .memory_addr_to_id_lookup
+                        .clone(),
+                    memoryidtobig_lookup_elements: interaction_elements
+                        .memory_id_to_value_lookup
+                        .clone(),
+                    verifyinstruction_lookup_elements: interaction_elements
+                        .verify_instruction_lookup
+                        .clone(),
+                    opcodes_lookup_elements: interaction_elements.opcodes_lookup_elements.clone(),
+                },
+            );
+        let jmp_rel_component = jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Component::new(
+            tree_span_provider,
+            jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Eval {
+                claim: cairo_claim.jmp_rel_imm,
+                interaction_claim: interaction_claim.jmp_rel_imm,
+                addr_to_id_lookup_elements: interaction_elements.memory_addr_to_id_lookup.clone(),
+                id_to_f252_lookup_elements: interaction_elements.memory_id_to_value_lookup.clone(),
+                verifyinstruction_lookup_elements: interaction_elements
+                    .verify_instruction_lookup
+                    .clone(),
+                opcodes_lookup_elements: interaction_elements.opcodes_lookup_elements.clone(),
+            },
+        );
         let memory_addr_to_id_component = addr_to_id::Component::new(
             tree_span_provider,
             addr_to_id::Eval::new(
@@ -278,7 +318,8 @@ impl CairoComponents {
         );
         Self {
             ret: ret_components,
-            
+            add_ap_imm: addapopcode_is_imm_t_op1_base_fp_f_component,
+            jmp_rel_imm: jmp_rel_component,
             memory_addr_to_id: memory_addr_to_id_component,
             memory_id_to_value: (
                 memory_id_to_value_component,
@@ -296,6 +337,8 @@ impl CairoComponents {
         for ret in self.ret.iter() {
             vec.push(ret);
         }
+        vec.push(&self.add_ap_imm);
+        vec.push(&self.jmp_rel_imm);
         vec.push(&self.memory_addr_to_id);
         vec.push(&self.memory_id_to_value.0);
         vec.push(&self.memory_id_to_value.1);
@@ -360,6 +403,10 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let ret_trace_generator = ret_opcode::ClaimGenerator::new(input.instructions.ret);
     let add_ap_imm_trace_generator =
         addapopcode_is_imm_t_op1_base_fp_f::ClaimGenerator::new(input.instructions.add_ap);
+    let jumpopcode_is_rel_t_is_imm_t_is_double_deref_f_trace_generator =
+        jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator::new(
+            input.instructions.jmp_rel_imm[0].clone(),
+        );
     let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
     let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
     let mut range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
@@ -388,6 +435,13 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         &mut memory_id_to_value_trace_generator,
         &mut verify_instruction_trace_generator,
     );
+    let (jmp_rel_imm_claim, jmp_rel_imm_interaction_prover) =
+        jumpopcode_is_rel_t_is_imm_t_is_double_deref_f_trace_generator.write_trace(
+            &mut tree_builder,
+            &mut memory_addr_to_id_trace_generator,
+            &mut memory_id_to_value_trace_generator,
+            &mut verify_instruction_trace_generator,
+        );
     let (memory_addr_to_id_claim, memory_addr_to_id_interaction_prover) =
         memory_addr_to_id_trace_generator.write_trace(&mut tree_builder);
     let (memory_id_to_value_claim, memory_id_to_value_interaction_prover) =
@@ -414,6 +468,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         ret: vec![ret_claim],
         memory_addr_to_id: memory_addr_to_id_claim.clone(),
         add_ap_imm: add_ap_imm_claim,
+        jmp_rel_imm: jmp_rel_imm_claim,
         memory_id_to_value: memory_id_to_value_claim.clone(),
         range_check9_9: range_check9_9_claim.clone(),
         range_check7_2_5: range_check_7_2_5_claim.clone(),
@@ -436,6 +491,13 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         &interaction_elements.opcodes_lookup_elements,
     );
     let add_ap_imm_interaction_claim = add_ap_imm_interaction_prover.write_interaction_trace(
+        &mut tree_builder,
+        &interaction_elements.memory_addr_to_id_lookup,
+        &interaction_elements.memory_id_to_value_lookup,
+        &interaction_elements.verify_instruction_lookup,
+        &interaction_elements.opcodes_lookup_elements,
+    );
+    let jmp_rel_imm_interaction_claim = jmp_rel_imm_interaction_prover.write_interaction_trace(
         &mut tree_builder,
         &interaction_elements.memory_addr_to_id_lookup,
         &interaction_elements.memory_id_to_value_lookup,
@@ -473,6 +535,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let interaction_claim = CairoInteractionClaim {
         ret: vec![ret_interaction_claim],
         add_ap_im: add_ap_imm_interaction_claim,
+        jmp_rel_imm: jmp_rel_imm_interaction_claim,
         memory_addr_to_id: memory_addr_to_id_interaction_claim.clone(),
         memory_id_to_value: memory_id_to_value_interaction_claim.clone(),
         range_check9_9: range_check9_9_interaction_claim.clone(),

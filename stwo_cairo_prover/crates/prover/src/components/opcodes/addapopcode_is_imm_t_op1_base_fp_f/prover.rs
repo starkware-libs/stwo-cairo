@@ -13,6 +13,7 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{Col, Column};
 use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -32,18 +33,12 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
-    pub fn new(cpu_inputs: Vec<VmState>) -> Self {
-        let cpu_inputs = cpu_inputs
-            .into_iter()
-            .map(|VmState { pc, ap, fp }| CasmState {
-                pc: M31(pc),
-                ap: M31(ap),
-                fp: M31(fp),
-            })
-            .collect();
-        Self { inputs: cpu_inputs }
+    pub fn new(inputs: Vec<VmState>) -> Self {
+        Self {
+            inputs: inputs.into_iter().map(Into::into).collect(),
+        }
     }
-    
+
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
@@ -77,19 +72,19 @@ impl ClaimGenerator {
             .memory_addr_to_id_inputs
             .iter()
             .for_each(|inputs| {
-                memory_addr_to_id_state.add_inputs(inputs);
+                memory_addr_to_id_state.add_inputs(&inputs[..n_calls]);
             });
         sub_components_inputs
             .memory_id_to_f252_inputs
             .iter()
             .for_each(|inputs| {
-                memory_id_to_f252_state.add_inputs(inputs);
+                memory_id_to_f252_state.add_inputs(&inputs[..n_calls]);
             });
         sub_components_inputs
             .verifyinstruction_inputs
             .iter()
             .for_each(|inputs| {
-                verifyinstruction_state.add_inputs(inputs);
+                verifyinstruction_state.add_inputs(&inputs[..n_calls]);
             });
 
         tree_builder.extend_evals(
@@ -339,9 +334,9 @@ impl InteractionClaimGenerator {
         memory_addr_to_id_lookup_elements: &memory::addr_to_id::RelationElements,
         memory_id_to_f252_lookup_elements: &memory::id_to_f252::RelationElements,
         verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
-        opcodes_lookup_elements: &opcodes::RelationElements,
+        _opcodes_lookup_elements: &opcodes::RelationElements,
     ) -> InteractionClaim {
-        let log_size = self.n_calls.next_power_of_two().ilog2();
+        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         let mut col_gen = logup_gen.new_col();
@@ -368,35 +363,30 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.opcodes[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = opcodes_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
+        // let mut col_gen = logup_gen.new_col();
+        // let lookup_row = &self.lookup_data.opcodes[0];
+        // for (i, lookup_values) in lookup_row.iter().enumerate() {
+        //     let denom = opcodes_lookup_elements.combine(lookup_values);
+        //     col_gen.write_frac(i, PackedQM31::one(), denom);
+        // }
+        // col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.opcodes[1];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = opcodes_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
+        // let mut col_gen = logup_gen.new_col();
+        // let lookup_row = &self.lookup_data.opcodes[1];
+        // for (i, lookup_values) in lookup_row.iter().enumerate() {
+        //     let denom = opcodes_lookup_elements.combine(lookup_values);
+        //     col_gen.write_frac(i, -PackedQM31::one(), denom);
+        // }
+        // col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_calls.is_power_of_two() {
-            let (trace, claimed_sum) = logup_gen.finalize_last();
-            (trace, claimed_sum, None)
-        } else {
-            let (trace, [claimed_sum, total_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
-        };
+        let (trace, [total_sum, claimed_sum]) =
+            logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
+
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
-            claimed_sum,
             total_sum,
+            claimed_sum: Some((claimed_sum, self.n_calls - 1)),
         }
     }
 }
