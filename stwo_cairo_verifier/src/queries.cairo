@@ -1,7 +1,7 @@
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
-use super::utils::{pow, bit_reverse_index, find, ArrayImpl};
+use super::utils::{ArrayImpl, bit_reverse_index, find, pow};
 
 
 /// An ordered set of query indices over a bit reversed [CircleDomain].
@@ -79,14 +79,14 @@ pub impl QueriesImpl of QueriesImplTrait {
                 already_added.append(v);
                 domains
                     .append(
-                        SubCircleDomain { coset_index: v / fold_factor, log_size: fri_step_size }
+                        SubCircleDomain { coset_index: v / fold_factor, log_size: fri_step_size },
                     );
             }
 
             i = i + 1;
         };
 
-        SparseSubCircleDomain { domains: domains, large_domain_log_size: *self.log_domain_size, }
+        SparseSubCircleDomain { domains: domains, large_domain_log_size: *self.log_domain_size }
     }
 }
 
@@ -137,13 +137,11 @@ pub struct SparseSubCircleDomain {
 pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
     fn flatten(self: @SparseSubCircleDomain) -> Array<usize> {
         let mut res = array![];
-        for domain in self
-            .domains
-            .span() {
-                for position in domain.to_decommitment_positions() {
-                    res.append(position);
-                };
+        for domain in self.domains.span() {
+            for position in domain.to_decommitment_positions() {
+                res.append(position);
             };
+        };
         res
     }
 
@@ -283,9 +281,9 @@ mod test {
                 2003706137,
                 2066089701,
                 2092416675,
-                2114908411
+                2114908411,
             ],
-            log_domain_size: 31
+            log_domain_size: 31,
         };
         assert_eq!(expected_result, result);
     }

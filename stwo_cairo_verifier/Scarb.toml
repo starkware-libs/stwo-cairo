@@ -6,13 +6,17 @@ edition = "2024_07"
 [lib]
 casm = true
 
+[cairo]
+# TODO(andrew): Remove once inlining bug fixed as increases step counts by about 3x.
+inlining-strategy = "avoid"
+
 [tool.fmt]
 sort-module-level-items = true
 
 [dependencies]
 
 [dev-dependencies]
-cairo_test = "2.8.0"
+cairo_test = "2.8.4"
 # snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.32.0" }
 # # TODO(andrew): Remove once get scarb >=2.8.3 working.
 # assert_macros = "2.8.0"
