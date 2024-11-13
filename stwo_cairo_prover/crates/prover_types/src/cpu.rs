@@ -582,8 +582,7 @@ impl<const B: usize, const L: usize> ProverType for BigUInt<B, L> {
     }
     fn r#type() -> String {
         match L {
-            4 => "BigUInt<256, 4>".to_string(),
-            8 => "BigUInt<512, 8>".to_string(),
+            6 | 12 => format!("BigUInt<{}, {}>", 64 * L, L),
             _ => panic!("Unsupported BigUInt size"),
         }
     }
