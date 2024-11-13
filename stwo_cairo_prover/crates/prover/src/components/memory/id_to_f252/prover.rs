@@ -136,6 +136,7 @@ impl ClaimGenerator {
                 range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
             }
         }
+        // TODO(Ohad): rangecheck the small values.
 
         // Extend trace.
         let big_log_size = big_table_trace[0].len().ilog2();
