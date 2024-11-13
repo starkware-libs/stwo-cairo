@@ -40,7 +40,7 @@ pub fn import_from_vm_output(
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
     assert!(end_addr < (1 << 32));
-    let mem_config = MemConfig::new((1 << 20) - 1, end_addr as u32);
+    let mem_config = MemConfig::default();
 
     let mem_path = priv_json.parent().unwrap().join(&priv_data.memory_path);
     let trace_path = priv_json.parent().unwrap().join(&priv_data.trace_path);
