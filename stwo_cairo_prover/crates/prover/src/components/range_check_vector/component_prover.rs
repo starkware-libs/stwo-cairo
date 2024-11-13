@@ -36,6 +36,12 @@ impl<const N: usize> RangeCheckClaimGenerator<N> {
         self.log_ranges.iter().sum()
     }
 
+    pub fn add_inputs(&mut self, inputs: &[[M31; N]]) {
+        for input in inputs {
+            self.add_m31(*input);
+        }
+    }
+
     // TODO(Ohad): test.
     pub fn add_m31(&mut self, input: [M31; N]) {
         let mut value = 0_u32;
