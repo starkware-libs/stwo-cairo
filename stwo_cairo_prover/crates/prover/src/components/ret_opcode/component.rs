@@ -1,10 +1,15 @@
+#![allow(non_camel_case_types)]
+#![allow(unused_imports)]
+use std::ops::{Mul, Sub};
+
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::LogupAtRow;
+use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX,
 };
+use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -12,101 +17,41 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::components::memory::id_to_f252;
-use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
+use crate::components::memory::{addr_to_id, id_to_f252};
+use crate::components::{memory, opcodes, verifyinstruction};
 
-pub const RET_N_TRACE_CELLS: usize = 7;
-pub const RET_INSTRUCTION: [u32; N_M31_IN_FELT252] = [
-    510, 447, 511, 495, 511, 91, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-];
-pub type Component = FrameworkComponent<Eval>;
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RelationElements(LookupElements<4>);
+impl RelationElements {
+    pub fn draw(channel: &mut impl Channel) -> Self {
+        Self(LookupElements::<4>::draw(channel))
+    }
+    pub fn combine<F: Clone, EF>(&self, values: &[F]) -> EF
+    where
+        EF: Clone + Zero + From<F> + From<SecureField> + Mul<F, Output = EF> + Sub<EF, Output = EF>,
+    {
+        self.0.combine(values)
+    }
+}
 
-#[derive(Clone)]
 pub struct Eval {
-    pub log_size: u32,
-    pub memory_lookup_elements: id_to_f252::RelationElements,
-    pub claimed_sum: SecureField,
-}
-impl Eval {
-    pub fn new(
-        ret_claim: Claim,
-        memory_lookup_elements: id_to_f252::RelationElements,
-        interaction_claim: InteractionClaim,
-    ) -> Self {
-        Self {
-            log_size: ret_claim.n_rets.next_power_of_two().ilog2(),
-            memory_lookup_elements,
-            claimed_sum: interaction_claim.claimed_sum,
-        }
-    }
+    pub claim: Claim,
+    pub interaction_claim: InteractionClaim,
+    pub memoryaddresstoid_lookup_elements: memory::addr_to_id::RelationElements,
+    pub memoryidtobig_lookup_elements: memory::id_to_f252::RelationElements,
+    pub verifyinstruction_lookup_elements: verifyinstruction::RelationElements,
+    pub opcodes_lookup_elements: opcodes::RelationElements,
 }
 
-impl FrameworkEval for Eval {
-    fn log_size(&self) -> u32 {
-        self.log_size
-    }
-
-    fn max_constraint_log_degree_bound(&self) -> u32 {
-        self.log_size + 1
-    }
-
-    fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
-        let mut logup =
-            LogupAtRow::<E>::new(INTERACTION_TRACE_IDX, self.claimed_sum, None, is_first);
-
-        // PC Column
-        let mut values: [_; N_M31_IN_FELT252 + 1] = std::array::from_fn(|_| E::F::zero());
-        values[0] = eval.next_trace_mask();
-        for i in 0..N_M31_IN_FELT252 {
-            values[i + 1] = E::F::from(M31::from(RET_INSTRUCTION[i]));
-        }
-        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
-        logup.write_frac(&mut eval, frac);
-        for i in 0..N_M31_IN_FELT252 {
-            values[i + 1] = E::F::from(M31::from(0));
-        }
-
-        // TODO(Ohad): Add AP to the VM logup constraint.
-        let _ap = eval.next_trace_mask();
-        let fp = eval.next_trace_mask();
-
-        // FP - 1
-        let fp_minus_one_0 = eval.next_trace_mask();
-        let fp_minus_one_1 = eval.next_trace_mask();
-        values[0] = fp.clone() - E::F::one();
-        values[1] = fp_minus_one_0;
-        values[2] = fp_minus_one_1;
-        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
-        logup.write_frac(&mut eval, frac);
-
-        // FP - 2
-        let fp_minus_two_0 = eval.next_trace_mask();
-        let fp_minus_two_1 = eval.next_trace_mask();
-        values[0] = fp - E::F::from(M31::from(2));
-        values[1] = fp_minus_two_0;
-        values[2] = fp_minus_two_1;
-        let frac = Fraction::new(E::EF::one(), self.memory_lookup_elements.combine(&values));
-        logup.write_frac(&mut eval, frac);
-
-        logup.finalize(&mut eval);
-        eval
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct Claim {
-    pub n_rets: usize,
+    pub n_calls: usize,
 }
 impl Claim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.n_rets as u64);
-    }
-
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_size = self.n_rets.next_power_of_two().ilog2();
-        let trace_log_sizes = vec![log_size; RET_N_TRACE_CELLS];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
+        let log_size = self.n_calls.next_power_of_two().ilog2();
+        let trace_log_sizes = vec![log_size; 11];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -114,15 +59,152 @@ impl Claim {
             interaction_log_sizes,
         ])
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_u64(self.n_calls as u64);
+    }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct InteractionClaim {
-    pub log_size: u32,
-    pub claimed_sum: SecureField,
+    pub total_sum: SecureField,
+    pub claimed_sum: ClaimedPrefixSum,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
+        // TODO(Ohad): mix claimed_sum.
+        channel.mix_felts(&[self.total_sum]);
+    }
+}
+
+pub type Component = FrameworkComponent<Eval>;
+
+impl FrameworkEval for Eval {
+    fn log_size(&self) -> u32 {
+        self.claim.n_calls.next_power_of_two().ilog2()
+    }
+
+    fn max_constraint_log_degree_bound(&self) -> u32 {
+        self.log_size() + 1
+    }
+
+    #[allow(unused_parens)]
+    #[allow(clippy::double_parens)]
+    #[allow(non_snake_case)]
+    #[allow(unused_variables)]
+    fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_0 = E::F::from(M31::from(0));
+        let M31_1 = E::F::from(M31::from(1));
+        let M31_2 = E::F::from(M31::from(2));
+        let M31_262144 = E::F::from(M31::from(262144));
+        let M31_32766 = E::F::from(M31::from(32766));
+        let M31_32767 = E::F::from(M31::from(32767));
+        let M31_512 = E::F::from(M31::from(512));
+        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
+        let mut logup = LogupAtRow::<E>::new(
+            INTERACTION_TRACE_IDX,
+            self.interaction_claim.total_sum,
+            Some(self.interaction_claim.claimed_sum),
+            is_first,
+        );
+        let input_pc_col0 = eval.next_trace_mask();
+        let input_ap_col1 = eval.next_trace_mask();
+        let input_fp_col2 = eval.next_trace_mask();
+        let next_pc_id_col3 = eval.next_trace_mask();
+        let next_pc_limb_0_col4 = eval.next_trace_mask();
+        let next_pc_limb_1_col5 = eval.next_trace_mask();
+        let next_pc_limb_2_col6 = eval.next_trace_mask();
+        let next_fp_id_col7 = eval.next_trace_mask();
+        let next_fp_limb_0_col8 = eval.next_trace_mask();
+        let next_fp_limb_1_col9 = eval.next_trace_mask();
+        let next_fp_limb_2_col10 = eval.next_trace_mask();
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.verifyinstruction_lookup_elements.combine(&[
+                input_pc_col0.clone(),
+                M31_32766.clone(),
+                M31_32767.clone(),
+                M31_32767.clone(),
+                M31_1.clone(),
+                M31_1.clone(),
+                M31_0.clone(),
+                M31_1.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_1.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_1.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.memoryaddresstoid_lookup_elements.combine(&[
+                (input_fp_col2.clone() - M31_1.clone()),
+                next_pc_id_col3.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.memoryidtobig_lookup_elements.combine(&[
+                next_pc_id_col3.clone(),
+                next_pc_limb_0_col4.clone(),
+                next_pc_limb_1_col5.clone(),
+                next_pc_limb_2_col6.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.memoryaddresstoid_lookup_elements.combine(&[
+                (input_fp_col2.clone() - M31_2.clone()),
+                next_fp_id_col7.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.memoryidtobig_lookup_elements.combine(&[
+                next_fp_id_col7.clone(),
+                next_fp_limb_0_col8.clone(),
+                next_fp_limb_1_col9.clone(),
+                next_fp_limb_2_col10.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+
+        // VM constraint.
+        // TODO(Ohad): uncomment.
+
+        // let frac = Fraction::new(
+        //     E::EF::one(),
+        //     self.opcodes_lookup_elements.combine(&[
+        //         input_pc_col0.clone(),
+        //         input_ap_col1.clone(),
+        //         input_fp_col2.clone(),
+        //     ]),
+        // );
+        // logup.write_frac(&mut eval, frac);
+        // let frac = Fraction::new(
+        //     -E::EF::one(),
+        //     self.opcodes_lookup_elements.combine(&[
+        //         ((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
+        //             + (next_pc_limb_2_col6.clone() * M31_262144.clone())),
+        //         input_ap_col1.clone(),
+        //         ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
+        //             + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
+        //     ]),
+        // );
+        // logup.write_frac(&mut eval, frac);
+
+        logup.finalize(&mut eval);
+
+        eval
     }
 }
