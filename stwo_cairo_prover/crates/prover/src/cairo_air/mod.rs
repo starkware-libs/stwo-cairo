@@ -21,7 +21,9 @@ use tracing::{span, Level};
 
 use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5, range_check_9_9};
-use crate::components::{opcodes, ret_opcode, verifyinstruction};
+use crate::components::{
+    addapopcode_is_imm_t_op1_base_fp_f, opcodes, ret_opcode, verifyinstruction,
+};
 use crate::felt::split_f252;
 use crate::input::instructions::VmState;
 use crate::input::CairoInput;
@@ -41,6 +43,7 @@ pub struct CairoClaim {
     pub final_state: VmState,
 
     pub ret: Vec<ret_opcode::Claim>,
+    pub add_ap_imm: addapopcode_is_imm_t_op1_base_fp_f::Claim,
     pub memory_addr_to_id: addr_to_id::Claim,
     pub memory_id_to_value: id_to_f252::Claim,
     pub verify_instruction: verifyinstruction::Claim,
@@ -101,6 +104,7 @@ impl CairoInteractionElements {
 #[derive(Serialize, Deserialize)]
 pub struct CairoInteractionClaim {
     pub ret: Vec<ret_opcode::InteractionClaim>,
+    pub add_ap_im: addapopcode_is_imm_t_op1_base_fp_f::InteractionClaim,
     pub memory_addr_to_id: addr_to_id::InteractionClaim,
     pub memory_id_to_value: id_to_f252::InteractionClaim,
     pub range_check9_9: range_check_9_9::InteractionClaim,
@@ -157,11 +161,13 @@ pub fn lookup_sum(
     sum += interaction_claim.range_check4_3.claimed_sum;
     sum += interaction_claim.ret[0].claimed_sum.0;
     sum += interaction_claim.verify_instruction.claimed_sum.0;
+    sum += interaction_claim.add_ap_im.claimed_sum.unwrap().0;
     sum
 }
 
 pub struct CairoComponents {
     ret: Vec<ret_opcode::Component>,
+    add_ap_imm: addapopcode_is_imm_t_op1_base_fp_f::Component,
     memory_addr_to_id: addr_to_id::Component,
     memory_id_to_value: (id_to_f252::BigComponent, id_to_f252::SmallComponent),
     verify_instruction: verifyinstruction::Component,
@@ -272,6 +278,7 @@ impl CairoComponents {
         );
         Self {
             ret: ret_components,
+            
             memory_addr_to_id: memory_addr_to_id_component,
             memory_id_to_value: (
                 memory_id_to_value_component,
@@ -351,6 +358,8 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     // Base trace.
     // TODO(Ohad): change to OpcodeClaimProvers, and integrate padding.
     let ret_trace_generator = ret_opcode::ClaimGenerator::new(input.instructions.ret);
+    let add_ap_imm_trace_generator =
+        addapopcode_is_imm_t_op1_base_fp_f::ClaimGenerator::new(input.instructions.add_ap);
     let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
     let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
     let mut range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
@@ -368,6 +377,12 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     let mut tree_builder = commitment_scheme.tree_builder();
 
     let (ret_claim, ret_interaction_prover) = ret_trace_generator.write_trace(
+        &mut tree_builder,
+        &mut memory_addr_to_id_trace_generator,
+        &mut memory_id_to_value_trace_generator,
+        &mut verify_instruction_trace_generator,
+    );
+    let (add_ap_imm_claim, add_ap_imm_interaction_prover) = add_ap_imm_trace_generator.write_trace(
         &mut tree_builder,
         &mut memory_addr_to_id_trace_generator,
         &mut memory_id_to_value_trace_generator,
@@ -398,6 +413,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         final_state: input.instructions.final_state,
         ret: vec![ret_claim],
         memory_addr_to_id: memory_addr_to_id_claim.clone(),
+        add_ap_imm: add_ap_imm_claim,
         memory_id_to_value: memory_id_to_value_claim.clone(),
         range_check9_9: range_check9_9_claim.clone(),
         range_check7_2_5: range_check_7_2_5_claim.clone(),
@@ -413,6 +429,13 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     // Interaction trace.
     let mut tree_builder = commitment_scheme.tree_builder();
     let ret_interaction_claim = ret_interaction_prover.write_interaction_trace(
+        &mut tree_builder,
+        &interaction_elements.memory_addr_to_id_lookup,
+        &interaction_elements.memory_id_to_value_lookup,
+        &interaction_elements.verify_instruction_lookup,
+        &interaction_elements.opcodes_lookup_elements,
+    );
+    let add_ap_imm_interaction_claim = add_ap_imm_interaction_prover.write_interaction_trace(
         &mut tree_builder,
         &interaction_elements.memory_addr_to_id_lookup,
         &interaction_elements.memory_id_to_value_lookup,
@@ -449,6 +472,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     // Commit to the interaction claim and the interaction trace.
     let interaction_claim = CairoInteractionClaim {
         ret: vec![ret_interaction_claim],
+        add_ap_im: add_ap_imm_interaction_claim,
         memory_addr_to_id: memory_addr_to_id_interaction_claim.clone(),
         memory_id_to_value: memory_id_to_value_interaction_claim.clone(),
         range_check9_9: range_check9_9_interaction_claim.clone(),
