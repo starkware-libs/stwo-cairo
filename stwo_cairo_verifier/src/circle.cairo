@@ -1,9 +1,10 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::num::traits::{WrappingAdd, WrappingSub, WrappingMul};
+use stwo_cairo_verifier::channel::{Channel, ChannelImpl};
 use stwo_cairo_verifier::fields::cm31::CM31;
 use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
-use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31, QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31One, QM31, QM31Trait};
 use super::utils::pow;
 
 /// A generator for the circle group over [`M31`].
@@ -99,9 +100,37 @@ impl CirclePointAdd<F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>> of Add<Cir
     }
 }
 
+impl CirclePointNeg<F, +Neg<F>, +Drop<F>, +Copy<F>> of Neg<CirclePoint<F>> {
+    fn neg(a: CirclePoint<F>) -> CirclePoint<F> {
+        CirclePoint { x: a.x, y: -a.y }
+    }
+}
+
 pub impl CirclePointM31Impl of CirclePointTrait<M31> {}
 
+#[generate_trait]
+pub impl CirclePointQM31AddCirclePointM31Impl of CirclePointQM31AddCirclePointM31Trait {
+    fn add_circle_point_m31(self: CirclePoint<QM31>, rhs: CirclePoint<M31>) -> CirclePoint<QM31> {
+        CirclePoint {
+            x: self.x.mul_m31(rhs.x) - self.y.mul_m31(rhs.y),
+            y: self.x.mul_m31(rhs.y) + self.y.mul_m31(rhs.x)
+        }
+    }
+}
+
 pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
+
+#[generate_trait]
+pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
+    fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
+        let t = self.draw_felt();
+        let t_squared = t * t;
+        let t_squared_plus_1_inv = (t_squared + QM31One::one()).inverse();
+        let x = (QM31One::one() - t_squared) * t_squared_plus_1_inv;
+        let y = (t + t) * t_squared_plus_1_inv;
+        CirclePoint { x, y }
+    }
+}
 
 impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
     fn lt(lhs: CirclePoint<QM31>, rhs: CirclePoint<QM31>) -> bool {
@@ -248,7 +277,8 @@ mod tests {
     use stwo_cairo_verifier::utils::pow;
     use super::{
         M31_CIRCLE_GEN, CirclePointQM31Impl, QM31_CIRCLE_GEN, M31_CIRCLE_ORDER, CirclePoint,
-        CirclePointM31Impl, CirclePointIndexImpl, Coset, CosetImpl, QM31_CIRCLE_ORDER
+        CirclePointM31Impl, CirclePointIndexImpl, Coset, CosetImpl, QM31_CIRCLE_ORDER,
+        CirclePointQM31AddCirclePointM31Impl
     };
 
     #[test]
@@ -408,6 +438,14 @@ mod tests {
         assert_eq!(
             QM31_CIRCLE_GEN.mul(QM31_CIRCLE_ORDER / 2),
             CirclePoint { x: -qm31(1, 0, 0, 0), y: qm31(0, 0, 0, 0) }
+        );
+    }
+
+    #[test]
+    fn test_add_circle_point_m31() {
+        assert_eq!(
+            QM31_CIRCLE_GEN.add_circle_point_m31(M31_CIRCLE_GEN),
+            QM31_CIRCLE_GEN + CirclePoint { x: M31_CIRCLE_GEN.x.into(), y: M31_CIRCLE_GEN.y.into() }
         );
     }
 }
