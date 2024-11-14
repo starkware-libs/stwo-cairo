@@ -4,7 +4,8 @@ use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 use ruint::Uint;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
-use stwo_prover::core::fields::m31::M31;
+
+pub type M31 = stwo_prover::core::fields::m31::M31;
 
 pub const PRIME: u32 = 2_u32.pow(31) - 1;
 
