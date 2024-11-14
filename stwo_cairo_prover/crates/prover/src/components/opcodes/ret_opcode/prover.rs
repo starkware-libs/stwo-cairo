@@ -20,7 +20,7 @@ use stwo_prover::core::utils::{bit_reverse, bit_reverse_coset_to_circle_domain_o
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
 use super::component::{Claim, InteractionClaim, RelationElements};
-use crate::components::{memory, opcodes, pack_values, verifyinstruction};
+use crate::components::{memory, opcodes, pack_values, verifyinstruction, GLOBAL_TRACKER};
 use crate::input::instructions::VmState;
 
 pub type PackedInputType = PackedCasmState;
@@ -38,7 +38,6 @@ impl ClaimGenerator {
             inputs: inputs.into_iter().map(Into::into).collect(),
         }
     }
-
 
     pub fn write_trace(
         mut self,
@@ -369,6 +368,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = verifyinstruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("verifyinstruction", lookup_values, "ret");
         }
         col_gen.finalize_col();
 
@@ -377,6 +377,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("addr_to_id", lookup_values, "ret");
         }
         col_gen.finalize_col();
 
@@ -385,6 +386,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryidtobig_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("id_to_big", lookup_values, "ret");
         }
         col_gen.finalize_col();
 
@@ -393,6 +395,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("addr_to_id", lookup_values, "ret");
         }
         col_gen.finalize_col();
 
@@ -400,6 +403,7 @@ impl InteractionClaimGenerator {
         let lookup_row = &self.lookup_data.memoryidtobig[1];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("id_to_big", lookup_values, "ret");
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();

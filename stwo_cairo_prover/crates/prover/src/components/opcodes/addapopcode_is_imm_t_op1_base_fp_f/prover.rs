@@ -21,7 +21,7 @@ use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
 use super::component::{Claim, InteractionClaim, RelationElements};
-use crate::components::{memory, opcodes, pack_values, verifyinstruction};
+use crate::components::{memory, opcodes, pack_values, verifyinstruction, GLOBAL_TRACKER};
 use crate::input::instructions::VmState;
 
 pub type InputType = CasmState;
@@ -344,6 +344,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = verifyinstruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("verifyinstruction", lookup_values, "add_ap");
         }
         col_gen.finalize_col();
 
@@ -352,6 +353,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memory_addr_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("addr_to_id", lookup_values, "add_ap");
         }
         col_gen.finalize_col();
 
@@ -360,6 +362,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memory_id_to_f252_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("id_to_big", lookup_values, "add_ap");
         }
         col_gen.finalize_col();
 

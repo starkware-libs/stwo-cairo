@@ -22,6 +22,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
+use crate::components::GLOBAL_TRACKER;
 use crate::components::{memory, pack_values, verifyinstruction};
 
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
@@ -360,6 +361,7 @@ pub struct InteractionClaimGenerator {
     pub lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
+    #[allow(clippy::too_many_arguments)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
@@ -377,6 +379,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = range_check_7_2_5_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("range_check_7_2_5", lookup_values, "verify");
         }
         col_gen.finalize_col();
 
@@ -385,6 +388,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = rangecheck_4_3_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("range_check_4_3", lookup_values, "verify");
         }
         col_gen.finalize_col();
 
@@ -393,6 +397,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("addr_to_id", lookup_values, "verify");
         }
         col_gen.finalize_col();
 
@@ -401,6 +406,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryidtobig_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("id_to_big", lookup_values, "verify");
         }
         col_gen.finalize_col();
 
@@ -409,6 +415,7 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = verifyinstruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, -PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed("verifyinstruction", lookup_values, PackedM31::one(), "verify");
         }
         col_gen.finalize_col();
 

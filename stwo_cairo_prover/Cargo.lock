@@ -1621,6 +1621,7 @@ dependencies = [
  "hex",
  "itertools 0.12.1",
  "num-traits",
+ "once_cell",
  "paste",
  "prover_types",
  "rand",

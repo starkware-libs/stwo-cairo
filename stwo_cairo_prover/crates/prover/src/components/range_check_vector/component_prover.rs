@@ -14,6 +14,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{RangeCheckClaim, RangeCheckInteractionClaim};
 use super::{generate_partitioned_enumeration, partition_into_bit_segments, SIMD_ENUMERATION_0};
+use crate::components::GLOBAL_TRACKER;
 
 // TODO(Ohad): rustdoc.
 pub struct RangeCheckClaimGenerator<const N: usize> {
@@ -120,10 +121,14 @@ impl<const N: usize> RangeCheckInteractionClaimGenerator<N> {
         let log_size = self.log_ranges.iter().sum::<u32>();
         let mut logup_gen = LogupTraceGenerator::new(log_size);
         let mut col_gen = logup_gen.new_col();
+        let mut relation_name = "range_check".to_string();
+        for log_range in &self.log_ranges {
+            relation_name.push_str(&format!("_{}", log_range));
+        }
 
         // Lookup values columns.
         for vec_row in 0..(1 << (log_size - LOG_N_LANES)) {
-            let numerator = (-self.multiplicities[vec_row]).into();
+            let numerator = -self.multiplicities[vec_row];
             let partitions = partition_into_bit_segments(
                 SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32),
                 self.log_ranges,
@@ -131,7 +136,13 @@ impl<const N: usize> RangeCheckInteractionClaimGenerator<N> {
             let partitions: [_; N] =
                 std::array::from_fn(|i| unsafe { PackedM31::from_simd_unchecked(partitions[i]) });
             let denom = lookup_elements.combine(&partitions);
-            col_gen.write_frac(vec_row, numerator, denom);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed(
+                &relation_name,
+                &partitions,
+                -numerator,
+                &relation_name,
+            );
+            col_gen.write_frac(vec_row, numerator.into(), denom);
         }
         col_gen.finalize_col();
 

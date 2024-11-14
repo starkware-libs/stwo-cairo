@@ -14,6 +14,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use super::component::{Claim, InteractionClaim, N_ADDR_TO_ID_COLUMNS};
 use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
+use crate::components::GLOBAL_TRACKER;
 use crate::input::mem::Memory;
 
 pub type PackedInputType = PackedM31;
@@ -159,6 +160,12 @@ impl AddrToIdInteractionClaimProver {
             let id = self.ids[vec_row];
             let denom: PackedSecureField = lookup_elements.combine(&[addr, id]);
             col_gen.write_frac(vec_row, (-self.multiplicities[vec_row]).into(), denom);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed(
+                "addr_to_id",
+                &[addr, id],
+                self.multiplicities[vec_row],
+                "",
+            );
         }
         col_gen.finalize_col();
 

@@ -23,6 +23,7 @@ use super::component::{
 use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::range_check_9_9;
+use crate::components::GLOBAL_TRACKER;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
 
@@ -121,9 +122,7 @@ impl ClaimGenerator {
         let small_values: Vec<[Simd<u32, N_LANES>; 4]> = self
             .small_values
             .into_iter()
-            .map(|v| {
-                u128_to_4_limbs(v)
-            })
+            .map(u128_to_4_limbs)
             .array_chunks::<N_LANES>()
             .map(|chunk| {
                 std::array::from_fn(|i| Simd::from_array(std::array::from_fn(|j| chunk[j][i])))
@@ -282,6 +281,12 @@ impl InteractionClaimGenerator {
                 std::array::from_fn(|i| self.big_ids_and_values[i][vec_row]);
             let denom: PackedQM31 = lookup_elements.combine(&values);
             col_gen.write_frac(vec_row, (-self.big_multiplicities[vec_row]).into(), denom);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed(
+                "id_to_big",
+                &values,
+                self.small_multiplicities[vec_row],
+                "",
+            );
         }
         col_gen.finalize_col();
 
@@ -293,6 +298,11 @@ impl InteractionClaimGenerator {
                     vec_row,
                     PackedQM31::broadcast(M31(1).into()),
                     range9_9_lookup_elements.combine(&[*l1, *l2]),
+                );
+                GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                    "range_check_9_9",
+                    &[*l1, *l2],
+                    "id_to_big",
                 );
             }
             col_gen.finalize_col();
@@ -309,6 +319,12 @@ impl InteractionClaimGenerator {
             let values: [PackedM31; SMALL_N_ID_AND_VALUE_COLUMNS] =
                 std::array::from_fn(|i| self.small_ids_and_values[i][vec_row]);
             let denom: PackedQM31 = lookup_elements.combine(&values);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed(
+                "id_to_big",
+                &values,
+                self.small_multiplicities[vec_row],
+                "",
+            );
             col_gen.write_frac(vec_row, (-self.small_multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
@@ -322,6 +338,11 @@ impl InteractionClaimGenerator {
                     vec_row,
                     PackedQM31::broadcast(M31(1).into()),
                     range9_9_lookup_elements.combine(&[*l1, *l2]),
+                );
+                GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                    "range_check_9_9",
+                    &[*l1, *l2],
+                    "id_to_big",
                 );
             }
             col_gen.finalize_col();
