@@ -362,7 +362,7 @@ pub trait EqExtend {
 impl EqExtend for PackedM31 {
     fn eq(&self, other: Self) -> PackedBool {
         PackedBool {
-            value: self.into_simd().simd_eq(other.into_simd()).to_int(),
+            value: self.into_simd().simd_eq(other.into_simd()).to_int() * Simd::splat(-1),
         }
     }
 }
