@@ -13,9 +13,9 @@ pub trait Invertible<T> {
 pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
     /// Computes all `1/arr[i]` with a single call to `inverse()` using Montgomery batch inversion.
     fn batch_inverse(
-        values: Array<T>
+        values: Array<T>,
     ) -> Array<
-        T
+        T,
     > {
         if values.is_empty() {
             return array![];
@@ -55,7 +55,7 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
 #[cfg(test)]
 mod tests {
     use super::m31::{M31, m31};
-    use super::{Invertible, BatchInvertible};
+    use super::{BatchInvertible, Invertible};
 
     #[test]
     fn test_batch_inverse() {

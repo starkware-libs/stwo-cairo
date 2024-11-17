@@ -4,22 +4,22 @@ use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
 use stwo_cairo_verifier::circle::{
-    CosetImpl, CirclePointIndexImpl, CirclePoint, M31_CIRCLE_LOG_ORDER
+    CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER,
 };
 use stwo_cairo_verifier::fields::BatchInvertible;
 use stwo_cairo_verifier::fields::cm31::{CM31, CM31Impl};
 use stwo_cairo_verifier::fields::m31::{M31, UnreducedM31};
 use stwo_cairo_verifier::fields::qm31::{
-    QM31, QM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl
+    PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl,
 };
 use stwo_cairo_verifier::poly::circle::{
-    CircleEvaluationImpl, CircleDomain, CircleDomainImpl, SparseCircleEvaluation,
-    SparseCircleEvaluationImpl, CanonicCosetImpl
+    CanonicCosetImpl, CircleDomain, CircleDomainImpl, CircleEvaluationImpl, SparseCircleEvaluation,
+    SparseCircleEvaluationImpl,
 };
 use stwo_cairo_verifier::queries::{
-    SparseSubCircleDomain, SparseSubCircleDomainImpl, SubCircleDomainImpl
+    SparseSubCircleDomain, SparseSubCircleDomainImpl, SubCircleDomainImpl,
 };
-use stwo_cairo_verifier::utils::{bit_reverse_index, pack4, ArrayImpl as ArrayUtilImpl};
+use stwo_cairo_verifier::utils::{ArrayImpl as ArrayUtilImpl, bit_reverse_index, pack4};
 use stwo_cairo_verifier::verifier::VerificationError;
 
 pub fn fri_answers(
@@ -172,7 +172,7 @@ pub fn fri_answers(
             samples,
             random_coeff,
             query_domain_per_log_size.get(log_size.into()).deref(),
-            queried_values
+            queried_values,
         );
 
         match answer {
@@ -211,37 +211,34 @@ fn fri_answers_for_log_size(
     let mut evals = array![];
     let mut column_eval_offset = 0;
 
-    for subdomain in query_domain
-        .domains
-        .span() {
-            let domain = subdomain.to_circle_domain(commitment_domain);
-            let domain_size = domain.size();
-            let domain_log_size = domain.log_size();
-            let denominator_inverses = quotient_denominator_inverses(@sample_batches, domain);
-            let mut values = array![];
+    for subdomain in query_domain.domains.span() {
+        let domain = subdomain.to_circle_domain(commitment_domain);
+        let domain_size = domain.size();
+        let domain_log_size = domain.log_size();
+        let denominator_inverses = quotient_denominator_inverses(@sample_batches, domain);
+        let mut values = array![];
 
-            for row in 0
-                ..domain_size {
-                    let domain_point = domain.at(bit_reverse_index(row, domain_log_size));
-                    let value = accumulate_row_quotients(
-                        @sample_batches,
-                        @queried_values_per_column,
-                        @quotient_consts,
-                        @denominator_inverses,
-                        row,
-                        domain_size,
-                        column_eval_offset,
-                        domain_point,
-                    );
-                    values.append(value);
-                };
-
-            // Progress the read offset.
-            column_eval_offset += domain_size;
-
-            let eval = CircleEvaluationImpl::new(domain, values);
-            evals.append(eval);
+        for row in 0..domain_size {
+            let domain_point = domain.at(bit_reverse_index(row, domain_log_size));
+            let value = accumulate_row_quotients(
+                @sample_batches,
+                @queried_values_per_column,
+                @quotient_consts,
+                @denominator_inverses,
+                row,
+                domain_size,
+                column_eval_offset,
+                domain_point,
+            );
+            values.append(value);
         };
+
+        // Progress the read offset.
+        column_eval_offset += domain_size;
+
+        let eval = CircleEvaluationImpl::new(domain, values);
+        evals.append(eval);
+    };
 
     assert!(column_eval_offset == query_domain_size);
 
@@ -268,39 +265,37 @@ fn accumulate_row_quotients(
 
     let mut row_accumulator: QM31 = Zero::zero();
 
-    for batch_i in 0
-        ..n_batches {
-            let line_coeffs = quotient_constants.line_coeffs[batch_i];
-            let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
-            let batch_size = sample_batch_columns_and_values.len();
-            assert!(batch_size == line_coeffs.len());
-            let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Impl::large_zero();
+    for batch_i in 0..n_batches {
+        let line_coeffs = quotient_constants.line_coeffs[batch_i];
+        let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
+        let batch_size = sample_batch_columns_and_values.len();
+        assert!(batch_size == line_coeffs.len());
+        let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Impl::large_zero();
 
-            for sample_i in 0
-                ..batch_size {
-                    let (column_index, _) = sample_batch_columns_and_values[sample_i];
-                    let column = *queried_values_per_column.at(*column_index);
-                    let column_value = *column.at(column_row);
-                    let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } =
-                        *line_coeffs[sample_i];
-                    // The numerator is a line equation passing through
-                    //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
-                    // evaluated at (domain_point.y, value).
-                    // When substituting a polynomial in this line equation, we get a polynomial
-                    // with a root at sample_point and conj(sample_point) if the original polynomial
-                    // had the values sample_value and conj(sample_value) at these points.
-                    // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
-                    // TODO(andrew): The whole `linear_term` can be moved out of the loop.
-                    let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
-                    numerator += alpha_mul_c.mul_m31(column_value.into()) - linear_term;
-                };
-
-            let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
-            let denom_inv = *denominator_inverses[batch_i * domain_size + row];
-            // Computes `row_accumulator * batch_coeff + numerator * denom_inv`.
-            row_accumulator =
-                QM31Impl::fma(row_accumulator, batch_coeff, numerator.reduce().mul_cm31(denom_inv));
+        for sample_i in 0..batch_size {
+            let (column_index, _) = sample_batch_columns_and_values[sample_i];
+            let column = *queried_values_per_column.at(*column_index);
+            let column_value = *column.at(column_row);
+            let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } =
+                *line_coeffs[sample_i];
+            // The numerator is a line equation passing through
+            //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
+            // evaluated at (domain_point.y, value).
+            // When substituting a polynomial in this line equation, we get a polynomial
+            // with a root at sample_point and conj(sample_point) if the original polynomial
+            // had the values sample_value and conj(sample_value) at these points.
+            // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
+            // TODO(andrew): The whole `linear_term` can be moved out of the loop.
+            let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
+            numerator += alpha_mul_c.mul_m31(column_value.into()) - linear_term;
         };
+
+        let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
+        let denom_inv = *denominator_inverses[batch_i * domain_size + row];
+        // Computes `row_accumulator * batch_coeff + numerator * denom_inv`.
+        row_accumulator =
+            QM31Impl::fma(row_accumulator, batch_coeff, numerator.reduce().mul_cm31(denom_inv));
+    };
 
     row_accumulator
 }
@@ -323,34 +318,31 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
         let mut line_coeffs = array![];
         let mut batch_random_coeffs = array![];
 
-        for sample_batch in sample_batches
-            .span() {
-                // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
-                // Use a better solution.
-                assert!(
-                    *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
-                    "Cannot evaluate a line with a single point ({:?}).",
-                    sample_batch.point
-                );
+        for sample_batch in sample_batches.span() {
+            // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
+            // Use a better solution.
+            assert!(
+                *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
+                "Cannot evaluate a line with a single point ({:?}).",
+                sample_batch.point,
+            );
 
-                let mut alpha: QM31 = One::one();
-                let mut batch_line_coeffs = array![];
+            let mut alpha: QM31 = One::one();
+            let mut batch_line_coeffs = array![];
 
-                for (_, column_value) in sample_batch
-                    .columns_and_values
-                    .span() {
-                        alpha = alpha * random_coeff;
-                        batch_line_coeffs
-                            .append(
-                                ComplexConjugateLineCoeffsImpl::new(
-                                    sample_batch.point, **column_value, alpha
-                                )
-                            );
-                    };
-
-                batch_random_coeffs.append(alpha);
-                line_coeffs.append(batch_line_coeffs);
+            for (_, column_value) in sample_batch.columns_and_values.span() {
+                alpha = alpha * random_coeff;
+                batch_line_coeffs
+                    .append(
+                        ComplexConjugateLineCoeffsImpl::new(
+                            sample_batch.point, **column_value, alpha,
+                        ),
+                    );
             };
+
+            batch_random_coeffs.append(alpha);
+            line_coeffs.append(batch_line_coeffs);
+        };
 
         QuotientConstants { line_coeffs, batch_random_coeffs }
     }
@@ -364,33 +356,28 @@ fn quotient_denominator_inverses(
 ) -> Array<CM31> {
     let mut domain_points_bit_rev = array![];
 
-    for i in 0
-        ..domain
-            .size() {
-                let i_bit_rev = bit_reverse_index(i, domain.log_size());
-                domain_points_bit_rev.append(domain.at(i_bit_rev));
-            };
+    for i in 0..domain.size() {
+        let i_bit_rev = bit_reverse_index(i, domain.log_size());
+        domain_points_bit_rev.append(domain.at(i_bit_rev));
+    };
 
     let mut flat_denominators = array![];
 
     // We want a `P` to be on a line that passes through a point `Pr + uPi` in `QM31^2`,
     // and its conjugate `Pr - uPi`. Thus, `Pr - P` is parallel to `Pi`. Or,
     // `(Pr - P).x * Pi.y - (Pr - P).y * Pi.x = 0`.
-    for sample_batch in sample_batches
-        .span() {
-            // Extract `Pr, Pi`.
-            let prx = *sample_batch.point.x.a;
-            let pry = *sample_batch.point.y.a;
-            let pix = *sample_batch.point.x.b;
-            let piy = *sample_batch.point.y.b;
+    for sample_batch in sample_batches.span() {
+        // Extract `Pr, Pi`.
+        let prx = *sample_batch.point.x.a;
+        let pry = *sample_batch.point.y.a;
+        let pix = *sample_batch.point.x.b;
+        let piy = *sample_batch.point.y.b;
 
-            for domain_point in domain_points_bit_rev
-                .span() {
-                    let denom = prx.sub_m31(*domain_point.x) * piy
-                        - pry.sub_m31(*domain_point.y) * pix;
-                    flat_denominators.append(denom);
-                };
+        for domain_point in domain_points_bit_rev.span() {
+            let denom = prx.sub_m31(*domain_point.x) * piy - pry.sub_m31(*domain_point.y) * pix;
+            flat_denominators.append(denom);
         };
+    };
 
     BatchInvertible::batch_inverse(flat_denominators)
 }
@@ -419,20 +406,19 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
         for samples in samples_per_column {
             // TODO(andrew): Almost all columns have a single sample at the OODS point.
             // Handling this case specifically is more optimal than using the dictionary.
-            for sample in samples
-                .span() {
-                    let point_key = CirclePointQM31Key::encode(sample.point);
-                    let (entry, point_samples) = grouped_samples.entry(point_key);
+            for sample in samples.span() {
+                let point_key = CirclePointQM31Key::encode(sample.point);
+                let (entry, point_samples) = grouped_samples.entry(point_key);
 
-                    // Check if we've seen the point before.
-                    if point_samples.is_null() {
-                        point_set.append(*sample.point);
-                    };
-
-                    let mut point_samples = point_samples.deref_or(array![]);
-                    point_samples.append((column, sample.value));
-                    grouped_samples = entry.finalize(NullableTrait::new(point_samples));
+                // Check if we've seen the point before.
+                if point_samples.is_null() {
+                    point_set.append(*sample.point);
                 };
+
+                let mut point_samples = point_samples.deref_or(array![]);
+                point_samples.append((column, sample.value));
+                grouped_samples = entry.finalize(NullableTrait::new(point_samples));
+            };
 
             column += 1;
         };
@@ -468,7 +454,7 @@ struct ComplexConjugateLineCoeffs {
 #[generate_trait]
 impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
     fn new(
-        sample_point: @CirclePoint<QM31>, sample_value: QM31, alpha: QM31
+        sample_point: @CirclePoint<QM31>, sample_value: QM31, alpha: QM31,
     ) -> ComplexConjugateLineCoeffs {
         let alpha_mul_a = alpha * neg_twice_imaginary_part(@sample_value);
         let alpha_mul_c = alpha * neg_twice_imaginary_part(sample_point.y);
@@ -511,21 +497,21 @@ mod tests {
     use core::array::ArrayImpl;
     use core::dict::Felt252Dict;
     use core::nullable::{NullableTrait};
-    use stwo_cairo_verifier::circle::{QM31_CIRCLE_GEN, CosetImpl, CirclePointIndexImpl};
+    use stwo_cairo_verifier::circle::{CirclePointIndexImpl, CosetImpl, QM31_CIRCLE_GEN};
     use stwo_cairo_verifier::fields::cm31::cm31;
     use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::fields::qm31::{qm31, PackedUnreducedQM31Impl};
+    use stwo_cairo_verifier::fields::qm31::{PackedUnreducedQM31Impl, qm31};
     use stwo_cairo_verifier::fri::CIRCLE_TO_LINE_FOLD_STEP;
     use stwo_cairo_verifier::poly::circle::{
-        SparseCircleEvaluationImpl, CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl
+        CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl, SparseCircleEvaluationImpl,
     };
     use stwo_cairo_verifier::queries::SubCircleDomainImpl;
     use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SubCircleDomain};
-    use stwo_cairo_verifier::utils::{pow, DictImpl};
+    use stwo_cairo_verifier::utils::{DictImpl, pow};
     use super::{
-        PointSample, fri_answers_for_log_size, ColumnSampleBatch, ColumnSampleBatchImpl,
-        ComplexConjugateLineCoeffsImpl, quotient_denominator_inverses, accumulate_row_quotients,
-        QuotientConstantsImpl, fri_answers
+        ColumnSampleBatch, ColumnSampleBatchImpl, ComplexConjugateLineCoeffsImpl, PointSample,
+        QuotientConstantsImpl, accumulate_row_quotients, fri_answers, fri_answers_for_log_size,
+        quotient_denominator_inverses,
     };
 
 
@@ -547,17 +533,17 @@ mod tests {
         let sub_domain0 = SubCircleDomain { coset_index: 2, log_size: 1 };
         let sub_domain1 = SubCircleDomain { coset_index: 3, log_size: 1 };
         let query_domain = SparseSubCircleDomain {
-            domains: array![sub_domain0, sub_domain1], large_domain_log_size: log_size
+            domains: array![sub_domain0, sub_domain1], large_domain_log_size: log_size,
         };
         let col0_query_values = array![m31(1), m31(2), m31(3), m31(4)];
         let col1_query_values = array![m31(1), m31(1), m31(2), m31(3)];
         let col2_query_values = array![m31(1), m31(1), m31(1), m31(2)];
         let queried_values_per_column = array![
-            @col0_query_values, @col1_query_values, @col2_query_values
+            @col0_query_values, @col1_query_values, @col2_query_values,
         ];
 
         let res = fri_answers_for_log_size(
-            log_size, samples_per_column, random_coeff, @query_domain, queried_values_per_column
+            log_size, samples_per_column, random_coeff, @query_domain, queried_values_per_column,
         )
             .unwrap();
 
@@ -568,18 +554,18 @@ mod tests {
                         (@sub_domain0).to_circle_domain(commitment_domain),
                         array![
                             qm31(1655798290, 1221610097, 1389601557, 962654234),
-                            qm31(638770057, 234503953, 730529691, 1759474677)
-                        ]
+                            qm31(638770057, 234503953, 730529691, 1759474677),
+                        ],
                     ),
                     CircleEvaluationImpl::new(
                         (@sub_domain1).to_circle_domain(commitment_domain),
                         array![
                             qm31(812355951, 1467349841, 519312011, 1870584702),
-                            qm31(1802072315, 1125204194, 422281582, 1308225981)
-                        ]
+                            qm31(1802072315, 1125204194, 422281582, 1308225981),
+                        ],
                     ),
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -600,11 +586,11 @@ mod tests {
         let random_coeff = qm31(9, 8, 7, 6);
         let col0_sub_domain = SubCircleDomain { coset_index: 2, log_size: 1 };
         let col0_query_domain = SparseSubCircleDomain {
-            domains: array![col0_sub_domain], large_domain_log_size: col0_log_size
+            domains: array![col0_sub_domain], large_domain_log_size: col0_log_size,
         };
         let col1_sub_domain = SubCircleDomain { coset_index: 3, log_size: 1 };
         let col1_query_domain = SparseSubCircleDomain {
-            domains: array![col1_sub_domain], large_domain_log_size: col1_log_size
+            domains: array![col1_sub_domain], large_domain_log_size: col1_log_size,
         };
         let mut query_domain_per_log_size: Felt252Dict = Default::default();
         query_domain_per_log_size.insert(5, NullableTrait::new(@col0_query_domain));
@@ -618,7 +604,7 @@ mod tests {
             @samples_per_column,
             random_coeff,
             query_domain_per_log_size,
-            @queried_values_per_column
+            @queried_values_per_column,
         )
             .unwrap();
 
@@ -631,9 +617,9 @@ mod tests {
                             array![
                                 qm31(1791306293, 1053124067, 158259497, 452720916),
                                 qm31(212478330, 1383090185, 1622369493, 599681801),
-                            ]
+                            ],
                         ),
-                    ]
+                    ],
                 ),
                 SparseCircleEvaluationImpl::new(
                     array![
@@ -641,12 +627,12 @@ mod tests {
                             (@col0_sub_domain).to_circle_domain(col0_commitment_domain),
                             array![
                                 qm31(834593128, 54438530, 120431711, 2027138945),
-                                qm31(1820575540, 1615656673, 695030281, 674192396)
-                            ]
+                                qm31(1820575540, 1615656673, 695030281, 674192396),
+                            ],
                         ),
-                    ]
-                )
-            ]
+                    ],
+                ),
+            ],
         );
     }
 
@@ -680,8 +666,8 @@ mod tests {
                 cm31(432303227, 706927115),
                 cm31(1241984415, 2002674046),
                 cm31(710698435, 1874662077),
-                cm31(805681622, 1895046717)
-            ]
+                cm31(805681622, 1895046717),
+            ],
         );
     }
 
@@ -705,7 +691,7 @@ mod tests {
                 ColumnSampleBatch {
                     point: sample0.point,
                     columns_and_values: array![
-                        (0, @sample0.value), (1, @sample0.value), (2, @sample0.value)
+                        (0, @sample0.value), (1, @sample0.value), (2, @sample0.value),
                     ],
                 },
                 ColumnSampleBatch {
@@ -715,7 +701,7 @@ mod tests {
                 ColumnSampleBatch {
                     point: sample1.point, columns_and_values: array![(0, @sample1.value)],
                 },
-            ]
+            ],
         )
     }
 
@@ -730,7 +716,7 @@ mod tests {
         let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
         let sample_batches = array![
             ColumnSampleBatch { point: p0, columns_and_values: array![(0, @qm31(0, 1, 2, 3))] },
-            ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] }
+            ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] },
         ];
         let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, alpha);
         let denominator_inverses = quotient_denominator_inverses(@sample_batches, domain);
@@ -744,7 +730,7 @@ mod tests {
             row,
             domain.size(),
             0,
-            domain.at(0)
+            domain.at(0),
         );
 
         assert!(res == qm31(545815778, 838613809, 1761463254, 2019099482));
@@ -761,7 +747,7 @@ mod tests {
         let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
         let sample_batches = array![
             ColumnSampleBatch { point: p0, columns_and_values: array![(0, @qm31(0, 1, 2, 3))] },
-            ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] }
+            ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] },
         ];
         let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, alpha);
         let denominator_inverses = quotient_denominator_inverses(@sample_batches, domain);
@@ -776,7 +762,7 @@ mod tests {
             row,
             domain.size(),
             column_eval_offset,
-            domain.at(1)
+            domain.at(1),
         );
 
         assert!(res == qm31(1352199520, 303329565, 518279043, 1496238271));
@@ -794,12 +780,11 @@ mod tests {
         assert!(n_queries < pow(2, log_size), "Query indices need to be unique");
         assert!(n_columns >= 3, "First three columns are manually created");
         let mut query_subdomains = array![];
-        for coset_index in 0
-            ..n_queries {
-                query_subdomains.append(SubCircleDomain { coset_index, log_size: log_fold_step })
-            };
+        for coset_index in 0..n_queries {
+            query_subdomains.append(SubCircleDomain { coset_index, log_size: log_fold_step })
+        };
         let query_domain = SparseSubCircleDomain {
-            domains: query_subdomains, large_domain_log_size: log_size
+            domains: query_subdomains, large_domain_log_size: log_size,
         };
         let p0 = QM31_CIRCLE_GEN;
         let p1 = p0 + QM31_CIRCLE_GEN;
@@ -819,16 +804,15 @@ mod tests {
         let col1_query_values = col_query_values.clone();
         let col2_query_values = col_query_values.clone();
         let mut queried_values_per_column = array![
-            @col0_query_values, @col1_query_values, @col2_query_values
+            @col0_query_values, @col1_query_values, @col2_query_values,
         ];
-        for _ in samples_per_column.len()
-            ..n_columns {
-                samples_per_column.append(@col1_samples);
-                queried_values_per_column.append(@col_query_values);
-            };
+        for _ in samples_per_column.len()..n_columns {
+            samples_per_column.append(@col1_samples);
+            queried_values_per_column.append(@col_query_values);
+        };
 
         let _res = fri_answers_for_log_size(
-            log_size, samples_per_column, random_coeff, @query_domain, queried_values_per_column
+            log_size, samples_per_column, random_coeff, @query_domain, queried_values_per_column,
         );
     }
 }
