@@ -351,7 +351,7 @@ impl Instructions {
 /// The counts of the instructions usage in the input, split to Stwo opcodes.
 ///
 /// See the documentation of `Instructions` for more details about the indexing mechanism.
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct InstructionCounts {
     pub ret: usize,
     pub add_ap: usize,

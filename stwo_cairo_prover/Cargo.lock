@@ -1651,6 +1651,7 @@ dependencies = [
  "log",
  "num-traits",
  "serde",
+ "serde_json",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
  "thiserror",
