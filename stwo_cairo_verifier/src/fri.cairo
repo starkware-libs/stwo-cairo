@@ -13,7 +13,7 @@ use stwo_cairo_verifier::poly::line::{
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-use stwo_cairo_verifier::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, find, pow};
+use stwo_cairo_verifier::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, find, pow2};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -270,7 +270,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             return Result::Err(FriVerificationError::InvalidNumFriLayers);
         }
 
-        if proof.last_layer_poly.len() != pow(2, config.log_last_layer_degree_bound) {
+        if proof.last_layer_poly.len() != pow2(config.log_last_layer_degree_bound) {
             return Result::Err(FriVerificationError::LastLayerDegreeInvalid);
         }
 

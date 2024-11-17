@@ -6,7 +6,7 @@ use stwo_cairo_verifier::fields::BatchInvertible;
 use stwo_cairo_verifier::fields::m31::M31;
 use stwo_cairo_verifier::fields::qm31::QM31;
 use stwo_cairo_verifier::poly::utils::ibutterfly;
-use stwo_cairo_verifier::utils::pow;
+use stwo_cairo_verifier::utils::pow2;
 
 /// A valid domain for circle polynomial interpolation and evaluation.
 ///
@@ -28,7 +28,7 @@ pub impl CircleDomainImpl of CircleDomainTrait {
     /// Returns the size of the domain.
     #[inline]
     fn size(self: @CircleDomain) -> usize {
-        pow(2, self.log_size())
+        pow2(self.log_size())
     }
 
     /// Returns the log size of the domain.
