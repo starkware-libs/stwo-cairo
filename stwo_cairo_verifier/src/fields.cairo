@@ -12,9 +12,9 @@ pub trait Field<T> {
 pub trait FieldBatchInverse<T, +Field<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
     /// Computes all `1/arr[i]` with a single call to `inverse()` using Montgomery batch inversion.
     fn batch_inverse(
-        arr: Array<T>
+        arr: Array<T>,
     ) -> Array<
-        T
+        T,
     > {
         if arr.is_empty() {
             return array![];

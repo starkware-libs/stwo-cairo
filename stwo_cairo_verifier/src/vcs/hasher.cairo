@@ -1,6 +1,6 @@
 use core::array::ArrayTrait;
 use core::hash::HashStateTrait;
-use core::poseidon::{poseidon_hash_span, hades_permutation, HashState};
+use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
 use stwo_cairo_verifier::BaseField;
 
 /// 8 M31 elements fit in a hash, since 31*8 = 242 < 252.
@@ -102,12 +102,12 @@ mod tests {
     fn test_m31() {
         assert_eq!(
             PoseidonMerkleHasher::hash_node(Option::None, array![m31(0), m31(1)]),
-            2552053700073128806553921687214114320458351061521275103654266875084493044716
+            2552053700073128806553921687214114320458351061521275103654266875084493044716,
         );
 
         assert_eq!(
             PoseidonMerkleHasher::hash_node(Option::Some((1, 2)), array![m31(3)]),
-            159358216886023795422515519110998391754567506678525778721401012606792642769
+            159358216886023795422515519110998391754567506678525778721401012606792642769,
         );
     }
 }

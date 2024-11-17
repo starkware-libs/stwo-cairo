@@ -3,17 +3,17 @@ use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::fields::Field;
 use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::qm31::{QM31_EXTENSION_DEGREE, QM31, QM31Zero, QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_cairo_verifier::poly::circle::CircleDomainImpl;
 use stwo_cairo_verifier::poly::circle::{SparseCircleEvaluation, SparseCircleEvaluationImpl};
-use stwo_cairo_verifier::poly::line::{
-    LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl
-};
 use stwo_cairo_verifier::poly::line::{LineDomain, LineDomainImpl};
+use stwo_cairo_verifier::poly::line::{
+    LineEvaluation, LineEvaluationImpl, SparseLineEvaluation, SparseLineEvaluationImpl,
+};
 use stwo_cairo_verifier::poly::line::{LinePoly, LinePolyImpl};
 use stwo_cairo_verifier::queries::SparseSubCircleDomain;
 use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
-use stwo_cairo_verifier::utils::{bit_reverse_index, OptionImpl, ArrayImpl, SpanExTrait, pow, find};
+use stwo_cairo_verifier::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, find, pow};
 use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
 use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -35,7 +35,7 @@ pub enum FriVerificationError {
     LastLayerDegreeInvalid,
     LastLayerEvaluationsInvalid,
     InnerLayerEvaluationsInvalid,
-    InnerLayerCommitmentInvalid
+    InnerLayerCommitmentInvalid,
 }
 
 #[derive(Drop, Debug)]
@@ -51,7 +51,7 @@ struct FriLayerVerifier {
 impl FriLayerVerifierImpl of FriLayerVerifierTrait {
     /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
     fn verify_and_fold(
-        self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>
+        self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>,
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         let sparse_evaluation = self.extract_evaluation(queries, evals_at_queries)?;
 
@@ -60,34 +60,28 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         let mut column_2 = array![];
         let mut column_3 = array![];
 
-        for subline_eval in sparse_evaluation
-            .subline_evals
-            .span() {
-                for eval in subline_eval
-                    .values
-                    .span() {
-                        let [x0, x1, x2, x3] = (*eval).to_array();
-                        column_0.append(x0);
-                        column_1.append(x1);
-                        column_2.append(x2);
-                        column_3.append(x3);
-                    };
+        for subline_eval in sparse_evaluation.subline_evals.span() {
+            for eval in subline_eval.values.span() {
+                let [x0, x1, x2, x3] = (*eval).to_array();
+                column_0.append(x0);
+                column_1.append(x1);
+                column_2.append(x2);
+                column_3.append(x3);
             };
+        };
 
         let actual_decommitment_array = array![column_0, column_1, column_2, column_3];
 
         let folded_queries = queries.fold(FOLD_STEP);
         let mut decommitment_positions = array![];
 
-        for folded_query_position in folded_queries
-            .positions
-            .span() {
-                let start = *folded_query_position * FOLD_FACTOR;
-                let end = start + FOLD_FACTOR;
-                for i in start..end {
-                    decommitment_positions.append(i);
-                };
+        for folded_query_position in folded_queries.positions.span() {
+            let start = *folded_query_position * FOLD_FACTOR;
+            let end = start + FOLD_FACTOR;
+            for i in start..end {
+                decommitment_positions.append(i);
             };
+        };
 
         let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
@@ -113,7 +107,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
     /// Returns the evaluations needed for decommitment.
     fn extract_evaluation(
-        self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>
+        self: @FriLayerVerifier, queries: @Queries, evals_at_queries: @Array<QM31>,
     ) -> Result<SparseLineEvaluation, FriVerificationError> {
         let mut all_subline_evals: Array<LineEvaluation> = array![];
 
@@ -174,7 +168,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             let subline_initial_index = bit_reverse_index(subline_start, self.domain.log_size());
             let subline_initial = self.domain.coset.index_at(subline_initial_index);
             let subline_domain = LineDomainImpl::new_unchecked(
-                CosetImpl::new(subline_initial, FOLD_STEP)
+                CosetImpl::new(subline_initial, FOLD_STEP),
             );
 
             all_subline_evals.append(LineEvaluationImpl::new(subline_domain, subline_evals));
@@ -229,7 +223,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// `column_bounds` should be the committed circle polynomial degree bounds in descending order.
     fn commit(
-        ref channel: Channel, config: FriConfig, proof: FriProof, column_bounds: Array<u32>
+        ref channel: Channel, config: FriConfig, proof: FriProof, column_bounds: Array<u32>,
     ) -> Result<FriVerifier, FriVerificationError> {
         let max_column_bound = column_bounds[0];
         let expected_query_log_domain_size = *max_column_bound + config.log_blowup_factor;
@@ -238,7 +232,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         let mut inner_layers = array![];
         let mut layer_bound = *max_column_bound - CIRCLE_TO_LINE_FOLD_STEP;
         let mut layer_domain = LineDomainImpl::new_unchecked(
-            CosetImpl::half_odds(layer_bound + config.log_blowup_factor)
+            CosetImpl::half_odds(layer_bound + config.log_blowup_factor),
         );
 
         let mut layer_index = 0;
@@ -255,7 +249,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                         folding_alpha: new_folding_alpha,
                         layer_index,
                         proof,
-                    }
+                    },
                 );
 
             if layer_bound >= FOLD_STEP {
@@ -291,8 +285,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                 inner_layers,
                 last_layer_domain: layer_domain,
                 last_layer_poly: proof.last_layer_poly,
-                queries: Option::None
-            }
+                queries: Option::None,
+            },
         )
     }
 
@@ -307,7 +301,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     }
 
     fn decommit_on_queries(
-        self: @FriVerifier, queries: @Queries, decommitted_values: Array<SparseCircleEvaluation>
+        self: @FriVerifier, queries: @Queries, decommitted_values: Array<SparseCircleEvaluation>,
     ) -> Result<(), FriVerificationError> {
         assert!(queries.log_domain_size == self.expected_query_log_domain_size);
         let (last_layer_queries, last_layer_query_evals) = self
@@ -319,7 +313,9 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// Returns the queries and query evaluations needed for verifying the last FRI layer.
     fn decommit_inner_layers(
-        self: @FriVerifier, queries: @Queries, mut decommitted_values: Array<SparseCircleEvaluation>
+        self: @FriVerifier,
+        queries: @Queries,
+        mut decommitted_values: Array<SparseCircleEvaluation>,
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         let circle_poly_alpha = *self.circle_poly_alpha;
         let circle_poly_alpha_pow_fold_factor = circle_poly_alpha * circle_poly_alpha;
@@ -332,7 +328,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         loop {
             let layer = match inner_layers.pop_front() {
                 Option::Some(layer) => layer,
-                Option::None => { break Result::Ok(()); }
+                Option::None => { break Result::Ok(()); },
             };
 
             let circle_poly_degree_bound = *layer.degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
@@ -353,7 +349,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
             match layer.verify_and_fold(@layer_queries, @layer_query_evals) {
                 Result::Ok((
-                    next_layer_queries, next_layer_query_evals
+                    next_layer_queries, next_layer_query_evals,
                 )) => {
                     layer_queries = next_layer_queries;
                     layer_query_evals = next_layer_query_evals;
@@ -403,12 +399,12 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// The order of the opening positions corresponds to the order of the column commitment.
     fn column_query_positions(
-        ref self: FriVerifier, ref channel: Channel
+        ref self: FriVerifier, ref channel: Channel,
     ) -> (Felt252Dict<Nullable<@SparseSubCircleDomain>>, Span<u32>) {
         let queries = QueriesImpl::generate(
             ref channel,
             *self.column_bounds[0] + self.config.log_blowup_factor,
-            self.config.n_queries
+            self.config.n_queries,
         );
         self.queries = Option::Some(queries.clone());
 
@@ -449,7 +445,7 @@ fn get_opening_positions(
         let felt_column_log_sizes: core::felt252 = (*column_log_sizes.at(i)).into();
         positions
             .insert(
-                felt_column_log_sizes, NullableTrait::new(@queries.opening_positions(FOLD_STEP))
+                felt_column_log_sizes, NullableTrait::new(@queries.opening_positions(FOLD_STEP)),
             );
         prev_log_size = column_log_sizes.at(i);
         prev_queries = queries;
@@ -467,15 +463,13 @@ fn get_opening_positions(
 pub fn fold_line(eval: LineEvaluation, alpha: QM31) -> LineEvaluation {
     let domain = eval.domain;
     let mut values = array![];
-    for i in 0
-        ..eval.values.len()
-            / 2 {
-                let x = domain.at(bit_reverse_index(i * FOLD_FACTOR, domain.log_size()));
-                let f_x = eval.values[2 * i];
-                let f_neg_x = eval.values[2 * i + 1];
-                let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
-                values.append(f0 + alpha * f1);
-            };
+    for i in 0..eval.values.len() / 2 {
+        let x = domain.at(bit_reverse_index(i * FOLD_FACTOR, domain.log_size()));
+        let f_x = eval.values[2 * i];
+        let f_neg_x = eval.values[2 * i + 1];
+        let (f0, f1) = ibutterfly(*f_x, *f_neg_x, x.inverse());
+        values.append(f0 + alpha * f1);
+    };
     LineEvaluationImpl::new(domain.double(), values)
 }
 
@@ -486,29 +480,29 @@ pub fn ibutterfly(v0: QM31, v1: QM31, itwid: M31) -> (QM31, QM31) {
 #[cfg(test)]
 mod test {
     use stwo_cairo_verifier::channel::ChannelTrait;
-    use stwo_cairo_verifier::circle::{Coset, CosetImpl, CirclePointIndexImpl};
+    use stwo_cairo_verifier::circle::{CirclePointIndexImpl, Coset, CosetImpl};
     use stwo_cairo_verifier::fields::qm31::qm31;
     use stwo_cairo_verifier::poly::circle::{
-        CircleDomain, CircleEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl
+        CircleDomain, CircleEvaluationImpl, SparseCircleEvaluation, SparseCircleEvaluationImpl,
     };
     use stwo_cairo_verifier::poly::line::LineDomainImpl;
     use stwo_cairo_verifier::poly::line::LinePoly;
     use stwo_cairo_verifier::poly::line::{
-        LineEvaluation, SparseLineEvaluation, SparseLineEvaluationImpl
+        LineEvaluation, SparseLineEvaluation, SparseLineEvaluationImpl,
     };
     use stwo_cairo_verifier::queries::{Queries, QueriesImpl};
     use stwo_cairo_verifier::vcs::verifier::MerkleDecommitment;
-    use super::{FriConfig, FriProof, FriVerifierImpl, FriVerificationError, FriLayerProof};
+    use super::{FriConfig, FriLayerProof, FriProof, FriVerificationError, FriVerifierImpl};
 
     #[test]
     fn test_fold_line_1() {
         let domain = LineDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(67108864), 1));
         let values = array![
             qm31(440443058, 1252794525, 1129773609, 1309365757),
-            qm31(974589897, 1592795796, 649052897, 863407657)
+            qm31(974589897, 1592795796, 649052897, 863407657),
         ];
         let sparse_line_evaluation = SparseLineEvaluation {
-            subline_evals: array![LineEvaluation { values, domain }]
+            subline_evals: array![LineEvaluation { values, domain }],
         };
         let alpha = qm31(1047716961, 506143067, 1065078409, 990356067);
 
@@ -522,10 +516,10 @@ mod test {
         let domain = LineDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(553648128), 1));
         let values = array![
             qm31(730692421, 1363821003, 2146256633, 106012305),
-            qm31(1387266930, 149259209, 1148988082, 1930518101)
+            qm31(1387266930, 149259209, 1148988082, 1930518101),
         ];
         let sparse_line_evaluation = SparseLineEvaluation {
-            subline_evals: array![LineEvaluation { values, domain }]
+            subline_evals: array![LineEvaluation { values, domain }],
         };
         let alpha = qm31(2084521793, 1326105747, 548635876, 1532708504);
 
@@ -589,7 +583,7 @@ mod test {
 
         match result {
             Result::Ok(_) => { panic!("Verifier should return InvalidNumFriLayers"); },
-            Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); }
+            Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); },
         }
     }
 
@@ -605,7 +599,7 @@ mod test {
 
         match result {
             Result::Ok(_) => { panic!("Verifier should return InvalidNumFriLayers"); },
-            Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); }
+            Result::Err(error) => { assert!(error == FriVerificationError::InvalidNumFriLayers); },
         }
     }
 
@@ -633,8 +627,8 @@ mod test {
                     FriLayerProof {
                         evals_subset: invalid_evals_subset.span(),
                         decommitment: inner_layers[1].decommitment.clone(),
-                        commitment: *inner_layers[1].commitment
-                    }
+                        commitment: *inner_layers[1].commitment,
+                    },
                 );
 
             // Keep the rest of the layers as they are
@@ -646,7 +640,7 @@ mod test {
 
             FriProof {
                 inner_layers: invalid_inner_layers.span(),
-                last_layer_poly: proof.last_layer_poly.clone()
+                last_layer_poly: proof.last_layer_poly.clone(),
             }
         };
 
@@ -659,7 +653,7 @@ mod test {
             Result::Ok(_) => { panic!("Verifier should return InnerLayerEvaluationsInvalid"); },
             Result::Err(error) => {
                 assert!(error == FriVerificationError::InnerLayerEvaluationsInvalid);
-            }
+            },
         }
     }
 
@@ -677,7 +671,7 @@ mod test {
 
             // Modify the second layer
             let mut invalid_evals_subset = array![
-                *inner_layers[1].evals_subset[0] + qm31(1, 0, 0, 0)
+                *inner_layers[1].evals_subset[0] + qm31(1, 0, 0, 0),
             ];
             let mut i = 1;
             while i < (*inner_layers[1].evals_subset).len() {
@@ -689,8 +683,8 @@ mod test {
                     FriLayerProof {
                         evals_subset: invalid_evals_subset.span(),
                         decommitment: inner_layers[1].decommitment.clone(),
-                        commitment: *inner_layers[1].commitment
-                    }
+                        commitment: *inner_layers[1].commitment,
+                    },
                 );
 
             // Keep the rest of the layers as they are
@@ -702,7 +696,7 @@ mod test {
 
             FriProof {
                 inner_layers: invalid_inner_layers.span(),
-                last_layer_poly: proof.last_layer_poly.clone()
+                last_layer_poly: proof.last_layer_poly.clone(),
             }
         };
         let mut channel = ChannelTrait::new(0x00);
@@ -714,7 +708,7 @@ mod test {
             Result::Ok(_) => { panic!("Verifier should return InnerLayerCommitmentInvalid"); },
             Result::Err(error) => {
                 assert!(error == FriVerificationError::InnerLayerCommitmentInvalid);
-            }
+            },
         }
     }
 
@@ -725,7 +719,7 @@ mod test {
         proof
             .last_layer_poly =
                 LinePoly {
-                    coeffs: array![qm31(1, 0, 0, 0), qm31(1, 0, 0, 0)], ..proof.last_layer_poly
+                    coeffs: array![qm31(1, 0, 0, 0), qm31(1, 0, 0, 0)], ..proof.last_layer_poly,
                 };
 
         let mut channel = ChannelTrait::new(0x00);
@@ -734,7 +728,7 @@ mod test {
             Result::Ok(_) => { panic!("Verifier should return LastLayerDegreeInvalid"); },
             Result::Err(error) => {
                 assert!(error == FriVerificationError::LastLayerDegreeInvalid);
-            }
+            },
         }
     }
 
@@ -753,7 +747,7 @@ mod test {
             Result::Ok(verifier) => {
                 verifier.decommit_on_queries(@invalid_queries, decommitted_values).unwrap();
             },
-            Result::Err(_) => {}
+            Result::Err(_) => {},
         }
     }
 
@@ -763,7 +757,7 @@ mod test {
 
     fn proof_with_constant_last_layer() -> ProofValues {
         let config = FriConfig {
-            log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1
+            log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 1,
         };
 
         let proof = FriProof {
@@ -773,28 +767,28 @@ mod test {
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
-                            0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
+                            0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003,
                         ],
-                        column_witness: array![]
+                        column_witness: array![],
                     },
-                    commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
+                    commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7,
                 },
                 FriLayerProof {
                     evals_subset: array![qm31(1396531676, 750161390, 1275165237, 1824394799)]
                         .span(),
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
-                            0x0539eb6bd5d99019f938130703ddfd97aaa9f46dea9714f9ed75528babb4db55
+                            0x0539eb6bd5d99019f938130703ddfd97aaa9f46dea9714f9ed75528babb4db55,
                         ],
-                        column_witness: array![]
+                        column_witness: array![],
                     },
-                    commitment: 0x078189f0ad5c044994f4b3100183203ed10545891f2459770dde4af4b9c2def7
-                }
+                    commitment: 0x078189f0ad5c044994f4b3100183203ed10545891f2459770dde4af4b9c2def7,
+                },
             ]
                 .span(),
             last_layer_poly: LinePoly {
-                coeffs: array![qm31(1030963115, 122157260, 1848484002, 1387601044)], log_size: 0
-            }
+                coeffs: array![qm31(1030963115, 122157260, 1848484002, 1387601044)], log_size: 0,
+            },
         };
         let bounds = array![3];
 
@@ -803,17 +797,17 @@ mod test {
             half_coset: Coset {
                 initial_index: CirclePointIndexImpl::new(603979776),
                 step_size: CirclePointIndexImpl::new(2147483648),
-                log_size: 0
-            }
+                log_size: 0,
+            },
         };
         let decommitted_values = array![
             SparseCircleEvaluation {
                 subcircle_evals: array![
                     CircleEvaluationImpl::new(
-                        domain, array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)]
-                    )
-                ]
-            }
+                        domain, array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)],
+                    ),
+                ],
+            },
         ];
 
         (config, proof, bounds, queries, decommitted_values)
@@ -821,7 +815,7 @@ mod test {
 
     fn proof_with_linear_last_layer() -> ProofValues {
         let config = FriConfig {
-            log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1
+            log_blowup_factor: 1, log_last_layer_degree_bound: 1, n_queries: 1,
         };
 
         let proof = FriProof {
@@ -831,21 +825,21 @@ mod test {
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
-                            0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003
+                            0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003,
                         ],
-                        column_witness: array![]
+                        column_witness: array![],
                     },
-                    commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7
+                    commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7,
                 },
             ]
                 .span(),
             last_layer_poly: LinePoly {
                 coeffs: array![
                     qm31(1166420758, 1481024254, 705780805, 948549530),
-                    qm31(1166420758, 1481024254, 705780805, 948549530)
+                    qm31(1166420758, 1481024254, 705780805, 948549530),
                 ],
-                log_size: 1
-            }
+                log_size: 1,
+            },
         };
         let bounds = array![3];
 
@@ -854,17 +848,17 @@ mod test {
             half_coset: Coset {
                 initial_index: CirclePointIndexImpl::new(603979776),
                 step_size: CirclePointIndexImpl::new(2147483648),
-                log_size: 0
-            }
+                log_size: 0,
+            },
         };
         let decommitted_values = array![
             SparseCircleEvaluation {
                 subcircle_evals: array![
                     CircleEvaluationImpl::new(
-                        domain, array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)]
-                    )
-                ]
-            }
+                        domain, array![qm31(1990458477, 0, 0, 0), qm31(1966717173, 0, 0, 0)],
+                    ),
+                ],
+            },
         ];
 
         (config, proof, bounds, queries, decommitted_values)
@@ -872,7 +866,7 @@ mod test {
 
     fn proof_with_last_layer_of_degree_four() -> ProofValues {
         let config = FriConfig {
-            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 1
+            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 1,
         };
         let proof = FriProof {
             inner_layers: array![
@@ -941,10 +935,10 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(1464849549, 0, 0, 0), qm31(35402781, 0, 0, 0),],
+                        array![qm31(1464849549, 0, 0, 0), qm31(35402781, 0, 0, 0)],
                     ),
                 ],
-            }
+            },
         ];
         (config, proof, bounds, queries, decommitted_values)
     }
@@ -952,7 +946,7 @@ mod test {
 
     fn proof_with_mixed_degree_1() -> ProofValues {
         let config = FriConfig {
-            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2
+            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 2,
         };
 
         let proof = FriProof {
@@ -960,7 +954,7 @@ mod test {
                 FriLayerProof {
                     evals_subset: array![
                         qm31(1332072020, 1609661801, 1897498023, 686558487),
-                        qm31(886239056, 1157828441, 2019876782, 1060063104)
+                        qm31(886239056, 1157828441, 2019876782, 1060063104),
                     ]
                         .span(),
                     decommitment: MerkleDecommitment {
@@ -972,16 +966,16 @@ mod test {
                             0x0718cb047c50ba071b9a4696537695f273f42a7af8bfb0e465190b905548f754,
                             0x055191c91b0668bab9271863162448c3396e8c2fc29f61bb621858210f4d0771,
                             0x040db6d0f16909d1daaf710e3fa9663ef52419ac5ae5433c915ac5939809eb79,
-                            0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3
+                            0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3,
                         ],
                         column_witness: array![],
                     },
-                    commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc
+                    commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
                 FriLayerProof {
                     evals_subset: array![
                         qm31(1263943078, 172354194, 2127081660, 1999316363),
-                        qm31(1311532324, 582549508, 1702052122, 36581530)
+                        qm31(1311532324, 582549508, 1702052122, 36581530),
                     ]
                         .span(),
                     decommitment: MerkleDecommitment {
@@ -993,14 +987,14 @@ mod test {
                             0x0668d865abd1cb2b868c20784728cd48a6c4cbd926da318ce8814c5dae779fd0,
                             0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769,
                         ],
-                        column_witness: array![]
+                        column_witness: array![],
                     },
-                    commitment: 0x06a3f2b104508429f6b74edcd62044afb4f618302a382f281fee118b12dc9dbd
+                    commitment: 0x06a3f2b104508429f6b74edcd62044afb4f618302a382f281fee118b12dc9dbd,
                 },
                 FriLayerProof {
                     evals_subset: array![
                         qm31(1660083285, 865580381, 2025493291, 1151079474),
-                        qm31(24828450, 1304266370, 129024597, 1635057579)
+                        qm31(24828450, 1304266370, 129024597, 1635057579),
                     ]
                         .span(),
                     decommitment: MerkleDecommitment {
@@ -1008,12 +1002,12 @@ mod test {
                             0x03c70415b07af713627bd1405e284be50c30ce6b628fb6a7d2accd3bb631c04c,
                             0x062c36d3bd5fec84f54c5e835935a923db06521e937e3fbdd99cd9cd9701a329,
                             0x0414361ae7771b465d1ed7241c6a9c383e19cee6db3230e16164ded0da216c4d,
-                            0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc
+                            0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc,
                         ],
-                        column_witness: array![]
+                        column_witness: array![],
                     },
-                    commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e
-                }
+                    commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e,
+                },
             ]
                 .span(),
             last_layer_poly: LinePoly {
@@ -1021,10 +1015,10 @@ mod test {
                     qm31(1365318542, 1863705492, 1698090260, 381798840),
                     qm31(1365318542, 1863705492, 1698090260, 381798840),
                     qm31(1365318542, 1863705492, 1698090260, 381798840),
-                    qm31(1365318542, 1863705492, 1698090260, 381798840)
+                    qm31(1365318542, 1863705492, 1698090260, 381798840),
                 ],
-                log_size: 2
-            }
+                log_size: 2,
+            },
         };
         let bounds = array![6, 5, 4];
         let queries = Queries { positions: array![7, 70], log_domain_size: 7 };
@@ -1036,22 +1030,22 @@ mod test {
                             half_coset: Coset {
                                 initial_index: CirclePointIndexImpl::new(1619001344),
                                 step_size: CirclePointIndexImpl::new(2147483648),
-                                log_size: 0
-                            }
+                                log_size: 0,
+                            },
                         },
-                        array![qm31(83295654, 0, 0, 0), qm31(666640840, 0, 0, 0)]
+                        array![qm31(83295654, 0, 0, 0), qm31(666640840, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
                                 initial_index: CirclePointIndexImpl::new(1652555776),
                                 step_size: CirclePointIndexImpl::new(2147483648),
-                                log_size: 0
-                            }
+                                log_size: 0,
+                            },
                         },
-                        array![qm31(1598588979, 0, 0, 0), qm31(1615371031, 0, 0, 0)]
-                    )
-                ]
+                        array![qm31(1598588979, 0, 0, 0), qm31(1615371031, 0, 0, 0)],
+                    ),
+                ],
             },
             SparseCircleEvaluation {
                 subcircle_evals: array![
@@ -1060,22 +1054,22 @@ mod test {
                             half_coset: Coset {
                                 initial_index: CirclePointIndexImpl::new(1090519040),
                                 step_size: CirclePointIndexImpl::new(2147483648),
-                                log_size: 0
-                            }
+                                log_size: 0,
+                            },
                         },
-                        array![qm31(985597997, 0, 0, 0), qm31(139496415, 0, 0, 0)]
+                        array![qm31(985597997, 0, 0, 0), qm31(139496415, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
                                 initial_index: CirclePointIndexImpl::new(1157627904),
                                 step_size: CirclePointIndexImpl::new(2147483648),
-                                log_size: 0
-                            }
+                                log_size: 0,
+                            },
                         },
-                        array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0)]
-                    )
-                ]
+                        array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0)],
+                    ),
+                ],
             },
             SparseCircleEvaluation {
                 subcircle_evals: array![
@@ -1084,30 +1078,30 @@ mod test {
                             half_coset: Coset {
                                 initial_index: CirclePointIndexImpl::new(33554432),
                                 step_size: CirclePointIndexImpl::new(2147483648),
-                                log_size: 0
-                            }
+                                log_size: 0,
+                            },
                         },
-                        array![qm31(1645691043, 0, 0, 0), qm31(2009531552, 0, 0, 0)]
+                        array![qm31(1645691043, 0, 0, 0), qm31(2009531552, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
                             half_coset: Coset {
                                 initial_index: CirclePointIndexImpl::new(167772160),
                                 step_size: CirclePointIndexImpl::new(2147483648),
-                                log_size: 0
-                            }
+                                log_size: 0,
+                            },
                         },
-                        array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0)]
-                    )
-                ]
-            }
+                        array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0)],
+                    ),
+                ],
+            },
         ];
 
         (config, proof, bounds, queries, decommitted_values)
     }
 
     fn proof_with_mixed_degree_2() -> (
-        FriConfig, FriProof, Array<u32>, Array<SparseCircleEvaluation>
+        FriConfig, FriProof, Array<u32>, Array<SparseCircleEvaluation>,
     ) {
         let config = FriConfig {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 3,
@@ -1152,7 +1146,7 @@ mod test {
                             0x0046d76cf189a1c1a9aad123f2c6a447af2c9fa4a7f58e11cd1852c00011a74b,
                             0x03f8cb35e41d5291f1539b1cd73b018d6510aa85ba3bc9720e6014aa95ec4248,
                             0x002d5922250cdbfedf908cabd24a158e9bdbb3de503e7636376c8a74921b8d41,
-                            0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769
+                            0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769,
                         ],
                         column_witness: array![],
                     },
@@ -1169,7 +1163,7 @@ mod test {
                         hash_witness: array![
                             0x058978bedb6abe931a3de1cdff9bce0f7e7ac7b14c9c2107ea66679874a67e9a,
                             0x027cf2f25d11835dbf4d3e0b0a3ab32f5b75de4f9904d1873115ecb5f2bd0555,
-                            0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc
+                            0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc,
                         ],
                         column_witness: array![],
                     },
@@ -1199,7 +1193,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(1784241578, 0, 0, 0), qm31(714402375, 0, 0, 0),],
+                        array![qm31(1784241578, 0, 0, 0), qm31(714402375, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
@@ -1209,7 +1203,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(673384396, 0, 0, 0), qm31(475618425, 0, 0, 0),],
+                        array![qm31(673384396, 0, 0, 0), qm31(475618425, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
@@ -1219,7 +1213,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(315059915, 0, 0, 0), qm31(558088919, 0, 0, 0),],
+                        array![qm31(315059915, 0, 0, 0), qm31(558088919, 0, 0, 0)],
                     ),
                 ],
             },
@@ -1233,7 +1227,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(142767236, 0, 0, 0), qm31(537984732, 0, 0, 0),],
+                        array![qm31(142767236, 0, 0, 0), qm31(537984732, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
@@ -1243,7 +1237,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0),],
+                        array![qm31(1718103579, 0, 0, 0), qm31(1537119660, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
@@ -1253,7 +1247,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(2124636505, 0, 0, 0), qm31(1506525049, 0, 0, 0),],
+                        array![qm31(2124636505, 0, 0, 0), qm31(1506525049, 0, 0, 0)],
                     ),
                 ],
             },
@@ -1267,7 +1261,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(1014591066, 0, 0, 0), qm31(1931899148, 0, 0, 0),],
+                        array![qm31(1014591066, 0, 0, 0), qm31(1931899148, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
@@ -1277,7 +1271,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0),],
+                        array![qm31(354887788, 0, 0, 0), qm31(934393698, 0, 0, 0)],
                     ),
                     CircleEvaluationImpl::new(
                         CircleDomain {
@@ -1287,7 +1281,7 @@ mod test {
                                 log_size: 0,
                             },
                         },
-                        array![qm31(509977960, 0, 0, 0), qm31(1887908506, 0, 0, 0),],
+                        array![qm31(509977960, 0, 0, 0), qm31(1887908506, 0, 0, 0)],
                     ),
                 ],
             },

@@ -1,6 +1,6 @@
 use core::array::SpanTrait;
 use core::num::traits::{WrappingMul, WrappingSub};
-use core::poseidon::{poseidon_hash_span, hades_permutation};
+use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
 use stwo_cairo_verifier::fields::qm31::QM31Trait;
 use stwo_cairo_verifier::utils::pack4;
@@ -43,7 +43,7 @@ pub struct Channel {
 #[generate_trait]
 pub impl ChannelImpl of ChannelTrait {
     fn new(digest: felt252) -> Channel {
-        Channel { digest, channel_time: Default::default(), }
+        Channel { digest, channel_time: Default::default() }
     }
 
     fn get_digest(ref self: Channel) -> felt252 {
@@ -61,14 +61,8 @@ pub impl ChannelImpl of ChannelTrait {
     fn draw_base_felts(ref self: Channel) -> [BaseField; FELTS_PER_HASH] {
         let mut cur = self.draw_felt252().into();
         [
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
+            extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
+            extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
         ]
     }
 
@@ -88,7 +82,7 @@ pub impl ChannelImpl of ChannelTrait {
                     break;
                 },
                 (
-                    Option::Some(x), Option::Some(y)
+                    Option::Some(x), Option::Some(y),
                 ) => {
                     let cur = pack4(0, (*x).to_array());
                     res.append(pack4(cur, (*y).to_array()));
@@ -134,12 +128,11 @@ pub impl ChannelImpl of ChannelTrait {
     fn draw_random_bytes(ref self: Channel) -> Array<u8> {
         let mut cur: u256 = self.draw_felt252().into();
         let mut bytes = array![];
-        for _ in 0_usize
-            ..31 {
-                let (q, r) = DivRem::div_rem(cur, 256);
-                bytes.append(r.try_into().unwrap());
-                cur = q;
-            };
+        for _ in 0_usize..31 {
+            let (q, r) = DivRem::div_rem(cur, 256);
+            bytes.append(r.try_into().unwrap());
+            cur = q;
+        };
         bytes
     }
 
@@ -299,7 +292,7 @@ mod tests {
             168,
             232,
             211,
-            147
+            147,
         ];
         assert_eq!(expected_result, result);
     }
@@ -340,7 +333,7 @@ mod tests {
             113,
             149,
             41,
-            12
+            12,
         ];
         assert_eq!(expected_result, result);
     }

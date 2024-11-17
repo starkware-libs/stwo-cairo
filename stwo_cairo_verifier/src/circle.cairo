@@ -1,21 +1,22 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
-use core::num::traits::{WrappingAdd, WrappingSub, WrappingMul};
+use core::num::traits::{WrappingAdd, WrappingMul, WrappingSub};
 use stwo_cairo_verifier::channel::{Channel, ChannelImpl};
 use stwo_cairo_verifier::circle_mul_table::{
-    M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29, M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23,
-    M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17, M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
-    M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5
+    M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17,
+    M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
+    M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
 use stwo_cairo_verifier::fields::Field;
 use stwo_cairo_verifier::fields::cm31::CM31;
 use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
-use stwo_cairo_verifier::fields::qm31::{QM31Impl, QM31One, QM31, QM31Trait};
+use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31One, QM31Trait};
 use super::utils::pow;
 
 /// A generator for the circle group over [`M31`].
-pub const M31_CIRCLE_GEN: CirclePoint<M31> =
-    CirclePoint { x: M31 { inner: 2 }, y: M31 { inner: 1268011823 }, };
+pub const M31_CIRCLE_GEN: CirclePoint<M31> = CirclePoint {
+    x: M31 { inner: 2 }, y: M31 { inner: 1268011823 },
+};
 
 pub const M31_CIRCLE_LOG_ORDER: u32 = 31;
 
@@ -26,17 +27,16 @@ pub const M31_CIRCLE_ORDER: u32 = 2147483648;
 pub const M31_CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 
 /// A generator for the circle group over [`QM31`].
-pub const QM31_CIRCLE_GEN: CirclePoint<QM31> =
-    CirclePoint {
-        x: QM31 {
-            a: CM31 { a: M31 { inner: 1 }, b: M31 { inner: 0 }, },
-            b: CM31 { a: M31 { inner: 478637715 }, b: M31 { inner: 513582971 } }
-        },
-        y: QM31 {
-            a: CM31 { a: M31 { inner: 992285211 }, b: M31 { inner: 649143431 } },
-            b: CM31 { a: M31 { inner: 740191619 }, b: M31 { inner: 1186584352 } }
-        },
-    };
+pub const QM31_CIRCLE_GEN: CirclePoint<QM31> = CirclePoint {
+    x: QM31 {
+        a: CM31 { a: M31 { inner: 1 }, b: M31 { inner: 0 } },
+        b: CM31 { a: M31 { inner: 478637715 }, b: M31 { inner: 513582971 } },
+    },
+    y: QM31 {
+        a: CM31 { a: M31 { inner: 992285211 }, b: M31 { inner: 649143431 } },
+        b: CM31 { a: M31 { inner: 740191619 }, b: M31 { inner: 1186584352 } },
+    },
+};
 
 /// Order of [`QM31_CIRCLE_GEN`].
 pub const QM31_CIRCLE_ORDER: u128 = 21267647892944572736998860269687930880;
@@ -45,11 +45,11 @@ pub const QM31_CIRCLE_ORDER: u128 = 21267647892944572736998860269687930880;
 #[derive(Drop, Copy, Debug, PartialEq)]
 pub struct CirclePoint<F> {
     pub x: F,
-    pub y: F
+    pub y: F,
 }
 
 pub trait CirclePointTrait<
-    F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>, +Zero<F>, +One<F>, +PartialEq<F>
+    F, +Add<F>, +Sub<F>, +Mul<F>, +Drop<F>, +Copy<F>, +Zero<F>, +One<F>, +PartialEq<F>,
 > {
     // Returns the neutral element of the circle.
     fn zero() -> CirclePoint<F> {
@@ -66,7 +66,7 @@ pub trait CirclePointTrait<
     ///
     /// All points have an order of the form `2^k`.
     fn log_order(
-        self: @CirclePoint<F>
+        self: @CirclePoint<F>,
     ) -> u32 {
         // we only need the x-coordinate to check order since the only point
         // with x=1 is the circle's identity
@@ -101,7 +101,7 @@ pub impl CirclePointQM31AddCirclePointM31Impl of CirclePointQM31AddCirclePointM3
     fn add_circle_point_m31(self: CirclePoint<QM31>, rhs: CirclePoint<M31>) -> CirclePoint<QM31> {
         CirclePoint {
             x: self.x.mul_m31(rhs.x) - self.y.mul_m31(rhs.y),
-            y: self.x.mul_m31(rhs.y) + self.y.mul_m31(rhs.x)
+            y: self.x.mul_m31(rhs.y) + self.y.mul_m31(rhs.x),
         }
     }
 }
@@ -157,7 +157,7 @@ pub impl CosetImpl of CosetTrait {
         Coset {
             initial_index: *self.initial_index + *self.initial_index,
             step_size: *self.step_size + *self.step_size,
-            log_size: *self.log_size - 1
+            log_size: *self.log_size - 1,
         }
     }
 
@@ -294,9 +294,9 @@ mod tests {
     use stwo_cairo_verifier::fields::m31::m31;
     use stwo_cairo_verifier::fields::qm31::QM31One;
     use super::{
-        M31_CIRCLE_GEN, CirclePointQM31Impl, QM31_CIRCLE_GEN, CirclePoint, CirclePointM31Impl,
-        CirclePointIndex, CirclePointIndexImpl, Coset, CosetImpl,
-        CirclePointQM31AddCirclePointM31Impl
+        CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
+        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
+        QM31_CIRCLE_GEN,
     };
 
 
@@ -355,7 +355,7 @@ mod tests {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
             log_size: 5,
-            step_size: CirclePointIndexImpl::new(67108864)
+            step_size: CirclePointIndexImpl::new(67108864),
         };
 
         let result = coset.index_at(8);
@@ -372,8 +372,8 @@ mod tests {
             Coset {
                 initial_index: CirclePointIndexImpl::new(16777216),
                 log_size: 5,
-                step_size: CirclePointIndexImpl::new(67108864)
-            }
+                step_size: CirclePointIndexImpl::new(67108864),
+            },
         );
     }
 
@@ -382,7 +382,7 @@ mod tests {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
             step_size: CirclePointIndexImpl::new(67108864),
-            log_size: 5
+            log_size: 5,
         };
 
         let result = coset.double();
@@ -392,8 +392,8 @@ mod tests {
             Coset {
                 initial_index: CirclePointIndexImpl::new(33554432),
                 step_size: CirclePointIndexImpl::new(134217728),
-                log_size: 4
-            }
+                log_size: 4,
+            },
         );
     }
 
@@ -402,7 +402,7 @@ mod tests {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
             step_size: CirclePointIndexImpl::new(67108864),
-            log_size: 5
+            log_size: 5,
         };
 
         let result = coset.at(17);
@@ -415,7 +415,7 @@ mod tests {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
             step_size: CirclePointIndexImpl::new(67108864),
-            log_size: 5
+            log_size: 5,
         };
 
         let result = coset.size();
@@ -427,7 +427,8 @@ mod tests {
     fn test_add_circle_point_m31() {
         assert_eq!(
             QM31_CIRCLE_GEN.add_circle_point_m31(M31_CIRCLE_GEN),
-            QM31_CIRCLE_GEN + CirclePoint { x: M31_CIRCLE_GEN.x.into(), y: M31_CIRCLE_GEN.y.into() }
+            QM31_CIRCLE_GEN
+                + CirclePoint { x: M31_CIRCLE_GEN.x.into(), y: M31_CIRCLE_GEN.y.into() },
         );
     }
 }
