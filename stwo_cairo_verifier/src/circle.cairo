@@ -11,7 +11,7 @@ use stwo_cairo_verifier::fields::Invertible;
 use stwo_cairo_verifier::fields::cm31::CM31;
 use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31One, QM31Trait};
-use super::utils::pow;
+use super::utils::POW_2;
 
 /// A generator for the circle group over [`M31`].
 pub const M31_CIRCLE_GEN: CirclePoint<M31> = CirclePoint {
@@ -168,7 +168,7 @@ pub impl CosetImpl of CosetTrait {
 
     /// Returns the size of the coset.
     fn size(self: @Coset) -> usize {
-        pow(2, *self.log_size)
+        *POW_2.span()[*self.log_size]
     }
 
     /// Creates a coset of the form `G_2n + <G_n>`.
@@ -216,7 +216,7 @@ pub impl CirclePointIndexImpl of CirclePointIndexTrait {
 
     fn subgroup_gen(log_size: u32) -> CirclePointIndex {
         assert!(log_size <= M31_CIRCLE_LOG_ORDER);
-        CirclePointIndex { index: pow(2, M31_CIRCLE_LOG_ORDER - log_size) }
+        CirclePointIndex { index: *POW_2.span()[M31_CIRCLE_LOG_ORDER - log_size] }
     }
 
     // TODO(andrew): When associated types are supported, support the Mul<Self, u32>.

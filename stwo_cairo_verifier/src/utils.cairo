@@ -8,7 +8,42 @@ use core::num::traits::BitSize;
 use core::traits::DivRem;
 use core::traits::PanicDestruct;
 use stwo_cairo_verifier::BaseField;
-use stwo_cairo_verifier::fields::qm31::{QM31, qm31};
+
+/// Look up table where index `i` stores value `2^i`.
+pub const POW_2: [u32; 32] = [
+    0b1,
+    0b10,
+    0b100,
+    0b1000,
+    0b10000,
+    0b100000,
+    0b1000000,
+    0b10000000,
+    0b100000000,
+    0b1000000000,
+    0b10000000000,
+    0b100000000000,
+    0b1000000000000,
+    0b10000000000000,
+    0b100000000000000,
+    0b1000000000000000,
+    0b10000000000000000,
+    0b100000000000000000,
+    0b1000000000000000000,
+    0b10000000000000000000,
+    0b100000000000000000000,
+    0b1000000000000000000000,
+    0b10000000000000000000000,
+    0b100000000000000000000000,
+    0b1000000000000000000000000,
+    0b10000000000000000000000000,
+    0b100000000000000000000000000,
+    0b1000000000000000000000000000,
+    0b10000000000000000000000000000,
+    0b100000000000000000000000000000,
+    0b1000000000000000000000000000000,
+    0b10000000000000000000000000000000,
+];
 
 #[generate_trait]
 pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {
@@ -153,22 +188,6 @@ pub fn pack4(cur: felt252, values: [BaseField; 4]) -> felt252 {
         + x3.into()
 }
 
-pub fn pow(base: u32, mut exponent: u32) -> u32 {
-    let mut result = 1;
-    let mut base_power = base;
-    loop {
-        if exponent & 1 == 1 {
-            result *= base_power;
-        }
-        exponent = exponent / 2;
-        if exponent == 0 {
-            break;
-        }
-        base_power = base_power * base_power;
-    };
-    result
-}
-
 pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     assert!(bits <= BitSize::<usize>::bits());
 
@@ -197,34 +216,9 @@ pub fn find(n: u32, a: Span<u32>) -> bool {
     res
 }
 
-pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
-    let mut result = qm31(1, 0, 0, 0);
-    let mut base_power = base;
-    loop {
-        if exponent & 1 == 1 {
-            result = result * base_power;
-        }
-        exponent = exponent / 2;
-        if exponent == 0 {
-            break;
-        }
-        base_power = base_power * base_power;
-    };
-    result
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{ArrayImpl, bit_reverse_index, pow, pow_qm31, qm31};
-
-    #[test]
-    fn test_pow() {
-        assert_eq!(25, pow(5, 2));
-        assert_eq!(16, pow(2, 4));
-        assert_eq!(1024, pow(2, 10));
-        assert_eq!(4096, pow(2, 12));
-        assert_eq!(1048576, pow(2, 20));
-    }
+    use super::{ArrayImpl, bit_reverse_index};
 
     #[test]
     fn test_bit_reverse() {
@@ -249,27 +243,6 @@ mod tests {
 
         // 31 bits
         assert_eq!(16448250, bit_reverse_index(800042880, 31));
-    }
-
-    #[test]
-    fn test_pow_qm31_1() {
-        let result = pow_qm31(qm31(1, 2, 3, 4), 0);
-        let expected_result = qm31(1, 0, 0, 0);
-        assert_eq!(expected_result, result)
-    }
-
-    #[test]
-    fn test_pow_qm31_2() {
-        let result = pow_qm31(qm31(1, 2, 3, 4), 1);
-        let expected_result = qm31(1, 2, 3, 4);
-        assert_eq!(expected_result, result)
-    }
-
-    #[test]
-    fn test_pow_qm31_3() {
-        let result = pow_qm31(qm31(1, 2, 3, 4), 37);
-        let expected_result = qm31(1394542587, 260510989, 997191897, 2127074080);
-        assert_eq!(expected_result, result)
     }
 
     #[test]
