@@ -372,10 +372,7 @@ mod tests {
 
     #[test]
     fn test_check_proof_of_work() {
-        let channel = Channel {
-            digest: 0b1000,
-            channel_time: Default::default(),
-        };
+        let channel = Channel { digest: 0b1000, channel_time: Default::default(), };
 
         let res = channel.check_proof_of_work(3);
 
@@ -384,10 +381,7 @@ mod tests {
 
     #[test]
     fn test_check_proof_of_work_with_invalid_n_bits() {
-        let channel = Channel {
-            digest: 0b1000,
-            channel_time: Default::default(),
-        };
+        let channel = Channel { digest: 0b1000, channel_time: Default::default(), };
 
         let res = channel.check_proof_of_work(4);
 
