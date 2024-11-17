@@ -7,7 +7,7 @@ use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
 use stwo_cairo_verifier::fields::{BaseField, SecureField};
 use stwo_cairo_verifier::poly::utils::{butterfly, fold, ibutterfly};
-use stwo_cairo_verifier::utils::pow;
+use stwo_cairo_verifier::utils::pow2;
 
 /// A univariate polynomial defined on a [LineDomain].
 #[derive(Debug, Drop, Clone)]
@@ -55,7 +55,7 @@ pub impl LinePolyImpl of LinePolyTrait {
         let log_domain_size = domain.log_size();
         let log_degree_bound = *self.log_size;
         let n_skipped_layers = log_domain_size - log_degree_bound;
-        let duplicity = pow(2, n_skipped_layers);
+        let duplicity = pow2(n_skipped_layers);
         let coeffs = repeat_value(self.coeffs.span(), duplicity);
 
         LineEvaluationImpl::new(domain, line_fft(coeffs, domain, n_skipped_layers))
@@ -164,7 +164,7 @@ pub impl LinePolySerde of Serde<LinePoly> {
         };
 
         // Check the sizes match.
-        if res.coeffs.len() != pow(2, res.log_size) {
+        if res.coeffs.len() != pow2(res.log_size) {
             return Option::None;
         }
 
