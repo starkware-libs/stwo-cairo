@@ -1,7 +1,7 @@
 use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
 use stwo_cairo_verifier::circle::CosetImpl;
 use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
-use super::utils::{ArrayImpl, bit_reverse_index, find, pow};
+use super::utils::{ArrayImpl, bit_reverse_index, find, pow2};
 
 
 /// An ordered set of query indices over a bit reversed [CircleDomain].
@@ -16,7 +16,7 @@ pub impl QueriesImpl of QueriesImplTrait {
     /// Randomizes a set of query indices uniformly over the range [0, 2^`log_query_size`).
     fn generate(ref channel: Channel, log_domain_size: u32, n_queries: usize) -> Queries {
         let mut unsorted_positions = array![];
-        let max_query = pow(2, log_domain_size) - 1;
+        let max_query = pow2(log_domain_size) - 1;
         let mut finished = false;
         loop {
             let random_bytes = channel.draw_random_bytes();
@@ -51,7 +51,7 @@ pub impl QueriesImpl of QueriesImplTrait {
     fn fold(self: @Queries, n_folds: u32) -> Queries {
         assert!(n_folds <= *self.log_domain_size);
         assert!(self.positions.len() > 0);
-        let folding_factor = pow(2, n_folds);
+        let folding_factor = pow2(n_folds);
         let mut new_last_position = *self.positions[0] / folding_factor;
         let mut new_positions = array![new_last_position];
         let mut i = 1;
@@ -68,7 +68,7 @@ pub impl QueriesImpl of QueriesImplTrait {
 
     fn opening_positions(self: @Queries, fri_step_size: u32) -> SparseSubCircleDomain {
         assert!(fri_step_size > 0);
-        let fold_factor = pow(2, fri_step_size);
+        let fold_factor = pow2(fri_step_size);
         let mut domains = array![];
         let snap_positions = self.positions;
         let mut already_added = array![];
@@ -103,7 +103,7 @@ pub struct SubCircleDomain {
 pub impl SubCircleDomainImpl of SubCircleDomainTrait {
     /// Calculates the decommitment positions needed for each query given the fri step size.
     fn to_decommitment_positions(self: @SubCircleDomain) -> Array<usize> {
-        let sub_circle_size = pow(2, *self.log_size);
+        let sub_circle_size = pow2(*self.log_size);
         let start = *self.coset_index * sub_circle_size;
         let end = start + sub_circle_size;
         let mut res = array![];
@@ -115,7 +115,7 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
 
     /// Returns the represented [CircleDomain].
     fn to_circle_domain(self: @SubCircleDomain, query_domain: CircleDomain) -> CircleDomain {
-        let index = *self.coset_index * pow(2, *self.log_size);
+        let index = *self.coset_index * pow2(*self.log_size);
         let query = bit_reverse_index(index, query_domain.log_size());
         let initial_index = query_domain.index_at(query);
         let half_coset = CosetImpl::new(initial_index, *self.log_size - 1);
@@ -123,7 +123,7 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
     }
 
     fn size(self: @SubCircleDomain) -> usize {
-        pow(2, *self.log_size).into()
+        pow2(*self.log_size).into()
     }
 }
 

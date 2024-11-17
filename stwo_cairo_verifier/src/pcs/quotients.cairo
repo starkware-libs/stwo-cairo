@@ -507,7 +507,7 @@ mod tests {
     };
     use stwo_cairo_verifier::queries::SubCircleDomainImpl;
     use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SubCircleDomain};
-    use stwo_cairo_verifier::utils::{DictImpl, pow};
+    use stwo_cairo_verifier::utils::{DictImpl, pow2};
     use super::{
         ColumnSampleBatch, ColumnSampleBatchImpl, ComplexConjugateLineCoeffsImpl, PointSample,
         QuotientConstantsImpl, accumulate_row_quotients, fri_answers, fri_answers_for_log_size,
@@ -777,7 +777,6 @@ mod tests {
         let n_columns = 1000;
         let log_fold_step = CIRCLE_TO_LINE_FOLD_STEP;
         let random_coeff = qm31(9, 8, 7, 6);
-        assert!(n_queries < pow(2, log_size), "Query indices need to be unique");
         assert!(n_columns >= 3, "First three columns are manually created");
         let mut query_subdomains = array![];
         for coset_index in 0..n_queries {
@@ -797,7 +796,7 @@ mod tests {
         let col2_samples = array![sample0, sample2];
         let mut samples_per_column = array![@col0_samples, @col1_samples, @col2_samples];
         let mut col_query_values = array![];
-        for i in 0..n_queries * pow(2, log_fold_step) {
+        for i in 0..n_queries * pow2(log_fold_step) {
             col_query_values.append(m31(i));
         };
         let col0_query_values = col_query_values.clone();
