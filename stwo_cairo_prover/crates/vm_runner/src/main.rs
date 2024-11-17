@@ -56,6 +56,8 @@ struct Args {
         conflicts_with_all = ["proof_mode", "air_private_input", "air_public_input"]
     )]
     run_from_cairo_pie: bool,
+    #[structopt(long = "output_path")]
+    output_path: PathBuf,
 }
 
 #[derive(Debug, Error)]
@@ -66,6 +68,8 @@ enum Error {
     IO(#[from] std::io::Error),
     #[error("The cairo program execution failed")]
     Runner(#[from] CairoRunError),
+    #[error("Serialization failed: {0}")]
+    Serde(#[from] serde_json::error::Error),
 }
 
 fn main() -> ExitCode {
@@ -88,7 +92,13 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args)?;
     let cairo_input = adapt_vm_output_to_stwo(cairo_runner);
+
     // TODO(yuval): serialize (here or in an outer function).
+    let execution_resources = cairo_input.instructions.counts();
+    std::fs::write(
+        args.output_path,
+        serde_json::to_string(&execution_resources)?,
+    )?;
 
     Ok(cairo_input)
 }

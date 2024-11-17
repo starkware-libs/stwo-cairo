@@ -10,6 +10,7 @@ itertools.workspace = true
 log.workspace = true
 num-traits.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 stwo_cairo_prover = { path = "../prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "../utils", version = "~0.1.0" }
 thiserror.workspace = true
