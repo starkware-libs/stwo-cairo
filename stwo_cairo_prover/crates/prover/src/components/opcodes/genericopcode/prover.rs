@@ -37,6 +37,12 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
+    pub fn new(inputs: Vec<VmState>) -> Self {
+        Self {
+            inputs: inputs.into_iter().map(Into::into).collect(),
+        }
+    }
+    
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
@@ -1224,10 +1230,10 @@ let mid_limbs_set_col222 = mid_limbs_set_tmp_914.as_m31();
 let diff_from_p_tmp_915 = ((dst_limb_0_col22) - (M31_1));
 let diff_from_p_tmp_916 = ((dst_limb_21_col43) - (M31_136));
 let diff_from_p_tmp_917 = ((dst_limb_27_col49) - (M31_256));
-let dst_sum_squares_inv_col223 = ((M31_1) / (((((((((((((((((((((((((((((((((((((((((((((((((((((((((M31_0) + (((diff_from_p_tmp_915) * (diff_from_p_tmp_915))))) + (dst_limb_1_col23))) + (dst_limb_2_col24))) + (dst_limb_3_col25))) + (dst_limb_4_col26))) + (dst_limb_5_col27))) + (dst_limb_6_col28))) + (dst_limb_7_col29))) + (dst_limb_8_col30))) + (dst_limb_9_col31))) + (dst_limb_10_col32))) + (dst_limb_11_col33))) + (dst_limb_12_col34))) + (dst_limb_13_col35))) + (dst_limb_14_col36))) + (dst_limb_15_col37))) + (dst_limb_16_col38))) + (dst_limb_17_col39))) + (dst_limb_18_col40))) + (dst_limb_19_col41))) + (dst_limb_20_col42))) + (((diff_from_p_tmp_916) * (diff_from_p_tmp_916))))) + (dst_limb_22_col44))) + (dst_limb_23_col45))) + (dst_limb_24_col46))) + (dst_limb_25_col47))) + (dst_limb_26_col48))) + (((diff_from_p_tmp_917) * (diff_from_p_tmp_917))))));
+let dst_sum_squares_inv_col223 = ((M31_1).div(((((((((((((((((((((((((((((((((((((((((((((((((((((((((M31_0) + (((diff_from_p_tmp_915) * (diff_from_p_tmp_915))))) + (dst_limb_1_col23))) + (dst_limb_2_col24))) + (dst_limb_3_col25))) + (dst_limb_4_col26))) + (dst_limb_5_col27))) + (dst_limb_6_col28))) + (dst_limb_7_col29))) + (dst_limb_8_col30))) + (dst_limb_9_col31))) + (dst_limb_10_col32))) + (dst_limb_11_col33))) + (dst_limb_12_col34))) + (dst_limb_13_col35))) + (dst_limb_14_col36))) + (dst_limb_15_col37))) + (dst_limb_16_col38))) + (dst_limb_17_col39))) + (dst_limb_18_col40))) + (dst_limb_19_col41))) + (dst_limb_20_col42))) + (((diff_from_p_tmp_916) * (diff_from_p_tmp_916))))) + (dst_limb_22_col44))) + (dst_limb_23_col45))) + (dst_limb_24_col46))) + (dst_limb_25_col47))) + (dst_limb_26_col48))) + (((diff_from_p_tmp_917) * (diff_from_p_tmp_917))))));
         trace[223].data[row_index] = dst_sum_squares_inv_col223;
 let dst_is_zero_tmp_918 = ((((((((((((((((((((((((((((((((((((((((((((((((((((((((M31_0) + (dst_limb_0_col22))) + (dst_limb_1_col23))) + (dst_limb_2_col24))) + (dst_limb_3_col25))) + (dst_limb_4_col26))) + (dst_limb_5_col27))) + (dst_limb_6_col28))) + (dst_limb_7_col29))) + (dst_limb_8_col30))) + (dst_limb_9_col31))) + (dst_limb_10_col32))) + (dst_limb_11_col33))) + (dst_limb_12_col34))) + (dst_limb_13_col35))) + (dst_limb_14_col36))) + (dst_limb_15_col37))) + (dst_limb_16_col38))) + (dst_limb_17_col39))) + (dst_limb_18_col40))) + (dst_limb_19_col41))) + (dst_limb_20_col42))) + (dst_limb_21_col43))) + (dst_limb_22_col44))) + (dst_limb_23_col45))) + (dst_limb_24_col46))) + (dst_limb_25_col47))) + (dst_limb_26_col48))) + (dst_limb_27_col49)).eq(M31_0);
-let dst_sum_inv_col224 = ((M31_1) / (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((M31_0) + (dst_limb_0_col22))) + (dst_limb_1_col23))) + (dst_limb_2_col24))) + (dst_limb_3_col25))) + (dst_limb_4_col26))) + (dst_limb_5_col27))) + (dst_limb_6_col28))) + (dst_limb_7_col29))) + (dst_limb_8_col30))) + (dst_limb_9_col31))) + (dst_limb_10_col32))) + (dst_limb_11_col33))) + (dst_limb_12_col34))) + (dst_limb_13_col35))) + (dst_limb_14_col36))) + (dst_limb_15_col37))) + (dst_limb_16_col38))) + (dst_limb_17_col39))) + (dst_limb_18_col40))) + (dst_limb_19_col41))) + (dst_limb_20_col42))) + (dst_limb_21_col43))) + (dst_limb_22_col44))) + (dst_limb_23_col45))) + (dst_limb_24_col46))) + (dst_limb_25_col47))) + (dst_limb_26_col48))) + (dst_limb_27_col49))) + (dst_is_zero_tmp_918.as_m31()))));
+let dst_sum_inv_col224 = ((M31_1).div(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((M31_0) + (dst_limb_0_col22))) + (dst_limb_1_col23))) + (dst_limb_2_col24))) + (dst_limb_3_col25))) + (dst_limb_4_col26))) + (dst_limb_5_col27))) + (dst_limb_6_col28))) + (dst_limb_7_col29))) + (dst_limb_8_col30))) + (dst_limb_9_col31))) + (dst_limb_10_col32))) + (dst_limb_11_col33))) + (dst_limb_12_col34))) + (dst_limb_13_col35))) + (dst_limb_14_col36))) + (dst_limb_15_col37))) + (dst_limb_16_col38))) + (dst_limb_17_col39))) + (dst_limb_18_col40))) + (dst_limb_19_col41))) + (dst_limb_20_col42))) + (dst_limb_21_col43))) + (dst_limb_22_col44))) + (dst_limb_23_col45))) + (dst_limb_24_col46))) + (dst_limb_25_col47))) + (dst_limb_26_col48))) + (dst_limb_27_col49))) + (dst_is_zero_tmp_918.as_m31()))));
         trace[224].data[row_index] = dst_sum_inv_col224;
 let op1_as_rel_imm_cond_col225 = ((pc_update_jnz_col15) * (((((((((((((((((((((((((((((((((((((((((((((((((((((((((M31_0) + (dst_limb_0_col22))) + (dst_limb_1_col23))) + (dst_limb_2_col24))) + (dst_limb_3_col25))) + (dst_limb_4_col26))) + (dst_limb_5_col27))) + (dst_limb_6_col28))) + (dst_limb_7_col29))) + (dst_limb_8_col30))) + (dst_limb_9_col31))) + (dst_limb_10_col32))) + (dst_limb_11_col33))) + (dst_limb_12_col34))) + (dst_limb_13_col35))) + (dst_limb_14_col36))) + (dst_limb_15_col37))) + (dst_limb_16_col38))) + (dst_limb_17_col39))) + (dst_limb_18_col40))) + (dst_limb_19_col41))) + (dst_limb_20_col42))) + (dst_limb_21_col43))) + (dst_limb_22_col44))) + (dst_limb_23_col45))) + (dst_limb_24_col46))) + (dst_limb_25_col47))) + (dst_limb_26_col48))) + (dst_limb_27_col49))));
         trace[225].data[row_index] = op1_as_rel_imm_cond_col225;
@@ -1281,7 +1287,6 @@ pub struct InteractionClaimGenerator {
     pub lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
@@ -1931,25 +1936,25 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data
-            .opcodes[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom =
-                opcodes_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
+        // let mut col_gen = logup_gen.new_col();
+        // let lookup_row = &self.lookup_data
+        //     .opcodes[0];
+        // for (i, lookup_values) in lookup_row.iter().enumerate() {
+        //     let denom =
+        //         opcodes_lookup_elements.combine(lookup_values);
+        //     col_gen.write_frac(i, PackedQM31::one(), denom);
+        // }
+        // col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data
-            .opcodes[1];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom =
-                opcodes_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
+        // let mut col_gen = logup_gen.new_col();
+        // let lookup_row = &self.lookup_data
+        //     .opcodes[1];
+        // for (i, lookup_values) in lookup_row.iter().enumerate() {
+        //     let denom =
+        //         opcodes_lookup_elements.combine(lookup_values);
+        //     col_gen.write_frac(i, -PackedQM31::one(), denom);
+        // }
+        // col_gen.finalize_col();
 
         let (trace, total_sum, claimed_sum) = if self.n_calls.is_power_of_two() {
             let (trace, claimed_sum) = logup_gen.finalize_last();

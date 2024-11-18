@@ -1,12 +1,11 @@
 use std::mem::transmute;
-use std::ops::{Add, BitAnd, BitOr, BitXor, Rem, Shl, Shr};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Rem, Shl, Shr, Sub};
 use std::simd::cmp::SimdPartialEq;
 use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
 
 use bytemuck::Zeroable;
 use itertools::all;
-use num_traits::Zero;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::{m31, FieldExpOps};
@@ -368,10 +367,6 @@ impl PackedFelt252 {
     }
     pub fn get_m31(&self, index: usize) -> PackedM31 {
         self.value[index]
-    }
-
-    pub fn from_limbs(limbs: [PackedM31; N_M31_IN_FELT252]) -> Self {
-        Self { value: limbs }
     }
 
     pub fn from_m31(val: PackedM31) -> Self {
