@@ -217,13 +217,8 @@ impl MerkleVerifierImpl<
         let mut column_log_sizes = self.column_log_sizes.span();
         let mut res_dict = Default::default();
         let mut col_index = 0;
-        let mut max_size = 0;
-        while !column_log_sizes.is_empty() {
-            let col_size = *column_log_sizes.pop_front().unwrap();
-            if col_size > max_size {
-                max_size = col_size;
-            }
-            let (res_dict_entry, value) = res_dict.entry(col_size.into());
+        while let Option::Some(col_size) = column_log_sizes.pop_front() {
+            let (res_dict_entry, value) = res_dict.entry((*col_size).into());
             let mut value = value.deref_or(array![]);
             value.append(col_index);
             res_dict = res_dict_entry.finalize(NullableTrait::new(value));
