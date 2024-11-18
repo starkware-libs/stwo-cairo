@@ -1,13 +1,13 @@
-mod channel;
-mod circle;
-mod fields;
-mod fri;
-mod pcs;
-mod poly;
+pub mod channel;
+pub mod circle;
+pub mod fields;
+pub mod fri;
+pub mod pcs;
+pub mod poly;
 mod queries;
-mod utils;
-mod vcs;
-mod verifier;
+pub mod utils;
+pub mod vcs;
+pub mod verifier;
 
 pub use fields::{BaseField, SecureField};
 
