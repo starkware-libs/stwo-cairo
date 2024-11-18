@@ -22,7 +22,7 @@ use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, Mer
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 pub const FOLD_STEP: u32 = 1;
 
-#[derive(Debug, Drop, PartialEq)]
+#[derive(Debug, Clone, Drop, PartialEq)]
 pub enum FriVerificationError {
     InvalidNumFriLayers,
     LastLayerDegreeInvalid,
@@ -68,9 +68,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
             };
             i += 1;
         };
-        let actual_decommitment_array = array![
-            column_0.span(), column_1.span(), column_2.span(), column_3.span()
-        ];
+        let actual_decommitment_array = array![column_0, column_1, column_2, column_3];
 
         let folded_queries = queries.fold(FOLD_STEP);
         let folded_queries_snapshot = @folded_queries;
@@ -107,7 +105,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
 
         let decommitment = self.proof.decommitment.clone();
         let result = merkle_verifier
-            .verify(queries_per_log_size, actual_decommitment_array, decommitment.clone());
+            .verify(queries_per_log_size, @actual_decommitment_array, decommitment.clone());
 
         let evals_at_folded_queries = sparse_evaluation.fold(*self.folding_alpha);
         match result {
@@ -423,7 +421,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// The order of the opening positions corresponds to the order of the column commitment.
     fn column_query_positions(
         ref self: FriVerifier, ref channel: Channel
-    ) -> (Felt252Dict<Nullable<SparseSubCircleDomain>>, Span<u32>) {
+    ) -> (Felt252Dict<Nullable<@SparseSubCircleDomain>>, Span<u32>) {
         let queries = QueriesImpl::generate(
             ref channel,
             *self.column_bounds[0] + self.config.log_blowup_factor,
@@ -453,13 +451,13 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 /// column opening positions are mapped by their log size.
 fn get_opening_positions(
     queries: @Queries, column_log_sizes: Span<u32>,
-) -> Felt252Dict<Nullable<SparseSubCircleDomain>> {
+) -> Felt252Dict<Nullable<@SparseSubCircleDomain>> {
     let mut prev_log_size = column_log_sizes[0];
     assert!(prev_log_size == queries.log_domain_size);
     let mut prev_queries = queries.clone();
-    let mut positions: Felt252Dict<Nullable<SparseSubCircleDomain>> = Default::default();
+    let mut positions: Felt252Dict<Nullable<@SparseSubCircleDomain>> = Default::default();
     let felt_prev: core::felt252 = (*prev_log_size).into();
-    positions.insert(felt_prev, NullableTrait::new(prev_queries.opening_positions(FOLD_STEP)));
+    positions.insert(felt_prev, NullableTrait::new(@prev_queries.opening_positions(FOLD_STEP)));
 
     let mut i = 1;
     while i < column_log_sizes.len() {
@@ -468,7 +466,7 @@ fn get_opening_positions(
         let felt_column_log_sizes: core::felt252 = (*column_log_sizes.at(i)).into();
         positions
             .insert(
-                felt_column_log_sizes, NullableTrait::new(queries.opening_positions(FOLD_STEP))
+                felt_column_log_sizes, NullableTrait::new(@queries.opening_positions(FOLD_STEP))
             );
         prev_log_size = column_log_sizes.at(i);
         prev_queries = queries;
