@@ -196,6 +196,7 @@ macro_rules! count_elements {
 generate_range_check_component!(9, 9);
 generate_range_check_component!(7, 2, 5);
 generate_range_check_component!(4, 3);
+generate_range_check_component!(19);
 
 #[cfg(test)]
 mod tests {

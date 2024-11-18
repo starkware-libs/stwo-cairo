@@ -6,6 +6,7 @@ use std::simd::Simd;
 
 use bytemuck::Zeroable;
 use itertools::all;
+use num_traits::Zero;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::m31;
@@ -171,6 +172,12 @@ impl PackedUInt32 {
     // TODO(Ohad): remove.
     pub fn in_m31_range(&self) -> bool {
         all(self.as_array(), |v| v.value < m31::P)
+    }
+
+    pub fn from_m31(val: PackedM31) -> Self {
+        Self {
+            simd: val.into_simd(),
+        }
     }
 }
 
@@ -344,8 +351,17 @@ pub struct PackedFelt252 {
     pub value: [PackedM31; N_M31_IN_FELT252],
 }
 impl PackedFelt252 {
+    pub fn from_limbs(limbs: [PackedM31; N_M31_IN_FELT252]) -> Self {
+        Self { value: limbs }
+    }
     pub fn get_m31(&self, index: usize) -> PackedM31 {
         self.value[index]
+    }
+    pub fn from_m31(val: PackedM31) -> Self {
+
+        Self {
+            value: std::array::from_fn(|i| if i == 0 { val } else { PackedM31::zero() }),
+        }
     }
 }
 
