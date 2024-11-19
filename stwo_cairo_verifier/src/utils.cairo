@@ -7,7 +7,7 @@ use core::iter::{IntoIterator, Iterator};
 use core::num::traits::BitSize;
 use core::traits::DivRem;
 use core::traits::PanicDestruct;
-use stwo_cairo_verifier::BaseField;
+use crate::BaseField;
 
 /// Look up table where index `i` stores value `2^i`.
 const POW_2: [u32; 32] = [

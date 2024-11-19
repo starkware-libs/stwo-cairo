@@ -1,14 +1,14 @@
-use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
-use stwo_cairo_verifier::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
-use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31_EXTENSION_DEGREE};
-use stwo_cairo_verifier::fri::FriVerificationError;
-use stwo_cairo_verifier::pcs::verifier::{
+use crate::channel::{Channel, ChannelTrait};
+use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
+use crate::fields::qm31::{QM31, QM31Impl, QM31_EXTENSION_DEGREE};
+use crate::fri::FriVerificationError;
+use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
-use stwo_cairo_verifier::utils::ArrayImpl;
-use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
-use stwo_cairo_verifier::vcs::verifier::MerkleVerificationError;
-use stwo_cairo_verifier::{ColumnArray, TreeArray};
+use crate::utils::ArrayImpl;
+use crate::vcs::hasher::PoseidonMerkleHasher;
+use crate::vcs::verifier::MerkleVerificationError;
+use crate::{ColumnArray, TreeArray};
 
 pub trait Air<T> {
     fn composition_log_degree_bound(self: @T) -> u32;
