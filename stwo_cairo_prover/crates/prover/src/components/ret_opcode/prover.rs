@@ -1,5 +1,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
+use std::default;
+
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -13,6 +15,7 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{Col, Column};
 use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -53,11 +56,8 @@ impl ClaimGenerator {
         verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
-        let size = if n_calls == 0 {
-            n_calls
-        } else {
-            std::cmp::max(n_calls.next_power_of_two(), N_LANES)
-        };
+        assert_ne!(n_calls, 0);
+        let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
         let need_padding = n_calls != size;
 
         if need_padding {
@@ -335,6 +335,7 @@ pub fn write_trace_simd(
     (trace, sub_components_inputs, lookup_data)
 }
 
+#[derive(Default)]
 pub struct LookupData {
     pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 2],
     pub memoryidtobig: [Vec<[PackedM31; 29]>; 2],
@@ -353,6 +354,7 @@ impl LookupData {
     }
 }
 
+#[derive(Default)]
 pub struct InteractionClaimGenerator {
     pub n_calls: usize,
     pub lookup_data: LookupData,
@@ -366,7 +368,7 @@ impl InteractionClaimGenerator {
         verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
         _opcodes_lookup_elements: &opcodes::VmRelationElements,
     ) -> InteractionClaim {
-        let log_size = self.n_calls.next_power_of_two().ilog2();
+        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         let mut col_gen = logup_gen.new_col();
