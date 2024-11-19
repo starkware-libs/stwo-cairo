@@ -2,7 +2,8 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Parser;
-use stwo_cairo_prover::cairo_air::{prove_cairo, CairoProof};
+use stwo_cairo_prover::cairo_air::air::CairoProof;
+use stwo_cairo_prover::cairo_air::prove_cairo;
 use stwo_cairo_prover::input::vm_import::{import_from_vm_output, VmImportError};
 use stwo_cairo_prover::input::CairoInput;
 use stwo_cairo_utils::logging_utils::init_logging;
