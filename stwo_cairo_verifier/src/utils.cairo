@@ -3,7 +3,7 @@ use core::box::BoxTrait;
 use core::dict::Felt252Dict;
 use core::dict::Felt252DictEntryTrait;
 use core::dict::Felt252DictTrait;
-use core::iter::{Iterator, IntoIterator};
+use core::iter::{IntoIterator, Iterator};
 use core::num::traits::BitSize;
 use core::traits::DivRem;
 use core::traits::PanicDestruct;
@@ -215,7 +215,7 @@ pub fn pow_qm31(base: QM31, mut exponent: u32) -> QM31 {
 
 #[cfg(test)]
 mod tests {
-    use super::{pow, pow_qm31, qm31, bit_reverse_index, ArrayImpl};
+    use super::{ArrayImpl, bit_reverse_index, pow, pow_qm31, qm31};
 
     #[test]
     fn test_pow() {

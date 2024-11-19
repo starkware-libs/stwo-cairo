@@ -1,7 +1,7 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::m31::{M31, M31Impl, m31};
-use super::{Invertible, BatchInvertible};
+use super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct CM31 {
@@ -130,7 +130,7 @@ pub fn cm31(a: u32, b: u32) -> CM31 {
 
 #[cfg(test)]
 mod tests {
-    use super::super::m31::{m31, P};
+    use super::super::m31::{P, m31};
     use super::{cm31};
 
     #[test]

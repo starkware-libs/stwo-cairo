@@ -1,8 +1,8 @@
-use core::num::traits::{WideMul, CheckedSub};
+use core::num::traits::{CheckedSub, WideMul};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::option::OptionTrait;
 use core::traits::TryInto;
-use super::{Invertible, BatchInvertible};
+use super::{BatchInvertible, Invertible};
 
 /// Equals `2^31 - 1`.
 pub const P: u32 = 0x7fffffff;
@@ -18,7 +18,7 @@ const P128NZ: NonZero<u128> = 0x7fffffff;
 
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct M31 {
-    pub inner: u32
+    pub inner: u32,
 }
 
 pub impl M31InvertibleImpl of Invertible<M31> {
@@ -200,7 +200,7 @@ fn sqn(v: M31, n: usize) -> M31 {
 #[cfg(test)]
 mod tests {
     use super::super::Invertible;
-    use super::{m31, P};
+    use super::{P, m31};
 
     const POW2_15: u32 = 0b1000000000000000;
     const POW2_16: u32 = 0b10000000000000000;

@@ -46,7 +46,7 @@ pub impl QM31Impl of QM31Trait {
     fn mul_m31(self: QM31, multiplier: M31) -> QM31 {
         QM31 {
             a: CM31 { a: self.a.a * multiplier, b: self.a.b * multiplier },
-            b: CM31 { a: self.b.a * multiplier, b: self.b.b * multiplier }
+            b: CM31 { a: self.b.a * multiplier, b: self.b.b * multiplier },
         }
     }
 
@@ -132,7 +132,7 @@ pub impl QM31Impl of QM31Trait {
             a: PP16 + aa_t_ba_a + r_t_ab_t_bb_a,
             b: PP16 + aa_t_ba_b + r_t_ab_t_bb_b,
             c: PP16 + aa_t_bb_a + ab_t_ba_a,
-            d: PP16 + aa_t_bb_b + ab_t_ba_b
+            d: PP16 + aa_t_bb_b + ab_t_ba_b,
         }
     }
 
@@ -273,11 +273,11 @@ impl UnreducedQM31Impl of UnreducedQM31Trait {
         QM31 {
             a: CM31 {
                 a: M31Impl::reduce_u128(self.a.try_into().unwrap()),
-                b: M31Impl::reduce_u128(self.b.try_into().unwrap())
+                b: M31Impl::reduce_u128(self.b.try_into().unwrap()),
             },
             b: CM31 {
                 a: M31Impl::reduce_u128(self.c.try_into().unwrap()),
-                b: M31Impl::reduce_u128(self.d.try_into().unwrap())
+                b: M31Impl::reduce_u128(self.d.try_into().unwrap()),
             },
         }
     }
@@ -304,7 +304,7 @@ impl QM31IntoUnreducedQM31 of Into<QM31, UnreducedQM31> {
             a: self.a.a.inner.into(),
             b: self.a.b.inner.into(),
             c: self.b.a.inner.into(),
-            d: self.b.b.inner.into()
+            d: self.b.b.inner.into(),
         }
     }
 }
@@ -426,9 +426,9 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
 #[cfg(test)]
 mod tests {
     use super::super::Invertible;
-    use super::super::m31::{m31, P};
+    use super::super::m31::{P, m31};
     use super::{
-        QM31, qm31, QM31Trait, QM31Impl, QM31IntoPackedUnreducedQM31, PackedUnreducedQM31Impl
+        PackedUnreducedQM31Impl, QM31, QM31Impl, QM31IntoPackedUnreducedQM31, QM31Trait, qm31,
     };
 
     #[test]
