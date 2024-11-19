@@ -1,22 +1,17 @@
+use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
+use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
-// TODO(spapini): Move this:
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct VmState {
-    pub pc: u32,
-    pub ap: u32,
-    pub fp: u32,
-}
-impl From<TraceEntry> for VmState {
+impl From<TraceEntry> for CasmState {
     fn from(entry: TraceEntry) -> Self {
         Self {
-            pc: entry.pc as u32,
-            ap: entry.ap as u32,
-            fp: entry.fp as u32,
+            pc: M31(entry.pc as u32),
+            ap: M31(entry.ap as u32),
+            fp: M31(entry.fp as u32),
         }
     }
 }
@@ -30,44 +25,44 @@ impl From<TraceEntry> for VmState {
 /// Note: for the flag "fp/ap", true means fp-based and false means ap-based.
 #[derive(Debug, Default)]
 pub struct Instructions {
-    pub initial_state: VmState,
-    pub final_state: VmState,
+    pub initial_state: CasmState,
+    pub final_state: CasmState,
 
     /// ret.
-    pub ret: Vec<VmState>,
+    pub ret: Vec<CasmState>,
 
     /// ap += imm.
-    pub add_ap: Vec<VmState>,
+    pub add_ap: Vec<CasmState>,
 
     /// jump rel imm.
     /// Flags: ap++?.
-    pub jmp_rel_imm: [Vec<VmState>; 2],
+    pub jmp_rel_imm: [Vec<CasmState>; 2],
 
     /// jump abs [fp/ap + offset].
     /// Flags: fp/ap, ap++?.
-    pub jmp_abs: [Vec<VmState>; 4],
+    pub jmp_abs: [Vec<CasmState>; 4],
 
     /// call rel imm.
-    pub call_rel_imm: Vec<VmState>,
+    pub call_rel_imm: Vec<CasmState>,
 
     /// call abs [fp/ap + offset].
     /// Flags: fp/ap.
-    pub call_abs: [Vec<VmState>; 2],
+    pub call_abs: [Vec<CasmState>; 2],
 
     /// jump rel imm if [fp/ap + offset] != 0.
     /// Flags: fp/ap, taken?, ap++?.
-    pub jnz_imm: [Vec<VmState>; 8],
+    pub jnz_imm: [Vec<CasmState>; 8],
 
     /// - [fp/ap + offset0] = [fp/ap + offset2]
-    pub mov_mem: Vec<VmState>,
+    pub mov_mem: Vec<CasmState>,
 
     /// - [fp/ap + offset0] = [[fp/ap + offset1] + offset2]
-    pub deref: Vec<VmState>,
+    pub deref: Vec<CasmState>,
 
     /// - [fp/ap + offset0] = imm
-    pub push_imm: Vec<VmState>,
+    pub push_imm: Vec<CasmState>,
 
-    pub generic: Vec<VmState>,
+    pub generic: Vec<CasmState>,
 }
 impl Instructions {
     pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
@@ -86,9 +81,9 @@ impl Instructions {
         res
     }
 
-    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState) {
-        let VmState { ap, fp, pc } = state;
-        let instruction = mem.get_inst(pc);
+    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: CasmState) {
+        let CasmState { ap, fp, pc } = state;
+        let instruction = mem.get_inst(pc.0);
         let instruction = Instruction::decode(instruction);
         match instruction {
             // ret.
@@ -249,7 +244,7 @@ impl Instructions {
                 opcode_assert_eq: false,
             } => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
-                let dst = mem.get(dst_addr.checked_add_signed(offset0 as i32).unwrap());
+                let dst = mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 let taken = dst != MemoryValue::Small(0);
                 let index = (dst_base_fp as usize)
                     | (taken as usize) << 1
