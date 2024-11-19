@@ -51,7 +51,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = self.n_calls.next_power_of_two().ilog2();
         let trace_log_sizes = vec![log_size; 11];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 7];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -186,26 +186,26 @@ impl FrameworkEval for Eval {
         // VM constraint.
         // TODO(Ohad): uncomment.
 
-        // let frac = Fraction::new(
-        //     E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         input_pc_col0.clone(),
-        //         input_ap_col1.clone(),
-        //         input_fp_col2.clone(),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
-        // let frac = Fraction::new(
-        //     -E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         ((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
-        //             + (next_pc_limb_2_col6.clone() * M31_262144.clone())),
-        //         input_ap_col1.clone(),
-        //         ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
-        //             + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                input_pc_col0.clone(),
+                input_ap_col1.clone(),
+                input_fp_col2.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            -E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                ((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
+                    + (next_pc_limb_2_col6.clone() * M31_262144.clone())),
+                input_ap_col1.clone(),
+                ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
+                    + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
 
         logup.finalize(&mut eval);
 

@@ -1,6 +1,7 @@
 use std::mem::transmute;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Rem, Shl, Shr, Sub};
-use std::simd::num::SimdUint;
+use std::simd::cmp::SimdPartialEq;
+use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
 
 use bytemuck::Zeroable;
@@ -24,7 +25,7 @@ pub trait PackedM31Type {
 
 #[derive(Clone, Copy, Debug)]
 pub struct PackedBool {
-    pub(crate) value: Simd<u8, N_LANES>,
+    pub(crate) value: Simd<i32, N_LANES>,
 }
 
 impl PackedM31Type for PackedBool {
@@ -437,11 +438,12 @@ pub trait EqExtend {
 }
 
 impl EqExtend for PackedM31 {
-    fn eq(&self, _other: Self) -> PackedBool {
-        todo!()
+    fn eq(&self, other: Self) -> PackedBool {
+        PackedBool {
+            value: self.into_simd().simd_eq(other.into_simd()).to_int() * Simd::splat(-1),
+        }
     }
 }
-
 pub trait DivExtend {
     fn div(&self, other: Self) -> Self;
 }
