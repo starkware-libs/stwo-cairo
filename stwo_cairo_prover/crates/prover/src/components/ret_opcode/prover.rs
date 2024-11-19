@@ -25,7 +25,6 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::{memory, pack_values, verifyinstruction};
-use crate::input::instructions::VmState;
 use crate::relations;
 
 pub type PackedInputType = PackedCasmState;
@@ -38,15 +37,7 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
-    pub fn new(cpu_inputs: Vec<VmState>) -> Self {
-        let cpu_inputs = cpu_inputs
-            .into_iter()
-            .map(|VmState { pc, ap, fp }| CasmState {
-                pc: M31(pc),
-                ap: M31(ap),
-                fp: M31(fp),
-            })
-            .collect();
+    pub fn new(cpu_inputs: Vec<CasmState>) -> Self {
         Self { inputs: cpu_inputs }
     }
 
