@@ -434,7 +434,7 @@ impl InteractionClaimGenerator {
         memoryaddresstoid_lookup_elements: &addr_to_id::RelationElements,
         id_to_f252_lookup_elements: &id_to_f252::RelationElements,
         verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
-        _opcodes_lookup_elements: &opcodes::RelationElements,
+        opcodes_lookup_elements: &opcodes::RelationElements,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -530,21 +530,24 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        // let mut col_gen = logup_gen.new_col();
-        // let lookup_row = &self.lookup_data.opcodes[0];
-        // for (i, lookup_values) in lookup_row.iter().enumerate() {
-        //     let denom = opcodes_lookup_elements.combine(lookup_values);
-        //     col_gen.write_frac(i, PackedQM31::one(), denom);
-        // }
-        // col_gen.finalize_col();
+        let mut col_gen = logup_gen.new_col();
+        let lookup_row = &self.lookup_data.opcodes[0];
+        for (i, lookup_values) in lookup_row.iter().enumerate() {
+            let denom = opcodes_lookup_elements.combine(lookup_values);
+            col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("opcodes", lookup_values, "call");
+        }
+        col_gen.finalize_col();
 
-        // let mut col_gen = logup_gen.new_col();
-        // let lookup_row = &self.lookup_data.opcodes[1];
-        // for (i, lookup_values) in lookup_row.iter().enumerate() {
-        //     let denom = opcodes_lookup_elements.combine(lookup_values);
-        //     col_gen.write_frac(i, -PackedQM31::one(), denom);
-        // }
-        // col_gen.finalize_col();
+        let mut col_gen = logup_gen.new_col();
+        let lookup_row = &self.lookup_data.opcodes[1];
+        for (i, lookup_values) in lookup_row.iter().enumerate() {
+            let denom = opcodes_lookup_elements.combine(lookup_values);
+            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed("opcodes", lookup_values, PackedM31::one(), "call");
+
+        }
+        col_gen.finalize_col();
 
         let (trace, total_sum, claimed_sum) = if self.n_calls.is_power_of_two() {
             let (trace, claimed_sum) = logup_gen.finalize_last();

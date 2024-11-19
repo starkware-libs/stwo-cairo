@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
-use super::mem::{MemoryBuilder, MemoryValue};
+use super::mem::MemoryBuilder;
 use super::vm_import::TraceEntry;
 
 // TODO(spapini): Move this:
@@ -12,6 +12,11 @@ pub struct VmState {
     pub pc: u32,
     pub ap: u32,
     pub fp: u32,
+}
+impl VmState {
+    pub fn values(&self) -> [M31; 3] {
+        [M31(self.pc), M31(self.ap), M31(self.fp)]
+    }
 }
 impl From<TraceEntry> for VmState {
     fn from(entry: TraceEntry) -> Self {
@@ -82,8 +87,9 @@ pub struct Instructions {
     pub generic: Vec<VmState>,
 }
 impl Instructions {
-    pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
+    pub fn from_iter(iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
         let mut res = Self::default();
+        let mut iter = iter.peekable();
 
         let Some(first) = iter.next() else {
             return res;
@@ -91,15 +97,19 @@ impl Instructions {
         res.initial_state = first.into();
         res.push_instr(mem, first.into());
 
-        for entry in iter {
-            res.final_state = entry.into();
+        while let Some(entry) = iter.next() {
+            // TODO(Ohad): this is wrong(?), as it ignores the last step.
+            let Some(next) = iter.peek() else {
+                break;
+            };
+            res.final_state = (*next).into();
             res.push_instr(mem, entry.into());
         }
         res
     }
 
     fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState) {
-        let VmState { ap, fp, pc } = state;
+        let VmState { ap: _, fp: _, pc } = state;
         let instruction = mem.get_inst(pc);
         let instruction = Instruction::decode(instruction);
         match instruction {
@@ -239,104 +249,104 @@ impl Instructions {
                 let index = op1_base_fp as usize;
                 self.call_abs[index].push(state);
             }
-            // jnz
-            Instruction {
-                offset0,
-                offset1: -1,
-                offset2: 1,
-                dst_base_fp,
-                op0_base_fp: true,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: true,
-                ap_update_add: false,
-                ap_update_add_1,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } => {
-                let dst_addr = if dst_base_fp { fp } else { ap };
-                let dst = mem.get(dst_addr.checked_add_signed(offset0 as i32).unwrap());
-                let taken = dst != MemoryValue::Small(0);
-                let index = (dst_base_fp as usize)
-                    | (taken as usize) << 1
-                    | (ap_update_add_1 as usize) << 2;
-                self.jnz_imm[index].push(state);
-            }
-            // [ap/fp + offset0] = [ap/fp + offset2].
-            Instruction {
-                offset0: _,
-                offset1: -1,
-                offset2: _,
-                dst_base_fp: _,
-                op0_base_fp: true,
-                op1_imm: false,
-                op1_base_fp,
-                op1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-            } if op1_base_fp != op1_base_ap => {
-                self.mov_mem.push(state);
-            }
-            // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
-            Instruction {
-                offset0: _,
-                offset1: _,
-                offset2: _,
-                dst_base_fp: _,
-                op0_base_fp: _,
-                op1_imm: false,
-                op1_base_fp: false,
-                op1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-            } => {
-                self.deref.push(state);
-            }
-            // [ap/fp + offset0] = imm.
-            Instruction {
-                offset0: _,
-                offset1: -1,
-                offset2: 1,
-                dst_base_fp: _,
-                op0_base_fp: true,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-            } => {
-                self.push_imm.push(state);
-            }
+            // // jnz
+            // Instruction {
+            //     offset0,
+            //     offset1: -1,
+            //     offset2: 1,
+            //     dst_base_fp,
+            //     op0_base_fp: true,
+            //     op1_imm: true,
+            //     op1_base_fp: false,
+            //     op1_base_ap: false,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: true,
+            //     ap_update_add: false,
+            //     ap_update_add_1,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: false,
+            // } => {
+            //     let dst_addr = if dst_base_fp { fp } else { ap };
+            //     let dst = mem.get(dst_addr.checked_add_signed(offset0 as i32).unwrap());
+            //     let taken = dst != MemoryValue::Small(0);
+            //     let index = (dst_base_fp as usize)
+            //         | (taken as usize) << 1
+            //         | (ap_update_add_1 as usize) << 2;
+            //     self.jnz_imm[index].push(state);
+            // }
+            // // [ap/fp + offset0] = [ap/fp + offset2].
+            // Instruction {
+            //     offset0: _,
+            //     offset1: -1,
+            //     offset2: _,
+            //     dst_base_fp: _,
+            //     op0_base_fp: true,
+            //     op1_imm: false,
+            //     op1_base_fp,
+            //     op1_base_ap,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: true,
+            // } if op1_base_fp != op1_base_ap => {
+            //     self.mov_mem.push(state);
+            // }
+            // // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
+            // Instruction {
+            //     offset0: _,
+            //     offset1: _,
+            //     offset2: _,
+            //     dst_base_fp: _,
+            //     op0_base_fp: _,
+            //     op1_imm: false,
+            //     op1_base_fp: false,
+            //     op1_base_ap: false,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: true,
+            // } => {
+            //     self.deref.push(state);
+            // }
+            // // [ap/fp + offset0] = imm.
+            // Instruction {
+            //     offset0: _,
+            //     offset1: -1,
+            //     offset2: 1,
+            //     dst_base_fp: _,
+            //     op0_base_fp: true,
+            //     op1_imm: true,
+            //     op1_base_fp: false,
+            //     op1_base_ap: false,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: true,
+            // } => {
+            //     self.push_imm.push(state);
+            // }
             _ => {
                 self.generic.push(state);
             }

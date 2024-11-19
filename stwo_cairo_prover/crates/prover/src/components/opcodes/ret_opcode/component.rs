@@ -51,7 +51,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = self.n_calls.next_power_of_two().ilog2();
         let trace_log_sizes = vec![log_size; 11];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 7];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -68,12 +68,19 @@ impl Claim {
 #[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct InteractionClaim {
     pub total_sum: SecureField,
-    pub claimed_sum: ClaimedPrefixSum,
+    pub claimed_sum: Option<ClaimedPrefixSum>,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(Ohad): mix claimed_sum.
         channel.mix_felts(&[self.total_sum]);
+    }
+
+    pub fn empty() -> Self {
+        Self {
+            total_sum: SecureField::zero(),
+            claimed_sum: None,
+        }
     }
 }
 
@@ -104,7 +111,7 @@ impl FrameworkEval for Eval {
         let mut logup = LogupAtRow::<E>::new(
             INTERACTION_TRACE_IDX,
             self.interaction_claim.total_sum,
-            Some(self.interaction_claim.claimed_sum),
+            self.interaction_claim.claimed_sum,
             is_first,
         );
         let input_pc_col0 = eval.next_trace_mask();
@@ -182,26 +189,26 @@ impl FrameworkEval for Eval {
         // VM constraint.
         // TODO(Ohad): uncomment.
 
-        // let frac = Fraction::new(
-        //     E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         input_pc_col0.clone(),
-        //         input_ap_col1.clone(),
-        //         input_fp_col2.clone(),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
-        // let frac = Fraction::new(
-        //     -E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         ((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
-        //             + (next_pc_limb_2_col6.clone() * M31_262144.clone())),
-        //         input_ap_col1.clone(),
-        //         ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
-        //             + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                input_pc_col0.clone(),
+                input_ap_col1.clone(),
+                input_fp_col2.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            -E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                ((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
+                    + (next_pc_limb_2_col6.clone() * M31_262144.clone())),
+                input_ap_col1.clone(),
+                ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
+                    + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
 
         logup.finalize(&mut eval);
 

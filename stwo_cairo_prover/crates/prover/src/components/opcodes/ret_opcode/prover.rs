@@ -47,11 +47,16 @@ impl ClaimGenerator {
         verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
-        let size = if n_calls == 0 {
-            n_calls
-        } else {
-            std::cmp::max(n_calls.next_power_of_two(), N_LANES)
-        };
+        if n_calls == 0 {
+            return (
+                Claim { n_calls },
+                InteractionClaimGenerator {
+                    n_calls,
+                    lookup_data: LookupData::with_capacity(0),
+                },
+            );
+        }
+        let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
         let need_padding = n_calls != size;
 
         if need_padding {
@@ -358,8 +363,11 @@ impl InteractionClaimGenerator {
         memoryaddresstoid_lookup_elements: &memory::addr_to_id::RelationElements,
         memoryidtobig_lookup_elements: &memory::id_to_f252::RelationElements,
         verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
-        _opcodes_lookup_elements: &opcodes::RelationElements,
+        opcodes_lookup_elements: &opcodes::RelationElements,
     ) -> InteractionClaim {
+        if self.n_calls == 0 {
+            return InteractionClaim::empty();
+        }
         let log_size = self.n_calls.next_power_of_two().ilog2();
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
@@ -368,7 +376,11 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = verifyinstruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
-            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("verifyinstruction", lookup_values, "ret");
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                "verifyinstruction",
+                lookup_values,
+                "ret",
+            );
         }
         col_gen.finalize_col();
 
@@ -377,7 +389,11 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
-            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("addr_to_id", lookup_values, "ret");
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                "addr_to_id",
+                lookup_values,
+                "ret",
+            );
         }
         col_gen.finalize_col();
 
@@ -386,7 +402,11 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryidtobig_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
-            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("id_to_big", lookup_values, "ret");
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                "id_to_big",
+                lookup_values,
+                "ret",
+            );
         }
         col_gen.finalize_col();
 
@@ -395,7 +415,11 @@ impl InteractionClaimGenerator {
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
-            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("addr_to_id", lookup_values, "ret");
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                "addr_to_id",
+                lookup_values,
+                "ret",
+            );
         }
         col_gen.finalize_col();
 
@@ -403,36 +427,56 @@ impl InteractionClaimGenerator {
         let lookup_row = &self.lookup_data.memoryidtobig[1];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom = memoryidtobig_lookup_elements.combine(lookup_values);
-            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation("id_to_big", lookup_values, "ret");
+            GLOBAL_TRACKER.lock().unwrap().add_packed_to_relation(
+                "id_to_big",
+                lookup_values,
+                "ret",
+            );
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         // VM Constraint.
 
-        // let mut col_gen = logup_gen.new_col();
-        // let lookup_row = &self.lookup_data.opcodes[0];
-        // for (i, lookup_values) in lookup_row.iter().enumerate() {
-        //     let denom = opcodes_lookup_elements.combine(lookup_values);
-        //     col_gen.write_frac(i, PackedQM31::one(), denom);
-        // }
-        // col_gen.finalize_col();
+        let mut col_gen = logup_gen.new_col();
+        let lookup_row = &self.lookup_data.opcodes[0];
+        for (i, lookup_values) in lookup_row.iter().enumerate() {
+            let denom = opcodes_lookup_elements.combine(lookup_values);
+            col_gen.write_frac(i, PackedQM31::one(), denom);
+            GLOBAL_TRACKER
+                .lock()
+                .unwrap()
+                .add_packed_to_relation("opcodes", lookup_values, "ret");
+        }
+        col_gen.finalize_col();
 
-        // let mut col_gen = logup_gen.new_col();
-        // let lookup_row = &self.lookup_data.opcodes[1];
-        // for (i, lookup_values) in lookup_row.iter().enumerate() {
-        //     let denom = opcodes_lookup_elements.combine(lookup_values);
-        //     col_gen.write_frac(i, -PackedQM31::one(), denom);
-        // }
-        // col_gen.finalize_col();
+        let mut col_gen = logup_gen.new_col();
+        let lookup_row = &self.lookup_data.opcodes[1];
+        for (i, lookup_values) in lookup_row.iter().enumerate() {
+            let denom = opcodes_lookup_elements.combine(lookup_values);
+            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            GLOBAL_TRACKER.lock().unwrap().yield_values_packed(
+                "opcodes",
+                lookup_values,
+                PackedM31::one(),
+                "ret",
+            );
+        }
+        col_gen.finalize_col();
 
-        let (trace, [total_sum, claimed_sum]) =
-            logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
+        let (trace, total_sum, claimed_sum) = if self.n_calls == 1 << log_size {
+            let (trace, claimed_sum) = logup_gen.finalize_last();
+            (trace, claimed_sum, None)
+        } else {
+            let (trace, [total_sum, claimed_sum]) =
+                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
+            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
+        };
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
             total_sum,
-            claimed_sum: (claimed_sum, self.n_calls - 1),
+            claimed_sum,
         }
     }
 }

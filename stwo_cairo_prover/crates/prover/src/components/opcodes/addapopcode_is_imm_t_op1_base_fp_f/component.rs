@@ -51,7 +51,7 @@ impl Claim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let preprocessed_log_sizes = vec![log_size];
         let trace_log_sizes = vec![log_size; 9];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE* 3];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE* 5];
         TreeVec::new(vec![
             preprocessed_log_sizes,
             trace_log_sizes,
@@ -96,15 +96,15 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
-        // let M31_134217728 = E::F::from(M31::from(134217728));
+        let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_136 = E::F::from(M31::from(136));
-        // let M31_2 = E::F::from(M31::from(2));
+        let M31_2 = E::F::from(M31::from(2));
         let M31_256 = E::F::from(M31::from(256));
-        // let M31_262144 = E::F::from(M31::from(262144));
+        let M31_262144 = E::F::from(M31::from(262144));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_32769 = E::F::from(M31::from(32769));
         let M31_511 = E::F::from(M31::from(511));
-        // let M31_512 = E::F::from(M31::from(512));
+        let M31_512 = E::F::from(M31::from(512));
         let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
         let mut logup = LogupAtRow::<E>::new(
             INTERACTION_TRACE_IDX,
@@ -113,8 +113,8 @@ impl FrameworkEval for Eval {
             is_first,
         );
         let input_pc_col0 = eval.next_trace_mask();
-        let _input_ap_col1 = eval.next_trace_mask();
-        let _input_fp_col2 = eval.next_trace_mask();
+        let input_ap_col1 = eval.next_trace_mask();
+        let input_fp_col2 = eval.next_trace_mask();
         let op1_id_col3 = eval.next_trace_mask();
         let msb_col4 = eval.next_trace_mask();
         let mid_limbs_set_col5 = eval.next_trace_mask();
@@ -204,29 +204,29 @@ impl FrameworkEval for Eval {
         );
         logup.write_frac(&mut eval, frac);
 
-        // let frac = Fraction::new(
-        //     E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         input_pc_col0.clone(),
-        //         input_ap_col1.clone(),
-        //         input_fp_col2.clone(),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
-        // let frac = Fraction::new(
-        //     -E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         (input_pc_col0.clone() + M31_2.clone()),
-        //         (input_ap_col1.clone()
-        //             + ((((op1_limb_0_col6.clone()
-        //                 + (op1_limb_1_col7.clone() * M31_512.clone()))
-        //                 + (op1_limb_2_col8.clone() * M31_262144.clone()))
-        //                 - msb_col4.clone())
-        //                 - (M31_134217728.clone() * mid_limbs_set_col5.clone()))),
-        //         input_fp_col2.clone(),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                input_pc_col0.clone(),
+                input_ap_col1.clone(),
+                input_fp_col2.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            -E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                (input_pc_col0.clone() + M31_2.clone()),
+                (input_ap_col1.clone()
+                    + ((((op1_limb_0_col6.clone()
+                        + (op1_limb_1_col7.clone() * M31_512.clone()))
+                        + (op1_limb_2_col8.clone() * M31_262144.clone()))
+                        - msb_col4.clone())
+                        - (M31_134217728.clone() * mid_limbs_set_col5.clone()))),
+                input_fp_col2.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
         logup.finalize(&mut eval);
 
         eval

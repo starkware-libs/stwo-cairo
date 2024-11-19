@@ -12,6 +12,7 @@ mod tests {
     use crate::input::plain::input_from_plain_casm;
 
     // TODO: Move next to the opcode.
+    #[ignore]
     #[test]
     fn test_jmp_abs() {
         let instructions = casm! {

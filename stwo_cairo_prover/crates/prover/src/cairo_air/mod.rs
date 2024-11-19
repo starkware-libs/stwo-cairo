@@ -79,6 +79,7 @@ impl CairoClaim {
             [self.memory_addr_to_id.log_sizes()],
             [self.memory_id_to_value.log_sizes()],
             [self.verify_instruction.log_sizes()],
+            [self.range_check_19.log_sizes()],
             [self.range_check9_9.log_sizes()],
             [self.range_check7_2_5.log_sizes()],
             [self.range_check4_3.log_sizes()],
@@ -185,6 +186,26 @@ pub fn lookup_sum(
             addr_to_id + id_to_value
         })
         .sum::<SecureField>();
+
+    sum += elements
+        .opcodes_lookup_elements
+        .combine::<M31, QM31>(&claim.final_state.values())
+        .inverse();
+    sum -= elements
+        .opcodes_lookup_elements
+        .combine::<M31, QM31>(&claim.initial_state.values())
+        .inverse();
+
+    GLOBAL_TRACKER
+        .lock()
+        .unwrap()
+        .add_to_relation("opcodes", &claim.final_state.values(), "pub");
+
+    GLOBAL_TRACKER
+        .lock()
+        .unwrap()
+        .yield_values("opcodes", &claim.initial_state.values(), 1, "pub");
+
     sum += interaction_claim.range_check9_9.claimed_sum;
     sum += interaction_claim.memory_addr_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
@@ -192,13 +213,18 @@ pub fn lookup_sum(
     sum += interaction_claim.range_check_19.claimed_sum;
     sum += interaction_claim.range_check7_2_5.claimed_sum;
     sum += interaction_claim.range_check4_3.claimed_sum;
-    sum += interaction_claim.ret[0].claimed_sum.0;
     sum += interaction_claim.verify_instruction.claimed_sum.0;
     sum += interaction_claim.add_ap_im.claimed_sum.unwrap().0;
     sum += if let Some(claimed_sum) = &interaction_claim.jmp_rel_imm.claimed_sum {
         claimed_sum.0
     } else {
         interaction_claim.jmp_rel_imm.total_sum
+    };
+
+    sum += if let Some(claimed_sum) = &interaction_claim.ret[0].claimed_sum {
+        claimed_sum.0
+    } else {
+        interaction_claim.ret[0].total_sum
     };
 
     sum += if let Some(claimed_sum) = &interaction_claim.call_rel.claimed_sum {
@@ -521,11 +547,6 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
         memory_id_to_value_trace_generator.add_m31(M31::from_u32_unchecked(id));
     }
 
-    println!(
-        "d_mults: {:?}",
-        memory_id_to_value_trace_generator.small_mults[7]
-    );
-
     let mut tree_builder = commitment_scheme.tree_builder();
 
     let (ret_claim, ret_interaction_prover) = ret_trace_generator.write_trace(
@@ -770,11 +791,8 @@ pub enum CairoVerificationError {
 #[cfg(test)]
 mod tests {
     use cairo_lang_casm::casm;
-    use itertools::Itertools;
 
     use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
-    use crate::felt::split_f252;
-    use crate::input::mem::u128_to_4_limbs;
     use crate::input::plain::input_from_plain_casm;
     use crate::input::vm_import::tests::small_cairo_input;
 
@@ -804,25 +822,6 @@ mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let input = test_input();
-        println!(
-            "{:?}",
-            input
-                .mem
-                .f252_values
-                .into_iter()
-                .map(split_f252)
-                .collect_vec()
-        );
-        println!(
-            "small values: {:?}",
-            input
-                .mem
-                .small_values
-                .into_iter()
-                .map(u128_to_4_limbs)
-                .collect_vec()
-        );
         let cairo_proof = prove_cairo(test_input()).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }

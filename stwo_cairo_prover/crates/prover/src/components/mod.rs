@@ -1,9 +1,12 @@
-use std::{collections::HashMap, sync::Mutex};
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use prover_types::simd::N_LANES;
-use stwo_prover::core::{backend::simd::{conversion::Pack, m31::PackedM31}, fields::m31::M31};
+use stwo_prover::core::backend::simd::conversion::Pack;
+use stwo_prover::core::backend::simd::m31::PackedM31;
+use stwo_prover::core::fields::m31::M31;
 
 pub mod memory;
 pub mod opcodes;
@@ -119,21 +122,26 @@ impl RelationTracker {
 
     pub fn summarize_relations(&self) {
         for (relation_name, entries) in &self.relations {
+            if relation_name != "opcodes" {
+                continue;
+            }
             println!("Relation: {}", relation_name);
 
             // Count additions for each vector of values and collect blame info
             let mut add_count: HashMap<&VectorEntry, usize> = HashMap::new();
-            let mut blame_info: HashMap<&VectorEntry, Vec<&String>> = HashMap::new();
+            let mut add_blame_info: HashMap<&VectorEntry, Vec<&String>> = HashMap::new();
+            let mut yield_blame_info: HashMap<&VectorEntry, Vec<&String>> = HashMap::new();
             for (vector, blame) in entries {
                 *add_count.entry(vector).or_insert(0) += 1;
-                blame_info.entry(vector).or_default().push(blame);
+                add_blame_info.entry(vector).or_default().push(blame);
             }
 
             // Compute yield sums for each vector of values
             let mut yield_sum: HashMap<&VectorEntry, usize> = HashMap::new();
             if let Some(yield_entries) = self.yields.get(relation_name) {
-                for (vector, _blame, multiplicity) in yield_entries {
+                for (vector, blame, multiplicity) in yield_entries {
                     *yield_sum.entry(vector).or_insert(0) += multiplicity;
+                    yield_blame_info.entry(vector).or_default().push(blame);
                 }
             }
 
@@ -149,7 +157,7 @@ impl RelationTracker {
                     );
 
                     // Display blame information for each addition
-                    for blame in &blame_info[vector] {
+                    for blame in &add_blame_info[vector] {
                         println!("      - Added by: {}", blame);
                     }
                 } else {
@@ -171,13 +179,15 @@ impl RelationTracker {
                         vector.values, 0, sum
                     );
                 }
+
+                for blame in &yield_blame_info[vector] {
+                    println!("  Vector {:?} yielded by {}", vector.values, blame);
+                }
             }
             println!();
         }
     }
 }
 
-
-pub static GLOBAL_TRACKER: Lazy<Mutex<RelationTracker>> = Lazy::new(|| {
-    Mutex::new(RelationTracker::new())
-});
+pub static GLOBAL_TRACKER: Lazy<Mutex<RelationTracker>> =
+    Lazy::new(|| Mutex::new(RelationTracker::new()));
