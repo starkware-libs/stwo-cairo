@@ -193,6 +193,7 @@ macro_rules! count_elements {
     ($x:expr, $($xs:expr),*) => (1 + count_elements!($($xs),*));
 }
 
+generate_range_check_component!(19);
 generate_range_check_component!(9, 9);
 generate_range_check_component!(7, 2, 5);
 generate_range_check_component!(4, 3);
