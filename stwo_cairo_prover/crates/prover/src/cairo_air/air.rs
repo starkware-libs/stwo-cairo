@@ -1,0 +1,306 @@
+use itertools::{chain, Itertools};
+use num_traits::Zero;
+use serde::{Deserialize, Serialize};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
+use stwo_prover::constraint_framework::{TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
+use stwo_prover::core::air::{Component, ComponentProver};
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::channel::Channel;
+use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::fields::qm31::{SecureField, QM31};
+use stwo_prover::core::fields::FieldExpOps;
+use stwo_prover::core::pcs::TreeVec;
+use stwo_prover::core::prover::StarkProof;
+use stwo_prover::core::vcs::ops::MerkleHasher;
+
+use super::IS_FIRST_LOG_SIZES;
+use crate::components::memory::{addr_to_id, id_to_f252};
+use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5, range_check_9_9};
+use crate::components::{opcodes, ret_opcode, verifyinstruction};
+use crate::felt::split_f252;
+use crate::input::instructions::VmState;
+
+#[derive(Serialize, Deserialize)]
+pub struct CairoProof<H: MerkleHasher> {
+    pub claim: CairoClaim,
+    pub interaction_claim: CairoInteractionClaim,
+    pub stark_proof: StarkProof<H>,
+}
+
+// (Address, Id, Value)
+pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
+
+#[derive(Serialize, Deserialize)]
+pub struct CairoClaim {
+    // Common claim values.
+    pub public_memory: PublicMemory,
+    pub initial_state: VmState,
+    pub final_state: VmState,
+
+    pub ret: Vec<ret_opcode::Claim>,
+    pub memory_addr_to_id: addr_to_id::Claim,
+    pub memory_id_to_value: id_to_f252::Claim,
+    pub verify_instruction: verifyinstruction::Claim,
+    pub range_check9_9: range_check_9_9::Claim,
+    pub range_check7_2_5: range_check_7_2_5::Claim,
+    pub range_check4_3: range_check_4_3::Claim,
+    // ...
+}
+
+impl CairoClaim {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        // TODO(spapini): Add common values.
+        self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.memory_addr_to_id.mix_into(channel);
+        self.memory_id_to_value.mix_into(channel);
+    }
+
+    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
+        let mut log_sizes = TreeVec::concat_cols(chain!(
+            self.ret.iter().map(|c| c.log_sizes()),
+            [self.memory_addr_to_id.log_sizes()],
+            [self.memory_id_to_value.log_sizes()],
+            [self.verify_instruction.log_sizes()],
+            [self.range_check9_9.log_sizes()],
+            [self.range_check7_2_5.log_sizes()],
+            [self.range_check4_3.log_sizes()],
+        ));
+        // Overwrite the preprocessed trace log sizes.
+        log_sizes[PREPROCESSED_TRACE_IDX] = IS_FIRST_LOG_SIZES.to_vec();
+        log_sizes
+    }
+}
+
+pub struct CairoInteractionElements {
+    pub memory_addr_to_id_lookup: addr_to_id::RelationElements,
+    pub memory_id_to_value_lookup: id_to_f252::RelationElements,
+    pub opcodes_lookup_elements: opcodes::VmRelationElements,
+    pub verify_instruction_lookup: verifyinstruction::RelationElements,
+    pub range9_9_lookup: range_check_9_9::RelationElements,
+    pub range7_2_5_lookup: range_check_7_2_5::RelationElements,
+    pub range4_3_lookup: range_check_4_3::RelationElements,
+    // ...
+}
+impl CairoInteractionElements {
+    pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
+        CairoInteractionElements {
+            memory_addr_to_id_lookup: addr_to_id::RelationElements::draw(channel),
+            memory_id_to_value_lookup: id_to_f252::RelationElements::draw(channel),
+            opcodes_lookup_elements: opcodes::VmRelationElements::draw(channel),
+            range9_9_lookup: range_check_9_9::RelationElements::draw(channel),
+            verify_instruction_lookup: verifyinstruction::RelationElements::draw(channel),
+            range7_2_5_lookup: range_check_7_2_5::RelationElements::draw(channel),
+            range4_3_lookup: range_check_4_3::RelationElements::draw(channel),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CairoInteractionClaim {
+    pub ret: Vec<ret_opcode::InteractionClaim>,
+    pub memory_addr_to_id: addr_to_id::InteractionClaim,
+    pub memory_id_to_value: id_to_f252::InteractionClaim,
+    pub range_check9_9: range_check_9_9::InteractionClaim,
+    pub range_check7_2_5: range_check_7_2_5::InteractionClaim,
+    pub range_check4_3: range_check_4_3::InteractionClaim,
+    pub verify_instruction: verifyinstruction::InteractionClaim,
+    // ...
+}
+
+impl CairoInteractionClaim {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.ret.iter().for_each(|c| c.mix_into(channel));
+        self.memory_addr_to_id.mix_into(channel);
+        self.memory_id_to_value.mix_into(channel);
+    }
+}
+
+pub fn lookup_sum(
+    claim: &CairoClaim,
+    elements: &CairoInteractionElements,
+    interaction_claim: &CairoInteractionClaim,
+) -> SecureField {
+    let mut sum = QM31::zero();
+    // TODO(Ohad): Optimized inverse.
+    sum += claim
+        .public_memory
+        .iter()
+        .map(|(addr, id, val)| {
+            let addr_to_id = elements
+                .memory_addr_to_id_lookup
+                .combine::<M31, QM31>(&[
+                    M31::from_u32_unchecked(*addr),
+                    M31::from_u32_unchecked(*id),
+                ])
+                .inverse();
+            let id_to_value = elements
+                .memory_id_to_value_lookup
+                .combine::<M31, QM31>(
+                    &[
+                        [M31::from_u32_unchecked(*id)].as_slice(),
+                        split_f252(*val).as_slice(),
+                    ]
+                    .concat(),
+                )
+                .inverse();
+            addr_to_id + id_to_value
+        })
+        .sum::<SecureField>();
+    sum += interaction_claim.range_check9_9.claimed_sum;
+    sum += interaction_claim.memory_addr_to_id.claimed_sum;
+    sum += interaction_claim.memory_id_to_value.big_claimed_sum;
+    sum += interaction_claim.memory_id_to_value.small_claimed_sum;
+    sum += interaction_claim.range_check7_2_5.claimed_sum;
+    sum += interaction_claim.range_check4_3.claimed_sum;
+    sum += interaction_claim.ret[0].claimed_sum.unwrap().0;
+    sum += interaction_claim.verify_instruction.claimed_sum.unwrap().0;
+    sum
+}
+
+pub struct CairoComponents {
+    ret: Vec<ret_opcode::Component>,
+    memory_addr_to_id: addr_to_id::Component,
+    memory_id_to_value: (id_to_f252::BigComponent, id_to_f252::SmallComponent),
+    verify_instruction: verifyinstruction::Component,
+    range_check9_9: range_check_9_9::Component,
+    range_check7_2_5: range_check_7_2_5::Component,
+    range_check4_3: range_check_4_3::Component,
+    // ...
+}
+
+impl CairoComponents {
+    pub fn new(
+        cairo_claim: &CairoClaim,
+        interaction_elements: &CairoInteractionElements,
+        interaction_claim: &CairoInteractionClaim,
+    ) -> Self {
+        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columnds(
+            &IS_FIRST_LOG_SIZES
+                .iter()
+                .copied()
+                .map(PreprocessedColumn::IsFirst)
+                .collect_vec(),
+        );
+
+        let ret_components = cairo_claim
+            .ret
+            .iter()
+            .zip(interaction_claim.ret.iter())
+            .map(|(&claim, &interaction_claim)| {
+                ret_opcode::Component::new(
+                    tree_span_provider,
+                    ret_opcode::Eval {
+                        claim,
+                        interaction_claim,
+                        memoryaddresstoid_lookup_elements: interaction_elements
+                            .memory_addr_to_id_lookup
+                            .clone(),
+                        memoryidtobig_lookup_elements: interaction_elements
+                            .memory_id_to_value_lookup
+                            .clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction_lookup
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements
+                            .opcodes_lookup_elements
+                            .clone(),
+                    },
+                )
+            })
+            .collect_vec();
+        let memory_addr_to_id_component = addr_to_id::Component::new(
+            tree_span_provider,
+            addr_to_id::Eval::new(
+                cairo_claim.memory_addr_to_id.clone(),
+                interaction_elements.memory_addr_to_id_lookup.clone(),
+                interaction_claim.memory_addr_to_id.clone(),
+            ),
+        );
+        let memory_id_to_value_component = id_to_f252::BigComponent::new(
+            tree_span_provider,
+            id_to_f252::BigEval::new(
+                cairo_claim.memory_id_to_value.clone(),
+                interaction_elements.memory_id_to_value_lookup.clone(),
+                interaction_elements.range9_9_lookup.clone(),
+                interaction_claim.memory_id_to_value.clone(),
+            ),
+        );
+        let small_memory_id_to_value_component = id_to_f252::SmallComponent::new(
+            tree_span_provider,
+            id_to_f252::SmallEval::new(
+                cairo_claim.memory_id_to_value.clone(),
+                interaction_elements.memory_id_to_value_lookup.clone(),
+                interaction_elements.range9_9_lookup.clone(),
+                interaction_claim.memory_id_to_value.clone(),
+            ),
+        );
+        let verifyinstruction_component = verifyinstruction::Component::new(
+            tree_span_provider,
+            verifyinstruction::Eval::new(
+                cairo_claim.verify_instruction,
+                interaction_elements.memory_addr_to_id_lookup.clone(),
+                interaction_elements.memory_id_to_value_lookup.clone(),
+                interaction_elements.range4_3_lookup.clone(),
+                interaction_elements.range7_2_5_lookup.clone(),
+                interaction_elements.verify_instruction_lookup.clone(),
+                interaction_claim.verify_instruction,
+            ),
+        );
+        let range_check9_9_component = range_check_9_9::Component::new(
+            tree_span_provider,
+            range_check_9_9::Eval::new(
+                interaction_elements.range9_9_lookup.clone(),
+                interaction_claim.range_check9_9.claimed_sum,
+            ),
+        );
+        let range_check_7_2_5_component = range_check_7_2_5::Component::new(
+            tree_span_provider,
+            range_check_7_2_5::Eval::new(
+                interaction_elements.range7_2_5_lookup.clone(),
+                interaction_claim.range_check7_2_5.claimed_sum,
+            ),
+        );
+        let range_check_4_3_component = range_check_4_3::Component::new(
+            tree_span_provider,
+            range_check_4_3::Eval::new(
+                interaction_elements.range4_3_lookup.clone(),
+                interaction_claim.range_check4_3.claimed_sum,
+            ),
+        );
+        Self {
+            ret: ret_components,
+            memory_addr_to_id: memory_addr_to_id_component,
+            memory_id_to_value: (
+                memory_id_to_value_component,
+                small_memory_id_to_value_component,
+            ),
+            verify_instruction: verifyinstruction_component,
+            range_check9_9: range_check9_9_component,
+            range_check7_2_5: range_check_7_2_5_component,
+            range_check4_3: range_check_4_3_component,
+        }
+    }
+
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+        let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
+        for ret in self.ret.iter() {
+            vec.push(ret);
+        }
+        vec.push(&self.memory_addr_to_id);
+        vec.push(&self.memory_id_to_value.0);
+        vec.push(&self.memory_id_to_value.1);
+        vec.push(&self.verify_instruction);
+        vec.push(&self.range_check9_9);
+        vec.push(&self.range_check7_2_5);
+        vec.push(&self.range_check4_3);
+
+        vec
+    }
+
+    pub fn components(&self) -> Vec<&dyn Component> {
+        self.provers()
+            .into_iter()
+            .map(|component| component as &dyn Component)
+            .collect()
+    }
+}
