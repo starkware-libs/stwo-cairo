@@ -1,5 +1,6 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
+use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::preprocessed_columns::{gen_is_first, PreprocessedColumn};
 use stwo_prover::constraint_framework::{TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
@@ -23,7 +24,6 @@ use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5, range_check_9_9};
 use crate::components::{opcodes, ret_opcode, verifyinstruction};
 use crate::felt::split_f252;
-use crate::input::instructions::VmState;
 use crate::input::CairoInput;
 
 #[derive(Serialize, Deserialize)]
@@ -40,8 +40,8 @@ pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 pub struct CairoClaim {
     // Common claim values.
     pub public_memory: PublicMemory,
-    pub initial_state: VmState,
-    pub final_state: VmState,
+    pub initial_state: CasmState,
+    pub final_state: CasmState,
 
     pub ret: Vec<ret_opcode::Claim>,
     pub memory_addr_to_id: addr_to_id::Claim,
