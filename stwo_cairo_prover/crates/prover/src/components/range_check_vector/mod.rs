@@ -168,7 +168,7 @@ macro_rules! generate_range_check_component {
                 pub struct InteractionClaimGenerator(RangeCheckInteractionClaimGenerator<N_RANGES>);
                 impl InteractionClaimGenerator {
                     pub fn write_interaction_trace(
-                        &self,
+                        self,
                         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
                         lookup_elements: &RelationElements,
                     ) -> InteractionClaim {

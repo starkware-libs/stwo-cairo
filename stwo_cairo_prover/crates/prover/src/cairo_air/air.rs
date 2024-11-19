@@ -9,8 +9,9 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::FieldExpOps;
-use stwo_prover::core::pcs::TreeVec;
+use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::prover::StarkProof;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::IS_FIRST_LOG_SIZES;
@@ -19,6 +20,7 @@ use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5, 
 use crate::components::{opcodes, ret_opcode, verifyinstruction};
 use crate::felt::split_f252;
 use crate::input::instructions::VmState;
+use crate::input::CairoInput;
 
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
@@ -58,9 +60,9 @@ impl CairoClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let mut log_sizes = TreeVec::concat_cols(chain!(
             self.ret.iter().map(|c| c.log_sizes()),
+            [self.verify_instruction.log_sizes()],
             [self.memory_addr_to_id.log_sizes()],
             [self.memory_id_to_value.log_sizes()],
-            [self.verify_instruction.log_sizes()],
             [self.range_check9_9.log_sizes()],
             [self.range_check7_2_5.log_sizes()],
             [self.range_check4_3.log_sizes()],
@@ -71,11 +73,196 @@ impl CairoClaim {
     }
 }
 
+pub struct AuxData {
+    pub public_memory: PublicMemory,
+    pub initial_state: VmState,
+    pub final_state: VmState,
+}
+
+pub struct CairoClaimGenerator {
+    aux_data: AuxData,
+    ret_trace_generator: ret_opcode::ClaimGenerator,
+    verify_instruction_trace_generator: verifyinstruction::ClaimGenerator,
+    memory_addr_to_id_trace_generator: addr_to_id::ClaimGenerator,
+    memory_id_to_value_trace_generator: id_to_f252::ClaimGenerator,
+    range_check_9_9_trace_generator: range_check_9_9::ClaimGenerator,
+    range_check_7_2_5_trace_generator: range_check_7_2_5::ClaimGenerator,
+    range_check_4_3_trace_generator: range_check_4_3::ClaimGenerator,
+    // ...
+}
+impl CairoClaimGenerator {
+    pub fn new(input: CairoInput) -> Self {
+        let ret_trace_generator = ret_opcode::ClaimGenerator::new(input.instructions.ret);
+        let verify_instruction_trace_generator = verifyinstruction::ClaimGenerator::default();
+        let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
+        let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
+        let range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
+        let range_check_7_2_5_trace_generator = range_check_7_2_5::ClaimGenerator::new();
+        let range_check_4_3_trace_generator = range_check_4_3::ClaimGenerator::new();
+
+        // Yield public memory.
+        for &addr in &input.public_mem_addresses {
+            let id = memory_addr_to_id_trace_generator.ids[addr as usize];
+            memory_addr_to_id_trace_generator.add_m31(M31::from_u32_unchecked(addr));
+            memory_id_to_value_trace_generator.add_m31(M31::from_u32_unchecked(id));
+        }
+
+        // Auxiliary data.
+        let public_memory = input
+            .public_mem_addresses
+            .iter()
+            .copied()
+            .map(|addr| {
+                let id = input.mem.get_raw_id(addr);
+                (addr, id, input.mem.get(addr).as_u256())
+            })
+            .collect_vec();
+        let aux_data = AuxData {
+            public_memory,
+            initial_state: input.instructions.initial_state,
+            final_state: input.instructions.final_state,
+        };
+
+        Self {
+            aux_data,
+            memory_addr_to_id_trace_generator,
+            memory_id_to_value_trace_generator,
+            verify_instruction_trace_generator,
+            range_check_9_9_trace_generator,
+            range_check_7_2_5_trace_generator,
+            range_check_4_3_trace_generator,
+            ret_trace_generator,
+        }
+    }
+
+    pub fn write_trace(
+        mut self,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+    ) -> (CairoClaim, CairoInteractionClaimGenerator) {
+        let (ret_claim, ret_interaction_gen) = self.ret_trace_generator.write_trace(
+            tree_builder,
+            &mut self.memory_addr_to_id_trace_generator,
+            &mut self.memory_id_to_value_trace_generator,
+            &mut self.verify_instruction_trace_generator,
+        );
+        let (verify_instruction_claim, verify_instruction_interaction_gen) =
+            self.verify_instruction_trace_generator.write_trace(
+                tree_builder,
+                &mut self.memory_addr_to_id_trace_generator,
+                &mut self.range_check_4_3_trace_generator,
+                &mut self.range_check_7_2_5_trace_generator,
+            );
+        let (memory_addr_to_id_claim, memory_addr_to_id_interaction_gen) = self
+            .memory_addr_to_id_trace_generator
+            .write_trace(tree_builder);
+        let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) = self
+            .memory_id_to_value_trace_generator
+            .write_trace(tree_builder, &mut self.range_check_9_9_trace_generator);
+        let (range_check9_9_claim, range_check_9_9_interaction_gen) = self
+            .range_check_9_9_trace_generator
+            .write_trace(tree_builder);
+        let (range_check_7_2_5_claim, range_check_7_2_5_interaction_gen) = self
+            .range_check_7_2_5_trace_generator
+            .write_trace(tree_builder);
+        let (range_check_4_3_claim, range_check_4_3_interaction_gen) = self
+            .range_check_4_3_trace_generator
+            .write_trace(tree_builder);
+        (
+            CairoClaim {
+                public_memory: self.aux_data.public_memory,
+                initial_state: self.aux_data.initial_state,
+                final_state: self.aux_data.final_state,
+                ret: vec![ret_claim],
+                verify_instruction: verify_instruction_claim,
+                memory_addr_to_id: memory_addr_to_id_claim.clone(),
+                memory_id_to_value: memory_id_to_value_claim.clone(),
+                range_check9_9: range_check9_9_claim.clone(),
+                range_check7_2_5: range_check_7_2_5_claim.clone(),
+                range_check4_3: range_check_4_3_claim.clone(),
+            },
+            CairoInteractionClaimGenerator {
+                ret_interaction_gen,
+                verify_instruction_interaction_gen,
+                memory_addr_to_id_interaction_gen,
+                memory_id_to_value_interaction_gen,
+                range_check_9_9_interaction_gen,
+                range_check_7_2_5_interaction_gen,
+                range_check_4_3_interaction_gen,
+            },
+        )
+    }
+}
+
+pub struct CairoInteractionClaimGenerator {
+    ret_interaction_gen: ret_opcode::InteractionClaimGenerator,
+    verify_instruction_interaction_gen: verifyinstruction::InteractionClaimGenerator,
+    memory_addr_to_id_interaction_gen: addr_to_id::InteractionClaimGenerator,
+    memory_id_to_value_interaction_gen: id_to_f252::InteractionClaimGenerator,
+    range_check_9_9_interaction_gen: range_check_9_9::InteractionClaimGenerator,
+    range_check_7_2_5_interaction_gen: range_check_7_2_5::InteractionClaimGenerator,
+    range_check_4_3_interaction_gen: range_check_4_3::InteractionClaimGenerator,
+    // ...
+}
+impl CairoInteractionClaimGenerator {
+    pub fn write_interaction_trace(
+        self,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        interaction_elements: &CairoInteractionElements,
+    ) -> CairoInteractionClaim {
+        let ret_interaction_claim = self.ret_interaction_gen.write_interaction_trace(
+            tree_builder,
+            &interaction_elements.memory_addr_to_id_lookup,
+            &interaction_elements.memory_id_to_value_lookup,
+            &interaction_elements.verify_instruction_lookup,
+            &interaction_elements.opcodes_lookup_elements,
+        );
+        let verifyinstruction_interaction_claim = self
+            .verify_instruction_interaction_gen
+            .write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_addr_to_id_lookup,
+                &interaction_elements.memory_id_to_value_lookup,
+                &interaction_elements.range4_3_lookup,
+                &interaction_elements.range7_2_5_lookup,
+                &interaction_elements.verify_instruction_lookup,
+            );
+        let memory_addr_to_id_interaction_claim = self
+            .memory_addr_to_id_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.memory_addr_to_id_lookup);
+        let memory_id_to_value_interaction_claim = self
+            .memory_id_to_value_interaction_gen
+            .write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_id_to_value_lookup,
+                &interaction_elements.range9_9_lookup,
+            );
+        let range_check9_9_interaction_claim = self
+            .range_check_9_9_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.range9_9_lookup);
+        let range_check_7_2_5_interaction_claim = self
+            .range_check_7_2_5_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.range7_2_5_lookup);
+        let range_check_4_3_interaction_claim = self
+            .range_check_4_3_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.range4_3_lookup);
+
+        CairoInteractionClaim {
+            ret: vec![ret_interaction_claim],
+            verify_instruction: verifyinstruction_interaction_claim,
+            memory_addr_to_id: memory_addr_to_id_interaction_claim,
+            memory_id_to_value: memory_id_to_value_interaction_claim,
+            range_check9_9: range_check9_9_interaction_claim,
+            range_check7_2_5: range_check_7_2_5_interaction_claim,
+            range_check4_3: range_check_4_3_interaction_claim,
+        }
+    }
+}
+
 pub struct CairoInteractionElements {
-    pub memory_addr_to_id_lookup: addr_to_id::RelationElements,
-    pub memory_id_to_value_lookup: id_to_f252::RelationElements,
     pub opcodes_lookup_elements: opcodes::VmRelationElements,
     pub verify_instruction_lookup: verifyinstruction::RelationElements,
+    pub memory_addr_to_id_lookup: addr_to_id::RelationElements,
+    pub memory_id_to_value_lookup: id_to_f252::RelationElements,
     pub range9_9_lookup: range_check_9_9::RelationElements,
     pub range7_2_5_lookup: range_check_7_2_5::RelationElements,
     pub range4_3_lookup: range_check_4_3::RelationElements,
@@ -84,11 +271,11 @@ pub struct CairoInteractionElements {
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
+            opcodes_lookup_elements: opcodes::VmRelationElements::draw(channel),
+            verify_instruction_lookup: verifyinstruction::RelationElements::draw(channel),
             memory_addr_to_id_lookup: addr_to_id::RelationElements::draw(channel),
             memory_id_to_value_lookup: id_to_f252::RelationElements::draw(channel),
-            opcodes_lookup_elements: opcodes::VmRelationElements::draw(channel),
             range9_9_lookup: range_check_9_9::RelationElements::draw(channel),
-            verify_instruction_lookup: verifyinstruction::RelationElements::draw(channel),
             range7_2_5_lookup: range_check_7_2_5::RelationElements::draw(channel),
             range4_3_lookup: range_check_4_3::RelationElements::draw(channel),
         }
@@ -98,15 +285,13 @@ impl CairoInteractionElements {
 #[derive(Serialize, Deserialize)]
 pub struct CairoInteractionClaim {
     pub ret: Vec<ret_opcode::InteractionClaim>,
+    pub verify_instruction: verifyinstruction::InteractionClaim,
     pub memory_addr_to_id: addr_to_id::InteractionClaim,
     pub memory_id_to_value: id_to_f252::InteractionClaim,
     pub range_check9_9: range_check_9_9::InteractionClaim,
     pub range_check7_2_5: range_check_7_2_5::InteractionClaim,
     pub range_check4_3: range_check_4_3::InteractionClaim,
-    pub verify_instruction: verifyinstruction::InteractionClaim,
-    // ...
 }
-
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.ret.iter().for_each(|c| c.mix_into(channel));
@@ -159,9 +344,9 @@ pub fn lookup_sum(
 
 pub struct CairoComponents {
     ret: Vec<ret_opcode::Component>,
+    verify_instruction: verifyinstruction::Component,
     memory_addr_to_id: addr_to_id::Component,
     memory_id_to_value: (id_to_f252::BigComponent, id_to_f252::SmallComponent),
-    verify_instruction: verifyinstruction::Component,
     range_check9_9: range_check_9_9::Component,
     range_check7_2_5: range_check_7_2_5::Component,
     range_check4_3: range_check_4_3::Component,
@@ -208,6 +393,18 @@ impl CairoComponents {
                 )
             })
             .collect_vec();
+        let verifyinstruction_component = verifyinstruction::Component::new(
+            tree_span_provider,
+            verifyinstruction::Eval::new(
+                cairo_claim.verify_instruction,
+                interaction_elements.memory_addr_to_id_lookup.clone(),
+                interaction_elements.memory_id_to_value_lookup.clone(),
+                interaction_elements.range4_3_lookup.clone(),
+                interaction_elements.range7_2_5_lookup.clone(),
+                interaction_elements.verify_instruction_lookup.clone(),
+                interaction_claim.verify_instruction,
+            ),
+        );
         let memory_addr_to_id_component = addr_to_id::Component::new(
             tree_span_provider,
             addr_to_id::Eval::new(
@@ -234,18 +431,6 @@ impl CairoComponents {
                 interaction_claim.memory_id_to_value.clone(),
             ),
         );
-        let verifyinstruction_component = verifyinstruction::Component::new(
-            tree_span_provider,
-            verifyinstruction::Eval::new(
-                cairo_claim.verify_instruction,
-                interaction_elements.memory_addr_to_id_lookup.clone(),
-                interaction_elements.memory_id_to_value_lookup.clone(),
-                interaction_elements.range4_3_lookup.clone(),
-                interaction_elements.range7_2_5_lookup.clone(),
-                interaction_elements.verify_instruction_lookup.clone(),
-                interaction_claim.verify_instruction,
-            ),
-        );
         let range_check9_9_component = range_check_9_9::Component::new(
             tree_span_provider,
             range_check_9_9::Eval::new(
@@ -269,12 +454,12 @@ impl CairoComponents {
         );
         Self {
             ret: ret_components,
+            verify_instruction: verifyinstruction_component,
             memory_addr_to_id: memory_addr_to_id_component,
             memory_id_to_value: (
                 memory_id_to_value_component,
                 small_memory_id_to_value_component,
             ),
-            verify_instruction: verifyinstruction_component,
             range_check9_9: range_check9_9_component,
             range_check7_2_5: range_check_7_2_5_component,
             range_check4_3: range_check_4_3_component,
@@ -286,10 +471,10 @@ impl CairoComponents {
         for ret in self.ret.iter() {
             vec.push(ret);
         }
+        vec.push(&self.verify_instruction);
         vec.push(&self.memory_addr_to_id);
         vec.push(&self.memory_id_to_value.0);
         vec.push(&self.memory_id_to_value.1);
-        vec.push(&self.verify_instruction);
         vec.push(&self.range_check9_9);
         vec.push(&self.range_check7_2_5);
         vec.push(&self.range_check4_3);

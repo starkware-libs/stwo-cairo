@@ -68,9 +68,9 @@ impl ClaimGenerator {
     }
 
     pub fn write_trace(
-        &mut self,
+        self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-    ) -> (Claim, AddrToIdInteractionClaimProver) {
+    ) -> (Claim, InteractionClaimGenerator) {
         let size = self.ids.len();
         let mut trace = (0..N_ADDR_TO_ID_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
@@ -122,7 +122,7 @@ impl ClaimGenerator {
             Claim {
                 log_size: log_address_bound,
             },
-            AddrToIdInteractionClaimProver {
+            InteractionClaimGenerator {
                 addresses,
                 ids,
                 multiplicities,
@@ -131,12 +131,12 @@ impl ClaimGenerator {
     }
 }
 
-pub struct AddrToIdInteractionClaimProver {
+pub struct InteractionClaimGenerator {
     pub addresses: Vec<PackedM31>,
     pub ids: Vec<PackedM31>,
     pub multiplicities: Vec<PackedM31>,
 }
-impl AddrToIdInteractionClaimProver {
+impl InteractionClaimGenerator {
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             addresses: Vec::with_capacity(capacity),
@@ -146,7 +146,7 @@ impl AddrToIdInteractionClaimProver {
     }
 
     pub fn write_interaction_trace(
-        &self,
+        self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &RelationElements,
     ) -> InteractionClaim {

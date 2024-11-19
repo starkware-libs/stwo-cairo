@@ -60,8 +60,6 @@ impl ClaimGenerator {
             sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
         }
 
-        memoryaddresstoid_state
-            .add_inputs(&sub_components_inputs.memoryaddresstoid_inputs[..n_calls]);
         rangecheck_4_3_state.add_inputs(&sub_components_inputs.rangecheck_4_3_inputs[..n_calls]);
         range_check_7_2_5_state
             .add_inputs(&sub_components_inputs.range_check_7_2_5_inputs[..n_calls]);

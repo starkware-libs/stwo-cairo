@@ -268,7 +268,7 @@ impl InteractionClaimGenerator {
     }
 
     pub fn write_interaction_trace(
-        &self,
+        self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         lookup_elements: &RelationElements,
         range9_9_lookup_elements: &range_check_9_9::RelationElements,
