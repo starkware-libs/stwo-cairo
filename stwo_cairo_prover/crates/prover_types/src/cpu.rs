@@ -49,6 +49,12 @@ pub struct CasmState {
     pub fp: M31,
 }
 
+impl CasmState {
+    pub fn values(&self) -> [M31; 3] {
+        [self.pc, self.ap, self.fp]
+    }
+}
+
 impl ProverType for CasmState {
     fn calc(&self) -> String {
         format!("{{ pc: {}, ap: {}, fp: {} }}", self.pc, self.ap, self.fp)

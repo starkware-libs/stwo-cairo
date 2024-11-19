@@ -1,5 +1,6 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
+use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
@@ -21,7 +22,7 @@ use crate::components::range_check_vector::{
 };
 use crate::components::{genericopcode, opcodes, ret_opcode, verifyinstruction};
 use crate::felt::split_f252;
-use crate::input::instructions::{Instructions, VmState};
+use crate::input::instructions::Instructions;
 use crate::input::CairoInput;
 
 #[derive(Serialize, Deserialize)]
@@ -99,8 +100,8 @@ impl CairoClaim {
 #[derive(Serialize, Deserialize)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
-    pub initial_state: VmState,
-    pub final_state: VmState,
+    pub initial_state: CasmState,
+    pub final_state: CasmState,
 }
 impl PublicData {
     pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
@@ -299,8 +300,8 @@ pub struct CairoClaimGenerator {
 }
 impl CairoClaimGenerator {
     pub fn new(input: CairoInput) -> Self {
-        let initial_state = input.instructions.initial_state.clone();
-        let final_state = input.instructions.final_state.clone();
+        let initial_state = input.instructions.initial_state;
+        let final_state = input.instructions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.instructions);
         let verify_instruction_trace_generator = verifyinstruction::ClaimGenerator::default();
         let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
