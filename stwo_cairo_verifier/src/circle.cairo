@@ -1,16 +1,16 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::num::traits::{WrappingAdd, WrappingMul, WrappingSub};
-use stwo_cairo_verifier::channel::{Channel, ChannelImpl};
-use stwo_cairo_verifier::circle_mul_table::{
+use crate::channel::{Channel, ChannelImpl};
+use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
-use stwo_cairo_verifier::fields::Invertible;
-use stwo_cairo_verifier::fields::cm31::CM31;
-use stwo_cairo_verifier::fields::m31::{M31, M31Impl};
-use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31One, QM31Trait};
+use crate::fields::Invertible;
+use crate::fields::cm31::CM31;
+use crate::fields::m31::{M31, M31Impl};
+use crate::fields::qm31::{QM31, QM31Impl, QM31One, QM31Trait};
 use super::utils::POW_2;
 
 /// A generator for the circle group over [`M31`].
@@ -291,8 +291,8 @@ impl CirclePointIndexPartialEx of PartialEq<CirclePointIndex> {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::fields::qm31::QM31One;
+    use crate::fields::m31::m31;
+    use crate::fields::qm31::QM31One;
     use super::{
         CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
         CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,

@@ -1,17 +1,17 @@
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
-use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
-use stwo_cairo_verifier::circle::CirclePoint;
-use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::qm31::QM31;
-use stwo_cairo_verifier::fri::{FriProof, FriVerifierImpl};
-use stwo_cairo_verifier::pcs::quotients::{PointSample, fri_answers};
-use stwo_cairo_verifier::queries::SparseSubCircleDomainImpl;
-use stwo_cairo_verifier::utils::ArrayImpl;
-use stwo_cairo_verifier::vcs::hasher::PoseidonMerkleHasher;
-use stwo_cairo_verifier::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use stwo_cairo_verifier::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
-use stwo_cairo_verifier::{ColumnArray, TreeArray};
+use crate::channel::{Channel, ChannelTrait};
+use crate::circle::CirclePoint;
+use crate::fields::m31::M31;
+use crate::fields::qm31::QM31;
+use crate::fri::{FriProof, FriVerifierImpl};
+use crate::pcs::quotients::{PointSample, fri_answers};
+use crate::queries::SparseSubCircleDomainImpl;
+use crate::utils::ArrayImpl;
+use crate::vcs::hasher::PoseidonMerkleHasher;
+use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
+use crate::{ColumnArray, TreeArray};
 use super::PcsConfig;
 
 #[derive(Drop, Serde)]

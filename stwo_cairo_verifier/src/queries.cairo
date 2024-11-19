@@ -1,6 +1,6 @@
-use stwo_cairo_verifier::channel::{Channel, ChannelTrait};
-use stwo_cairo_verifier::circle::CosetImpl;
-use stwo_cairo_verifier::poly::circle::{CircleDomain, CircleDomainImpl};
+use crate::channel::{Channel, ChannelTrait};
+use crate::circle::CosetImpl;
+use crate::poly::circle::{CircleDomain, CircleDomainImpl};
 use super::utils::{ArrayImpl, POW_2, bit_reverse_index, find};
 
 
@@ -157,7 +157,7 @@ pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
 
 #[cfg(test)]
 mod test {
-    use stwo_cairo_verifier::channel::ChannelTrait;
+    use crate::channel::ChannelTrait;
     use super::{Queries, QueriesImpl};
 
     #[test]

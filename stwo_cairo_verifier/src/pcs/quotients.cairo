@@ -3,24 +3,18 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
-use stwo_cairo_verifier::circle::{
-    CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER,
-};
-use stwo_cairo_verifier::fields::BatchInvertible;
-use stwo_cairo_verifier::fields::cm31::{CM31, CM31Impl};
-use stwo_cairo_verifier::fields::m31::{M31, UnreducedM31};
-use stwo_cairo_verifier::fields::qm31::{
-    PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl,
-};
-use stwo_cairo_verifier::poly::circle::{
+use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
+use crate::fields::BatchInvertible;
+use crate::fields::cm31::{CM31, CM31Impl};
+use crate::fields::m31::{M31, UnreducedM31};
+use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl};
+use crate::poly::circle::{
     CanonicCosetImpl, CircleDomain, CircleDomainImpl, CircleEvaluationImpl, SparseCircleEvaluation,
     SparseCircleEvaluationImpl,
 };
-use stwo_cairo_verifier::queries::{
-    SparseSubCircleDomain, SparseSubCircleDomainImpl, SubCircleDomainImpl,
-};
-use stwo_cairo_verifier::utils::{ArrayImpl as ArrayUtilImpl, bit_reverse_index, pack4};
-use stwo_cairo_verifier::verifier::VerificationError;
+use crate::queries::{SparseSubCircleDomain, SparseSubCircleDomainImpl, SubCircleDomainImpl};
+use crate::utils::{ArrayImpl as ArrayUtilImpl, bit_reverse_index, pack4};
+use crate::verifier::VerificationError;
 
 pub fn fri_answers(
     log_size_per_column: @Array<u32>,
@@ -497,17 +491,17 @@ mod tests {
     use core::array::ArrayImpl;
     use core::dict::Felt252Dict;
     use core::nullable::{NullableTrait};
-    use stwo_cairo_verifier::circle::{CirclePointIndexImpl, CosetImpl, QM31_CIRCLE_GEN};
-    use stwo_cairo_verifier::fields::cm31::cm31;
-    use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::fields::qm31::{PackedUnreducedQM31Impl, qm31};
-    use stwo_cairo_verifier::fri::CIRCLE_TO_LINE_FOLD_STEP;
-    use stwo_cairo_verifier::poly::circle::{
+    use crate::circle::{CirclePointIndexImpl, CosetImpl, QM31_CIRCLE_GEN};
+    use crate::fields::cm31::cm31;
+    use crate::fields::m31::m31;
+    use crate::fields::qm31::{PackedUnreducedQM31Impl, qm31};
+    use crate::fri::CIRCLE_TO_LINE_FOLD_STEP;
+    use crate::poly::circle::{
         CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl, SparseCircleEvaluationImpl,
     };
-    use stwo_cairo_verifier::queries::SubCircleDomainImpl;
-    use stwo_cairo_verifier::queries::{SparseSubCircleDomain, SubCircleDomain};
-    use stwo_cairo_verifier::utils::{DictImpl, POW_2};
+    use crate::queries::SubCircleDomainImpl;
+    use crate::queries::{SparseSubCircleDomain, SubCircleDomain};
+    use crate::utils::{DictImpl, POW_2};
     use super::{
         ColumnSampleBatch, ColumnSampleBatchImpl, ComplexConjugateLineCoeffsImpl, PointSample,
         QuotientConstantsImpl, accumulate_row_quotients, fri_answers, fri_answers_for_log_size,

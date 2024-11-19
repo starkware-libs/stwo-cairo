@@ -1,13 +1,11 @@
 use core::iter::{IntoIterator, Iterator};
-use stwo_cairo_verifier::circle::{
-    CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl,
-};
-use stwo_cairo_verifier::fields::BatchInvertible;
-use stwo_cairo_verifier::fields::m31::{M31, m31};
-use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
-use stwo_cairo_verifier::fields::{BaseField, SecureField};
-use stwo_cairo_verifier::poly::utils::{butterfly, fold, ibutterfly};
-use stwo_cairo_verifier::utils::POW_2;
+use crate::circle::{CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl};
+use crate::fields::BatchInvertible;
+use crate::fields::m31::{M31, m31};
+use crate::fields::qm31::{QM31, QM31Impl, QM31Zero};
+use crate::fields::{BaseField, SecureField};
+use crate::poly::utils::{butterfly, fold, ibutterfly};
+use crate::utils::POW_2;
 
 /// A univariate polynomial defined on a [LineDomain].
 #[derive(Debug, Drop, Clone)]
@@ -303,9 +301,9 @@ impl LineDomainIteratorImpl of Iterator<LineDomainIterator> {
 #[cfg(test)]
 mod tests {
     use core::iter::{IntoIterator, Iterator};
-    use stwo_cairo_verifier::circle::{CirclePointIndexImpl, CosetImpl};
-    use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::fields::qm31::qm31;
+    use crate::circle::{CirclePointIndexImpl, CosetImpl};
+    use crate::fields::m31::m31;
+    use crate::fields::qm31::qm31;
     use super::{LineDomain, LineDomainImpl, LineDomainIterator, LinePoly, LinePolyTrait};
 
     #[test]
