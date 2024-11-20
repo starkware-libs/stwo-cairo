@@ -25,7 +25,7 @@ pub trait PackedM31Type {
 
 #[derive(Clone, Copy, Debug)]
 pub struct PackedBool {
-    pub(crate) value: Simd<u8, N_LANES>,
+    pub(crate) value: Simd<i32, N_LANES>,
 }
 
 impl PackedM31Type for PackedBool {
@@ -448,8 +448,8 @@ impl EqExtend for PackedM31 {
                 .cast(),
         }
     }
-}
 
+}
 pub trait DivExtend {
     fn div(&self, other: Self) -> Self;
 }
