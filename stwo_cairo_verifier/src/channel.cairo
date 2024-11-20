@@ -36,7 +36,7 @@ impl ChannelTimeImpl of ChannelTimeTrait {
 
 #[derive(Drop)]
 pub struct Channel {
-    digest: felt252,
+    pub digest: felt252,
     channel_time: ChannelTime,
 }
 
@@ -61,14 +61,8 @@ pub impl ChannelImpl of ChannelTrait {
     fn draw_base_felts(ref self: Channel) -> [BaseField; FELTS_PER_HASH] {
         let mut cur = self.draw_felt252().into();
         [
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
-            extract_m31(ref cur),
+            extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
+            extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
         ]
     }
 

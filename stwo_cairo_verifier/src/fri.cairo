@@ -400,7 +400,11 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// The order of the opening positions corresponds to the order of the column commitment.
     fn column_query_positions(
         ref self: FriVerifier, ref channel: Channel,
-    ) -> (Felt252Dict<Nullable<@SparseSubCircleDomain>>, Span<u32>) {
+    ) -> (
+        Felt252Dict<Nullable<Span<usize>>>,
+        Felt252Dict<Nullable<@SparseSubCircleDomain>>,
+        Span<u32>,
+    ) {
         let queries = QueriesImpl::generate(
             ref channel,
             *self.column_bounds[0] + self.config.log_blowup_factor,
@@ -420,8 +424,31 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             i = i + 1;
         };
 
-        (get_opening_positions(@queries, column_log_sizes.span()), column_log_sizes.span())
+        (
+            get_query_positions_per_log_size(queries.clone(), column_log_sizes.span()),
+            get_opening_positions(@queries, column_log_sizes.span()),
+            column_log_sizes.span(),
+        )
     }
+}
+
+fn get_query_positions_per_log_size(
+    mut queries: Queries, mut column_log_sizes: Span<u32>,
+) -> Felt252Dict<Nullable<Span<usize>>> {
+    let mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
+
+    while let Option::Some(column_log_size) = column_log_sizes.pop_front() {
+        let n_folds = queries.log_domain_size - *column_log_size;
+
+        if n_folds != 0 {
+            queries = queries.fold(n_folds);
+        }
+
+        query_positions_per_log_size
+            .insert((*column_log_size).into(), NullableTrait::new(queries.positions.span()));
+    };
+
+    query_positions_per_log_size
 }
 
 /// Returns the column opening positions needed for verification.
@@ -565,7 +592,7 @@ mod test {
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, bounds).unwrap();
 
         let mut channel = ChannelTrait::new(0x00);
-        let (_, _) = verifier.column_query_positions(ref channel);
+        let (_, _, _) = verifier.column_query_positions(ref channel);
 
         verifier.decommit(decommitted_values).unwrap();
     }
