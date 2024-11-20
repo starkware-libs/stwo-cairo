@@ -6,14 +6,13 @@ edition = "2024_07"
 [lib]
 casm = true
 
-[cairo]
-# TODO(andrew): Remove once inlining bug fixed as increases step counts by about 3x.
-inlining-strategy = "avoid"
-
 [tool.fmt]
 sort-module-level-items = true
 
 [dependencies]
+# cairo_test = "2.8.5"
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.33.0" }
+assert_macros = "2.8.5"
 
-[dev-dependencies]
-cairo_test = "2.8.4"
+[scripts]
+test = "snforge test --max-n-steps 100000000"
