@@ -11,37 +11,37 @@ use crate::BaseField;
 
 /// Look up table where index `i` stores value `2^i`.
 const POW_2: [u32; 32] = [
-    0b1,
-    0b10,
-    0b100,
-    0b1000,
-    0b10000,
-    0b100000,
-    0b1000000,
-    0b10000000,
-    0b100000000,
-    0b1000000000,
-    0b10000000000,
-    0b100000000000,
-    0b1000000000000,
-    0b10000000000000,
-    0b100000000000000,
-    0b1000000000000000,
-    0b10000000000000000,
-    0b100000000000000000,
-    0b1000000000000000000,
-    0b10000000000000000000,
-    0b100000000000000000000,
-    0b1000000000000000000000,
-    0b10000000000000000000000,
-    0b100000000000000000000000,
-    0b1000000000000000000000000,
-    0b10000000000000000000000000,
-    0b100000000000000000000000000,
-    0b1000000000000000000000000000,
-    0b10000000000000000000000000000,
-    0b100000000000000000000000000000,
-    0b1000000000000000000000000000000,
+    0b1, // 
+    0b10, //
+    0b100, //
+    0b1000, //
+    0b10000, //
+    0b100000, //
+    0b1000000, //
+    0b10000000, //
+    0b100000000, //
+    0b1000000000, //
+    0b10000000000, //
+    0b100000000000, //
+    0b1000000000000, //
+    0b10000000000000, //
+    0b100000000000000, //
+    0b1000000000000000, //
+    0b10000000000000000, //
+    0b100000000000000000, //
+    0b1000000000000000000, //
+    0b10000000000000000000, //
+    0b100000000000000000000, //
+    0b1000000000000000000000, //
+    0b10000000000000000000000, //
+    0b100000000000000000000000, //
+    0b1000000000000000000000000, //
+    0b10000000000000000000000000, //
+    0b100000000000000000000000000, //
+    0b1000000000000000000000000000, //
+    0b10000000000000000000000000000, //
+    0b100000000000000000000000000000, //
+    0b1000000000000000000000000000000, //
     0b10000000000000000000000000000000,
 ];
 
@@ -52,11 +52,23 @@ pub fn pow2(n: u32) -> u32 {
 }
 
 #[generate_trait]
-pub impl DictImpl<T, +Felt252DictValue<T>, +PanicDestruct<T>> of DictTrait<T> {
-    fn replace(ref self: Felt252Dict<T>, key: felt252, new_value: T) -> T {
+pub impl DictImpl<T, +Felt252DictValue<T>> of DictTrait<T> {
+    fn replace<+PanicDestruct<T>>(ref self: Felt252Dict<T>, key: felt252, new_value: T) -> T {
         let (entry, value) = self.entry(key);
         self = entry.finalize(new_value);
         value
+    }
+
+    // TODO(andrew): Is there a better way to handle this?
+    fn clone_subset<+Copy<T>, +Drop<T>>(
+        ref self: Felt252Dict<T>, subset_keys: Span<u32>,
+    ) -> Felt252Dict<T> {
+        let mut res: Felt252Dict<T> = Default::default();
+        for key in subset_keys {
+            let key = (*key).into();
+            res.insert(key, self.get(key));
+        };
+        res
     }
 }
 
@@ -148,6 +160,11 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
 
 #[generate_trait]
 pub impl SpanImpl<T> of SpanExTrait<T> {
+    #[inline]
+    fn first(mut self: Span<T>) -> Option<@T> {
+        self.pop_front()
+    }
+
     fn pop_front_n(ref self: Span<T>, n: usize) -> Span<T> {
         let (res, remainder) = self.split_at(n);
         self = remainder;
@@ -160,9 +177,11 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
     }
 
     fn next_if_eq<+PartialEq<T>>(ref self: Span<T>, other: @T) -> Option<@T> {
-        if let Option::Some(value) = self.get(0) {
-            if value.unbox() == other {
-                return self.pop_front();
+        let mut self_copy = self;
+        if let Option::Some(value) = self_copy.pop_front() {
+            if value == other {
+                self = self_copy;
+                return Option::Some(other);
             }
         }
         Option::None
@@ -205,19 +224,6 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
         bits -= 1;
     };
     result
-}
-
-pub fn find(n: u32, a: Span<u32>) -> bool {
-    let mut i = 0;
-    let mut res = false;
-    while i < a.len() {
-        if (*a[i] == n) {
-            res = true;
-            break;
-        }
-        i = i + 1;
-    };
-    res
 }
 
 #[cfg(test)]

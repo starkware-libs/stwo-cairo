@@ -1,13 +1,14 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::poly::circle::{CircleDomain, CircleDomainImpl};
-use super::utils::{ArrayImpl, bit_reverse_index, find, pow2};
+use super::utils::{ArrayImpl, bit_reverse_index, pow2};
 
-
-/// An ordered set of query indices over a bit reversed [CircleDomain].
-#[derive(Drop, Clone, Debug, PartialEq)]
+/// An ordered set of query positions.
+#[derive(Drop, Copy, Debug, PartialEq)]
 pub struct Queries {
-    pub positions: Array<usize>,
+    /// Query positions sorted in ascending order.
+    pub positions: Span<usize>,
+    /// Size of the domain from which the queries were sampled.
     pub log_domain_size: u32,
 }
 
@@ -39,54 +40,20 @@ pub impl QueriesImpl of QueriesImplTrait {
             }
         };
 
-        Queries { positions: unsorted_positions.sort_ascending().dedup(), log_domain_size }
+        Queries { positions: unsorted_positions.sort_ascending().dedup().span(), log_domain_size }
     }
 
     fn len(self: @Queries) -> usize {
-        self.positions.len()
+        (*self.positions).len()
     }
 
     /// Calculates the matching query indices in a folded domain (i.e each domain point is doubled)
     /// given `self` (the queries of the original domain) and the number of folds between domains.
-    fn fold(self: @Queries, n_folds: u32) -> Queries {
-        assert!(n_folds <= *self.log_domain_size);
-        assert!(self.positions.len() > 0);
-        let folding_factor = pow2(n_folds);
-        let mut new_last_position = *self.positions[0] / folding_factor;
-        let mut new_positions = array![new_last_position];
-        let mut i = 1;
-        while i < self.positions.len() {
-            let new_position = *self.positions[i] / folding_factor;
-            if new_position != new_last_position {
-                new_last_position = new_position;
-                new_positions.append(new_last_position);
-            }
-            i += 1;
-        };
-        Queries { positions: new_positions, log_domain_size: *self.log_domain_size - n_folds }
-    }
-
-    fn opening_positions(self: @Queries, fri_step_size: u32) -> SparseSubCircleDomain {
-        assert!(fri_step_size > 0);
-        let fold_factor = pow2(fri_step_size);
-        let mut domains = array![];
-        let snap_positions = self.positions;
-        let mut already_added = array![];
-        let mut i = 0;
-        while i < snap_positions.len() {
-            let v = *snap_positions.at(i);
-            if (!find(v, already_added.span())) {
-                already_added.append(v);
-                domains
-                    .append(
-                        SubCircleDomain { coset_index: v / fold_factor, log_size: fri_step_size },
-                    );
-            }
-
-            i = i + 1;
-        };
-
-        SparseSubCircleDomain { domains: domains, large_domain_log_size: *self.log_domain_size }
+    fn fold(self: Queries, n_folds: u32) -> Queries {
+        Queries {
+            positions: get_folded_query_positions(self.positions, n_folds),
+            log_domain_size: self.log_domain_size - n_folds,
+        }
     }
 }
 
@@ -98,6 +65,27 @@ pub struct SubCircleDomain {
     pub log_size: u32,
 }
 
+/// Returns a deduped list of folded query positions.
+///
+/// # Panics
+///
+/// Panics if query positions is empty.
+pub fn get_folded_query_positions(mut query_positions: Span<usize>, n_folds: u32) -> Span<usize> {
+    let folding_factor = pow2(n_folds);
+    let mut prev_folded_position = *query_positions.pop_front().unwrap() / folding_factor;
+    let mut folded_positions = array![prev_folded_position];
+
+    for position in query_positions {
+        let folded_position = *position / folding_factor;
+
+        if folded_position != prev_folded_position {
+            folded_positions.append(folded_position);
+            prev_folded_position = folded_position;
+        }
+    };
+
+    folded_positions.span()
+}
 
 #[generate_trait]
 pub impl SubCircleDomainImpl of SubCircleDomainTrait {
@@ -127,34 +115,6 @@ pub impl SubCircleDomainImpl of SubCircleDomainTrait {
     }
 }
 
-#[derive(Drop, Debug)]
-pub struct SparseSubCircleDomain {
-    pub domains: Array<SubCircleDomain>,
-    pub large_domain_log_size: u32,
-}
-
-#[generate_trait]
-pub impl SparseSubCircleDomainImpl of SparseSubCircleDomainTrait {
-    fn flatten(self: @SparseSubCircleDomain) -> Array<usize> {
-        let mut res = array![];
-        for domain in self.domains.span() {
-            for position in domain.to_decommitment_positions() {
-                res.append(position);
-            };
-        };
-        res
-    }
-
-    /// Returns the number of points in the domain.
-    fn size(self: @SparseSubCircleDomain) -> usize {
-        let mut size = 0;
-        for domain in self.domains.span() {
-            size += domain.size();
-        };
-        size
-    }
-}
-
 #[cfg(test)]
 mod test {
     use crate::channel::ChannelTrait;
@@ -162,17 +122,17 @@ mod test {
 
     #[test]
     fn test_fold_1() {
-        let queries = Queries { positions: array![5], log_domain_size: 6 };
+        let queries = Queries { positions: array![5].span(), log_domain_size: 6 };
         let result = queries.fold(1);
-        let expected_result = Queries { positions: array![2], log_domain_size: 5 };
+        let expected_result = Queries { positions: array![2].span(), log_domain_size: 5 };
         assert_eq!(expected_result, result);
     }
 
     #[test]
     fn test_fold_2() {
-        let queries = Queries { positions: array![17, 27], log_domain_size: 6 };
+        let queries = Queries { positions: array![17, 27].span(), log_domain_size: 6 };
         let result = queries.fold(1);
-        let expected_result = Queries { positions: array![8, 13], log_domain_size: 5 };
+        let expected_result = Queries { positions: array![8, 13].span(), log_domain_size: 5 };
         assert_eq!(expected_result, result);
     }
 
@@ -282,7 +242,8 @@ mod test {
                 2066089701,
                 2092416675,
                 2114908411,
-            ],
+            ]
+                .span(),
             log_domain_size: 31,
         };
         assert_eq!(expected_result, result);
