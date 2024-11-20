@@ -543,39 +543,21 @@ pub fn lookup_sum(
     sum
 }
 
-pub struct CairoComponents {
+pub struct OpcodeComponents {
     generic: Vec<genericopcode::Component>,
     ret: Vec<ret_opcode::Component>,
-    verify_instruction: verifyinstruction::Component,
-    memory_addr_to_id: addr_to_id::Component,
-    memory_id_to_value: (id_to_f252::BigComponent, id_to_f252::SmallComponent),
-    range_check_19: range_check_19::Component,
-    range_check9_9: range_check_9_9::Component,
-    range_check7_2_5: range_check_7_2_5::Component,
-    range_check4_3: range_check_4_3::Component,
-    // ...
 }
-
-impl CairoComponents {
+impl OpcodeComponents {
     pub fn new(
-        cairo_claim: &CairoClaim,
+        tree_span_provider: &mut TraceLocationAllocator,
+        claim: &OpcodeClaim,
         interaction_elements: &CairoInteractionElements,
-        interaction_claim: &CairoInteractionClaim,
+        interaction_claim: &OpcodeInteractionClaim,
     ) -> Self {
-        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columnds(
-            &IS_FIRST_LOG_SIZES
-                .iter()
-                .copied()
-                .map(PreprocessedColumn::IsFirst)
-                .collect_vec(),
-        );
-
-        // TODO(Ohad) separate opcode components.
-        let generic_components = cairo_claim
-            .opcodes
+        let generic_components = claim
             .generic
             .iter()
-            .zip(interaction_claim.opcodes.generic.iter())
+            .zip(interaction_claim.generic.iter())
             .map(|(&claim, &interaction_claim)| {
                 genericopcode::Component::new(
                     tree_span_provider,
@@ -600,11 +582,10 @@ impl CairoComponents {
                 )
             })
             .collect_vec();
-        let ret_components = cairo_claim
-            .opcodes
+        let ret_components = claim
             .ret
             .iter()
-            .zip(interaction_claim.opcodes.ret.iter())
+            .zip(interaction_claim.ret.iter())
             .map(|(&claim, &interaction_claim)| {
                 ret_opcode::Component::new(
                     tree_span_provider,
@@ -625,6 +606,59 @@ impl CairoComponents {
                 )
             })
             .collect_vec();
+        Self {
+            generic: generic_components,
+            ret: ret_components,
+        }
+    }
+
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+        let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
+        vec.extend(
+            self.generic
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.ret
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec
+    }
+}
+
+pub struct CairoComponents {
+    opcodes: OpcodeComponents,
+    verify_instruction: verifyinstruction::Component,
+    memory_addr_to_id: addr_to_id::Component,
+    memory_id_to_value: (id_to_f252::BigComponent, id_to_f252::SmallComponent),
+    range_check_19: range_check_19::Component,
+    range_check9_9: range_check_9_9::Component,
+    range_check7_2_5: range_check_7_2_5::Component,
+    range_check4_3: range_check_4_3::Component,
+    // ...
+}
+impl CairoComponents {
+    pub fn new(
+        cairo_claim: &CairoClaim,
+        interaction_elements: &CairoInteractionElements,
+        interaction_claim: &CairoInteractionClaim,
+    ) -> Self {
+        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columnds(
+            &IS_FIRST_LOG_SIZES
+                .iter()
+                .copied()
+                .map(PreprocessedColumn::IsFirst)
+                .collect_vec(),
+        );
+
+        let opcode_components = OpcodeComponents::new(
+            tree_span_provider,
+            &cairo_claim.opcodes,
+            interaction_elements,
+            &interaction_claim.opcodes,
+        );
         let verifyinstruction_component = verifyinstruction::Component::new(
             tree_span_provider,
             verifyinstruction::Eval::new(
@@ -692,8 +726,7 @@ impl CairoComponents {
             ),
         );
         Self {
-            generic: generic_components,
-            ret: ret_components,
+            opcodes: opcode_components,
             verify_instruction: verifyinstruction_component,
             memory_addr_to_id: memory_addr_to_id_component,
             memory_id_to_value: (
@@ -708,23 +741,20 @@ impl CairoComponents {
     }
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
-        let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
-        for gen in self.generic.iter() {
-            vec.push(gen);
-        }
-        for ret in self.ret.iter() {
-            vec.push(ret);
-        }
-        vec.push(&self.verify_instruction);
-        vec.push(&self.memory_addr_to_id);
-        vec.push(&self.memory_id_to_value.0);
-        vec.push(&self.memory_id_to_value.1);
-        vec.push(&self.range_check_19);
-        vec.push(&self.range_check9_9);
-        vec.push(&self.range_check7_2_5);
-        vec.push(&self.range_check4_3);
-
-        vec
+        chain!(
+            self.opcodes.provers(),
+            [
+                &self.verify_instruction as &dyn ComponentProver<SimdBackend>,
+                &self.memory_addr_to_id,
+                &self.memory_id_to_value.0,
+                &self.memory_id_to_value.1,
+                &self.range_check_19,
+                &self.range_check9_9,
+                &self.range_check7_2_5,
+                &self.range_check4_3,
+            ],
+        )
+        .collect()
     }
 
     pub fn components(&self) -> Vec<&dyn Component> {
