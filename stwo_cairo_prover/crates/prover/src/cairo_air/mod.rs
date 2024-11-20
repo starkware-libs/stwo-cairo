@@ -17,7 +17,7 @@ use crate::input::CairoInput;
 
 const LOG_MAX_ROWS: u32 = 20;
 
-const IS_FIRST_LOG_SIZES: [u32; 6] = [18, 4, 14, 19, 7, 6];
+const IS_FIRST_LOG_SIZES: [u32; 7] = [18, 4, 14, 19, 7, 6, 5];
 pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
