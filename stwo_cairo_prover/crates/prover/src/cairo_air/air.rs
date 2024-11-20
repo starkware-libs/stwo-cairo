@@ -386,6 +386,16 @@ pub fn lookup_sum(
             addr_to_id + id_to_value
         })
         .sum::<SecureField>();
+
+    sum += elements
+        .opcodes
+        .combine::<M31, QM31>(&claim.public_data.final_state.values())
+        .inverse();
+    sum -= elements
+        .opcodes
+        .combine::<M31, QM31>(&claim.public_data.initial_state.values())
+        .inverse();
+
     sum += if let Some((claimed_sum, ..)) = interaction_claim.generic.claimed_sum {
         claimed_sum
     } else {
