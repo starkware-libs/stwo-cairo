@@ -82,6 +82,46 @@ pub struct PublicData {
     pub initial_state: VmState,
     pub final_state: VmState,
 }
+impl PublicData {
+    pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
+        // TODO(Ohad): Optimized inverse.
+        let mut sum = QM31::zero();
+        sum += self
+            .public_memory
+            .iter()
+            .map(|(addr, id, val)| {
+                let addr_to_id = lookup_elements
+                    .memory_addr_to_id
+                    .combine::<M31, QM31>(&[
+                        M31::from_u32_unchecked(*addr),
+                        M31::from_u32_unchecked(*id),
+                    ])
+                    .inverse();
+                let id_to_value = lookup_elements
+                    .memory_id_to_value
+                    .combine::<M31, QM31>(
+                        &[
+                            [M31::from_u32_unchecked(*id)].as_slice(),
+                            split_f252(*val).as_slice(),
+                        ]
+                        .concat(),
+                    )
+                    .inverse();
+                addr_to_id + id_to_value
+            })
+            .sum::<QM31>();
+
+        sum += lookup_elements
+            .opcodes
+            .combine::<M31, QM31>(&self.final_state.values())
+            .inverse();
+        sum -= lookup_elements
+            .opcodes
+            .combine::<M31, QM31>(&self.initial_state.values())
+            .inverse();
+        sum
+    }
+}
 
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
@@ -359,43 +399,7 @@ pub fn lookup_sum(
     interaction_claim: &CairoInteractionClaim,
 ) -> SecureField {
     let mut sum = QM31::zero();
-    // TODO(Ohad): Optimized inverse.
-    // TODO(Ohad): move public data to a function.
-    sum += claim
-        .public_data
-        .public_memory
-        .iter()
-        .map(|(addr, id, val)| {
-            let addr_to_id = elements
-                .memory_addr_to_id
-                .combine::<M31, QM31>(&[
-                    M31::from_u32_unchecked(*addr),
-                    M31::from_u32_unchecked(*id),
-                ])
-                .inverse();
-            let id_to_value = elements
-                .memory_id_to_value
-                .combine::<M31, QM31>(
-                    &[
-                        [M31::from_u32_unchecked(*id)].as_slice(),
-                        split_f252(*val).as_slice(),
-                    ]
-                    .concat(),
-                )
-                .inverse();
-            addr_to_id + id_to_value
-        })
-        .sum::<SecureField>();
-
-    sum += elements
-        .opcodes
-        .combine::<M31, QM31>(&claim.public_data.final_state.values())
-        .inverse();
-    sum -= elements
-        .opcodes
-        .combine::<M31, QM31>(&claim.public_data.initial_state.values())
-        .inverse();
-
+    sum += claim.public_data.logup_sum(elements);
     sum += if let Some((claimed_sum, ..)) = interaction_claim.generic.claimed_sum {
         claimed_sum
     } else {
