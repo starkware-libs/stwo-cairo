@@ -42,12 +42,12 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    input_from_finished_runner(runner)
+    input_from_finished_runner(runner, true)
 }
 
 // TODO(yuval): consider returning a result instead of panicking...
 /// Assumes memory and trace are already relocated. Otherwise panics.
-pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
+pub fn input_from_finished_runner(runner: CairoRunner, generic_only: bool) -> CairoInput {
     let program_len = runner.get_program().iter_data().count();
     let mem = runner
         .relocated_memory
@@ -64,7 +64,7 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let instructions = Instructions::from_iter(trace, &mut mem);
+    let instructions = Instructions::from_iter(trace, &mut mem, generic_only);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();

@@ -366,7 +366,7 @@ impl InteractionClaimGenerator {
         memoryaddresstoid_lookup_elements: &memory::addr_to_id::RelationElements,
         memoryidtobig_lookup_elements: &memory::id_to_f252::RelationElements,
         verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
-        _opcodes_lookup_elements: &opcodes::VmRelationElements,
+        opcodes_lookup_elements: &opcodes::VmRelationElements,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -413,21 +413,21 @@ impl InteractionClaimGenerator {
 
         // VM Constraint.
 
-        // let mut col_gen = logup_gen.new_col();
-        // let lookup_row = &self.lookup_data.opcodes[0];
-        // for (i, lookup_values) in lookup_row.iter().enumerate() {
-        //     let denom = opcodes_lookup_elements.combine(lookup_values);
-        //     col_gen.write_frac(i, PackedQM31::one(), denom);
-        // }
-        // col_gen.finalize_col();
+        let mut col_gen = logup_gen.new_col();
+        let lookup_row = &self.lookup_data.opcodes[0];
+        for (i, lookup_values) in lookup_row.iter().enumerate() {
+            let denom = opcodes_lookup_elements.combine(lookup_values);
+            col_gen.write_frac(i, PackedQM31::one(), denom);
+        }
+        col_gen.finalize_col();
 
-        // let mut col_gen = logup_gen.new_col();
-        // let lookup_row = &self.lookup_data.opcodes[1];
-        // for (i, lookup_values) in lookup_row.iter().enumerate() {
-        //     let denom = opcodes_lookup_elements.combine(lookup_values);
-        //     col_gen.write_frac(i, -PackedQM31::one(), denom);
-        // }
-        // col_gen.finalize_col();
+        let mut col_gen = logup_gen.new_col();
+        let lookup_row = &self.lookup_data.opcodes[1];
+        for (i, lookup_values) in lookup_row.iter().enumerate() {
+            let denom = opcodes_lookup_elements.combine(lookup_values);
+            col_gen.write_frac(i, -PackedQM31::one(), denom);
+        }
+        col_gen.finalize_col();
 
         let (trace, [total_sum, claimed_sum]) =
             logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);

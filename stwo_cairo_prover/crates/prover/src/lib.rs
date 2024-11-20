@@ -10,7 +10,8 @@ mod tests {
 
     use crate::input::plain::input_from_plain_casm;
 
-    // TODO: Move next to the opcode.
+    // TODO(Ohad): un-ignore when the opcode is in.
+    #[ignore]
     #[test]
     fn test_jmp_abs() {
         let instructions = casm! {
