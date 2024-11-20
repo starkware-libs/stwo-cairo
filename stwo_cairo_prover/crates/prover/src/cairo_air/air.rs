@@ -37,7 +37,7 @@ pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 #[derive(Serialize, Deserialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
-    pub generic: genericopcode::Claim,
+    pub generic: Vec<genericopcode::Claim>,
     pub ret: Vec<ret_opcode::Claim>,
     pub memory_addr_to_id: addr_to_id::Claim,
     pub memory_id_to_value: id_to_f252::Claim,
@@ -60,7 +60,7 @@ impl CairoClaim {
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let mut log_sizes = TreeVec::concat_cols(chain!(
-            [self.generic.log_sizes()],
+            self.generic.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
             [self.verify_instruction.log_sizes()],
             [self.memory_addr_to_id.log_sizes()],
@@ -131,8 +131,8 @@ pub struct CairoClaimGenerator {
     public_data: PublicData,
 
     // Opcodes
-    generic_opcode_trace_generator: genericopcode::ClaimGenerator,
-    ret_trace_generator: ret_opcode::ClaimGenerator,
+    generic_opcode_trace_generators: Vec<genericopcode::ClaimGenerator>,
+    ret_trace_generators: Vec<ret_opcode::ClaimGenerator>,
 
     // Internal components.
     verify_instruction_trace_generator: verifyinstruction::ClaimGenerator,
@@ -146,9 +146,11 @@ pub struct CairoClaimGenerator {
 }
 impl CairoClaimGenerator {
     pub fn new(input: CairoInput) -> Self {
-        let generic_opcode_trace_generator =
-            genericopcode::ClaimGenerator::new(input.instructions.generic);
-        let ret_trace_generator = ret_opcode::ClaimGenerator::new(input.instructions.ret);
+        // TODO(Ohad): decide split sizes for opcode traces.
+        let generic_opcode_trace_generators = vec![genericopcode::ClaimGenerator::new(
+            input.instructions.generic,
+        )];
+        let ret_trace_generators = vec![ret_opcode::ClaimGenerator::new(input.instructions.ret)];
         let verify_instruction_trace_generator = verifyinstruction::ClaimGenerator::default();
         let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
         let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
@@ -182,8 +184,8 @@ impl CairoClaimGenerator {
 
         Self {
             public_data,
-            generic_opcode_trace_generator,
-            ret_trace_generator,
+            generic_opcode_trace_generators,
+            ret_trace_generators,
             memory_addr_to_id_trace_generator,
             memory_id_to_value_trace_generator,
             verify_instruction_trace_generator,
@@ -198,21 +200,32 @@ impl CairoClaimGenerator {
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
-        let (generic_opcode_claim, generic_opcode_interaction_gen) =
-            self.generic_opcode_trace_generator.write_trace(
-                tree_builder,
-                &mut self.memory_addr_to_id_trace_generator,
-                &mut self.memory_id_to_value_trace_generator,
-                &mut self.range_check_19_trace_generator,
-                &mut self.range_check_9_9_trace_generator,
-                &mut self.verify_instruction_trace_generator,
-            );
-        let (ret_claim, ret_interaction_gen) = self.ret_trace_generator.write_trace(
-            tree_builder,
-            &mut self.memory_addr_to_id_trace_generator,
-            &mut self.memory_id_to_value_trace_generator,
-            &mut self.verify_instruction_trace_generator,
-        );
+        let (generic_opcode_claims, generic_opcode_interaction_gens) = self
+            .generic_opcode_trace_generators
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &mut self.memory_addr_to_id_trace_generator,
+                    &mut self.memory_id_to_value_trace_generator,
+                    &mut self.range_check_19_trace_generator,
+                    &mut self.range_check_9_9_trace_generator,
+                    &mut self.verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (ret_claims, ret_interaction_gens) = self
+            .ret_trace_generators
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &mut self.memory_addr_to_id_trace_generator,
+                    &mut self.memory_id_to_value_trace_generator,
+                    &mut self.verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
         let (verify_instruction_claim, verify_instruction_interaction_gen) =
             self.verify_instruction_trace_generator.write_trace(
                 tree_builder,
@@ -241,8 +254,8 @@ impl CairoClaimGenerator {
         (
             CairoClaim {
                 public_data: self.public_data,
-                generic: generic_opcode_claim,
-                ret: vec![ret_claim],
+                generic: generic_opcode_claims,
+                ret: ret_claims,
                 verify_instruction: verify_instruction_claim,
                 memory_addr_to_id: memory_addr_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
@@ -252,8 +265,8 @@ impl CairoClaimGenerator {
                 range_check4_3: range_check_4_3_claim,
             },
             CairoInteractionClaimGenerator {
-                generic_opcode_interaction_gen,
-                ret_interaction_gen,
+                generic_opcode_interaction_gens,
+                ret_interaction_gens,
                 verify_instruction_interaction_gen,
                 memory_addr_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
@@ -267,8 +280,8 @@ impl CairoClaimGenerator {
 }
 
 pub struct CairoInteractionClaimGenerator {
-    generic_opcode_interaction_gen: genericopcode::InteractionClaimGenerator,
-    ret_interaction_gen: ret_opcode::InteractionClaimGenerator,
+    generic_opcode_interaction_gens: Vec<genericopcode::InteractionClaimGenerator>,
+    ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
     verify_instruction_interaction_gen: verifyinstruction::InteractionClaimGenerator,
     memory_addr_to_id_interaction_gen: addr_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: id_to_f252::InteractionClaimGenerator,
@@ -284,23 +297,34 @@ impl CairoInteractionClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         interaction_elements: &CairoInteractionElements,
     ) -> CairoInteractionClaim {
-        let generic_opcode_interaction_claim =
-            self.generic_opcode_interaction_gen.write_interaction_trace(
-                tree_builder,
-                &interaction_elements.memory_addr_to_id,
-                &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_check_19,
-                &interaction_elements.range_check_9_9,
-                &interaction_elements.verify_instruction,
-                &interaction_elements.opcodes,
-            );
-        let ret_interaction_claim = self.ret_interaction_gen.write_interaction_trace(
-            tree_builder,
-            &interaction_elements.memory_addr_to_id,
-            &interaction_elements.memory_id_to_value,
-            &interaction_elements.verify_instruction,
-            &interaction_elements.opcodes,
-        );
+        let generic_opcode_interaction_claims = self
+            .generic_opcode_interaction_gens
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_addr_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.range_check_19,
+                    &interaction_elements.range_check_9_9,
+                    &interaction_elements.verify_instruction,
+                    &interaction_elements.opcodes,
+                )
+            })
+            .collect();
+        let ret_interaction_claims = self
+            .ret_interaction_gens
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_addr_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.verify_instruction,
+                    &interaction_elements.opcodes,
+                )
+            })
+            .collect();
         let verifyinstruction_interaction_claim = self
             .verify_instruction_interaction_gen
             .write_interaction_trace(
@@ -335,8 +359,8 @@ impl CairoInteractionClaimGenerator {
             .write_interaction_trace(tree_builder, &interaction_elements.range_check_4_3);
 
         CairoInteractionClaim {
-            generic: generic_opcode_interaction_claim,
-            ret: vec![ret_interaction_claim],
+            generic: generic_opcode_interaction_claims,
+            ret: ret_interaction_claims,
             verify_instruction: verifyinstruction_interaction_claim,
             memory_addr_to_id: memory_addr_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
@@ -376,7 +400,7 @@ impl CairoInteractionElements {
 
 #[derive(Serialize, Deserialize)]
 pub struct CairoInteractionClaim {
-    pub generic: genericopcode::InteractionClaim,
+    pub generic: Vec<genericopcode::InteractionClaim>,
     pub ret: Vec<ret_opcode::InteractionClaim>,
     pub verify_instruction: verifyinstruction::InteractionClaim,
     pub memory_addr_to_id: addr_to_id::InteractionClaim,
@@ -405,10 +429,12 @@ pub fn lookup_sum(
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
-    sum += match interaction_claim.generic.claimed_sum {
-        Some((claimed_sum, ..)) => claimed_sum,
-        None => interaction_claim.generic.total_sum,
-    };
+    for interaction_claim in &interaction_claim.generic {
+        sum += match interaction_claim.claimed_sum {
+            Some((claimed_sum, ..)) => claimed_sum,
+            None => interaction_claim.total_sum,
+        };
+    }
     sum += interaction_claim.ret[0].claimed_sum.unwrap().0;
     sum += interaction_claim.verify_instruction.claimed_sum.unwrap().0;
     sum += interaction_claim.range_check_19.claimed_sum;
@@ -422,7 +448,7 @@ pub fn lookup_sum(
 }
 
 pub struct CairoComponents {
-    generic: genericopcode::Component,
+    generic: Vec<genericopcode::Component>,
     ret: Vec<ret_opcode::Component>,
     verify_instruction: verifyinstruction::Component,
     memory_addr_to_id: addr_to_id::Component,
@@ -448,19 +474,34 @@ impl CairoComponents {
                 .collect_vec(),
         );
 
-        let generic_component = genericopcode::Component::new(
-            tree_span_provider,
-            genericopcode::Eval {
-                claim: cairo_claim.generic,
-                interaction_claim: interaction_claim.generic,
-                memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
-                memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-                opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
-                range_check_9_9_lookup_elements: interaction_elements.range_check_9_9.clone(),
-            },
-        );
+        let generic_components = cairo_claim
+            .generic
+            .iter()
+            .zip(interaction_claim.generic.iter())
+            .map(|(&claim, &interaction_claim)| {
+                genericopcode::Component::new(
+                    tree_span_provider,
+                    genericopcode::Eval {
+                        claim,
+                        interaction_claim,
+                        memoryaddresstoid_lookup_elements: interaction_elements
+                            .memory_addr_to_id
+                            .clone(),
+                        memoryidtobig_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        range_check_9_9_lookup_elements: interaction_elements
+                            .range_check_9_9
+                            .clone(),
+                    },
+                )
+            })
+            .collect_vec();
         let ret_components = cairo_claim
             .ret
             .iter()
@@ -552,7 +593,7 @@ impl CairoComponents {
             ),
         );
         Self {
-            generic: generic_component,
+            generic: generic_components,
             ret: ret_components,
             verify_instruction: verifyinstruction_component,
             memory_addr_to_id: memory_addr_to_id_component,
@@ -569,7 +610,9 @@ impl CairoComponents {
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
         let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
-        vec.push(&self.generic);
+        for gen in self.generic.iter() {
+            vec.push(gen);
+        }
         for ret in self.ret.iter() {
             vec.push(ret);
         }
