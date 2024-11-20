@@ -55,7 +55,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let trace_log_sizes = vec![log_size; 229];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 63];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 65];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -3397,50 +3397,50 @@ impl FrameworkEval for Eval {
                     - M31_1.clone())),
         );
 
-        // let frac = Fraction::new(
-        //     E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         input_pc_col0.clone(),
-        //         input_ap_col1.clone(),
-        //         input_fp_col2.clone(),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
-        // let frac = Fraction::new(
-        //     -E::EF::one(),
-        //     self.opcodes_lookup_elements.combine(&[
-        //         ((((pc_update_regular_tmp_232.clone()
-        //             * (input_pc_col0.clone() + (M31_1.clone() + op1_imm_col8.clone())))
-        //             + (pc_update_jump_col13.clone()
-        //                 * ((res_limb_0_col193.clone()
-        //                     + (res_limb_1_col194.clone() * M31_512.clone()))
-        //                     + (res_limb_2_col195.clone() * M31_262144.clone()))))
-        //             + (pc_update_jump_rel_col14.clone()
-        //                 * (input_pc_col0.clone()
-        //                     + ((((res_limb_0_col193.clone()
-        //                         + (res_limb_1_col194.clone() * M31_512.clone()))
-        //                         + (res_limb_2_col195.clone() * M31_262144.clone()))
-        //                         - msb_col221.clone())
-        //                         - (M31_134217728.clone() * mid_limbs_set_col222.clone())))))
-        //             + (pc_update_jnz_col15.clone() * next_pc_jnz_col228.clone())),
-        //         (((input_ap_col1.clone()
-        //             + (ap_update_add_col16.clone()
-        //                 * ((((res_limb_0_col193.clone()
-        //                     + (res_limb_1_col194.clone() * M31_512.clone()))
-        //                     + (res_limb_2_col195.clone() * M31_262144.clone()))
-        //                     - msb_col221.clone())
-        //                     - (M31_134217728.clone() * mid_limbs_set_col222.clone()))))
-        //             + (ap_update_add_1_col17.clone() * M31_1.clone()))
-        //             + (opcode_call_col18.clone() * M31_2.clone())),
-        //         (((fp_update_regular_tmp_234.clone() * input_fp_col2.clone())
-        //             + (opcode_ret_col19.clone()
-        //                 * ((dst_limb_0_col22.clone()
-        //                     + (dst_limb_1_col23.clone() * M31_512.clone()))
-        //                     + (dst_limb_2_col24.clone() * M31_262144.clone()))))
-        //             + (opcode_call_col18.clone() * (input_ap_col1.clone() + M31_2.clone()))),
-        //     ]),
-        // );
-        // logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                input_pc_col0.clone(),
+                input_ap_col1.clone(),
+                input_fp_col2.clone(),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
+        let frac = Fraction::new(
+            -E::EF::one(),
+            self.opcodes_lookup_elements.combine(&[
+                ((((pc_update_regular_tmp_232.clone()
+                    * (input_pc_col0.clone() + (M31_1.clone() + op1_imm_col8.clone())))
+                    + (pc_update_jump_col13.clone()
+                        * ((res_limb_0_col193.clone()
+                            + (res_limb_1_col194.clone() * M31_512.clone()))
+                            + (res_limb_2_col195.clone() * M31_262144.clone()))))
+                    + (pc_update_jump_rel_col14.clone()
+                        * (input_pc_col0.clone()
+                            + ((((res_limb_0_col193.clone()
+                                + (res_limb_1_col194.clone() * M31_512.clone()))
+                                + (res_limb_2_col195.clone() * M31_262144.clone()))
+                                - msb_col221.clone())
+                                - (M31_134217728.clone() * mid_limbs_set_col222.clone())))))
+                    + (pc_update_jnz_col15.clone() * next_pc_jnz_col228.clone())),
+                (((input_ap_col1.clone()
+                    + (ap_update_add_col16.clone()
+                        * ((((res_limb_0_col193.clone()
+                            + (res_limb_1_col194.clone() * M31_512.clone()))
+                            + (res_limb_2_col195.clone() * M31_262144.clone()))
+                            - msb_col221.clone())
+                            - (M31_134217728.clone() * mid_limbs_set_col222.clone()))))
+                    + (ap_update_add_1_col17.clone() * M31_1.clone()))
+                    + (opcode_call_col18.clone() * M31_2.clone())),
+                (((fp_update_regular_tmp_234.clone() * input_fp_col2.clone())
+                    + (opcode_ret_col19.clone()
+                        * ((dst_limb_0_col22.clone()
+                            + (dst_limb_1_col23.clone() * M31_512.clone()))
+                            + (dst_limb_2_col24.clone() * M31_262144.clone()))))
+                    + (opcode_call_col18.clone() * (input_ap_col1.clone() + M31_2.clone()))),
+            ]),
+        );
+        logup.write_frac(&mut eval, frac);
         logup.finalize(&mut eval);
 
         eval

@@ -150,5 +150,5 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
 /// Assumes memory and trace are already relocated. Otherwise panics.
 fn adapt_vm_output_to_stwo(runner: CairoRunner) -> CairoInput {
     let _span = tracing::info_span!("adapt_vm_output_to_stwo").entered();
-    input_from_finished_runner(runner)
+    input_from_finished_runner(runner, false)
 }
