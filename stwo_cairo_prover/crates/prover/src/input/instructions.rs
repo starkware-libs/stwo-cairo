@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
@@ -10,6 +11,11 @@ pub struct VmState {
     pub pc: u32,
     pub ap: u32,
     pub fp: u32,
+}
+impl VmState {
+    pub fn values(&self) -> [M31; 3] {
+        [M31(self.pc), M31(self.ap), M31(self.fp)]
+    }
 }
 impl From<TraceEntry> for VmState {
     fn from(entry: TraceEntry) -> Self {
@@ -70,23 +76,33 @@ pub struct Instructions {
     pub generic: Vec<VmState>,
 }
 impl Instructions {
-    pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
+    pub fn from_iter(
+        iter: impl Iterator<Item = TraceEntry>,
+        mem: &mut MemoryBuilder,
+        dev_mode: bool,
+    ) -> Self {
         let mut res = Self::default();
+        let mut iter = iter.peekable();
 
         let Some(first) = iter.next() else {
             return res;
         };
         res.initial_state = first.into();
-        res.push_instr(mem, first.into());
+        res.push_instr(mem, first.into(), dev_mode);
 
-        for entry in iter {
-            res.final_state = entry.into();
-            res.push_instr(mem, entry.into());
+        while let Some(entry) = iter.next() {
+            // TODO(Ohad): Check if the adapter outputs the final state.
+            let Some(next) = iter.peek() else {
+                break;
+            };
+            res.final_state = (*next).into();
+            res.push_instr(mem, entry.into(), dev_mode);
         }
         res
     }
 
-    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState) {
+    // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
+    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: VmState, dev_mode: bool) {
         let VmState { ap, fp, pc } = state;
         let instruction = mem.get_inst(pc);
         let instruction = Instruction::decode(instruction);
@@ -132,7 +148,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => self.add_ap.push(state),
+            } if !dev_mode => self.add_ap.push(state),
             // jump rel imm.
             Instruction {
                 offset0: -1,
@@ -153,7 +169,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => {
+            } if !dev_mode => {
                 self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
             }
             // jump abs [ap/fp + offset].
@@ -176,7 +192,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if op1_base_fp != op1_base_ap => {
+            } if !dev_mode && op1_base_fp != op1_base_ap => {
                 let index = op1_base_fp as usize | (ap_update_add_1 as usize) << 1;
                 self.jmp_abs[index].push(state);
             }
@@ -200,7 +216,7 @@ impl Instructions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => {
+            } if !dev_mode => {
                 self.call_rel_imm.push(state);
             }
             // call abs [ap/fp + offset].
@@ -223,7 +239,7 @@ impl Instructions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if op1_base_fp != op1_base_ap => {
+            } if !dev_mode && op1_base_fp != op1_base_ap => {
                 let index = op1_base_fp as usize;
                 self.call_abs[index].push(state);
             }
@@ -247,7 +263,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => {
+            } if !dev_mode => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = mem.get(dst_addr.checked_add_signed(offset0 as i32).unwrap());
                 let taken = dst != MemoryValue::Small(0);
@@ -276,7 +292,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if op1_base_fp != op1_base_ap => {
+            } if !dev_mode && op1_base_fp != op1_base_ap => {
                 self.mov_mem.push(state);
             }
             // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
@@ -299,7 +315,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } => {
+            } if !dev_mode => {
                 self.deref.push(state);
             }
             // [ap/fp + offset0] = imm.
@@ -322,7 +338,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } => {
+            } if !dev_mode => {
                 self.push_imm.push(state);
             }
             _ => {
