@@ -444,7 +444,6 @@ impl EqExtend for PackedM31 {
         }
     }
 }
-
 pub trait DivExtend {
     fn div(&self, other: Self) -> Self;
 }
