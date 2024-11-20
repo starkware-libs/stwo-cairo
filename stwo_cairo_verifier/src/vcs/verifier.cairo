@@ -113,7 +113,11 @@ impl MerkleVerifierImpl<
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
-        let mut layer_log_size = *self.column_log_sizes.max().unwrap();
+        let mut layer_log_size = match self.column_log_sizes.max() {
+            Option::Some(max_log_size) => *max_log_size,
+            Option::None => { return Result::Ok(()); },
+        };
+
         let mut cols_by_size = Self::cols_by_size(self);
 
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];

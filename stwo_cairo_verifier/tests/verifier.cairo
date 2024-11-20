@@ -13,38 +13,18 @@ use stwo_cairo_verifier::{ColumnArray, TreeArray};
 
 mod proofs;
 
-#[test]
-#[available_gas(100000000000)]
-fn test_horizontal_fib_128_column_with_blowup_2() {
-    let proof = proofs::horizontal_fib_128_column_with_blowup_2::proof();
-    let config = PcsConfig {
-        pow_bits: 10,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60,
-        },
-    };
-
-    // Verify.
-    let log_size = 20;
-    let air = HorizontalFibAir::<128> { log_size };
-    let mut channel = ChannelImpl::new(0);
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
-
-    // Decommit.
-    commitment_scheme
-        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(128, log_size), ref channel);
-
-    if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
-        panic!("Verification failed: {:?}", err);
-    }
-}
+// #[test]
+// fn test_deserialise() {
+//     let test_proof = proofs::test_proof::proof();
+//     println!("TEST PROOF WORKED");
+// }
 
 #[test]
 #[available_gas(100000000000)]
 fn test_horizontal_fib_128_column_with_blowup_16() {
     let proof = proofs::horizontal_fib_128_column_with_blowup_16::proof();
     let config = PcsConfig {
-        pow_bits: 10,
+        pow_bits: 0,
         fri_config: FriConfig {
             log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15,
         },
@@ -57,8 +37,44 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
+    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], @array![], ref channel);
     commitment_scheme
-        .commit(*proof.commitments[0], @ArrayImpl::new_repeated(128, log_size), ref channel);
+        .commit(
+            *proof.commitment_scheme_proof.commitments[1],
+            @ArrayImpl::new_repeated(128, log_size),
+            ref channel,
+        );
+
+    if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
+        panic!("Verification failed: {:?}", err);
+    }
+}
+
+#[test]
+#[available_gas(100000000000)]
+fn test_horizontal_fib_128_column_with_blowup_2() {
+    let proof = proofs::horizontal_fib_128_column_with_blowup_2::proof();
+    let config = PcsConfig {
+        pow_bits: 0,
+        fri_config: FriConfig {
+            log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60,
+        },
+    };
+
+    // Verify.
+    let log_size = 20;
+    let air = HorizontalFibAir::<128> { log_size };
+    let mut channel = ChannelImpl::new(0);
+    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+    // Decommit.
+    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], @array![], ref channel);
+    commitment_scheme
+        .commit(
+            *proof.commitment_scheme_proof.commitments[1],
+            @ArrayImpl::new_repeated(128, log_size),
+            ref channel,
+        );
 
     if let Result::Err(err) = verify(air, ref channel, proof, ref commitment_scheme) {
         panic!("Verification failed: {:?}", err);
@@ -78,7 +94,7 @@ impl HorizontalFibAirImpl<const N_COLUMNS: usize> of Air<HorizontalFibAir<N_COLU
     fn mask_points(
         self: @HorizontalFibAir<N_COLUMNS>, point: CirclePoint<QM31>,
     ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>> {
-        array![ArrayImpl::new_repeated(N_COLUMNS, array![point])]
+        array![array![], ArrayImpl::new_repeated(N_COLUMNS, array![point])]
     }
 
     fn eval_composition_polynomial_at_point(
@@ -87,7 +103,7 @@ impl HorizontalFibAirImpl<const N_COLUMNS: usize> of Air<HorizontalFibAir<N_COLU
         mask_values: @TreeArray<ColumnArray<Array<QM31>>>,
         random_coeff: QM31,
     ) -> QM31 {
-        let base_trace_tree = mask_values[0].span();
+        let base_trace_tree = mask_values[1].span();
         let mut constraint_acc = QM31Zero::zero();
 
         for i in 2..N_COLUMNS {
