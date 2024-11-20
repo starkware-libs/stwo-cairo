@@ -297,7 +297,7 @@ mod tests {
     use core::dict::Felt252DictTrait;
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
-    use crate::fields::m31::m31;
+    use stwo_cairo_verifier::fields::m31::m31;
     use super::{MerkleDecommitment, MerkleVerifier, MerkleVerifierImpl};
 
     #[test]

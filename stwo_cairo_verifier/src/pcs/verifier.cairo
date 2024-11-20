@@ -3,19 +3,20 @@ use core::iter::{IntoIterator, Iterator};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
-use crate::fields::qm31::QM31;
+use crate::fields::qm31::{QM31, QM31Impl};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
-use crate::queries::SparseSubCircleDomainImpl;
-use crate::utils::ArrayImpl;
+use crate::utils::{ArrayImpl, DictImpl};
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
 use crate::{ColumnArray, TreeArray};
 use super::PcsConfig;
 
+// TODO(andrew): Change all `Array` types to `Span`.
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
+    pub commitments: TreeArray<felt252>,
     /// Sampled mask values.
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
@@ -73,7 +74,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
-        let CommitmentSchemeProof { sampled_values,
+        let CommitmentSchemeProof { commitments: _,
+        sampled_values,
         decommitments,
         queried_values,
         proof_of_work_nonce,
@@ -94,14 +96,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         let random_coeff = channel.draw_felt();
         let column_log_sizes = self.column_log_sizes();
-        let log_blowup_factor = *self.config.fri_config.log_blowup_factor;
-        let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor);
+        let fri_config = *self.config.fri_config;
+        let log_blowup_factor = fri_config.log_blowup_factor;
+        let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor).span();
 
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier =
-            match FriVerifierImpl::commit(
-                ref channel, *self.config.fri_config, fri_proof, column_log_bounds,
-            ) {
+            match FriVerifierImpl::commit(ref channel, fri_config, fri_proof, column_log_bounds) {
             Result::Ok(fri_verifier) => fri_verifier,
             Result::Err(err) => { return Result::Err(VerificationError::Fri(err)); },
         };
@@ -113,9 +114,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             return Result::Err(VerificationError::ProofOfWork);
         }
 
-        // Get FRI query domains.
-        let (mut fri_query_domain_per_log_size, fri_query_domain_log_sizes) = fri_verifier
-            .column_query_positions(ref channel);
+        // Get FRI query positions.
+        let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
+            .sample_query_positions(ref channel);
 
         let n_trees = self.trees.len();
 
@@ -132,18 +133,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             let decommitment = decommitments.next().unwrap();
             let queried_values = queried_values[tree_i].span();
 
-            let mut queries_per_log_size = Default::default();
-
-            for log_size in fri_query_domain_log_sizes {
-                let log_size_felt252 = (*log_size).into();
-                let domain = fri_query_domain_per_log_size.get(log_size_felt252).deref();
-                // TODO: Flatten all domains ahead of time outside the loops.
-                queries_per_log_size
-                    .insert(log_size_felt252, NullableTrait::new(domain.flatten().span()));
-            };
-
+            // TODO(andrew): Unfortunately the current merkle implementation pops values from the
+            // query position dict so it has to be duplicated.
             if let Result::Err(err) = tree
-                .verify(queries_per_log_size, queried_values, decommitment) {
+                .verify(
+                    query_positions_by_log_size.clone_subset(unique_column_log_sizes),
+                    queried_values,
+                    decommitment,
+                ) {
                 break Result::Err(VerificationError::Merkle(err));
             }
 
@@ -171,7 +168,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             @flattened_column_log_sizes,
             @samples,
             random_coeff,
-            fri_query_domain_per_log_size,
+            query_positions_by_log_size,
             @flattened_query_values,
         )?;
 
