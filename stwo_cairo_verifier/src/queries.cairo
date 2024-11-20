@@ -3,7 +3,6 @@ use crate::circle::CosetImpl;
 use crate::poly::circle::{CircleDomain, CircleDomainImpl};
 use super::utils::{ArrayImpl, bit_reverse_index, find, pow2};
 
-
 /// An ordered set of query indices over a bit reversed [CircleDomain].
 #[derive(Drop, Clone, Debug, PartialEq)]
 pub struct Queries {
@@ -49,21 +48,12 @@ pub impl QueriesImpl of QueriesImplTrait {
     /// Calculates the matching query indices in a folded domain (i.e each domain point is doubled)
     /// given `self` (the queries of the original domain) and the number of folds between domains.
     fn fold(self: @Queries, n_folds: u32) -> Queries {
-        assert!(n_folds <= *self.log_domain_size);
         assert!(self.positions.len() > 0);
-        let folding_factor = pow2(n_folds);
-        let mut new_last_position = *self.positions[0] / folding_factor;
-        let mut new_positions = array![new_last_position];
-        let mut i = 1;
-        while i < self.positions.len() {
-            let new_position = *self.positions[i] / folding_factor;
-            if new_position != new_last_position {
-                new_last_position = new_position;
-                new_positions.append(new_last_position);
-            }
-            i += 1;
-        };
-        Queries { positions: new_positions, log_domain_size: *self.log_domain_size - n_folds }
+        Queries {
+            positions: get_folded_query_positions(self.positions.span(), n_folds),
+            // TODO(andrew): Check Cairo does checked sub in all profiles.
+            log_domain_size: *self.log_domain_size - n_folds,
+        }
     }
 
     fn opening_positions(self: @Queries, fri_step_size: u32) -> SparseSubCircleDomain {
@@ -98,6 +88,16 @@ pub struct SubCircleDomain {
     pub log_size: u32,
 }
 
+pub fn get_folded_query_positions(query_positions: Span<usize>, n_folds: u32) -> Array<usize> {
+    let folding_factor = pow2(n_folds);
+    let mut folded_positions = array![];
+
+    for position in query_positions {
+        folded_positions.append(*position / folding_factor);
+    };
+
+    folded_positions.dedup()
+}
 
 #[generate_trait]
 pub impl SubCircleDomainImpl of SubCircleDomainTrait {

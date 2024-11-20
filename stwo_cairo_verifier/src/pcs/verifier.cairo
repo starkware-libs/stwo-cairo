@@ -1,12 +1,14 @@
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
+use core::nullable::NullableTrait;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
+use crate::poly::circle::{CircleEvaluation, SparseCircleEvaluation};
 use crate::fields::m31::M31;
-use crate::fields::qm31::QM31;
-use crate::fri::{FriProof, FriVerifierImpl};
+use crate::fields::qm31::{QM31, QM31Impl};
+use crate::fri::{FOLD_FACTOR, FOLD_STEP, FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
-use crate::queries::SparseSubCircleDomainImpl;
+use crate::queries::{SparseSubCircleDomainImpl, get_folded_query_positions};
 use crate::utils::ArrayImpl;
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
@@ -14,13 +16,18 @@ use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationErr
 use crate::{ColumnArray, TreeArray};
 use super::PcsConfig;
 
+// TODO(andrew): Change all `Array` types to `Span`.
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
+    pub commitments: TreeArray<felt252>,
     /// Sampled mask values.
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
     /// All queried trace values.
     pub queried_values: TreeArray<ColumnArray<Array<M31>>>,
+    pub missing_quotient_values: Span<QM31>,
+    pub quotients_commitment: felt252,
+    pub quotient_decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
 }
@@ -73,10 +80,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
-        let CommitmentSchemeProof { sampled_values,
+        let CommitmentSchemeProof { commitments: _,
+        sampled_values,
         decommitments,
         queried_values,
         proof_of_work_nonce,
+        missing_quotient_values,
+        quotients_commitment,
+        quotient_decommitment,
         fri_proof } =
             proof;
 
@@ -97,6 +108,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let log_blowup_factor = *self.config.fri_config.log_blowup_factor;
         let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor);
 
+        channel.mix_digest(quotients_commitment);
+
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier =
             match FriVerifierImpl::commit(
@@ -114,7 +127,10 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         }
 
         // Get FRI query domains.
-        let (mut fri_query_domain_per_log_size, fri_query_domain_log_sizes) = fri_verifier
+        let (
+            mut queries_per_log_size, mut fri_query_domain_per_log_size, fri_query_domain_log_sizes,
+        ) =
+            fri_verifier
             .column_query_positions(ref channel);
 
         let n_trees = self.trees.len();
@@ -132,18 +148,16 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             let decommitment = decommitments.next().unwrap();
             let queried_values = queried_values[tree_i];
 
-            let mut queries_per_log_size = Default::default();
+            // TODO(andrew): Do better.
+            let mut queries_per_log_size_cpy = Default::default();
 
             for log_size in fri_query_domain_log_sizes {
-                let log_size_felt252 = (*log_size).into();
-                let domain = fri_query_domain_per_log_size.get(log_size_felt252).deref();
-                // TODO: Flatten all domains ahead of time outside the loops.
-                queries_per_log_size
-                    .insert(log_size_felt252, NullableTrait::new(domain.flatten().span()));
+                let log_size = (*log_size).into();
+                queries_per_log_size_cpy.insert(log_size, queries_per_log_size.get(log_size));
             };
 
             if let Result::Err(err) = tree
-                .verify(queries_per_log_size, queried_values, decommitment) {
+                .verify(queries_per_log_size_cpy, queried_values, decommitment) {
                 break Result::Err(VerificationError::Merkle(err));
             }
 
@@ -167,13 +181,41 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // TODO(andrew): Flattening not nessesary. Check how costly.
         let flattened_query_values = get_flattened_query_values(queried_values);
 
+        // TODO(andrew): Do better.
+        let mut queries_per_log_size_cpy = Default::default();
+
+        for log_size in fri_query_domain_log_sizes {
+            let log_size = (*log_size).into();
+            queries_per_log_size_cpy.insert(log_size, queries_per_log_size.get(log_size));
+        };
+
         let fri_answers = fri_answers(
             @flattened_column_log_sizes,
             @samples,
             random_coeff,
-            fri_query_domain_per_log_size,
+            queries_per_log_size,
             @flattened_query_values,
+            missing_quotient_values,
         )?;
+
+        let mut quotient_column_log_sizes = array![];
+
+        for log_size in fri_query_domain_log_sizes {
+            quotient_column_log_sizes.append(*log_size);
+            quotient_column_log_sizes.append(*log_size);
+            quotient_column_log_sizes.append(*log_size);
+            quotient_column_log_sizes.append(*log_size);
+        };
+
+        let quotients_tree = MerkleVerifier {
+            root: quotients_commitment, column_log_sizes: quotient_column_log_sizes,
+        };
+
+        let (opening_positions_per_log_size, decomposed_fri_answers) = get_fri_answers_decommitment_values(fri_answers.span(), ref queries_per_log_size_cpy, fri_query_domain_log_sizes);
+        if let Result::Err(err) = quotients_tree
+                .verify(opening_positions_per_log_size, @decomposed_fri_answers, quotient_decommitment) {
+                return Result::Err(VerificationError::Merkle(err));
+            }
 
         if let Result::Err(err) = fri_verifier.decommit(fri_answers) {
             return Result::Err(VerificationError::Fri(err));
@@ -181,6 +223,52 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         Result::Ok(())
     }
+}
+
+fn get_fri_answers_decommitment_values(
+    fri_answers: Span<SparseCircleEvaluation>,
+    ref queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+    log_sizes: Span<u32>,
+) -> (Felt252Dict<Nullable<Span<usize>>>, ColumnArray<Array<M31>>) {
+    let mut opening_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>> = Default::default();
+
+    for log_size in log_sizes {
+        let log_size = (*log_size).into();
+        let query_positions = queries_per_log_size.get(log_size).deref();
+        let mut opening_positions = array![];
+        for folded_position in get_folded_query_positions(query_positions, FOLD_STEP) {
+            let start_position = folded_position * FOLD_FACTOR;
+            let end_position = start_position + FOLD_FACTOR;
+            for position in start_position..end_position {
+                opening_positions.append(position);
+            };
+        };
+        opening_positions_per_log_size.insert(log_size, NullableTrait::new(opening_positions.span()));
+    };
+
+    let mut decomposed_fri_answers = array![];
+
+    for fri_answers_secure_column in fri_answers {
+        let mut c0 = array![];
+        let mut c1 = array![];
+        let mut c2 = array![];
+        let mut c3 = array![];
+        for subcircle_eval in fri_answers_secure_column.subcircle_evals.span() {
+            for value in subcircle_eval.bit_reversed_values.span() {
+                let [v0, v1, v2, v3] = (*value).to_array();
+                c0.append(v0);
+                c1.append(v1);
+                c2.append(v2);
+                c3.append(v3);
+            }
+        };
+        decomposed_fri_answers.append(c0);
+        decomposed_fri_answers.append(c1);
+        decomposed_fri_answers.append(c2);
+        decomposed_fri_answers.append(c3);
+    };
+
+    (opening_positions_per_log_size, decomposed_fri_answers)
 }
 
 /// Returns all column log bounds deduped and sorted in ascending order.

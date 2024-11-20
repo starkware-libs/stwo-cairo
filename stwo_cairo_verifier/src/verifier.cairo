@@ -33,11 +33,12 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     ref commitment_scheme: CommitmentSchemeVerifier,
 ) -> Result<(), VerificationError> {
     let random_coeff = channel.draw_felt();
+    let StarkProof { commitment_scheme_proof } = proof;
 
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            *proof.commitments[proof.commitments.len() - 1],
+            *commitment_scheme_proof.commitments[commitment_scheme_proof.commitments.len() - 1],
             @ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, air.composition_log_degree_bound()),
             ref channel,
         );
@@ -50,7 +51,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Add the composition polynomial mask points.
     sample_points.append(ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, array![oods_point]));
 
-    let sampled_oods_values = @proof.commitment_scheme_proof.sampled_values;
+    let sampled_oods_values = @commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
         Result::Ok(composition_oods_eval) => composition_oods_eval,
@@ -66,7 +67,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         return Result::Err(VerificationError::OodsNotMatching);
     }
 
-    commitment_scheme.verify_values(sample_points, proof.commitment_scheme_proof, ref channel)
+    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)
 }
 
 /// Extracts the composition trace evaluation from the mask.
@@ -105,7 +106,6 @@ pub struct InvalidOodsSampleStructure {}
 
 #[derive(Drop, Serde)]
 pub struct StarkProof {
-    pub commitments: TreeArray<felt252>,
     pub commitment_scheme_proof: CommitmentSchemeProof,
 }
 
