@@ -387,6 +387,16 @@ pub fn lookup_sum(
         })
         .sum::<SecureField>();
 
+    // Yield initial state and use the final.
+    sum -= elements
+        .opcodes
+        .combine::<M31, QM31>(&claim.public_data.initial_state.values())
+        .inverse();
+    sum += elements
+        .opcodes
+        .combine::<M31, QM31>(&claim.public_data.final_state.values())
+        .inverse();
+
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
