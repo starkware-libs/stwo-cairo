@@ -64,8 +64,8 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let vm_output: CairoInput =
         import_from_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
 
-    let instruction_counts = vm_output.instructions.counts();
-    log::info!("Instruction counts: {instruction_counts:?}");
+    let casm_states_by_opcode_count = &vm_output.state_transitions.casm_states_by_opcode.counts();
+    log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
 
     let proof = prove_cairo(vm_output)?;
 
