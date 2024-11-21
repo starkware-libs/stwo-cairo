@@ -6,12 +6,15 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
-use super::instructions::Instructions;
 use super::mem::{MemConfig, MemoryBuilder};
+use super::state_transitions::StateTransitions;
 use super::vm_import::MemEntry;
 use super::{CairoInput, SegmentAddrs};
 
-pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> CairoInput {
+pub fn input_from_plain_casm(
+    casm: Vec<cairo_lang_casm::instructions::Instruction>,
+    generic_only: bool,
+) -> CairoInput {
     let felt_code = casm
         .into_iter()
         .flat_map(|instruction| instruction.assemble().encode())
@@ -42,7 +45,7 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    input_from_finished_runner(runner, true)
+    input_from_finished_runner(runner, generic_only)
 }
 
 // TODO(yuval): consider returning a result instead of panicking...
@@ -64,12 +67,12 @@ pub fn input_from_finished_runner(runner: CairoRunner, generic_only: bool) -> Ca
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let instructions = Instructions::from_iter(trace, &mut mem, generic_only);
+    let state_transitions = StateTransitions::from_iter(trace, &mut mem, generic_only);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
-        instructions,
+        state_transitions,
         mem: mem.build(),
         public_mem_addresses,
         range_check_builtin: SegmentAddrs {

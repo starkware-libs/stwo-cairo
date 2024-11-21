@@ -98,10 +98,10 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
     let cairo_runner = run_vm(&args)?;
     let cairo_input = adapt_vm_output_to_stwo(cairo_runner);
 
-    let execution_resources = cairo_input.instructions.counts();
+    let execution_resources = &cairo_input.state_transitions.vm_state_by_opcode;
     std::fs::write(
         args.output_path,
-        serde_json::to_string(&execution_resources)?,
+        serde_json::to_string(execution_resources)?,
     )?;
 
     Ok(cairo_input)
