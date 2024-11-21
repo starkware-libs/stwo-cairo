@@ -5,12 +5,14 @@ use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
+#[cfg(test)]
+use indexmap::IndexMap;
 use json::{PrivateInput, PublicInput};
 use thiserror::Error;
 use tracing::{span, Level};
 
-use super::instructions::Instructions;
 use super::mem::MemConfig;
+use super::state_transition::StateTransition;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
 use crate::input::SegmentAddrs;
@@ -48,7 +50,7 @@ pub fn import_from_vm_output(
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
     let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
-    let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mut mem);
+    let state_transition = StateTransition::from_iter(TraceIter(&mut trace_file), &mut mem);
 
     let public_mem_addresses = pub_data
         .public_memory
@@ -57,7 +59,7 @@ pub fn import_from_vm_output(
         .collect();
 
     Ok(CairoInput {
-        instructions,
+        state_transition,
         mem: mem.build(),
         public_mem_addresses,
         range_check_builtin: SegmentAddrs {
@@ -128,7 +130,6 @@ pub mod tests {
     use std::path::PathBuf;
 
     use super::*;
-    use crate::input::instructions::InstructionCounts;
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -153,45 +154,71 @@ pub mod tests {
     #[test]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
-        assert_eq!(
-            input.instructions.counts(),
-            InstructionCounts {
-                ret: 49472,
-                add_ap: 36895,
-                jmp_rel_imm: [31873866, 0],
-                jmp_abs: [0, 0, 0, 0],
-                call_rel_imm: 49439,
-                call_abs: [0, 33],
-                jnz_imm: [20957, 5100, 30113, 11235, 6075, 0, 20947, 0],
-                mov_mem: 233432,
-                deref: 811061,
-                push_imm: 43184,
-                generic: 362623
-            }
-        );
-        println!("Instruction counts: {:#?}", input.instructions.counts());
+        let expected_counts: IndexMap<&str, usize> = IndexMap::from([
+            ("generic_opcode", 0),
+            ("add_ap_opcode_is_imm_f_op1_base_fp_f", 0),
+            ("add_ap_opcode_is_imm_t_op1_base_fp_f", 36895), // add ap
+            ("add_ap_opcode_is_imm_f_op1_base_fp_t", 33),    // generic
+            ("add_opcode_is_small_t_is_imm_t", 94680),       // generic
+            ("add_opcode_is_small_f_is_imm_f", 181481),      // generic
+            ("add_opcode_is_small_t_is_imm_f", 44567),       // generic
+            ("add_opcode_is_small_f_is_imm_t", 12141),       // generic
+            ("assert_eq_opcode_is_double_deref_f_is_imm_f", 233432), // mov mem
+            ("assert_eq_opcode_is_double_deref_t_is_imm_f", 811061), // deref
+            ("assert_eq_opcode_is_double_deref_f_is_imm_t", 43184), // push imm
+            ("call_opcode_is_rel_f_op1_base_fp_f", 0),
+            ("call_opcode_is_rel_t_op1_base_fp_f", 49439), // call rel imm
+            ("call_opcode_is_rel_f_op1_base_fp_t", 33),    // cal abs
+            ("jnz_opcode_is_taken_t_dst_base_fp_t", 11235), // jnz
+            ("jnz_opcode_is_taken_f_dst_base_fp_f", 27032), // jnz
+            ("jnz_opcode_is_taken_t_dst_base_fp_f", 51060), // jnz
+            ("jnz_opcode_is_taken_f_dst_base_fp_t", 5100), // jnz
+            ("jump_opcode_is_rel_t_is_imm_t_is_double_deref_f", 31873866), // jump rel imm
+            ("jump_opcode_is_rel_t_is_imm_f_is_double_deref_f", 500), // generic
+            ("jump_opcode_is_rel_f_is_imm_f_is_double_deref_t", 32), // generic
+            ("jump_opcode_is_rel_f_is_imm_f_is_double_deref_f", 0),
+            ("mul_opcode_is_small_t_is_imm_t", 14653), // generic
+            ("mul_opcode_is_small_t_is_imm_f", 8574),  // generic
+            ("mul_opcode_is_small_f_is_imm_f", 2572),  // generic
+            ("mul_opcode_is_small_f_is_imm_t", 3390),  // generic
+            ("ret_opcode", 49472),                     // ret
+        ]);
+        assert_eq!(input.state_transition.counts(), expected_counts);
     }
 
     #[ignore]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
-        assert_eq!(
-            input.instructions.counts(),
-            InstructionCounts {
-                ret: 462,
-                add_ap: 2,
-                jmp_rel_imm: [124627, 0],
-                jmp_abs: [0, 0, 0, 0],
-                call_rel_imm: 462,
-                call_abs: [0, 0],
-                jnz_imm: [0, 11, 0, 450, 0, 0, 0, 0],
-                mov_mem: 55,
-                deref: 2100,
-                push_imm: 1952,
-                generic: 951
-            }
-        );
-        println!("Instruction counts: {:#?}", input.instructions.counts());
+        let expected_counts: IndexMap<&str, usize> = IndexMap::from([
+            ("generic_opcode", 0),
+            ("add_ap_opcode_is_imm_f_op1_base_fp_f", 0),
+            ("add_ap_opcode_is_imm_t_op1_base_fp_f", 2), // add ap
+            ("add_ap_opcode_is_imm_f_op1_base_fp_t", 1), // generic
+            ("add_opcode_is_small_t_is_imm_t", 750),     // generic
+            ("add_opcode_is_small_f_is_imm_f", 0),       // generic
+            ("add_opcode_is_small_t_is_imm_f", 0),       // generic
+            ("add_opcode_is_small_f_is_imm_t", 200),     // generic
+            ("assert_eq_opcode_is_double_deref_f_is_imm_f", 55), // mov mem
+            ("assert_eq_opcode_is_double_deref_t_is_imm_f", 2100), // deref
+            ("assert_eq_opcode_is_double_deref_f_is_imm_t", 1952), // push imm
+            ("call_opcode_is_rel_f_op1_base_fp_f", 0),
+            ("call_opcode_is_rel_t_op1_base_fp_f", 462), // call rel imm
+            ("call_opcode_is_rel_f_op1_base_fp_t", 0),   // cal abs
+            ("jnz_opcode_is_taken_t_dst_base_fp_t", 450), // jnz
+            ("jnz_opcode_is_taken_f_dst_base_fp_f", 0),  // jnz
+            ("jnz_opcode_is_taken_t_dst_base_fp_f", 0),  // jnz
+            ("jnz_opcode_is_taken_f_dst_base_fp_t", 11), // jnz
+            ("jump_opcode_is_rel_t_is_imm_t_is_double_deref_f", 124627), // jump rel imm
+            ("jump_opcode_is_rel_t_is_imm_f_is_double_deref_f", 0), // generic
+            ("jump_opcode_is_rel_f_is_imm_f_is_double_deref_t", 0), // generic
+            ("jump_opcode_is_rel_f_is_imm_f_is_double_deref_f", 0),
+            ("mul_opcode_is_small_t_is_imm_t", 0), // generic
+            ("mul_opcode_is_small_t_is_imm_f", 0), // generic
+            ("mul_opcode_is_small_f_is_imm_f", 0), // generic
+            ("mul_opcode_is_small_f_is_imm_t", 0), // generic
+            ("ret_opcode", 462),                   // ret
+        ]);
+        assert_eq!(input.state_transition.counts(), expected_counts);
     }
 }
