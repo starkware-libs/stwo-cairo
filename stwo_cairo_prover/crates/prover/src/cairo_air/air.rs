@@ -97,7 +97,8 @@ pub struct CairoClaimGenerator {
 }
 impl CairoClaimGenerator {
     pub fn new(input: CairoInput) -> Self {
-        let ret_trace_generator = ret_opcode::ClaimGenerator::new(input.instructions.ret);
+        let ret_trace_generator =
+            ret_opcode::ClaimGenerator::new(input.instructions.components.ret_opcode);
         let verify_instruction_trace_generator = verifyinstruction::ClaimGenerator::default();
         let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
         let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);

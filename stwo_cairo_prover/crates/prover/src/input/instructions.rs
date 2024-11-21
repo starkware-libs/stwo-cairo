@@ -1,10 +1,152 @@
+use indexmap::IndexMap;
 use prover_types::cpu::CasmState;
-use serde::{Deserialize, Serialize};
 use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
+
+/// This struct matches the opcode components list created in `stwo-air-infra`.
+/// TODO: Ensure it syncs with that list.
+#[derive(Debug, Default)]
+pub struct Opcodes {
+    pub generic_opcode: Vec<CasmState>,
+    pub add_ap_opcode_is_imm_f_op1_base_fp_f: Vec<CasmState>,
+    pub add_ap_opcode_is_imm_t_op1_base_fp_f: Vec<CasmState>,
+    pub add_ap_opcode_is_imm_f_op1_base_fp_t: Vec<CasmState>,
+    pub add_opcode_is_small_t_is_imm_t: Vec<CasmState>,
+    pub add_opcode_is_small_f_is_imm_f: Vec<CasmState>,
+    pub add_opcode_is_small_t_is_imm_f: Vec<CasmState>,
+    pub add_opcode_is_small_f_is_imm_t: Vec<CasmState>,
+    pub assert_eq_opcode_is_double_deref_f_is_imm_f: Vec<CasmState>,
+    pub assert_eq_opcode_is_double_deref_t_is_imm_f: Vec<CasmState>,
+    pub assert_eq_opcode_is_double_deref_f_is_imm_t: Vec<CasmState>,
+    pub call_opcode_is_rel_f_op1_base_fp_f: Vec<CasmState>,
+    pub call_opcode_is_rel_t_op1_base_fp_f: Vec<CasmState>,
+    pub call_opcode_is_rel_f_op1_base_fp_t: Vec<CasmState>,
+    pub jnz_opcode_is_taken_t_dst_base_fp_t: Vec<CasmState>,
+    pub jnz_opcode_is_taken_f_dst_base_fp_f: Vec<CasmState>,
+    pub jnz_opcode_is_taken_t_dst_base_fp_f: Vec<CasmState>,
+    pub jnz_opcode_is_taken_f_dst_base_fp_t: Vec<CasmState>,
+    pub jump_opcode_is_rel_t_is_imm_t_is_double_deref_f: Vec<CasmState>,
+    pub jump_opcode_is_rel_t_is_imm_f_is_double_deref_f: Vec<CasmState>,
+    pub jump_opcode_is_rel_f_is_imm_f_is_double_deref_t: Vec<CasmState>,
+    pub jump_opcode_is_rel_f_is_imm_f_is_double_deref_f: Vec<CasmState>,
+    pub mul_opcode_is_small_t_is_imm_t: Vec<CasmState>,
+    pub mul_opcode_is_small_t_is_imm_f: Vec<CasmState>,
+    pub mul_opcode_is_small_f_is_imm_f: Vec<CasmState>,
+    pub mul_opcode_is_small_f_is_imm_t: Vec<CasmState>,
+    pub ret_opcode: Vec<CasmState>,
+}
+
+impl Opcodes {
+    pub fn counts(&self) -> IndexMap<&str, usize> {
+        let mut counts = IndexMap::new();
+        counts.insert("generic_opcode", self.generic_opcode.len());
+        counts.insert(
+            "add_ap_opcode_is_imm_f_op1_base_fp_f",
+            self.add_ap_opcode_is_imm_f_op1_base_fp_f.len(),
+        );
+        counts.insert(
+            "add_ap_opcode_is_imm_t_op1_base_fp_f",
+            self.add_ap_opcode_is_imm_t_op1_base_fp_f.len(),
+        );
+        counts.insert(
+            "add_ap_opcode_is_imm_f_op1_base_fp_t",
+            self.add_ap_opcode_is_imm_f_op1_base_fp_t.len(),
+        );
+        counts.insert(
+            "add_opcode_is_small_t_is_imm_t",
+            self.add_opcode_is_small_t_is_imm_t.len(),
+        );
+        counts.insert(
+            "add_opcode_is_small_f_is_imm_f",
+            self.add_opcode_is_small_f_is_imm_f.len(),
+        );
+        counts.insert(
+            "add_opcode_is_small_t_is_imm_f",
+            self.add_opcode_is_small_t_is_imm_f.len(),
+        );
+        counts.insert(
+            "add_opcode_is_small_f_is_imm_t",
+            self.add_opcode_is_small_f_is_imm_t.len(),
+        );
+        counts.insert(
+            "assert_eq_opcode_is_double_deref_f_is_imm_f",
+            self.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
+        );
+        counts.insert(
+            "assert_eq_opcode_is_double_deref_t_is_imm_f",
+            self.assert_eq_opcode_is_double_deref_t_is_imm_f.len(),
+        );
+        counts.insert(
+            "assert_eq_opcode_is_double_deref_f_is_imm_t",
+            self.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
+        );
+        counts.insert(
+            "call_opcode_is_rel_f_op1_base_fp_f",
+            self.call_opcode_is_rel_f_op1_base_fp_f.len(),
+        );
+        counts.insert(
+            "call_opcode_is_rel_t_op1_base_fp_f",
+            self.call_opcode_is_rel_t_op1_base_fp_f.len(),
+        );
+        counts.insert(
+            "call_opcode_is_rel_f_op1_base_fp_t",
+            self.call_opcode_is_rel_f_op1_base_fp_t.len(),
+        );
+        counts.insert(
+            "jnz_opcode_is_taken_t_dst_base_fp_t",
+            self.jnz_opcode_is_taken_t_dst_base_fp_t.len(),
+        );
+        counts.insert(
+            "jnz_opcode_is_taken_f_dst_base_fp_f",
+            self.jnz_opcode_is_taken_f_dst_base_fp_f.len(),
+        );
+        counts.insert(
+            "jnz_opcode_is_taken_t_dst_base_fp_f",
+            self.jnz_opcode_is_taken_t_dst_base_fp_f.len(),
+        );
+        counts.insert(
+            "jnz_opcode_is_taken_f_dst_base_fp_t",
+            self.jnz_opcode_is_taken_f_dst_base_fp_t.len(),
+        );
+        counts.insert(
+            "jump_opcode_is_rel_t_is_imm_t_is_double_deref_f",
+            self.jump_opcode_is_rel_t_is_imm_t_is_double_deref_f.len(),
+        );
+        counts.insert(
+            "jump_opcode_is_rel_t_is_imm_f_is_double_deref_f",
+            self.jump_opcode_is_rel_t_is_imm_f_is_double_deref_f.len(),
+        );
+        counts.insert(
+            "jump_opcode_is_rel_f_is_imm_f_is_double_deref_t",
+            self.jump_opcode_is_rel_f_is_imm_f_is_double_deref_t.len(),
+        );
+        counts.insert(
+            "jump_opcode_is_rel_f_is_imm_f_is_double_deref_f",
+            self.jump_opcode_is_rel_f_is_imm_f_is_double_deref_f.len(),
+        );
+        counts.insert(
+            "mul_opcode_is_small_t_is_imm_t",
+            self.mul_opcode_is_small_t_is_imm_t.len(),
+        );
+        counts.insert(
+            "mul_opcode_is_small_t_is_imm_f",
+            self.mul_opcode_is_small_t_is_imm_f.len(),
+        );
+        counts.insert(
+            "mul_opcode_is_small_f_is_imm_f",
+            self.mul_opcode_is_small_f_is_imm_f.len(),
+        );
+        counts.insert(
+            "mul_opcode_is_small_f_is_imm_t",
+            self.mul_opcode_is_small_f_is_imm_t.len(),
+        );
+        counts.insert("ret_opcode", self.ret_opcode.len());
+        counts
+    }
+}
 
 impl From<TraceEntry> for CasmState {
     fn from(entry: TraceEntry) -> Self {
@@ -16,54 +158,13 @@ impl From<TraceEntry> for CasmState {
     }
 }
 
-// TODO(yuval/alonT): consider making the indexing mechanism more explicit in the code).
-/// The instructions usage in the input, split to Stwo opcodes.
-///
-/// For each opcode with flags, the array describes the different flag combinations. The index
-/// refers to the flag combination in bit-reverse/little-endian. For example, jnz_imm at index 1
-/// (100 in bit-reverse/little-endian) is for: fp (1=true), not taken (0=false), no ap++ (0=false).
-/// Note: for the flag "fp/ap", true means fp-based and false means ap-based.
 #[derive(Debug, Default)]
 pub struct Instructions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
-
-    /// ret.
-    pub ret: Vec<CasmState>,
-
-    /// ap += imm.
-    pub add_ap: Vec<CasmState>,
-
-    /// jump rel imm.
-    /// Flags: ap++?.
-    pub jmp_rel_imm: [Vec<CasmState>; 2],
-
-    /// jump abs [fp/ap + offset].
-    /// Flags: fp/ap, ap++?.
-    pub jmp_abs: [Vec<CasmState>; 4],
-
-    /// call rel imm.
-    pub call_rel_imm: Vec<CasmState>,
-
-    /// call abs [fp/ap + offset].
-    /// Flags: fp/ap.
-    pub call_abs: [Vec<CasmState>; 2],
-
-    /// jump rel imm if [fp/ap + offset] != 0.
-    /// Flags: fp/ap, taken?, ap++?.
-    pub jnz_imm: [Vec<CasmState>; 8],
-
-    /// - [fp/ap + offset0] = [fp/ap + offset2]
-    pub mov_mem: Vec<CasmState>,
-
-    /// - [fp/ap + offset0] = [[fp/ap + offset1] + offset2]
-    pub deref: Vec<CasmState>,
-
-    /// - [fp/ap + offset0] = imm
-    pub push_imm: Vec<CasmState>,
-
-    pub generic: Vec<CasmState>,
+    pub components: Opcodes,
 }
+
 impl Instructions {
     pub fn from_iter(mut iter: impl Iterator<Item = TraceEntry>, mem: &mut MemoryBuilder) -> Self {
         let mut res = Self::default();
@@ -81,12 +182,13 @@ impl Instructions {
         res
     }
 
+    /// Adds the instruction at the given PC to the component that proves it.
     fn push_instr(&mut self, mem: &mut MemoryBuilder, state: CasmState) {
         let CasmState { ap, fp, pc } = state;
         let instruction = mem.get_inst(pc.0);
         let instruction = Instruction::decode(instruction);
         match instruction {
-            // ret.
+            // ret
             Instruction {
                 offset0: -2,
                 offset1: -1,
@@ -106,17 +208,18 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: true,
                 opcode_assert_eq: false,
-            } => self.ret.push(state),
-            // ap += imm.
+            } => self.components.ret_opcode.push(state),
+
+            // add ap
             Instruction {
                 offset0: -1,
                 offset1: -1,
-                offset2: 1,
+                offset2,
                 dst_base_fp: true,
                 op0_base_fp: true,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
+                op1_imm,
+                op1_base_fp,
+                op1_base_ap,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump: false,
@@ -127,68 +230,107 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => self.add_ap.push(state),
-            // jump rel imm.
-            Instruction {
-                offset0: -1,
-                offset1: -1,
-                offset2: 1,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: true,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
             } => {
-                self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
+                if op1_imm {
+                    // ap += Imm
+                    assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
+                    self.components
+                        .add_ap_opcode_is_imm_t_op1_base_fp_f
+                        .push(state);
+                } else if op1_base_fp {
+                    // ap += [fp + offset2]
+                    assert!(!op1_base_ap);
+                    self.components
+                        .add_ap_opcode_is_imm_f_op1_base_fp_t
+                        .push(state);
+                } else {
+                    // ap += [ap + offset2]
+                    assert!(op1_base_ap);
+                    self.components
+                        .add_ap_opcode_is_imm_f_op1_base_fp_f
+                        .push(state);
+                }
             }
-            // jump abs [ap/fp + offset].
+            // jump
             Instruction {
                 offset0: -1,
-                offset1: -1,
-                offset2: _,
+                offset1,
+                offset2,
                 dst_base_fp: true,
-                op0_base_fp: true,
-                op1_imm: false,
+                op0_base_fp,
+                op1_imm,
                 op1_base_fp,
                 op1_base_ap,
                 res_add: false,
                 res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
+                pc_update_jump,
+                pc_update_jump_rel,
                 pc_update_jnz: false,
                 ap_update_add: false,
-                ap_update_add_1,
+                ap_update_add_1: _,
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if op1_base_fp != op1_base_ap => {
-                let index = op1_base_fp as usize | (ap_update_add_1 as usize) << 1;
-                self.jmp_abs[index].push(state);
+            } => {
+                if op1_imm {
+                    // jump rel imm
+                    assert!(
+                        pc_update_jump_rel
+                            && !pc_update_jump
+                            && !op1_base_fp
+                            && !op1_base_ap
+                            && op0_base_fp
+                            && offset1 == -1
+                            && offset2 == 1
+                    );
+                    self.components
+                        .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+                        .push(state);
+                } else if pc_update_jump_rel {
+                    // jump rel [ap/fp + offset2]
+                    assert!(
+                        !pc_update_jump
+                            && (op1_base_fp || op1_base_ap)
+                            && op0_base_fp
+                            && offset1 == -1
+                    );
+                    self.components
+                        .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
+                        .push(state);
+                } else if !op1_base_fp && !op1_base_ap {
+                    // jump abs [[ap/fp + offset1] + offset2]
+                    assert!(pc_update_jump);
+                    self.components
+                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
+                        .push(state);
+                } else {
+                    // jump abs [ap/fp + offset2]
+                    assert!(
+                        (op1_base_fp || op1_base_ap)
+                            && op0_base_fp
+                            && pc_update_jump
+                            && offset1 == -1
+                    );
+                    self.components
+                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
+                        .push(state);
+                }
             }
-            // call rel imm.
+
+            // call
             Instruction {
                 offset0: 0,
                 offset1: 1,
-                offset2: 1,
+                offset2,
                 dst_base_fp: false,
                 op0_base_fp: false,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
+                op1_imm,
+                op1_base_fp,
+                op1_base_ap,
                 res_add: false,
                 res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: true,
+                pc_update_jump,
+                pc_update_jump_rel,
                 pc_update_jnz: false,
                 ap_update_add: false,
                 ap_update_add_1: false,
@@ -196,32 +338,29 @@ impl Instructions {
                 opcode_ret: false,
                 opcode_assert_eq: false,
             } => {
-                self.call_rel_imm.push(state);
+                if pc_update_jump_rel {
+                    // call rel imm
+                    assert!(
+                        op1_imm && !op1_base_fp && !op1_base_ap && offset2 == 1 && !pc_update_jump
+                    );
+                    self.components
+                        .call_opcode_is_rel_t_op1_base_fp_f
+                        .push(state);
+                } else if op1_base_fp {
+                    // call abs [fp + offset2]
+                    assert!(!op1_base_ap && !op1_imm && pc_update_jump);
+                    self.components
+                        .call_opcode_is_rel_f_op1_base_fp_t
+                        .push(state);
+                } else {
+                    // call abs [ap + offset2]
+                    assert!(op1_base_ap && !op1_imm && pc_update_jump);
+                    self.components
+                        .call_opcode_is_rel_f_op1_base_fp_f
+                        .push(state);
+                }
             }
-            // call abs [ap/fp + offset].
-            Instruction {
-                offset0: 0,
-                offset1: 1,
-                offset2: _,
-                dst_base_fp: false,
-                op0_base_fp: false,
-                op1_imm: false,
-                op1_base_fp,
-                op1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: true,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } if op1_base_fp != op1_base_ap => {
-                let index = op1_base_fp as usize;
-                self.call_abs[index].push(state);
-            }
+
             // jnz
             Instruction {
                 offset0,
@@ -238,7 +377,7 @@ impl Instructions {
                 pc_update_jump_rel: false,
                 pc_update_jnz: true,
                 ap_update_add: false,
-                ap_update_add_1,
+                ap_update_add_1: _,
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
@@ -246,19 +385,39 @@ impl Instructions {
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 let taken = dst != MemoryValue::Small(0);
-                let index = (dst_base_fp as usize)
-                    | (taken as usize) << 1
-                    | (ap_update_add_1 as usize) << 2;
-                self.jnz_imm[index].push(state);
+                if taken {
+                    if dst_base_fp {
+                        // jump rel imm if [fp + offset0] != 0
+                        self.components
+                            .jnz_opcode_is_taken_t_dst_base_fp_t
+                            .push(state);
+                    } else {
+                        // jump rel imm if [ap + offset0] != 0
+                        self.components
+                            .jnz_opcode_is_taken_t_dst_base_fp_f
+                            .push(state);
+                    };
+                } else if dst_base_fp {
+                    // jump rel imm if [fp + offset0] != 0
+                    self.components
+                        .jnz_opcode_is_taken_f_dst_base_fp_t
+                        .push(state);
+                } else {
+                    // jump rel imm if [ap + offset] != 0
+                    self.components
+                        .jnz_opcode_is_taken_f_dst_base_fp_f
+                        .push(state);
+                };
             }
-            // [ap/fp + offset0] = [ap/fp + offset2].
+
+            // assert equal
             Instruction {
                 offset0: _,
-                offset1: -1,
-                offset2: _,
+                offset1,
+                offset2,
                 dst_base_fp: _,
-                op0_base_fp: true,
-                op1_imm: false,
+                op0_base_fp,
+                op1_imm,
                 op1_base_fp,
                 op1_base_ap,
                 res_add: false,
@@ -271,21 +430,45 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if op1_base_fp != op1_base_ap => {
-                self.mov_mem.push(state);
+            } => {
+                if op1_imm {
+                    // [ap/fp + offset0] = imm
+                    assert!(
+                        !op1_base_fp
+                            && !op1_base_ap
+                            && offset2 == 1
+                            && op0_base_fp
+                            && offset1 == -1
+                    );
+                    self.components
+                        .assert_eq_opcode_is_double_deref_f_is_imm_t
+                        .push(state);
+                } else if !op1_base_fp && !op1_base_ap {
+                    // [ap/fp + offset0] = [[ap/fp + offset1] + offset2]
+                    self.components
+                        .assert_eq_opcode_is_double_deref_t_is_imm_f
+                        .push(state);
+                } else {
+                    // [ap/fp + offset0] = [ap/fp + offset1]
+                    assert!((op1_base_fp || op1_base_ap) && offset1 == -1 && op0_base_fp);
+                    self.components
+                        .assert_eq_opcode_is_double_deref_f_is_imm_f
+                        .push(state);
+                }
             }
-            // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
+
+            // mul
             Instruction {
-                offset0: _,
+                offset0,
                 offset1: _,
-                offset2: _,
+                offset2,
                 dst_base_fp: _,
-                op0_base_fp: _,
-                op1_imm: false,
-                op1_base_fp: false,
-                op1_base_ap: false,
+                op0_base_fp,
+                op1_imm,
+                op1_base_fp,
+                op1_base_ap,
                 res_add: false,
-                res_mul: false,
+                res_mul: true,
                 pc_update_jump: false,
                 pc_update_jump_rel: false,
                 pc_update_jnz: false,
@@ -295,19 +478,42 @@ impl Instructions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                self.deref.push(state);
+                let op1_addr = if op0_base_fp { fp } else { ap };
+                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                if op1_imm {
+                    // [ap/fp + offset0] = [ap/fp + offset1] * Imm
+                    assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
+                    if let MemoryValue::Small(_) = op1 {
+                        self.components.mul_opcode_is_small_t_is_imm_t.push(state);
+                    } else {
+                        self.components.mul_opcode_is_small_f_is_imm_t.push(state);
+                    };
+                } else {
+                    // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2]
+                    assert!((op1_base_fp || op1_base_ap));
+                    let op0_addr = if op0_base_fp { fp } else { ap };
+                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    if let MemoryValue::F252(_) = op1 {
+                        self.components.mul_opcode_is_small_f_is_imm_f.push(state);
+                    } else if let MemoryValue::F252(_) = op0 {
+                        self.components.mul_opcode_is_small_f_is_imm_f.push(state);
+                    } else {
+                        self.components.mul_opcode_is_small_t_is_imm_f.push(state);
+                    }
+                }
             }
-            // [ap/fp + offset0] = imm.
+
+            // add
             Instruction {
-                offset0: _,
-                offset1: -1,
-                offset2: 1,
+                offset0,
+                offset1: _,
+                offset2,
                 dst_base_fp: _,
-                op0_base_fp: true,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
-                res_add: false,
+                op0_base_fp,
+                op1_imm,
+                op1_base_fp,
+                op1_base_ap,
+                res_add: true,
                 res_mul: false,
                 pc_update_jump: false,
                 pc_update_jump_rel: false,
@@ -318,66 +524,41 @@ impl Instructions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                self.push_imm.push(state);
+                let op1_addr = if op0_base_fp { fp } else { ap };
+                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                if op1_imm {
+                    // [ap/fp + offset0] = [ap/fp + offset1] + Imm
+                    assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
+                    let op1_addr = if op0_base_fp { fp } else { ap };
+                    let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    if let MemoryValue::Small(_) = op1 {
+                        self.components.add_opcode_is_small_t_is_imm_t.push(state);
+                    } else {
+                        self.components.add_opcode_is_small_f_is_imm_t.push(state);
+                    };
+                } else {
+                    // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2]
+                    assert!((op1_base_fp || op1_base_ap));
+                    let op0_addr = if op0_base_fp { fp } else { ap };
+                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    if let MemoryValue::F252(_) = op1 {
+                        self.components.add_opcode_is_small_f_is_imm_f.push(state);
+                    } else if let MemoryValue::F252(_) = op0 {
+                        self.components.add_opcode_is_small_t_is_imm_f.push(state);
+                    } else {
+                        self.components.add_opcode_is_small_t_is_imm_f.push(state);
+                    }
+                }
             }
+
+            // generic opcode
             _ => {
-                self.generic.push(state);
+                self.components.generic_opcode.push(state);
             }
         }
     }
 
-    pub fn counts(&self) -> InstructionCounts {
-        InstructionCounts {
-            ret: self.ret.len(),
-            add_ap: self.add_ap.len(),
-            jmp_rel_imm: self.jmp_rel_imm.each_ref().map(Vec::len),
-            jmp_abs: self.jmp_abs.each_ref().map(Vec::len),
-            call_rel_imm: self.call_rel_imm.len(),
-            call_abs: self.call_abs.each_ref().map(Vec::len),
-            jnz_imm: self.jnz_imm.each_ref().map(Vec::len),
-            mov_mem: self.mov_mem.len(),
-            deref: self.deref.len(),
-            push_imm: self.push_imm.len(),
-            generic: self.generic.len(),
-        }
+    pub fn counts(&self) -> IndexMap<&str, usize> {
+        self.components.counts()
     }
-}
-
-/// The counts of the instructions usage in the input, split to Stwo opcodes.
-///
-/// See the documentation of `Instructions` for more details about the indexing mechanism.
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct InstructionCounts {
-    pub ret: usize,
-    pub add_ap: usize,
-
-    /// jump rel imm.
-    /// Flags: ap++?.
-    pub jmp_rel_imm: [usize; 2],
-
-    // jump abs [fp/ap + offset].
-    // Flags: fp/ap, ap++?.
-    pub jmp_abs: [usize; 4],
-
-    /// call rel imm.
-    pub call_rel_imm: usize,
-
-    // call abs [fp/ap + offset].
-    // Flags: fp/ap.
-    pub call_abs: [usize; 2],
-
-    /// jump rel imm if [fp/ap + offset] != 0.
-    /// Flags: fp/ap, taken?, ap++?.
-    pub jnz_imm: [usize; 8],
-
-    /// - [fp/ap + offset0] = [fp/ap + offset2]
-    pub mov_mem: usize,
-
-    /// - [fp/ap + offset0] = [[fp/ap + offset1] + offset2]
-    pub deref: usize,
-
-    /// - [fp/ap + offset0] = imm
-    pub push_imm: usize,
-
-    pub generic: usize,
 }
