@@ -17,6 +17,7 @@ thiserror.workspace = true
 tracing.workspace = true
 paste.workspace = true
 prover_types = { path = "../prover_types" }
+indexmap = {features = ["serde"] }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true

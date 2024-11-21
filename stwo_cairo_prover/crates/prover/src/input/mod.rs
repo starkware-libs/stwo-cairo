@@ -1,4 +1,4 @@
-use instructions::Instructions;
+use instructions::StateTransition;
 use mem::Memory;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,7 @@ pub const N_REGISTERS: usize = 3;
 // Externally provided inputs.
 #[derive(Debug)]
 pub struct CairoInput {
-    pub instructions: Instructions,
+    pub state_transition: StateTransition,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
 

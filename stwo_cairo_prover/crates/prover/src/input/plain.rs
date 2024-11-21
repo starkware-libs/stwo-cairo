@@ -6,7 +6,7 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
-use super::instructions::Instructions;
+use super::instructions::StateTransition;
 use super::mem::{MemConfig, MemoryBuilder};
 use super::vm_import::MemEntry;
 use super::{CairoInput, SegmentAddrs};
@@ -64,12 +64,12 @@ pub fn input_from_finished_runner(runner: CairoRunner) -> CairoInput {
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let instructions = Instructions::from_iter(trace, &mut mem);
+    let state_transition = StateTransition::from_iter(trace, &mut mem);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
-        instructions,
+        state_transition,
         mem: mem.build(),
         public_mem_addresses,
         range_check_builtin: SegmentAddrs {
