@@ -12,7 +12,7 @@ pub const QM31_EXTENSION_DEGREE: usize = 4;
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq)]
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct QM31 {
     pub a: CM31,
     pub b: CM31,
@@ -152,6 +152,7 @@ pub impl QM31Add of core::traits::Add<QM31> {
 }
 
 pub impl QM31Sub of core::traits::Sub<QM31> {
+    #[inline]
     fn sub(lhs: QM31, rhs: QM31) -> QM31 {
         QM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
     }

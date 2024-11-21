@@ -6,7 +6,7 @@ use stwo_cairo_verifier::fields::BatchInvertible;
 use stwo_cairo_verifier::fields::m31::{M31, m31};
 use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31Zero};
 use stwo_cairo_verifier::fields::{BaseField, SecureField};
-use stwo_cairo_verifier::poly::utils::{fold, ibutterfly};
+use stwo_cairo_verifier::poly::utils::{butterfly, fold, ibutterfly};
 use stwo_cairo_verifier::utils::pow;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -151,10 +151,25 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     res
 }
 
-#[inline]
-fn butterfly(v0: QM31, v1: QM31, twid: M31) -> (QM31, QM31) {
-    let tmp = v1.mul_m31(twid);
-    (v0 + tmp, v0 - tmp)
+pub impl LinePolySerde of Serde<LinePoly> {
+    fn serialize(self: @LinePoly, ref output: Array<felt252>) {
+        self.coeffs.serialize(ref output);
+        self.log_size.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<LinePoly> {
+        let res = LinePoly {
+            coeffs: Serde::deserialize(ref serialized)?,
+            log_size: Serde::deserialize(ref serialized)?,
+        };
+
+        // Check the sizes match.
+        if res.coeffs.len() != pow(2, res.log_size) {
+            return Option::None;
+        }
+
+        Option::Some(res)
+    }
 }
 
 /// Domain comprising of the x-coordinates of points in a [Coset].

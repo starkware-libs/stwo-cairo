@@ -192,14 +192,14 @@ pub struct FriConfig {
 /// Stores a subset of evaluations in a fri layer with their corresponding merkle decommitments.
 ///
 /// The subset corresponds to the set of evaluations needed by a FRI verifier.
-#[derive(Drop, Clone, Debug)]
+#[derive(Drop, Clone, Debug, Serde)]
 pub struct FriLayerProof {
     pub evals_subset: Span<QM31>,
     pub decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
     pub commitment: felt252,
 }
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct FriProof {
     pub inner_layers: Span<FriLayerProof>,
     pub last_layer_poly: LinePoly,
