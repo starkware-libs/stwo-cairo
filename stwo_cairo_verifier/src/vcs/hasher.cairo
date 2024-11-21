@@ -26,7 +26,7 @@ pub trait MerkleHasher {
 
     /// Hashes a single Merkle node.
     fn hash_node(
-        children_hashes: Option<(Self::Hash, Self::Hash)>, column_values: Array<BaseField>,
+        children_hashes: Option<(Self::Hash, Self::Hash)>, column_values: Span<BaseField>,
     ) -> Self::Hash;
 }
 
@@ -34,7 +34,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
     type Hash = felt252;
 
     fn hash_node(
-        children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Array<BaseField>,
+        children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
         let mut hash_array: Array<felt252> = Default::default();
         if let Option::Some((x, y)) = children_hashes {
@@ -51,7 +51,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         } else {
             // Most often a single QM31 column commitment due to FRI.
             // TODO(andrew): Implement non-mixed degree merkle for FRI decommitments.
-            if let Option::Some(values) = column_values.span().try_into() {
+            if let Option::Some(values) = column_values.try_into() {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
                 let [v0, v1, v2, v3]: [BaseField; 4] = (*values).unbox();
                 let mut word = v0.inner.into();
@@ -63,16 +63,6 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
                 return hash;
             }
         }
-
-        // Pad column_values to a multiple of 8.
-        let mut pad_len = M31_ELEMENETS_IN_HASH_MINUS1
-            - ((column_values.len() + M31_ELEMENETS_IN_HASH_MINUS1) % M31_ELEMENETS_IN_HASH);
-        let padding = core::num::traits::Zero::zero();
-        for _ in 0..pad_len {
-            column_values.append(padding);
-        };
-
-        let mut column_values = column_values.span();
 
         // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
         // functionality here to do all packing and hashing in a single pass.
@@ -89,6 +79,21 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             hash_array.append(word);
         };
 
+        if !column_values.is_empty() {
+            let mut word = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
+                .inner
+                .into();
+
+            for _ in 1..M31_ELEMENETS_IN_HASH {
+                let v = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
+                    .inner
+                    .into();
+                word = word * M31_IN_HASH_SHIFT + v;
+            };
+
+            hash_array.append(word);
+        }
+
         poseidon_hash_span(hash_array.span())
     }
 }
@@ -101,12 +106,12 @@ mod tests {
     #[test]
     fn test_m31() {
         assert_eq!(
-            PoseidonMerkleHasher::hash_node(Option::None, array![m31(0), m31(1)]),
+            PoseidonMerkleHasher::hash_node(Option::None, array![m31(0), m31(1)].span()),
             2552053700073128806553921687214114320458351061521275103654266875084493044716,
         );
 
         assert_eq!(
-            PoseidonMerkleHasher::hash_node(Option::Some((1, 2)), array![m31(3)]),
+            PoseidonMerkleHasher::hash_node(Option::Some((1, 2)), array![m31(3)].span()),
             159358216886023795422515519110998391754567506678525778721401012606792642769,
         );
     }
