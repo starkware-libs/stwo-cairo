@@ -8,10 +8,10 @@ use core::dict::Felt252DictTrait;
 use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
-use stwo_cairo_verifier::utils::SpanExTrait;
-use stwo_cairo_verifier::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
-use stwo_cairo_verifier::vcs::hasher::MerkleHasher;
-use stwo_cairo_verifier::{BaseField, ColumnArray};
+use crate::utils::SpanExTrait;
+use crate::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
+use crate::vcs::hasher::MerkleHasher;
+use crate::{BaseField, ColumnArray};
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
@@ -298,7 +298,7 @@ mod tests {
     use core::dict::Felt252DictTrait;
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
-    use stwo_cairo_verifier::fields::m31::m31;
+    use crate::fields::m31::m31;
     use super::{MerkleDecommitment, MerkleVerifier, MerkleVerifierImpl};
 
     #[test]

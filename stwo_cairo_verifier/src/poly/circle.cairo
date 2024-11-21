@@ -1,12 +1,12 @@
-use stwo_cairo_verifier::circle::{
+use crate::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl, CirclePointTrait,
     Coset, CosetImpl,
 };
-use stwo_cairo_verifier::fields::BatchInvertible;
-use stwo_cairo_verifier::fields::m31::M31;
-use stwo_cairo_verifier::fields::qm31::QM31;
-use stwo_cairo_verifier::poly::utils::ibutterfly;
-use stwo_cairo_verifier::utils::pow2;
+use crate::fields::BatchInvertible;
+use crate::fields::m31::M31;
+use crate::fields::qm31::QM31;
+use crate::poly::utils::ibutterfly;
+use crate::utils::pow2;
 
 /// A valid domain for circle polynomial interpolation and evaluation.
 ///
@@ -190,9 +190,9 @@ pub impl SparseCircleEvaluationImpl of SparseCircleEvaluationImplTrait {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::circle::{CirclePoint, CirclePointIndexImpl, Coset, CosetImpl};
-    use stwo_cairo_verifier::fields::m31::m31;
-    use stwo_cairo_verifier::fields::qm31::qm31;
+    use crate::circle::{CirclePoint, CirclePointIndexImpl, Coset, CosetImpl};
+    use crate::fields::m31::m31;
+    use crate::fields::qm31::qm31;
     use super::{
         CircleDomain, CircleDomainTrait, CircleEvaluationImpl, SparseCircleEvaluation,
         SparseCircleEvaluationImplTrait,

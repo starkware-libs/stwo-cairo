@@ -1,5 +1,5 @@
-use stwo_cairo_verifier::circle::CirclePoint;
-use stwo_cairo_verifier::fields::m31::M31;
+use crate::circle::CirclePoint;
+use crate::fields::m31::M31;
 
 /// Index `i` stores `M31_CIRCLE_GEN * i`.
 pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [CirclePoint<M31>; 64] = [
@@ -343,7 +343,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29: [CirclePoint<M31>; 64] = [
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_verifier::circle::{CirclePointM31Impl, M31_CIRCLE_GEN};
+    use crate::circle::{CirclePointM31Impl, M31_CIRCLE_GEN};
     use super::{
         M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17,
         M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
