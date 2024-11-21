@@ -96,7 +96,7 @@ impl FriLayerVerifierImpl of FriLayerVerifierTrait {
         let decommitment = (*self.proof.decommitment).clone();
 
         if let Result::Err(_) = merkle_verifier
-            .verify(queries_per_log_size, @actual_decommitment_array, decommitment) {
+            .verify(queries_per_log_size, actual_decommitment_array.span(), decommitment) {
             return Result::Err(FriVerificationError::InnerLayerCommitmentInvalid);
         }
 
@@ -766,8 +766,9 @@ mod test {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
                             0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7,
                 },
@@ -777,8 +778,9 @@ mod test {
                     decommitment: MerkleDecommitment {
                         hash_witness: array![
                             0x0539eb6bd5d99019f938130703ddfd97aaa9f46dea9714f9ed75528babb4db55,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x078189f0ad5c044994f4b3100183203ed10545891f2459770dde4af4b9c2def7,
                 },
@@ -824,8 +826,9 @@ mod test {
                         hash_witness: array![
                             0x02894fb64f5b5ad74ad6868ded445416d52840c2c4a36499f0eb37a03841bfc8,
                             0x05d3f79e2cfd15b605e1e8eb759aa79e775e89df7c4ae5966efe3b96d3554003,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x03e5bad5822d062c05ff947d282dc2d56a6a420d14f2f74972bb5b01287731a7,
                 },
@@ -877,8 +880,9 @@ mod test {
                             0x0718cb047c50ba071b9a4696537695f273f42a7af8bfb0e465190b905548f754,
                             0x040db6d0f16909d1daaf710e3fa9663ef52419ac5ae5433c915ac5939809eb79,
                             0x06eb066c6e21999bc152bbac0a4b93c6c80b702f6ff7860be62cc10b89aa8352,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
@@ -891,8 +895,9 @@ mod test {
                             0x017bdda6c344feddd93884211b626ca806da73bfa55cd7eef54b687dd744651a,
                             0x038d80d42b4192fd30dc894d5a26f3db757da5313c7940685058641091eb6d71,
                             0x0406355da40056abcf1278c92f3ab9aa52ca028fe437e6dbe15cdbcc7b83eed0,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x046198bc34caa0b046234fa46ef591327a6864cb8a373bc13ce2cc9b3d5f3720,
                 },
@@ -903,8 +908,9 @@ mod test {
                             0x0454d5cffc792c2308fb8dcf992c255f0535048b7bfbe9d08c1c3ae92178cd16,
                             0x071f311ea2e00f2e44066f0a577f27e62648b66152afa3122e0aebe7420fbcd2,
                             0x037c8315cf3525ea7097be7b687f44f9f0cecf1054ec553e183f0a9d2bd0b5d7,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x0344b5796a1b37e154053d94532921bd1dc9db98b454d0a7537974e2b9fc17b5,
                 },
@@ -965,8 +971,9 @@ mod test {
                             0x055191c91b0668bab9271863162448c3396e8c2fc29f61bb621858210f4d0771,
                             0x040db6d0f16909d1daaf710e3fa9663ef52419ac5ae5433c915ac5939809eb79,
                             0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
@@ -984,8 +991,9 @@ mod test {
                             0x0163c94c52552862374f1d7b09036d7cf74b4d59914c4393503cfd9bc49d53d3,
                             0x0668d865abd1cb2b868c20784728cd48a6c4cbd926da318ce8814c5dae779fd0,
                             0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x06a3f2b104508429f6b74edcd62044afb4f618302a382f281fee118b12dc9dbd,
                 },
@@ -1001,8 +1009,9 @@ mod test {
                             0x062c36d3bd5fec84f54c5e835935a923db06521e937e3fbdd99cd9cd9701a329,
                             0x0414361ae7771b465d1ed7241c6a9c383e19cee6db3230e16164ded0da216c4d,
                             0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e,
                 },
@@ -1125,8 +1134,9 @@ mod test {
                             0x03af1609280ef18b58dfe676fa9ac9288ebc4f2a48f511fe714b059c487455da,
                             0x01c0a53fdf814604afe54aebd2a6d2880b072e217367b3adcc8a9bc14269015f,
                             0x06ff62ebff373bc63508ad4c9c9997e38aa91331e1159c2809d81fd20b7a07e3,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x07bc3121028865ac7ce98ec2cdbc6b4716ef91880374f6a8e93661fe51a759dc,
                 },
@@ -1145,8 +1155,9 @@ mod test {
                             0x03f8cb35e41d5291f1539b1cd73b018d6510aa85ba3bc9720e6014aa95ec4248,
                             0x002d5922250cdbfedf908cabd24a158e9bdbb3de503e7636376c8a74921b8d41,
                             0x0774e25d9d61fc18f3c2a365213b81fd36cced1626e02afc4dbe4aef52021769,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x06a3f2b104508429f6b74edcd62044afb4f618302a382f281fee118b12dc9dbd,
                 },
@@ -1162,8 +1173,9 @@ mod test {
                             0x058978bedb6abe931a3de1cdff9bce0f7e7ac7b14c9c2107ea66679874a67e9a,
                             0x027cf2f25d11835dbf4d3e0b0a3ab32f5b75de4f9904d1873115ecb5f2bd0555,
                             0x03abab172aeee1c04052395036cc50a51fb2497cfd307c96f32e718c4b3639cc,
-                        ],
-                        column_witness: array![],
+                        ]
+                            .span(),
+                        column_witness: array![].span(),
                     },
                     commitment: 0x03d2565deb5099be20df825aabfe4678a0922d6b4a988d23a553c9f06b5bf96e,
                 },

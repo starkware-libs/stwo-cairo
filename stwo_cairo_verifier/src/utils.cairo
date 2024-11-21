@@ -83,19 +83,6 @@ pub impl OptionImpl<T> of OptionExTrait<T> {
 
 #[generate_trait]
 pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
-    fn pop_front_n(ref self: Array<T>, mut n: usize) -> Array<T> {
-        let mut res = array![];
-        while n != 0 {
-            if let Option::Some(value) = self.pop_front() {
-                res.append(value);
-            } else {
-                break;
-            }
-            n -= 1;
-        };
-        res
-    }
-
     fn max<+Copy<T>, +PartialOrd<T>>(mut self: @Array<T>) -> Option<@T> {
         self.span().max()
     }
@@ -161,6 +148,17 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
 
 #[generate_trait]
 pub impl SpanImpl<T> of SpanExTrait<T> {
+    fn pop_front_n(ref self: Span<T>, n: usize) -> Span<T> {
+        let (res, remainder) = self.split_at(n);
+        self = remainder;
+        res
+    }
+
+    #[inline]
+    fn split_at(self: Span<T>, mid: usize) -> (Span<T>, Span<T>) {
+        (self.slice(0, mid), self.slice(mid, self.len() - mid))
+    }
+
     fn next_if_eq<+PartialEq<T>>(ref self: Span<T>, other: @T) -> Option<@T> {
         if let Option::Some(value) = self.get(0) {
             if value.unbox() == other {

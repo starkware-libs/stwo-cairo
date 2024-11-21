@@ -17,5 +17,11 @@ fn main() {}
 /// An array in which each element relates (by index) to a column in the trace.
 pub type ColumnArray<T> = Array<T>;
 
+/// A span in which each element relates (by index) to a column in the trace.
+pub type ColumnSpan<T> = Span<T>;
+
 /// An array in which each element relates (by index) to a commitment tree.
 pub type TreeArray<T> = Array<T>;
+
+/// A span in which each element relates (by index) to a commitment tree.
+pub type TreeSpan<T> = Span<T>;

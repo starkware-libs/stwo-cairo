@@ -103,7 +103,7 @@ fn extract_composition_coordinate_eval(
 #[derive(Clone, Copy, Debug, Drop)]
 pub struct InvalidOodsSampleStructure {}
 
-// TODO(andrew): Consider removing this type and Serde. 
+// TODO(andrew): Consider removing this type and Serde.
 // Instead just read from a proof buffer like the STARK verifier on Ethereum.
 #[derive(Drop, Serde)]
 pub struct StarkProof {
