@@ -9,8 +9,8 @@ use json::{PrivateInput, PublicInput};
 use thiserror::Error;
 use tracing::{span, Level};
 
-use super::instructions::Instructions;
 use super::mem::MemConfig;
+use super::state_transitions::StateTransitions;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
 use crate::input::SegmentAddrs;
@@ -48,7 +48,8 @@ pub fn import_from_vm_output(
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
     let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
-    let instructions = Instructions::from_iter(TraceIter(&mut trace_file), &mut mem, false);
+    let state_transitions =
+        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, false);
 
     let public_mem_addresses = pub_data
         .public_memory
@@ -57,7 +58,7 @@ pub fn import_from_vm_output(
         .collect();
 
     Ok(CairoInput {
-        instructions,
+        state_transitions,
         mem: mem.build(),
         public_mem_addresses,
         range_check_builtin: SegmentAddrs {
@@ -128,7 +129,6 @@ pub mod tests {
     use std::path::PathBuf;
 
     use super::*;
-    use crate::input::instructions::InstructionCounts;
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -149,49 +149,130 @@ pub mod tests {
         )
     }
 
+    // TODO (Stav): Once all the components are in, verify the proof to ensure the sort was correct.
     #[ignore]
     #[test]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
+        let components = input.state_transitions.vm_state_by_opcode;
+        assert_eq!(components.generic_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_f.len(), 0);
+        assert_eq!(components.add_ap_opcode_is_imm_t_op1_base_fp_f.len(), 36895);
+        assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_t.len(), 33);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 94680);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 181481);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 44567);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 12141);
         assert_eq!(
-            input.instructions.counts(),
-            InstructionCounts {
-                ret: 49472,
-                add_ap: 36895,
-                jmp_rel_imm: [31873866, 0],
-                jmp_abs: [0, 0, 0, 0],
-                call_rel_imm: 49439,
-                call_abs: [0, 33],
-                jnz_imm: [20957, 5100, 30113, 11235, 6075, 0, 20947, 0],
-                mov_mem: 233432,
-                deref: 811061,
-                push_imm: 43184,
-                generic: 362623
-            }
+            components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
+            233432
         );
-        println!("Instruction counts: {:#?}", input.instructions.counts());
+        assert_eq!(
+            components.assert_eq_opcode_is_double_deref_t_is_imm_f.len(),
+            811061
+        );
+        assert_eq!(
+            components.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
+            43184
+        );
+        assert_eq!(components.call_opcode_is_rel_f_op1_base_fp_f.len(), 0);
+        assert_eq!(components.call_opcode_is_rel_t_op1_base_fp_f.len(), 49439);
+        assert_eq!(components.call_opcode_is_rel_f_op1_base_fp_t.len(), 33);
+        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_t.len(), 11235);
+        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_f.len(), 27032);
+        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_f.len(), 51060);
+        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_t.len(), 5100);
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+                .len(),
+            31873865
+        );
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
+                .len(),
+            500
+        );
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
+                .len(),
+            32
+        );
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
+                .len(),
+            0
+        );
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 14653);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 8574);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 2572);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 3390);
+        assert_eq!(components.ret_opcode.len(), 49472);
     }
 
     #[ignore]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
+        let components = input.state_transitions.vm_state_by_opcode;
+        assert_eq!(components.generic_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_f.len(), 0);
+        assert_eq!(components.add_ap_opcode_is_imm_t_op1_base_fp_f.len(), 2);
+        assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_t.len(), 1);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 750);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 0);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 0);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 200);
         assert_eq!(
-            input.instructions.counts(),
-            InstructionCounts {
-                ret: 462,
-                add_ap: 2,
-                jmp_rel_imm: [124627, 0],
-                jmp_abs: [0, 0, 0, 0],
-                call_rel_imm: 462,
-                call_abs: [0, 0],
-                jnz_imm: [0, 11, 0, 450, 0, 0, 0, 0],
-                mov_mem: 55,
-                deref: 2100,
-                push_imm: 1952,
-                generic: 951
-            }
+            components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
+            55
         );
-        println!("Instruction counts: {:#?}", input.instructions.counts());
+        assert_eq!(
+            components.assert_eq_opcode_is_double_deref_t_is_imm_f.len(),
+            2100
+        );
+        assert_eq!(
+            components.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
+            1952
+        );
+        assert_eq!(components.call_opcode_is_rel_f_op1_base_fp_f.len(), 0);
+        assert_eq!(components.call_opcode_is_rel_t_op1_base_fp_f.len(), 462);
+        assert_eq!(components.call_opcode_is_rel_f_op1_base_fp_t.len(), 0);
+        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_t.len(), 450);
+        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_f.len(), 0);
+        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_f.len(), 0);
+        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_t.len(), 11);
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+                .len(),
+            124626
+        );
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
+                .len(),
+            0
+        );
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
+                .len(),
+            0
+        );
+        assert_eq!(
+            components
+                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
+                .len(),
+            0
+        );
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 0);
+        assert_eq!(components.ret_opcode.len(), 462);
     }
 }
