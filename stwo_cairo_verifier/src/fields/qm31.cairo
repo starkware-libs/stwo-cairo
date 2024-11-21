@@ -162,6 +162,7 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
     #[inline]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
+        // QM31Impl::fma(lhs, rhs, qm31(0, 0, 0, 0))
         QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
