@@ -11,17 +11,17 @@ use core::option::OptionTrait;
 use crate::utils::SpanExTrait;
 use crate::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use crate::vcs::hasher::MerkleHasher;
-use crate::{BaseField, ColumnArray};
+use crate::{BaseField, ColumnSpan};
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
     /// order they are needed.
-    pub hash_witness: Array<H::Hash>,
+    pub hash_witness: Span<H::Hash>,
     /// Column values that the verifier needs but cannot deduce from previous computations, in the
     /// order they are needed.
     /// This complements the column values that were queried. These must be supplied directly to
     /// the verifier.
-    pub column_witness: Array<BaseField>,
+    pub column_witness: Span<BaseField>,
 }
 
 impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
@@ -45,7 +45,7 @@ impl MerkleDecommitmentClone<
 }
 
 impl MerkleDecommitmentSerde<
-    impl H: MerkleHasher, +Serde<H::Hash>, +Drop<H::Hash>,
+    impl H: MerkleHasher, +Serde<Span<H::Hash>>,
 > of Serde<MerkleDecommitment<H>> {
     fn serialize(self: @MerkleDecommitment<H>, ref output: Array<felt252>) {
         self.hash_witness.serialize(ref output);
@@ -95,7 +95,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     fn verify(
         self: @MerkleVerifier<H>,
         queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: @ColumnArray<Array<BaseField>>,
+        queried_values: ColumnSpan<Array<BaseField>>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError>;
 
@@ -108,7 +108,7 @@ impl MerkleVerifierImpl<
     fn verify(
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: @Array<Array<BaseField>>,
+        queried_values: ColumnSpan<Array<BaseField>>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
@@ -173,7 +173,7 @@ impl MerkleVerifierImpl<
                     } else {
                         break Result::Err(MerkleVerificationError::WitnessTooShort);
                     };
-                    Option::Some((left_hash, right_hash))
+                    Option::Some((*left_hash, *right_hash))
                 };
 
                 // If the column values were queried, read them from `queried_value`.
@@ -186,7 +186,7 @@ impl MerkleVerifierImpl<
                         i += 1;
                     };
                     col_query_index += 1;
-                    res
+                    res.span()
                 } else {
                     column_witness.pop_front_n(n_columns_in_layer)
                 };
@@ -266,21 +266,20 @@ fn next_decommitment_node<H>(
 
 /// Fetches the hash of the next node from the previous layer in the Merkle tree.
 /// The hash is fetched either from the computed values or from the witness.
+#[inline]
 fn fetch_prev_node_hash<H, +Copy<H>, +Drop<H>>(
-    ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Array<H>, expected_query: u32,
-) -> Option<H> {
+    ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Span<H>, expected_query: u32,
+) -> Option<@H> {
     // If the child was computed, use that value.
-    if let Option::Some((q, h)) = prev_layer_hashes.get(0).as_unboxed() {
+    let mut prev_layer_hashes_span = prev_layer_hashes.span();
+    if let Option::Some((q, h)) = prev_layer_hashes_span.pop_front() {
         if *q == expected_query {
-            prev_layer_hashes.pop_front().unwrap();
-            return Option::Some(*h);
+            let _ = prev_layer_hashes.pop_front();
+            return Option::Some(h);
         }
     }
     // If the child was not computed, read it from the witness.
-    if let Option::Some(h) = hash_witness.pop_front() {
-        return Option::Some(h);
-    }
-    Option::None
+    hash_witness.pop_front()
 }
 
 #[derive(Drop, Debug)]
@@ -315,7 +314,8 @@ mod tests {
                 0x01b4e5f9533e652324ab6b5747edc3343db8f1b9432cdcf2e5ea54fa156ba483,
                 0x04a389ddc8e37da68b73c185460f372a5ed8a09eab0f51c63578776db8d1b5ae,
                 0x03adfd255329a9a3d49792362f34630fd6b04cc7efdb3a6a175c70b988915cdc,
-            ],
+            ]
+                .span(),
             column_witness: array![
                 m31(885772305),
                 m31(94648313),
@@ -323,7 +323,8 @@ mod tests {
                 m31(957953858),
                 m31(608524802),
                 m31(428382412),
-            ],
+            ]
+                .span(),
         };
         let mut queries_per_log_size = Default::default();
         queries_per_log_size.insert(3, NullableTrait::new(array![2, 5, 7].span()));
@@ -339,9 +340,10 @@ mod tests {
             array![m31(996158769), m31(69309287), m31(420798739)],
             array![m31(650584843), m31(942699537), m31(310081088)],
             array![m31(71167745), m31(330264928), m31(409791388)],
-        ];
+        ]
+            .span();
         MerkleVerifier { root, column_log_sizes }
-            .verify(queries_per_log_size, @queried_values, decommitment)
+            .verify(queries_per_log_size, queried_values, decommitment)
             .expect('verification failed');
     }
 }

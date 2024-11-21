@@ -130,7 +130,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
             let tree = self.trees[tree_i];
             let decommitment = decommitments.next().unwrap();
-            let queried_values = queried_values[tree_i];
+            let queried_values = queried_values[tree_i].span();
 
             let mut queries_per_log_size = Default::default();
 
