@@ -22,7 +22,7 @@ use crate::components::range_check_vector::{
 };
 use crate::components::{genericopcode, ret_opcode, verifyinstruction};
 use crate::felt::split_f252;
-use crate::input::instructions::Instructions;
+use crate::input::state_transitions::StateTransitions;
 use crate::input::CairoInput;
 use crate::relations;
 
@@ -150,15 +150,19 @@ pub struct OpcodesClaimGenerator {
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
-    pub fn new(input: Instructions) -> Self {
+    pub fn new(input: StateTransitions) -> Self {
         // TODO(Ohad): decide split sizes for opcode traces.
         let mut generic = vec![];
         let mut ret = vec![];
-        if !input.generic.is_empty() {
-            generic.push(genericopcode::ClaimGenerator::new(input.generic));
+        if !input.casm_states_by_opcode.generic_opcode.is_empty() {
+            generic.push(genericopcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.generic_opcode,
+            ));
         }
-        if !input.ret.is_empty() {
-            ret.push(ret_opcode::ClaimGenerator::new(input.ret));
+        if !input.casm_states_by_opcode.ret_opcode.is_empty() {
+            ret.push(ret_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.ret_opcode,
+            ));
         }
         Self { ret, generic }
     }
@@ -305,9 +309,9 @@ pub struct CairoClaimGenerator {
 }
 impl CairoClaimGenerator {
     pub fn new(input: CairoInput) -> Self {
-        let initial_state = input.instructions.initial_state;
-        let final_state = input.instructions.final_state;
-        let opcodes = OpcodesClaimGenerator::new(input.instructions);
+        let initial_state = input.state_transitions.initial_state;
+        let final_state = input.state_transitions.final_state;
+        let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator = verifyinstruction::ClaimGenerator::default();
         let mut memory_addr_to_id_trace_generator = addr_to_id::ClaimGenerator::new(&input.mem);
         let mut memory_id_to_value_trace_generator = id_to_f252::ClaimGenerator::new(&input.mem);
