@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::fmt::Debug;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 
@@ -408,7 +409,6 @@ pub const FELT252_BITS_PER_WORD: usize = 9;
 pub const P_FELTS: [u32; FELT252_N_WORDS] = [
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 0, 0, 256,
 ];
-pub const P_BIG_UINT_LIMBS: [u64; 4] = [1, 0, 0, 2_u64.pow(59) + 17];
 
 // A non-redundant representation of a 252-bit element in the field of numbers
 // modulo the prime 2**251 + 17 * 2**192 + 1.
@@ -433,7 +433,7 @@ impl Felt252 {
         M31::from_u32_unchecked(value)
     }
 
-    pub fn from_limbs(felts: &[M31]) -> Self {
+    pub fn from_limbs(felts: Vec<M31>) -> Self {
         assert!(felts.len() <= FELT252_N_WORDS, "Invalid number of felts");
         let mut limbs = [0u64; 4];
         for (index, felt) in felts.iter().enumerate() {
@@ -453,17 +453,6 @@ impl Felt252 {
     pub fn from_m31(felt: M31) -> Self {
         Self {
             limbs: [felt.0 as u64, 0, 0, 0],
-        }
-    }
-
-    pub fn from_biguint256(biguint: BigUInt<256, 4>) -> Self {
-        assert!(
-            Uint::<256, 4>::from_limbs(biguint.limbs) < Uint::from_limbs(P_BIG_UINT_LIMBS),
-            "BigUInt is too big"
-        );
-
-        Self {
-            limbs: biguint.limbs,
         }
     }
 }
@@ -609,7 +598,24 @@ impl<const B: usize, const L: usize> From<[u64; L]> for BigUInt<B, L> {
     }
 }
 
+const CHILD_BITS: usize = 12;
+
 impl<const B: usize, const L: usize> BigUInt<B, L> {
+    pub fn get_m31(&self, index: usize) -> M31 {
+        let mask = (1u64 << CHILD_BITS) - 1;
+        let shift = CHILD_BITS * index;
+        let low_limb = shift / 64;
+        let shift_low = shift & 0x3F;
+        let high_limb = min((shift + CHILD_BITS - 1) / 64, L - 1);
+        let value = if low_limb == high_limb {
+            ((self.limbs[low_limb] >> (shift_low)) & mask) as u32
+        } else {
+            (((self.limbs[low_limb] >> (shift_low)) | (self.limbs[high_limb] << (64 - shift_low)))
+                & mask) as u32
+        };
+        M31::from_u32_unchecked(value)
+    }
+
     pub fn get_u64(&self, index: usize) -> UInt64 {
         UInt64 {
             value: self.limbs[index],
