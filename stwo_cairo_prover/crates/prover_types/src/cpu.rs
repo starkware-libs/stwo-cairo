@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::fmt::Debug;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 
@@ -599,6 +600,7 @@ impl<const B: usize, const L: usize> From<[u64; L]> for BigUInt<B, L> {
 
 // Length of each modulo builtin word in bits.
 pub const MOD_BUILTIN_WORD_BIT_LEN: usize = 96;
+const CHILD_BITS: usize = 12;
 
 impl<const B: usize, const L: usize> BigUInt<B, L> {
     pub fn from_felt252_array(mod_words: Vec<Felt252>) -> Self {
@@ -632,6 +634,23 @@ impl<const B: usize, const L: usize> BigUInt<B, L> {
         assert!(cum_len <= B, "BigUInt is too big");
 
         Self { limbs }
+    }
+
+    // Given an index, returns the child of index `index` of the partition into limbs of CHILD_BITS
+    // bits as a M31 felt.
+    pub fn get_m31(&self, index: usize) -> M31 {
+        let mask = (1u64 << CHILD_BITS) - 1;
+        let child_start = CHILD_BITS * index;
+        let low_limb = child_start / 64;
+        let shift_low = child_start & 0x3F;
+        let high_limb = min((child_start + CHILD_BITS - 1) / 64, L - 1);
+        let value = if low_limb == high_limb {
+            ((self.limbs[low_limb] >> (shift_low)) & mask) as u32
+        } else {
+            (((self.limbs[low_limb] >> (shift_low)) | (self.limbs[high_limb] << (64 - shift_low)))
+                & mask) as u32
+        };
+        M31::from_u32_unchecked(value)
     }
 
     pub fn get_u64(&self, index: usize) -> UInt64 {
