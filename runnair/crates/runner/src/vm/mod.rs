@@ -1,14 +1,11 @@
 pub mod add_ap;
+pub mod jmp;
 pub mod operand;
 
 use stwo_prover::core::fields::m31::M31;
 
-use self::add_ap::{
-    addap_add_ap_ap, addap_add_ap_fp, addap_add_fp_ap, addap_add_fp_fp, addap_add_imm_ap,
-    addap_add_imm_fp, addap_deref_ap, addap_deref_fp, addap_double_deref_ap, addap_double_deref_fp,
-    addap_imm, addap_mul_ap_ap, addap_mul_ap_fp, addap_mul_fp_ap, addap_mul_fp_fp,
-    addap_mul_imm_ap, addap_mul_imm_fp,
-};
+use self::add_ap::*;
+use self::jmp::*;
 use crate::memory::Memory;
 
 #[derive(Clone, Copy, Debug)]
