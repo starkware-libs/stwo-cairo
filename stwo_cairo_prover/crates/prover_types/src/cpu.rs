@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::fmt::Debug;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 
@@ -12,7 +13,7 @@ pub const PRIME: u32 = 2_u32.pow(31) - 1;
 pub trait AlgebraicType: ProverType + Add + Sub + Mul + Div {}
 impl AlgebraicType for M31 {}
 impl AlgebraicType for Felt252 {}
-impl<const B: usize, const L: usize> AlgebraicType for BigUInt<B, L> {}
+impl<const B: usize, const L: usize, const F: usize> AlgebraicType for BigUInt<B, L, F> {}
 
 pub trait NumericType: ProverType + Rem + Shl + Shr + BitAnd + BitOr + BitXor {}
 impl NumericType for UInt16 {}
@@ -554,18 +555,26 @@ impl ProverType for Felt252 {
     }
 }
 
+// Length of each modulo builtin word in bits.
+pub const MOD_BUILTIN_WORD_BIT_LEN: usize = 96;
+// Length of each biguint word in bits.
+pub const BIGUINT_BITS_PER_WORD: usize = 12;
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-pub struct BigUInt<const B: usize, const L: usize> {
+// B is the number of bits in the BigUInt.
+// L is the number of 64-bit limbs in the BigUInt.
+// F is the number of BIGUINT_BITS_PER_M31-bit limbs in the BigUInt.
+pub struct BigUInt<const B: usize, const L: usize, const F: usize> {
     pub limbs: [u64; L],
 }
 
-impl<const B: usize, const L: usize> Default for BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> Default for BigUInt<B, L, F> {
     fn default() -> Self {
         Self { limbs: [0; L] }
     }
 }
 
-impl<const B: usize, const L: usize> ProverType for BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> ProverType for BigUInt<B, L, F> {
     fn calc(&self) -> String {
         format!("{:?}", self.limbs)
     }
@@ -578,29 +587,26 @@ impl<const B: usize, const L: usize> ProverType for BigUInt<B, L> {
 }
 
 // Convert between BigUInt and Uint for performing field operations.
-impl<const B: usize, const L: usize> From<BigUInt<B, L>> for Uint<B, L> {
-    fn from(n: BigUInt<B, L>) -> Uint<B, L> {
+impl<const B: usize, const L: usize, const F: usize> From<BigUInt<B, L, F>> for Uint<B, L> {
+    fn from(n: BigUInt<B, L, F>) -> Uint<B, L> {
         Uint::from_limbs(n.limbs)
     }
 }
 
-impl<const B: usize, const L: usize> From<Uint<B, L>> for BigUInt<B, L> {
-    fn from(n: Uint<B, L>) -> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> From<Uint<B, L>> for BigUInt<B, L, F> {
+    fn from(n: Uint<B, L>) -> BigUInt<B, L, F> {
         let limbs = n.into_limbs();
         BigUInt { limbs }
     }
 }
 
-impl<const B: usize, const L: usize> From<[u64; L]> for BigUInt<B, L> {
-    fn from(limbs: [u64; L]) -> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> From<[u64; L]> for BigUInt<B, L, F> {
+    fn from(limbs: [u64; L]) -> BigUInt<B, L, F> {
         BigUInt { limbs }
     }
 }
 
-// Length of each modulo builtin word in bits.
-pub const MOD_BUILTIN_WORD_BIT_LEN: usize = 96;
-
-impl<const B: usize, const L: usize> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> BigUInt<B, L, F> {
     pub fn from_felt252_array(mod_words: Vec<Felt252>) -> Self {
         // only takes MODULO_WORD_BIT_LEN from each Felt252
         let needed_bits = mod_words.len() * MOD_BUILTIN_WORD_BIT_LEN;
@@ -634,28 +640,25 @@ impl<const B: usize, const L: usize> BigUInt<B, L> {
         Self { limbs }
     }
 
-    pub fn get_u64(&self, index: usize) -> UInt64 {
-        UInt64 {
-            value: self.limbs[index],
-        }
+    // Returns the BIGUINT_BITS_PER_WORD-bit word at the given index.
+    pub fn get_m31(&self, index: usize) -> M31 {
+        let mask = (1u64 << BIGUINT_BITS_PER_WORD) - 1;
+        let shift = BIGUINT_BITS_PER_WORD * index;
+        let low_limb = shift / 64;
+        let shift_low = shift & 0x3F;
+        let high_limb = (shift + BIGUINT_BITS_PER_WORD - 1) / 64;
+        let value = if low_limb == high_limb {
+            ((self.limbs[low_limb] >> (shift_low)) & mask) as u32
+        } else {
+            (((self.limbs[low_limb] >> (shift_low)) | (self.limbs[high_limb] << (64 - shift_low)))
+                & mask) as u32
+        };
+        M31::from_u32_unchecked(value)
     }
 
-    pub fn from_limbs(limbs: Vec<UInt64>) -> Self {
-        assert!(limbs.len() <= L, "Invalid number of limbs");
-        let mut res = [0; L];
-        for (index, limb) in limbs.iter().enumerate() {
-            res[index] = limb.value;
-        }
-        Self { limbs: res }
-    }
-
-    pub fn from_u64(limb: UInt64) -> Self {
-        let mut limbs = [0; L];
-        limbs[0] = limb.value;
-        Self { limbs }
-    }
-
-    pub fn from_biguint<const OB: usize, const OL: usize>(other: BigUInt<OB, OL>) -> Self {
+    pub fn from_biguint<const OB: usize, const OL: usize, const OF: usize>(
+        other: BigUInt<OB, OL, OF>,
+    ) -> Self {
         if OL > L && !other.limbs.iter().skip(L).all(|&x| x == 0) {
             panic!("BigUInt is too big");
         }
@@ -667,10 +670,10 @@ impl<const B: usize, const L: usize> BigUInt<B, L> {
         Self { limbs }
     }
 
-    pub fn widening_mul<const DB: usize, const DL: usize>(
+    pub fn widening_mul<const DB: usize, const DL: usize, const DF: usize>(
         self,
-        rhs: BigUInt<B, L>,
-    ) -> BigUInt<DB, DL> {
+        rhs: BigUInt<B, L, F>,
+    ) -> BigUInt<DB, DL, DF> {
         let self_uint: Uint<B, L> = self.into();
         let rhs_uint: Uint<B, L> = rhs.into();
 
@@ -687,9 +690,9 @@ impl<const B: usize, const L: usize> BigUInt<B, L> {
     }
 }
 
-impl<const B: usize, const L: usize> Add for BigUInt<B, L> {
-    type Output = BigUInt<B, L>;
-    fn add(self, other: BigUInt<B, L>) -> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> Add for BigUInt<B, L, F> {
+    type Output = BigUInt<B, L, F>;
+    fn add(self, other: BigUInt<B, L, F>) -> BigUInt<B, L, F> {
         let self_uint: Uint<B, L> = self.into();
         let other_uint: Uint<B, L> = other.into();
 
@@ -697,9 +700,9 @@ impl<const B: usize, const L: usize> Add for BigUInt<B, L> {
     }
 }
 
-impl<const B: usize, const L: usize> Sub for BigUInt<B, L> {
-    type Output = BigUInt<B, L>;
-    fn sub(self, other: BigUInt<B, L>) -> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> Sub for BigUInt<B, L, F> {
+    type Output = BigUInt<B, L, F>;
+    fn sub(self, other: BigUInt<B, L, F>) -> BigUInt<B, L, F> {
         let self_uint: Uint<B, L> = self.into();
         let other_uint: Uint<B, L> = other.into();
 
@@ -707,9 +710,9 @@ impl<const B: usize, const L: usize> Sub for BigUInt<B, L> {
     }
 }
 
-impl<const B: usize, const L: usize> Mul for BigUInt<B, L> {
-    type Output = BigUInt<B, L>;
-    fn mul(self, other: BigUInt<B, L>) -> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> Mul for BigUInt<B, L, F> {
+    type Output = BigUInt<B, L, F>;
+    fn mul(self, other: BigUInt<B, L, F>) -> BigUInt<B, L, F> {
         let self_uint: Uint<B, L> = self.into();
         let other_uint: Uint<B, L> = other.into();
 
@@ -717,9 +720,9 @@ impl<const B: usize, const L: usize> Mul for BigUInt<B, L> {
     }
 }
 
-impl<const B: usize, const L: usize> Div for BigUInt<B, L> {
-    type Output = BigUInt<B, L>;
-    fn div(self, other: BigUInt<B, L>) -> BigUInt<B, L> {
+impl<const B: usize, const L: usize, const F: usize> Div for BigUInt<B, L, F> {
+    type Output = BigUInt<B, L, F>;
+    fn div(self, other: BigUInt<B, L, F>) -> BigUInt<B, L, F> {
         let self_uint: Uint<B, L> = self.into();
         let other_uint: Uint<B, L> = other.into();
 
