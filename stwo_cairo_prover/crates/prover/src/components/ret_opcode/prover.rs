@@ -7,6 +7,7 @@ use num_traits::{One, Zero};
 use prover_types::cpu::*;
 use prover_types::simd::*;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Unpack;
@@ -23,8 +24,9 @@ use stwo_prover::core::utils::{bit_reverse, bit_reverse_coset_to_circle_domain_o
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
 use super::component::{Claim, InteractionClaim, RelationElements};
-use crate::components::{memory, opcodes, pack_values, verifyinstruction};
+use crate::components::{memory, pack_values, verifyinstruction};
 use crate::input::instructions::VmState;
+use crate::relations::*;
 
 pub type PackedInputType = PackedCasmState;
 pub type InputType = CasmState;
@@ -363,10 +365,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_lookup_elements: &memory::addr_to_id::RelationElements,
-        memoryidtobig_lookup_elements: &memory::id_to_f252::RelationElements,
-        verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
-        opcodes_lookup_elements: &opcodes::VmRelationElements,
+        memoryaddresstoid_lookup_elements: &AddrToIdRelation,
+        memoryidtobig_lookup_elements: &IdToValueRelation,
+        verifyinstruction_lookup_elements: &VerifyInstructionRelation,
+        opcodes_lookup_elements: &VmRelation,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);

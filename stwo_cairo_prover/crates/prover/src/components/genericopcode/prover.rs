@@ -6,6 +6,7 @@ use num_traits::{One, Zero};
 use prover_types::cpu::*;
 use prover_types::simd::*;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
@@ -23,11 +24,16 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::memory::{addr_to_id, id_to_f252};
-use crate::components::opcodes::VmRelationElements;
-use crate::components::{opcodes, pack_values, verifyinstruction};
+use crate::relations::*;
+use crate::components::{pack_values, verifyinstruction};
 use crate::input::instructions::VmState;
 use crate::components::range_check_vector::range_check_9_9;
 use crate::components::range_check_vector::range_check_19;
+use crate::relations::AddrToIdRelation;
+use crate::relations::IdToValueRelation;
+use crate::relations::RangeCheck_19Relation;
+use crate::relations::RangeCheck_9_9Relation;
+use crate::relations::VerifyInstructionRelation;
 
 
 
@@ -1299,17 +1305,17 @@ impl InteractionClaimGenerator {
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memoryaddresstoid_lookup_elements:
-            &addr_to_id::RelationElements,
+            &AddrToIdRelation,
         memoryidtobig_lookup_elements:
-            &id_to_f252::RelationElements,
+            &IdToValueRelation,
         range_check_19_lookup_elements:
-            &range_check_19::RelationElements,
+            &RangeCheck_19Relation,
         range_check_9_9_lookup_elements:
-            &range_check_9_9::RelationElements,
+            &RangeCheck_9_9Relation,
         verifyinstruction_lookup_elements:
-            &verifyinstruction::RelationElements,
+            &VerifyInstructionRelation,
         opcodes_lookup_elements:
-            &VmRelationElements,
+            &VmRelation,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);

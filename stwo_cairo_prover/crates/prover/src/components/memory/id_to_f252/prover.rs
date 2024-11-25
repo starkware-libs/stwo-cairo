@@ -4,6 +4,7 @@ use std::simd::Simd;
 use itertools::{chain, zip_eq, Itertools};
 use prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -19,13 +20,13 @@ use super::component::{
     Claim, InteractionClaim, BIG_N_ID_AND_VALUE_COLUMNS, MEMORY_ID_SIZE, N_M31_IN_SMALL_FELT252,
     SMALL_N_ID_AND_VALUE_COLUMNS,
 };
-use super::RelationElements;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::range_check_9_9;
 use crate::felt::split_f252_simd;
 use crate::input::mem::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_TAG,
 };
+use crate::relations::*;
 
 pub type PackedInputType = PackedBaseField;
 pub type InputType = BaseField;
@@ -270,8 +271,8 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &RelationElements,
-        range9_9_lookup_elements: &range_check_9_9::RelationElements,
+        lookup_elements: &IdToValueRelation,
+        range9_9_lookup_elements: &RangeCheck_9_9Relation,
     ) -> InteractionClaim {
         let big_table_log_size = self.big_ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
