@@ -43,8 +43,8 @@ impl Eval {
     ) -> Self {
         Self {
             claim,
-            memoryaddresstoid_lookup_elements,
-            memoryidtobig_lookup_elements,
+            addr_to_id_lookup_elements,
+            id_to_f252_lookup_elements,
             rangecheck_4_3_lookup_elements,
             range_check_7_2_5_lookup_elements,
             verifyinstruction_lookup_elements,
@@ -186,13 +186,13 @@ impl FrameworkEval for Eval {
         eval.add_constraint((input_col17.clone() * (M31_1.clone() - input_col17.clone())));
         eval.add_constraint((input_col18.clone() * (M31_1.clone() - input_col18.clone())));
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.addr_to_id_lookup_elements,
             E::EF::one(),
             &[input_col0.clone(), instruction_id_col27.clone()],
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.id_to_f252_lookup_elements,
             E::EF::one(),
             &[
                 instruction_id_col27.clone(),

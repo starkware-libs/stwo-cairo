@@ -53,8 +53,8 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
-        memoryidtobig_state: &mut memory::id_to_f252::ClaimGenerator,
+        addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
+        id_to_f252_state: &mut memory::id_to_f252::ClaimGenerator,
         verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
@@ -69,22 +69,19 @@ impl ClaimGenerator {
 
         let simd_inputs = pack_values(&self.inputs);
         let (trace, mut sub_components_inputs, lookup_data) =
-            write_trace_simd(simd_inputs, memoryaddresstoid_state, memoryidtobig_state);
+            write_trace_simd(simd_inputs, addr_to_id_state, id_to_f252_state);
 
         if need_padding {
             sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
         }
 
         // Add inputs.
-        memoryaddresstoid_state
-            .add_inputs(&sub_components_inputs.memoryaddresstoid_inputs[0][..n_calls]);
-        memoryaddresstoid_state
-            .add_inputs(&sub_components_inputs.memoryaddresstoid_inputs[1][..n_calls]);
-        memoryaddresstoid_state
-            .add_inputs(&sub_components_inputs.memoryaddresstoid_inputs[2][..n_calls]);
-        memoryidtobig_state.add_inputs(&sub_components_inputs.memoryidtobig_inputs[0][..n_calls]);
-        memoryidtobig_state.add_inputs(&sub_components_inputs.memoryidtobig_inputs[1][..n_calls]);
-        memoryidtobig_state.add_inputs(&sub_components_inputs.memoryidtobig_inputs[2][..n_calls]);
+        addr_to_id_state.add_inputs(&sub_components_inputs.addr_to_id_inputs[0][..n_calls]);
+        addr_to_id_state.add_inputs(&sub_components_inputs.addr_to_id_inputs[1][..n_calls]);
+        addr_to_id_state.add_inputs(&sub_components_inputs.addr_to_id_inputs[2][..n_calls]);
+        id_to_f252_state.add_inputs(&sub_components_inputs.id_to_f252_inputs[0][..n_calls]);
+        id_to_f252_state.add_inputs(&sub_components_inputs.id_to_f252_inputs[1][..n_calls]);
+        id_to_f252_state.add_inputs(&sub_components_inputs.id_to_f252_inputs[2][..n_calls]);
         verifyinstruction_state
             .add_inputs(&sub_components_inputs.verifyinstruction_inputs[0][..n_calls]);
 
@@ -114,25 +111,25 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs {
-    pub memoryaddresstoid_inputs: [Vec<memory::addr_to_id::InputType>; 3],
-    pub memoryidtobig_inputs: [Vec<memory::id_to_f252::InputType>; 3],
+    pub addr_to_id_inputs: [Vec<memory::addr_to_id::InputType>; 3],
+    pub id_to_f252_inputs: [Vec<memory::id_to_f252::InputType>; 3],
     pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],
 }
 impl SubComponentInputs {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            memoryaddresstoid_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
-            memoryidtobig_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
+            addr_to_id_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
+            id_to_f252_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
             verifyinstruction_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
         }
     }
 
     fn bit_reverse_coset_to_circle_domain_order(&mut self) {
-        for vec in self.memoryaddresstoid_inputs.iter_mut() {
+        for vec in self.addr_to_id_inputs.iter_mut() {
             bit_reverse_coset_to_circle_domain_order(vec);
         }
-        for vec in self.memoryidtobig_inputs.iter_mut() {
+        for vec in self.id_to_f252_inputs.iter_mut() {
             bit_reverse_coset_to_circle_domain_order(vec);
         }
         for vec in self.verifyinstruction_inputs.iter_mut() {
@@ -147,8 +144,8 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
-    memoryidtobig_state: &mut memory::id_to_f252::ClaimGenerator,
+    addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
+    id_to_f252_state: &mut memory::id_to_f252::ClaimGenerator,
 ) -> (
     [BaseColumn; N_TRACE_COLUMNS],
     SubComponentInputs,
@@ -181,10 +178,10 @@ pub fn write_trace_simd(
             trace[1].data[row_index] = input_ap_col1;
             let input_fp_col2 = tmp_0.fp;
             trace[2].data[row_index] = input_fp_col2;
-            sub_components_inputs.memoryaddresstoid_inputs[0].extend(input_pc_col0.to_array());
-            let tmp_55 = memoryaddresstoid_state.deduce_output(input_pc_col0);
-            sub_components_inputs.memoryidtobig_inputs[0].extend(tmp_55.to_array());
-            let tmp_56 = memoryidtobig_state.deduce_output(tmp_55);
+            sub_components_inputs.addr_to_id_inputs[0].extend(input_pc_col0.to_array());
+            let tmp_55 = addr_to_id_state.deduce_output(input_pc_col0);
+            sub_components_inputs.id_to_f252_inputs[0].extend(tmp_55.to_array());
+            let tmp_56 = id_to_f252_state.deduce_output(tmp_55);
             sub_components_inputs.verifyinstruction_inputs[0].extend(
                 (
                     input_pc_col0,
@@ -234,21 +231,21 @@ pub fn write_trace_simd(
                 M31_1,
                 M31_0,
             ]);
-            sub_components_inputs.memoryaddresstoid_inputs[1]
+            sub_components_inputs.addr_to_id_inputs[1]
                 .extend(((input_fp_col2) - (M31_1)).to_array());
-            let tmp_60 = memoryaddresstoid_state.deduce_output(((input_fp_col2) - (M31_1)));
+            let tmp_60 = addr_to_id_state.deduce_output(((input_fp_col2) - (M31_1)));
             let next_pc_id_col3 = tmp_60;
             trace[3].data[row_index] = next_pc_id_col3;
-            lookup_data.memoryaddresstoid[0].push([((input_fp_col2) - (M31_1)), next_pc_id_col3]);
-            sub_components_inputs.memoryidtobig_inputs[1].extend(next_pc_id_col3.to_array());
-            let tmp_61 = memoryidtobig_state.deduce_output(next_pc_id_col3);
+            lookup_data.addr_to_id[0].push([((input_fp_col2) - (M31_1)), next_pc_id_col3]);
+            sub_components_inputs.id_to_f252_inputs[1].extend(next_pc_id_col3.to_array());
+            let tmp_61 = id_to_f252_state.deduce_output(next_pc_id_col3);
             let next_pc_limb_0_col4 = tmp_61.get_m31(0);
             trace[4].data[row_index] = next_pc_limb_0_col4;
             let next_pc_limb_1_col5 = tmp_61.get_m31(1);
             trace[5].data[row_index] = next_pc_limb_1_col5;
             let next_pc_limb_2_col6 = tmp_61.get_m31(2);
             trace[6].data[row_index] = next_pc_limb_2_col6;
-            lookup_data.memoryidtobig[0].push([
+            lookup_data.id_to_f252[0].push([
                 next_pc_id_col3,
                 next_pc_limb_0_col4,
                 next_pc_limb_1_col5,
@@ -279,21 +276,21 @@ pub fn write_trace_simd(
                 M31_0,
                 M31_0,
             ]);
-            sub_components_inputs.memoryaddresstoid_inputs[2]
+            sub_components_inputs.addr_to_id_inputs[2]
                 .extend(((input_fp_col2) - (M31_2)).to_array());
-            let tmp_62 = memoryaddresstoid_state.deduce_output(((input_fp_col2) - (M31_2)));
+            let tmp_62 = addr_to_id_state.deduce_output(((input_fp_col2) - (M31_2)));
             let next_fp_id_col7 = tmp_62;
             trace[7].data[row_index] = next_fp_id_col7;
-            lookup_data.memoryaddresstoid[1].push([((input_fp_col2) - (M31_2)), next_fp_id_col7]);
-            sub_components_inputs.memoryidtobig_inputs[2].extend(next_fp_id_col7.to_array());
-            let tmp_63 = memoryidtobig_state.deduce_output(next_fp_id_col7);
+            lookup_data.addr_to_id[1].push([((input_fp_col2) - (M31_2)), next_fp_id_col7]);
+            sub_components_inputs.id_to_f252_inputs[2].extend(next_fp_id_col7.to_array());
+            let tmp_63 = id_to_f252_state.deduce_output(next_fp_id_col7);
             let next_fp_limb_0_col8 = tmp_63.get_m31(0);
             trace[8].data[row_index] = next_fp_limb_0_col8;
             let next_fp_limb_1_col9 = tmp_63.get_m31(1);
             trace[9].data[row_index] = next_fp_limb_1_col9;
             let next_fp_limb_2_col10 = tmp_63.get_m31(2);
             trace[10].data[row_index] = next_fp_limb_2_col10;
-            lookup_data.memoryidtobig[1].push([
+            lookup_data.id_to_f252[1].push([
                 next_fp_id_col7,
                 next_fp_limb_0_col8,
                 next_fp_limb_1_col9,
@@ -339,8 +336,8 @@ pub fn write_trace_simd(
 
 #[derive(Default)]
 pub struct LookupData {
-    pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 2],
-    pub memoryidtobig: [Vec<[PackedM31; 29]>; 2],
+    pub addr_to_id: [Vec<[PackedM31; 2]>; 2],
+    pub id_to_f252: [Vec<[PackedM31; 29]>; 2],
     pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
     pub opcodes: [Vec<[PackedM31; 3]>; 2],
 }
@@ -348,8 +345,8 @@ impl LookupData {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            memoryaddresstoid: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            memoryidtobig: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
+            addr_to_id: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
+            id_to_f252: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
             verifyinstruction: [Vec::with_capacity(capacity)],
             opcodes: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
         }
@@ -382,33 +379,33 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[0];
+        let lookup_row = &self.lookup_data.addr_to_id[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
+            let denom = addr_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[0];
+        let lookup_row = &self.lookup_data.id_to_f252[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            let denom = id_to_f252_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[1];
+        let lookup_row = &self.lookup_data.addr_to_id[1];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
+            let denom = addr_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[1];
+        let lookup_row = &self.lookup_data.id_to_f252[1];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            let denom = id_to_f252_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();

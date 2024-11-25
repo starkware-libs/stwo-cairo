@@ -563,12 +563,8 @@ impl OpcodeComponents {
                     tree_span_provider,
                     genericopcode::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
-                            .memory_addr_to_id
-                            .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
+                        addr_to_id_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+                        id_to_f252_lookup_elements: interaction_elements.memory_id_to_value.clone(),
                         verifyinstruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
@@ -591,12 +587,8 @@ impl OpcodeComponents {
                     tree_span_provider,
                     ret_opcode::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
-                            .memory_addr_to_id
-                            .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
+                        addr_to_id_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+                        id_to_f252_lookup_elements: interaction_elements.memory_id_to_value.clone(),
                         verifyinstruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),

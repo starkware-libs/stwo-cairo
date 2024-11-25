@@ -37,7 +37,7 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
+        addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
         rangecheck_4_3_state: &mut range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
@@ -53,7 +53,7 @@ impl ClaimGenerator {
 
         let simd_inputs = pack_values(&self.inputs);
         let (trace, mut sub_components_inputs, lookup_data) =
-            write_trace_simd(simd_inputs, memoryaddresstoid_state);
+            write_trace_simd(simd_inputs, addr_to_id_state);
 
         if need_padding {
             sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
@@ -97,7 +97,7 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs {
-    pub memoryaddresstoid_inputs: Vec<memory::addr_to_id::InputType>,
+    pub addr_to_id_inputs: Vec<memory::addr_to_id::InputType>,
     pub rangecheck_4_3_inputs: Vec<range_check_4_3::InputType>,
     pub range_check_7_2_5_inputs: Vec<range_check_7_2_5::InputType>,
 }
@@ -105,14 +105,14 @@ impl SubComponentInputs {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            memoryaddresstoid_inputs: Vec::with_capacity(capacity),
+            addr_to_id_inputs: Vec::with_capacity(capacity),
             rangecheck_4_3_inputs: Vec::with_capacity(capacity),
             range_check_7_2_5_inputs: Vec::with_capacity(capacity),
         }
     }
 
     fn bit_reverse_coset_to_circle_domain_order(&mut self) {
-        bit_reverse_coset_to_circle_domain_order(&mut self.memoryaddresstoid_inputs);
+        bit_reverse_coset_to_circle_domain_order(&mut self.addr_to_id_inputs);
         bit_reverse_coset_to_circle_domain_order(&mut self.rangecheck_4_3_inputs);
         bit_reverse_coset_to_circle_domain_order(&mut self.range_check_7_2_5_inputs);
     }
@@ -124,7 +124,7 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
+    addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
 ) -> (Vec<BaseColumn>, SubComponentInputs, LookupData) {
     const N_TRACE_COLUMNS: usize = 28;
     let mut trace_values: [_; N_TRACE_COLUMNS] =
@@ -257,13 +257,13 @@ pub fn write_trace_simd(
                 .extend([offset2_low_col24, offset2_high_col26].unpack());
             lookup_data.rangecheck_4_3[0].push([offset2_low_col24, offset2_high_col26]);
             sub_components_inputs
-                .memoryaddresstoid_inputs
+                .addr_to_id_inputs
                 .extend(input_col0.unpack());
-            let tmp_50 = memoryaddresstoid_state.deduce_output(input_col0);
+            let tmp_50 = addr_to_id_state.deduce_output(input_col0);
             let instruction_id_col27 = tmp_50;
             trace_values[27].data[row_index] = instruction_id_col27;
-            lookup_data.memoryaddresstoid[0].push([input_col0, instruction_id_col27]);
-            lookup_data.memoryidtobig[0].push([
+            lookup_data.addr_to_id[0].push([input_col0, instruction_id_col27]);
+            lookup_data.id_to_f252[0].push([
                 instruction_id_col27,
                 offset0_low_col19,
                 ((offset0_mid_col20) + ((offset1_low_col21) * (M31_128))),
@@ -334,8 +334,8 @@ pub fn write_trace_simd(
 
 #[derive(Default)]
 pub struct LookupData {
-    pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 1],
-    pub memoryidtobig: [Vec<[PackedM31; 29]>; 1],
+    pub addr_to_id: [Vec<[PackedM31; 2]>; 1],
+    pub id_to_f252: [Vec<[PackedM31; 29]>; 1],
     pub rangecheck_4_3: [Vec<[PackedM31; 2]>; 1],
     pub range_check_7_2_5: [Vec<[PackedM31; 3]>; 1],
     pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
@@ -344,8 +344,8 @@ impl LookupData {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            memoryaddresstoid: [Vec::with_capacity(capacity)],
-            memoryidtobig: [Vec::with_capacity(capacity)],
+            addr_to_id: [Vec::with_capacity(capacity)],
+            id_to_f252: [Vec::with_capacity(capacity)],
             rangecheck_4_3: [Vec::with_capacity(capacity)],
             range_check_7_2_5: [Vec::with_capacity(capacity)],
             verifyinstruction: [Vec::with_capacity(capacity)],
@@ -388,17 +388,17 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[0];
+        let lookup_row = &self.lookup_data.addr_to_id[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
+            let denom = addr_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[0];
+        let lookup_row = &self.lookup_data.id_to_f252[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            let denom = id_to_f252_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();

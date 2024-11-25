@@ -1,7 +1,10 @@
 use prover_types::simd::N_LANES;
 use stwo_prover::core::backend::simd::conversion::Pack;
 
+pub mod addapopcode_is_imm_t_op1_base_fp_f;
+pub mod callopcode_is_rel_t_op1_base_fp_f;
 pub mod genericopcode;
+pub mod jumpopcode_is_rel_t_is_imm_t_is_double_deref_f;
 pub mod memory;
 pub mod range_check_vector;
 pub mod ret_opcode;

@@ -414,7 +414,7 @@ impl FrameworkEval for Eval {
         // ReadPositive_num_bits_252.
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.addr_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((dst_base_fp_col6.clone() * input_fp_col2.clone())
@@ -425,7 +425,7 @@ impl FrameworkEval for Eval {
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.id_to_f252_lookup_elements,
             E::EF::one(),
             &[
                 dst_id_col21.clone(),
@@ -463,7 +463,7 @@ impl FrameworkEval for Eval {
         // ReadPositive_num_bits_252.
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.addr_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((op0_base_fp_col7.clone() * input_fp_col2.clone())
@@ -474,7 +474,7 @@ impl FrameworkEval for Eval {
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.id_to_f252_lookup_elements,
             E::EF::one(),
             &[
                 op0_id_col50.clone(),
@@ -565,7 +565,7 @@ impl FrameworkEval for Eval {
         // ReadPositive_num_bits_252.
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.addr_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((((op1_base_fp_col9.clone() * input_fp_col2.clone())
@@ -581,7 +581,7 @@ impl FrameworkEval for Eval {
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.id_to_f252_lookup_elements,
             E::EF::one(),
             &[
                 op1_id_col79.clone(),
