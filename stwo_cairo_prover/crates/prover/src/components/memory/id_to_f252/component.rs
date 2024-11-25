@@ -1,18 +1,16 @@
 use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX,
+    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
 use stwo_prover::core::channel::Channel;
-use stwo_prover::core::fields::qm31::{SecureField, QM31};
+use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
-use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
+use stwo_prover::relation;
 
-use crate::components::range_check_vector::range_check_9_9;
+use crate::relations;
 
 // TODO(AlonH): Make memory size configurable.
 pub const MEMORY_ID_SIZE: usize = 1;
@@ -30,16 +28,16 @@ pub type BigComponent = FrameworkComponent<BigEval>;
 pub type SmallComponent = FrameworkComponent<SmallEval>;
 
 const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
-pub type RelationElements = LookupElements<N_LOGUP_POWERS>;
+
+relation!(RelationElements, N_LOGUP_POWERS);
 
 /// IDs are continuous and start from 0.
 /// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
 #[derive(Clone)]
 pub struct BigEval {
     pub log_n_rows: u32,
-    pub lookup_elements: RelationElements,
-    pub range9_9_lookup_elements: range_check_9_9::RelationElements,
-    pub claimed_sum: QM31,
+    pub lookup_elements: relations::IdToValue,
+    pub range9_9_lookup_elements: relations::RangeCheck_9_9,
 }
 impl BigEval {
     pub const fn n_columns(&self) -> usize {
@@ -47,15 +45,13 @@ impl BigEval {
     }
     pub fn new(
         claim: Claim,
-        lookup_elements: RelationElements,
-        range9_9_lookup_elements: range_check_9_9::RelationElements,
-        interaction_claim: InteractionClaim,
+        lookup_elements: relations::IdToValue,
+        range9_9_lookup_elements: relations::RangeCheck_9_9,
     ) -> Self {
         Self {
             log_n_rows: claim.big_log_size,
             lookup_elements,
             range9_9_lookup_elements,
-            claimed_sum: interaction_claim.big_claimed_sum,
         }
     }
 }
@@ -70,40 +66,33 @@ impl FrameworkEval for BigEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
-        let mut logup =
-            LogupAtRow::<E>::new(INTERACTION_TRACE_IDX, self.claimed_sum, None, is_first);
-
         let id_and_value: [E::F; MEMORY_ID_SIZE + N_M31_IN_FELT252] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.lookup_elements,
             E::EF::from(-multiplicity),
-            self.lookup_elements.combine(&id_and_value),
-        );
-        logup.write_frac(&mut eval, frac);
+            &id_and_value,
+        )]);
 
         // Range check elements.
         for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
-            let frac = Fraction::new(
+            eval.add_to_relation(&[RelationEntry::new(
+                &self.range9_9_lookup_elements,
                 E::EF::one(),
-                self.range9_9_lookup_elements
-                    .combine(&[l.clone(), r.clone()]),
-            );
-            logup.write_frac(&mut eval, frac);
+                &[l.clone(), r.clone()],
+            )]);
         }
 
-        logup.finalize(&mut eval);
-
+        eval.finalize_logup();
         eval
     }
 }
 
 pub struct SmallEval {
     pub log_n_rows: u32,
-    pub lookup_elements: RelationElements,
-    pub range_check_9_9_relation: range_check_9_9::RelationElements,
-    pub claimed_sum: QM31,
+    pub lookup_elements: relations::IdToValue,
+    pub range_check_9_9_relation: relations::RangeCheck_9_9,
 }
 impl SmallEval {
     pub const fn n_columns(&self) -> usize {
@@ -111,15 +100,13 @@ impl SmallEval {
     }
     pub fn new(
         claim: Claim,
-        lookup_elements: RelationElements,
-        range_check_9_9_relation: range_check_9_9::RelationElements,
-        interaction_claim: InteractionClaim,
+        lookup_elements: relations::IdToValue,
+        range_check_9_9_relation: relations::RangeCheck_9_9,
     ) -> Self {
         Self {
             log_n_rows: claim.small_log_size,
             lookup_elements,
             range_check_9_9_relation,
-            claimed_sum: interaction_claim.small_claimed_sum,
         }
     }
 }
@@ -133,31 +120,25 @@ impl FrameworkEval for SmallEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
-        let mut logup =
-            LogupAtRow::<E>::new(INTERACTION_TRACE_IDX, self.claimed_sum, None, is_first);
-
         let id_and_value: [E::F; SMALL_N_ID_AND_VALUE_COLUMNS] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.lookup_elements,
             E::EF::from(-multiplicity),
-            self.lookup_elements.combine(&id_and_value),
-        );
-        logup.write_frac(&mut eval, frac);
+            &id_and_value,
+        )]);
 
         // Range check elements.
         for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
-            let frac = Fraction::new(
+            eval.add_to_relation(&[RelationEntry::new(
+                &self.range_check_9_9_relation,
                 E::EF::one(),
-                self.range_check_9_9_relation
-                    .combine(&[l.clone(), r.clone()]),
-            );
-            logup.write_frac(&mut eval, frac);
+                &[l.clone(), r.clone()],
+            )]);
         }
 
-        logup.finalize(&mut eval);
-
+        eval.finalize_logup();
         eval
     }
 }

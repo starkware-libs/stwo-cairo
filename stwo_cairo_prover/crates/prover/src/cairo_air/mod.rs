@@ -29,7 +29,7 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
 
     // Setup protocol.
     let channel = &mut Blake2sChannel::default();
-    let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
+    let mut commitment_scheme = CommitmentSchemeProver::new(config, &twiddles);
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
