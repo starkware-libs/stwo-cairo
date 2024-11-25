@@ -148,7 +148,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if !dev_mode => self.add_ap.push(state),
+            } => self.add_ap.push(state),
             // jump rel imm.
             Instruction {
                 offset0: -1,

@@ -19,7 +19,9 @@ use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
 };
-use crate::components::{genericopcode, ret_opcode, verifyinstruction};
+use crate::components::{
+    addapopcode_is_imm_t_op1_base_fp_f, genericopcode, ret_opcode, verifyinstruction,
+};
 use crate::felt::split_f252;
 use crate::input::instructions::{Instructions, VmState};
 use crate::input::CairoInput;
@@ -37,17 +39,20 @@ pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
 #[derive(Serialize, Deserialize)]
 pub struct OpcodeClaim {
+    add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::Claim>,
     ret: Vec<ret_opcode::Claim>,
     generic: Vec<genericopcode::Claim>,
 }
 impl OpcodeClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.add_ap.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
+            self.add_ap.iter().map(|c| c.log_sizes()),
             self.generic.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
         ))
@@ -145,16 +150,24 @@ impl PublicData {
 }
 
 pub struct OpcodesClaimGenerator {
+    add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::ClaimGenerator>,
     generic: Vec<genericopcode::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
     pub fn new(input: Instructions) -> Self {
         // TODO(Ohad): decide split sizes for opcode traces.
+        let add_ap = vec![addapopcode_is_imm_t_op1_base_fp_f::ClaimGenerator::new(
+            input.add_ap,
+        )];
         let generic = vec![genericopcode::ClaimGenerator::new(input.generic)];
         let ret = vec![ret_opcode::ClaimGenerator::new(input.ret)];
 
-        Self { ret, generic }
+        Self {
+            add_ap,
+            ret,
+            generic,
+        }
     }
 
     pub fn write_trace(
@@ -166,6 +179,18 @@ impl OpcodesClaimGenerator {
         range_check_9_9_trace_generator: &mut range_check_9_9::ClaimGenerator,
         verify_instruction_trace_generator: &mut verifyinstruction::ClaimGenerator,
     ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
+        let (add_ap_claims, add_ap_interaction_gens) = self
+            .add_ap
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_addr_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
         let (generic_opcode_claims, generic_opcode_interaction_gens) = self
             .generic
             .into_iter()
@@ -194,10 +219,12 @@ impl OpcodesClaimGenerator {
             .unzip();
         (
             OpcodeClaim {
+                add_ap: add_ap_claims,
                 generic: generic_opcode_claims,
                 ret: ret_claims,
             },
             OpcodesInteractionClaimGenerator {
+                add_ap_interaction_gens,
                 generic_opcode_interaction_gens,
                 ret_interaction_gens,
             },
@@ -207,17 +234,25 @@ impl OpcodesClaimGenerator {
 
 #[derive(Serialize, Deserialize)]
 pub struct OpcodeInteractionClaim {
+    add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::InteractionClaim>,
     generic: Vec<genericopcode::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
 }
 impl OpcodeInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.add_ap.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
+        for interaction_claim in &self.add_ap {
+            sum += match interaction_claim.logup_sums.1 {
+                Some((claimed_sum, ..)) => claimed_sum,
+                None => interaction_claim.logup_sums.0,
+            };
+        }
         for interaction_claim in &self.generic {
             sum += match interaction_claim.claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
@@ -235,6 +270,7 @@ impl OpcodeInteractionClaim {
 }
 
 pub struct OpcodesInteractionClaimGenerator {
+    add_ap_interaction_gens: Vec<addapopcode_is_imm_t_op1_base_fp_f::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<genericopcode::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
@@ -244,6 +280,19 @@ impl OpcodesInteractionClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         interaction_elements: &CairoInteractionElements,
     ) -> OpcodeInteractionClaim {
+        let add_ap_cinteraciton_claims = self
+            .add_ap_interaction_gens
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_addr_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.verify_instruction,
+                    &interaction_elements.opcodes,
+                )
+            })
+            .collect();
         let generic_opcode_interaction_claims = self
             .generic_opcode_interaction_gens
             .into_iter()
@@ -273,6 +322,7 @@ impl OpcodesInteractionClaimGenerator {
             })
             .collect();
         OpcodeInteractionClaim {
+            add_ap: add_ap_cinteraciton_claims,
             generic: generic_opcode_interaction_claims,
             ret: ret_interaction_claims,
         }
@@ -544,6 +594,7 @@ pub fn lookup_sum(
 }
 
 pub struct OpcodeComponents {
+    add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::Component>,
     generic: Vec<genericopcode::Component>,
     ret: Vec<ret_opcode::Component>,
 }
@@ -554,6 +605,29 @@ impl OpcodeComponents {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &OpcodeInteractionClaim,
     ) -> Self {
+        let add_ap_components = claim
+            .add_ap
+            .iter()
+            .zip(interaction_claim.add_ap.iter())
+            .map(|(&claim, &interaction_claim)| {
+                addapopcode_is_imm_t_op1_base_fp_f::Component::new(
+                    tree_span_provider,
+                    addapopcode_is_imm_t_op1_base_fp_f::Eval {
+                        claim,
+                        addr_to_id_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+                        id_to_f252_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    (
+                        interaction_claim.logup_sums.0,
+                        interaction_claim.logup_sums.1,
+                    ),
+                )
+            })
+            .collect_vec();
         let generic_components = claim
             .generic
             .iter()
@@ -599,6 +673,7 @@ impl OpcodeComponents {
             })
             .collect_vec();
         Self {
+            add_ap: add_ap_components,
             generic: generic_components,
             ret: ret_components,
         }
@@ -606,6 +681,11 @@ impl OpcodeComponents {
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
         let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
+        vec.extend(
+            self.add_ap
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
         vec.extend(
             self.generic
                 .iter()

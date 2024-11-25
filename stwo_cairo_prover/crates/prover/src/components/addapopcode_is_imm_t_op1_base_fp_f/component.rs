@@ -34,7 +34,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let trace_log_sizes = vec![log_size; 9];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 8];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,

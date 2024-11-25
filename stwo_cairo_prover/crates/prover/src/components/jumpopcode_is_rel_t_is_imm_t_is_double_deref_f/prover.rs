@@ -34,6 +34,18 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
+    pub fn new(cpu_inputs: Vec<VmState>) -> Self {
+        let cpu_inputs = cpu_inputs
+            .into_iter()
+            .map(|VmState { pc, ap, fp }| CasmState {
+                pc: M31(pc),
+                ap: M31(ap),
+                fp: M31(fp),
+            })
+            .collect();
+        Self { inputs: cpu_inputs }
+    }
+    
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
