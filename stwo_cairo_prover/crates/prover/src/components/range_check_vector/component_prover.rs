@@ -7,13 +7,14 @@ macro_rules! range_check_prover {
 
             use itertools::{chain, Itertools};
             use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+            use stwo_prover::constraint_framework::Relation;
             use stwo_prover::core::backend::simd::column::BaseColumn;
             use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
             use stwo_prover::core::backend::simd::SimdBackend;
             use stwo_prover::core::fields::m31::M31;
             use stwo_prover::core::pcs::TreeBuilder;
-            use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
             use stwo_prover::core::poly::BitReversedOrder;
+            use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
             use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
             use $crate::components::range_check_vector::{generate_partitioned_enumeration,
@@ -164,7 +165,6 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::logup::LookupElements;
     use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
@@ -182,7 +182,6 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         const LOG_HEIGHT: u32 = 14;
         const LOG_BLOWUP_FACTOR: u32 = 1;
-        const N_RANGES: usize = 3;
         let log_ranges = [7, 2, 5];
         let twiddles = SimdBackend::precompute_twiddles(
             CanonicCoset::new(LOG_HEIGHT + LOG_BLOWUP_FACTOR)
@@ -219,7 +218,7 @@ mod tests {
         tree_builder.commit(channel);
         let mut tree_builder = commitment_scheme.tree_builder();
 
-        let lookup_elements = LookupElements::<N_RANGES>::draw(channel);
+        let lookup_elements = range_check_7_2_5::RelationElements::draw(channel);
         let interaction_claim = interaction_claim_generator
             .write_interaction_trace(&mut tree_builder, &lookup_elements);
         tree_builder.commit(channel);
@@ -227,10 +226,8 @@ mod tests {
         let tree_span_provider = &mut TraceLocationAllocator::default();
         let component = FrameworkComponent::new(
             tree_span_provider,
-            range_check_7_2_5::Eval {
-                lookup_elements,
-                claimed_sum: interaction_claim.claimed_sum,
-            },
+            range_check_7_2_5::Eval { lookup_elements },
+            (interaction_claim.claimed_sum, None),
         );
 
         let trace_polys = commitment_scheme
@@ -244,6 +241,7 @@ mod tests {
             |eval| {
                 component.evaluate(eval);
             },
+            (interaction_claim.claimed_sum, None),
         )
     }
 }

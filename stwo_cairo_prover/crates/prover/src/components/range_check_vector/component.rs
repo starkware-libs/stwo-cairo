@@ -5,21 +5,16 @@ macro_rules! range_check_eval{
                 use serde::{Deserialize, Serialize};
                 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
                 use stwo_prover::constraint_framework::FrameworkEval;
-                use stwo_prover::constraint_framework::INTERACTION_TRACE_IDX;
-                use stwo_prover::constraint_framework::logup::LogupAtRow;
-                use stwo_prover::constraint_framework::logup::LookupElements;
-                use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
                 use stwo_prover::core::channel::Channel;
                 use stwo_prover::core::fields::qm31::QM31;
                 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
-                use stwo_prover::core::lookups::utils::Fraction;
+                use stwo_prover::constraint_framework::RelationEntry;
                 use stwo_prover::core::pcs::TreeVec;
 
                 use $crate::components::memory::id_to_f252::component::N_MULTIPLICITY_COLUMNS;
 
                 const N_RANGES:usize = $crate::count_elements!($($log_range),*);
                 const RANGES : [u32; N_RANGES] = [$($log_range),+];
-                pub type RelationElements = LookupElements<N_RANGES>;
                 pub type Component = FrameworkComponent<[<Eval>]>;
 
                 #[derive(Clone, Deserialize, Serialize)]
@@ -58,15 +53,12 @@ macro_rules! range_check_eval{
 
                 pub struct Eval {
                     pub lookup_elements: RelationElements,
-                    pub claimed_sum: QM31,
                 }
                 impl Eval {
                     pub fn new(lookup_elements: RelationElements,
-                         interaction_claim: InteractionClaim
                         ) -> Self {
                         Self {
                             lookup_elements,
-                            claimed_sum: interaction_claim.claimed_sum,
                         }
                     }
                 }
@@ -79,28 +71,15 @@ macro_rules! range_check_eval{
                         self.log_size() + 1
                     }
                     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-                        let is_first = eval.get_preprocessed_column(
-                            PreprocessedColumn::IsFirst(self.log_size())
-                        );
-                        let mut logup =
-                            LogupAtRow::<E>::new(
-                                INTERACTION_TRACE_IDX,
-                                self.claimed_sum, None,
-                                is_first
-                            );
                         let rc_values: [E::F; N_RANGES] = std::array::from_fn(|_|
                              eval.next_trace_mask()
                             );
                         let multiplicity = eval.next_trace_mask();
-                        logup.write_frac(
-                            &mut eval,
-                            Fraction::new(
-                                E::EF::from(-multiplicity),
-                                self.lookup_elements.combine(&rc_values),
-                            ),
-                        );
-                        logup.finalize(&mut eval);
+                        eval.add_to_relation(&[RelationEntry::new(
+                            &self.lookup_elements, E::EF::from(-multiplicity), &rc_values
+                        )]);
 
+                        eval.finalize_logup();
                         eval
                     }
                 }

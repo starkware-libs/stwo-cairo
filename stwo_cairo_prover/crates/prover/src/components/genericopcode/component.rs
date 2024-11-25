@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX,
+    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, INTERACTION_TRACE_IDX,
 };
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES};
 use stwo_prover::core::channel::Channel;
@@ -38,7 +38,6 @@ impl RelationElements {
 
 pub struct Eval {
     pub claim: Claim,
-    pub interaction_claim: InteractionClaim,
     pub memoryaddresstoid_lookup_elements: addr_to_id::RelationElements,
     pub memoryidtobig_lookup_elements: id_to_f252::RelationElements,
     pub range_check_19_lookup_elements: range_check_19::RelationElements,
@@ -115,13 +114,6 @@ impl FrameworkEval for Eval {
         let M31_512 = E::F::from(M31::from(512));
         let M31_64 = E::F::from(M31::from(64));
         let M31_8 = E::F::from(M31::from(8));
-        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
-        let mut logup = LogupAtRow::<E>::new(
-            INTERACTION_TRACE_IDX,
-            self.interaction_claim.total_sum,
-            self.interaction_claim.claimed_sum,
-            is_first,
-        );
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -356,9 +348,10 @@ impl FrameworkEval for Eval {
 
         // DecodeInstruction_337193008ebaa578.
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.verifyinstruction_lookup_elements,
             E::EF::one(),
-            self.verifyinstruction_lookup_elements.combine(&[
+            &[
                 input_pc_col0.clone(),
                 offset0_col3.clone(),
                 offset1_col4.clone(),
@@ -378,9 +371,8 @@ impl FrameworkEval for Eval {
                 opcode_call_col18.clone(),
                 opcode_ret_col19.clone(),
                 opcode_assert_eq_col20.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
         let op1_base_op0_tmp_230 = (((M31_1.clone() - op1_imm_col8.clone())
             - op1_base_fp_col9.clone())
@@ -421,19 +413,21 @@ impl FrameworkEval for Eval {
 
         // ReadPositive_num_bits_252.
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
-            self.memoryaddresstoid_lookup_elements.combine(&[
+            &[
                 (((dst_base_fp_col6.clone() * input_fp_col2.clone())
                     + ((M31_1.clone() - dst_base_fp_col6.clone()) * input_ap_col1.clone()))
                     + (offset0_col3.clone() - M31_32768.clone())),
                 dst_id_col21.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryidtobig_lookup_elements,
             E::EF::one(),
-            self.memoryidtobig_lookup_elements.combine(&[
+            &[
                 dst_id_col21.clone(),
                 dst_limb_0_col22.clone(),
                 dst_limb_1_col23.clone(),
@@ -463,25 +457,26 @@ impl FrameworkEval for Eval {
                 dst_limb_25_col47.clone(),
                 dst_limb_26_col48.clone(),
                 dst_limb_27_col49.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
         // ReadPositive_num_bits_252.
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
-            self.memoryaddresstoid_lookup_elements.combine(&[
+            &[
                 (((op0_base_fp_col7.clone() * input_fp_col2.clone())
                     + ((M31_1.clone() - op0_base_fp_col7.clone()) * input_ap_col1.clone()))
                     + (offset1_col4.clone() - M31_32768.clone())),
                 op0_id_col50.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryidtobig_lookup_elements,
             E::EF::one(),
-            self.memoryidtobig_lookup_elements.combine(&[
+            &[
                 op0_id_col50.clone(),
                 op0_limb_0_col51.clone(),
                 op0_limb_1_col52.clone(),
@@ -511,9 +506,8 @@ impl FrameworkEval for Eval {
                 op0_limb_25_col76.clone(),
                 op0_limb_26_col77.clone(),
                 op0_limb_27_col78.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
         // CondFelt252AsAddr.
 
@@ -570,9 +564,10 @@ impl FrameworkEval for Eval {
 
         // ReadPositive_num_bits_252.
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
-            self.memoryaddresstoid_lookup_elements.combine(&[
+            &[
                 (((((op1_base_fp_col9.clone() * input_fp_col2.clone())
                     + (op1_base_ap_col10.clone() * input_ap_col1.clone()))
                     + (op1_imm_col8.clone() * input_pc_col0.clone()))
@@ -582,12 +577,13 @@ impl FrameworkEval for Eval {
                             + (op0_limb_2_col53.clone() * M31_262144.clone()))))
                     + (offset2_col5.clone() - M31_32768.clone())),
                 op1_id_col79.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryidtobig_lookup_elements,
             E::EF::one(),
-            self.memoryidtobig_lookup_elements.combine(&[
+            &[
                 op1_id_col79.clone(),
                 op1_limb_0_col80.clone(),
                 op1_limb_1_col81.clone(),
@@ -617,116 +613,123 @@ impl FrameworkEval for Eval {
                 op1_limb_25_col105.clone(),
                 op1_limb_26_col106.clone(),
                 op1_limb_27_col107.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
         // Add252.
 
         // RangeCheckBigValue.
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[add_res_limb_0_col108.clone(), add_res_limb_1_col109.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[add_res_limb_0_col108.clone(), add_res_limb_1_col109.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[add_res_limb_2_col110.clone(), add_res_limb_3_col111.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[add_res_limb_2_col110.clone(), add_res_limb_3_col111.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[add_res_limb_4_col112.clone(), add_res_limb_5_col113.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[add_res_limb_4_col112.clone(), add_res_limb_5_col113.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[add_res_limb_6_col114.clone(), add_res_limb_7_col115.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[add_res_limb_6_col114.clone(), add_res_limb_7_col115.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[add_res_limb_8_col116.clone(), add_res_limb_9_col117.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[add_res_limb_8_col116.clone(), add_res_limb_9_col117.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_10_col118.clone(),
                 add_res_limb_11_col119.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_12_col120.clone(),
                 add_res_limb_13_col121.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_14_col122.clone(),
                 add_res_limb_15_col123.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_16_col124.clone(),
                 add_res_limb_17_col125.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_18_col126.clone(),
                 add_res_limb_19_col127.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_20_col128.clone(),
                 add_res_limb_21_col129.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_22_col130.clone(),
                 add_res_limb_23_col131.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_24_col132.clone(),
                 add_res_limb_25_col133.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 add_res_limb_26_col134.clone(),
                 add_res_limb_27_col135.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
         // VerifyAdd252.
 
@@ -987,108 +990,116 @@ impl FrameworkEval for Eval {
 
         // RangeCheckBigValue.
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[mul_res_limb_0_col137.clone(), mul_res_limb_1_col138.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[mul_res_limb_0_col137.clone(), mul_res_limb_1_col138.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[mul_res_limb_2_col139.clone(), mul_res_limb_3_col140.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[mul_res_limb_2_col139.clone(), mul_res_limb_3_col140.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[mul_res_limb_4_col141.clone(), mul_res_limb_5_col142.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[mul_res_limb_4_col141.clone(), mul_res_limb_5_col142.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[mul_res_limb_6_col143.clone(), mul_res_limb_7_col144.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[mul_res_limb_6_col143.clone(), mul_res_limb_7_col144.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements
-                .combine(&[mul_res_limb_8_col145.clone(), mul_res_limb_9_col146.clone()]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            &[mul_res_limb_8_col145.clone(), mul_res_limb_9_col146.clone()],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_10_col147.clone(),
                 mul_res_limb_11_col148.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_12_col149.clone(),
                 mul_res_limb_13_col150.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_14_col151.clone(),
                 mul_res_limb_15_col152.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_16_col153.clone(),
                 mul_res_limb_17_col154.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_18_col155.clone(),
                 mul_res_limb_19_col156.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_20_col157.clone(),
                 mul_res_limb_21_col158.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_22_col159.clone(),
                 mul_res_limb_23_col160.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_24_col161.clone(),
                 mul_res_limb_25_col162.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_9_9_lookup_elements,
             E::EF::one(),
-            self.range_check_9_9_lookup_elements.combine(&[
+            &[
                 mul_res_limb_26_col163.clone(),
                 mul_res_limb_27_col164.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
         // VerifyMul252.
 
@@ -2056,284 +2067,284 @@ impl FrameworkEval for Eval {
         let conv_mod_tmp_869 = (((M31_0.clone() + (M31_2.clone() * conv_tmp_807.clone()))
             - (M31_4.clone() * conv_tmp_835.clone()))
             + (M31_2.clone() * conv_tmp_841.clone()));
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(k_col165.clone() + M31_262144.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(k_col165.clone() + M31_262144.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_0_col166.clone() * M31_512.clone())
                 - ((conv_mod_tmp_842.clone() - (M31_1.clone() * k_col165.clone()))
                     + M31_0.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_0_col166.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_0_col166.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_1_col167.clone() * M31_512.clone())
                 - (conv_mod_tmp_843.clone() + carry_0_col166.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_1_col167.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_1_col167.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_2_col168.clone() * M31_512.clone())
                 - (conv_mod_tmp_844.clone() + carry_1_col167.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_2_col168.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_2_col168.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_3_col169.clone() * M31_512.clone())
                 - (conv_mod_tmp_845.clone() + carry_2_col168.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_3_col169.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_3_col169.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_4_col170.clone() * M31_512.clone())
                 - (conv_mod_tmp_846.clone() + carry_3_col169.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_4_col170.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_4_col170.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_5_col171.clone() * M31_512.clone())
                 - (conv_mod_tmp_847.clone() + carry_4_col170.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_5_col171.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_5_col171.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_6_col172.clone() * M31_512.clone())
                 - (conv_mod_tmp_848.clone() + carry_5_col171.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_6_col172.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_6_col172.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_7_col173.clone() * M31_512.clone())
                 - (conv_mod_tmp_849.clone() + carry_6_col172.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_7_col173.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_7_col173.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_8_col174.clone() * M31_512.clone())
                 - (conv_mod_tmp_850.clone() + carry_7_col173.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_8_col174.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_8_col174.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_9_col175.clone() * M31_512.clone())
                 - (conv_mod_tmp_851.clone() + carry_8_col174.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_9_col175.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_9_col175.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_10_col176.clone() * M31_512.clone())
                 - (conv_mod_tmp_852.clone() + carry_9_col175.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_10_col176.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_10_col176.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_11_col177.clone() * M31_512.clone())
                 - (conv_mod_tmp_853.clone() + carry_10_col176.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_11_col177.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_11_col177.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_12_col178.clone() * M31_512.clone())
                 - (conv_mod_tmp_854.clone() + carry_11_col177.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_12_col178.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_12_col178.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_13_col179.clone() * M31_512.clone())
                 - (conv_mod_tmp_855.clone() + carry_12_col178.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_13_col179.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_13_col179.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_14_col180.clone() * M31_512.clone())
                 - (conv_mod_tmp_856.clone() + carry_13_col179.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_14_col180.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_14_col180.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_15_col181.clone() * M31_512.clone())
                 - (conv_mod_tmp_857.clone() + carry_14_col180.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_15_col181.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_15_col181.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_16_col182.clone() * M31_512.clone())
                 - (conv_mod_tmp_858.clone() + carry_15_col181.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_16_col182.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_16_col182.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_17_col183.clone() * M31_512.clone())
                 - (conv_mod_tmp_859.clone() + carry_16_col182.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_17_col183.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_17_col183.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_18_col184.clone() * M31_512.clone())
                 - (conv_mod_tmp_860.clone() + carry_17_col183.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_18_col184.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_18_col184.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_19_col185.clone() * M31_512.clone())
                 - (conv_mod_tmp_861.clone() + carry_18_col184.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_19_col185.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_19_col185.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_20_col186.clone() * M31_512.clone())
                 - (conv_mod_tmp_862.clone() + carry_19_col185.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_20_col186.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_20_col186.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_21_col187.clone() * M31_512.clone())
                 - ((conv_mod_tmp_863.clone() - (M31_136.clone() * k_col165.clone()))
                     + carry_20_col186.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_21_col187.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_21_col187.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_22_col188.clone() * M31_512.clone())
                 - (conv_mod_tmp_864.clone() + carry_21_col187.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_22_col188.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_22_col188.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_23_col189.clone() * M31_512.clone())
                 - (conv_mod_tmp_865.clone() + carry_22_col188.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_23_col189.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_23_col189.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_24_col190.clone() * M31_512.clone())
                 - (conv_mod_tmp_866.clone() + carry_23_col189.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_24_col190.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_24_col190.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_25_col191.clone() * M31_512.clone())
                 - (conv_mod_tmp_867.clone() + carry_24_col190.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_25_col191.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_25_col191.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((carry_26_col192.clone() * M31_512.clone())
                 - (conv_mod_tmp_868.clone() + carry_25_col191.clone())),
         );
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
-            self.range_check_19_lookup_elements
-                .combine(&[(carry_26_col192.clone() + M31_131072.clone())]),
-        );
-        logup.write_frac(&mut eval, frac);
+            &[(carry_26_col192.clone() + M31_131072.clone())],
+        )]);
+
         eval.add_constraint(
             ((conv_mod_tmp_869.clone() - (M31_256.clone() * k_col165.clone()))
                 + carry_26_col192.clone()),
@@ -3397,18 +3408,20 @@ impl FrameworkEval for Eval {
                     - M31_1.clone())),
         );
 
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.opcodes_lookup_elements,
             E::EF::one(),
-            self.opcodes_lookup_elements.combine(&[
+            &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.opcodes_lookup_elements,
             -E::EF::one(),
-            self.opcodes_lookup_elements.combine(&[
+            &[
                 ((((pc_update_regular_tmp_232.clone()
                     * (input_pc_col0.clone() + (M31_1.clone() + op1_imm_col8.clone())))
                     + (pc_update_jump_col13.clone()
@@ -3438,11 +3451,10 @@ impl FrameworkEval for Eval {
                             + (dst_limb_1_col23.clone() * M31_512.clone()))
                             + (dst_limb_2_col24.clone() * M31_262144.clone()))))
                     + (opcode_call_col18.clone() * (input_ap_col1.clone() + M31_2.clone()))),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        logup.finalize(&mut eval);
+            ],
+        )]);
 
+        eval.finalize_logup();
         eval
     }
 }

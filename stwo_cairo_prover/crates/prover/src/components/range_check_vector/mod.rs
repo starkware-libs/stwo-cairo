@@ -62,6 +62,7 @@ macro_rules! generate_range_check_code {
     ($($log_range:expr),+) => {
         paste::paste!{
             pub mod [<range_check_$($log_range)_*>] {
+                stwo_prover::relation!(RelationElements, N_RANGES);
                 $crate::range_check_eval!($($log_range),+);
                 $crate::range_check_prover!($($log_range),+);
             }

@@ -2,7 +2,7 @@ use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
-use stwo_prover::constraint_framework::{TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
+use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Channel;
@@ -16,6 +16,7 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::IS_FIRST_LOG_SIZES;
 use crate::components::memory::{addr_to_id, id_to_f252};
+use crate::components::opcodes::VmRelationElements;
 use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
 };
@@ -110,36 +111,35 @@ impl PublicData {
             .public_memory
             .iter()
             .map(|(addr, id, val)| {
-                let addr_to_id = lookup_elements
-                    .memory_addr_to_id
-                    .combine::<M31, QM31>(&[
-                        M31::from_u32_unchecked(*addr),
-                        M31::from_u32_unchecked(*id),
-                    ])
-                    .inverse();
-                let id_to_value = lookup_elements
-                    .memory_id_to_value
-                    .combine::<M31, QM31>(
-                        &[
-                            [M31::from_u32_unchecked(*id)].as_slice(),
-                            split_f252(*val).as_slice(),
-                        ]
-                        .concat(),
-                    )
-                    .inverse();
+                let addr_to_id = <addr_to_id::RelationElements as Relation<M31, QM31>>::combine(
+                    &lookup_elements.memory_addr_to_id,
+                    &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
+                )
+                .inverse();
+                let id_to_value = <id_to_f252::RelationElements as Relation<M31, QM31>>::combine(
+                    &lookup_elements.memory_id_to_value,
+                    &[
+                        [M31::from_u32_unchecked(*id)].as_slice(),
+                        split_f252(*val).as_slice(),
+                    ]
+                    .concat(),
+                )
+                .inverse();
                 addr_to_id + id_to_value
             })
             .sum::<QM31>();
 
         // Yield initial state and use the final.
-        sum += lookup_elements
-            .opcodes
-            .combine::<M31, QM31>(&self.final_state.values())
-            .inverse();
-        sum -= lookup_elements
-            .opcodes
-            .combine::<M31, QM31>(&self.initial_state.values())
-            .inverse();
+        sum += <VmRelationElements as Relation<M31, QM31>>::combine(
+            &lookup_elements.opcodes,
+            &self.final_state.values(),
+        )
+        .inverse();
+        sum -= <VmRelationElements as Relation<M31, QM31>>::combine(
+            &lookup_elements.opcodes,
+            &self.initial_state.values(),
+        )
+        .inverse();
         sum
     }
 }
@@ -563,7 +563,6 @@ impl OpcodeComponents {
                     tree_span_provider,
                     genericopcode::Eval {
                         claim,
-                        interaction_claim,
                         memoryaddresstoid_lookup_elements: interaction_elements
                             .memory_addr_to_id
                             .clone(),
@@ -579,6 +578,7 @@ impl OpcodeComponents {
                             .range_check_9_9
                             .clone(),
                     },
+                    (interaction_claim.total_sum, interaction_claim.claimed_sum),
                 )
             })
             .collect_vec();
@@ -591,7 +591,6 @@ impl OpcodeComponents {
                     tree_span_provider,
                     ret_opcode::Eval {
                         claim,
-                        interaction_claim,
                         memoryaddresstoid_lookup_elements: interaction_elements
                             .memory_addr_to_id
                             .clone(),
@@ -603,6 +602,7 @@ impl OpcodeComponents {
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
                     },
+                    (interaction_claim.total_sum, interaction_claim.claimed_sum),
                 )
             })
             .collect_vec();
@@ -645,7 +645,7 @@ impl CairoComponents {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
-        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columnds(
+        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
             &IS_FIRST_LOG_SIZES
                 .iter()
                 .copied()
@@ -668,7 +668,10 @@ impl CairoComponents {
                 interaction_elements.range_check_4_3.clone(),
                 interaction_elements.range_check_7_2_5.clone(),
                 interaction_elements.verify_instruction.clone(),
-                interaction_claim.verify_instruction,
+            ),
+            (
+                interaction_claim.verify_instruction.total_sum,
+                interaction_claim.verify_instruction.claimed_sum,
             ),
         );
         let memory_addr_to_id_component = addr_to_id::Component::new(
@@ -676,7 +679,10 @@ impl CairoComponents {
             addr_to_id::Eval::new(
                 cairo_claim.memory_addr_to_id.clone(),
                 interaction_elements.memory_addr_to_id.clone(),
-                interaction_claim.memory_addr_to_id.clone(),
+            ),
+            (
+                interaction_claim.memory_addr_to_id.clone().claimed_sum,
+                None,
             ),
         );
         let memory_id_to_value_component = id_to_f252::BigComponent::new(
@@ -685,7 +691,10 @@ impl CairoComponents {
                 cairo_claim.memory_id_to_value.clone(),
                 interaction_elements.memory_id_to_value.clone(),
                 interaction_elements.range_check_9_9.clone(),
-                interaction_claim.memory_id_to_value.clone(),
+            ),
+            (
+                interaction_claim.memory_id_to_value.clone().big_claimed_sum,
+                None,
             ),
         );
         let small_memory_id_to_value_component = id_to_f252::SmallComponent::new(
@@ -694,36 +703,34 @@ impl CairoComponents {
                 cairo_claim.memory_id_to_value.clone(),
                 interaction_elements.memory_id_to_value.clone(),
                 interaction_elements.range_check_9_9.clone(),
-                interaction_claim.memory_id_to_value.clone(),
+            ),
+            (
+                interaction_claim
+                    .memory_id_to_value
+                    .clone()
+                    .small_claimed_sum,
+                None,
             ),
         );
         let range_check_19_component = range_check_19::Component::new(
             tree_span_provider,
-            range_check_19::Eval::new(
-                interaction_elements.range_check_19.clone(),
-                interaction_claim.range_check_19,
-            ),
+            range_check_19::Eval::new(interaction_elements.range_check_19.clone()),
+            (interaction_claim.range_check_19.claimed_sum, None),
         );
         let range_check9_9_component = range_check_9_9::Component::new(
             tree_span_provider,
-            range_check_9_9::Eval::new(
-                interaction_elements.range_check_9_9.clone(),
-                interaction_claim.range_check_9_9,
-            ),
+            range_check_9_9::Eval::new(interaction_elements.range_check_9_9.clone()),
+            (interaction_claim.range_check_9_9.claimed_sum, None),
         );
         let range_check_7_2_5_component = range_check_7_2_5::Component::new(
             tree_span_provider,
-            range_check_7_2_5::Eval::new(
-                interaction_elements.range_check_7_2_5.clone(),
-                interaction_claim.range_check_7_2_5,
-            ),
+            range_check_7_2_5::Eval::new(interaction_elements.range_check_7_2_5.clone()),
+            (interaction_claim.range_check_7_2_5.claimed_sum, None),
         );
         let range_check_4_3_component = range_check_4_3::Component::new(
             tree_span_provider,
-            range_check_4_3::Eval::new(
-                interaction_elements.range_check_4_3.clone(),
-                interaction_claim.range_check_4_3,
-            ),
+            range_check_4_3::Eval::new(interaction_elements.range_check_4_3.clone()),
+            (interaction_claim.range_check_4_3.claimed_sum, None),
         );
         Self {
             opcodes: opcode_components,
