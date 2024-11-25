@@ -23,6 +23,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::{pack_values, verifyinstruction};
+use crate::input::instructions::VmState;
 use crate::relations::*;
 
 pub type InputType = CasmState;

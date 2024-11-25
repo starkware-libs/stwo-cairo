@@ -169,7 +169,7 @@ impl Instructions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if !dev_mode => {
+            }  => {
                 self.jmp_rel_imm[ap_update_add_1 as usize].push(state);
             }
             // jump abs [ap/fp + offset].
