@@ -668,28 +668,28 @@ impl CairoComponents {
             tree_span_provider,
             range_check_19::Eval::new(
                 interaction_elements.range_check_19.clone(),
-                interaction_claim.range_check_19.claimed_sum,
+                interaction_claim.range_check_19,
             ),
         );
         let range_check9_9_component = range_check_9_9::Component::new(
             tree_span_provider,
             range_check_9_9::Eval::new(
                 interaction_elements.range_check_9_9.clone(),
-                interaction_claim.range_check_9_9.claimed_sum,
+                interaction_claim.range_check_9_9,
             ),
         );
         let range_check_7_2_5_component = range_check_7_2_5::Component::new(
             tree_span_provider,
             range_check_7_2_5::Eval::new(
                 interaction_elements.range_check_7_2_5.clone(),
-                interaction_claim.range_check_7_2_5.claimed_sum,
+                interaction_claim.range_check_7_2_5,
             ),
         );
         let range_check_4_3_component = range_check_4_3::Component::new(
             tree_span_provider,
             range_check_4_3::Eval::new(
                 interaction_elements.range_check_4_3.clone(),
-                interaction_claim.range_check_4_3.claimed_sum,
+                interaction_claim.range_check_4_3,
             ),
         );
         Self {

@@ -1,7 +1,6 @@
 use std::iter::zip;
 use std::simd::Simd;
 
-use component::RangeCheckVectorEval;
 use stwo_prover::constraint_framework::logup::LookupElements;
 pub mod component;
 pub mod component_prover;
@@ -53,150 +52,27 @@ pub fn generate_partitioned_enumeration<const N: usize>(
 }
 
 #[macro_export]
-macro_rules! generate_range_check_component {
+macro_rules! count_elements {
+    ($x:expr) => (1);
+    ($x:expr, $($xs:expr),*) => (1 + $crate::count_elements!($($xs),*));
+}
+
+#[macro_export]
+macro_rules! generate_range_check_code {
     ($($log_range:expr),+) => {
-        paste::paste! {
-            pub mod [<range_check_$($log_range)_*>]{
-                use std::ops::{Deref, DerefMut};
-                use serde::{Deserialize, Serialize};
-                use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
-                use stwo_prover::constraint_framework::FrameworkEval;
-                use stwo_prover::constraint_framework::logup::LookupElements;
-                use stwo_prover::core::backend::simd::m31::PackedM31;
-                use stwo_prover::core::backend::simd::SimdBackend;
-                use stwo_prover::core::fields::m31::M31;
-                use stwo_prover::core::fields::qm31::QM31;
-                use stwo_prover::core::pcs::TreeBuilder;
-                use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-
-                use $crate::components::range_check_vector::component::{
-                    RangeCheckClaim, RangeCheckInteractionClaim,
-                };
-                use $crate::components::range_check_vector::component_prover::{
-                    RangeCheckClaimGenerator, RangeCheckInteractionClaimGenerator,
-                };
-                use $crate::components::range_check_vector::RangeCheckVectorEval;
-
-
-
-                const N_RANGES:usize = count_elements!($($log_range),*);
-                pub type Component = FrameworkComponent<[<Eval>]>;
-
-                #[derive(Clone, Serialize, Deserialize)]
-                pub struct Claim(RangeCheckClaim);
-                impl Deref for Claim {
-                    type Target = RangeCheckClaim;
-                    fn deref(&self) -> &Self::Target {
-                        &self.0
-                    }
-                }
-
-                #[derive(Clone, Serialize, Deserialize)]
-                pub struct InteractionClaim(RangeCheckInteractionClaim);
-                impl Deref for InteractionClaim {
-                    type Target = RangeCheckInteractionClaim;
-                    fn deref(&self) -> &Self::Target {
-                        &self.0
-                    }
-                }
-
-                pub type RelationElements = LookupElements<N_RANGES>;
-
-                pub struct Eval {
-                    eval: RangeCheckVectorEval<N_RANGES>,
-                }
-
-                impl Eval {
-                    pub fn new(lookup_elements: RelationElements,
-                                claimed_sum: QM31) -> Self {
-                        Self {
-                            eval: RangeCheckVectorEval {
-                                log_ranges: [$($log_range),*],
-                                lookup_elements,
-                                claimed_sum,
-                            },
-                        }
-                    }
-                }
-
-                impl FrameworkEval for Eval {
-                    fn log_size(&self) -> u32 {
-                        self.eval.log_size()
-                    }
-
-                    fn max_constraint_log_degree_bound(&self) -> u32 {
-                        self.eval.max_constraint_log_degree_bound()
-                    }
-
-                    fn evaluate<E: EvalAtRow>(&self, eval: E) -> E {
-                        self.eval.evaluate(eval)
-                    }
-                }
-
-                pub type PackedInputType = [PackedM31; N_RANGES];
-                pub type InputType = [M31; N_RANGES];
-
-                pub struct ClaimGenerator(RangeCheckClaimGenerator::<N_RANGES>);
-                impl ClaimGenerator {
-                    #[allow(clippy::new_without_default)]
-                    pub fn new() -> Self {
-                        Self(RangeCheckClaimGenerator::<N_RANGES>::new([$($log_range),*]))
-                    }
-
-                    pub fn write_trace(
-                        self,
-                        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-                    ) -> (Claim,InteractionClaimGenerator){
-                        let (claim, interaction_claim) = self.0.write_trace(tree_builder);
-                        (Claim(claim), InteractionClaimGenerator(interaction_claim))
-                    }
-                }
-
-                impl Deref for ClaimGenerator {
-                    type Target = RangeCheckClaimGenerator::<N_RANGES>;
-                    fn deref(&self) -> &Self::Target {
-                        &self.0
-                    }
-                }
-
-                impl DerefMut for ClaimGenerator {
-                    fn deref_mut(&mut self) -> &mut <Self as std::ops::Deref>::Target {
-                        &mut self.0
-                    }
-                }
-
-                pub struct InteractionClaimGenerator(RangeCheckInteractionClaimGenerator<N_RANGES>);
-                impl InteractionClaimGenerator {
-                    pub fn write_interaction_trace(
-                        self,
-                        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-                        lookup_elements: &RelationElements,
-                    ) -> InteractionClaim {
-                        InteractionClaim(self.0.write_interaction_trace(tree_builder, lookup_elements))
-                    }
-                }
-
-                impl Deref for InteractionClaimGenerator {
-                    type Target = RangeCheckInteractionClaimGenerator::<N_RANGES>;
-                    fn deref(&self) -> &Self::Target {
-                        &self.0
-                    }
-                }
-
+        paste::paste!{
+            pub mod [<range_check_$($log_range)_*>] {
+                $crate::range_check_eval!($($log_range),+);
+                $crate::range_check_prover!($($log_range),+);
             }
         }
     };
 }
 
-macro_rules! count_elements {
-    ($x:expr) => (1);
-    ($x:expr, $($xs:expr),*) => (1 + count_elements!($($xs),*));
-}
-
-generate_range_check_component!(19);
-generate_range_check_component!(9, 9);
-generate_range_check_component!(7, 2, 5);
-generate_range_check_component!(4, 3);
+generate_range_check_code!(19);
+generate_range_check_code!(9, 9);
+generate_range_check_code!(7, 2, 5);
+generate_range_check_code!(4, 3);
 
 #[cfg(test)]
 mod tests {
