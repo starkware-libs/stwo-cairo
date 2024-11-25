@@ -392,26 +392,18 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                     NullableTrait::new(column_decommitment_positions),
                 );
 
-            let mut coord_col_0 = array![];
-            let mut coord_col_1 = array![];
-            let mut coord_col_2 = array![];
-            let mut coord_col_3 = array![];
+            let mut decommitment = array![];
 
             for subset_eval in sparse_evaluation.subset_evals.span() {
                 for eval in subset_eval.span() {
                     // Split the QM31 into its M31 coordinate values.
                     let [v0, v1, v2, v3] = (*eval).to_array();
-                    coord_col_0.append(v0);
-                    coord_col_1.append(v1);
-                    coord_col_2.append(v2);
-                    coord_col_3.append(v3);
+                    decommitment.append(v0);
+                    decommitment.append(v1);
+                    decommitment.append(v2);
+                    decommitment.append(v3);
                 };
             };
-
-            decommitment_coordinate_columns.append(coord_col_0);
-            decommitment_coordinate_columns.append(coord_col_1);
-            decommitment_coordinate_columns.append(coord_col_2);
-            decommitment_coordinate_columns.append(coord_col_3);
 
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
@@ -481,27 +473,18 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             return Result::Err(FriVerificationError::InnerLayerEvaluationsInvalid);
         }
 
-        // TODO(andrew): Consider seperating into seperate function.
-        let mut coord_col_0 = array![];
-        let mut coord_col_1 = array![];
-        let mut coord_col_2 = array![];
-        let mut coord_col_3 = array![];
+        let mut decommitment = array![];
 
         for subset_eval in sparse_evaluation.subset_evals.span() {
             for eval in subset_eval.span() {
                 // Split the QM31 into its M31 coordinate values.
                 let [v0, v1, v2, v3] = (*eval).to_array();
-                coord_col_0.append(v0);
-                coord_col_1.append(v1);
-                coord_col_2.append(v2);
-                coord_col_3.append(v3);
+                decommitment.append(v0);
+                decommitment.append(v1);
+                decommitment.append(v2);
+                decommitment.append(v3);
             };
         };
-
-        // For decommitment, a QM31 col must be split into its constituent M31 coordinate cols.
-        let decommitment_coordinate_columns = array![
-            coord_col_0, coord_col_1, coord_col_2, coord_col_3,
-        ];
 
         let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
@@ -517,7 +500,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         if let Result::Err(_) = merkle_verifier
             .verify(
                 decommitment_positions_dict,
-                decommitment_coordinate_columns.span(),
+                decommitment.span(),
                 (*self.proof.decommitment).clone(),
             ) {
             return Result::Err(FriVerificationError::InnerLayerCommitmentInvalid);

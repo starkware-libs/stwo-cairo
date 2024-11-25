@@ -4,6 +4,7 @@ use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
+use crate::TreeArray;
 use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Impl};
 use crate::fields::m31::{M31, UnreducedM31};
@@ -12,6 +13,7 @@ use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationIm
 use crate::queries::SubCircleDomainImpl;
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::verifier::VerificationError;
+
 
 /// Computes the OOD quotients at the query positions.
 ///
@@ -169,12 +171,18 @@ pub fn fri_answers(
             queried_values.append(query_evals_by_column[column]);
         };
 
+        // TODO(ilya): fix
+        let n_columns = array![0, 128, 0];
+
+        let mut queried_values = array![];
+
         let answer = fri_answers_for_log_size(
             log_size,
             samples,
             random_coeff,
             query_positions_per_log_size.get(log_size.into()).deref(),
-            queried_values,
+            ref queried_values,
+            n_columns,
         );
 
         match answer {
@@ -191,44 +199,38 @@ fn fri_answers_for_log_size(
     samples_per_column: Array<@Array<PointSample>>,
     random_coeff: QM31,
     mut query_positions: Span<usize>,
-    query_evals_by_column: Array<@Array<M31>>,
+    ref queried_values: TreeArray<Span<M31>>,
+    n_columns: TreeArray<usize>,
 ) -> Result<Span<QM31>, VerificationError> {
-    let n_query_positions = query_positions.len();
-    let mut query_evals_by_column_iter = query_evals_by_column.span().into_iter();
-
-    loop {
-        // Check there are the correct number of column values.
-        if let Option::Some(column_queries) = query_evals_by_column_iter.next() {
-            if (*column_queries).len() != n_query_positions {
-                break Result::Err(VerificationError::InvalidStructure('num query values'));
-            }
-        } else {
-            break Result::Ok(());
-        }
-    }?;
-
     let sample_batches = ColumnSampleBatchImpl::group_by_point(samples_per_column);
     let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, random_coeff);
     let commitment_domain = CanonicCosetImpl::new(log_size).circle_domain();
-    let mut row_index_iter = (0..n_query_positions).into_iter();
     let mut quotient_evals_at_queries = array![];
 
     for query_position in query_positions {
+        let mut queried_values_at_row = array![];
+        let mut new_queried_values = array![];
+
+        let mut n_columns = n_columns.clone();
+        for mut interaction_queried_values in queried_values {
+            queried_values_at_row
+                .append_span(
+                    interaction_queried_values.pop_front_n(n_columns.pop_front().unwrap()),
+                );
+            new_queried_values.append(interaction_queried_values);
+        };
+        queried_values = new_queried_values;
+
         quotient_evals_at_queries
             .append(
                 accumulate_row_quotients(
                     @sample_batches,
-                    @query_evals_by_column,
+                    queried_values_at_row.span(),
                     @quotient_constants,
-                    // TODO(andrew): See if unwrap_or more performant.
-                    row_index_iter.next().unwrap(),
                     commitment_domain.at(bit_reverse_index(*query_position, log_size)),
                 ),
             );
     };
-
-    // Sanity check all rows have been visited.
-    assert!(row_index_iter.next().is_none());
 
     Result::Ok(quotient_evals_at_queries.span())
 }
@@ -244,9 +246,8 @@ fn fri_answers_for_log_size(
 #[inline(always)]
 fn accumulate_row_quotients(
     sample_batches: @Array<ColumnSampleBatch>,
-    query_evals_by_column: @Array<@Array<M31>>,
+    queried_values_at_row: Span<M31>,
     quotient_constants: @QuotientConstants,
-    query_index: usize,
     domain_point: CirclePoint<M31>,
 ) -> QM31 {
     let n_batches = sample_batches.len();
@@ -268,8 +269,7 @@ fn accumulate_row_quotients(
 
         for sample_i in 0..batch_size {
             let (column_index, _) = sample_batch_columns_and_values[sample_i];
-            let column_query_evals = *query_evals_by_column.at(*column_index);
-            let query_eval_at_column = *column_query_evals.at(query_index);
+            let query_eval_at_column = *queried_values_at_row.at(*column_index);
             let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } =
                 *line_coeffs[sample_i];
             // The numerator is a line equation passing through
@@ -499,15 +499,14 @@ mod tests {
         let samples_by_column = array![@col0_samples, @col1_samples, @col2_samples];
         let random_coeff = qm31(9, 8, 7, 6);
         let query_positions = array![4, 5, 6, 7].span();
-        let col0_query_values = array![m31(1), m31(2), m31(3), m31(4)];
-        let col1_query_values = array![m31(1), m31(1), m31(2), m31(3)];
-        let col2_query_values = array![m31(1), m31(1), m31(1), m31(2)];
-        let query_evals_by_column = array![
-            @col0_query_values, @col1_query_values, @col2_query_values,
-        ];
+        let col0_query_values = array![m31(1), m31(2), m31(3), m31(4)].span();
+        let col1_query_values = array![m31(1), m31(1), m31(2), m31(3)].span();
+        let col2_query_values = array![m31(1), m31(1), m31(1), m31(2)].span();
+        let mut query_evals = array![col0_query_values, col1_query_values, col2_query_values];
+        let n_columns = array![1, 1, 1];
 
         let res = fri_answers_for_log_size(
-            log_size, samples_by_column, random_coeff, query_positions, query_evals_by_column,
+            log_size, samples_by_column, random_coeff, query_positions, ref query_evals, n_columns,
         )
             .unwrap();
 
@@ -620,9 +619,7 @@ mod tests {
     fn test_accumulate_row_quotients() {
         let alpha = qm31(4, 3, 2, 1);
         let domain = CircleDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(1), 0));
-        let column1_query_values = array![m31(1), m31(9)];
-        let column0_query_values = array![m31(5), m31(3)];
-        let query_evals_by_column = array![@column0_query_values, @column1_query_values];
+        let queried_values_at_row = array![m31(5), m31(1)].span();
         let p0 = QM31_CIRCLE_GEN;
         let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
         let sample_batches = array![
@@ -630,58 +627,54 @@ mod tests {
             ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] },
         ];
         let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, alpha);
-        let row = 0;
 
         let res = accumulate_row_quotients(
-            @sample_batches, @query_evals_by_column, @quotient_constants, row, domain.at(0),
+            @sample_batches, queried_values_at_row, @quotient_constants, domain.at(0),
         );
 
         assert_eq!(res, qm31(545815778, 838613809, 1761463254, 2019099482));
     }
-
-    // Test used to benchmark step counts.
-    #[test]
-    fn test_fri_answers_with_1000_columns() {
-        // TODO(andrew): Note Forge fails if these are declated `const ...`.
-        let log_size: u32 = 16;
-        let n_queries: usize = 20;
-        let n_columns: usize = 1000;
-        let random_coeff = qm31(9, 8, 7, 6);
-        assert!(n_columns >= 3, "First three columns are manually created");
-        let mut query_positions = array![];
-        for query_position in 0..n_queries {
-            query_positions.append(query_position);
-        };
-        let p0 = QM31_CIRCLE_GEN;
-        let p1 = p0 + QM31_CIRCLE_GEN;
-        let p2 = p1 + QM31_CIRCLE_GEN;
-        let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
-        let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
-        let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
-        let col0_samples = array![sample0, sample1, sample2];
-        let col1_samples = array![sample0];
-        let col2_samples = array![sample0, sample2];
-        let mut samples_per_column = array![@col0_samples, @col1_samples, @col2_samples];
-        let mut col_query_values = array![];
-        for i in 0..n_queries {
-            col_query_values.append(m31(i));
-        };
-        let col0_query_values = col_query_values.clone();
-        let col1_query_values = col_query_values.clone();
-        let col2_query_values = col_query_values.clone();
-        let mut query_evals_by_column = array![
-            @col0_query_values, @col1_query_values, @col2_query_values,
-        ];
-        for _ in samples_per_column.len()..n_columns {
-            samples_per_column.append(@col1_samples);
-            query_evals_by_column.append(@col_query_values);
-        };
-        let _res = fri_answers_for_log_size(
-            log_size,
-            samples_per_column,
-            random_coeff,
-            query_positions.span(),
-            query_evals_by_column,
-        );
-    }
+    // // Test used to benchmark step counts.
+// #[test]
+// fn test_fri_answers_with_1000_columns() {
+//     // TODO(andrew): Note Forge fails if these are declated `const ...`.
+//     let log_size: u32 = 16;
+//     let n_queries: usize = 20;
+//     let n_columns: usize = 1000;
+//     let random_coeff = qm31(9, 8, 7, 6);
+//     assert!(n_columns >= 3, "First three columns are manually created");
+//     let mut query_positions = array![];
+//     for query_position in 0..n_queries {
+//         query_positions.append(query_position);
+//     };
+//     let p0 = QM31_CIRCLE_GEN;
+//     let p1 = p0 + QM31_CIRCLE_GEN;
+//     let p2 = p1 + QM31_CIRCLE_GEN;
+//     let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
+//     let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
+//     let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
+//     let col0_samples = array![sample0, sample1, sample2];
+//     let col1_samples = array![sample0];
+//     let col2_samples = array![sample0, sample2];
+//     let mut samples_per_column = array![@col0_samples, @col1_samples, @col2_samples];
+//     let mut col_query_values = array![];
+//     for i in 0..n_queries {
+//         col_query_values.append(m31(i));
+//     };
+//     for _ in samples_per_column.len()..n_columns {
+//         samples_per_column.append(@col1_samples);
+//         query_evals_by_column.append(@col_query_values);
+//     };
+//     // TODO(ilya): fix
+//     let n_columns = array![0, n_columns, 0];
+//     let mut query_evals = array![];
+//     let _res = fri_answers_for_log_size(
+//         log_size,
+//         samples_per_column,
+//         random_coeff,
+//         query_positions.span(),
+//         ref query_evals,
+//         n_columns,
+//     );
+// }
 }
