@@ -8,10 +8,10 @@ use core::dict::Felt252DictTrait;
 use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
+use crate::BaseField;
 use crate::utils::SpanExTrait;
 use crate::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use crate::vcs::hasher::MerkleHasher;
-use crate::{BaseField, ColumnSpan};
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
@@ -95,7 +95,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     fn verify(
         self: @MerkleVerifier<H>,
         queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: ColumnSpan<Array<BaseField>>,
+        queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError>;
 
@@ -108,7 +108,7 @@ impl MerkleVerifierImpl<
     fn verify(
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-        queried_values: ColumnSpan<Array<BaseField>>,
+        mut queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
@@ -133,16 +133,7 @@ impl MerkleVerifierImpl<
                 .deref_or(array![]);
             let n_columns_in_layer = layer_cols.len();
 
-            let mut layer_queried_values = array![];
-
-            while let Option::Some(column_index) = layer_cols.pop_front() {
-                layer_queried_values.append(queried_values[column_index].span());
-            };
-
-            let layer_queried_values = @layer_queried_values;
-
             // Extract the requested queries to the current layer.
-            let mut col_query_index: u32 = 0;
             let mut layer_column_queries = queries_per_log_size
                 .replace(layer_log_size.into(), Default::default())
                 .deref_or(array![].span());
@@ -182,15 +173,7 @@ impl MerkleVerifierImpl<
 
                 // If the column values were queried, read them from `queried_value`.
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
-                    let mut res = array![];
-                    let mut i = 0;
-                    while i != n_columns_in_layer {
-                        let queried_column = layer_queried_values[i];
-                        res.append(*queried_column[col_query_index]);
-                        i += 1;
-                    };
-                    col_query_index += 1;
-                    res.span()
+                    queried_values.pop_front_n(n_columns_in_layer)
                 } else {
                     column_witness.pop_front_n(n_columns_in_layer)
                 };
@@ -334,16 +317,36 @@ mod tests {
         queries_per_log_size.insert(3, NullableTrait::new(array![2, 5, 7].span()));
         queries_per_log_size.insert(4, NullableTrait::new(array![7, 11, 14].span()));
         let queried_values = array![
-            array![m31(720125469), m31(997644238), m31(194302184)],
-            array![m31(122725140), m31(840979908), m31(658446453)],
-            array![m31(968171809), m31(100529415), m31(1057594968)],
-            array![m31(1012109813), m31(428994537), m31(992269493)],
-            array![m31(766295003), m31(28706943), m31(967997322)],
-            array![m31(552345729), m31(696999129), m31(287489501)],
-            array![m31(364669117), m31(933029034), m31(285391207)],
-            array![m31(996158769), m31(69309287), m31(420798739)],
-            array![m31(650584843), m31(942699537), m31(310081088)],
-            array![m31(71167745), m31(330264928), m31(409791388)],
+            m31(720125469),
+            m31(968171809),
+            m31(364669117),
+            m31(996158769),
+            m31(997644238),
+            m31(100529415),
+            m31(933029034),
+            m31(69309287),
+            m31(194302184),
+            m31(1057594968),
+            m31(285391207),
+            m31(420798739),
+            m31(122725140),
+            m31(1012109813),
+            m31(766295003),
+            m31(552345729),
+            m31(650584843),
+            m31(71167745),
+            m31(840979908),
+            m31(428994537),
+            m31(28706943),
+            m31(696999129),
+            m31(942699537),
+            m31(330264928),
+            m31(658446453),
+            m31(992269493),
+            m31(967997322),
+            m31(287489501),
+            m31(310081088),
+            m31(409791388),
         ]
             .span();
         MerkleVerifier { root, column_log_sizes }
