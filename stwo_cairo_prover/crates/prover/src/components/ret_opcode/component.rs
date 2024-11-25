@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, INTERACTION_TRACE_IDX,
+    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, INTERACTION_TRACE_IDX,
 };
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::channel::Channel;
@@ -18,7 +18,8 @@ use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{addr_to_id, id_to_f252};
-use crate::components::{memory, opcodes, verifyinstruction};
+use crate::components::{memory, verifyinstruction};
+use crate::relations::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RelationElements(LookupElements<4>);
@@ -36,11 +37,10 @@ impl RelationElements {
 
 pub struct Eval {
     pub claim: Claim,
-    pub interaction_claim: InteractionClaim,
-    pub memoryaddresstoid_lookup_elements: memory::addr_to_id::RelationElements,
-    pub memoryidtobig_lookup_elements: memory::id_to_f252::RelationElements,
-    pub verifyinstruction_lookup_elements: verifyinstruction::RelationElements,
-    pub opcodes_lookup_elements: opcodes::VmRelationElements,
+    pub memoryaddresstoid_lookup_elements: AddrToIdRelation,
+    pub memoryidtobig_lookup_elements: IdToValueRelation,
+    pub verifyinstruction_lookup_elements: VerifyInstructionRelation,
+    pub opcodes_lookup_elements: VmRelation,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
@@ -104,13 +104,6 @@ impl FrameworkEval for Eval {
         let M31_32766 = E::F::from(M31::from(32766));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_512 = E::F::from(M31::from(512));
-        let is_first = eval.get_preprocessed_column(PreprocessedColumn::IsFirst(self.log_size()));
-        let mut logup = LogupAtRow::<E>::new(
-            INTERACTION_TRACE_IDX,
-            self.interaction_claim.total_sum,
-            self.interaction_claim.claimed_sum,
-            is_first,
-        );
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -122,9 +115,11 @@ impl FrameworkEval for Eval {
         let next_fp_limb_0_col8 = eval.next_trace_mask();
         let next_fp_limb_1_col9 = eval.next_trace_mask();
         let next_fp_limb_2_col10 = eval.next_trace_mask();
-        let frac = Fraction::new(
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.verifyinstruction_lookup_elements,
             E::EF::one(),
-            self.verifyinstruction_lookup_elements.combine(&[
+            &[
                 input_pc_col0.clone(),
                 M31_32766.clone(),
                 M31_32767.clone(),
@@ -143,72 +138,76 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_1.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        // ReadPositive_num_bits_27.
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
-            self.memoryaddresstoid_lookup_elements.combine(&[
+            &[
                 (input_fp_col2.clone() - M31_1.clone()),
                 next_pc_id_col3.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryidtobig_lookup_elements,
             E::EF::one(),
-            self.memoryidtobig_lookup_elements.combine(&[
+            &[
                 next_pc_id_col3.clone(),
                 next_pc_limb_0_col4.clone(),
                 next_pc_limb_1_col5.clone(),
                 next_pc_limb_2_col6.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        // ReadPositive_num_bits_27.
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
-            self.memoryaddresstoid_lookup_elements.combine(&[
+            &[
                 (input_fp_col2.clone() - M31_2.clone()),
                 next_fp_id_col7.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.memoryidtobig_lookup_elements,
             E::EF::one(),
-            self.memoryidtobig_lookup_elements.combine(&[
+            &[
                 next_fp_id_col7.clone(),
                 next_fp_limb_0_col8.clone(),
                 next_fp_limb_1_col9.clone(),
                 next_fp_limb_2_col10.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
-        // VM constraint.
-        // TODO(Ohad): uncomment.
-
-        let frac = Fraction::new(
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.opcodes_lookup_elements,
             E::EF::one(),
-            self.opcodes_lookup_elements.combine(&[
+            &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
-        let frac = Fraction::new(
+            ],
+        )]);
+
+        eval.add_to_relation(&[RelationEntry::new(
+            &self.opcodes_lookup_elements,
             -E::EF::one(),
-            self.opcodes_lookup_elements.combine(&[
+            &[
                 ((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
                     + (next_pc_limb_2_col6.clone() * M31_262144.clone())),
                 input_ap_col1.clone(),
                 ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
                     + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
-            ]),
-        );
-        logup.write_frac(&mut eval, frac);
+            ],
+        )]);
 
-        logup.finalize(&mut eval);
-
+        eval.finalize_logup();
         eval
     }
 }

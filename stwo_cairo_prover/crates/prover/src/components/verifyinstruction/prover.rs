@@ -5,6 +5,7 @@ use num_traits::{One, Zero};
 use prover_types::cpu::*;
 use prover_types::simd::*;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Unpack;
@@ -23,6 +24,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
 use crate::components::{memory, pack_values, verifyinstruction};
+use crate::relations::*;
 
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
 pub type InputType = (M31, [M31; 3], [M31; 15]);
@@ -360,11 +362,11 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_lookup_elements: &memory::addr_to_id::RelationElements,
-        memoryidtobig_lookup_elements: &memory::id_to_f252::RelationElements,
-        rangecheck_4_3_lookup_elements: &range_check_4_3::RelationElements,
-        range_check_7_2_5_lookup_elements: &range_check_7_2_5::RelationElements,
-        verifyinstruction_lookup_elements: &verifyinstruction::RelationElements,
+        memoryaddresstoid_lookup_elements: &AddrToIdRelation,
+        memoryidtobig_lookup_elements: &IdToValueRelation,
+        rangecheck_4_3_lookup_elements: &RangeCheck_4_3Relation,
+        range_check_7_2_5_lookup_elements: &RangeCheck_7_2_5Relation,
+        verifyinstruction_lookup_elements: &VerifyInstructionRelation,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);

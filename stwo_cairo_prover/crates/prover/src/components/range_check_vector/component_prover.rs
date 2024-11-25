@@ -7,13 +7,14 @@ macro_rules! range_check_prover {
 
             use itertools::{chain, Itertools};
             use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+            use stwo_prover::constraint_framework::Relation;
             use stwo_prover::core::backend::simd::column::BaseColumn;
             use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
             use stwo_prover::core::backend::simd::SimdBackend;
             use stwo_prover::core::fields::m31::M31;
             use stwo_prover::core::pcs::TreeBuilder;
-            use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
             use stwo_prover::core::poly::BitReversedOrder;
+            use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
             use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
             use $crate::components::range_check_vector::{generate_partitioned_enumeration,
@@ -122,7 +123,7 @@ macro_rules! range_check_prover {
                 pub fn write_interaction_trace(
                     &self,
                     tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-                    lookup_elements: &RelationElements,
+                    lookup_elements: &[<RangeCheck_$($log_range)_*Relation>],
                 ) -> InteractionClaim {
                     let log_size = RANGES.iter().sum::<u32>();
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -164,7 +165,6 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::logup::LookupElements;
     use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
@@ -176,13 +176,12 @@ mod tests {
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 
     use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
-
+    use crate::relations::*;
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);
         const LOG_HEIGHT: u32 = 14;
         const LOG_BLOWUP_FACTOR: u32 = 1;
-        const N_RANGES: usize = 3;
         let log_ranges = [7, 2, 5];
         let mut claim_generator = range_check_7_2_5::ClaimGenerator::new();
 
@@ -220,7 +219,7 @@ mod tests {
         tree_builder.commit(channel);
         let mut tree_builder = commitment_scheme.tree_builder();
 
-        let lookup_elements = LookupElements::<N_RANGES>::draw(channel);
+        let lookup_elements = RangeCheck_7_2_5Relation::draw(channel);
         let interaction_claim = interaction_claim_generator
             .write_interaction_trace(&mut tree_builder, &lookup_elements);
         tree_builder.commit(channel);
@@ -228,10 +227,8 @@ mod tests {
         let tree_span_provider = &mut TraceLocationAllocator::default();
         let component = FrameworkComponent::new(
             tree_span_provider,
-            range_check_7_2_5::Eval {
-                lookup_elements,
-                claimed_sum: interaction_claim.claimed_sum,
-            },
+            range_check_7_2_5::Eval { lookup_elements },
+            (interaction_claim.claimed_sum, None),
         );
 
         let trace_polys = commitment_scheme
@@ -245,6 +242,7 @@ mod tests {
             |eval| {
                 component.evaluate(eval);
             },
+            (interaction_claim.claimed_sum, None),
         )
     }
 }
