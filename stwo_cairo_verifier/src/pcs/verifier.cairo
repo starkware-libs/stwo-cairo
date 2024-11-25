@@ -21,7 +21,7 @@ pub struct CommitmentSchemeProof {
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
     /// All queried trace values.
-    pub queried_values: TreeArray<ColumnArray<Array<M31>>>,
+    pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
 }
@@ -131,7 +131,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
             let tree = self.trees[tree_i];
             let decommitment = decommitments.next().unwrap();
-            let queried_values = queried_values[tree_i].span();
+            let queried_values = *queried_values[tree_i];
 
             // TODO(andrew): Unfortunately the current merkle implementation pops values from the
             // query position dict so it has to be duplicated.
@@ -153,23 +153,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Answer FRI queries.
         let samples = get_flattened_samples(sampled_points, sampled_values);
 
-        let mut flattened_column_log_sizes = array![];
-
-        for column_log_sizes in column_log_sizes {
-            for log_size in column_log_sizes.span() {
-                flattened_column_log_sizes.append(*log_size);
-            };
-        };
-
-        // TODO(andrew): Flattening not nessesary. Check how costly.
-        let flattened_query_values = get_flattened_query_values(queried_values);
-
         let fri_answers = fri_answers(
-            @flattened_column_log_sizes,
-            @samples,
+            column_log_sizes.span(),
+            samples.span(),
             random_coeff,
             query_positions_by_log_size,
-            @flattened_query_values,
+            queried_values,
         )?;
 
         if let Result::Err(err) = fri_verifier.decommit(fri_answers) {
@@ -247,19 +236,6 @@ fn get_flattened_samples(
         };
 
         tree_i += 1;
-    };
-    res
-}
-
-#[inline]
-fn get_flattened_query_values(
-    query_values: TreeArray<ColumnArray<Array<M31>>>,
-) -> ColumnArray<Array<M31>> {
-    let mut res = array![];
-    for query_values in query_values {
-        for column_query_values in query_values {
-            res.append(column_query_values);
-        };
     };
     res
 }
