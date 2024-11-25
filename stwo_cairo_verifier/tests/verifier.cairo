@@ -69,6 +69,7 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
 
     // Decommit.
     commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], @array![], ref channel);
+
     commitment_scheme
         .commit(
             *proof.commitment_scheme_proof.commitments[1],
