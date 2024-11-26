@@ -4,7 +4,9 @@ use std::ops::{Mul, Sub};
 
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
+use stwo_prover::constraint_framework::logup::{
+    ClaimedPrefixSum, LogupAtRow, LogupSums, LookupElements,
+};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, INTERACTION_TRACE_IDX,
@@ -22,22 +24,20 @@ use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
 use crate::components::{memory, verifyinstruction};
 use crate::relations;
 
-relation!(RelationElements, 30);
-
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::AddrToId,
-    pub memoryidtobig_lookup_elements: relations::IdToValue,
-    pub rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
+    pub addr_to_id_lookup_elements: relations::AddrToId,
+    pub id_to_f252_lookup_elements: relations::IdToValue,
+    pub range_check_4_3_lookup_elements: relations::RangeCheck_4_3,
     pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
     pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
 }
 impl Eval {
     pub fn new(
         claim: Claim,
-        memoryaddresstoid_lookup_elements: relations::AddrToId,
-        memoryidtobig_lookup_elements: relations::IdToValue,
-        rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
+        addr_to_id_lookup_elements: relations::AddrToId,
+        id_to_f252_lookup_elements: relations::IdToValue,
+        range_check_4_3_lookup_elements: relations::RangeCheck_4_3,
         range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
         verifyinstruction_lookup_elements: relations::VerifyInstruction,
     ) -> Self {
@@ -45,7 +45,7 @@ impl Eval {
             claim,
             addr_to_id_lookup_elements,
             id_to_f252_lookup_elements,
-            rangecheck_4_3_lookup_elements,
+            range_check_4_3_lookup_elements,
             range_check_7_2_5_lookup_elements,
             verifyinstruction_lookup_elements,
         }
@@ -76,12 +76,16 @@ impl Claim {
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct InteractionClaim {
-    pub total_sum: SecureField,
-    pub claimed_sum: Option<ClaimedPrefixSum>,
+    pub logup_sums: LogupSums,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.total_sum]);
+        let (total_sum, claimed_sum) = self.logup_sums;
+        channel.mix_felts(&[total_sum]);
+        if let Some(claimed_sum) = claimed_sum {
+            channel.mix_felts(&[claimed_sum.0]);
+            channel.mix_u64(claimed_sum.1 as u64);
+        }
     }
 }
 
@@ -166,7 +170,7 @@ impl FrameworkEval for Eval {
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.rangecheck_4_3_lookup_elements,
+            &self.range_check_4_3_lookup_elements,
             E::EF::one(),
             &[offset2_low_col24.clone(), offset2_high_col26.clone()],
         )]);

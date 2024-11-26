@@ -24,7 +24,7 @@ use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::{pack_values, verifyinstruction};
 use crate::input::instructions::VmState;
-use crate::relations::*;
+use crate::relations;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
@@ -46,7 +46,6 @@ impl ClaimGenerator {
             .collect();
         Self { inputs: cpu_inputs }
     }
-     
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
@@ -120,16 +119,16 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs {
-    pub addr_to_id_inputs: [Vec<addr_to_id::InputType>; 2],
-    pub id_to_f252_inputs: [Vec<id_to_f252::InputType>; 2],
+    pub addr_to_id_inputs: [Vec<addr_to_id::InputType>; 1],
+    pub id_to_f252_inputs: [Vec<id_to_f252::InputType>; 1],
     pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],
 }
 impl SubComponentInputs {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            addr_to_id_inputs: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            id_to_f252_inputs: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
+            addr_to_id_inputs: [Vec::with_capacity(capacity)],
+            id_to_f252_inputs: [Vec::with_capacity(capacity)],
             verifyinstruction_inputs: [Vec::with_capacity(capacity)],
         }
     }
@@ -192,10 +191,9 @@ pub fn write_trace_simd(
 
             // DecodeInstruction_a14b71db698d77c8.
 
-            sub_components_inputs.addr_to_id_inputs[0].extend(input_pc_col0.unpack());
             let addr_to_id_value_tmp_937 = addr_to_id_state.deduce_output(input_pc_col0);
-            sub_components_inputs.id_to_f252_inputs[0].extend(addr_to_id_value_tmp_937.unpack());
             let id_to_f252_value_tmp_938 = id_to_f252_state.deduce_output(addr_to_id_value_tmp_937);
+
             sub_components_inputs.verifyinstruction_inputs[0].extend(
                 (
                     input_pc_col0,
@@ -232,13 +230,12 @@ pub fn write_trace_simd(
 
             // ReadSmall.
 
-            sub_components_inputs.addr_to_id_inputs[1].extend(((input_pc_col0) + (M31_1)).unpack());
             let addr_to_id_value_tmp_940 =
                 addr_to_id_state.deduce_output(((input_pc_col0) + (M31_1)));
-            sub_components_inputs.id_to_f252_inputs[1].extend(addr_to_id_value_tmp_940.unpack());
             let id_to_f252_value_tmp_941 = id_to_f252_state.deduce_output(addr_to_id_value_tmp_940);
             let op1_id_col3 = addr_to_id_value_tmp_940;
             trace[3].data[row_index] = op1_id_col3;
+            sub_components_inputs.addr_to_id_inputs[0].extend(((input_pc_col0) + (M31_1)).unpack());
 
             lookup_data.addr_to_id[0].push([((input_pc_col0) + (M31_1)), op1_id_col3]);
 
@@ -257,6 +254,7 @@ pub fn write_trace_simd(
             trace[7].data[row_index] = op1_limb_1_col7;
             let op1_limb_2_col8 = id_to_f252_value_tmp_941.get_m31(2);
             trace[8].data[row_index] = op1_limb_2_col8;
+            sub_components_inputs.id_to_f252_inputs[0].extend(op1_id_col3.unpack());
 
             lookup_data.id_to_f252[0].push([
                 op1_id_col3,
@@ -332,10 +330,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        addr_to_id_lookup_elements: &AddrToIdRelation,
-        id_to_f252_lookup_elements: &IdToValueRelation,
-        verifyinstruction_lookup_elements: &VerifyInstructionRelation,
-        opcodes_lookup_elements: &VmRelation,
+        addr_to_id_lookup_elements: &relations::AddrToId,
+        id_to_f252_lookup_elements: &relations::IdToValue,
+        verifyinstruction_lookup_elements: &relations::VerifyInstruction,
+        opcodes_lookup_elements: &relations::Vm,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);

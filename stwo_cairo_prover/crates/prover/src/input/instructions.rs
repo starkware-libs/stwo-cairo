@@ -216,7 +216,7 @@ impl Instructions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if !dev_mode => {
+            }   => {
                 self.call_rel_imm.push(state);
             }
             // call abs [ap/fp + offset].

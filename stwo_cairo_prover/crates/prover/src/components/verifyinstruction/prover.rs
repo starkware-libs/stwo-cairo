@@ -10,24 +10,25 @@ use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Unpack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-use stwo_prover::core::backend::simd::qm31::{PackedQM31, PackedSecureField};
+use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{Col, Column};
 use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::{bit_reverse, bit_reverse_coset_to_circle_domain_order};
+use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
-use super::component::{Claim, InteractionClaim, RelationElements};
+use super::component::{Claim, InteractionClaim};
+use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
 use crate::components::{memory, pack_values, verifyinstruction};
 use crate::relations;
 
-pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
 pub type InputType = (M31, [M31; 3], [M31; 15]);
+pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
+const N_TRACE_COLUMNS: usize = 28;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -37,8 +38,9 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
-        rangecheck_4_3_state: &mut range_check_4_3::ClaimGenerator,
+        addr_to_id_state: &mut addr_to_id::ClaimGenerator,
+        id_to_f252_state: &mut id_to_f252::ClaimGenerator,
+        range_check_4_3_state: &mut range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
@@ -51,32 +53,52 @@ impl ClaimGenerator {
             bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
         }
 
-        let simd_inputs = pack_values(&self.inputs);
+        let packed_inputs = pack_values(&self.inputs);
         let (trace, mut sub_components_inputs, lookup_data) =
-            write_trace_simd(simd_inputs, addr_to_id_state);
+            write_trace_simd(packed_inputs, addr_to_id_state, id_to_f252_state);
 
         if need_padding {
             sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
         }
+        sub_components_inputs
+            .addr_to_id_inputs
+            .iter()
+            .for_each(|inputs| {
+                addr_to_id_state.add_inputs(&inputs[..n_calls]);
+            });
+        sub_components_inputs
+            .id_to_f252_inputs
+            .iter()
+            .for_each(|inputs| {
+                id_to_f252_state.add_inputs(&inputs[..n_calls]);
+            });
+        sub_components_inputs
+            .range_check_4_3_inputs
+            .iter()
+            .for_each(|inputs| {
+                range_check_4_3_state.add_inputs(&inputs[..n_calls]);
+            });
+        sub_components_inputs
+            .range_check_7_2_5_inputs
+            .iter()
+            .for_each(|inputs| {
+                range_check_7_2_5_state.add_inputs(&inputs[..n_calls]);
+            });
 
-        rangecheck_4_3_state.add_inputs(&sub_components_inputs.rangecheck_4_3_inputs[..n_calls]);
-        range_check_7_2_5_state
-            .add_inputs(&sub_components_inputs.range_check_7_2_5_inputs[..n_calls]);
-
-        let trace = trace
-            .into_iter()
-            .map(|eval| {
-                let domain = CanonicCoset::new(
-                    eval.len()
-                        .checked_ilog2()
-                        .expect("Input is not a power of 2!"),
-                )
-                .circle_domain();
-                CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(domain, eval)
-            })
-            .collect_vec();
-
-        tree_builder.extend_evals(trace);
+        tree_builder.extend_evals(
+            trace
+                .into_iter()
+                .map(|eval| {
+                    let domain = CanonicCoset::new(
+                        eval.len()
+                            .checked_ilog2()
+                            .expect("Input is not a power of 2!"),
+                    )
+                    .circle_domain();
+                    CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(domain, eval)
+                })
+                .collect_vec(),
+        );
 
         (
             Claim { n_calls },
@@ -88,33 +110,40 @@ impl ClaimGenerator {
     }
 
     pub fn add_inputs(&mut self, inputs: &[InputType]) {
-        inputs.iter().for_each(|input| self.inputs.push(*input));
-    }
-
-    pub fn add_single_input(&mut self, input: InputType) {
-        self.inputs.push(input);
+        self.inputs.extend(inputs);
     }
 }
 
 pub struct SubComponentInputs {
-    pub addr_to_id_inputs: Vec<memory::addr_to_id::InputType>,
-    pub rangecheck_4_3_inputs: Vec<range_check_4_3::InputType>,
-    pub range_check_7_2_5_inputs: Vec<range_check_7_2_5::InputType>,
+    pub addr_to_id_inputs: [Vec<addr_to_id::InputType>; 1],
+    pub id_to_f252_inputs: [Vec<id_to_f252::InputType>; 1],
+    pub range_check_4_3_inputs: [Vec<range_check_4_3::InputType>; 1],
+    pub range_check_7_2_5_inputs: [Vec<range_check_7_2_5::InputType>; 1],
 }
 impl SubComponentInputs {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            addr_to_id_inputs: Vec::with_capacity(capacity),
-            rangecheck_4_3_inputs: Vec::with_capacity(capacity),
-            range_check_7_2_5_inputs: Vec::with_capacity(capacity),
+            addr_to_id_inputs: [Vec::with_capacity(capacity)],
+            id_to_f252_inputs: [Vec::with_capacity(capacity)],
+            range_check_4_3_inputs: [Vec::with_capacity(capacity)],
+            range_check_7_2_5_inputs: [Vec::with_capacity(capacity)],
         }
     }
 
     fn bit_reverse_coset_to_circle_domain_order(&mut self) {
-        bit_reverse_coset_to_circle_domain_order(&mut self.addr_to_id_inputs);
-        bit_reverse_coset_to_circle_domain_order(&mut self.rangecheck_4_3_inputs);
-        bit_reverse_coset_to_circle_domain_order(&mut self.range_check_7_2_5_inputs);
+        self.addr_to_id_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.id_to_f252_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.range_check_4_3_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.range_check_7_2_5_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
     }
 }
 
@@ -124,10 +153,15 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    addr_to_id_state: &mut memory::addr_to_id::ClaimGenerator,
-) -> (Vec<BaseColumn>, SubComponentInputs, LookupData) {
+    addr_to_id_state: &mut addr_to_id::ClaimGenerator,
+    id_to_f252_state: &mut id_to_f252::ClaimGenerator,
+) -> (
+    [BaseColumn; N_TRACE_COLUMNS],
+    SubComponentInputs,
+    LookupData,
+) {
     const N_TRACE_COLUMNS: usize = 28;
-    let mut trace_values: [_; N_TRACE_COLUMNS] =
+    let mut trace: [_; N_TRACE_COLUMNS] =
         std::array::from_fn(|_| Col::<SimdBackend, M31>::zeros(inputs.len() * N_LANES));
 
     let mut lookup_data = LookupData::with_capacity(inputs.len());
@@ -157,7 +191,7 @@ pub fn write_trace_simd(
         .into_iter()
         .enumerate()
         .for_each(|(row_index, verifyinstruction_input)| {
-            let tmp_0 = (
+            let input_tmp_155 = (
                 verifyinstruction_input.0,
                 [
                     verifyinstruction_input.1[0],
@@ -182,87 +216,100 @@ pub fn write_trace_simd(
                     verifyinstruction_input.2[14],
                 ],
             );
-            let input_col0 = tmp_0.0;
-            trace_values[0].data[row_index] = input_col0;
-            let input_col1 = tmp_0.1[0];
-            trace_values[1].data[row_index] = input_col1;
-            let input_col2 = tmp_0.1[1];
-            trace_values[2].data[row_index] = input_col2;
-            let input_col3 = tmp_0.1[2];
-            trace_values[3].data[row_index] = input_col3;
-            let input_col4 = tmp_0.2[0];
-            trace_values[4].data[row_index] = input_col4;
-            let input_col5 = tmp_0.2[1];
-            trace_values[5].data[row_index] = input_col5;
-            let input_col6 = tmp_0.2[2];
-            trace_values[6].data[row_index] = input_col6;
-            let input_col7 = tmp_0.2[3];
-            trace_values[7].data[row_index] = input_col7;
-            let input_col8 = tmp_0.2[4];
-            trace_values[8].data[row_index] = input_col8;
-            let input_col9 = tmp_0.2[5];
-            trace_values[9].data[row_index] = input_col9;
-            let input_col10 = tmp_0.2[6];
-            trace_values[10].data[row_index] = input_col10;
-            let input_col11 = tmp_0.2[7];
-            trace_values[11].data[row_index] = input_col11;
-            let input_col12 = tmp_0.2[8];
-            trace_values[12].data[row_index] = input_col12;
-            let input_col13 = tmp_0.2[9];
-            trace_values[13].data[row_index] = input_col13;
-            let input_col14 = tmp_0.2[10];
-            trace_values[14].data[row_index] = input_col14;
-            let input_col15 = tmp_0.2[11];
-            trace_values[15].data[row_index] = input_col15;
-            let input_col16 = tmp_0.2[12];
-            trace_values[16].data[row_index] = input_col16;
-            let input_col17 = tmp_0.2[13];
-            trace_values[17].data[row_index] = input_col17;
-            let input_col18 = tmp_0.2[14];
-            trace_values[18].data[row_index] = input_col18;
-            let tmp_11 = ((PackedUInt16::from_m31(input_col1)) & (UInt16_511));
-            let offset0_low_col19 = tmp_11.as_m31();
-            trace_values[19].data[row_index] = offset0_low_col19;
-            let tmp_12 = ((PackedUInt16::from_m31(input_col1)) >> (UInt16_9));
-            let offset0_mid_col20 = tmp_12.as_m31();
-            trace_values[20].data[row_index] = offset0_mid_col20;
-            let tmp_13 = ((PackedUInt16::from_m31(input_col2)) & (UInt16_3));
-            let offset1_low_col21 = tmp_13.as_m31();
-            trace_values[21].data[row_index] = offset1_low_col21;
-            let tmp_14 = (((PackedUInt16::from_m31(input_col2)) >> (UInt16_2)) & (UInt16_511));
-            let offset1_mid_col22 = tmp_14.as_m31();
-            trace_values[22].data[row_index] = offset1_mid_col22;
-            let tmp_15 = ((PackedUInt16::from_m31(input_col2)) >> (UInt16_11));
-            let offset1_high_col23 = tmp_15.as_m31();
-            trace_values[23].data[row_index] = offset1_high_col23;
-            let tmp_16 = ((PackedUInt16::from_m31(input_col3)) & (UInt16_15));
-            let offset2_low_col24 = tmp_16.as_m31();
-            trace_values[24].data[row_index] = offset2_low_col24;
-            let tmp_17 = (((PackedUInt16::from_m31(input_col3)) >> (UInt16_4)) & (UInt16_511));
-            let offset2_mid_col25 = tmp_17.as_m31();
-            trace_values[25].data[row_index] = offset2_mid_col25;
-            let tmp_18 = ((PackedUInt16::from_m31(input_col3)) >> (UInt16_13));
-            let offset2_high_col26 = tmp_18.as_m31();
-            trace_values[26].data[row_index] = offset2_high_col26;
-            sub_components_inputs
-                .range_check_7_2_5_inputs
+            let input_col0 = input_tmp_155.0;
+            trace[0].data[row_index] = input_col0;
+            let input_col1 = input_tmp_155.1[0];
+            trace[1].data[row_index] = input_col1;
+            let input_col2 = input_tmp_155.1[1];
+            trace[2].data[row_index] = input_col2;
+            let input_col3 = input_tmp_155.1[2];
+            trace[3].data[row_index] = input_col3;
+            let input_col4 = input_tmp_155.2[0];
+            trace[4].data[row_index] = input_col4;
+            let input_col5 = input_tmp_155.2[1];
+            trace[5].data[row_index] = input_col5;
+            let input_col6 = input_tmp_155.2[2];
+            trace[6].data[row_index] = input_col6;
+            let input_col7 = input_tmp_155.2[3];
+            trace[7].data[row_index] = input_col7;
+            let input_col8 = input_tmp_155.2[4];
+            trace[8].data[row_index] = input_col8;
+            let input_col9 = input_tmp_155.2[5];
+            trace[9].data[row_index] = input_col9;
+            let input_col10 = input_tmp_155.2[6];
+            trace[10].data[row_index] = input_col10;
+            let input_col11 = input_tmp_155.2[7];
+            trace[11].data[row_index] = input_col11;
+            let input_col12 = input_tmp_155.2[8];
+            trace[12].data[row_index] = input_col12;
+            let input_col13 = input_tmp_155.2[9];
+            trace[13].data[row_index] = input_col13;
+            let input_col14 = input_tmp_155.2[10];
+            trace[14].data[row_index] = input_col14;
+            let input_col15 = input_tmp_155.2[11];
+            trace[15].data[row_index] = input_col15;
+            let input_col16 = input_tmp_155.2[12];
+            trace[16].data[row_index] = input_col16;
+            let input_col17 = input_tmp_155.2[13];
+            trace[17].data[row_index] = input_col17;
+            let input_col18 = input_tmp_155.2[14];
+            trace[18].data[row_index] = input_col18;
+
+            // EncodeOffsets.
+
+            let offset0_low_tmp_166 = ((PackedUInt16::from_m31(input_col1)) & (UInt16_511));
+            let offset0_low_col19 = offset0_low_tmp_166.as_m31();
+            trace[19].data[row_index] = offset0_low_col19;
+            let offset0_mid_tmp_167 = ((PackedUInt16::from_m31(input_col1)) >> (UInt16_9));
+            let offset0_mid_col20 = offset0_mid_tmp_167.as_m31();
+            trace[20].data[row_index] = offset0_mid_col20;
+            let offset1_low_tmp_168 = ((PackedUInt16::from_m31(input_col2)) & (UInt16_3));
+            let offset1_low_col21 = offset1_low_tmp_168.as_m31();
+            trace[21].data[row_index] = offset1_low_col21;
+            let offset1_mid_tmp_169 =
+                (((PackedUInt16::from_m31(input_col2)) >> (UInt16_2)) & (UInt16_511));
+            let offset1_mid_col22 = offset1_mid_tmp_169.as_m31();
+            trace[22].data[row_index] = offset1_mid_col22;
+            let offset1_high_tmp_170 = ((PackedUInt16::from_m31(input_col2)) >> (UInt16_11));
+            let offset1_high_col23 = offset1_high_tmp_170.as_m31();
+            trace[23].data[row_index] = offset1_high_col23;
+            let offset2_low_tmp_171 = ((PackedUInt16::from_m31(input_col3)) & (UInt16_15));
+            let offset2_low_col24 = offset2_low_tmp_171.as_m31();
+            trace[24].data[row_index] = offset2_low_col24;
+            let offset2_mid_tmp_172 =
+                (((PackedUInt16::from_m31(input_col3)) >> (UInt16_4)) & (UInt16_511));
+            let offset2_mid_col25 = offset2_mid_tmp_172.as_m31();
+            trace[25].data[row_index] = offset2_mid_col25;
+            let offset2_high_tmp_173 = ((PackedUInt16::from_m31(input_col3)) >> (UInt16_13));
+            let offset2_high_col26 = offset2_high_tmp_173.as_m31();
+            trace[26].data[row_index] = offset2_high_col26;
+
+            sub_components_inputs.range_check_7_2_5_inputs[0]
                 .extend([offset0_mid_col20, offset1_low_col21, offset1_high_col23].unpack());
+
             lookup_data.range_check_7_2_5[0].push([
                 offset0_mid_col20,
                 offset1_low_col21,
                 offset1_high_col23,
             ]);
-            sub_components_inputs
-                .rangecheck_4_3_inputs
+
+            sub_components_inputs.range_check_4_3_inputs[0]
                 .extend([offset2_low_col24, offset2_high_col26].unpack());
-            lookup_data.rangecheck_4_3[0].push([offset2_low_col24, offset2_high_col26]);
-            sub_components_inputs
-                .addr_to_id_inputs
-                .extend(input_col0.unpack());
-            let tmp_50 = addr_to_id_state.deduce_output(input_col0);
-            let instruction_id_col27 = tmp_50;
-            trace_values[27].data[row_index] = instruction_id_col27;
+
+            lookup_data.range_check_4_3[0].push([offset2_low_col24, offset2_high_col26]);
+
+            // EncodeFlags.
+
+            // MemVerify.
+
+            let addr_to_id_value_tmp_176 = addr_to_id_state.deduce_output(input_col0);
+            let instruction_id_col27 = addr_to_id_value_tmp_176;
+            trace[27].data[row_index] = instruction_id_col27;
+            sub_components_inputs.addr_to_id_inputs[0].extend(input_col0.unpack());
+
             lookup_data.addr_to_id[0].push([input_col0, instruction_id_col27]);
+            sub_components_inputs.id_to_f252_inputs[0].extend(instruction_id_col27.unpack());
+
             lookup_data.id_to_f252[0].push([
                 instruction_id_col27,
                 offset0_low_col19,
@@ -306,6 +353,7 @@ pub fn write_trace_simd(
                 M31_0,
                 M31_0,
             ]);
+
             lookup_data.verifyinstruction[0].push([
                 input_col0,
                 input_col1,
@@ -329,14 +377,13 @@ pub fn write_trace_simd(
             ]);
         });
 
-    (trace_values.to_vec(), sub_components_inputs, lookup_data)
+    (trace, sub_components_inputs, lookup_data)
 }
 
-#[derive(Default)]
 pub struct LookupData {
     pub addr_to_id: [Vec<[PackedM31; 2]>; 1],
     pub id_to_f252: [Vec<[PackedM31; 29]>; 1],
-    pub rangecheck_4_3: [Vec<[PackedM31; 2]>; 1],
+    pub range_check_4_3: [Vec<[PackedM31; 2]>; 1],
     pub range_check_7_2_5: [Vec<[PackedM31; 3]>; 1],
     pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
 }
@@ -346,14 +393,13 @@ impl LookupData {
         Self {
             addr_to_id: [Vec::with_capacity(capacity)],
             id_to_f252: [Vec::with_capacity(capacity)],
-            rangecheck_4_3: [Vec::with_capacity(capacity)],
+            range_check_4_3: [Vec::with_capacity(capacity)],
             range_check_7_2_5: [Vec::with_capacity(capacity)],
             verifyinstruction: [Vec::with_capacity(capacity)],
         }
     }
 }
 
-#[derive(Default)]
 pub struct InteractionClaimGenerator {
     pub n_calls: usize,
     pub lookup_data: LookupData,
@@ -362,9 +408,9 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_lookup_elements: &relations::AddrToId,
-        memoryidtobig_lookup_elements: &relations::IdToValue,
-        rangecheck_4_3_lookup_elements: &relations::RangeCheck_4_3,
+        addr_to_id_lookup_elements: &relations::AddrToId,
+        id_to_f252_lookup_elements: &relations::IdToValue,
+        range_check_4_3_lookup_elements: &relations::RangeCheck_4_3,
         range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
         verifyinstruction_lookup_elements: &relations::VerifyInstruction,
     ) -> InteractionClaim {
@@ -380,9 +426,9 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.rangecheck_4_3[0];
+        let lookup_row = &self.lookup_data.range_check_4_3[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = rangecheck_4_3_lookup_elements.combine(lookup_values);
+            let denom = range_check_4_3_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
@@ -411,13 +457,18 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        let (trace, [total_sum, claimed_sum]) =
-            logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
+        let (trace, total_sum, claimed_sum) = if self.n_calls == 1 << log_size {
+            let (trace, claimed_sum) = logup_gen.finalize_last();
+            (trace, claimed_sum, None)
+        } else {
+            let (trace, [total_sum, claimed_sum]) =
+                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
+            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
+        };
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
-            total_sum,
-            claimed_sum: Some((claimed_sum, self.n_calls - 1)),
+            logup_sums: (total_sum, claimed_sum),
         }
     }
 }

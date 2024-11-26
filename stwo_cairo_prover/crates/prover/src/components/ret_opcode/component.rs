@@ -4,7 +4,9 @@ use std::ops::{Mul, Sub};
 
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
+use stwo_prover::constraint_framework::logup::{
+    ClaimedPrefixSum, LogupAtRow, LogupSums, LookupElements,
+};
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, INTERACTION_TRACE_IDX,
@@ -37,8 +39,8 @@ impl RelationElements {
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::AddrToId,
-    pub memoryidtobig_lookup_elements: relations::IdToValue,
+    pub addr_to_id_lookup_elements: relations::AddrToId,
+    pub id_to_f252_lookup_elements: relations::IdToValue,
     pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
     pub opcodes_lookup_elements: relations::Vm,
 }
@@ -67,16 +69,15 @@ impl Claim {
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct InteractionClaim {
-    pub total_sum: SecureField,
-    pub claimed_sum: Option<ClaimedPrefixSum>,
+    pub logup_sums: LogupSums,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some((claimed_sum, idx)) = self.claimed_sum {
-            channel.mix_felts(&[self.total_sum, claimed_sum]);
-            channel.mix_u64(idx as u64);
-        } else {
-            channel.mix_felts(&[self.total_sum]);
+        let (total_sum, claimed_sum) = self.logup_sums;
+        channel.mix_felts(&[total_sum]);
+        if let Some(claimed_sum) = claimed_sum {
+            channel.mix_felts(&[claimed_sum.0]);
+            channel.mix_u64(claimed_sum.1 as u64);
         }
     }
 }

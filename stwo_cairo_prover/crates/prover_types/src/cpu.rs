@@ -408,6 +408,7 @@ pub const FELT252_BITS_PER_WORD: usize = 9;
 pub const P_FELTS: [u32; FELT252_N_WORDS] = [
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 0, 0, 256,
 ];
+pub const P_BIG_UINT_LIMBS: [u64; 4] = [1, 0, 0, 2_u64.pow(59) + 17];
 
 // A non-redundant representation of a 252-bit element in the field of numbers
 // modulo the prime 2**251 + 17 * 2**192 + 1.
@@ -452,6 +453,17 @@ impl Felt252 {
     pub fn from_m31(felt: M31) -> Self {
         Self {
             limbs: [felt.0 as u64, 0, 0, 0],
+        }
+    }
+
+    pub fn from_biguint256(biguint: BigUInt<256, 4>) -> Self {
+        assert!(
+            Uint::<256, 4>::from_limbs(biguint.limbs) < Uint::from_limbs(P_BIG_UINT_LIMBS),
+            "BigUInt is too big"
+        );
+
+        Self {
+            limbs: biguint.limbs,
         }
     }
 }

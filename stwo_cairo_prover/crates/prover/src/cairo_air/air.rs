@@ -20,7 +20,7 @@ use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
 };
 use crate::components::{
-    addapopcode_is_imm_t_op1_base_fp_f, genericopcode,
+    addapopcode_is_imm_t_op1_base_fp_f, callopcode_is_rel_t_op1_base_fp_f, genericopcode,
     jumpopcode_is_rel_t_is_imm_t_is_double_deref_f, ret_opcode, verifyinstruction,
 };
 use crate::felt::split_f252;
@@ -40,14 +40,16 @@ pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
 #[derive(Serialize, Deserialize)]
 pub struct OpcodeClaim {
-    jump: Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Claim>,
     add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::Claim>,
+    call_rel: Vec<callopcode_is_rel_t_op1_base_fp_f::Claim>,
     generic: Vec<genericopcode::Claim>,
+    jump: Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Claim>,
     ret: Vec<ret_opcode::Claim>,
 }
 impl OpcodeClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.add_ap.iter().for_each(|c| c.mix_into(channel));
+        self.call_rel.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.jump.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
@@ -56,6 +58,7 @@ impl OpcodeClaim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
             self.add_ap.iter().map(|c| c.log_sizes()),
+            self.call_rel.iter().map(|c| c.log_sizes()),
             self.generic.iter().map(|c| c.log_sizes()),
             self.jump.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
@@ -154,9 +157,10 @@ impl PublicData {
 }
 
 pub struct OpcodesClaimGenerator {
-    jump: Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator>,
     add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::ClaimGenerator>,
+    call_rel: Vec<callopcode_is_rel_t_op1_base_fp_f::ClaimGenerator>,
     generic: Vec<genericopcode::ClaimGenerator>,
+    jump: Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
@@ -164,6 +168,9 @@ impl OpcodesClaimGenerator {
         // TODO(Ohad): decide split sizes for opcode traces.
         let add_ap = vec![addapopcode_is_imm_t_op1_base_fp_f::ClaimGenerator::new(
             input.add_ap,
+        )];
+        let call_rel = vec![callopcode_is_rel_t_op1_base_fp_f::ClaimGenerator::new(
+            input.call_rel_imm,
         )];
         let generic = vec![genericopcode::ClaimGenerator::new(input.generic)];
         let jump = vec![
@@ -175,6 +182,7 @@ impl OpcodesClaimGenerator {
 
         Self {
             add_ap,
+            call_rel,
             generic,
             jump,
             ret,
@@ -192,6 +200,18 @@ impl OpcodesClaimGenerator {
     ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
         let (add_ap_claims, add_ap_interaction_gens) = self
             .add_ap
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_addr_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (call_rel_claims, call_rel_interaction_gens) = self
+            .call_rel
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -243,12 +263,14 @@ impl OpcodesClaimGenerator {
         (
             OpcodeClaim {
                 add_ap: add_ap_claims,
+                call_rel: call_rel_claims,
                 generic: generic_opcode_claims,
                 jump: jump_opcode_claims,
                 ret: ret_claims,
             },
             OpcodesInteractionClaimGenerator {
                 add_ap_interaction_gens,
+                call_rel_interaction_gens,
                 generic_opcode_interaction_gens,
                 jump_opcode_interaction_gens,
                 ret_interaction_gens,
@@ -260,6 +282,7 @@ impl OpcodesClaimGenerator {
 #[derive(Serialize, Deserialize)]
 pub struct OpcodeInteractionClaim {
     add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::InteractionClaim>,
+    call_rel: Vec<callopcode_is_rel_t_op1_base_fp_f::InteractionClaim>,
     generic: Vec<genericopcode::InteractionClaim>,
     jump: Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
@@ -267,6 +290,7 @@ pub struct OpcodeInteractionClaim {
 impl OpcodeInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.add_ap.iter().for_each(|c| c.mix_into(channel));
+        self.call_rel.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.jump.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
@@ -280,10 +304,16 @@ impl OpcodeInteractionClaim {
                 None => interaction_claim.logup_sums.0,
             };
         }
-        for interaction_claim in &self.generic {
-            sum += match interaction_claim.claimed_sum {
+        for interaction_claim in &self.call_rel {
+            sum += match interaction_claim.logup_sums.1 {
                 Some((claimed_sum, ..)) => claimed_sum,
-                None => interaction_claim.total_sum,
+                None => interaction_claim.logup_sums.0,
+            };
+        }
+        for interaction_claim in &self.generic {
+            sum += match interaction_claim.logup_sums.1 {
+                Some((claimed_sum, ..)) => claimed_sum,
+                None => interaction_claim.logup_sums.0,
             };
         }
         for interaction_claim in &self.jump {
@@ -293,9 +323,9 @@ impl OpcodeInteractionClaim {
             };
         }
         for interaction_claim in &self.ret {
-            sum += match interaction_claim.claimed_sum {
+            sum += match interaction_claim.logup_sums.1 {
                 Some((claimed_sum, ..)) => claimed_sum,
-                None => interaction_claim.total_sum,
+                None => interaction_claim.logup_sums.0,
             };
         }
         sum
@@ -304,6 +334,7 @@ impl OpcodeInteractionClaim {
 
 pub struct OpcodesInteractionClaimGenerator {
     add_ap_interaction_gens: Vec<addapopcode_is_imm_t_op1_base_fp_f::InteractionClaimGenerator>,
+    call_rel_interaction_gens: Vec<callopcode_is_rel_t_op1_base_fp_f::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<genericopcode::InteractionClaimGenerator>,
     jump_opcode_interaction_gens:
         Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaimGenerator>,
@@ -315,8 +346,21 @@ impl OpcodesInteractionClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         interaction_elements: &CairoInteractionElements,
     ) -> OpcodeInteractionClaim {
-        let add_ap_cinteraciton_claims = self
+        let add_ap_interaction_claims = self
             .add_ap_interaction_gens
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_addr_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.verify_instruction,
+                    &interaction_elements.opcodes,
+                )
+            })
+            .collect();
+        let call_rel_interaction_claims = self
+            .call_rel_interaction_gens
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -370,7 +414,8 @@ impl OpcodesInteractionClaimGenerator {
             })
             .collect();
         OpcodeInteractionClaim {
-            add_ap: add_ap_cinteraciton_claims,
+            add_ap: add_ap_interaction_claims,
+            call_rel: call_rel_interaction_claims,
             generic: generic_opcode_interaction_claims,
             jump: jump_interaction_claims,
             ret: ret_interaction_claims,
@@ -461,6 +506,7 @@ impl CairoClaimGenerator {
             self.verify_instruction_trace_generator.write_trace(
                 tree_builder,
                 &mut self.memory_addr_to_id_trace_generator,
+                &mut self.memory_id_to_value_trace_generator,
                 &mut self.range_check_4_3_trace_generator,
                 &mut self.range_check_7_2_5_trace_generator,
             );
@@ -631,7 +677,7 @@ pub fn lookup_sum(
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
     sum += interaction_claim.opcodes.sum();
-    sum += interaction_claim.verify_instruction.claimed_sum.unwrap().0;
+    sum += interaction_claim.verify_instruction.logup_sums.1.unwrap().0;
     sum += interaction_claim.range_check_19.claimed_sum;
     sum += interaction_claim.range_check_9_9.claimed_sum;
     sum += interaction_claim.range_check_7_2_5.claimed_sum;
@@ -644,6 +690,7 @@ pub fn lookup_sum(
 
 pub struct OpcodeComponents {
     add_ap: Vec<addapopcode_is_imm_t_op1_base_fp_f::Component>,
+    call_rel: Vec<callopcode_is_rel_t_op1_base_fp_f::Component>,
     generic: Vec<genericopcode::Component>,
     jump: Vec<jumpopcode_is_rel_t_is_imm_t_is_double_deref_f::Component>,
     ret: Vec<ret_opcode::Component>,
@@ -671,13 +718,30 @@ impl OpcodeComponents {
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
                     },
-                    (
-                        interaction_claim.logup_sums.0,
-                        interaction_claim.logup_sums.1,
-                    ),
+                    interaction_claim.logup_sums,
                 )
             })
             .collect_vec();
+        let call_rel_components = claim
+            .call_rel
+            .iter()
+            .zip(&interaction_claim.call_rel)
+            .map(|(&claim, &interaction_claim)| {
+                callopcode_is_rel_t_op1_base_fp_f::Component::new(
+                    tree_span_provider,
+                    callopcode_is_rel_t_op1_base_fp_f::Eval {
+                        claim,
+                        addr_to_id_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+                        id_to_f252_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.logup_sums,
+                )
+            })
+            .collect();
         let generic_components = claim
             .generic
             .iter()
@@ -698,7 +762,7 @@ impl OpcodeComponents {
                             .range_check_9_9
                             .clone(),
                     },
-                    (interaction_claim.total_sum, interaction_claim.claimed_sum),
+                    interaction_claim.logup_sums,
                 )
             })
             .collect_vec();
@@ -718,10 +782,7 @@ impl OpcodeComponents {
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
                     },
-                    (
-                        interaction_claim.logup_sums.0,
-                        interaction_claim.logup_sums.1,
-                    ),
+                    interaction_claim.logup_sums,
                 )
             })
             .collect_vec();
@@ -741,12 +802,13 @@ impl OpcodeComponents {
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
                     },
-                    (interaction_claim.total_sum, interaction_claim.claimed_sum),
+                    interaction_claim.logup_sums,
                 )
             })
             .collect_vec();
         Self {
             add_ap: add_ap_components,
+            call_rel: call_rel_components,
             generic: generic_components,
             jump: jump_components,
             ret: ret_components,
@@ -757,6 +819,11 @@ impl OpcodeComponents {
         let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
         vec.extend(
             self.add_ap
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.call_rel
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
@@ -820,10 +887,7 @@ impl CairoComponents {
                 interaction_elements.range_check_7_2_5.clone(),
                 interaction_elements.verify_instruction.clone(),
             ),
-            (
-                interaction_claim.verify_instruction.total_sum,
-                interaction_claim.verify_instruction.claimed_sum,
-            ),
+            interaction_claim.verify_instruction.logup_sums,
         );
         let memory_addr_to_id_component = addr_to_id::Component::new(
             tree_span_provider,

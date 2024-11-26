@@ -100,7 +100,6 @@ pub fn verify_cairo(
 
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
-
     claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
     let interaction_elements = CairoInteractionElements::draw(channel);

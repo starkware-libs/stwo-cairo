@@ -15,15 +15,14 @@ use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{addr_to_id, id_to_f252};
 use crate::components::verifyinstruction;
-use crate::relations::*;
-stwo_prover::relation!(RelationElements, 4);
+use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub addr_to_id_lookup_elements: AddrToIdRelation,
-    pub id_to_f252_lookup_elements: IdToValueRelation,
-    pub verifyinstruction_lookup_elements: VerifyInstructionRelation,
-    pub opcodes_lookup_elements: VmRelation,
+    pub addr_to_id_lookup_elements: relations::AddrToId,
+    pub id_to_f252_lookup_elements: relations::IdToValue,
+    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub opcodes_lookup_elements: relations::Vm,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
@@ -34,7 +33,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let trace_log_sizes = vec![log_size; 11];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 8];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 9];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,

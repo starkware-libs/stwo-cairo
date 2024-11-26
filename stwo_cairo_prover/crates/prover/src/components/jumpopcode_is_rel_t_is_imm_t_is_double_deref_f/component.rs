@@ -14,16 +14,16 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::verifyinstruction;
-use crate::relations::*;
+use crate::relations;
 
 stwo_prover::relation!(RelationElements, 4);
 
 pub struct Eval {
     pub claim: Claim,
-    pub addr_to_id_lookup_elements: AddrToIdRelation,
-    pub id_to_f252_lookup_elements: IdToValueRelation,
-    pub verifyinstruction_lookup_elements: VerifyInstructionRelation,
-    pub opcodes_lookup_elements: VmRelation,
+    pub addr_to_id_lookup_elements: relations::AddrToId,
+    pub id_to_f252_lookup_elements: relations::IdToValue,
+    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub opcodes_lookup_elements: relations::Vm,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
