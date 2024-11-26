@@ -25,6 +25,8 @@ use crate::input::instructions::{Instructions, VmState};
 use crate::input::CairoInput;
 use crate::relations;
 
+const LOG_MAX_COMPONENT_SIZE: u32 = 23;
+
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
@@ -151,8 +153,16 @@ pub struct OpcodesClaimGenerator {
 impl OpcodesClaimGenerator {
     pub fn new(input: Instructions) -> Self {
         // TODO(Ohad): decide split sizes for opcode traces.
-        let generic = vec![genericopcode::ClaimGenerator::new(input.generic)];
-        let ret = vec![ret_opcode::ClaimGenerator::new(input.ret)];
+        let generic = input
+            .generic
+            .chunks(1 << LOG_MAX_COMPONENT_SIZE)
+            .map(|input| genericopcode::ClaimGenerator::new(input.to_vec()))
+            .collect_vec();
+        let ret = input
+            .ret
+            .chunks(1 << LOG_MAX_COMPONENT_SIZE)
+            .map(|input| ret_opcode::ClaimGenerator::new(input.to_vec()))
+            .collect_vec();
 
         Self { ret, generic }
     }
