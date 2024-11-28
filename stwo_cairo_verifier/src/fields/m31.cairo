@@ -1,24 +1,16 @@
-use core::num::traits::{CheckedSub, WideMul};
+use bounded_int::{AddHelper, BoundedInt, DivRemHelper, SubHelper, div_rem, upcast};
+use core::num::traits::WideMul;
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use core::option::OptionTrait;
-use core::traits::TryInto;
 use super::{BatchInvertible, Invertible};
 
-/// Equals `2^31 - 1`.
-pub const P: u32 = 0x7fffffff;
+pub const P: felt252 = 0x7fffffff;
+pub const P_U32: u32 = 0x7fffffff;
 
-/// Equals `2^31 - 1`.
-const P32NZ: NonZero<u32> = 0x7fffffff;
-
-/// Equals `2^31 - 1`.
-const P64NZ: NonZero<u64> = 0x7fffffff;
-
-/// Equals `2^31 - 1`.
-const P128NZ: NonZero<u128> = 0x7fffffff;
+type M31InnerT = M31InnerT;
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct M31 {
-    pub inner: u32,
+    pub inner: M31InnerT,
 }
 
 pub impl M31InvertibleImpl of Invertible<M31> {
@@ -40,27 +32,32 @@ pub impl M31BatchInvertibleImpl of BatchInvertible<M31> {}
 pub impl M31Impl of M31Trait {
     #[inline]
     fn reduce_u32(val: u32) -> M31 {
-        let (_, res) = core::integer::u32_safe_divmod(val, P32NZ);
-        M31 { inner: res.try_into().unwrap() }
+        let (_, res) = div_rem(val, NZ_M31_P);
+        M31 { inner: upcast(res) }
     }
 
     #[inline]
     fn reduce_u64(val: u64) -> M31 {
-        let (_, res) = core::integer::u64_safe_divmod(val, P64NZ);
-        M31 { inner: res.try_into().unwrap() }
+        let (_, res) = div_rem(val, NZ_M31_P);
+        M31 { inner: upcast(res) }
     }
 
     #[inline]
     fn reduce_u128(val: u128) -> M31 {
-        let (_, res) = core::integer::u128_safe_divmod(val, P128NZ);
-        M31 { inner: res.try_into().unwrap() }
+        let (_, res) = div_rem(val, NZ_M31_P);
+        M31 { inner: upcast(res) }
     }
 }
+
 pub impl M31Add of core::traits::Add<M31> {
     #[inline]
     fn add(lhs: M31, rhs: M31) -> M31 {
-        let res = lhs.inner + rhs.inner;
-        let res = res.checked_sub(P).unwrap_or(res);
+        let sum = bounded_int::add(lhs.inner, rhs.inner);
+        let res = match bounded_int::constrain::<BoundedInt<0, { 2 * (P - 1) }>, P>(sum) {
+            Result::Ok(lt) => lt,
+            Result::Err(gte) => upcast(bounded_int::sub(gte, M31_P)),
+        };
+
         M31 { inner: res }
     }
 }
@@ -68,16 +65,24 @@ pub impl M31Add of core::traits::Add<M31> {
 pub impl M31Sub of core::traits::Sub<M31> {
     #[inline]
     fn sub(lhs: M31, rhs: M31) -> M31 {
-        lhs + (-rhs)
+        let diff = bounded_int::sub(lhs.inner, rhs.inner);
+        let res = match bounded_int::constrain::<BoundedInt<{ -(P - 1) }, { P - 1 }>, 0>(diff) {
+            Result::Ok(lt) => upcast(bounded_int::add(lt, M31_P)),
+            Result::Err(gte) => gte,
+        };
+
+        M31 { inner: res }
     }
 }
 
 pub impl M31Mul of core::traits::Mul<M31> {
     #[inline]
     fn mul(lhs: M31, rhs: M31) -> M31 {
-        M31Impl::reduce_u64(lhs.inner.wide_mul(rhs.inner))
+        let lhs_as_u32: u32 = upcast(lhs.inner);
+        M31Impl::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner)))
     }
 }
+
 
 pub impl M31AddAssign of AddAssign<M31, M31> {
     #[inline]
@@ -133,11 +138,7 @@ pub impl M31One of core::num::traits::One<M31> {
 pub impl M31Neg of Neg<M31> {
     #[inline]
     fn neg(a: M31) -> M31 {
-        if a.inner == 0 {
-            M31 { inner: 0 }
-        } else {
-            M31 { inner: P - a.inner }
-        }
+        M31 { inner: 0 } - a
     }
 }
 
@@ -150,11 +151,11 @@ impl M31IntoFelt252 of Into<M31, felt252> {
 
 impl M31PartialOrd of PartialOrd<M31> {
     fn ge(lhs: M31, rhs: M31) -> bool {
-        lhs.inner >= rhs.inner
+        upcast::<_, u32>(lhs.inner) >= upcast(rhs.inner)
     }
 
     fn lt(lhs: M31, rhs: M31) -> bool {
-        lhs.inner < rhs.inner
+        upcast::<_, u32>(lhs.inner) < upcast(rhs.inner)
     }
 }
 
@@ -197,10 +198,63 @@ fn sqn(v: M31, n: usize) -> M31 {
     sqn(v * v, n - 1)
 }
 
+
+type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
+
+
+const NZ_M31_P: NonZero<ConstValue<P>> = 0x7fffffff;
+const M31_P: ConstValue<P> = 0x7fffffff;
+
+impl DivRemU32ByP of DivRemHelper<u32, ConstValue<P>> {
+    // 0x2 = (2**32 - 1) / P.
+    type DivT = BoundedInt<0, 2>;
+    type RemT = M31InnerT;
+}
+
+impl DivRemU64ByP of DivRemHelper<u64, ConstValue<P>> {
+    // 0x200000004 = (2**64 - 1) / P.
+    type DivT = BoundedInt<0, 0x200000004>;
+    type RemT = M31InnerT;
+}
+
+impl DivRemU128ByP of DivRemHelper<u128, ConstValue<P>> {
+    // 0x2000000040000000800000010 = (2**128 - 1) / P.
+    type DivT = BoundedInt<0, 0x2000000040000000800000010>;
+    type RemT = M31InnerT;
+}
+
+impl M31AddHelper of AddHelper<M31InnerT, M31InnerT> {
+    type Result = BoundedInt<0, { 2 * (P - 1) }>;
+}
+
+impl M31SubHelper of SubHelper<M31InnerT, M31InnerT> {
+    type Result = BoundedInt<{ -(P - 1) }, { P - 1 }>;
+}
+
+impl M31AddReduceHelper of SubHelper<BoundedInt<P, { 2 * (P - 1) }>, ConstValue<P>> {
+    type Result = BoundedInt<0, { P - 2 }>;
+}
+
+
+impl M31SubReduceHelper of AddHelper<BoundedInt<{ -(P - 1) }, { -1 }>, ConstValue<P>> {
+    type Result = BoundedInt<1, { P - 1 }>;
+}
+
+pub impl M31AddConstrainP of bounded_int::ConstrainHelper<BoundedInt<0, { 2 * (P - 1) }>, P> {
+    type LowT = M31InnerT;
+    type HighT = BoundedInt<{ P }, { 2 * (P - 1) }>;
+}
+
+
+pub impl M31SubConstrain0 of bounded_int::ConstrainHelper<BoundedInt<{ -(P - 1) }, { P - 1 }>, 0> {
+    type LowT = BoundedInt<{ -(P - 1) }, { -1 }>;
+    type HighT = M31InnerT;
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::Invertible;
-    use super::{P, m31};
+    use super::{P_U32 as P, m31};
 
     const POW2_15: u32 = 0b1000000000000000;
     const POW2_16: u32 = 0b10000000000000000;
