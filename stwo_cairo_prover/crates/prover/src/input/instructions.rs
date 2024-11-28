@@ -79,13 +79,17 @@ impl Instructions {
         res.initial_state = first.into();
         res.push_instr(mem, first.into(), dev_mode);
 
+        let mut last_entry = None;
         while let Some(entry) = iter.next() {
             // TODO(Ohad): Check if the adapter outputs the final state.
             let Some(next) = iter.peek() else {
                 break;
             };
-            res.final_state = (*next).into();
+            last_entry = Some(*next);
             res.push_instr(mem, entry.into(), dev_mode);
+        }
+        if let Some(last_entry) = last_entry {
+            res.final_state = last_entry.into();
         }
         res
     }
