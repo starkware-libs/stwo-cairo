@@ -76,6 +76,7 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
     }
 }
 
+
 #[derive(Drop)]
 pub struct FibAir<const N_COLUMNS: usize> {
     pub log_size: u32,

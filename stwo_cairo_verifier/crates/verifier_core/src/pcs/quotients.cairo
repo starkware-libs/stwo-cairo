@@ -296,9 +296,8 @@ fn accumulate_row_quotients(
         for sample_i in 0..batch_size {
             let (column_index, _) = sample_batch_columns_and_values[sample_i];
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
-            let ComplexConjugateLineCoeffs {
-                alpha_mul_a, alpha_mul_b, alpha_mul_c,
-            } = *line_coeffs[sample_i];
+            let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } =
+                *line_coeffs[sample_i];
             // The numerator is a line equation passing through
             //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
             // evaluated at (domain_point.y, value).

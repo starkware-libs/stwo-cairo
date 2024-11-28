@@ -1,5 +1,6 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
+use crate::poly::circle::CircleDomainImpl;
 use super::utils::{ArrayImpl, pow2};
 
 /// An ordered set of query positions.

@@ -1,5 +1,7 @@
 [workspace]
 members = [
     "crates/bounded_int",
+    "crates/cairo_air",
+    "crates/constraint_framework",
     "crates/verifier_core",
 ]
