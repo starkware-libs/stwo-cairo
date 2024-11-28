@@ -6,7 +6,22 @@ name = "bounded_int"
 version = "0.1.0"
 
 [[package]]
-name = "stwo_cairo_verifier"
+name = "stwo_cairo_air"
+version = "0.1.0"
+dependencies = [
+ "stwo_constraint_framework",
+ "stwo_verifier_core",
+]
+
+[[package]]
+name = "stwo_constraint_framework"
+version = "0.1.0"
+dependencies = [
+ "stwo_verifier_core",
+]
+
+[[package]]
+name = "stwo_verifier_core"
 version = "0.1.0"
 dependencies = [
  "bounded_int",
