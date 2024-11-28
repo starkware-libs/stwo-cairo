@@ -39,7 +39,8 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     commitment_scheme
         .commit(
             *commitment_scheme_proof.commitments[commitment_scheme_proof.commitments.len() - 1],
-            @ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, air.composition_log_degree_bound()),
+            ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, air.composition_log_degree_bound())
+                .span(),
             ref channel,
         );
 

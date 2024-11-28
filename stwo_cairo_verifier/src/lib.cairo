@@ -12,7 +12,9 @@ pub mod verifier;
 
 pub use fields::{BaseField, SecureField};
 
-fn main() {}
+fn main() {
+    println!("WHOA");
+}
 
 /// An array in which each element relates (by index) to a column in the trace.
 pub type ColumnArray<T> = Array<T>;
