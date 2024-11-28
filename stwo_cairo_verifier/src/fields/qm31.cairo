@@ -427,7 +427,7 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
 #[cfg(test)]
 mod tests {
     use super::super::Invertible;
-    use super::super::m31::{P, m31};
+    use super::super::m31::{P_U32 as P, m31};
     use super::{
         PackedUnreducedQM31Impl, QM31, QM31Impl, QM31IntoPackedUnreducedQM31, QM31Trait, qm31,
     };
