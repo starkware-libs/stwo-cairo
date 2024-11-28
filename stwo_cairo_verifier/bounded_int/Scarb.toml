@@ -1,0 +1,15 @@
+[package]
+name = "bounded_int"
+version = "0.1.0"
+edition = "2023_10"
+
+[lib]
+
+[cairo]
+
+[tool.fmt]
+sort-module-level-items = true
+
+[dependencies]
+
+[dev-dependencies]
