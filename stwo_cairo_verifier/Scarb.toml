@@ -1,19 +1,7 @@
 [workspace]
-members = ["bounded_int"]
-
-[package]
-name = "stwo_cairo_verifier"
-version = "0.1.0"
-edition = "2024_07"
-
-[lib]
-casm = true
-
-[tool.fmt]
-sort-module-level-items = true
-
-[dependencies]
-bounded_int = { path = "bounded_int" }
-
-[dev-dependencies]
-cairo_test = "2.8.5"
+members = [
+    "crates/bounded_int",
+    "crates/cairo_air",
+    "crates/constraint_framework",
+    "crates/verifier_core",
+]

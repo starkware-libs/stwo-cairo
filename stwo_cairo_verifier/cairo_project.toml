@@ -1,0 +1,11 @@
+[crate_roots]
+verifier = "src"
+bounded_int = "bounded_int/src"
+
+[config.override.verifier]
+edition = "2024_07"
+
+[config.override.verifier.dependencies.bounded_int]
+
+[config.override.bounded_int]
+edition = "2023_10"
