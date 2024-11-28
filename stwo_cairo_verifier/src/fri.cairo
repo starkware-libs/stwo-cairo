@@ -276,7 +276,7 @@ fn decommit_last_layer(
         };
 
         // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
-        // the FFT return evals in bit-reversed order to prevent this unnessesary bit-reverse.
+        // the FFT return evals in bit-reversed order to prevent this unnecessary bit-reverse.
         let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
 
         if query_eval != *last_layer_evals[last_layer_eval_i] {

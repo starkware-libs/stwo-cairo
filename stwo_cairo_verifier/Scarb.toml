@@ -3,6 +3,9 @@ name = "stwo_cairo_verifier"
 version = "0.1.0"
 edition = "2024_07"
 
+# [cairo]
+# enable-gas = false
+
 [lib]
 casm = true
 
