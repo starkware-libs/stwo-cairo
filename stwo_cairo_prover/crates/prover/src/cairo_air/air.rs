@@ -152,9 +152,14 @@ pub struct OpcodesClaimGenerator {
 impl OpcodesClaimGenerator {
     pub fn new(input: Instructions) -> Self {
         // TODO(Ohad): decide split sizes for opcode traces.
-        let generic = vec![genericopcode::ClaimGenerator::new(input.generic)];
-        let ret = vec![ret_opcode::ClaimGenerator::new(input.ret)];
-
+        let mut generic = vec![];
+        let mut ret = vec![];
+        if !input.generic.is_empty() {
+            generic.push(genericopcode::ClaimGenerator::new(input.generic));
+        }
+        if !input.ret.is_empty() {
+            ret.push(ret_opcode::ClaimGenerator::new(input.ret));
+        }
         Self { ret, generic }
     }
 
