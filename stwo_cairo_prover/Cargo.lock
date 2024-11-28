@@ -1594,7 +1594,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=264922e#264922ee99bd875cadb656bddc1e4aaf3a0f7aa2"
+source = "git+https://github.com/starkware-libs/stwo?rev=af9250#af9250e1374e1f3513f421633c13e665b72a7d9e"
 dependencies = [
  "blake2",
  "blake3",
@@ -1639,6 +1639,8 @@ version = "0.1.0"
 dependencies = [
  "env_logger",
  "log",
+ "starknet-ff",
+ "stwo-prover",
  "tracing",
  "tracing-subscriber",
 ]

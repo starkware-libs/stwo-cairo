@@ -6,5 +6,7 @@ edition = "2021"
 [dependencies]
 env_logger.workspace = true
 log.workspace = true
+starknet-ff.workspace = true
+stwo-prover.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
