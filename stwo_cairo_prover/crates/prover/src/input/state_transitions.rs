@@ -395,7 +395,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if !dev_mode => {
+            } => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 let taken = dst != MemoryValue::Small(0);
