@@ -19,7 +19,7 @@ use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::{
     memory_address_to_id, memory_id_to_big, pack_values, range_check_19, range_check_9_9,
-    verifyinstruction,
+    verify_instruction,
 };
 use crate::relations;
 
@@ -43,7 +43,7 @@ pub struct Eval {
     pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -350,7 +350,7 @@ impl FrameworkEval for Eval {
         // DecodeInstruction_337193008ebaa578.
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
