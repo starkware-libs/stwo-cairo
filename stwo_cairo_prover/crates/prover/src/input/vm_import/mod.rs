@@ -48,8 +48,7 @@ pub fn import_from_vm_output(
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
     let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
-    let state_transitions =
-        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, false);
+    let state_transitions = StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, true);
 
     let public_mem_addresses = pub_data
         .public_memory
