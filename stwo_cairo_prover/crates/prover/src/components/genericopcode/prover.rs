@@ -28,7 +28,7 @@ use crate::relations;
 use crate::components::{pack_values, verifyinstruction};
 use crate::components::range_check_vector::range_check_9_9;
 use crate::components::range_check_vector::range_check_19;
-use crate::relations::AddrToId;
+use crate::relations::MemoryAddressToId;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
@@ -1290,9 +1290,9 @@ impl InteractionClaimGenerator {
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memoryaddresstoid_lookup_elements:
-            &relations::AddrToId,
+            &relations::MemoryAddressToId,
         memoryidtobig_lookup_elements:
-            &relations::IdToValue,
+            &relations::MemoryIdToBig,
         range_check_19_lookup_elements:
             &relations::RangeCheck_19,
         range_check_9_9_lookup_elements:
@@ -1300,7 +1300,7 @@ impl InteractionClaimGenerator {
         verifyinstruction_lookup_elements:
             &relations::VerifyInstruction,
         opcodes_lookup_elements:
-            &relations::Vm,
+            &relations::Opcodes,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);

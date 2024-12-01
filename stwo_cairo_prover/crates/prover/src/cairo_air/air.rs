@@ -112,12 +112,13 @@ impl PublicData {
             .public_memory
             .iter()
             .map(|(addr, id, val)| {
-                let memory_address_to_id = <relations::AddrToId as Relation<M31, QM31>>::combine(
-                    &lookup_elements.memory_address_to_id,
-                    &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
-                )
-                .inverse();
-                let id_to_value = <relations::IdToValue as Relation<M31, QM31>>::combine(
+                let memory_address_to_id =
+                    <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
+                        &lookup_elements.memory_address_to_id,
+                        &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
+                    )
+                    .inverse();
+                let id_to_value = <relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
                     &lookup_elements.memory_id_to_value,
                     &[
                         [M31::from_u32_unchecked(*id)].as_slice(),
@@ -131,12 +132,12 @@ impl PublicData {
             .sum::<QM31>();
 
         // Yield initial state and use the final.
-        sum += <relations::Vm as Relation<M31, QM31>>::combine(
+        sum += <relations::Opcodes as Relation<M31, QM31>>::combine(
             &lookup_elements.opcodes,
             &self.final_state.values(),
         )
         .inverse();
-        sum -= <relations::Vm as Relation<M31, QM31>>::combine(
+        sum -= <relations::Opcodes as Relation<M31, QM31>>::combine(
             &lookup_elements.opcodes,
             &self.initial_state.values(),
         )
@@ -488,10 +489,10 @@ impl CairoInteractionClaimGenerator {
 }
 
 pub struct CairoInteractionElements {
-    pub opcodes: relations::Vm,
+    pub opcodes: relations::Opcodes,
     pub verify_instruction: relations::VerifyInstruction,
-    pub memory_address_to_id: relations::AddrToId,
-    pub memory_id_to_value: relations::IdToValue,
+    pub memory_address_to_id: relations::MemoryAddressToId,
+    pub memory_id_to_value: relations::MemoryIdToBig,
     pub range_check_19: relations::RangeCheck_19,
     pub range_check_9_9: relations::RangeCheck_9_9,
     pub range_check_7_2_5: relations::RangeCheck_7_2_5,
@@ -501,10 +502,10 @@ pub struct CairoInteractionElements {
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
-            opcodes: relations::Vm::draw(channel),
+            opcodes: relations::Opcodes::draw(channel),
             verify_instruction: relations::VerifyInstruction::draw(channel),
-            memory_address_to_id: relations::AddrToId::draw(channel),
-            memory_id_to_value: relations::IdToValue::draw(channel),
+            memory_address_to_id: relations::MemoryAddressToId::draw(channel),
+            memory_id_to_value: relations::MemoryIdToBig::draw(channel),
             range_check_19: relations::RangeCheck_19::draw(channel),
             range_check_9_9: relations::RangeCheck_9_9::draw(channel),
             range_check_7_2_5: relations::RangeCheck_7_2_5::draw(channel),
