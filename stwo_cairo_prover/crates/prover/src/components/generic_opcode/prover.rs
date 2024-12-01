@@ -1351,7 +1351,7 @@ impl InteractionClaimGenerator {
             &relations::RangeCheck_19,
         rangecheck_9_9_lookup_elements:
             &relations::RangeCheck_9_9,
-        verifyinstruction_lookup_elements:
+        verify_instruction_lookup_elements:
             &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
@@ -1362,7 +1362,7 @@ impl InteractionClaimGenerator {
             .verifyinstruction[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom =
-                verifyinstruction_lookup_elements.combine(lookup_values);
+                verify_instruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
