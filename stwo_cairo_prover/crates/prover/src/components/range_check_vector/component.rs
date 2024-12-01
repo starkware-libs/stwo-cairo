@@ -12,7 +12,7 @@ macro_rules! range_check_eval{
                 use stwo_prover::core::pcs::TreeVec;
 
                 use $crate::relations;
-                use $crate::components::memory::id_to_f252::component::N_MULTIPLICITY_COLUMNS;
+                use $crate::components::memory::memory_id_to_big::component::N_MULTIPLICITY_COLUMNS;
 
                 const N_RANGES:usize = $crate::count_elements!($($log_range),*);
                 const RANGES : [u32; N_RANGES] = [$($log_range),+];

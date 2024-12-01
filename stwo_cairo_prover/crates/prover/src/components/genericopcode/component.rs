@@ -17,7 +17,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::components::memory::{addr_to_id, id_to_f252};
+use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::range_check_vector::{range_check_19, range_check_9_9};
 use crate::components::{pack_values, verifyinstruction};
 use crate::relations;

@@ -37,7 +37,7 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
+        memoryaddresstoid_state: &mut memory::memory_address_to_id::ClaimGenerator,
         rangecheck_4_3_state: &mut range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
@@ -97,7 +97,7 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs {
-    pub memoryaddresstoid_inputs: Vec<memory::addr_to_id::InputType>,
+    pub memoryaddresstoid_inputs: Vec<memory::memory_address_to_id::InputType>,
     pub rangecheck_4_3_inputs: Vec<range_check_4_3::InputType>,
     pub range_check_7_2_5_inputs: Vec<range_check_7_2_5::InputType>,
 }
@@ -124,7 +124,7 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
+    memoryaddresstoid_state: &mut memory::memory_address_to_id::ClaimGenerator,
 ) -> (Vec<BaseColumn>, SubComponentInputs, LookupData) {
     const N_TRACE_COLUMNS: usize = 28;
     let mut trace_values: [_; N_TRACE_COLUMNS] =

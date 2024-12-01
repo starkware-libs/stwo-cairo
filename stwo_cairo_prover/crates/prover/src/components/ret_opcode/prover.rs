@@ -44,8 +44,8 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
-        memoryidtobig_state: &mut memory::id_to_f252::ClaimGenerator,
+        memoryaddresstoid_state: &mut memory::memory_address_to_id::ClaimGenerator,
+        memoryidtobig_state: &mut memory::memory_id_to_big::ClaimGenerator,
         verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
@@ -105,8 +105,8 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs {
-    pub memoryaddresstoid_inputs: [Vec<memory::addr_to_id::InputType>; 3],
-    pub memoryidtobig_inputs: [Vec<memory::id_to_f252::InputType>; 3],
+    pub memoryaddresstoid_inputs: [Vec<memory::memory_address_to_id::InputType>; 3],
+    pub memoryidtobig_inputs: [Vec<memory::memory_id_to_big::InputType>; 3],
     pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],
 }
 impl SubComponentInputs {
@@ -138,8 +138,8 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    memoryaddresstoid_state: &mut memory::addr_to_id::ClaimGenerator,
-    memoryidtobig_state: &mut memory::id_to_f252::ClaimGenerator,
+    memoryaddresstoid_state: &mut memory::memory_address_to_id::ClaimGenerator,
+    memoryidtobig_state: &mut memory::memory_id_to_big::ClaimGenerator,
 ) -> (
     [BaseColumn; N_TRACE_COLUMNS],
     SubComponentInputs,
