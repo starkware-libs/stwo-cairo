@@ -19,7 +19,7 @@ use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::relation;
 
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
-use crate::components::{memory, verifyinstruction};
+use crate::components::{memory, verify_instruction};
 use crate::relations;
 
 relation!(RelationElements, 30);
@@ -30,7 +30,7 @@ pub struct Eval {
     pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
     pub rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
     pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 impl Eval {
     pub fn new(
@@ -39,7 +39,7 @@ impl Eval {
         memoryidtobig_lookup_elements: relations::MemoryIdToBig,
         rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
         range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
-        verifyinstruction_lookup_elements: relations::VerifyInstruction,
+        verify_instruction_lookup_elements: relations::VerifyInstruction,
     ) -> Self {
         Self {
             claim,
@@ -47,7 +47,7 @@ impl Eval {
             memoryidtobig_lookup_elements,
             rangecheck_4_3_lookup_elements,
             range_check_7_2_5_lookup_elements,
-            verifyinstruction_lookup_elements,
+            verify_instruction_lookup_elements,
         }
     }
 }
@@ -221,7 +221,7 @@ impl FrameworkEval for Eval {
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             -E::EF::one(),
             &[
                 input_col0.clone(),

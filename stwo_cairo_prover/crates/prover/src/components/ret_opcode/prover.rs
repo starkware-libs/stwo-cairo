@@ -24,7 +24,7 @@ use stwo_prover::core::utils::{bit_reverse, bit_reverse_coset_to_circle_domain_o
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
 use super::component::{Claim, InteractionClaim, RelationElements};
-use crate::components::{memory, pack_values, verifyinstruction};
+use crate::components::{memory, pack_values, verify_instruction};
 use crate::relations;
 
 pub type PackedInputType = PackedCasmState;
@@ -46,7 +46,7 @@ impl ClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memoryaddresstoid_state: &mut memory::memory_address_to_id::ClaimGenerator,
         memoryidtobig_state: &mut memory::memory_id_to_big::ClaimGenerator,
-        verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
+        verify_instruction_state: &mut verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
         assert_ne!(n_calls, 0);
@@ -76,8 +76,8 @@ impl ClaimGenerator {
         memoryidtobig_state.add_inputs(&sub_components_inputs.memoryidtobig_inputs[0][..n_calls]);
         memoryidtobig_state.add_inputs(&sub_components_inputs.memoryidtobig_inputs[1][..n_calls]);
         memoryidtobig_state.add_inputs(&sub_components_inputs.memoryidtobig_inputs[2][..n_calls]);
-        verifyinstruction_state
-            .add_inputs(&sub_components_inputs.verifyinstruction_inputs[0][..n_calls]);
+        verify_instruction_state
+            .add_inputs(&sub_components_inputs.verify_instruction_inputs[0][..n_calls]);
 
         tree_builder.extend_evals(
             trace
@@ -107,7 +107,7 @@ impl ClaimGenerator {
 pub struct SubComponentInputs {
     pub memoryaddresstoid_inputs: [Vec<memory::memory_address_to_id::InputType>; 3],
     pub memoryidtobig_inputs: [Vec<memory::memory_id_to_big::InputType>; 3],
-    pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],
+    pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],
 }
 impl SubComponentInputs {
     #[allow(unused_variables)]
@@ -115,7 +115,7 @@ impl SubComponentInputs {
         Self {
             memoryaddresstoid_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
             memoryidtobig_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
-            verifyinstruction_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
+            verify_instruction_inputs: std::array::from_fn(|_| Vec::with_capacity(capacity)),
         }
     }
 
@@ -126,7 +126,7 @@ impl SubComponentInputs {
         for vec in self.memoryidtobig_inputs.iter_mut() {
             bit_reverse_coset_to_circle_domain_order(vec);
         }
-        for vec in self.verifyinstruction_inputs.iter_mut() {
+        for vec in self.verify_instruction_inputs.iter_mut() {
             bit_reverse_coset_to_circle_domain_order(vec);
         }
     }
@@ -176,7 +176,7 @@ pub fn write_trace_simd(
             let tmp_55 = memoryaddresstoid_state.deduce_output(input_pc_col0);
             sub_components_inputs.memoryidtobig_inputs[0].extend(tmp_55.to_array());
             let tmp_56 = memoryidtobig_state.deduce_output(tmp_55);
-            sub_components_inputs.verifyinstruction_inputs[0].extend(
+            sub_components_inputs.verify_instruction_inputs[0].extend(
                 (
                     input_pc_col0,
                     [
@@ -204,7 +204,7 @@ pub fn write_trace_simd(
                 )
                     .unpack(),
             );
-            lookup_data.verifyinstruction[0].push([
+            lookup_data.verify_instruction[0].push([
                 input_pc_col0,
                 M31_32766,
                 M31_32767,
@@ -332,7 +332,7 @@ pub fn write_trace_simd(
 pub struct LookupData {
     pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 2],
     pub memoryidtobig: [Vec<[PackedM31; 29]>; 2],
-    pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
+    pub verify_instruction: [Vec<[PackedM31; 19]>; 1],
     pub opcodes: [Vec<[PackedM31; 3]>; 2],
 }
 impl LookupData {
@@ -341,7 +341,7 @@ impl LookupData {
         Self {
             memoryaddresstoid: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
             memoryidtobig: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            verifyinstruction: [Vec::with_capacity(capacity)],
+            verify_instruction: [Vec::with_capacity(capacity)],
             opcodes: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
         }
     }
@@ -358,16 +358,16 @@ impl InteractionClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memoryaddresstoid_lookup_elements: &relations::MemoryAddressToId,
         memoryidtobig_lookup_elements: &relations::MemoryIdToBig,
-        verifyinstruction_lookup_elements: &relations::VerifyInstruction,
+        verify_instruction_lookup_elements: &relations::VerifyInstruction,
         opcodes_lookup_elements: &relations::Opcodes,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.verifyinstruction[0];
+        let lookup_row = &self.lookup_data.verify_instruction[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = verifyinstruction_lookup_elements.combine(lookup_values);
+            let denom = verify_instruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();

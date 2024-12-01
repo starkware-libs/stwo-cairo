@@ -25,7 +25,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::relations;
-use crate::components::{pack_values, verifyinstruction};
+use crate::components::{pack_values, verify_instruction};
 use crate::components::range_check_vector::range_check_9_9;
 use crate::components::range_check_vector::range_check_19;
 use crate::relations::MemoryAddressToId;
@@ -45,7 +45,7 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_state: &mut memory_address_to_id::ClaimGenerator,memoryidtobig_state: &mut memory_id_to_big::ClaimGenerator,range_check_19_state: &mut range_check_19::ClaimGenerator,range_check_9_9_state: &mut range_check_9_9::ClaimGenerator,verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
+        memoryaddresstoid_state: &mut memory_address_to_id::ClaimGenerator,memoryidtobig_state: &mut memory_id_to_big::ClaimGenerator,range_check_19_state: &mut range_check_19::ClaimGenerator,range_check_9_9_state: &mut range_check_9_9::ClaimGenerator,verify_instruction_state: &mut verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
         assert_ne!(n_calls, 0);
@@ -72,8 +72,8 @@ impl ClaimGenerator {
             range_check_19_state.add_inputs(&inputs[..n_calls]);
         });sub_components_inputs.range_check_9_9_inputs.iter().for_each(|inputs| {
             range_check_9_9_state.add_inputs(&inputs[..n_calls]);
-        });sub_components_inputs.verifyinstruction_inputs.iter().for_each(|inputs| {
-            verifyinstruction_state.add_inputs(&inputs[..n_calls]);
+        });sub_components_inputs.verify_instruction_inputs.iter().for_each(|inputs| {
+            verify_instruction_state.add_inputs(&inputs[..n_calls]);
         });
 
         tree_builder.extend_evals(
@@ -111,11 +111,11 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs
-{pub memoryaddresstoid_inputs: [Vec<memory_address_to_id::InputType>; 4],pub memoryidtobig_inputs: [Vec<memory_id_to_big::InputType>; 4],pub range_check_19_inputs: [Vec<range_check_19::InputType>; 28],pub range_check_9_9_inputs: [Vec<range_check_9_9::InputType>; 28],pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],}
+{pub memoryaddresstoid_inputs: [Vec<memory_address_to_id::InputType>; 4],pub memoryidtobig_inputs: [Vec<memory_id_to_big::InputType>; 4],pub range_check_19_inputs: [Vec<range_check_19::InputType>; 28],pub range_check_9_9_inputs: [Vec<range_check_9_9::InputType>; 28],pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],}
 impl SubComponentInputs {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
-        Self {memoryaddresstoid_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],memoryidtobig_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_19_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_9_9_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],verifyinstruction_inputs: [Vec::with_capacity(capacity),],}
+        Self {memoryaddresstoid_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],memoryidtobig_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_19_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_9_9_inputs: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],verify_instruction_inputs: [Vec::with_capacity(capacity),],}
 
     }
 
@@ -132,7 +132,7 @@ impl SubComponentInputs {
         self.range_check_9_9_inputs
             .iter_mut()
             .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
-        self.verifyinstruction_inputs
+        self.verify_instruction_inputs
             .iter_mut()
             .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
     }
@@ -159,8 +159,8 @@ pub fn write_trace_simd(
     let M31_0 = PackedM31::broadcast(M31::from(0));let M31_1 = PackedM31::broadcast(M31::from(1));let M31_131072 = PackedM31::broadcast(M31::from(131072));let M31_134217728 = PackedM31::broadcast(M31::from(134217728));let M31_136 = PackedM31::broadcast(M31::from(136));let M31_2 = PackedM31::broadcast(M31::from(2));let M31_256 = PackedM31::broadcast(M31::from(256));let M31_262144 = PackedM31::broadcast(M31::from(262144));let M31_32 = PackedM31::broadcast(M31::from(32));let M31_32768 = PackedM31::broadcast(M31::from(32768));let M31_4 = PackedM31::broadcast(M31::from(4));let M31_4194304 = PackedM31::broadcast(M31::from(4194304));let M31_511 = PackedM31::broadcast(M31::from(511));let M31_512 = PackedM31::broadcast(M31::from(512));let M31_64 = PackedM31::broadcast(M31::from(64));let M31_65536 = PackedM31::broadcast(M31::from(65536));let M31_8 = PackedM31::broadcast(M31::from(8));let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));let UInt16_10 = PackedUInt16::broadcast(UInt16::from(10));let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));let UInt16_12 = PackedUInt16::broadcast(UInt16::from(12));let UInt16_127 = PackedUInt16::broadcast(UInt16::from(127));let UInt16_13 = PackedUInt16::broadcast(UInt16::from(13));let UInt16_14 = PackedUInt16::broadcast(UInt16::from(14));let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));let UInt16_31 = PackedUInt16::broadcast(UInt16::from(31));let UInt16_4 = PackedUInt16::broadcast(UInt16::from(4));let UInt16_5 = PackedUInt16::broadcast(UInt16::from(5));let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));let UInt16_8 = PackedUInt16::broadcast(UInt16::from(8));let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));let UInt32_262143 = PackedUInt32::broadcast(UInt32::from(262143));let UInt32_511 = PackedUInt32::broadcast(UInt32::from(511));let UInt32_65536 = PackedUInt32::broadcast(UInt32::from(65536));let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
 
     inputs.into_iter()
-        .enumerate().for_each(|(row_index, genericopcode_input)| {
-        let input_tmp_138 = genericopcode_input;
+        .enumerate().for_each(|(row_index, generic_opcode_input)| {
+        let input_tmp_138 = generic_opcode_input;
 let input_pc_col0 = input_tmp_138.pc;
         trace[0].data[row_index] = input_pc_col0;
 let input_ap_col1 = input_tmp_138.ap;
@@ -244,10 +244,10 @@ let opcode_assert_eq_tmp_228 = ((((((((PackedUInt16::from_m31(memoryidtobig_valu
 let opcode_assert_eq_col20 = opcode_assert_eq_tmp_228.as_m31();
         trace[20].data[row_index] = opcode_assert_eq_col20;
 sub_components_inputs
-            .verifyinstruction_inputs[0]
+            .verify_instruction_inputs[0]
             .extend((input_pc_col0, [offset0_col3, offset1_col4, offset2_col5], [dst_base_fp_col6, op0_base_fp_col7, op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12, pc_update_jump_col13, pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16, ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20]).unpack());
 
-lookup_data.verifyinstruction[0].push([input_pc_col0, offset0_col3, offset1_col4, offset2_col5, dst_base_fp_col6, op0_base_fp_col7, op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12, pc_update_jump_col13, pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16, ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20]);
+lookup_data.verify_instruction[0].push([input_pc_col0, offset0_col3, offset1_col4, offset2_col5, dst_base_fp_col6, op0_base_fp_col7, op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12, pc_update_jump_col13, pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16, ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20]);
 
 
 
@@ -1271,11 +1271,11 @@ lookup_data.opcodes[1].push([((((((((pc_update_regular_tmp_232) * (((input_pc_co
 
 #[derive(Default)]
 pub struct LookupData
-{pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 3],pub memoryidtobig: [Vec<[PackedM31; 29]>; 3],pub range_check_19: [Vec<[PackedM31; 1]>; 28],pub range_check_9_9: [Vec<[PackedM31; 2]>; 28],pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],pub opcodes: [Vec<[PackedM31; 3]>; 2],}
+{pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 3],pub memoryidtobig: [Vec<[PackedM31; 29]>; 3],pub range_check_19: [Vec<[PackedM31; 1]>; 28],pub range_check_9_9: [Vec<[PackedM31; 2]>; 28],pub verify_instruction: [Vec<[PackedM31; 19]>; 1],pub opcodes: [Vec<[PackedM31; 3]>; 2],}
 impl LookupData {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
-        Self {memoryaddresstoid: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],memoryidtobig: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_19: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_9_9: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],verifyinstruction: [Vec::with_capacity(capacity),],opcodes: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),],}
+        Self {memoryaddresstoid: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],memoryidtobig: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_19: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],range_check_9_9: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],verify_instruction: [Vec::with_capacity(capacity),],opcodes: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),],}
 
     }
 }
@@ -1297,7 +1297,7 @@ impl InteractionClaimGenerator {
             &relations::RangeCheck_19,
         range_check_9_9_lookup_elements:
             &relations::RangeCheck_9_9,
-        verifyinstruction_lookup_elements:
+        verify_instruction_lookup_elements:
             &relations::VerifyInstruction,
         opcodes_lookup_elements:
             &relations::Opcodes,
@@ -1307,10 +1307,10 @@ impl InteractionClaimGenerator {
 
         let mut col_gen = logup_gen.new_col();
         let lookup_row = &self.lookup_data
-            .verifyinstruction[0];
+            .verify_instruction[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
             let denom =
-                verifyinstruction_lookup_elements.combine(lookup_values);
+                verify_instruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();

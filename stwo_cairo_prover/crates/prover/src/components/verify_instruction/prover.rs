@@ -23,7 +23,7 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 
 use super::component::{Claim, InteractionClaim, RelationElements};
 use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
-use crate::components::{memory, pack_values, verifyinstruction};
+use crate::components::{memory, pack_values, verify_instruction};
 use crate::relations;
 
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
@@ -156,30 +156,30 @@ pub fn write_trace_simd(
     inputs
         .into_iter()
         .enumerate()
-        .for_each(|(row_index, verifyinstruction_input)| {
+        .for_each(|(row_index, verify_instruction_input)| {
             let tmp_0 = (
-                verifyinstruction_input.0,
+                verify_instruction_input.0,
                 [
-                    verifyinstruction_input.1[0],
-                    verifyinstruction_input.1[1],
-                    verifyinstruction_input.1[2],
+                    verify_instruction_input.1[0],
+                    verify_instruction_input.1[1],
+                    verify_instruction_input.1[2],
                 ],
                 [
-                    verifyinstruction_input.2[0],
-                    verifyinstruction_input.2[1],
-                    verifyinstruction_input.2[2],
-                    verifyinstruction_input.2[3],
-                    verifyinstruction_input.2[4],
-                    verifyinstruction_input.2[5],
-                    verifyinstruction_input.2[6],
-                    verifyinstruction_input.2[7],
-                    verifyinstruction_input.2[8],
-                    verifyinstruction_input.2[9],
-                    verifyinstruction_input.2[10],
-                    verifyinstruction_input.2[11],
-                    verifyinstruction_input.2[12],
-                    verifyinstruction_input.2[13],
-                    verifyinstruction_input.2[14],
+                    verify_instruction_input.2[0],
+                    verify_instruction_input.2[1],
+                    verify_instruction_input.2[2],
+                    verify_instruction_input.2[3],
+                    verify_instruction_input.2[4],
+                    verify_instruction_input.2[5],
+                    verify_instruction_input.2[6],
+                    verify_instruction_input.2[7],
+                    verify_instruction_input.2[8],
+                    verify_instruction_input.2[9],
+                    verify_instruction_input.2[10],
+                    verify_instruction_input.2[11],
+                    verify_instruction_input.2[12],
+                    verify_instruction_input.2[13],
+                    verify_instruction_input.2[14],
                 ],
             );
             let input_col0 = tmp_0.0;
@@ -306,7 +306,7 @@ pub fn write_trace_simd(
                 M31_0,
                 M31_0,
             ]);
-            lookup_data.verifyinstruction[0].push([
+            lookup_data.verify_instruction[0].push([
                 input_col0,
                 input_col1,
                 input_col2,
@@ -338,7 +338,7 @@ pub struct LookupData {
     pub memoryidtobig: [Vec<[PackedM31; 29]>; 1],
     pub rangecheck_4_3: [Vec<[PackedM31; 2]>; 1],
     pub range_check_7_2_5: [Vec<[PackedM31; 3]>; 1],
-    pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
+    pub verify_instruction: [Vec<[PackedM31; 19]>; 1],
 }
 impl LookupData {
     #[allow(unused_variables)]
@@ -348,7 +348,7 @@ impl LookupData {
             memoryidtobig: [Vec::with_capacity(capacity)],
             rangecheck_4_3: [Vec::with_capacity(capacity)],
             range_check_7_2_5: [Vec::with_capacity(capacity)],
-            verifyinstruction: [Vec::with_capacity(capacity)],
+            verify_instruction: [Vec::with_capacity(capacity)],
         }
     }
 }
@@ -366,7 +366,7 @@ impl InteractionClaimGenerator {
         memoryidtobig_lookup_elements: &relations::MemoryIdToBig,
         rangecheck_4_3_lookup_elements: &relations::RangeCheck_4_3,
         range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
-        verifyinstruction_lookup_elements: &relations::VerifyInstruction,
+        verify_instruction_lookup_elements: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -404,9 +404,9 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.verifyinstruction[0];
+        let lookup_row = &self.lookup_data.verify_instruction[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = verifyinstruction_lookup_elements.combine(lookup_values);
+            let denom = verify_instruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, -PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
