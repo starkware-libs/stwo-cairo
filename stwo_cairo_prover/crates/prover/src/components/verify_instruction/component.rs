@@ -1,55 +1,27 @@
 #![allow(non_camel_case_types)]
 #![allow(unused_imports)]
-use std::ops::{Mul, Sub};
-
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
-use stwo_prover::constraint_framework::logup::{ClaimedPrefixSum, LogupAtRow, LookupElements};
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
+use stwo_prover::constraint_framework::logup::{LogupAtRow, LogupSums, LookupElements};
 use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, INTERACTION_TRACE_IDX,
+    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
-use stwo_prover::core::backend::simd::m31::PackedM31;
+use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
-use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
-use stwo_prover::relation;
 
-use crate::components::range_check_vector::{range_check_4_3, range_check_7_2_5};
-use crate::components::{memory, verify_instruction};
 use crate::relations;
-
-relation!(RelationElements, 30);
 
 pub struct Eval {
     pub claim: Claim,
     pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
     pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
     pub rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
-    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
-    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
-}
-impl Eval {
-    pub fn new(
-        claim: Claim,
-        memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
-        memoryidtobig_lookup_elements: relations::MemoryIdToBig,
-        rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
-        range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
-        verify_instruction_lookup_elements: relations::VerifyInstruction,
-    ) -> Self {
-        Self {
-            claim,
-            memoryaddresstoid_lookup_elements,
-            memoryidtobig_lookup_elements,
-            rangecheck_4_3_lookup_elements,
-            range_check_7_2_5_lookup_elements,
-            verify_instruction_lookup_elements,
-        }
-    }
+    pub rangecheck_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
+    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
@@ -58,12 +30,12 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_size = self.n_calls.next_power_of_two().ilog2();
-        let preprocesed_trace_log_sizes = vec![log_size];
+        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let trace_log_sizes = vec![log_size; 28];
         let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
+        let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
-            preprocesed_trace_log_sizes,
+            preprocessed_log_sizes,
             trace_log_sizes,
             interaction_log_sizes,
         ])
@@ -76,12 +48,16 @@ impl Claim {
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
 pub struct InteractionClaim {
-    pub total_sum: SecureField,
-    pub claimed_sum: Option<ClaimedPrefixSum>,
+    pub logup_sums: LogupSums,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.total_sum]);
+        let (total_sum, claimed_sum) = self.logup_sums;
+        channel.mix_felts(&[total_sum]);
+        if let Some(claimed_sum) = claimed_sum {
+            channel.mix_felts(&[claimed_sum.0]);
+            channel.mix_u64(claimed_sum.1 as u64);
+        }
     }
 }
 
@@ -89,7 +65,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.n_calls.next_power_of_two().ilog2()
+        std::cmp::max(self.claim.n_calls.next_power_of_two().ilog2(), LOG_N_LANES)
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -141,22 +117,28 @@ impl FrameworkEval for Eval {
         let offset2_mid_col25 = eval.next_trace_mask();
         let offset2_high_col26 = eval.next_trace_mask();
         let instruction_id_col27 = eval.next_trace_mask();
+
+        // encode_offsets.
+
+        // Reconstructed offset0 is correct.
         eval.add_constraint(
             ((offset0_low_col19.clone() + (offset0_mid_col20.clone() * M31_512.clone()))
                 - input_col1.clone()),
         );
+        // Reconstructed offset1 is correct.
         eval.add_constraint(
             (((offset1_low_col21.clone() + (offset1_mid_col22.clone() * M31_4.clone()))
                 + (offset1_high_col23.clone() * M31_2048.clone()))
                 - input_col2.clone()),
         );
+        // Reconstructed offset2 is correct.
         eval.add_constraint(
             (((offset2_low_col24.clone() + (offset2_mid_col25.clone() * M31_16.clone()))
                 + (offset2_high_col26.clone() * M31_8192.clone()))
                 - input_col3.clone()),
         );
         eval.add_to_relation(&[RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
+            &self.rangecheck_7_2_5_lookup_elements,
             E::EF::one(),
             &[
                 offset0_mid_col20.clone(),
@@ -170,21 +152,42 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[offset2_low_col24.clone(), offset2_high_col26.clone()],
         )]);
+
+        // encode_flags.
+
+        // Flag dst_base_fp is a bit.
         eval.add_constraint((input_col4.clone() * (M31_1.clone() - input_col4.clone())));
+        // Flag op0_base_fp is a bit.
         eval.add_constraint((input_col5.clone() * (M31_1.clone() - input_col5.clone())));
+        // Flag op1_imm is a bit.
         eval.add_constraint((input_col6.clone() * (M31_1.clone() - input_col6.clone())));
+        // Flag op1_base_fp is a bit.
         eval.add_constraint((input_col7.clone() * (M31_1.clone() - input_col7.clone())));
+        // Flag op1_base_ap is a bit.
         eval.add_constraint((input_col8.clone() * (M31_1.clone() - input_col8.clone())));
+        // Flag res_add is a bit.
         eval.add_constraint((input_col9.clone() * (M31_1.clone() - input_col9.clone())));
+        // Flag res_mul is a bit.
         eval.add_constraint((input_col10.clone() * (M31_1.clone() - input_col10.clone())));
+        // Flag pc_update_jump is a bit.
         eval.add_constraint((input_col11.clone() * (M31_1.clone() - input_col11.clone())));
+        // Flag pc_update_jump_rel is a bit.
         eval.add_constraint((input_col12.clone() * (M31_1.clone() - input_col12.clone())));
+        // Flag pc_update_jnz is a bit.
         eval.add_constraint((input_col13.clone() * (M31_1.clone() - input_col13.clone())));
+        // Flag ap_update_add is a bit.
         eval.add_constraint((input_col14.clone() * (M31_1.clone() - input_col14.clone())));
+        // Flag ap_update_add_1 is a bit.
         eval.add_constraint((input_col15.clone() * (M31_1.clone() - input_col15.clone())));
+        // Flag opcode_call is a bit.
         eval.add_constraint((input_col16.clone() * (M31_1.clone() - input_col16.clone())));
+        // Flag opcode_ret is a bit.
         eval.add_constraint((input_col17.clone() * (M31_1.clone() - input_col17.clone())));
+        // Flag opcode_assert_eq is a bit.
         eval.add_constraint((input_col18.clone() * (M31_1.clone() - input_col18.clone())));
+
+        // mem_verify.
+
         eval.add_to_relation(&[RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
@@ -221,7 +224,7 @@ impl FrameworkEval for Eval {
         )]);
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.verify_instruction_lookup_elements,
+            &self.verifyinstruction_lookup_elements,
             -E::EF::one(),
             &[
                 input_col0.clone(),
