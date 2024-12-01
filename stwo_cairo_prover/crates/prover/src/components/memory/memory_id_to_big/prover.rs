@@ -271,7 +271,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &relations::IdToValue,
+        lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
     ) -> InteractionClaim {
         let big_table_log_size = self.big_ids_and_values[0].len().ilog2() + LOG_N_LANES;

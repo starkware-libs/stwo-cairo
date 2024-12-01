@@ -39,12 +39,12 @@ impl RelationElements {
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::AddrToId,
-    pub memoryidtobig_lookup_elements: relations::IdToValue,
+    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
+    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
     pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
-    pub opcodes_lookup_elements: relations::Vm,
+    pub opcodes_lookup_elements: relations::Opcodes,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize)]

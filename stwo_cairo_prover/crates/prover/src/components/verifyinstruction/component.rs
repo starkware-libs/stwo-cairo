@@ -26,8 +26,8 @@ relation!(RelationElements, 30);
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::AddrToId,
-    pub memoryidtobig_lookup_elements: relations::IdToValue,
+    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
+    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
     pub rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
     pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
     pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
@@ -35,8 +35,8 @@ pub struct Eval {
 impl Eval {
     pub fn new(
         claim: Claim,
-        memoryaddresstoid_lookup_elements: relations::AddrToId,
-        memoryidtobig_lookup_elements: relations::IdToValue,
+        memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
+        memoryidtobig_lookup_elements: relations::MemoryIdToBig,
         rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
         range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
         verifyinstruction_lookup_elements: relations::VerifyInstruction,

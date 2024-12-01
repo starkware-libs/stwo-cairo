@@ -362,8 +362,8 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_lookup_elements: &relations::AddrToId,
-        memoryidtobig_lookup_elements: &relations::IdToValue,
+        memoryaddresstoid_lookup_elements: &relations::MemoryAddressToId,
+        memoryidtobig_lookup_elements: &relations::MemoryIdToBig,
         rangecheck_4_3_lookup_elements: &relations::RangeCheck_4_3,
         range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
         verifyinstruction_lookup_elements: &relations::VerifyInstruction,
