@@ -18,7 +18,7 @@ use stwo_prover::core::lookups::utils::Fraction;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
-use crate::components::{memory, verifyinstruction};
+use crate::components::{memory, verify_instruction};
 use crate::relations;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -39,7 +39,7 @@ pub struct Eval {
     pub claim: Claim,
     pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
     pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -117,7 +117,7 @@ impl FrameworkEval for Eval {
         let next_fp_limb_2_col10 = eval.next_trace_mask();
 
         eval.add_to_relation(&[RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
