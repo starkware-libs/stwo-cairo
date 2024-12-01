@@ -200,35 +200,6 @@ impl StateTransitions {
         let CasmState { ap, fp, pc } = state;
         let instruction = mem.get_inst(pc.0);
         let instruction = Instruction::decode(instruction);
-        if dev_mode {
-            if let Instruction {
-                offset0: -2,
-                offset1: -1,
-                offset2: -1,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op1_imm: false,
-                op1_base_fp: true,
-                op1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: false,
-                opcode_ret: true,
-                opcode_assert_eq: false,
-            } = instruction
-            {
-                self.casm_states_by_opcode.ret_opcode.push(state);
-            } else {
-                self.casm_states_by_opcode.generic_opcode.push(state);
-            }
-
-            return;
-        }
 
         match instruction {
             // ret.
@@ -314,7 +285,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => {
+            } if !dev_mode => {
                 if op1_imm {
                     // jump rel imm.
                     assert!(
@@ -380,7 +351,7 @@ impl StateTransitions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => {
+            } if !dev_mode => {
                 if pc_update_jump_rel {
                     // call rel imm.
                     assert!(
@@ -424,7 +395,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } => {
+            } if !dev_mode => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 let taken = dst != MemoryValue::Small(0);
@@ -473,7 +444,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } => {
+            } if !dev_mode => {
                 if op1_imm {
                     // [ap/fp + offset0] = imm.
                     assert!(
@@ -520,7 +491,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } => {
+            } if !dev_mode => {
                 let op1_addr = if op0_base_fp { fp } else { ap };
                 let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 if op1_imm {
@@ -576,7 +547,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } => {
+            } if !dev_mode => {
                 let op1_addr = if op0_base_fp { fp } else { ap };
                 let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 if op1_imm {
