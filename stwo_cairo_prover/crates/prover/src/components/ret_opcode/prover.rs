@@ -356,10 +356,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_lookup_elements: &relations::AddrToId,
-        memoryidtobig_lookup_elements: &relations::IdToValue,
+        memoryaddresstoid_lookup_elements: &relations::MemoryAddressToId,
+        memoryidtobig_lookup_elements: &relations::MemoryIdToBig,
         verifyinstruction_lookup_elements: &relations::VerifyInstruction,
-        opcodes_lookup_elements: &relations::Vm,
+        opcodes_lookup_elements: &relations::Opcodes,
     ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);

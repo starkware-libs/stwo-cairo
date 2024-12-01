@@ -36,7 +36,7 @@ relation!(RelationElements, N_LOGUP_POWERS);
 #[derive(Clone)]
 pub struct BigEval {
     pub log_n_rows: u32,
-    pub lookup_elements: relations::IdToValue,
+    pub lookup_elements: relations::MemoryIdToBig,
     pub range9_9_lookup_elements: relations::RangeCheck_9_9,
 }
 impl BigEval {
@@ -45,7 +45,7 @@ impl BigEval {
     }
     pub fn new(
         claim: Claim,
-        lookup_elements: relations::IdToValue,
+        lookup_elements: relations::MemoryIdToBig,
         range9_9_lookup_elements: relations::RangeCheck_9_9,
     ) -> Self {
         Self {
@@ -91,7 +91,7 @@ impl FrameworkEval for BigEval {
 
 pub struct SmallEval {
     pub log_n_rows: u32,
-    pub lookup_elements: relations::IdToValue,
+    pub lookup_elements: relations::MemoryIdToBig,
     pub range_check_9_9_relation: relations::RangeCheck_9_9,
 }
 impl SmallEval {
@@ -100,7 +100,7 @@ impl SmallEval {
     }
     pub fn new(
         claim: Claim,
-        lookup_elements: relations::IdToValue,
+        lookup_elements: relations::MemoryIdToBig,
         range_check_9_9_relation: relations::RangeCheck_9_9,
     ) -> Self {
         Self {
