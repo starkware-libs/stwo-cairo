@@ -1,10 +1,12 @@
 pub mod add_ap;
+pub mod assert;
 pub mod jmp;
 pub mod operand;
 
 use stwo_prover::core::fields::m31::M31;
 
 use self::add_ap::*;
+use self::assert::*;
 use self::jmp::*;
 use crate::memory::Memory;
 
@@ -13,6 +15,24 @@ pub struct State {
     ap: M31,
     fp: M31,
     pc: M31,
+}
+
+impl State {
+    pub fn advance(self) -> Self {
+        Self {
+            ap: self.ap,
+            fp: self.fp,
+            pc: self.pc + M31(1),
+        }
+    }
+
+    pub fn advance_and_increment_ap(self) -> Self {
+        Self {
+            ap: self.ap + M31(1),
+            fp: self.fp,
+            pc: self.pc + M31(1),
+        }
+    }
 }
 
 pub struct VM {

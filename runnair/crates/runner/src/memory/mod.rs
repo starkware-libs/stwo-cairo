@@ -81,6 +81,10 @@ impl Memory {
     ) -> Entry<MaybeRelocatableAddr, MaybeRelocatableValue> {
         self.data.entry(key.into())
     }
+
+    pub fn get<T: Into<MaybeRelocatableAddr>>(&self, key: T) -> Option<MaybeRelocatableValue> {
+        self.data.get(&key.into()).copied()
+    }
 }
 
 #[cfg(test)]
