@@ -1,4 +1,5 @@
 pub mod air;
+pub mod opcodes_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use num_traits::Zero;
@@ -17,7 +18,7 @@ use crate::input::CairoInput;
 
 const LOG_MAX_ROWS: u32 = 20;
 
-const IS_FIRST_LOG_SIZES: [u32; 7] = [18, 4, 14, 19, 7, 6, 5];
+const IS_FIRST_LOG_SIZES: [u32; 16] = [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4];
 pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
@@ -172,7 +173,12 @@ mod tests {
     #[ignore]
     #[test]
     fn test_full_cairo_air() {
-        let cairo_proof = prove_cairo(small_cairo_input()).unwrap();
+        let input = small_cairo_input();
+        println!(
+            "execution resources: {:?}",
+            input.state_transitions.casm_states_by_opcode.counts()
+        );
+        let cairo_proof = prove_cairo(input).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 }
