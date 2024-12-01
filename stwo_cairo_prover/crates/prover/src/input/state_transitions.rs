@@ -444,7 +444,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if !dev_mode => {
+            } => {
                 if op1_imm {
                     // [ap/fp + offset0] = imm.
                     assert!(
