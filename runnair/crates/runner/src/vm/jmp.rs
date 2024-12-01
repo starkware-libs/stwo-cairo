@@ -1,9 +1,9 @@
 use paste::paste;
 use stwo_prover::core::fields::m31::M31;
 
-use super::{Instruction, State};
 use crate::memory::relocatable::assert_and_project;
 use crate::memory::{MaybeRelocatableValue, Memory};
+use crate::vm::{InstructionArgs, State};
 
 pub fn jmp_rel(state: State, operand: M31) -> State {
     State {
@@ -43,10 +43,10 @@ macro_rules! jmp_with_operand {
             pub fn [<jmp_rel_ $operand>](
                 memory: &mut Memory,
                 state: State,
-                instruction: Instruction,
+                args: InstructionArgs,
             ) -> State {
                 if let MaybeRelocatableValue::Absolute(offset) =
-                    crate::vm::operand::$operand(memory, state, &instruction.args)
+                    crate::vm::operand::$operand(memory, state, &args)
                 {
                     jmp_rel(state, assert_and_project(offset))
                 } else {
@@ -57,10 +57,10 @@ macro_rules! jmp_with_operand {
             pub fn [<jmp_rel_ $operand _appp>](
                 memory: &mut Memory,
                 state: State,
-                instruction: Instruction,
+                args: InstructionArgs,
             ) -> State {
                 if let MaybeRelocatableValue::Absolute(offset) =
-                    crate::vm::operand::$operand(memory, state, &instruction.args)
+                    crate::vm::operand::$operand(memory, state, &args)
                 {
                     jmp_rel_appp(state, assert_and_project(offset))
                 } else {
@@ -71,10 +71,10 @@ macro_rules! jmp_with_operand {
             pub fn [<jmp_abs_ $operand>](
                 memory: &mut Memory,
                 state: State,
-                instruction: Instruction,
+                args: InstructionArgs,
             ) -> State {
                 if let MaybeRelocatableValue::Absolute(offset) =
-                    crate::vm::operand::$operand(memory, state, &instruction.args)
+                    crate::vm::operand::$operand(memory, state, &args)
                 {
                     jmp_abs(state, assert_and_project(offset))
                 } else {
@@ -85,10 +85,10 @@ macro_rules! jmp_with_operand {
             pub fn [<jmp_abs_ $operand _appp>](
                 memory: &mut Memory,
                 state: State,
-                instruction: Instruction,
+                args: InstructionArgs,
             ) -> State {
                 if let MaybeRelocatableValue::Absolute(offset) =
-                    crate::vm::operand::$operand(memory, state, &instruction.args)
+                    crate::vm::operand::$operand(memory, state, &args)
                 {
                     jmp_abs_appp(state, assert_and_project(offset))
                 } else {
@@ -117,4 +117,3 @@ jmp_with_operand!(mul_fp_ap);
 jmp_with_operand!(mul_fp_fp);
 jmp_with_operand!(mul_imm_ap);
 jmp_with_operand!(mul_imm_fp);
-

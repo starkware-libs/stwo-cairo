@@ -1,15 +1,15 @@
 use paste::paste;
 use stwo_prover::core::fields::m31::M31;
 
-use super::{Instruction, State};
 use crate::memory::relocatable::assert_and_project;
 use crate::memory::{MaybeRelocatableValue, Memory};
+use crate::vm::{InstructionArgs, State};
 
 pub fn addap(state: State, summand: M31) -> State {
     State {
         ap: state.ap + summand,
         fp: state.fp,
-        pc: state.pc,
+        pc: state.pc + M31(1),
     }
 }
 
@@ -19,10 +19,10 @@ macro_rules! addap_with_operand {
             pub fn [<addap_ $operand>](
                 memory: &mut Memory,
                 state: State,
-                instruction: Instruction,
+                args: InstructionArgs,
             ) -> State {
                 if let MaybeRelocatableValue::Absolute(summand) =
-                    crate::vm::operand::$operand(memory, state, &instruction.args)
+                    crate::vm::operand::$operand(memory, state, &args)
                 {
                     addap(state, assert_and_project(summand))
                 } else {

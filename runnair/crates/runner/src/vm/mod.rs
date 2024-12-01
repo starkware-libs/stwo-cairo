@@ -28,7 +28,7 @@ pub struct Instruction {
 }
 
 // TODO(alont): autogenerate this.
-pub fn opcode_to_instruction(opcode: usize) -> fn(&mut Memory, State, Instruction) -> State {
+pub fn opcode_to_instruction(opcode: usize) -> fn(&mut Memory, State, InstructionArgs) -> State {
     match opcode {
         0 => addap_add_ap_ap,
         1 => addap_add_ap_fp,
