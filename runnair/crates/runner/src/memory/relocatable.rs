@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
 use num_traits::Zero;
 use stwo_prover::core::fields::m31::M31;
@@ -165,6 +165,118 @@ impl<T: Add<M31, Output = T> + From<M31>> Add<M31> for MaybeRelocatable<T> {
         match self {
             MaybeRelocatable::Relocatable(lhs) => MaybeRelocatable::Relocatable(lhs + rhs),
             MaybeRelocatable::Absolute(lhs) => MaybeRelocatable::Absolute(lhs + rhs),
+        }
+    }
+}
+
+impl Sub<M31> for Relocatable {
+    type Output = Self;
+    fn sub(self, rhs: M31) -> Self {
+        Self {
+            segment: self.segment,
+            offset: self.offset - rhs,
+        }
+    }
+}
+
+impl Sub<MaybeRelocatable<M31>> for MaybeRelocatable<M31> {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
+        match (self, rhs) {
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Relocatable(lhs - rhs)
+            }
+            (MaybeRelocatable::Absolute(_), MaybeRelocatable::Relocatable(_)) => {
+                panic!("Cannot subtract a relocatable from an absolute.")
+            }
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Relocatable(rhs)) => {
+                if lhs.segment != rhs.segment {
+                    panic!("Cannot subtract relocatables from different segments.");
+                }
+                MaybeRelocatable::Absolute(lhs.offset - rhs.offset)
+            }
+            (MaybeRelocatable::Absolute(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Absolute(lhs - rhs)
+            }
+        }
+    }
+}
+
+impl Sub<MaybeRelocatable<QM31>> for MaybeRelocatable<M31> {
+    type Output = MaybeRelocatable<QM31>;
+    fn sub(self, rhs: MaybeRelocatable<QM31>) -> MaybeRelocatable<QM31> {
+        match (self, rhs) {
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Relocatable(lhs - assert_and_project(rhs))
+            }
+            (MaybeRelocatable::Absolute(_), MaybeRelocatable::Relocatable(_)) => {
+                panic!("Cannot subtract a relocatable from an absolute.")
+            }
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Relocatable(rhs)) => {
+                if lhs.segment != rhs.segment {
+                    panic!("Cannot subtract relocatables from different segments.");
+                }
+                MaybeRelocatable::Absolute((lhs.offset - rhs.offset).into())
+            }
+            (MaybeRelocatable::Absolute(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Absolute(lhs - rhs)
+            }
+        }
+    }
+}
+
+impl Sub<MaybeRelocatable<M31>> for MaybeRelocatable<QM31> {
+    type Output = Self;
+    fn sub(self, rhs: MaybeRelocatable<M31>) -> Self {
+        match (self, rhs) {
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Relocatable(lhs - rhs)
+            }
+            (MaybeRelocatable::Absolute(_), MaybeRelocatable::Relocatable(_)) => {
+                panic!("Cannot subtract a relocatable from an absolute.")
+            }
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Relocatable(rhs)) => {
+                if lhs.segment != rhs.segment {
+                    panic!("Cannot subtract relocatables from different segments.");
+                }
+                MaybeRelocatable::Absolute(QM31::from(lhs.offset - rhs.offset))
+            }
+            (MaybeRelocatable::Absolute(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Absolute(lhs - rhs)
+            }
+        }
+    }
+}
+
+impl Sub<MaybeRelocatable<QM31>> for MaybeRelocatable<QM31> {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
+        match (self, rhs) {
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Relocatable(lhs - assert_and_project(rhs))
+            }
+            (MaybeRelocatable::Absolute(_), MaybeRelocatable::Relocatable(_)) => {
+                panic!("Cannot subtract a relocatable from an absolute.")
+            }
+            (MaybeRelocatable::Relocatable(lhs), MaybeRelocatable::Relocatable(rhs)) => {
+                if lhs.segment != rhs.segment {
+                    panic!("Cannot subtract relocatables from different segments.");
+                }
+                MaybeRelocatable::Absolute(QM31::from(lhs.offset - rhs.offset))
+            }
+            (MaybeRelocatable::Absolute(lhs), MaybeRelocatable::Absolute(rhs)) => {
+                MaybeRelocatable::Absolute(lhs - rhs)
+            }
+        }
+    }
+}
+
+impl<T: Sub<M31, Output = T> + From<M31>> Sub<M31> for MaybeRelocatable<T> {
+    type Output = Self;
+    fn sub(self, rhs: M31) -> Self {
+        match self {
+            MaybeRelocatable::Relocatable(lhs) => MaybeRelocatable::Relocatable(lhs - rhs),
+            MaybeRelocatable::Absolute(lhs) => MaybeRelocatable::Absolute(lhs - rhs),
         }
     }
 }
