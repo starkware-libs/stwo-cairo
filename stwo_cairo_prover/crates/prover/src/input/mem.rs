@@ -4,8 +4,8 @@ use std::ops::{Deref, DerefMut};
 use itertools::Itertools;
 
 use super::vm_import::MemEntry;
-use crate::components::memory::id_to_f252::component::N_M31_IN_SMALL_FELT252;
-use crate::components::memory::id_to_f252::N_BITS_PER_FELT;
+use crate::components::memory::memory_id_to_big::component::N_M31_IN_SMALL_FELT252;
+use crate::components::memory::memory_id_to_big::N_BITS_PER_FELT;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [

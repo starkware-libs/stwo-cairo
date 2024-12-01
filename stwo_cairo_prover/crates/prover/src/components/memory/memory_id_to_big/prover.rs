@@ -346,8 +346,8 @@ mod tests {
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::components::memory::addr_to_id;
-    use crate::components::memory::id_to_f252::component::N_M31_IN_FELT252;
+    use crate::components::memory::memory_address_to_id;
+    use crate::components::memory::memory_id_to_big::component::N_M31_IN_FELT252;
     use crate::felt::split_f252;
     use crate::input::mem::{MemConfig, MemoryBuilder};
 
@@ -372,10 +372,10 @@ mod tests {
             mem.set(*a as u64, mem.value_from_felt252(expected[j]));
         }
         let mem = mem.build();
-        let addr_to_id = addr_to_id::ClaimGenerator::new(&mem);
+        let memory_address_to_id = memory_address_to_id::ClaimGenerator::new(&mem);
         let id_to_felt = super::ClaimGenerator::new(&mem);
 
-        let id = addr_to_id.deduce_output(input);
+        let id = memory_address_to_id.deduce_output(input);
         let output = id_to_felt.deduce_output(id).value;
 
         for (i, expected) in expected.into_iter().enumerate() {

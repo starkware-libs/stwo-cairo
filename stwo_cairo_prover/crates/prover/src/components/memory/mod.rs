@@ -1,5 +1,5 @@
-pub mod addr_to_id;
-pub mod id_to_f252;
+pub mod memory_address_to_id;
+pub mod memory_id_to_big;
 
 pub const LOG_MEMORY_ADDRESS_BOUND: u32 = 20;
 pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
@@ -9,7 +9,7 @@ mod tests {
     use itertools::Itertools;
     use stwo_prover::core::fields::m31::BaseField;
 
-    use crate::components::memory::addr_to_id;
+    use crate::components::memory::memory_address_to_id;
     use crate::input::mem::{MemConfig, MemoryBuilder, MemoryValueId};
     use crate::input::vm_import::MemEntry;
 
@@ -23,8 +23,8 @@ mod tests {
             }),
         )
         .build();
-        let mut addr_to_id_gen = addr_to_id::ClaimGenerator::new(&memory);
-        let mut id_to_f252 = addr_to_id::ClaimGenerator::new(&memory);
+        let mut memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(&memory);
+        let mut memory_id_to_big = memory_address_to_id::ClaimGenerator::new(&memory);
         let address_usages = [0, 1, 1, 2, 2, 2]
             .into_iter()
             .map(BaseField::from)
@@ -36,14 +36,14 @@ mod tests {
             let decoded_id = memory.address_to_id[addr.0 as usize].decode();
             match decoded_id {
                 MemoryValueId::F252(id) => {
-                    id_to_f252.add_m31(BaseField::from_u32_unchecked(id));
+                    memory_id_to_big.add_m31(BaseField::from_u32_unchecked(id));
                 }
                 MemoryValueId::Small(_id) => {}
             }
-            addr_to_id_gen.add_m31(*addr);
+            memory_address_to_id_gen.add_m31(*addr);
         });
 
-        assert_eq!(addr_to_id_gen.multiplicities, expected_addr_mult);
-        assert_eq!(id_to_f252.multiplicities, expected_f252_mult);
+        assert_eq!(memory_address_to_id_gen.multiplicities, expected_addr_mult);
+        assert_eq!(memory_id_to_big.multiplicities, expected_f252_mult);
     }
 }

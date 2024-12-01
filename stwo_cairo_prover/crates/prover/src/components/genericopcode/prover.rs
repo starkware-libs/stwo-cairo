@@ -23,7 +23,7 @@ use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 
 use super::component::{Claim, InteractionClaim, RelationElements};
-use crate::components::memory::{addr_to_id, id_to_f252};
+use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::relations;
 use crate::components::{pack_values, verifyinstruction};
 use crate::components::range_check_vector::range_check_9_9;
@@ -45,7 +45,7 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        memoryaddresstoid_state: &mut addr_to_id::ClaimGenerator,memoryidtobig_state: &mut id_to_f252::ClaimGenerator,range_check_19_state: &mut range_check_19::ClaimGenerator,range_check_9_9_state: &mut range_check_9_9::ClaimGenerator,verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
+        memoryaddresstoid_state: &mut memory_address_to_id::ClaimGenerator,memoryidtobig_state: &mut memory_id_to_big::ClaimGenerator,range_check_19_state: &mut range_check_19::ClaimGenerator,range_check_9_9_state: &mut range_check_9_9::ClaimGenerator,verifyinstruction_state: &mut verifyinstruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_calls = self.inputs.len();
         assert_ne!(n_calls, 0);
@@ -111,7 +111,7 @@ impl ClaimGenerator {
 }
 
 pub struct SubComponentInputs
-{pub memoryaddresstoid_inputs: [Vec<addr_to_id::InputType>; 4],pub memoryidtobig_inputs: [Vec<id_to_f252::InputType>; 4],pub range_check_19_inputs: [Vec<range_check_19::InputType>; 28],pub range_check_9_9_inputs: [Vec<range_check_9_9::InputType>; 28],pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],}
+{pub memoryaddresstoid_inputs: [Vec<memory_address_to_id::InputType>; 4],pub memoryidtobig_inputs: [Vec<memory_id_to_big::InputType>; 4],pub range_check_19_inputs: [Vec<range_check_19::InputType>; 28],pub range_check_9_9_inputs: [Vec<range_check_9_9::InputType>; 28],pub verifyinstruction_inputs: [Vec<verifyinstruction::InputType>; 1],}
 impl SubComponentInputs {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
@@ -145,7 +145,7 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    memoryaddresstoid_state: &mut addr_to_id::ClaimGenerator,memoryidtobig_state: &mut id_to_f252::ClaimGenerator,
+    memoryaddresstoid_state: &mut memory_address_to_id::ClaimGenerator,memoryidtobig_state: &mut memory_id_to_big::ClaimGenerator,
 ) -> ([BaseColumn; N_TRACE_COLUMNS],
     SubComponentInputs,
     LookupData) {
