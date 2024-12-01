@@ -10,6 +10,13 @@ pub mod verify_instruction;
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9};
 
+// When padding is needed, the inputs must be arranged in order defined by the neighbor
+// function. his order allows using the partial sum mechanism to sum only the first n_call inputs.
+// [`SubComponentInputs::bit_reverse_coset_to_circle_domain_order`] permutes the
+// bit-reversed-circle-domain ordered values to the natural order. Used  to ignore padded values at
+// the tail of the natural ordered vector.
+// TODO(Ohad): generalize the padding logic, and move above doc to the relevant function.
+
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
         .array_chunks::<N_LANES>()

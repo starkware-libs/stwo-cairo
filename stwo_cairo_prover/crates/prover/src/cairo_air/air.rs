@@ -230,15 +230,17 @@ impl OpcodeInteractionClaim {
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
         for interaction_claim in &self.generic {
-            sum += match interaction_claim.claimed_sum {
+            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
+            sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
-                None => interaction_claim.total_sum,
+                None => total_sum,
             };
         }
         for interaction_claim in &self.ret {
-            sum += match interaction_claim.claimed_sum {
+            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
+            sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
-                None => interaction_claim.total_sum,
+                None => total_sum,
             };
         }
         sum
@@ -263,10 +265,10 @@ impl OpcodesInteractionClaimGenerator {
                     tree_builder,
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
                     &interaction_elements.range_check_19,
                     &interaction_elements.range_check_9_9,
                     &interaction_elements.verify_instruction,
-                    &interaction_elements.opcodes,
                 )
             })
             .collect();
@@ -278,8 +280,8 @@ impl OpcodesInteractionClaimGenerator {
                     tree_builder,
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
-                    &interaction_elements.verify_instruction,
                     &interaction_elements.opcodes,
+                    &interaction_elements.verify_instruction,
                 )
             })
             .collect();
@@ -375,6 +377,7 @@ impl CairoClaimGenerator {
             self.verify_instruction_trace_generator.write_trace(
                 tree_builder,
                 &mut self.memory_address_to_id_trace_generator,
+                &mut self.memory_id_to_value_trace_generator,
                 &mut self.range_check_4_3_trace_generator,
                 &mut self.range_check_7_2_5_trace_generator,
             );
@@ -545,7 +548,7 @@ pub fn lookup_sum(
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
     sum += interaction_claim.opcodes.sum();
-    sum += interaction_claim.verify_instruction.claimed_sum.unwrap().0;
+    sum += interaction_claim.verify_instruction.logup_sums.1.unwrap().0;
     sum += interaction_claim.range_check_19.claimed_sum;
     sum += interaction_claim.range_check_9_9.claimed_sum;
     sum += interaction_claim.range_check_7_2_5.claimed_sum;
@@ -582,16 +585,16 @@ impl OpcodeComponents {
                         memoryidtobig_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
-                        range_check_9_9_lookup_elements: interaction_elements
+                        rangecheck_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        rangecheck_9_9_lookup_elements: interaction_elements
                             .range_check_9_9
                             .clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
                     },
-                    (interaction_claim.total_sum, interaction_claim.claimed_sum),
+                    interaction_claim.logup_sums,
                 )
             })
             .collect_vec();
@@ -610,12 +613,12 @@ impl OpcodeComponents {
                         memoryidtobig_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
+                        verifyinstruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
                     },
-                    (interaction_claim.total_sum, interaction_claim.claimed_sum),
+                    interaction_claim.logup_sums,
                 )
             })
             .collect_vec();
@@ -677,18 +680,17 @@ impl CairoComponents {
         );
         let verify_instruction_component = verify_instruction::Component::new(
             tree_span_provider,
-            verify_instruction::Eval::new(
-                cairo_claim.verify_instruction,
-                interaction_elements.memory_address_to_id.clone(),
-                interaction_elements.memory_id_to_value.clone(),
-                interaction_elements.range_check_4_3.clone(),
-                interaction_elements.range_check_7_2_5.clone(),
-                interaction_elements.verify_instruction.clone(),
-            ),
-            (
-                interaction_claim.verify_instruction.total_sum,
-                interaction_claim.verify_instruction.claimed_sum,
-            ),
+            verify_instruction::Eval {
+                claim: cairo_claim.verify_instruction,
+                memoryaddresstoid_lookup_elements: interaction_elements
+                    .memory_address_to_id
+                    .clone(),
+                memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                rangecheck_4_3_lookup_elements: interaction_elements.range_check_4_3.clone(),
+                rangecheck_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
+                verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+            },
+            interaction_claim.verify_instruction.logup_sums,
         );
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,
