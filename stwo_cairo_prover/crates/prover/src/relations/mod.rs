@@ -1,9 +1,9 @@
 #![allow(non_camel_case_types)]
 use stwo_prover::relation;
 
-relation!(AddrToId, 2);
-relation!(IdToValue, 29);
-relation!(Vm, 3);
+relation!(MemoryAddressToId, 2);
+relation!(MemoryIdToBig, 29);
+relation!(Opcodes, 3);
 relation!(RangeCheck_18, 1);
 relation!(RangeCheck_19, 1);
 relation!(RangeCheck_9_9, 2);

@@ -16,7 +16,7 @@ pub type Component = FrameworkComponent<Eval>;
 #[derive(Clone)]
 pub struct Eval {
     pub log_n_rows: u32,
-    pub lookup_elements: relations::AddrToId,
+    pub lookup_elements: relations::MemoryAddressToId,
 }
 impl Eval {
     // TODO(ShaharS): use Seq column for address, and also use repititions.
@@ -24,7 +24,7 @@ impl Eval {
         N_ADDR_TO_ID_COLUMNS
     }
 
-    pub fn new(claim: Claim, lookup_elements: relations::AddrToId) -> Self {
+    pub fn new(claim: Claim, lookup_elements: relations::MemoryAddressToId) -> Self {
         Self {
             log_n_rows: claim.log_size,
             lookup_elements,

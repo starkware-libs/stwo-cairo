@@ -149,7 +149,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-        lookup_elements: &relations::AddrToId,
+        lookup_elements: &relations::MemoryAddressToId,
     ) -> InteractionClaim {
         let log_size = self.addresses.len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
