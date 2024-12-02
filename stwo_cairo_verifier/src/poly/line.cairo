@@ -1,10 +1,9 @@
 use core::iter::{IntoIterator, Iterator};
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl};
-use crate::fields::BatchInvertible;
 use crate::fields::m31::{M31, m31};
 use crate::fields::qm31::{QM31, QM31Impl, QM31Zero};
 use crate::fields::{BaseField, SecureField};
-use crate::poly::utils::{butterfly, fold, ibutterfly};
+use crate::poly::utils::{butterfly, fold};
 use crate::utils::pow2;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -242,37 +241,6 @@ pub impl LineEvaluationImpl of LineEvaluationTrait {
     fn new(domain: LineDomain, values: Array<QM31>) -> LineEvaluation {
         assert!(values.len() == domain.size());
         LineEvaluation { values: values, domain: domain }
-    }
-}
-
-/// Holds a small foldable subset of univariate SecureField polynomial evaluations.
-#[derive(Drop)]
-pub struct SparseLineEvaluation {
-    pub subline_evals: Array<LineEvaluation>,
-}
-
-#[generate_trait]
-pub impl SparseLineEvaluationImpl of SparseLineEvaluationTrait {
-    /// Folds evaluations of a degree `d` polynomial into evaluations of a degree `d/2` polynomial.
-    fn fold(self: SparseLineEvaluation, alpha: QM31) -> Array<QM31> {
-        let mut domain_initials = array![];
-
-        for eval in self.subline_evals.span() {
-            domain_initials.append(eval.domain.at(0));
-        };
-
-        let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
-        let mut res = array![];
-
-        for eval in self.subline_evals {
-            let x_inv = domain_initials_inv.pop_front().unwrap();
-            let values: Box<[QM31; 2]> = *eval.values.span().try_into().unwrap();
-            let [f_at_x, f_at_neg_x] = values.unbox();
-            let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
-            res.append(f0 + alpha * f1);
-        };
-
-        res
     }
 }
 
