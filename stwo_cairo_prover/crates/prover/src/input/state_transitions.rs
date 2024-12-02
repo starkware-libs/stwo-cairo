@@ -547,7 +547,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if !dev_mode => {
+            } => {
                 let op1_addr = if op0_base_fp { fp } else { ap };
                 let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 if op1_imm {
