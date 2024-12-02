@@ -15,7 +15,8 @@ use crate::components::{
     add_ap_opcode_is_imm_t_op1_base_fp_f, add_opcode_is_small_f_is_imm_f,
     add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
     assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
-    assert_eq_opcode_is_double_deref_t_is_imm_f, generic_opcode,
+    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op1_base_fp_f,
+    call_opcode_is_rel_f_op1_base_fp_t, call_opcode_is_rel_t_op1_base_fp_f, generic_opcode,
     jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
     jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
@@ -39,6 +40,9 @@ pub struct OpcodeClaim {
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Claim>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Claim>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Claim>,
+    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::Claim>,
+    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::Claim>,
+    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::Claim>,
     generic: Vec<generic_opcode::Claim>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Claim>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Claim>,
@@ -64,6 +68,9 @@ impl OpcodeClaim {
         self.assert_eq_f_f.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_f_t.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.call_f_f.iter().for_each(|c| c.mix_into(channel));
+        self.call_f_t.iter().for_each(|c| c.mix_into(channel));
+        self.call_t_f.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_f.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_t.iter().for_each(|c| c.mix_into(channel));
@@ -89,6 +96,9 @@ impl OpcodeClaim {
             self.assert_eq_f_f.iter().map(|c| c.log_sizes()),
             self.assert_eq_f_t.iter().map(|c| c.log_sizes()),
             self.assert_eq_t_f.iter().map(|c| c.log_sizes()),
+            self.call_f_f.iter().map(|c| c.log_sizes()),
+            self.call_f_t.iter().map(|c| c.log_sizes()),
+            self.call_t_f.iter().map(|c| c.log_sizes()),
             self.generic.iter().map(|c| c.log_sizes()),
             self.jnz_f_f.iter().map(|c| c.log_sizes()),
             self.jnz_f_t.iter().map(|c| c.log_sizes()),
@@ -116,6 +126,9 @@ pub struct OpcodesClaimGenerator {
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::ClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::ClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::ClaimGenerator>,
+    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::ClaimGenerator>,
+    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::ClaimGenerator>,
+    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::ClaimGenerator>,
     generic: Vec<generic_opcode::ClaimGenerator>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator>,
@@ -142,6 +155,9 @@ impl OpcodesClaimGenerator {
         let mut assert_eq_f_f = vec![];
         let mut assert_eq_f_t = vec![];
         let mut assert_eq_t_f = vec![];
+        let mut call_f_f = vec![];
+        let mut call_f_t = vec![];
+        let mut call_t_f = vec![];
         let mut generic = vec![];
         let mut jnz_f_f = vec![];
         let mut jnz_f_t = vec![];
@@ -265,6 +281,39 @@ impl OpcodesClaimGenerator {
         if !input.casm_states_by_opcode.generic_opcode.is_empty() {
             generic.push(generic_opcode::ClaimGenerator::new(
                 input.casm_states_by_opcode.generic_opcode,
+            ));
+        }
+        if !input
+            .casm_states_by_opcode
+            .call_opcode_is_rel_f_op1_base_fp_f
+            .is_empty()
+        {
+            call_f_f.push(call_opcode_is_rel_f_op1_base_fp_f::ClaimGenerator::new(
+                input
+                    .casm_states_by_opcode
+                    .call_opcode_is_rel_f_op1_base_fp_f,
+            ));
+        }
+        if !input
+            .casm_states_by_opcode
+            .call_opcode_is_rel_f_op1_base_fp_t
+            .is_empty()
+        {
+            call_f_t.push(call_opcode_is_rel_f_op1_base_fp_t::ClaimGenerator::new(
+                input
+                    .casm_states_by_opcode
+                    .call_opcode_is_rel_f_op1_base_fp_t,
+            ));
+        }
+        if !input
+            .casm_states_by_opcode
+            .call_opcode_is_rel_t_op1_base_fp_f
+            .is_empty()
+        {
+            call_t_f.push(call_opcode_is_rel_t_op1_base_fp_f::ClaimGenerator::new(
+                input
+                    .casm_states_by_opcode
+                    .call_opcode_is_rel_t_op1_base_fp_f,
             ));
         }
         if !input
@@ -417,6 +466,9 @@ impl OpcodesClaimGenerator {
             assert_eq_f_f,
             assert_eq_f_t,
             assert_eq_t_f,
+            call_f_f,
+            call_f_t,
+            call_t_f,
             generic,
             jnz_f_f,
             jnz_f_t,
@@ -551,6 +603,42 @@ impl OpcodesClaimGenerator {
             .unzip();
         let (assert_eq_t_f_claims, assert_eq_t_f_interaction_gens) = self
             .assert_eq_t_f
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (call_f_f_claims, call_f_f_interaction_gens) = self
+            .call_f_f
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (call_f_t_claims, call_f_t_interaction_gens) = self
+            .call_f_t
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (call_t_f_claims, call_t_f_interaction_gens) = self
+            .call_t_f
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -721,6 +809,9 @@ impl OpcodesClaimGenerator {
                 assert_eq_f_f: assert_eq_f_f_claims,
                 assert_eq_f_t: assert_eq_f_t_claims,
                 assert_eq_t_f: assert_eq_t_f_claims,
+                call_f_f: call_f_f_claims,
+                call_f_t: call_f_t_claims,
+                call_t_f: call_t_f_claims,
                 generic: generic_opcode_claims,
                 jnz_f_f: jnz_f_f_claims,
                 jnz_f_t: jnz_f_t_claims,
@@ -745,6 +836,9 @@ impl OpcodesClaimGenerator {
                 assert_eq_f_f: assert_eq_f_f_interaction_gens,
                 assert_eq_f_t: assert_eq_f_t_interaction_gens,
                 assert_eq_t_f: assert_eq_t_f_interaction_gens,
+                call_f_f: call_f_f_interaction_gens,
+                call_f_t: call_f_t_interaction_gens,
+                call_t_f: call_t_f_interaction_gens,
                 generic_opcode_interaction_gens,
                 jnz_f_f: jnz_f_f_interaction_gens,
                 jnz_f_t: jnz_f_t_interaction_gens,
@@ -774,6 +868,9 @@ pub struct OpcodeInteractionClaim {
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaim>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaim>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaim>,
+    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::InteractionClaim>,
+    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::InteractionClaim>,
+    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::InteractionClaim>,
     generic: Vec<generic_opcode::InteractionClaim>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaim>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaim>,
@@ -799,6 +896,9 @@ impl OpcodeInteractionClaim {
         self.assert_eq_f_f.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_f_t.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.call_f_f.iter().for_each(|c| c.mix_into(channel));
+        self.call_f_t.iter().for_each(|c| c.mix_into(channel));
+        self.call_t_f.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_f.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_t.iter().for_each(|c| c.mix_into(channel));
@@ -879,6 +979,27 @@ impl OpcodeInteractionClaim {
             };
         }
         for interaction_claim in &self.assert_eq_t_f {
+            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
+            sum += match claimed_sum {
+                Some((claimed_sum, ..)) => claimed_sum,
+                None => total_sum,
+            };
+        }
+        for interaction_claim in &self.call_f_f {
+            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
+            sum += match claimed_sum {
+                Some((claimed_sum, ..)) => claimed_sum,
+                None => total_sum,
+            };
+        }
+        for interaction_claim in &self.call_f_t {
+            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
+            sum += match claimed_sum {
+                Some((claimed_sum, ..)) => claimed_sum,
+                None => total_sum,
+            };
+        }
+        for interaction_claim in &self.call_t_f {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
@@ -984,6 +1105,9 @@ pub struct OpcodesInteractionClaimGenerator {
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaimGenerator>,
+    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::InteractionClaimGenerator>,
+    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::InteractionClaimGenerator>,
+    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaimGenerator>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaimGenerator>,
@@ -1120,6 +1244,45 @@ impl OpcodesInteractionClaimGenerator {
             .collect();
         let assert_eq_t_f_interaction_claims = self
             .assert_eq_t_f
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
+        let call_f_f_interaction_claims = self
+            .call_f_f
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
+        let call_f_t_interaction_claims = self
+            .call_f_t
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
+        let call_t_f_interaction_claims = self
+            .call_t_f
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1302,6 +1465,9 @@ impl OpcodesInteractionClaimGenerator {
             assert_eq_f_f: assert_eq_f_f_interaction_claims,
             assert_eq_f_t: assert_eq_f_t_interaction_claims,
             assert_eq_t_f: assert_eq_t_f_interaction_claims,
+            call_f_f: call_f_f_interaction_claims,
+            call_f_t: call_f_t_interaction_claims,
+            call_t_f: call_t_f_interaction_claims,
             generic: generic_opcode_interaction_claims,
             jnz_f_f: jnz_f_f_interaction_claims,
             jnz_f_t: jnz_f_t_interaction_claims,
@@ -1329,6 +1495,9 @@ pub struct OpcodeComponents {
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Component>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Component>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Component>,
+    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::Component>,
+    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::Component>,
+    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::Component>,
     generic: Vec<generic_opcode::Component>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Component>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Component>,
@@ -1583,6 +1752,78 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
+        let call_f_f_components = claim
+            .call_f_f
+            .iter()
+            .zip(interaction_claim.call_f_f.iter())
+            .map(|(&claim, &interaction_claim)| {
+                call_opcode_is_rel_f_op1_base_fp_f::Component::new(
+                    tree_span_provider,
+                    call_opcode_is_rel_f_op1_base_fp_f::Eval {
+                        claim,
+                        memoryaddresstoid_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memoryidtobig_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.logup_sums,
+                )
+            })
+            .collect();
+        let call_f_t_components = claim
+            .call_f_t
+            .iter()
+            .zip(interaction_claim.call_f_t.iter())
+            .map(|(&claim, &interaction_claim)| {
+                call_opcode_is_rel_f_op1_base_fp_t::Component::new(
+                    tree_span_provider,
+                    call_opcode_is_rel_f_op1_base_fp_t::Eval {
+                        claim,
+                        memoryaddresstoid_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memoryidtobig_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.logup_sums,
+                )
+            })
+            .collect();
+        let call_t_f_components = claim
+            .call_t_f
+            .iter()
+            .zip(interaction_claim.call_t_f.iter())
+            .map(|(&claim, &interaction_claim)| {
+                call_opcode_is_rel_t_op1_base_fp_f::Component::new(
+                    tree_span_provider,
+                    call_opcode_is_rel_t_op1_base_fp_f::Eval {
+                        claim,
+                        memoryaddresstoid_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memoryidtobig_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verifyinstruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.logup_sums,
+                )
+            })
+            .collect();
         let generic_components = claim
             .generic
             .iter()
@@ -1888,6 +2129,9 @@ impl OpcodeComponents {
             assert_eq_f_f: assert_eq_f_f_components,
             assert_eq_f_t: assert_eq_f_t_components,
             assert_eq_t_f: assert_eq_t_f_components,
+            call_f_f: call_f_f_components,
+            call_f_t: call_f_t_components,
+            call_t_f: call_t_f_components,
             generic: generic_components,
             jnz_f_f: jnz_f_f_components,
             jnz_f_t: jnz_f_t_components,
@@ -1952,6 +2196,21 @@ impl OpcodeComponents {
         );
         vec.extend(
             self.assert_eq_t_f
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.call_f_f
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.call_f_t
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.call_t_f
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );

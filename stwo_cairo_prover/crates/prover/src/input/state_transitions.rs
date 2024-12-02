@@ -196,7 +196,7 @@ impl StateTransitions {
 
     // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
+    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: CasmState, _dev_mode: bool) {
         let CasmState { ap, fp, pc } = state;
         let instruction = mem.get_inst(pc.0);
         let instruction = Instruction::decode(instruction);
@@ -351,7 +351,7 @@ impl StateTransitions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if !dev_mode => {
+            } => {
                 if pc_update_jump_rel {
                     // call rel imm.
                     assert!(
