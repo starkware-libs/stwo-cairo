@@ -3,14 +3,14 @@ use core::iter::{IntoIterator, Iterator};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
-use crate::fields::qm31::{QM31, QM31Impl};
+use crate::fields::qm31::{QM31, QM31Impl, QM31_EXTENSION_DEGREE};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
-use crate::{ColumnArray, TreeArray};
+use crate::{ColumnArray, ColumnSpan, TreeArray};
 use super::PcsConfig;
 
 // TODO(andrew): Change all `Array` types to `Span`.
@@ -55,6 +55,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn commit(
         ref self: CommitmentSchemeVerifier,
         commitment: felt252,
+        // TODO(ilya): replace with n_columns_per_log_size.
         log_sizes: @Array<u32>,
         ref channel: Channel,
     ) {
@@ -153,12 +154,25 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Answer FRI queries.
         let samples = get_flattened_samples(sampled_points, sampled_values);
 
+        // TODO(ilya): Set the correct number of columns per log size for non fibonacci AIR.
+        let mut n_columns_per_log_size = array![
+            array![
+                0, 0, QM31_EXTENSION_DEGREE,
+            ], // The following assumes all the columns are of the same size.
+            array![0, self.trees[1].column_log_sizes.len(), 0],
+        ];
+        let max_log_size = *self.trees[2].column_log_sizes[0];
+
+        for _ in 0..(max_log_size - 1) {
+            n_columns_per_log_size.append(array![0, 0, 0]);
+        };
+
         let fri_answers = fri_answers(
-            column_log_sizes.span(),
-            samples.span(),
+            samples,
             random_coeff,
             query_positions_by_log_size,
             queried_values,
+            n_columns_per_log_size,
         )?;
 
         if let Result::Err(err) = fri_verifier.decommit(fri_answers) {
@@ -204,7 +218,7 @@ fn get_column_log_bounds(
 fn get_flattened_samples(
     sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
     sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
-) -> ColumnArray<Array<PointSample>> {
+) -> TreeArray<ColumnSpan<Array<PointSample>>> {
     let mut res = array![];
     let n_trees = sampled_points.len();
     assert!(sampled_points.len() == sampled_values.len());
@@ -216,6 +230,7 @@ fn get_flattened_samples(
         assert!(tree_points.len() == tree_values.len());
         let n_columns = tree_points.len();
 
+        let mut tree_samples = array![];
         let mut column_i = 0;
         while column_i < n_columns {
             let column_points = tree_points[column_i];
@@ -231,10 +246,11 @@ fn get_flattened_samples(
                 sample_i += 1;
             };
 
-            res.append(column_samples);
+            tree_samples.append(column_samples);
             column_i += 1;
         };
 
+        res.append(tree_samples.span());
         tree_i += 1;
     };
     res
