@@ -1,3 +1,6 @@
+[workspace]
+members = ["bounded_int"]
+
 [package]
 name = "stwo_cairo_verifier"
 version = "0.1.0"
@@ -10,4 +13,7 @@ casm = true
 sort-module-level-items = true
 
 [dependencies]
+bounded_int = { path = "bounded_int" }
+
+[dev-dependencies]
 cairo_test = "2.8.5"
