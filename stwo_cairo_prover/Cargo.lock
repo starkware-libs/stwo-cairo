@@ -8,7 +8,6 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "log",
- "serde",
  "serde_json",
  "stwo-prover",
  "stwo_cairo_prover",
@@ -1425,6 +1424,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48fd7bd8a6377e15ad9d42a8ec25371b94ddc67abe7c8b9127bec79bebaaae18"
 
 [[package]]
+name = "run_and_prove"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "log",
+ "serde_json",
+ "stwo-prover",
+ "stwo_cairo_prover",
+ "stwo_cairo_utils",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
 name = "rust_decimal"
 version = "1.36.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1761,8 +1774,11 @@ dependencies = [
 name = "stwo_cairo_utils"
 version = "0.1.0"
 dependencies = [
+ "cairo-vm",
+ "clap",
  "env_logger",
  "log",
+ "thiserror 1.0.69",
  "tracing",
  "tracing-subscriber",
 ]
@@ -1771,18 +1787,13 @@ dependencies = [
 name = "stwo_vm_runner"
 version = "0.1.0"
 dependencies = [
- "cairo-vm",
  "clap",
- "itertools 0.12.1",
- "log",
  "num-traits",
- "serde",
  "serde_json",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
  "thiserror 1.0.69",
  "tracing",
- "wasm-bindgen",
 ]
 
 [[package]]
