@@ -473,8 +473,8 @@ impl StateTransitions {
 
             // mul.
             Instruction {
-                offset0,
-                offset1: _,
+                offset0: _,
+                offset1,
                 offset2,
                 dst_base_fp: _,
                 op0_base_fp,
@@ -492,12 +492,12 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } if !dev_mode => {
-                let op1_addr = if op0_base_fp { fp } else { ap };
-                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                let op0_addr = if op0_base_fp { fp } else { ap };
+                let op0 = mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap());
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    if let MemoryValue::Small(_) = op1 {
+                    if let MemoryValue::Small(_) = op0 {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -509,8 +509,8 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    let op0_addr = if op0_base_fp { fp } else { ap };
-                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    let op1_addr = if op1_base_fp { fp } else { ap };
+                    let op1 = mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap());
                     if let MemoryValue::F252(_) = op1 {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_f
@@ -529,8 +529,8 @@ impl StateTransitions {
 
             // add.
             Instruction {
-                offset0,
-                offset1: _,
+                offset0: _,
+                offset1,
                 offset2,
                 dst_base_fp: _,
                 op0_base_fp,
@@ -548,14 +548,12 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } if !dev_mode => {
-                let op1_addr = if op0_base_fp { fp } else { ap };
-                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                let op0_addr = if op0_base_fp { fp } else { ap };
+                let op0 = mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap());
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    let op1_addr = if op0_base_fp { fp } else { ap };
-                    let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                    if let MemoryValue::Small(_) = op1 {
+                    if let MemoryValue::Small(_) = op0 {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -567,15 +565,15 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    let op0_addr = if op0_base_fp { fp } else { ap };
-                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    let op1_addr = if op1_base_fp { fp } else { ap };
+                    let op1 = mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap());
                     if let MemoryValue::F252(_) = op1 {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_f_is_imm_f
                             .push(state);
                     } else if let MemoryValue::F252(_) = op0 {
                         self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_f
+                            .add_opcode_is_small_f_is_imm_f
                             .push(state);
                     } else {
                         self.casm_states_by_opcode
