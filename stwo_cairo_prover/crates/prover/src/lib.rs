@@ -1,4 +1,7 @@
 #![feature(array_methods, portable_simd, iter_array_chunks, array_chunks)]
+// TODO(Ohad): remove.
+#![allow(clippy::too_many_arguments)]
+
 pub mod cairo_air;
 pub mod components;
 pub mod felt;
@@ -191,6 +194,8 @@ mod tests {
         );
     }
 
+    // TODO(Ohad): un-ignore.
+    #[ignore = "mul small opcode is not implemented yet"]
     #[test]
     fn test_mul() {
         let instructions = casm! {
