@@ -5,6 +5,10 @@ use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
+// The range of small values is 27 bits.
+const SMALL_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
+const SMALL_MIN_VALUE: i32 = -(2_i32.pow(27));
+
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
 /// and should match the opcode's air used by `stwo-cairo-air`.
@@ -474,9 +478,9 @@ impl StateTransitions {
             // mul.
             Instruction {
                 offset0,
-                offset1: _,
+                offset1,
                 offset2,
-                dst_base_fp: _,
+                dst_base_fp,
                 op0_base_fp,
                 op1_imm,
                 op1_base_fp,
@@ -492,12 +496,20 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } if !dev_mode => {
-                let op1_addr = if op0_base_fp { fp } else { ap };
-                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                let (dst_addr, op0_addr, op1_addr) = (
+                    if dst_base_fp { fp } else { ap },
+                    if op0_base_fp { fp } else { ap },
+                    if op1_base_fp { fp } else { ap },
+                );
+                let (dst, op0, op1) = (
+                    mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                    mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                    mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                );
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    if let MemoryValue::Small(_) = op1 {
+                    if are_small_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -509,19 +521,13 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    let op0_addr = if op0_base_fp { fp } else { ap };
-                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                    if let MemoryValue::F252(_) = op1 {
+                    if are_small_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_f
-                            .push(state);
-                    } else if let MemoryValue::F252(_) = op0 {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_f
+                            .mul_opcode_is_small_t_is_imm_f
                             .push(state);
                     } else {
                         self.casm_states_by_opcode
-                            .mul_opcode_is_small_t_is_imm_f
+                            .mul_opcode_is_small_f_is_imm_f
                             .push(state);
                     }
                 }
@@ -530,9 +536,9 @@ impl StateTransitions {
             // add.
             Instruction {
                 offset0,
-                offset1: _,
+                offset1,
                 offset2,
-                dst_base_fp: _,
+                dst_base_fp,
                 op0_base_fp,
                 op1_imm,
                 op1_base_fp,
@@ -548,14 +554,20 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } if !dev_mode => {
-                let op1_addr = if op0_base_fp { fp } else { ap };
-                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                let (dst_addr, op0_addr, op1_addr) = (
+                    if dst_base_fp { fp } else { ap },
+                    if op0_base_fp { fp } else { ap },
+                    if op1_base_fp { fp } else { ap },
+                );
+                let (dst, op0, op1) = (
+                    mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                    mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                    mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                );
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    let op1_addr = if op0_base_fp { fp } else { ap };
-                    let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                    if let MemoryValue::Small(_) = op1 {
+                    if are_small_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -567,19 +579,13 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    let op0_addr = if op0_base_fp { fp } else { ap };
-                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                    if let MemoryValue::F252(_) = op1 {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_f_is_imm_f
-                            .push(state);
-                    } else if let MemoryValue::F252(_) = op0 {
+                    if are_small_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_f
                             .push(state);
                     } else {
                         self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_f
+                            .add_opcode_is_small_f_is_imm_f
                             .push(state);
                     }
                 }
@@ -591,4 +597,14 @@ impl StateTransitions {
             }
         }
     }
+}
+
+// Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
+fn are_small_operands(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
+    is_small(dst) && is_small(op0) && is_small(op1)
+}
+
+// Returns 'true' if the memory value is within the range of [-2^27, 2^27 - 1].
+fn is_small(val: MemoryValue) -> bool {
+    matches!(val, MemoryValue::Small(val) if (val as i128>= SMALL_MIN_VALUE as i128) && (val as i128 <= SMALL_MAX_VALUE as i128))
 }
