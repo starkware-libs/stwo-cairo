@@ -149,6 +149,7 @@ pub mod tests {
     }
 
     // TODO (Stav): Once all the components are in, verify the proof to ensure the sort was correct.
+    /// When not ignored, the test passes only with dev_mod = false.
     #[ignore]
     #[test]
     fn test_read_from_large_files() {
@@ -158,10 +159,10 @@ pub mod tests {
         assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_f.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_t_op1_base_fp_f.len(), 36895);
         assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_t.len(), 33);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 94680);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 181481);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 44567);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 12141);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 102658);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 185253);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 40795);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 4163);
         assert_eq!(
             components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
             233432
@@ -205,13 +206,14 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 14653);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 8574);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 2572);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 3390);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 14783);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 7846);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 3300);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 3260);
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 
+    // When not ignored, the test passes only with dev_mod = false.
     #[ignore]
     #[test]
     fn test_read_from_small_files() {
@@ -221,10 +223,10 @@ pub mod tests {
         assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_f.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_t_op1_base_fp_f.len(), 2);
         assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_t.len(), 1);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 750);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 950);
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 0);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 0);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 200);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 0);
         assert_eq!(
             components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
             55
