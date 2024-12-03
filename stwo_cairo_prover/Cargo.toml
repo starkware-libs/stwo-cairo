@@ -5,6 +5,7 @@ members = [
     "crates/cairo-serialize",
     "crates/cairo-serialize-derive",
     "crates/utils",
+    "crates/run_and_prove",
     "crates/vm_runner",
     "crates/prover_types",
     "crates/air_structs_derive",
@@ -32,6 +33,8 @@ rand = "0.8.5"
 serde = "1.0.207"
 serde_json = "1.0.1"
 sonic-rs = "0.3.10"
+stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
+stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "f24cde6", features = [
     "parallel",
@@ -42,6 +45,9 @@ tracing-subscriber = "0.3.18"
 paste = "1.0"
 starknet-ff = "0.3.7"
 ruint = "1.12.3"
+# Pin wasm-bindgen version to the version pinned by lambdaclass/cairo-vm/vm
+# TODO(yuval): remove the pin once the pinning in lambdaclass/cairo-vm/vm is removed.
+wasm-bindgen = { version = "= 0.2.92" }
 
 [profile.bench]
 codegen-units = 1
