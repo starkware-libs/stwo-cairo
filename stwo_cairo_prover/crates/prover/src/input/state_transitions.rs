@@ -555,41 +555,49 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if !dev_mode => {
+            } => {
                 let op1_addr = if op0_base_fp { fp } else { ap };
-                let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                let _op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    let op1_addr = if op0_base_fp { fp } else { ap };
-                    let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                    if let MemoryValue::Small(_) = op1 {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_t
-                            .push(state);
-                    } else {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_f_is_imm_t
-                            .push(state);
-                    };
+                    // TODO(Ohad): uncomment when adapter is fixed.
+                    // let op1_addr = if op0_base_fp { fp } else { ap };
+                    // let op1 = mem.get(op1_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    // if let MemoryValue::Small(_) = op1 {
+                    //     self.casm_states_by_opcode
+                    //         .add_opcode_is_small_t_is_imm_t
+                    //         .push(state);
+                    // } else {
+                    //     self.casm_states_by_opcode
+                    //         .add_opcode_is_small_f_is_imm_t
+                    //         .push(state);
+                    // };
+                    self.casm_states_by_opcode
+                        .add_opcode_is_small_f_is_imm_t
+                        .push(state);
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    let op0_addr = if op0_base_fp { fp } else { ap };
-                    let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                    if let MemoryValue::F252(_) = op1 {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_f_is_imm_f
-                            .push(state);
-                    } else if let MemoryValue::F252(_) = op0 {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_f
-                            .push(state);
-                    } else {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_f
-                            .push(state);
-                    }
+                    // TODO (Ohad): uncomment when adapter is fixed.
+                    // let op0_addr = if op0_base_fp { fp } else { ap };
+                    // let op0 = mem.get(op0_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                    // if let MemoryValue::F252(_) = op1 {
+                    //     self.casm_states_by_opcode
+                    //         .add_opcode_is_small_f_is_imm_f
+                    //         .push(state);
+                    // } else if let MemoryValue::F252(_) = op0 {
+                    //     self.casm_states_by_opcode
+                    //         .add_opcode_is_small_t_is_imm_f
+                    //         .push(state);
+                    // } else {
+                    //     self.casm_states_by_opcode
+                    //         .add_opcode_is_small_t_is_imm_f
+                    //         .push(state);
+                    // }
+                    self.casm_states_by_opcode
+                        .add_opcode_is_small_f_is_imm_f
+                        .push(state);
                 }
             }
 
