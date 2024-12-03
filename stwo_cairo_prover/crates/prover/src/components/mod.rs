@@ -17,8 +17,15 @@ pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod verify_instruction;
 
+// TODO(Ohad): mul small.
+pub mod mul_opcode_is_small_f_is_imm_f;
+pub mod mul_opcode_is_small_f_is_imm_t;
+
 pub use memory::{memory_address_to_id, memory_id_to_big};
-pub use range_check_vector::{range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9};
+pub use range_check_vector::{
+    range_check_19, range_check_3, range_check_4_3, range_check_6, range_check_7_2_5,
+    range_check_9_9,
+};
 
 // When padding is needed, the inputs must be arranged in the order defined by the neighbor
 // function. This order allows using the partial sum mechanism to sum only the first n_call inputs.
