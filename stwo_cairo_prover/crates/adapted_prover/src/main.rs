@@ -6,7 +6,7 @@ use stwo_cairo_prover::cairo_air::air::CairoProof;
 use stwo_cairo_prover::cairo_air::prove_cairo;
 use stwo_cairo_prover::input::vm_import::{import_from_vm_output, VmImportError};
 use stwo_cairo_prover::input::CairoInput;
-use stwo_cairo_utils::logging_utils::init_logging;
+use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 use thiserror::Error;
@@ -43,18 +43,7 @@ enum Error {
 }
 
 fn main() -> ExitCode {
-    // TODO(yuval): allow control on log levels through args.
-    init_logging(log::LevelFilter::Info);
-    match run(std::env::args()) {
-        Ok(_) => {
-            log::info!("Adapted prover succeeded");
-            ExitCode::SUCCESS
-        }
-        Err(error) => {
-            log::info!("Adapted prover failed: {error}");
-            ExitCode::FAILURE
-        }
-    }
+    run_binary(run)
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHasher>, Error> {
@@ -69,8 +58,6 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
 
     let proof = prove_cairo(vm_output)?;
 
-    // TODO(yuval): This is just some serialization for the sake of serialization. Find the right
-    // way to serialize the proof.
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
     Ok(proof)
