@@ -16,9 +16,11 @@ use tracing::{span, Level};
 
 use crate::input::CairoInput;
 
-const LOG_MAX_ROWS: u32 = 20;
+const LOG_MAX_ROWS: u32 = 22;
 
-const IS_FIRST_LOG_SIZES: [u32; 16] = [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4];
+const IS_FIRST_LOG_SIZES: [u32; 19] = [
+    22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
+];
 pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
