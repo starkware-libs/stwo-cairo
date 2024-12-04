@@ -50,8 +50,9 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
 
     // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-
+    let span = span!(Level::INFO, "Base trace").entered();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+    span.exit();
     claim.mix_into(channel);
     tree_builder.commit(channel);
 
