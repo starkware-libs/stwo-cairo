@@ -1,4 +1,5 @@
 pub mod air;
+mod gen_constraints;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use num_traits::Zero;

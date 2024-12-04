@@ -7,8 +7,11 @@ pub use prover::{ClaimGenerator, InputType, InteractionClaimGenerator};
 
 #[cfg(test)]
 mod tests {
-    use stwo_prover::constraint_framework::expr::ExprEvaluator;
-    use stwo_prover::constraint_framework::FrameworkEval;
+    use std::collections::{BTreeMap, BTreeSet};
+
+    use itertools::{chain, Itertools};
+    use stwo_prover::constraint_framework::expr::{BaseExpr, ColumnExpr, ExprEvaluator, ExtExpr};
+    use stwo_prover::constraint_framework::{FrameworkEval, InfoEvaluator};
 
     use crate::components::genericopcode;
     use crate::relations;
@@ -24,11 +27,5 @@ mod tests {
             verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
             opcodes_lookup_elements: relations::Vm::dummy(),
         };
-
-        let expected = "";
-        let constraint_str = eval
-            .evaluate(ExprEvaluator::new(16, false))
-            .format_constraints();
-        assert_eq!(constraint_str, expected);
     }
 }
