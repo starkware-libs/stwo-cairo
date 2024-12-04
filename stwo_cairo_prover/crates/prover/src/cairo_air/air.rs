@@ -14,6 +14,7 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::prover::StarkProof;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
+use tracing::{span, Level};
 
 use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
@@ -203,6 +204,7 @@ impl CairoClaimGenerator {
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
+        let span = span!(Level::INFO, "opcodes_trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
             &mut self.memory_address_to_id_trace_generator,
@@ -211,6 +213,8 @@ impl CairoClaimGenerator {
             &mut self.range_check_9_9_trace_generator,
             &mut self.verify_instruction_trace_generator,
         );
+        span.exit();
+        let span = span!(Level::INFO, "internal component traces").entered();
         let (verify_instruction_claim, verify_instruction_interaction_gen) =
             self.verify_instruction_trace_generator.write_trace(
                 tree_builder,
@@ -237,6 +241,7 @@ impl CairoClaimGenerator {
         let (range_check_4_3_claim, range_check_4_3_interaction_gen) = self
             .range_check_4_3_trace_generator
             .write_trace(tree_builder);
+        span.exit();
         (
             CairoClaim {
                 public_data: self.public_data,
