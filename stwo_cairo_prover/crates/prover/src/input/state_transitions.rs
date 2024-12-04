@@ -355,7 +355,7 @@ impl StateTransitions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
-            } if !dev_mode => {
+            } => {
                 if pc_update_jump_rel {
                     // call rel imm.
                     assert!(
