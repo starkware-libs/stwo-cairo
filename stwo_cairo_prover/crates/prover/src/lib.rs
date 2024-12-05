@@ -26,8 +26,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
@@ -57,8 +57,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .add_ap_opcode_is_imm_f_op1_base_fp_f
@@ -82,8 +82,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .call_opcode_is_rel_f_op1_base_fp_t
@@ -107,8 +107,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .call_opcode_is_rel_f_op1_base_fp_f
@@ -126,8 +126,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .jnz_opcode_is_taken_f_dst_base_fp_f
@@ -145,8 +145,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .jnz_opcode_is_taken_t_dst_base_fp_t
@@ -165,8 +165,8 @@ mod tests {
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
                 .assert_eq_opcode_is_double_deref_f_is_imm_f
@@ -175,23 +175,53 @@ mod tests {
         );
     }
 
-    // TODO(Ohad/Stav): un-ignore.
-    #[ignore = "disabled until adapter is fixed"]
     #[test]
-    fn test_add() {
+    fn test_add_small() {
         let instructions = casm! {
             call rel 2;
-            [ap] =  8, ap++;
-            [ap] = 12, ap++;
-            [ap+2] = [fp-1] + [ap-2];
+            [ap] = 134217725, ap++;
+            [ap] = 2, ap++;
+            // The sum is 2^27-1 which is the maximal value for a small number.
+            [ap] = [fp] + [ap-1], ap++;
+            // The sum is 2^27-1 which is the maximal value for a small number.
+            [ap] = [fp-1] + 134217724, ap++;
             [ap] = 1, ap++;
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode.add_opcode_is_small_t_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_t_is_imm_t.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_add_big() {
+        let instructions = casm! {
+            call rel 2;
+            [ap] = 134217725, ap++;
+            [ap] = 3, ap++;
+            // The sum is 2^27 which is the minimal value for a big number.
+            [ap] = [fp] + [ap-1], ap++;
+            [ap] = [ap-1] + 1, ap++;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_f_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_f_is_imm_t.len(),
             1
         );
     }
@@ -199,24 +229,48 @@ mod tests {
     // TODO(Ohad): un-ignore.
     #[ignore = "mul small opcode is not implemented yet"]
     #[test]
-    fn test_mul() {
+    fn test_mul_small() {
         let instructions = casm! {
-            [ap] =  8, ap++;
-            [ap] = 12, ap++;
+            [ap] =  7, ap++;
+            [ap] = 19173961, ap++;
+            // The multiplication result is 2^27 - 1 which is the maximal value for a small number.
             [ap] = [ap-1] * [ap-2], ap++;
             [ap] = [ap-1]*7, ap++;
             [ap] = 1, ap++;
         }
         .instructions;
 
-        let inp = input_from_plain_casm(instructions, false);
-        let casm_states_by_opcode = inp.state_transitions.casm_states_by_opcode;
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_t_is_imm_f.len(),
             1
         );
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_mul_big() {
+        let instructions = casm! {
+            [ap] =  8, ap++;
+            [ap] = 19173961, ap++;
+            [ap] = [ap-1] * [ap-2], ap++;
+            [ap] = [ap-1]* 2147483647, ap++;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_f_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t.len(),
             1
         );
     }
