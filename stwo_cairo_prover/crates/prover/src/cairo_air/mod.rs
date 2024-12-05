@@ -1,9 +1,12 @@
 pub mod air;
+mod debug;
 pub mod opcodes_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
+use debug::track_cairo_relations;
 use num_traits::Zero;
 use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
+use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Blake2sChannel;
 use stwo_prover::core::fields::qm31::SecureField;
@@ -21,7 +24,10 @@ const LOG_MAX_ROWS: u32 = 22;
 const IS_FIRST_LOG_SIZES: [u32; 19] = [
     22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
 ];
-pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
+pub fn prove_cairo(
+    input: CairoInput,
+    track_relations: bool,
+) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
     let twiddles = SimdBackend::precompute_twiddles(
@@ -47,7 +53,6 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
 
     // Run Cairo.
     let cairo_claim_generator = CairoClaimGenerator::new(input);
-
     // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();
@@ -55,6 +60,15 @@ pub fn prove_cairo(input: CairoInput) -> Result<CairoProof<Blake2sMerkleHasher>,
     span.exit();
     claim.mix_into(channel);
     tree_builder.commit(channel);
+
+    if track_relations {
+        let relation_summary = RelationSummary::summarize_relations(&track_cairo_relations(
+            &commitment_scheme,
+            &claim,
+        ))
+        .cleaned();
+        println!("Relations summary: {:?}", relation_summary);
+    }
 
     // Draw interaction elements.
     let interaction_elements = CairoInteractionElements::draw(channel);
@@ -169,14 +183,14 @@ mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo(test_input()).unwrap();
+        let cairo_proof = prove_cairo(test_input(), true).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 
     #[ignore]
     #[test]
     fn test_full_cairo_air() {
-        let cairo_proof = prove_cairo(small_cairo_input()).unwrap();
+        let cairo_proof = prove_cairo(small_cairo_input(), true).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 }
