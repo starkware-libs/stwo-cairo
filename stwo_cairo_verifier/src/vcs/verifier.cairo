@@ -10,7 +10,7 @@ use core::nullable::NullableTrait;
 use core::option::OptionTrait;
 use crate::BaseField;
 use crate::utils::SpanExTrait;
-use crate::utils::{ArrayExTrait, DictTrait};
+use crate::utils::{ArrayExTrait, DictTrait, OptBoxTrait};
 use crate::vcs::hasher::MerkleHasher;
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
@@ -142,7 +142,7 @@ impl MerkleVerifierImpl<
             let res = loop {
                 // Fetch the next query.
                 let current_query = if let Option::Some(current_query) =
-                    next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
+                    next_decommitment_node(layer_column_queries, @prev_layer_hashes) {
                     current_query
                 } else {
                     break Result::Ok(());
@@ -231,11 +231,11 @@ impl MerkleVerifierImpl<
 }
 
 fn next_decommitment_node<H>(
-    layer_queries: Span<u32>, prev_queries: Span<(u32, H)>,
+    layer_queries: Span<u32>, prev_queries: @Array<(u32, H)>,
 ) -> Option<usize> {
     // Fetch the next query.
-    let layer_query_head = layer_queries.first();
-    let prev_query_head = if let Option::Some((prev_query, _)) = prev_queries.first() {
+    let layer_query_head = layer_queries.get(0).as_unboxed();
+    let prev_query_head = if let Option::Some((prev_query, _)) = prev_queries.get(0).as_unboxed() {
         Option::Some(*prev_query / 2)
     } else {
         Option::None

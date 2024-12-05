@@ -31,7 +31,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 28];
+        let trace_log_sizes = vec![log_size; 29];
         let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
@@ -117,6 +117,7 @@ impl FrameworkEval for Eval {
         let offset2_mid_col25 = eval.next_trace_mask();
         let offset2_high_col26 = eval.next_trace_mask();
         let instruction_id_col27 = eval.next_trace_mask();
+        let mult = eval.next_trace_mask();
 
         // encode_offsets.
 
@@ -225,7 +226,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(&[RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
-            -E::EF::one(),
+            E::EF::from(-mult),
             &[
                 input_col0.clone(),
                 input_col1.clone(),
