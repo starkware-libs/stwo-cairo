@@ -5,9 +5,13 @@ use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
-// The range of small values is 27 bits.
-const SMALL_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
-const SMALL_MIN_VALUE: i32 = -(2_i32.pow(27));
+// The range of small values for the add opcode is 27 bits.
+const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
+const SMALL_ADD_MIN_VALUE: i32 = -(2_i32.pow(27));
+
+// The range of small values for the mul opcode is usighned 15 bits.
+const SMALL_MUL_MAX_VALUE: i32 = 2_i32.pow(15) - 1;
+const SMALL_MUL_MIN_VALUE: i32 = 0;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -477,10 +481,10 @@ impl StateTransitions {
 
             // mul.
             Instruction {
-                offset0,
+                offset0: _,
                 offset1,
                 offset2,
-                dst_base_fp,
+                dst_base_fp: _,
                 op0_base_fp,
                 op1_imm,
                 op1_base_fp,
@@ -496,13 +500,11 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                let (dst_addr, op0_addr, op1_addr) = (
-                    if dst_base_fp { fp } else { ap },
+                let (op0_addr, op1_addr) = (
                     if op0_base_fp { fp } else { ap },
                     if op1_base_fp { fp } else { ap },
                 );
-                let (dst, op0, op1) = (
-                    mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                let (op0, op1) = (
                     mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
                     mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
                 );
@@ -514,7 +516,7 @@ impl StateTransitions {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_t
                             .push(state);
-                    } else if are_small_operands(dst, op0, op1) {
+                    } else if are_small_mul_operands(op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -531,7 +533,7 @@ impl StateTransitions {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_f
                             .push(state);
-                    } else if are_small_operands(dst, op0, op1) {
+                    } else if are_small_mul_operands(op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_f
                             .push(state);
@@ -577,7 +579,7 @@ impl StateTransitions {
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    if are_small_operands(dst, op0, op1) {
+                    if are_small_add_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -589,7 +591,7 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    if are_small_operands(dst, op0, op1) {
+                    if are_small_add_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_f
                             .push(state);
@@ -610,11 +612,21 @@ impl StateTransitions {
 }
 
 // Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
-fn are_small_operands(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
-    is_small(dst) && is_small(op0) && is_small(op1)
+fn are_small_add_operands(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
+    is_small_add(dst) && is_small_add(op0) && is_small_add(op1)
 }
 
 // Returns 'true' if the memory value is within the range of [-2^27, 2^27 - 1].
-fn is_small(val: MemoryValue) -> bool {
-    matches!(val, MemoryValue::Small(val) if (val as i128>= SMALL_MIN_VALUE as i128) && (val as i128 <= SMALL_MAX_VALUE as i128))
+fn is_small_add(val: MemoryValue) -> bool {
+    matches!(val, MemoryValue::Small(val) if (val as i128>= SMALL_ADD_MIN_VALUE as i128) && (val as i128 <= SMALL_ADD_MAX_VALUE as i128))
+}
+
+// Returns 'true' the multiplication factors are in the range [0, 2^15-1]
+fn are_small_mul_operands(op0: MemoryValue, op1: MemoryValue) -> bool {
+    is_small_mul(op0) && is_small_mul(op1)
+}
+
+// Returns 'true' if the memory value is within the range of [0, 2^15 - 1].
+fn is_small_mul(val: MemoryValue) -> bool {
+    matches!(val, MemoryValue::Small(val) if (val as i128>= SMALL_MUL_MIN_VALUE as i128) && (val as i128 <= SMALL_MUL_MAX_VALUE as i128))
 }
