@@ -1633,7 +1633,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=6e7d2aa6#6e7d2aa687071cd049c3ddac0cea778dfe755497"
+source = "git+https://github.com/starkware-libs/stwo?rev=76af3c6#76af3c6c7afc5b6e582ec5d16a03e74efe5a11ee"
 dependencies = [
  "blake2",
  "blake3",
