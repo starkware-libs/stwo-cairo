@@ -495,7 +495,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if !dev_mode => {
+            } => {
                 let (dst_addr, op0_addr, op1_addr) = (
                     if dst_base_fp { fp } else { ap },
                     if op0_base_fp { fp } else { ap },
@@ -509,7 +509,12 @@ impl StateTransitions {
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    if are_small_operands(dst, op0, op1) {
+                    // TODO(Ohad): remove when mul small is implemented.
+                    if dev_mode {
+                        self.casm_states_by_opcode
+                            .mul_opcode_is_small_f_is_imm_t
+                            .push(state);
+                    } else if are_small_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -521,7 +526,12 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    if are_small_operands(dst, op0, op1) {
+                    // TODO(Ohad): remove when mul small is implemented.
+                    if dev_mode {
+                        self.casm_states_by_opcode
+                            .mul_opcode_is_small_f_is_imm_f
+                            .push(state);
+                    } else if are_small_operands(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_f
                             .push(state);
