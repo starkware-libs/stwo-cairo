@@ -465,7 +465,7 @@ pub fn track_cairo_relations(
                 rangecheck_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
                 verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
             },
-            claim.verify_instruction.n_calls,
+            1 << claim.verify_instruction.log_size,
         )
         .entries(trace),
     );

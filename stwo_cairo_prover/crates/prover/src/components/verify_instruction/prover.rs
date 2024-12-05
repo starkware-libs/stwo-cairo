@@ -1,5 +1,9 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
+use std::collections::{BTreeMap, BTreeSet};
+use std::iter::zip;
+use std::vec;
+
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -28,65 +32,61 @@ use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
-const N_TRACE_COLUMNS: usize = 28;
+const N_MULTIPLICITY_COLUMNS: usize = 1;
+const N_TRACE_COLUMNS: usize = 28 + N_MULTIPLICITY_COLUMNS;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
-    pub inputs: Vec<InputType>,
+    pub inputs: BTreeMap<InputType, u32>,
 }
 impl ClaimGenerator {
-    pub fn new(inputs: Vec<InputType>) -> Self {
-        Self { inputs }
-    }
-
     pub fn write_trace(
-        mut self,
+        self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
         memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
         range_check_4_3_state: &mut range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        let n_calls = self.inputs.len();
+        let (mut inputs, mut mults) = self.inputs.into_iter().unzip::<_, _, Vec<_>, Vec<_>>();
+        let n_calls = inputs.len();
         assert_ne!(n_calls, 0);
         let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
+        let log_size = size.ilog2();
         let need_padding = n_calls != size;
 
         if need_padding {
-            self.inputs.resize(size, *self.inputs.first().unwrap());
-            bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
+            inputs.resize(size, *inputs.first().unwrap());
+            mults.resize(size, 0);
         }
 
-        let packed_inputs = pack_values(&self.inputs);
-        let (trace, mut sub_components_inputs, lookup_data) =
-            write_trace_simd(packed_inputs, memory_address_to_id_state);
+        let packed_inputs = pack_values(&inputs);
+        let (trace, sub_components_inputs, lookup_data) =
+            write_trace_simd(packed_inputs, mults, memory_address_to_id_state);
 
-        if need_padding {
-            sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
-        }
         sub_components_inputs
             .range_check_4_3_inputs
             .iter()
             .for_each(|inputs| {
-                range_check_4_3_state.add_inputs(&inputs[..n_calls]);
+                range_check_4_3_state.add_inputs(&inputs[..]);
             });
         sub_components_inputs
             .range_check_7_2_5_inputs
             .iter()
             .for_each(|inputs| {
-                range_check_7_2_5_state.add_inputs(&inputs[..n_calls]);
+                range_check_7_2_5_state.add_inputs(&inputs[..]);
             });
         sub_components_inputs
             .memory_address_to_id_inputs
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..n_calls]);
+                memory_address_to_id_state.add_inputs(&inputs[..]);
             });
         sub_components_inputs
             .memory_id_to_big_inputs
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
+                memory_id_to_big_state.add_inputs(&inputs[..]);
             });
 
         tree_builder.extend_evals(
@@ -105,16 +105,18 @@ impl ClaimGenerator {
         );
 
         (
-            Claim { n_calls },
+            Claim { log_size },
             InteractionClaimGenerator {
-                n_calls,
+                log_size,
                 lookup_data,
             },
         )
     }
 
     pub fn add_inputs(&mut self, inputs: &[InputType]) {
-        self.inputs.extend(inputs);
+        for input in inputs {
+            *self.inputs.entry(*input).or_default() += 1;
+        }
     }
 }
 
@@ -134,21 +136,6 @@ impl SubComponentInputs {
             memory_id_to_big_inputs: [Vec::with_capacity(capacity)],
         }
     }
-
-    fn bit_reverse_coset_to_circle_domain_order(&mut self) {
-        self.range_check_4_3_inputs
-            .iter_mut()
-            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
-        self.range_check_7_2_5_inputs
-            .iter_mut()
-            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
-        self.memory_address_to_id_inputs
-            .iter_mut()
-            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
-        self.memory_id_to_big_inputs
-            .iter_mut()
-            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
-    }
 }
 
 #[allow(clippy::useless_conversion)]
@@ -157,15 +144,15 @@ impl SubComponentInputs {
 #[allow(non_snake_case)]
 pub fn write_trace_simd(
     inputs: Vec<PackedInputType>,
+    mults: Vec<u32>,
     memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
 ) -> (
     [BaseColumn; N_TRACE_COLUMNS],
     SubComponentInputs,
     LookupData,
 ) {
-    const N_TRACE_COLUMNS: usize = 28;
-    let mut trace: [_; N_TRACE_COLUMNS] =
-        std::array::from_fn(|_| Col::<SimdBackend, M31>::zeros(inputs.len() * N_LANES));
+    let mut trace: [_; N_TRACE_COLUMNS - N_MULTIPLICITY_COLUMNS] =
+        std::array::from_fn(|i| Col::<SimdBackend, M31>::zeros(inputs.len() * N_LANES));
 
     let mut lookup_data = LookupData::with_capacity(inputs.len());
     #[allow(unused_mut)]
@@ -381,6 +368,14 @@ pub fn write_trace_simd(
             ]);
         });
 
+    let multplicity_column =
+        BaseColumn::from_iter(mults.clone().into_iter().map(M31::from_u32_unchecked));
+    lookup_data.mults = multplicity_column.data.clone();
+    let trace = chain!(trace, [multplicity_column])
+        .collect_vec()
+        .try_into()
+        .unwrap();
+
     (trace, sub_components_inputs, lookup_data)
 }
 
@@ -390,6 +385,7 @@ pub struct LookupData {
     pub rangecheck_4_3: [Vec<[PackedM31; 2]>; 1],
     pub rangecheck_7_2_5: [Vec<[PackedM31; 3]>; 1],
     pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
+    pub mults: Vec<PackedM31>,
 }
 impl LookupData {
     #[allow(unused_variables)]
@@ -400,12 +396,13 @@ impl LookupData {
             rangecheck_4_3: [Vec::with_capacity(capacity)],
             rangecheck_7_2_5: [Vec::with_capacity(capacity)],
             verifyinstruction: [Vec::with_capacity(capacity)],
+            mults: vec![],
         }
     }
 }
 
 pub struct InteractionClaimGenerator {
-    pub n_calls: usize,
+    pub log_size: u32,
     pub lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -418,8 +415,7 @@ impl InteractionClaimGenerator {
         rangecheck_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
         verifyinstruction_lookup_elements: &relations::VerifyInstruction,
     ) -> InteractionClaim {
-        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
-        let mut logup_gen = LogupTraceGenerator::new(log_size);
+        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         let mut col_gen = logup_gen.new_col();
         let lookup_row = &self.lookup_data.rangecheck_7_2_5[0];
@@ -455,19 +451,16 @@ impl InteractionClaimGenerator {
 
         let mut col_gen = logup_gen.new_col();
         let lookup_row = &self.lookup_data.verifyinstruction[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
+        let mults = &self.lookup_data.mults;
+        for (i, (lookup_values, &mults)) in zip(lookup_row, mults).enumerate() {
             let denom = verifyinstruction_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            col_gen.write_frac(i, (-mults).into(), denom);
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_calls == 1 << log_size {
+        let (trace, total_sum, claimed_sum) = {
             let (trace, claimed_sum) = logup_gen.finalize_last();
             (trace, claimed_sum, None)
-        } else {
-            let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
         };
         tree_builder.extend_evals(trace);
 
