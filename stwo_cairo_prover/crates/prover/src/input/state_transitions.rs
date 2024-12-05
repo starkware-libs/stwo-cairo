@@ -5,9 +5,13 @@ use super::decode::Instruction;
 use super::mem::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
-// The range of small values is 27 bits.
-const SMALL_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
-const SMALL_MIN_VALUE: i32 = -(2_i32.pow(27));
+// Small add operands are 27 bits.
+const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
+const SMALL_ADD_MIN_VALUE: i32 = -(2_i32.pow(27));
+
+// Small mul operands are 15 bits.
+const SMALL_MUL_MAX_VALUE: u32 = 2_u32.pow(15) - 1;
+const SMALL_MUL_MIN_VALUE: u32 = 0;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -477,10 +481,10 @@ impl StateTransitions {
 
             // mul.
             Instruction {
-                offset0,
+                offset0: _,
                 offset1,
                 offset2,
-                dst_base_fp,
+                dst_base_fp: _,
                 op0_base_fp,
                 op1_imm,
                 op1_base_fp,
@@ -496,13 +500,11 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                let (dst_addr, op0_addr, op1_addr) = (
-                    if dst_base_fp { fp } else { ap },
+                let (op0_addr, op1_addr) = (
                     if op0_base_fp { fp } else { ap },
                     if op1_base_fp { fp } else { ap },
                 );
-                let (dst, op0, op1) = (
-                    mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                let (op0, op1) = (
                     mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
                     mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
                 );
@@ -514,7 +516,7 @@ impl StateTransitions {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_t
                             .push(state);
-                    } else if are_small_operands(dst, op0, op1) {
+                    } else if is_small_mul(op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -531,7 +533,7 @@ impl StateTransitions {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_f
                             .push(state);
-                    } else if are_small_operands(dst, op0, op1) {
+                    } else if is_small_mul(op0, op1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_f
                             .push(state);
@@ -577,7 +579,7 @@ impl StateTransitions {
                 if op1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
                     assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    if are_small_operands(dst, op0, op1) {
+                    if is_small_add(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -589,7 +591,7 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
                     assert!((op1_base_fp || op1_base_ap));
-                    if are_small_operands(dst, op0, op1) {
+                    if is_small_add(dst, op0, op1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_f
                             .push(state);
@@ -609,12 +611,298 @@ impl StateTransitions {
     }
 }
 
-// Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
-fn are_small_operands(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
-    is_small(dst) && is_small(op0) && is_small(op1)
+fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
+    matches!(val, MemoryValue::Small(val) if (val as i128 >= min) && (val as i128 <= max))
 }
 
-// Returns 'true' if the memory value is within the range of [-2^27, 2^27 - 1].
-fn is_small(val: MemoryValue) -> bool {
-    matches!(val, MemoryValue::Small(val) if (val as i128>= SMALL_MIN_VALUE as i128) && (val as i128 <= SMALL_MAX_VALUE as i128))
+// Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
+fn is_small_add(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
+    [dst, op0, op1].iter().all(|val| {
+        is_within_range(
+            *val,
+            SMALL_ADD_MIN_VALUE as i128,
+            SMALL_ADD_MAX_VALUE as i128,
+        )
+    })
+}
+
+// Returns 'true' the multiplication factors are in the range [0, 2^15-1].
+fn is_small_mul(op0: MemoryValue, op1: MemoryValue) -> bool {
+    [op0, op1].iter().all(|val| {
+        is_within_range(
+            *val,
+            SMALL_MUL_MIN_VALUE as i128,
+            SMALL_MUL_MAX_VALUE as i128,
+        )
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use cairo_lang_casm::casm;
+
+    use crate::input::plain::input_from_plain_casm;
+
+    // TODO(Ohad): un-ignore when the opcode is in.
+    #[ignore]
+    #[test]
+    fn test_jmp_abs() {
+        let instructions = casm! {
+            call rel 2;
+            [ap] = [ap-1] + 3;
+            jmp abs [ap];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
+                .len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode
+                .call_opcode_is_rel_t_op1_base_fp_f
+                .len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_t_is_imm_t.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_add_ap() {
+        let instructions = casm! {
+            [ap] = 38, ap++;
+            [ap] = 12, ap++;
+            ap += [ap -2];
+            ap += [fp + 1];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .add_ap_opcode_is_imm_f_op1_base_fp_f
+                .len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode
+                .add_ap_opcode_is_imm_f_op1_base_fp_f
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_call() {
+        let instructions = casm! {
+            call rel 2;
+            call abs [fp - 1];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .call_opcode_is_rel_f_op1_base_fp_t
+                .len(),
+            2
+        );
+        assert_eq!(
+            casm_states_by_opcode
+                .call_opcode_is_rel_t_op1_base_fp_f
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_call2() {
+        let instructions = casm! {
+            call rel 2;
+            call abs [ap - 1];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .call_opcode_is_rel_f_op1_base_fp_f
+                .len(),
+            2
+        );
+    }
+
+    #[test]
+    fn test_jnz_taken() {
+        let instructions = casm! {
+            [ap] = 0, ap++;
+            jmp rel 2 if [ap-1] != 0;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .jnz_opcode_is_taken_f_dst_base_fp_f
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_jnz_not_taken() {
+        let instructions = casm! {
+            call rel 2;
+            jmp rel 2 if [fp-1] != 0;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .jnz_opcode_is_taken_t_dst_base_fp_t
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_assert_equal() {
+        let instructions = casm! {
+            [ap] =  8, ap++;
+            [ap] =  8, ap++;
+            [ap+2] = [fp + 1];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .assert_eq_opcode_is_double_deref_f_is_imm_f
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_add_small() {
+        let instructions = casm! {
+            call rel 2;
+            [ap] = 134217725, ap++;
+            [ap] = 2, ap++;
+            // 134217725 + 2= 2^27-1.
+            [ap] = [fp] + [ap-1], ap++;
+            // 134217724 + 3 = 2^27-1.
+            [ap] = [fp-1] + 134217724, ap++;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_t_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_t_is_imm_t.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_add_big() {
+        let instructions = casm! {
+            call rel 2;
+            [ap] = 134217725, ap++;
+            [ap] = 3, ap++;
+            // 134217725 + 3 = is 2^27.
+            [ap] = [fp] + [ap-1], ap++;
+            [ap] = [ap-1] + 1, ap++;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_f_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.add_opcode_is_small_f_is_imm_t.len(),
+            1
+        );
+    }
+
+    // TODO(Ohad): un-ignore.
+    #[ignore = "mul small opcode is not implemented yet"]
+    #[test]
+    fn test_mul_small() {
+        let instructions = casm! {
+            // 2^15-1 is the maximal factor value for a small mul.
+            [ap] =  32767, ap++;
+            // 2^15-1 is the maximal factor value for a small mul.
+            [ap] = 32767, ap++;
+            [ap] = [ap-1] * [ap-2], ap++;
+            [ap] = [ap-1]*7, ap++;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_mul_big() {
+        let instructions = casm! {
+            [ap] =  8, ap++;
+            // 2^15 is the minimal factor value for a big mul.
+            [ap] = 32768, ap++;
+            [ap] = [ap-1] * [ap-2], ap++;
+            [ap] = [ap-1]* 2, ap++;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_f_is_imm_f.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t.len(),
+            1
+        );
+    }
 }

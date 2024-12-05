@@ -207,10 +207,10 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 11955);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6895);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4251);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 6088);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 8996);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 
