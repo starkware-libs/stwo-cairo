@@ -563,7 +563,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
-            } if !dev_mode => {
+            } => {
                 let (dst_addr, op0_addr, op1_addr) = (
                     if dst_base_fp { fp } else { ap },
                     if op0_base_fp { fp } else { ap },
