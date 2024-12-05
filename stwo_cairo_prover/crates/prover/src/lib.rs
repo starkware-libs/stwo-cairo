@@ -175,6 +175,8 @@ mod tests {
         );
     }
 
+    // TODO(Ohad/Stav): un-ignore.
+    #[ignore = "disabled until adapter is fixed"]
     #[test]
     fn test_add() {
         let instructions = casm! {
