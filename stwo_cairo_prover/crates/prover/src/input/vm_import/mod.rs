@@ -155,7 +155,7 @@ pub mod tests {
         let input = large_cairo_input();
         let components = input.state_transitions.casm_states_by_opcode;
         // TODO (Ohad): delete the following line and remove comments after deleting dev_mod.
-        assert_eq!(components.generic_opcode.len(), 49472);
+        assert_eq!(components.generic_opcode.len(), 49470);
         // assert_eq!(components.generic_opcode.len(), 0);
         // assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_f.len(), 0);
         // assert_eq!(components.add_ap_opcode_is_imm_t_op1_base_fp_f.len(), 36895);
@@ -220,7 +220,7 @@ pub mod tests {
         let input = small_cairo_input();
         let components = input.state_transitions.casm_states_by_opcode;
         // TODO (Ohad): delete the following line and remove comments after deleting dev_mod.
-        assert_eq!(components.generic_opcode.len(), 462);
+        assert_eq!(components.generic_opcode.len(), 460);
         // assert_eq!(components.generic_opcode.len(), 0);
         // assert_eq!(components.add_ap_opcode_is_imm_f_op1_base_fp_f.len(), 0);
         // assert_eq!(components.add_ap_opcode_is_imm_t_op1_base_fp_f.len(), 2);
