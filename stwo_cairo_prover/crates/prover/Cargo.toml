@@ -3,6 +3,9 @@ name = "stwo_cairo_prover"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+parallel = ["rayon"]
+
 [dependencies]
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
@@ -17,6 +20,7 @@ thiserror.workspace = true
 tracing.workspace = true
 paste.workspace = true
 prover_types = { path = "../prover_types" }
+rayon = { version = "1.10.0", optional = true }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
