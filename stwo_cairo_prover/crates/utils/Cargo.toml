@@ -4,7 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+cairo-vm.workspace = true
+clap.workspace = true
 env_logger.workspace = true
 log.workspace = true
+stwo_cairo_prover.workspace = true
+thiserror.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
