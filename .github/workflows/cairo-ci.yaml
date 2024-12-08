@@ -38,14 +38,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          lfs: false
+          lfs: true
+      - name: Fetch all LFS files
+        run: git lfs fetch --all
+      - name: Pull LFS files
+        run: git lfs pull
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
           profile: minimal
           toolchain: nightly-2024-01-04
       - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2024-01-04 test --release
+      - run: cargo +nightly-2024-01-04 test --release --features "lfs"
 
   format:
     runs-on: ubuntu-latest
