@@ -21,3 +21,6 @@ prover_types = { path = "../prover_types" }
 [dev-dependencies]
 cairo-lang-casm.workspace = true
 rand.workspace = true
+
+[features]
+lfs = []
