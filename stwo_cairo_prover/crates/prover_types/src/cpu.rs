@@ -49,6 +49,9 @@ pub struct CasmState {
     pub fp: M31,
 }
 
+unsafe impl Send for CasmState {}
+unsafe impl Sync for CasmState {}
+
 impl CasmState {
     pub fn values(&self) -> [M31; 3] {
         [self.pc, self.ap, self.fp]
