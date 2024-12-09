@@ -28,6 +28,8 @@ struct Args {
     proof_path: PathBuf,
     #[structopt(long = "debug_lookup")]
     debug_lookup: bool,
+    #[structopt(long = "display_components")]
+    display_components: bool,
 }
 
 #[derive(Debug, Error)]
@@ -69,7 +71,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let casm_states_by_opcode_count = &vm_output.state_transitions.casm_states_by_opcode.counts();
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
 
-    let proof = prove_cairo(vm_output, args.debug_lookup)?;
+    let proof = prove_cairo(vm_output, args.debug_lookup, args.display_components)?;
 
     // TODO(yuval): This is just some serialization for the sake of serialization. Find the right
     // way to serialize the proof.

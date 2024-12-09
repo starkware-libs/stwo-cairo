@@ -27,6 +27,7 @@ const IS_FIRST_LOG_SIZES: [u32; 19] = [
 pub fn prove_cairo(
     input: CairoInput,
     track_relations: bool,
+    print_resources: bool,
 ) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
@@ -89,6 +90,9 @@ pub fn prove_cairo(
 
     // Component provers.
     let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
+    if print_resources {
+        println!("{}", component_builder);
+    }
     let components = component_builder.provers();
 
     // Prove stark.
@@ -183,14 +187,14 @@ mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo(test_input(), true).unwrap();
+        let cairo_proof = prove_cairo(test_input(), true, true).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 
     #[ignore]
     #[test]
     fn test_full_cairo_air() {
-        let cairo_proof = prove_cairo(small_cairo_input(), true).unwrap();
+        let cairo_proof = prove_cairo(small_cairo_input(), true, true).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 }
