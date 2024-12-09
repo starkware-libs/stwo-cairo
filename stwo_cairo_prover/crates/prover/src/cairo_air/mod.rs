@@ -1,9 +1,9 @@
 pub mod air;
-mod debug;
+mod debug_tools;
 pub mod opcodes_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
-use debug::track_cairo_relations;
+use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
@@ -24,9 +24,12 @@ const LOG_MAX_ROWS: u32 = 22;
 const IS_FIRST_LOG_SIZES: [u32; 19] = [
     22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
 ];
+
 pub fn prove_cairo(
     input: CairoInput,
+    // TODO(Ohad): wrap these flags in a struct.
     track_relations: bool,
+    display_components: bool,
 ) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let config = PcsConfig::default();
@@ -93,6 +96,10 @@ pub fn prove_cairo(
 
     // Prove stark.
     let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+
+    if display_components {
+        println!("{}", component_builder);
+    }
 
     Ok(CairoProof {
         claim,
@@ -183,14 +190,14 @@ mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo(test_input(), true).unwrap();
+        let cairo_proof = prove_cairo(test_input(), true, true).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 
     #[ignore]
     #[test]
     fn test_full_cairo_air() {
-        let cairo_proof = prove_cairo(small_cairo_input(), true).unwrap();
+        let cairo_proof = prove_cairo(small_cairo_input(), true, true).unwrap();
         verify_cairo(cairo_proof).unwrap();
     }
 }
