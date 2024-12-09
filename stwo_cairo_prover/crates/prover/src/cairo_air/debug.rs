@@ -3,7 +3,9 @@ use num_traits::One;
 use stwo_prover::constraint_framework::relation_tracker::{
     RelationTrackerComponent, RelationTrackerEntry,
 };
-use stwo_prover::constraint_framework::TraceLocationAllocator;
+use stwo_prover::constraint_framework::{
+    FrameworkComponent, FrameworkEval, TraceLocationAllocator,
+};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::CommitmentSchemeProver;
@@ -582,4 +584,21 @@ pub fn track_cairo_relations(
     });
 
     entries
+}
+
+pub(super) fn indent_component_display<E: FrameworkEval>(
+    component: &FrameworkComponent<E>,
+) -> String {
+    let component_display = &format!("\n{}", component);
+    component_display
+        .lines()
+        .map(|line| format!("\t{}", line))
+        .join("\n")
+}
+
+pub(super) fn display_components<E: FrameworkEval>(components: &[FrameworkComponent<E>]) -> String {
+    components
+        .iter()
+        .map(|component| indent_component_display(component))
+        .join("\n")
 }

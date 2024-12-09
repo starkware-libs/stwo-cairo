@@ -17,6 +17,7 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use tracing::{span, Level};
 
+use super::debug::indent_component_display;
 use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
@@ -546,5 +547,53 @@ impl CairoComponents {
             .into_iter()
             .map(|component| component as &dyn Component)
             .collect()
+    }
+}
+
+impl std::fmt::Display for CairoComponents {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "CairoComponents")?;
+        writeln!(f, "Opcodes: {}", self.opcodes)?;
+        writeln!(
+            f,
+            "VerifyInstruction: {}",
+            indent_component_display(&self.verify_instruction)
+        )?;
+        writeln!(
+            f,
+            "MemoryAddressToId: {}",
+            indent_component_display(&self.memory_address_to_id)
+        )?;
+        writeln!(
+            f,
+            "MemoryIdToValue: {}",
+            indent_component_display(&self.memory_id_to_value.0)
+        )?;
+        writeln!(
+            f,
+            "SmallMemoryIdToValue: {}",
+            indent_component_display(&self.memory_id_to_value.1)
+        )?;
+        writeln!(
+            f,
+            "RangeCheck19: {}",
+            indent_component_display(&self.range_check_19)
+        )?;
+        writeln!(
+            f,
+            "RangeCheck9_9: {}",
+            indent_component_display(&self.range_check9_9)
+        )?;
+        writeln!(
+            f,
+            "RangeCheck7_2_5: {}",
+            indent_component_display(&self.range_check7_2_5)
+        )?;
+        writeln!(
+            f,
+            "RangeCheck4_3: {}",
+            indent_component_display(&self.range_check4_3)
+        )?;
+        Ok(())
     }
 }
