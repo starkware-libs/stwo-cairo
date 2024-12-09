@@ -10,6 +10,7 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::air::CairoInteractionElements;
+use super::debug_tools::display_components;
 use crate::components::{
     add_ap_opcode_is_imm_f_op1_base_fp_f, add_ap_opcode_is_imm_f_op1_base_fp_t,
     add_ap_opcode_is_imm_t_op1_base_fp_f, add_opcode_is_small_f_is_imm_f,
@@ -2258,5 +2259,61 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec
+    }
+}
+
+impl std::fmt::Display for OpcodeComponents {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "add_f_f:")?;
+        writeln!(f, "{}", display_components(&self.add_f_f))?;
+        writeln!(f, "add_f_t:")?;
+        writeln!(f, "{}", display_components(&self.add_f_t))?;
+        writeln!(f, "add_t_f:")?;
+        writeln!(f, "{}", display_components(&self.add_t_f))?;
+        writeln!(f, "add_t_t:")?;
+        writeln!(f, "{}", display_components(&self.add_t_t))?;
+        writeln!(f, "add_ap_f_f:")?;
+        writeln!(f, "{}", display_components(&self.add_ap_f_f))?;
+        writeln!(f, "add_ap_f_t:")?;
+        writeln!(f, "{}", display_components(&self.add_ap_f_t))?;
+        writeln!(f, "add_ap_t_f:")?;
+        writeln!(f, "{}", display_components(&self.add_ap_t_f))?;
+        writeln!(f, "assert_eq_f_f:")?;
+        writeln!(f, "{}", display_components(&self.assert_eq_f_f))?;
+        writeln!(f, "assert_eq_f_t:")?;
+        writeln!(f, "{}", display_components(&self.assert_eq_f_t))?;
+        writeln!(f, "assert_eq_t_f:")?;
+        writeln!(f, "{}", display_components(&self.assert_eq_t_f))?;
+        writeln!(f, "call_f_f:")?;
+        writeln!(f, "{}", display_components(&self.call_f_f))?;
+        writeln!(f, "call_f_t:")?;
+        writeln!(f, "{}", display_components(&self.call_f_t))?;
+        writeln!(f, "call_t_f:")?;
+        writeln!(f, "{}", display_components(&self.call_t_f))?;
+        writeln!(f, "generic:")?;
+        writeln!(f, "{}", display_components(&self.generic))?;
+        writeln!(f, "jnz_f_f:")?;
+        writeln!(f, "{}", display_components(&self.jnz_f_f))?;
+        writeln!(f, "jnz_f_t:")?;
+        writeln!(f, "{}", display_components(&self.jnz_f_t))?;
+        writeln!(f, "jnz_t_f:")?;
+        writeln!(f, "{}", display_components(&self.jnz_t_f))?;
+        writeln!(f, "jnz_t_t:")?;
+        writeln!(f, "{}", display_components(&self.jnz_t_t))?;
+        writeln!(f, "jump_f_f_f:")?;
+        writeln!(f, "{}", display_components(&self.jump_f_f_f))?;
+        writeln!(f, "jump_f_f_t:")?;
+        writeln!(f, "{}", display_components(&self.jump_f_f_t))?;
+        writeln!(f, "jump_t_f_f:")?;
+        writeln!(f, "{}", display_components(&self.jump_t_f_f))?;
+        writeln!(f, "jump_t_t_f:")?;
+        writeln!(f, "{}", display_components(&self.jump_t_t_f))?;
+        writeln!(f, "mul_f_f:")?;
+        writeln!(f, "{}", display_components(&self.mul_f_f))?;
+        writeln!(f, "mul_f_t:")?;
+        writeln!(f, "{}", display_components(&self.mul_f_t))?;
+        writeln!(f, "ret:")?;
+        writeln!(f, "{}", display_components(&self.ret))?;
+        Ok(())
     }
 }
