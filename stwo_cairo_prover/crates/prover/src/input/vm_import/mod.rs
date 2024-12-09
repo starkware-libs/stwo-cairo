@@ -131,7 +131,7 @@ pub mod tests {
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/large_cairo_input");
+        d.push("test_data/test_read_from_large_files");
 
         import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
@@ -207,10 +207,10 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 8996);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 11146);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 18043);
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 
