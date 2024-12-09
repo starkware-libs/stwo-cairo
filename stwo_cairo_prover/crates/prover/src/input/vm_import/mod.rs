@@ -129,14 +129,13 @@ impl<R: Read> Iterator for MemEntryIter<'_, R> {
 
 #[cfg(test)]
 pub mod tests {
-
     use std::path::PathBuf;
 
     use super::*;
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/large_cairo_input");
+        d.push("test_data/test_read_from_large_files");
 
         import_from_vm_output(
             d.join("pub.json").as_path(),
@@ -145,13 +144,13 @@ pub mod tests {
         )
         .expect(
             "
-            Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
+            Failed to read test files. Checkout input/README.md.",
         )
     }
 
     pub fn small_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/small_cairo_input");
+        d.push("test_data/test_read_from_small_files");
         import_from_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
@@ -159,13 +158,14 @@ pub mod tests {
         )
         .expect(
             "
-            Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
+            Failed to read test files. Checkout input/README.md.",
         )
     }
 
-    // TODO (Stav): Once all the components are in, verify the proof to ensure the sort was correct.
-    #[ignore]
+    // TODO (Stav): Once all the components are in, verify the proof to ensure the adapter works
+    // correctly.
     #[test]
+    #[cfg(feature = "slow-tests")]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
         let components = input.state_transitions.casm_states_by_opcode;
@@ -230,7 +230,9 @@ pub mod tests {
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 
-    #[ignore]
+    // TODO (Stav): Once all the components are in, verify the proof to ensure the adapter works
+    // correctly.
+    #[cfg(feature = "slow-tests")]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();

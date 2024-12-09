@@ -5,6 +5,7 @@ edition = "2021"
 
 [features]
 parallel = ["rayon"]
+slow-tests = []
 
 [dependencies]
 air_structs_derive = { path = "../air_structs_derive" }
