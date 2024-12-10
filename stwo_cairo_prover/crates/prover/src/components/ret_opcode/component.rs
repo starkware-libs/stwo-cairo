@@ -94,9 +94,9 @@ impl FrameworkEval for Eval {
         let next_fp_limb_1_col9 = eval.next_trace_mask();
         let next_fp_limb_2_col10 = eval.next_trace_mask();
 
-        // decode_instruction_c94bba24192ecf68.
+        // DecodeInstruction_c94bba24192ecf68.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
             E::EF::one(),
             &[
@@ -119,20 +119,20 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 M31_1.clone(),
             ],
-        )]);
+        ));
 
-        // read_positive_num_bits_27.
+        // ReadPositive_num_bits_27.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_fp_col2.clone() - M31_1.clone()),
                 next_pc_id_col3.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -141,20 +141,20 @@ impl FrameworkEval for Eval {
                 next_pc_limb_1_col5.clone(),
                 next_pc_limb_2_col6.clone(),
             ],
-        )]);
+        ));
 
-        // read_positive_num_bits_27.
+        // ReadPositive_num_bits_27.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_fp_col2.clone() - M31_2.clone()),
                 next_fp_id_col7.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -163,9 +163,9 @@ impl FrameworkEval for Eval {
                 next_fp_limb_1_col9.clone(),
                 next_fp_limb_2_col10.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::one(),
             &[
@@ -173,9 +173,9 @@ impl FrameworkEval for Eval {
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             -E::EF::one(),
             &[
@@ -185,7 +185,7 @@ impl FrameworkEval for Eval {
                 ((next_fp_limb_0_col8.clone() + (next_fp_limb_1_col9.clone() * M31_512.clone()))
                     + (next_fp_limb_2_col10.clone() * M31_262144.clone())),
             ],
-        )]);
+        ));
 
         eval.finalize_logup();
         eval

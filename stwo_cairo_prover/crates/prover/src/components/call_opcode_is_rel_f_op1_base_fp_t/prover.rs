@@ -183,29 +183,29 @@ pub fn write_trace_simd(
 
     inputs.into_iter().enumerate().for_each(
         |(row_index, call_opcode_is_rel_f_op1_base_fp_t_input)| {
-            let input_tmp_1199 = call_opcode_is_rel_f_op1_base_fp_t_input;
-            let input_pc_col0 = input_tmp_1199.pc;
+            let input_tmp_d5fd_0 = call_opcode_is_rel_f_op1_base_fp_t_input;
+            let input_pc_col0 = input_tmp_d5fd_0.pc;
             trace[0].data[row_index] = input_pc_col0;
-            let input_ap_col1 = input_tmp_1199.ap;
+            let input_ap_col1 = input_tmp_d5fd_0.ap;
             trace[1].data[row_index] = input_ap_col1;
-            let input_fp_col2 = input_tmp_1199.fp;
+            let input_fp_col2 = input_tmp_d5fd_0.fp;
             trace[2].data[row_index] = input_fp_col2;
 
-            // decode_instruction_52374a4f35d83024.
+            // DecodeInstruction_52374a4f35d83024.
 
-            let memory_address_to_id_value_tmp_1204 =
+            let memoryaddresstoid_value_tmp_d5fd_1 =
                 memory_address_to_id_state.deduce_output(input_pc_col0);
-            let memory_id_to_big_value_tmp_1205 =
-                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1204);
-            let offset2_tmp_1206 =
-                ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1205.get_m31(3)))
+            let memoryidtobig_value_tmp_d5fd_2 =
+                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_d5fd_1);
+            let offset2_tmp_d5fd_3 =
+                ((((PackedUInt16::from_m31(memoryidtobig_value_tmp_d5fd_2.get_m31(3)))
                     >> (UInt16_5))
-                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1205.get_m31(4)))
+                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d5fd_2.get_m31(4)))
                         << (UInt16_4)))
-                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1205.get_m31(5)))
+                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_d5fd_2.get_m31(5)))
                         & (UInt16_7))
                         << (UInt16_13)));
-            let offset2_col3 = offset2_tmp_1206.as_m31();
+            let offset2_col3 = offset2_tmp_d5fd_3.as_m31();
             trace[3].data[row_index] = offset2_col3;
 
             sub_components_inputs.verify_instruction_inputs[0].extend(
@@ -242,22 +242,22 @@ pub fn write_trace_simd(
                 M31_0,
             ]);
 
-            // read_positive_num_bits_27.
+            // ReadPositive_num_bits_27.
 
-            let memory_address_to_id_value_tmp_1208 =
+            let memoryaddresstoid_value_tmp_d5fd_4 =
                 memory_address_to_id_state.deduce_output(input_ap_col1);
-            let memory_id_to_big_value_tmp_1209 =
-                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1208);
-            let stored_fp_id_col4 = memory_address_to_id_value_tmp_1208;
+            let memoryidtobig_value_tmp_d5fd_5 =
+                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_d5fd_4);
+            let stored_fp_id_col4 = memoryaddresstoid_value_tmp_d5fd_4;
             trace[4].data[row_index] = stored_fp_id_col4;
             sub_components_inputs.memory_address_to_id_inputs[0].extend(input_ap_col1.unpack());
 
             lookup_data.memoryaddresstoid[0].push([input_ap_col1, stored_fp_id_col4]);
-            let stored_fp_limb_0_col5 = memory_id_to_big_value_tmp_1209.get_m31(0);
+            let stored_fp_limb_0_col5 = memoryidtobig_value_tmp_d5fd_5.get_m31(0);
             trace[5].data[row_index] = stored_fp_limb_0_col5;
-            let stored_fp_limb_1_col6 = memory_id_to_big_value_tmp_1209.get_m31(1);
+            let stored_fp_limb_1_col6 = memoryidtobig_value_tmp_d5fd_5.get_m31(1);
             trace[6].data[row_index] = stored_fp_limb_1_col6;
-            let stored_fp_limb_2_col7 = memory_id_to_big_value_tmp_1209.get_m31(2);
+            let stored_fp_limb_2_col7 = memoryidtobig_value_tmp_d5fd_5.get_m31(2);
             trace[7].data[row_index] = stored_fp_limb_2_col7;
             sub_components_inputs.memory_id_to_big_inputs[0].extend(stored_fp_id_col4.unpack());
 
@@ -293,24 +293,24 @@ pub fn write_trace_simd(
                 M31_0,
             ]);
 
-            // read_positive_num_bits_27.
+            // ReadPositive_num_bits_27.
 
-            let memory_address_to_id_value_tmp_1210 =
+            let memoryaddresstoid_value_tmp_d5fd_6 =
                 memory_address_to_id_state.deduce_output(((input_ap_col1) + (M31_1)));
-            let memory_id_to_big_value_tmp_1211 =
-                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1210);
-            let stored_ret_pc_id_col8 = memory_address_to_id_value_tmp_1210;
+            let memoryidtobig_value_tmp_d5fd_7 =
+                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_d5fd_6);
+            let stored_ret_pc_id_col8 = memoryaddresstoid_value_tmp_d5fd_6;
             trace[8].data[row_index] = stored_ret_pc_id_col8;
             sub_components_inputs.memory_address_to_id_inputs[1]
                 .extend(((input_ap_col1) + (M31_1)).unpack());
 
             lookup_data.memoryaddresstoid[1]
                 .push([((input_ap_col1) + (M31_1)), stored_ret_pc_id_col8]);
-            let stored_ret_pc_limb_0_col9 = memory_id_to_big_value_tmp_1211.get_m31(0);
+            let stored_ret_pc_limb_0_col9 = memoryidtobig_value_tmp_d5fd_7.get_m31(0);
             trace[9].data[row_index] = stored_ret_pc_limb_0_col9;
-            let stored_ret_pc_limb_1_col10 = memory_id_to_big_value_tmp_1211.get_m31(1);
+            let stored_ret_pc_limb_1_col10 = memoryidtobig_value_tmp_d5fd_7.get_m31(1);
             trace[10].data[row_index] = stored_ret_pc_limb_1_col10;
-            let stored_ret_pc_limb_2_col11 = memory_id_to_big_value_tmp_1211.get_m31(2);
+            let stored_ret_pc_limb_2_col11 = memoryidtobig_value_tmp_d5fd_7.get_m31(2);
             trace[11].data[row_index] = stored_ret_pc_limb_2_col11;
             sub_components_inputs.memory_id_to_big_inputs[1].extend(stored_ret_pc_id_col8.unpack());
 
@@ -346,13 +346,13 @@ pub fn write_trace_simd(
                 M31_0,
             ]);
 
-            // read_positive_num_bits_27.
+            // ReadPositive_num_bits_27.
 
-            let memory_address_to_id_value_tmp_1212 = memory_address_to_id_state
+            let memoryaddresstoid_value_tmp_d5fd_8 = memory_address_to_id_state
                 .deduce_output(((input_fp_col2) + ((offset2_col3) - (M31_32768))));
-            let memory_id_to_big_value_tmp_1213 =
-                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1212);
-            let next_pc_id_col12 = memory_address_to_id_value_tmp_1212;
+            let memoryidtobig_value_tmp_d5fd_9 =
+                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_d5fd_8);
+            let next_pc_id_col12 = memoryaddresstoid_value_tmp_d5fd_8;
             trace[12].data[row_index] = next_pc_id_col12;
             sub_components_inputs.memory_address_to_id_inputs[2]
                 .extend(((input_fp_col2) + ((offset2_col3) - (M31_32768))).unpack());
@@ -361,11 +361,11 @@ pub fn write_trace_simd(
                 ((input_fp_col2) + ((offset2_col3) - (M31_32768))),
                 next_pc_id_col12,
             ]);
-            let next_pc_limb_0_col13 = memory_id_to_big_value_tmp_1213.get_m31(0);
+            let next_pc_limb_0_col13 = memoryidtobig_value_tmp_d5fd_9.get_m31(0);
             trace[13].data[row_index] = next_pc_limb_0_col13;
-            let next_pc_limb_1_col14 = memory_id_to_big_value_tmp_1213.get_m31(1);
+            let next_pc_limb_1_col14 = memoryidtobig_value_tmp_d5fd_9.get_m31(1);
             trace[14].data[row_index] = next_pc_limb_1_col14;
-            let next_pc_limb_2_col15 = memory_id_to_big_value_tmp_1213.get_m31(2);
+            let next_pc_limb_2_col15 = memoryidtobig_value_tmp_d5fd_9.get_m31(2);
             trace[15].data[row_index] = next_pc_limb_2_col15;
             sub_components_inputs.memory_id_to_big_inputs[2].extend(next_pc_id_col12.unpack());
 

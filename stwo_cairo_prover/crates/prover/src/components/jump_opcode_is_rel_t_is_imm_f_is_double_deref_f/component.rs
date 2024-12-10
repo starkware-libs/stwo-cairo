@@ -99,9 +99,9 @@ impl FrameworkEval for Eval {
         let next_pc_limb_1_col11 = eval.next_trace_mask();
         let next_pc_limb_2_col12 = eval.next_trace_mask();
 
-        // decode_instruction_2cd1887fb89e83e3.
+        // DecodeInstruction_2cd1887fb89e83e3.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
             E::EF::one(),
             &[
@@ -122,16 +122,16 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 ap_update_add_1_col6.clone(),
             ],
-        )]);
+        ));
 
         // Either flag op1_base_fp is on or flag op1_base_ap is on.
         eval.add_constraint(
             ((op1_base_fp_col4.clone() + op1_base_ap_col5.clone()) - M31_1.clone()),
         );
 
-        // read_small.
+        // ReadSmall.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
@@ -140,9 +140,9 @@ impl FrameworkEval for Eval {
                     + (offset2_col3.clone() - M31_32768.clone())),
                 next_pc_id_col7.clone(),
             ],
-        )]);
+        ));
 
-        // cond_decode_small_sign.
+        // CondDecodeSmallSign.
 
         // msb is a bit.
         eval.add_constraint((msb_col8.clone() * (msb_col8.clone() - M31_1.clone())));
@@ -155,7 +155,7 @@ impl FrameworkEval for Eval {
             ((M31_1.clone() * mid_limbs_set_col9.clone()) * (msb_col8.clone() - M31_1.clone())),
         );
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -189,9 +189,9 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 (msb_col8.clone() * M31_256.clone()),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::one(),
             &[
@@ -199,9 +199,9 @@ impl FrameworkEval for Eval {
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             -E::EF::one(),
             &[
@@ -214,7 +214,7 @@ impl FrameworkEval for Eval {
                 (input_ap_col1.clone() + ap_update_add_1_col6.clone()),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
         eval.finalize_logup();
         eval
