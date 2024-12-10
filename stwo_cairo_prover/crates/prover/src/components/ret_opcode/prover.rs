@@ -329,7 +329,8 @@ pub fn write_trace_simd(
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1664);
             let next_fp_id_col7 = memory_address_to_id_value_tmp_1664;
             (*trace.data[7].get()).data[row_index] = next_fp_id_col7;
-            (*sub_components_inputs.memory_address_to_id_inputs[1].get())[row_index * N_LANES..]
+            (*sub_components_inputs.memory_address_to_id_inputs[1].get())
+                [row_index * N_LANES..(row_index + 1) * N_LANES]
                 .copy_from_slice(&((input_fp_col2) - (M31_2)).unpack());
 
             (*lookup_data.memoryaddresstoid[1].get())[row_index] =
