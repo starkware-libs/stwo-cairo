@@ -30,7 +30,7 @@ jobs:
       - run: scarb fmt --check
       - run: scarb test
 
-  run-tests:
+     run-tests:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,14 +38,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          lfs: false
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
           profile: minimal
           toolchain: nightly-2024-01-04
       - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2024-01-04 test --release
+      - run: cargo +nightly-2024-01-04 test --release --features "lfs"
 
   format:
     runs-on: ubuntu-latest
