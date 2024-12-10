@@ -641,8 +641,13 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
     })
 }
 
+/// Tests instructions mapping.
+/// Every opcode is tested except:
+/// - `jmp rel [ap/fp + offset]`
+/// - `jmp abs [[ap/fp + offset1] + offset2]`
+// TODO(Stav): Find a way to check those without the casm macro.
 #[cfg(test)]
-mod tests {
+mod mappings_tests {
     use cairo_lang_casm::casm;
 
     use crate::input::plain::input_from_plain_casm;
@@ -680,12 +685,31 @@ mod tests {
     }
 
     #[test]
+    fn test_jmp_rel() {
+        let instructions = casm! {
+            jmp rel 2;
+            [ap] = [ap-1] + 3, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+                .len(),
+            1
+        );
+    }
+
+    #[test]
     fn test_add_ap() {
         let instructions = casm! {
             [ap] = 38, ap++;
             [ap] = 12, ap++;
             ap += [ap -2];
             ap += [fp + 1];
+            ap += 1;
             [ap] = 1, ap++;
         }
         .instructions;
@@ -700,7 +724,13 @@ mod tests {
         );
         assert_eq!(
             casm_states_by_opcode
-                .add_ap_opcode_is_imm_f_op_1_base_fp_f
+                .add_ap_opcode_is_imm_f_op_1_base_fp_t
+                .len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode
+                .add_ap_opcode_is_imm_t_op_1_base_fp_f
                 .len(),
             1
         );
@@ -751,7 +781,7 @@ mod tests {
     }
 
     #[test]
-    fn test_jnz_taken() {
+    fn test_jnz_not_taken_ap() {
         let instructions = casm! {
             [ap] = 0, ap++;
             jmp rel 2 if [ap-1] != 0;
@@ -770,7 +800,27 @@ mod tests {
     }
 
     #[test]
-    fn test_jnz_not_taken() {
+    fn test_jnz_not_taken_fp() {
+        let instructions = casm! {
+            call rel 2;
+            [ap] = 0, ap++;
+            jmp rel 2 if [fp] != 0;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .jnz_opcode_is_taken_f_dst_base_fp_t
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_jnz_taken_fp() {
         let instructions = casm! {
             call rel 2;
             jmp rel 2 if [fp-1] != 0;
@@ -783,6 +833,25 @@ mod tests {
         assert_eq!(
             casm_states_by_opcode
                 .jnz_opcode_is_taken_t_dst_base_fp_t
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_jnz_taken_ap() {
+        let instructions = casm! {
+            [ap] = 5, ap++;
+            jmp rel 2 if [ap-1] != 0;
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .jnz_opcode_is_taken_t_dst_base_fp_f
                 .len(),
             1
         );
@@ -827,6 +896,12 @@ mod tests {
         assert_eq!(
             casm_states_by_opcode.add_opcode_is_small_t_is_imm_f.len(),
             1
+        );
+        assert_eq!(
+            casm_states_by_opcode
+                .assert_eq_opcode_is_double_deref_f_is_imm_t
+                .len(),
+            2
         );
         assert_eq!(
             casm_states_by_opcode.add_opcode_is_small_t_is_imm_t.len(),
@@ -906,6 +981,61 @@ mod tests {
         );
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_generic() {
+        let instructions = casm! {
+        [ap]=1, ap++;
+        [ap]=2, ap++;
+        jmp rel [ap-2] if [ap-1] != 0;
+        [ap]=1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(casm_states_by_opcode.generic_opcode.len(), 1);
+    }
+
+    #[test]
+    fn test_ret() {
+        let instructions = casm! {
+        [ap] = 10, ap++;
+        call rel 4;
+        jmp rel 11;
+
+        jmp rel 4 if [fp-3] != 0;
+        jmp rel 6;
+        [ap] = [fp-3] + (-1), ap++;
+        call rel (-6);
+        ret;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(casm_states_by_opcode.ret_opcode.len(), 11);
+    }
+
+    #[test]
+    fn test_assert_eq_double_deref() {
+        let instructions = casm! {
+            call rel 2;
+            [ap] = 100, ap++;
+            [ap] = [[fp - 2] + 2], ap++;  // [fp - 2] is the old fp.
+            [ap] = 5;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(
+            casm_states_by_opcode
+                .assert_eq_opcode_is_double_deref_t_is_imm_f
+                .len(),
             1
         );
     }
