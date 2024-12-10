@@ -113,9 +113,9 @@ impl FrameworkEval for Eval {
         let op1_limb_1_col24 = eval.next_trace_mask();
         let op1_limb_2_col25 = eval.next_trace_mask();
 
-        // decode_instruction_9aed6a790187299c.
+        // DecodeInstruction_9aed6a790187299c.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
             E::EF::one(),
             &[
@@ -139,11 +139,11 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 M31_1.clone(),
             ],
-        )]);
+        ));
 
-        // read_small.
+        // ReadSmall.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
@@ -152,9 +152,9 @@ impl FrameworkEval for Eval {
                     + (offset0_col3.clone() - M31_32768.clone())),
                 dst_id_col8.clone(),
             ],
-        )]);
+        ));
 
-        // cond_decode_small_sign.
+        // CondDecodeSmallSign.
 
         // msb is a bit.
         eval.add_constraint((msb_col9.clone() * (msb_col9.clone() - M31_1.clone())));
@@ -167,7 +167,7 @@ impl FrameworkEval for Eval {
             ((M31_1.clone() * mid_limbs_set_col10.clone()) * (msb_col9.clone() - M31_1.clone())),
         );
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -201,11 +201,11 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 (msb_col9.clone() * M31_256.clone()),
             ],
-        )]);
+        ));
 
-        // read_small.
+        // ReadSmall.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
@@ -214,9 +214,9 @@ impl FrameworkEval for Eval {
                     + (offset1_col4.clone() - M31_32768.clone())),
                 op0_id_col14.clone(),
             ],
-        )]);
+        ));
 
-        // cond_decode_small_sign.
+        // CondDecodeSmallSign.
 
         // msb is a bit.
         eval.add_constraint((msb_col15.clone() * (msb_col15.clone() - M31_1.clone())));
@@ -229,7 +229,7 @@ impl FrameworkEval for Eval {
             ((M31_1.clone() * mid_limbs_set_col16.clone()) * (msb_col15.clone() - M31_1.clone())),
         );
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -263,20 +263,20 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 (msb_col15.clone() * M31_256.clone()),
             ],
-        )]);
+        ));
 
-        // read_small.
+        // ReadSmall.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_pc_col0.clone() + M31_1.clone()),
                 op1_id_col20.clone(),
             ],
-        )]);
+        ));
 
-        // cond_decode_small_sign.
+        // CondDecodeSmallSign.
 
         // msb is a bit.
         eval.add_constraint((msb_col21.clone() * (msb_col21.clone() - M31_1.clone())));
@@ -289,7 +289,7 @@ impl FrameworkEval for Eval {
             ((M31_1.clone() * mid_limbs_set_col22.clone()) * (msb_col21.clone() - M31_1.clone())),
         );
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -323,7 +323,7 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 (msb_col21.clone() * M31_256.clone()),
             ],
-        )]);
+        ));
 
         // dst equals op0 + op1.
         eval.add_constraint(
@@ -342,7 +342,7 @@ impl FrameworkEval for Eval {
                         - msb_col21.clone())
                         - (M31_134217728.clone() * mid_limbs_set_col22.clone())))),
         );
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::one(),
             &[
@@ -350,9 +350,9 @@ impl FrameworkEval for Eval {
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             -E::EF::one(),
             &[
@@ -360,7 +360,7 @@ impl FrameworkEval for Eval {
                 (input_ap_col1.clone() + ap_update_add_1_col7.clone()),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
         eval.finalize_logup();
         eval

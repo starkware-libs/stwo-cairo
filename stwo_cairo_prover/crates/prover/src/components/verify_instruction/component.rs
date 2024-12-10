@@ -137,7 +137,7 @@ impl FrameworkEval for Eval {
                 + (offset2_high_col26.clone() * M31_8192.clone()))
                 - input_col3.clone()),
         );
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.rangecheck_7_2_5_lookup_elements,
             E::EF::one(),
             &[
@@ -145,13 +145,13 @@ impl FrameworkEval for Eval {
                 offset1_low_col21.clone(),
                 offset1_high_col23.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.rangecheck_4_3_lookup_elements,
             E::EF::one(),
             &[offset2_low_col24.clone(), offset2_high_col26.clone()],
-        )]);
+        ));
 
         // encode_flags.
 
@@ -188,13 +188,13 @@ impl FrameworkEval for Eval {
 
         // mem_verify.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[input_col0.clone(), instruction_id_col27.clone()],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -221,9 +221,9 @@ impl FrameworkEval for Eval {
                     + (input_col17.clone() * M31_128.clone()))
                     + (input_col18.clone() * M31_256.clone())),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
             E::EF::from(-mult),
             &[
@@ -247,7 +247,7 @@ impl FrameworkEval for Eval {
                 input_col17.clone(),
                 input_col18.clone(),
             ],
-        )]);
+        ));
 
         eval.finalize_logup();
         eval

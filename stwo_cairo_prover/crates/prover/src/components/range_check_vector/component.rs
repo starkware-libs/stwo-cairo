@@ -75,9 +75,9 @@ macro_rules! range_check_eval{
                              eval.next_trace_mask()
                             );
                         let multiplicity = eval.next_trace_mask();
-                        eval.add_to_relation(&[RelationEntry::new(
+                        eval.add_to_relation(RelationEntry::new(
                             &self.lookup_elements, E::EF::from(-multiplicity), &rc_values
-                        )]);
+                        ));
 
                         eval.finalize_logup();
                         eval

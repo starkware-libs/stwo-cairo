@@ -99,9 +99,9 @@ impl FrameworkEval for Eval {
         let next_pc_limb_1_col14 = eval.next_trace_mask();
         let next_pc_limb_2_col15 = eval.next_trace_mask();
 
-        // decode_instruction_d06cc8770ddfafbc.
+        // DecodeInstruction_d06cc8770ddfafbc.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
             E::EF::one(),
             &[
@@ -123,17 +123,17 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 M31_1.clone(),
             ],
-        )]);
+        ));
 
-        // read_positive_num_bits_27.
+        // ReadPositive_num_bits_27.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[input_ap_col1.clone(), stored_fp_id_col4.clone()],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -142,7 +142,7 @@ impl FrameworkEval for Eval {
                 stored_fp_limb_1_col6.clone(),
                 stored_fp_limb_2_col7.clone(),
             ],
-        )]);
+        ));
 
         //[ap] = fp.
         eval.add_constraint(
@@ -151,18 +151,18 @@ impl FrameworkEval for Eval {
                 - input_fp_col2.clone()),
         );
 
-        // read_positive_num_bits_27.
+        // ReadPositive_num_bits_27.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_ap_col1.clone() + M31_1.clone()),
                 stored_ret_pc_id_col8.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -171,7 +171,7 @@ impl FrameworkEval for Eval {
                 stored_ret_pc_limb_1_col10.clone(),
                 stored_ret_pc_limb_2_col11.clone(),
             ],
-        )]);
+        ));
 
         //[ap+1] = return_pc.
         eval.add_constraint(
@@ -181,18 +181,18 @@ impl FrameworkEval for Eval {
                 - (input_pc_col0.clone() + M31_1.clone())),
         );
 
-        // read_positive_num_bits_27.
+        // ReadPositive_num_bits_27.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_ap_col1.clone() + (offset2_col3.clone() - M31_32768.clone())),
                 next_pc_id_col12.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -201,9 +201,9 @@ impl FrameworkEval for Eval {
                 next_pc_limb_1_col14.clone(),
                 next_pc_limb_2_col15.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::one(),
             &[
@@ -211,9 +211,9 @@ impl FrameworkEval for Eval {
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             -E::EF::one(),
             &[
@@ -222,7 +222,7 @@ impl FrameworkEval for Eval {
                 (input_ap_col1.clone() + M31_2.clone()),
                 (input_ap_col1.clone() + M31_2.clone()),
             ],
-        )]);
+        ));
 
         eval.finalize_logup();
         eval
