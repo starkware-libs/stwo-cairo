@@ -1666,6 +1666,7 @@ dependencies = [
  "paste",
  "prover_types",
  "rand",
+ "rayon",
  "serde",
  "sonic-rs",
  "stwo-prover",

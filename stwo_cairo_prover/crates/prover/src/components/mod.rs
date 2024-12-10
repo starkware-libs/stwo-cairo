@@ -1,5 +1,10 @@
+use std::array;
+use std::cell::UnsafeCell;
+
 use prover_types::simd::N_LANES;
+use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
+use stwo_prover::core::backend::Column;
 
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_f;
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_t;
@@ -46,4 +51,24 @@ pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
         .array_chunks::<N_LANES>()
         .map(|c| T::pack(*c))
         .collect()
+}
+
+// TODO(Ohad): move to another file.
+struct ThreadSafeTrace<const N: usize> {
+    data: [UnsafeCell<BaseColumn>; N],
+}
+
+unsafe impl<const N: usize> Send for ThreadSafeTrace<N> {}
+unsafe impl<const N: usize> Sync for ThreadSafeTrace<N> {}
+
+impl<const N: usize> ThreadSafeTrace<N> {
+    fn new(rows: usize) -> Self {
+        Self {
+            data: array::from_fn(|_| UnsafeCell::new(unsafe { BaseColumn::uninitialized(rows) })),
+        }
+    }
+
+    pub fn inner(self) -> [BaseColumn; N] {
+        self.data.map(|c| c.into_inner())
+    }
 }
