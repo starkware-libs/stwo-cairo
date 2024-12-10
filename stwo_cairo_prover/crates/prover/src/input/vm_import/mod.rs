@@ -210,10 +210,11 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 8996);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
+        // TODO(Ohad): update counts after adding mull small.
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 11146);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 18043);
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 
