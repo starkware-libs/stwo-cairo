@@ -186,73 +186,73 @@ pub fn write_trace_simd(
 
     inputs.into_iter().enumerate().for_each(
         |(row_index, assert_eq_opcode_is_double_deref_t_is_imm_f_input)| {
-            let input_tmp_1131 = assert_eq_opcode_is_double_deref_t_is_imm_f_input;
-            let input_pc_col0 = input_tmp_1131.pc;
+            let input_tmp_d488_0 = assert_eq_opcode_is_double_deref_t_is_imm_f_input;
+            let input_pc_col0 = input_tmp_d488_0.pc;
             trace[0].data[row_index] = input_pc_col0;
-            let input_ap_col1 = input_tmp_1131.ap;
+            let input_ap_col1 = input_tmp_d488_0.ap;
             trace[1].data[row_index] = input_ap_col1;
-            let input_fp_col2 = input_tmp_1131.fp;
+            let input_fp_col2 = input_tmp_d488_0.fp;
             trace[2].data[row_index] = input_fp_col2;
 
-            // decode_instruction_a2af169c0fec5c47.
+            // DecodeInstruction_a2af169c0fec5c47.
 
-            let memory_address_to_id_value_tmp_1141 =
+            let memoryaddresstoid_value_tmp_d488_1 =
                 memory_address_to_id_state.deduce_output(input_pc_col0);
-            let memory_id_to_big_value_tmp_1142 =
-                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1141);
-            let offset0_tmp_1143 =
-                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(0)))
-                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(1)))
+            let memoryidtobig_value_tmp_d488_2 =
+                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_d488_1);
+            let offset0_tmp_d488_3 =
+                ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(0)))
+                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(1)))
                         & (UInt16_127))
                         << (UInt16_9)));
-            let offset0_col3 = offset0_tmp_1143.as_m31();
+            let offset0_col3 = offset0_tmp_d488_3.as_m31();
             trace[3].data[row_index] = offset0_col3;
-            let offset1_tmp_1144 =
-                ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(1)))
+            let offset1_tmp_d488_4 =
+                ((((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(1)))
                     >> (UInt16_7))
-                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(2)))
+                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(2)))
                         << (UInt16_2)))
-                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(3)))
+                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(3)))
                         & (UInt16_31))
                         << (UInt16_11)));
-            let offset1_col4 = offset1_tmp_1144.as_m31();
+            let offset1_col4 = offset1_tmp_d488_4.as_m31();
             trace[4].data[row_index] = offset1_col4;
-            let offset2_tmp_1145 =
-                ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(3)))
+            let offset2_tmp_d488_5 =
+                ((((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(3)))
                     >> (UInt16_5))
-                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(4)))
+                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(4)))
                         << (UInt16_4)))
-                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(5)))
+                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(5)))
                         & (UInt16_7))
                         << (UInt16_13)));
-            let offset2_col5 = offset2_tmp_1145.as_m31();
+            let offset2_col5 = offset2_tmp_d488_5.as_m31();
             trace[5].data[row_index] = offset2_col5;
-            let dst_base_fp_tmp_1146 =
-                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(5)))
+            let dst_base_fp_tmp_d488_6 =
+                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_0))
                     & (UInt16_1));
-            let dst_base_fp_col6 = dst_base_fp_tmp_1146.as_m31();
+            let dst_base_fp_col6 = dst_base_fp_tmp_d488_6.as_m31();
             trace[6].data[row_index] = dst_base_fp_col6;
-            let op0_base_fp_tmp_1147 =
-                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(5)))
+            let op0_base_fp_tmp_d488_7 =
+                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_1))
                     & (UInt16_1));
-            let op0_base_fp_col7 = op0_base_fp_tmp_1147.as_m31();
+            let op0_base_fp_col7 = op0_base_fp_tmp_d488_7.as_m31();
             trace[7].data[row_index] = op0_base_fp_col7;
-            let ap_update_add_1_tmp_1148 =
-                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(5)))
+            let ap_update_add_1_tmp_d488_8 =
+                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_1142.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_d488_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_11))
                     & (UInt16_1));
-            let ap_update_add_1_col8 = ap_update_add_1_tmp_1148.as_m31();
+            let ap_update_add_1_col8 = ap_update_add_1_tmp_d488_8.as_m31();
             trace[8].data[row_index] = ap_update_add_1_col8;
 
             sub_components_inputs.verify_instruction_inputs[0].extend(
@@ -302,16 +302,16 @@ pub fn write_trace_simd(
                 M31_1,
             ]);
 
-            // read_positive_num_bits_27.
+            // ReadPositive_num_bits_27.
 
-            let memory_address_to_id_value_tmp_1152 = memory_address_to_id_state.deduce_output(
+            let memoryaddresstoid_value_tmp_d488_9 = memory_address_to_id_state.deduce_output(
                 ((((op0_base_fp_col7) * (input_fp_col2))
                     + (((M31_1) - (op0_base_fp_col7)) * (input_ap_col1)))
                     + ((offset1_col4) - (M31_32768))),
             );
-            let memory_id_to_big_value_tmp_1153 =
-                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_1152);
-            let mem1_base_id_col9 = memory_address_to_id_value_tmp_1152;
+            let memoryidtobig_value_tmp_d488_10 =
+                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_d488_9);
+            let mem1_base_id_col9 = memoryaddresstoid_value_tmp_d488_9;
             trace[9].data[row_index] = mem1_base_id_col9;
             sub_components_inputs.memory_address_to_id_inputs[0].extend(
                 ((((op0_base_fp_col7) * (input_fp_col2))
@@ -326,11 +326,11 @@ pub fn write_trace_simd(
                     + ((offset1_col4) - (M31_32768))),
                 mem1_base_id_col9,
             ]);
-            let mem1_base_limb_0_col10 = memory_id_to_big_value_tmp_1153.get_m31(0);
+            let mem1_base_limb_0_col10 = memoryidtobig_value_tmp_d488_10.get_m31(0);
             trace[10].data[row_index] = mem1_base_limb_0_col10;
-            let mem1_base_limb_1_col11 = memory_id_to_big_value_tmp_1153.get_m31(1);
+            let mem1_base_limb_1_col11 = memoryidtobig_value_tmp_d488_10.get_m31(1);
             trace[11].data[row_index] = mem1_base_limb_1_col11;
-            let mem1_base_limb_2_col12 = memory_id_to_big_value_tmp_1153.get_m31(2);
+            let mem1_base_limb_2_col12 = memoryidtobig_value_tmp_d488_10.get_m31(2);
             trace[12].data[row_index] = mem1_base_limb_2_col12;
             sub_components_inputs.memory_id_to_big_inputs[0].extend(mem1_base_id_col9.unpack());
 
@@ -366,14 +366,14 @@ pub fn write_trace_simd(
                 M31_0,
             ]);
 
-            // mem_verify_equal.
+            // MemVerifyEqual.
 
-            let memory_address_to_id_value_tmp_1154 = memory_address_to_id_state.deduce_output(
+            let memoryaddresstoid_value_tmp_d488_11 = memory_address_to_id_state.deduce_output(
                 ((((dst_base_fp_col6) * (input_fp_col2))
                     + (((M31_1) - (dst_base_fp_col6)) * (input_ap_col1)))
                     + ((offset0_col3) - (M31_32768))),
             );
-            let dst_id_col13 = memory_address_to_id_value_tmp_1154;
+            let dst_id_col13 = memoryaddresstoid_value_tmp_d488_11;
             trace[13].data[row_index] = dst_id_col13;
             sub_components_inputs.memory_address_to_id_inputs[1].extend(
                 ((((dst_base_fp_col6) * (input_fp_col2))

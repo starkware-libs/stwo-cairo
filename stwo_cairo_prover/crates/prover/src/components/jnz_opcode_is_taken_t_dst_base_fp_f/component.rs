@@ -129,9 +129,9 @@ impl FrameworkEval for Eval {
         let next_pc_limb_1_col40 = eval.next_trace_mask();
         let next_pc_limb_2_col41 = eval.next_trace_mask();
 
-        // decode_instruction_d2b4cd588a3e2a7b.
+        // DecodeInstruction_d2b4cd588a3e2a7b.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.verifyinstruction_lookup_elements,
             E::EF::one(),
             &[
@@ -152,20 +152,20 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 ap_update_add_1_col4.clone(),
             ],
-        )]);
+        ));
 
-        // read_positive_num_bits_252.
+        // ReadPositive_num_bits_252.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_ap_col1.clone() + (offset0_col3.clone() - M31_32768.clone())),
                 dst_id_col5.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -199,7 +199,7 @@ impl FrameworkEval for Eval {
                 dst_limb_26_col32.clone(),
                 dst_limb_27_col33.clone(),
             ],
-        )]);
+        ));
 
         // dst doesn't equal 0.
         eval.add_constraint(
@@ -235,14 +235,14 @@ impl FrameworkEval for Eval {
                 * res_col34.clone())
                 - M31_1.clone()),
         );
-        let diff_from_p_tmp_1249 = (dst_limb_0_col6.clone() - M31_1.clone());
-        let diff_from_p_tmp_1250 = (dst_limb_21_col27.clone() - M31_136.clone());
-        let diff_from_p_tmp_1251 = (dst_limb_27_col33.clone() - M31_256.clone());
+        let diff_from_p_tmp_490d_7 = (dst_limb_0_col6.clone() - M31_1.clone());
+        let diff_from_p_tmp_490d_8 = (dst_limb_21_col27.clone() - M31_136.clone());
+        let diff_from_p_tmp_490d_9 = (dst_limb_27_col33.clone() - M31_256.clone());
         // dst doesn't equal P.
         eval.add_constraint(
             ((((((((((((((((((((((((((((((M31_0.clone()
-                + (diff_from_p_tmp_1249.clone()
-                    * diff_from_p_tmp_1249.clone()))
+                + (diff_from_p_tmp_490d_7.clone()
+                    * diff_from_p_tmp_490d_7.clone()))
                 + dst_limb_1_col7.clone())
                 + dst_limb_2_col8.clone())
                 + dst_limb_3_col9.clone())
@@ -263,29 +263,29 @@ impl FrameworkEval for Eval {
                 + dst_limb_18_col24.clone())
                 + dst_limb_19_col25.clone())
                 + dst_limb_20_col26.clone())
-                + (diff_from_p_tmp_1250.clone() * diff_from_p_tmp_1250.clone()))
+                + (diff_from_p_tmp_490d_8.clone() * diff_from_p_tmp_490d_8.clone()))
                 + dst_limb_22_col28.clone())
                 + dst_limb_23_col29.clone())
                 + dst_limb_24_col30.clone())
                 + dst_limb_25_col31.clone())
                 + dst_limb_26_col32.clone())
-                + (diff_from_p_tmp_1251.clone() * diff_from_p_tmp_1251.clone()))
+                + (diff_from_p_tmp_490d_9.clone() * diff_from_p_tmp_490d_9.clone()))
                 * res_squares_col35.clone())
                 - M31_1.clone()),
         );
 
-        // read_small.
+        // ReadSmall.
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryaddresstoid_lookup_elements,
             E::EF::one(),
             &[
                 (input_pc_col0.clone() + M31_1.clone()),
                 next_pc_id_col36.clone(),
             ],
-        )]);
+        ));
 
-        // cond_decode_small_sign.
+        // CondDecodeSmallSign.
 
         // msb is a bit.
         eval.add_constraint((msb_col37.clone() * (msb_col37.clone() - M31_1.clone())));
@@ -298,7 +298,7 @@ impl FrameworkEval for Eval {
             ((M31_1.clone() * mid_limbs_set_col38.clone()) * (msb_col37.clone() - M31_1.clone())),
         );
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.memoryidtobig_lookup_elements,
             E::EF::one(),
             &[
@@ -332,9 +332,9 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 (msb_col37.clone() * M31_256.clone()),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::one(),
             &[
@@ -342,9 +342,9 @@ impl FrameworkEval for Eval {
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
-        eval.add_to_relation(&[RelationEntry::new(
+        eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             -E::EF::one(),
             &[
@@ -357,7 +357,7 @@ impl FrameworkEval for Eval {
                 (input_ap_col1.clone() + ap_update_add_1_col4.clone()),
                 input_fp_col2.clone(),
             ],
-        )]);
+        ));
 
         eval.finalize_logup();
         eval
