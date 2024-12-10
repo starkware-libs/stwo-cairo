@@ -70,13 +70,28 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
                 val: bytemuck::cast_slice(&v.to_bytes_le()).try_into().unwrap(),
             })
         });
+
+    // Create hash map of runner.vm.builtin_runners, builtin_dict
+    let segment_offsets = runner.vm.segments.relocate_segments().unwrap();
+    let builtin_dict = runner.get_builtin_segment_info_for_pie().unwrap();
+    println!("builtin_dict: {:?}\n\n", builtin_dict);
+    for (name, segment) in builtin_dict.clone().into_iter() {
+        let start_addr = segment_offsets[segment.index as usize];
+        let n_calls = segment.size;
+        println!(
+            "builtin segment: {:?} start_addr: {:?} n_calls: {:?}",
+            name, start_addr, n_calls
+        );
+    }
+    if !builtin_dict.is_empty() {
+        assert_eq!(1, 0);
+    }
     let trace = runner.relocated_trace.unwrap();
     let trace = trace.iter().map(|t| t.clone().into());
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
     let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode);
-
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
