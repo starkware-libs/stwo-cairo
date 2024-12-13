@@ -1,6 +1,8 @@
 use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
+use starknet_ff::FieldElement;
+use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
@@ -143,7 +145,7 @@ impl FrameworkEval for SmallEval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Claim {
     pub big_log_size: u32,
     pub small_log_size: u32,
@@ -188,5 +190,16 @@ impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.big_claimed_sum]);
         channel.mix_felts(&[self.small_claimed_sum]);
+    }
+}
+
+impl CairoSerialize for InteractionClaim {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        let Self {
+            big_claimed_sum,
+            small_claimed_sum,
+        } = self;
+        CairoSerialize::serialize(big_claimed_sum, output);
+        CairoSerialize::serialize(small_claimed_sum, output);
     }
 }
