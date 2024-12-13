@@ -2,18 +2,19 @@ use itertools::{chain, Itertools};
 use num_traits::Zero;
 use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::logup::LogupSumsExt;
 use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::channel::Channel;
+use stwo_prover::core::backend::BackendForChannel;
+use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use stwo_prover::core::prover::StarkProof;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use tracing::{span, Level};
 
@@ -39,10 +40,26 @@ pub struct CairoProof<H: MerkleHasher> {
     pub stark_proof: StarkProof<H>,
 }
 
+impl<H: MerkleHasher> CairoSerialize for CairoProof<H>
+where
+    H::Hash: CairoSerialize,
+{
+    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+        let Self {
+            claim,
+            interaction_claim,
+            stark_proof,
+        } = self;
+        CairoSerialize::serialize(claim, output);
+        CairoSerialize::serialize(interaction_claim, output);
+        CairoSerialize::serialize(stark_proof, output);
+    }
+}
+
 // (Address, Id, Value)
 pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
@@ -85,7 +102,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -202,10 +219,13 @@ impl CairoClaimGenerator {
         }
     }
 
-    pub fn write_trace(
+    pub fn write_trace<MC: MerkleChannel>(
         mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-    ) -> (CairoClaim, CairoInteractionClaimGenerator) {
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+    ) -> (CairoClaim, CairoInteractionClaimGenerator)
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
@@ -282,11 +302,14 @@ pub struct CairoInteractionClaimGenerator {
     // ...
 }
 impl CairoInteractionClaimGenerator {
-    pub fn write_interaction_trace(
+    pub fn write_interaction_trace<MC: MerkleChannel>(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         interaction_elements: &CairoInteractionElements,
-    ) -> CairoInteractionClaim {
+    ) -> CairoInteractionClaim
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         let opcodes_interaction_claims = self
             .opcodes_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
@@ -362,7 +385,7 @@ impl CairoInteractionElements {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,
