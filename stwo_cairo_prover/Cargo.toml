@@ -2,6 +2,8 @@
 members = [
     "crates/adapted_prover",
     "crates/prover",
+    "crates/cairo-serialize",
+    "crates/cairo-serialize-derive",
     "crates/utils",
     "crates/vm_runner",
     "crates/prover_types",
