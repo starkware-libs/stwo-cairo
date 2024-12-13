@@ -9,13 +9,15 @@ macro_rules! range_check_prover {
             use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
             use stwo_prover::constraint_framework::Relation;
             use stwo_prover::core::backend::simd::column::BaseColumn;
+            use stwo_prover::core::fields::m31::BaseField;
             use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
             use stwo_prover::core::backend::simd::SimdBackend;
+            use stwo_prover::core::backend::BackendForChannel;
+            use stwo_prover::core::channel::MerkleChannel;
             use stwo_prover::core::fields::m31::M31;
             use stwo_prover::core::pcs::TreeBuilder;
             use stwo_prover::core::poly::BitReversedOrder;
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-            use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
             use $crate::components::range_check_vector::{generate_partitioned_enumeration,
                                             partition_into_bit_segments, SIMD_ENUMERATION_0};
@@ -77,10 +79,12 @@ macro_rules! range_check_prover {
                     })
                 }
 
-                pub fn write_trace(
+                pub fn write_trace<MC: MerkleChannel>(
                     self,
-                    tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-                ) -> (Claim, InteractionClaimGenerator) {
+                    tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+                ) -> (Claim, InteractionClaimGenerator)
+                where
+                SimdBackend: BackendForChannel<MC>, {
                     let log_size = self.log_size();
 
                     let fixed_columns = self.write_fixed_columns();
@@ -97,7 +101,7 @@ macro_rules! range_check_prover {
                     let domain = CanonicCoset::new(log_size).circle_domain();
                     let trace = chain!(fixed_columns, [multiplicity_column])
                         .map(|col|
-                            CircleEvaluation::<SimdBackend, _, BitReversedOrder>::new(domain, col)
+                            CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(domain, col)
                         );
 
                     tree_builder.extend_evals(trace);
@@ -120,11 +124,13 @@ macro_rules! range_check_prover {
                 pub multiplicities: Vec<PackedM31>,
             }
             impl InteractionClaimGenerator {
-                pub fn write_interaction_trace(
+                pub fn write_interaction_trace<MC: MerkleChannel>(
                     &self,
-                    tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+                    tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
                     lookup_elements: &relations::[<RangeCheck_$($log_range)_*>],
-                ) -> InteractionClaim {
+                ) -> InteractionClaim
+                where
+                SimdBackend: BackendForChannel<MC>, {
                     let log_size = RANGES.iter().sum::<u32>();
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
                     let mut col_gen = logup_gen.new_col();
@@ -174,6 +180,7 @@ mod tests {
     use stwo_prover::core::channel::Blake2sChannel;
     use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
     use crate::relations;
@@ -193,7 +200,10 @@ mod tests {
 
         let channel = &mut Blake2sChannel::default();
         let config = PcsConfig::default();
-        let commitment_scheme = &mut CommitmentSchemeProver::new(config, &twiddles);
+        let commitment_scheme =
+            &mut CommitmentSchemeProver::<SimdBackend, Blake2sMerkleChannel>::new(
+                config, &twiddles,
+            );
 
         // Preprocessed trace.
         let mut tree_builder = commitment_scheme.tree_builder();

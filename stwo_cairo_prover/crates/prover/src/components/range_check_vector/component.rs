@@ -3,6 +3,7 @@ macro_rules! range_check_eval{
     ($($log_range:expr),+) => {
         paste::paste! {
                 use serde::{Deserialize, Serialize};
+                use stwo_cairo_serialize::CairoSerialize;
                 use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
                 use stwo_prover::constraint_framework::FrameworkEval;
                 use stwo_prover::core::channel::Channel;
@@ -18,7 +19,7 @@ macro_rules! range_check_eval{
                 const RANGES : [u32; N_RANGES] = [$($log_range),+];
                 pub type Component = FrameworkComponent<[<Eval>]>;
 
-                #[derive(Clone, Deserialize, Serialize)]
+                #[derive(Clone, Deserialize, Serialize, CairoSerialize)]
                 pub struct Claim {
                     pub log_ranges: Vec<u32>,
                 }
@@ -42,7 +43,7 @@ macro_rules! range_check_eval{
                     }
                 }
 
-                #[derive(Clone, Copy, Serialize, Deserialize)]
+                #[derive(Clone, Copy, Serialize, Deserialize, CairoSerialize)]
                 pub struct InteractionClaim{
                     pub claimed_sum: QM31,
                 }

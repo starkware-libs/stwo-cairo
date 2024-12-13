@@ -4,13 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-stwo-prover.workspace = true
-starknet-ff.workspace = true
+bytemuck.workspace = true
+itertools.workspace = true
+num-traits.workspace = true
 ruint.workspace = true
 serde.workspace = true
-itertools.workspace = true
-bytemuck.workspace = true
-num-traits.workspace = true
+starknet-ff.workspace = true
+stwo_cairo_utils = { path = "../utils" }
+stwo-cairo-serialize = { path = "../cairo-serialize" }
+stwo-prover.workspace = true
 
 [dev-dependencies]
 rand.workspace = true

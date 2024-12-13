@@ -13,14 +13,17 @@ cairo-vm.workspace = true
 hex.workspace = true
 itertools.workspace = true
 num-traits.workspace = true
-serde.workspace = true
-sonic-rs.workspace = true
-stwo-prover.workspace = true
-thiserror.workspace = true
-tracing.workspace = true
 paste.workspace = true
 prover_types = { path = "../prover_types" }
 rayon = { version = "1.10.0", optional = true }
+serde.workspace = true
+sonic-rs.workspace = true
+starknet-ff.workspace = true
+stwo_cairo_utils = { path = "../utils" }
+stwo-cairo-serialize = { path = "../cairo-serialize" }
+stwo-prover.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true

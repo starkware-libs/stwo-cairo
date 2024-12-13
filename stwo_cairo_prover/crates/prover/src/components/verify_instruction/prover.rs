@@ -16,7 +16,8 @@ use stwo_prover::core::backend::simd::conversion::Unpack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{Col, Column};
+use stwo_prover::core::backend::{BackendForChannel, Col, Column};
+use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
@@ -40,14 +41,17 @@ pub struct ClaimGenerator {
     pub inputs: BTreeMap<InputType, u32>,
 }
 impl ClaimGenerator {
-    pub fn write_trace(
+    pub fn write_trace<MC: MerkleChannel>(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
         range_check_4_3_state: &mut range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (Claim, InteractionClaimGenerator)
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         let (mut inputs, mut mults) = self.inputs.into_iter().unzip::<_, _, Vec<_>, Vec<_>>();
         let n_calls = inputs.len();
         assert_ne!(n_calls, 0);
@@ -406,15 +410,18 @@ pub struct InteractionClaimGenerator {
     pub lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace(
+    pub fn write_interaction_trace<MC: MerkleChannel>(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memoryaddresstoid_lookup_elements: &relations::MemoryAddressToId,
         memoryidtobig_lookup_elements: &relations::MemoryIdToBig,
         rangecheck_4_3_lookup_elements: &relations::RangeCheck_4_3,
         rangecheck_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
         verifyinstruction_lookup_elements: &relations::VerifyInstruction,
-    ) -> InteractionClaim {
+    ) -> InteractionClaim
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         let mut col_gen = logup_gen.new_col();
