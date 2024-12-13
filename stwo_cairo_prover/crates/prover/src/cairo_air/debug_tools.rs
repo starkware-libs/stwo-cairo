@@ -7,10 +7,11 @@ use stwo_prover::constraint_framework::{
     FrameworkComponent, FrameworkEval, TraceLocationAllocator,
 };
 use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::backend::BackendForChannel;
+use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::CommitmentSchemeProver;
 use stwo_prover::core::poly::circle::CanonicCoset;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::air::CairoClaim;
 use crate::components::{
@@ -32,10 +33,13 @@ use crate::components::{
 use crate::felt::split_f252;
 use crate::relations;
 
-pub fn track_cairo_relations(
-    commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, Blake2sMerkleChannel>,
+pub fn track_cairo_relations<MC: MerkleChannel>(
+    commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
     claim: &CairoClaim,
-) -> Vec<RelationTrackerEntry> {
+) -> Vec<RelationTrackerEntry>
+where
+    SimdBackend: BackendForChannel<MC>,
+{
     // Cairo air aggregates interpolated polynomials. Evaluate to get the original trace.
     // NOTE: this process is slow, and should be only used for debugging.
     let evals = commitment_scheme.trace().polys.map(|interaction_tree| {

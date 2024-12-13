@@ -8,7 +8,7 @@ use stwo_cairo_prover::input::vm_import::{import_from_vm_output, VmImportError};
 use stwo_cairo_prover::input::CairoInput;
 use stwo_cairo_utils::logging_utils::init_logging;
 use stwo_prover::core::prover::ProvingError;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -71,7 +71,8 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let casm_states_by_opcode_count = &vm_output.state_transitions.casm_states_by_opcode.counts();
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
 
-    let proof = prove_cairo(vm_output, args.debug_lookup, args.display_components)?;
+    let proof =
+        prove_cairo::<Blake2sMerkleChannel>(vm_output, args.debug_lookup, args.display_components)?;
 
     // TODO(yuval): This is just some serialization for the sake of serialization. Find the right
     // way to serialize the proof.

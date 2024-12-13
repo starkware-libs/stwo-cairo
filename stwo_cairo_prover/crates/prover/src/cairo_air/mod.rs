@@ -8,12 +8,13 @@ use num_traits::Zero;
 use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::channel::Blake2sChannel;
+use stwo_prover::core::backend::BackendForChannel;
+use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::qm31::SecureField;
+use stwo_prover::core::fri::FriConfig;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
-use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -25,14 +26,25 @@ const IS_FIRST_LOG_SIZES: [u32; 19] = [
     22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
 ];
 
-pub fn prove_cairo(
+pub fn prove_cairo<MC: MerkleChannel>(
     input: CairoInput,
     // TODO(Ohad): wrap these flags in a struct.
     track_relations: bool,
     display_components: bool,
-) -> Result<CairoProof<Blake2sMerkleHasher>, ProvingError> {
+) -> Result<CairoProof<MC::H>, ProvingError>
+where
+    SimdBackend: BackendForChannel<MC>,
+{
     let _span = span!(Level::INFO, "prove_cairo").entered();
-    let config = PcsConfig::default();
+    // let config = PcsConfig::default();
+    let config = PcsConfig {
+        pow_bits: 0,
+        fri_config: FriConfig {
+            log_last_layer_degree_bound: 2,
+            log_blowup_factor: 1,
+            n_queries: 15,
+        },
+    };
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
             .circle_domain()
@@ -40,8 +52,8 @@ pub fn prove_cairo(
     );
 
     // Setup protocol.
-    let channel = &mut Blake2sChannel::default();
-    let mut commitment_scheme = CommitmentSchemeProver::new(config, &twiddles);
+    let channel = &mut MC::C::default();
+    let mut commitment_scheme = CommitmentSchemeProver::<SimdBackend, MC>::new(config, &twiddles);
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
@@ -108,18 +120,25 @@ pub fn prove_cairo(
     })
 }
 
-pub fn verify_cairo(
+pub fn verify_cairo<MC: MerkleChannel>(
     CairoProof {
         claim,
         interaction_claim,
         stark_proof,
-    }: CairoProof<Blake2sMerkleHasher>,
+    }: CairoProof<MC::H>,
 ) -> Result<(), CairoVerificationError> {
     // Verify.
-    let config = PcsConfig::default();
-    let channel = &mut Blake2sChannel::default();
-    let commitment_scheme_verifier =
-        &mut CommitmentSchemeVerifier::<Blake2sMerkleChannel>::new(config);
+    // let config = PcsConfig::default();
+    let config = PcsConfig {
+        pow_bits: 0,
+        fri_config: FriConfig {
+            log_last_layer_degree_bound: 2,
+            log_blowup_factor: 1,
+            n_queries: 15,
+        },
+    };
+    let channel = &mut MC::C::default();
+    let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(config);
 
     let log_sizes = claim.log_sizes();
 
@@ -158,7 +177,13 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write;
+
     use cairo_lang_casm::casm;
+    use itertools::Itertools;
+    use stwo_cairo_serialize::CairoSerialize;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+    use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
     use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
     use crate::input::plain::input_from_plain_casm;
@@ -190,14 +215,28 @@ mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo(test_input(), true, true).unwrap();
-        verify_cairo(cairo_proof).unwrap();
+        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(test_input(), true, true).unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+    }
+
+    #[ignore]
+    #[test]
+    fn generate_and_serialise_proof() {
+        let cairo_proof =
+            prove_cairo::<Poseidon252MerkleChannel>(test_input(), true, true).unwrap();
+        let mut output = Vec::new();
+        CairoSerialize::serialize(&cairo_proof, &mut output);
+        let proof_str = output.iter().map(|v| v.to_string()).join(",");
+        let mut file = std::fs::File::create("proof.cairo").unwrap();
+        file.write_all(proof_str.as_bytes()).unwrap();
+        verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
     }
 
     #[ignore]
     #[test]
     fn test_full_cairo_air() {
-        let cairo_proof = prove_cairo(small_cairo_input(), true, true).unwrap();
-        verify_cairo(cairo_proof).unwrap();
+        let cairo_proof =
+            prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), true, true).unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 }

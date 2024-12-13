@@ -8,9 +8,11 @@ stwo-prover.workspace = true
 starknet-ff.workspace = true
 ruint.workspace = true
 serde.workspace = true
+stwo_cairo_utils = { path = "../utils" }
 itertools.workspace = true
 bytemuck.workspace = true
 num-traits.workspace = true
+stwo-cairo-serialize = { path = "../cairo-serialize" }
 
 [dev-dependencies]
 rand.workspace = true

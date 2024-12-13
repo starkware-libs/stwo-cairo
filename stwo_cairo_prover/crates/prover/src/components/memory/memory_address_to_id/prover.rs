@@ -5,12 +5,12 @@ use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedSecureField;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{Col, Column};
+use stwo_prover::core::backend::{BackendForChannel, Col, Column};
+use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
 use super::component::{Claim, InteractionClaim, N_ADDR_TO_ID_COLUMNS};
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
@@ -68,10 +68,13 @@ impl ClaimGenerator {
         self.multiplicities[addr] += 1;
     }
 
-    pub fn write_trace(
+    pub fn write_trace<MC: MerkleChannel>(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
-    ) -> (Claim, InteractionClaimGenerator) {
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+    ) -> (Claim, InteractionClaimGenerator)
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         let size = self.ids.len();
         let mut trace = (0..N_ADDR_TO_ID_COLUMNS)
             .map(|_| Col::<SimdBackend, BaseField>::zeros(size))
@@ -115,7 +118,9 @@ impl ClaimGenerator {
         let domain = CanonicCoset::new(log_address_bound).circle_domain();
         let trace = trace
             .into_iter()
-            .map(|eval| CircleEvaluation::<SimdBackend, _, BitReversedOrder>::new(domain, eval))
+            .map(|eval| {
+                CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(domain, eval)
+            })
             .collect_vec();
         tree_builder.extend_evals(trace);
 
@@ -146,11 +151,14 @@ impl InteractionClaimGenerator {
         }
     }
 
-    pub fn write_interaction_trace(
+    pub fn write_interaction_trace<MC: MerkleChannel>(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, Blake2sMerkleChannel>,
+        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         lookup_elements: &relations::MemoryAddressToId,
-    ) -> InteractionClaim {
+    ) -> InteractionClaim
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         let log_size = self.addresses.len().ilog2() + LOG_N_LANES;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
