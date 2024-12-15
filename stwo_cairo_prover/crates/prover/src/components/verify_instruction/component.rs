@@ -30,8 +30,10 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
+        const N_LOOKUPS: usize = 5;
         let trace_log_sizes = vec![self.log_size; 29];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 5];
+        let interaction_log_sizes =
+            vec![self.log_size; SECURE_EXTENSION_DEGREE * N_LOOKUPS.div_ceil(2)];
         let preprocessed_log_sizes = vec![self.log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -249,7 +251,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        eval.finalize_logup();
+        eval.finalize_logup_in_pairs();
         eval
     }
 }
