@@ -178,7 +178,8 @@ pub fn fri_answers(
 
     let mut answers = array![];
     let mut log_size = M31_CIRCLE_LOG_ORDER;
-    assert_eq!(n_columns_per_tree.len(), 3);
+    let one_per_tree = [1, 1, 1].span();
+    assert_eq!(n_columns_per_tree.len(), one_per_tree.len());
     loop {
         let columns = match columns_per_log_size_rev.next() {
             Option::Some(columns) => columns,
@@ -186,7 +187,7 @@ pub fn fri_answers(
         };
         log_size -= 1;
 
-        let n_columns = tree_take_n(ref n_columns_per_tree, [1, 1, 1].span());
+        let n_columns = tree_take_n(ref n_columns_per_tree, one_per_tree);
 
         if columns.is_empty() {
             continue;
