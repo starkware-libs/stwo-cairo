@@ -425,34 +425,28 @@ impl InteractionClaimGenerator {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.rangecheck_7_2_5[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = rangecheck_7_2_5_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
+        for (i, (v0, v1)) in zip(
+            &self.lookup_data.rangecheck_7_2_5[0],
+            &self.lookup_data.rangecheck_4_3[0],
+        )
+        .enumerate()
+        {
+            let p0: PackedQM31 = rangecheck_7_2_5_lookup_elements.combine(v0);
+            let p1: PackedQM31 = rangecheck_4_3_lookup_elements.combine(v1);
+            col_gen.write_frac(i, p0 + p1, p0 * p1);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.rangecheck_4_3[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = rangecheck_4_3_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
+        for (i, (v0, v1)) in zip(
+            &self.lookup_data.memoryaddresstoid[0],
+            &self.lookup_data.memoryidtobig[0],
+        )
+        .enumerate()
+        {
+            let p0: PackedQM31 = memoryaddresstoid_lookup_elements.combine(v0);
+            let p1: PackedQM31 = memoryidtobig_lookup_elements.combine(v1);
+            col_gen.write_frac(i, p0 + p1, p0 * p1);
         }
         col_gen.finalize_col();
 
