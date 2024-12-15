@@ -477,7 +477,7 @@ pub fn track_cairo_relations(
         RelationTrackerComponent::new(
             tree_span_provider,
             memory_address_to_id::Eval {
-                log_n_rows: claim.memory_address_to_id.log_size,
+                log_size: claim.memory_address_to_id.log_size,
                 lookup_elements: relations::MemoryAddressToId::dummy(),
             },
             1 << claim.memory_address_to_id.log_size,
