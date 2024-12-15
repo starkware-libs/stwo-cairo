@@ -16,9 +16,10 @@ mod tests {
 
     #[test]
     fn test_memory_trace_prover() {
+        const N_ENTRIES: u64 = 10;
         let memory = MemoryBuilder::from_iter(
             MemConfig::default(),
-            (0..10).map(|i| MemEntry {
+            (0..N_ENTRIES).map(|i| MemEntry {
                 addr: i,
                 val: [i as u32; 8],
             }),
@@ -30,8 +31,8 @@ mod tests {
             .into_iter()
             .map(BaseField::from)
             .collect_vec();
-        let expected_addr_mult: [u32; 16] = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let expected_f252_mult: [u32; 16] = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let expected_addr_mult: [u32; N_ENTRIES as usize] = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0];
+        let expected_f252_mult: [u32; N_ENTRIES as usize] = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0];
 
         address_usages.iter().for_each(|addr| {
             let decoded_id = memory.address_to_id[addr.0 as usize].decode();
