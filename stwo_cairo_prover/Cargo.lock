@@ -1210,7 +1210,9 @@ dependencies = [
  "ruint",
  "serde",
  "starknet-ff",
+ "stwo-cairo-serialize",
  "stwo-prover",
+ "stwo_cairo_utils",
 ]
 
 [[package]]
@@ -1631,6 +1633,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
+name = "stwo-cairo-serialize"
+version = "0.1.0"
+dependencies = [
+ "starknet-ff",
+ "stwo-cairo-serialize-derive",
+ "stwo-prover",
+]
+
+[[package]]
+name = "stwo-cairo-serialize-derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.85",
+]
+
+[[package]]
 name = "stwo-prover"
 version = "0.1.1"
 source = "git+https://github.com/starkware-libs/stwo?rev=060f0e4#060f0e4e2b2d32bfad8eabc17ef66292d883e220"
@@ -1669,7 +1689,10 @@ dependencies = [
  "rayon",
  "serde",
  "sonic-rs",
+ "starknet-ff",
+ "stwo-cairo-serialize",
  "stwo-prover",
+ "stwo_cairo_utils",
  "thiserror",
  "tracing",
 ]

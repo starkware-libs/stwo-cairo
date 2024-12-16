@@ -1,4 +1,3 @@
-#![allow(clippy::too_many_arguments)]
 pub mod component;
 pub mod prover;
 
