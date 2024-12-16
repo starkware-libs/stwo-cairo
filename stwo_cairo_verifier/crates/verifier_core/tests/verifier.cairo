@@ -11,12 +11,13 @@ use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::verifier::{Air, verify};
 use stwo_verifier_core::{ColumnArray, TreeArray};
 
-mod proofs;
+mod fib_128_column_with_blowup_16_proof;
+mod fib_128_column_with_blowup_2_proof;
 
 #[test]
 #[available_gas(100000000000)]
 fn test_horizontal_fib_128_column_with_blowup_16() {
-    let proof = proofs::horizontal_fib_128_column_with_blowup_16::proof();
+    let proof = fib_128_column_with_blowup_16_proof::proof();
     let config = PcsConfig {
         pow_bits: 0,
         fri_config: FriConfig {
@@ -26,16 +27,16 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
 
     // Verify.
     let log_size = 20;
-    let air = HorizontalFibAir::<128> { log_size };
+    let air = FibAir::<128> { log_size };
     let mut channel = ChannelImpl::new(0);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
-    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], @array![], ref channel);
+    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], [].span(), ref channel);
     commitment_scheme
         .commit(
             *proof.commitment_scheme_proof.commitments[1],
-            @ArrayImpl::new_repeated(128, log_size),
+            ArrayImpl::new_repeated(128, log_size).span(),
             ref channel,
         );
 
@@ -47,7 +48,7 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
 #[test]
 #[available_gas(100000000000)]
 fn test_horizontal_fib_128_column_with_blowup_2() {
-    let proof = proofs::horizontal_fib_128_column_with_blowup_2::proof();
+    let proof = fib_128_column_with_blowup_2_proof::proof();
     let config = PcsConfig {
         pow_bits: 0,
         fri_config: FriConfig {
@@ -57,16 +58,16 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
 
     // Verify.
     let log_size = 20;
-    let air = HorizontalFibAir::<128> { log_size };
+    let air = FibAir::<128> { log_size };
     let mut channel = ChannelImpl::new(0);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
-    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], @array![], ref channel);
+    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], [].span(), ref channel);
     commitment_scheme
         .commit(
             *proof.commitment_scheme_proof.commitments[1],
-            @ArrayImpl::new_repeated(128, log_size),
+            ArrayImpl::new_repeated(128, log_size).span(),
             ref channel,
         );
 
@@ -76,23 +77,23 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
 }
 
 #[derive(Drop)]
-struct HorizontalFibAir<const N_COLUMNS: usize> {
-    log_size: u32,
+pub struct FibAir<const N_COLUMNS: usize> {
+    pub log_size: u32,
 }
 
-impl HorizontalFibAirImpl<const N_COLUMNS: usize> of Air<HorizontalFibAir<N_COLUMNS>> {
-    fn composition_log_degree_bound(self: @HorizontalFibAir<N_COLUMNS>) -> u32 {
+impl FibAirImpl<const N_COLUMNS: usize> of Air<FibAir<N_COLUMNS>> {
+    fn composition_log_degree_bound(self: @FibAir<N_COLUMNS>) -> u32 {
         *self.log_size + 1
     }
 
     fn mask_points(
-        self: @HorizontalFibAir<N_COLUMNS>, point: CirclePoint<QM31>,
+        self: @FibAir<N_COLUMNS>, point: CirclePoint<QM31>,
     ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>> {
         array![array![], ArrayImpl::new_repeated(N_COLUMNS, array![point])]
     }
 
     fn eval_composition_polynomial_at_point(
-        self: @HorizontalFibAir<N_COLUMNS>,
+        self: @FibAir<N_COLUMNS>,
         point: CirclePoint<QM31>,
         mask_values: @TreeArray<ColumnArray<Array<QM31>>>,
         random_coeff: QM31,
@@ -101,13 +102,13 @@ impl HorizontalFibAirImpl<const N_COLUMNS: usize> of Air<HorizontalFibAir<N_COLU
         let mut constraint_acc = QM31Zero::zero();
 
         for i in 2..N_COLUMNS {
-            let a_col: @Array<QM31> = base_trace_tree[i - 2];
-            let b_col: @Array<QM31> = base_trace_tree[i - 1];
-            let c_col: @Array<QM31> = base_trace_tree[i];
-            let a: QM31 = *a_col[0];
-            let b: QM31 = *b_col[0];
-            let c: QM31 = *c_col[0];
-            let constraint: QM31 = c - b * b - a * a;
+            let a_col = base_trace_tree[i - 2];
+            let b_col = base_trace_tree[i - 1];
+            let c_col = base_trace_tree[i];
+            let a = *a_col[0];
+            let b = *b_col[0];
+            let c = *c_col[0];
+            let constraint = c - b * b - a * a;
             constraint_acc = constraint_acc * random_coeff + constraint;
         };
 
