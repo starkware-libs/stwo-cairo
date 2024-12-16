@@ -74,13 +74,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
-        let CommitmentSchemeProof { commitments: _,
-        sampled_values,
-        decommitments,
-        queried_values,
-        proof_of_work_nonce,
-        fri_proof } =
-            proof;
+        let CommitmentSchemeProof {
+            commitments: _,
+            sampled_values,
+            decommitments,
+            queried_values,
+            proof_of_work_nonce,
+            fri_proof,
+        } = proof;
 
         let mut flattened_sampled_values = array![];
 
