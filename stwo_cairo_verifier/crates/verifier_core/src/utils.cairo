@@ -270,4 +270,3 @@ mod tests {
         assert_eq!(ArrayImpl::new_repeated(5, 3_usize), array![3, 3, 3, 3, 3]);
     }
 }
-
