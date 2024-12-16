@@ -1,15 +1,15 @@
-use stwo_cairo_verifier::channel::ChannelImpl;
-use stwo_cairo_verifier::circle::{
+use stwo_verifier_core::channel::ChannelImpl;
+use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_cairo_verifier::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
-use stwo_cairo_verifier::fri::FriConfig;
-use stwo_cairo_verifier::pcs::PcsConfig;
-use stwo_cairo_verifier::pcs::verifier::CommitmentSchemeVerifierImpl;
-use stwo_cairo_verifier::poly::circle::CanonicCosetImpl;
-use stwo_cairo_verifier::utils::ArrayImpl;
-use stwo_cairo_verifier::verifier::{Air, verify};
-use stwo_cairo_verifier::{ColumnArray, TreeArray};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
+use stwo_verifier_core::fri::FriConfig;
+use stwo_verifier_core::pcs::PcsConfig;
+use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
+use stwo_verifier_core::poly::circle::CanonicCosetImpl;
+use stwo_verifier_core::utils::ArrayImpl;
+use stwo_verifier_core::verifier::{Air, verify};
+use stwo_verifier_core::{ColumnArray, TreeArray};
 
 mod proofs;
 
