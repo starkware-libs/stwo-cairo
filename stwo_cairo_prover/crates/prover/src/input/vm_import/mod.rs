@@ -215,7 +215,6 @@ pub mod tests {
     }
 
     // When not ignored, the test passes only with dev_mod = false.
-    #[ignore]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
