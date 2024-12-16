@@ -1,7 +1,6 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
-use crate::poly::circle::{CircleDomain, CircleDomainImpl};
-use super::utils::{ArrayImpl, bit_reverse_index, pow2};
+use super::utils::{ArrayImpl, pow2};
 
 /// An ordered set of query positions.
 #[derive(Drop, Copy, Debug, PartialEq)]
@@ -57,14 +56,6 @@ pub impl QueriesImpl of QueriesImplTrait {
     }
 }
 
-/// Represents a circle domain relative to a larger circle domain. The `coset_index` is the bit
-/// reversed query index in the larger domain.
-#[derive(Drop, Debug, Copy)]
-pub struct SubCircleDomain {
-    pub coset_index: usize,
-    pub log_size: u32,
-}
-
 /// Returns a deduped list of folded query positions.
 ///
 /// # Panics
@@ -85,34 +76,6 @@ pub fn get_folded_query_positions(mut query_positions: Span<usize>, n_folds: u32
     };
 
     folded_positions.span()
-}
-
-#[generate_trait]
-pub impl SubCircleDomainImpl of SubCircleDomainTrait {
-    /// Calculates the decommitment positions needed for each query given the fri step size.
-    fn to_decommitment_positions(self: @SubCircleDomain) -> Array<usize> {
-        let sub_circle_size = pow2(*self.log_size);
-        let start = *self.coset_index * sub_circle_size;
-        let end = start + sub_circle_size;
-        let mut res = array![];
-        for i in start..end {
-            res.append(i);
-        };
-        res
-    }
-
-    /// Returns the represented [CircleDomain].
-    fn to_circle_domain(self: @SubCircleDomain, query_domain: CircleDomain) -> CircleDomain {
-        let index = *self.coset_index * pow2(*self.log_size);
-        let query = bit_reverse_index(index, query_domain.log_size());
-        let initial_index = query_domain.index_at(query);
-        let half_coset = CosetImpl::new(initial_index, *self.log_size - 1);
-        CircleDomainImpl::new(half_coset)
-    }
-
-    fn size(self: @SubCircleDomain) -> usize {
-        pow2(*self.log_size).into()
-    }
 }
 
 #[cfg(test)]

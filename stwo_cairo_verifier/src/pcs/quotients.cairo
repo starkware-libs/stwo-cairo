@@ -9,7 +9,6 @@ use crate::fields::cm31::{CM31, CM31Impl};
 use crate::fields::m31::{M31, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-use crate::queries::SubCircleDomainImpl;
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::verifier::VerificationError;
 use crate::{ColumnSpan, TreeArray, TreeSpan};
@@ -505,7 +504,6 @@ mod tests {
     use crate::fields::m31::m31;
     use crate::fields::qm31::{PackedUnreducedQM31Impl, qm31};
     use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-    use crate::queries::SubCircleDomainImpl;
     use crate::utils::DictImpl;
     use super::{
         ColumnSampleBatch, ColumnSampleBatchImpl, ComplexConjugateLineCoeffsImpl, PointSample,
