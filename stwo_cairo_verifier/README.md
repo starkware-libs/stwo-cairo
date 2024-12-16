@@ -26,9 +26,9 @@ Modify [`Scarb.toml`](./Scarb.toml) to use [Starknet Foundary](https://github.co
 
 ```diff
 [dev-dependencies]
-- cairo_test = "2.8.5"
+- cairo_test = "2.9.2"
 + snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.33.0" }
-+ assert_macros = "2.8.5"
++ assert_macros = "2.9.2"
 +
 + [scripts]
 + test = "snforge test --max-n-steps 100000000"

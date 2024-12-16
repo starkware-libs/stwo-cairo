@@ -54,10 +54,9 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn commit(
         ref channel: Channel, config: FriConfig, proof: FriProof, column_log_bounds: Span<u32>,
     ) -> Result<FriVerifier, FriVerificationError> {
-        let FriProof { first_layer: first_layer_proof,
-        inner_layers: mut inner_layer_proofs,
-        last_layer_poly } =
-            proof;
+        let FriProof {
+            first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
+        } = proof;
 
         channel.mix_digest(first_layer_proof.commitment);
 
