@@ -1,0 +1,16 @@
+[package]
+name = "stwo_verifier_core"
+version = "0.1.0"
+edition = "2024_07"
+
+[lib]
+casm = true
+
+[tool.fmt]
+sort-module-level-items = true
+
+[dependencies]
+bounded_int = { path = "../bounded_int" }
+
+[dev-dependencies]
+cairo_test = "2.9.2"
