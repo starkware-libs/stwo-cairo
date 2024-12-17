@@ -1,13 +1,15 @@
 use itertools::Itertools;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Data, DeriveInput, Fields, Path, Type};
+use syn::{parse_macro_input, Data, DataStruct, DeriveInput, Fields, Path, Type};
+
+// TODO(Ohad): consider moving this crate to 'Stwo'.
 
 #[proc_macro_derive(SubComponentInputs)]
 pub fn derive_sub_component_inputs(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
-    assert_is_struct(&input);
     let name = &input.ident;
+    let input = expect_struct(&input);
     let vec_array_fields = extract_vec_array_fields(&input);
 
     // TODO(Ohad): deprecate with_capacity.
@@ -26,40 +28,61 @@ pub fn derive_sub_component_inputs(input: proc_macro::TokenStream) -> proc_macro
     proc_macro::TokenStream::from(expanded)
 }
 
+#[proc_macro_derive(LookupData)]
+pub fn derive_lookup_data(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = &input.ident;
+    let input = expect_struct(&input);
+    let vec_array_fields = extract_vec_array_fields(&input);
+
+    // TODO(Ohad): deprecate with_capacity.
+    let with_capacity_method = generate_with_capacity_method(&vec_array_fields);
+    let uninitialized_method = generate_uninitialized_method(&vec_array_fields);
+
+    let expanded = quote! {
+        impl #name {
+            #with_capacity_method
+            #uninitialized_method
+        }
+    };
+
+    proc_macro::TokenStream::from(expanded)
+}
+
 #[derive(Clone)]
 struct VecArrayField {
     name: syn::Ident,
     array_length: usize,
 }
 
-fn assert_is_struct(input: &DeriveInput) {
-    if !matches!(input.data, Data::Struct(_)) {
-        panic!("Derive(SubComponentInputs) can only be applied to structs.");
+fn expect_struct(input: &DeriveInput) -> DataStruct {
+    if let Data::Struct(data_struct) = &input.data {
+        data_struct.clone()
+    } else {
+        panic!("Expected a struct");
     }
 }
 
-fn extract_vec_array_fields(input: &DeriveInput) -> Vec<VecArrayField> {
+fn extract_vec_array_fields(data_struct: &DataStruct) -> Vec<VecArrayField> {
     let mut vec_array_fields = Vec::new();
 
-    if let Data::Struct(data_struct) = &input.data {
-        if let Fields::Named(fields) = &data_struct.fields {
-            for field in &fields.named {
-                // Field is an array of Vecs.
-                if let Type::Array(type_array) = &field.ty {
-                    if let Type::Path(element_type) = &*type_array.elem {
-                        // Element is a Vec.
-                        if is_vec_type(&element_type.path) {
-                            // Get the array length
-                            if let syn::Expr::Lit(syn::ExprLit {
-                                lit: syn::Lit::Int(length_lit),
-                                ..
-                            }) = type_array.len.clone()
-                            {
-                                vec_array_fields.push(VecArrayField {
-                                    name: field.ident.clone().unwrap(),
-                                    array_length: length_lit.base10_parse().unwrap(),
-                                });
-                            }
+    if let Fields::Named(fields) = &data_struct.fields {
+        for field in &fields.named {
+            // Field is an array of Vecs.
+            if let Type::Array(type_array) = &field.ty {
+                if let Type::Path(element_type) = &*type_array.elem {
+                    // Element is a Vec.
+                    if is_vec_type(&element_type.path) {
+                        // Get the array length
+                        if let syn::Expr::Lit(syn::ExprLit {
+                            lit: syn::Lit::Int(length_lit),
+                            ..
+                        }) = type_array.len.clone()
+                        {
+                            vec_array_fields.push(VecArrayField {
+                                name: field.ident.clone().unwrap(),
+                                array_length: length_lit.base10_parse().unwrap(),
+                            });
                         }
                     }
                 }
