@@ -1,10 +1,10 @@
 use core::array::SpanTrait;
 use core::num::traits::{WrappingMul, WrappingSub};
-use core::poseidon::{hades_permutation, poseidon_hash_span};
+use core::poseidon::hades_permutation;
 use core::traits::DivRem;
 use crate::fields::m31::M31Trait;
 use crate::fields::qm31::QM31Trait;
-use crate::utils::pack4;
+use crate::utils::{pack4, poseidon_hash_span};
 use crate::{BaseField, SecureField};
 
 /// Equals `2^31`.
