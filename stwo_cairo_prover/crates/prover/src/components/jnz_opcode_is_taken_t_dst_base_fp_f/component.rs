@@ -236,9 +236,12 @@ impl FrameworkEval for Eval {
                 * res_col34.clone())
                 - M31_1.clone()),
         );
-        let diff_from_p_tmp_490d_7 = (dst_limb_0_col6.clone() - M31_1.clone());
-        let diff_from_p_tmp_490d_8 = (dst_limb_21_col27.clone() - M31_136.clone());
-        let diff_from_p_tmp_490d_9 = (dst_limb_27_col33.clone() - M31_256.clone());
+        let diff_from_p_tmp_490d_7 =
+            eval.add_intermediate((dst_limb_0_col6.clone() - M31_1.clone()));
+        let diff_from_p_tmp_490d_8 =
+            eval.add_intermediate((dst_limb_21_col27.clone() - M31_136.clone()));
+        let diff_from_p_tmp_490d_9 =
+            eval.add_intermediate((dst_limb_27_col33.clone() - M31_256.clone()));
         // dst doesn't equal P.
         eval.add_constraint(
             ((((((((((((((((((((((((((((((M31_0.clone()

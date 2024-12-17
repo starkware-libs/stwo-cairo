@@ -7,6 +7,7 @@ edition = "2021"
 parallel = ["rayon"]
 
 [dependencies]
+air_structs_derive = { path = "../air_structs_derive" }
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
 cairo-vm.workspace = true
