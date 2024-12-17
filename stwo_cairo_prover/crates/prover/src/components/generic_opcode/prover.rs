@@ -1,6 +1,6 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]#![allow(unused_parens)]
 #![allow(unused_imports)]
-use air_structs_derive::SubComponentInputs;
+use air_structs_derive::{SubComponentInputs, LookupData};
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -1256,15 +1256,9 @@ lookup_data.opcodes[1].push([((((((((pc_update_regular_tmp_5745_23) * (((input_p
     (trace, sub_components_inputs, lookup_data)
 }
 
+#[derive(LookupData)]
 pub struct LookupData
 {pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 3],pub memoryidtobig: [Vec<[PackedM31; 29]>; 3],pub opcodes: [Vec<[PackedM31; 3]>; 2],pub rangecheck_19: [Vec<[PackedM31; 1]>; 28],pub rangecheck_9_9: [Vec<[PackedM31; 2]>; 28],pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],}
-impl LookupData {
-    #[allow(unused_variables)]
-    fn with_capacity(capacity: usize) -> Self {
-        Self {memoryaddresstoid: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],memoryidtobig: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],opcodes: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),],rangecheck_19: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],rangecheck_9_9: [Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),Vec::with_capacity(capacity),],verifyinstruction: [Vec::with_capacity(capacity),],}
-
-    }
-}
 
 pub struct InteractionClaimGenerator {
     pub n_calls: usize,

@@ -26,6 +26,27 @@ pub fn derive_sub_component_inputs(input: proc_macro::TokenStream) -> proc_macro
     proc_macro::TokenStream::from(expanded)
 }
 
+#[proc_macro_derive(LookupData)]
+pub fn derive_lookup_data(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    assert_is_struct(&input);
+    let name = &input.ident;
+    let vec_array_fields = extract_vec_array_fields(&input);
+
+    // TODO(Ohad): deprecate with_capacity.
+    let with_capacity_method = generate_with_capacity_method(&vec_array_fields);
+    let uninitialized_method = generate_uninitialized_method(&vec_array_fields);
+
+    let expanded = quote! {
+        impl #name {
+            #with_capacity_method
+            #uninitialized_method
+        }
+    };
+
+    proc_macro::TokenStream::from(expanded)
+}
+
 #[derive(Clone)]
 struct VecArrayField {
     name: syn::Ident,
@@ -34,7 +55,7 @@ struct VecArrayField {
 
 fn assert_is_struct(input: &DeriveInput) {
     if !matches!(input.data, Data::Struct(_)) {
-        panic!("Derive(SubComponentInputs) can only be applied to structs.");
+        panic!("Derive(SubComponentInputs/LookupData) can only be applied to structs.");
     }
 }
 
