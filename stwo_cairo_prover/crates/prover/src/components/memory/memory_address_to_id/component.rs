@@ -77,7 +77,7 @@ impl FrameworkEval for Eval {
             ));
         }
 
-        eval.finalize_logup();
+        eval.finalize_logup_in_pairs();
         eval
     }
 }
@@ -90,7 +90,8 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let preprocessed_log_sizes = vec![self.log_size];
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * N_SPLIT_CHUNKS];
+        let interaction_log_sizes =
+            vec![self.log_size; SECURE_EXTENSION_DEGREE * N_SPLIT_CHUNKS.div_ceil(2)];
         TreeVec::new(vec![
             preprocessed_log_sizes,
             trace_log_sizes,
