@@ -358,245 +358,298 @@ impl FrameworkEval for Eval {
 
         // sub_p_bit is a bit.
         eval.add_constraint((sub_p_bit_col95.clone() * (sub_p_bit_col95.clone() - M31_1.clone())));
-        let carry_tmp_f0ae_15 = (((((op0_limb_0_col38.clone() + op1_limb_0_col67.clone())
-            + M31_0.clone())
-            - dst_limb_0_col9.clone())
-            - (M31_1.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_15 = eval.add_intermediate(
+            (((((op0_limb_0_col38.clone() + op1_limb_0_col67.clone()) + M31_0.clone())
+                - dst_limb_0_col9.clone())
+                - (M31_1.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_15.clone()
                 * ((carry_tmp_f0ae_15.clone() * carry_tmp_f0ae_15.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_16 = (((((op0_limb_1_col39.clone() + op1_limb_1_col68.clone())
-            + carry_tmp_f0ae_15.clone())
-            - dst_limb_1_col10.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_16 = eval.add_intermediate(
+            (((((op0_limb_1_col39.clone() + op1_limb_1_col68.clone())
+                + carry_tmp_f0ae_15.clone())
+                - dst_limb_1_col10.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_16.clone()
                 * ((carry_tmp_f0ae_16.clone() * carry_tmp_f0ae_16.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_17 = (((((op0_limb_2_col40.clone() + op1_limb_2_col69.clone())
-            + carry_tmp_f0ae_16.clone())
-            - dst_limb_2_col11.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_17 = eval.add_intermediate(
+            (((((op0_limb_2_col40.clone() + op1_limb_2_col69.clone())
+                + carry_tmp_f0ae_16.clone())
+                - dst_limb_2_col11.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_17.clone()
                 * ((carry_tmp_f0ae_17.clone() * carry_tmp_f0ae_17.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_18 = (((((op0_limb_3_col41.clone() + op1_limb_3_col70.clone())
-            + carry_tmp_f0ae_17.clone())
-            - dst_limb_3_col12.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_18 = eval.add_intermediate(
+            (((((op0_limb_3_col41.clone() + op1_limb_3_col70.clone())
+                + carry_tmp_f0ae_17.clone())
+                - dst_limb_3_col12.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_18.clone()
                 * ((carry_tmp_f0ae_18.clone() * carry_tmp_f0ae_18.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_19 = (((((op0_limb_4_col42.clone() + op1_limb_4_col71.clone())
-            + carry_tmp_f0ae_18.clone())
-            - dst_limb_4_col13.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_19 = eval.add_intermediate(
+            (((((op0_limb_4_col42.clone() + op1_limb_4_col71.clone())
+                + carry_tmp_f0ae_18.clone())
+                - dst_limb_4_col13.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_19.clone()
                 * ((carry_tmp_f0ae_19.clone() * carry_tmp_f0ae_19.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_20 = (((((op0_limb_5_col43.clone() + op1_limb_5_col72.clone())
-            + carry_tmp_f0ae_19.clone())
-            - dst_limb_5_col14.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_20 = eval.add_intermediate(
+            (((((op0_limb_5_col43.clone() + op1_limb_5_col72.clone())
+                + carry_tmp_f0ae_19.clone())
+                - dst_limb_5_col14.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_20.clone()
                 * ((carry_tmp_f0ae_20.clone() * carry_tmp_f0ae_20.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_21 = (((((op0_limb_6_col44.clone() + op1_limb_6_col73.clone())
-            + carry_tmp_f0ae_20.clone())
-            - dst_limb_6_col15.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_21 = eval.add_intermediate(
+            (((((op0_limb_6_col44.clone() + op1_limb_6_col73.clone())
+                + carry_tmp_f0ae_20.clone())
+                - dst_limb_6_col15.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_21.clone()
                 * ((carry_tmp_f0ae_21.clone() * carry_tmp_f0ae_21.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_22 = (((((op0_limb_7_col45.clone() + op1_limb_7_col74.clone())
-            + carry_tmp_f0ae_21.clone())
-            - dst_limb_7_col16.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_22 = eval.add_intermediate(
+            (((((op0_limb_7_col45.clone() + op1_limb_7_col74.clone())
+                + carry_tmp_f0ae_21.clone())
+                - dst_limb_7_col16.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_22.clone()
                 * ((carry_tmp_f0ae_22.clone() * carry_tmp_f0ae_22.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_23 = (((((op0_limb_8_col46.clone() + op1_limb_8_col75.clone())
-            + carry_tmp_f0ae_22.clone())
-            - dst_limb_8_col17.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_23 = eval.add_intermediate(
+            (((((op0_limb_8_col46.clone() + op1_limb_8_col75.clone())
+                + carry_tmp_f0ae_22.clone())
+                - dst_limb_8_col17.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_23.clone()
                 * ((carry_tmp_f0ae_23.clone() * carry_tmp_f0ae_23.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_24 = (((((op0_limb_9_col47.clone() + op1_limb_9_col76.clone())
-            + carry_tmp_f0ae_23.clone())
-            - dst_limb_9_col18.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_24 = eval.add_intermediate(
+            (((((op0_limb_9_col47.clone() + op1_limb_9_col76.clone())
+                + carry_tmp_f0ae_23.clone())
+                - dst_limb_9_col18.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_24.clone()
                 * ((carry_tmp_f0ae_24.clone() * carry_tmp_f0ae_24.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_25 = (((((op0_limb_10_col48.clone() + op1_limb_10_col77.clone())
-            + carry_tmp_f0ae_24.clone())
-            - dst_limb_10_col19.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_25 = eval.add_intermediate(
+            (((((op0_limb_10_col48.clone() + op1_limb_10_col77.clone())
+                + carry_tmp_f0ae_24.clone())
+                - dst_limb_10_col19.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_25.clone()
                 * ((carry_tmp_f0ae_25.clone() * carry_tmp_f0ae_25.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_26 = (((((op0_limb_11_col49.clone() + op1_limb_11_col78.clone())
-            + carry_tmp_f0ae_25.clone())
-            - dst_limb_11_col20.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_26 = eval.add_intermediate(
+            (((((op0_limb_11_col49.clone() + op1_limb_11_col78.clone())
+                + carry_tmp_f0ae_25.clone())
+                - dst_limb_11_col20.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_26.clone()
                 * ((carry_tmp_f0ae_26.clone() * carry_tmp_f0ae_26.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_27 = (((((op0_limb_12_col50.clone() + op1_limb_12_col79.clone())
-            + carry_tmp_f0ae_26.clone())
-            - dst_limb_12_col21.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_27 = eval.add_intermediate(
+            (((((op0_limb_12_col50.clone() + op1_limb_12_col79.clone())
+                + carry_tmp_f0ae_26.clone())
+                - dst_limb_12_col21.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_27.clone()
                 * ((carry_tmp_f0ae_27.clone() * carry_tmp_f0ae_27.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_28 = (((((op0_limb_13_col51.clone() + op1_limb_13_col80.clone())
-            + carry_tmp_f0ae_27.clone())
-            - dst_limb_13_col22.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_28 = eval.add_intermediate(
+            (((((op0_limb_13_col51.clone() + op1_limb_13_col80.clone())
+                + carry_tmp_f0ae_27.clone())
+                - dst_limb_13_col22.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_28.clone()
                 * ((carry_tmp_f0ae_28.clone() * carry_tmp_f0ae_28.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_29 = (((((op0_limb_14_col52.clone() + op1_limb_14_col81.clone())
-            + carry_tmp_f0ae_28.clone())
-            - dst_limb_14_col23.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_29 = eval.add_intermediate(
+            (((((op0_limb_14_col52.clone() + op1_limb_14_col81.clone())
+                + carry_tmp_f0ae_28.clone())
+                - dst_limb_14_col23.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_29.clone()
                 * ((carry_tmp_f0ae_29.clone() * carry_tmp_f0ae_29.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_30 = (((((op0_limb_15_col53.clone() + op1_limb_15_col82.clone())
-            + carry_tmp_f0ae_29.clone())
-            - dst_limb_15_col24.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_30 = eval.add_intermediate(
+            (((((op0_limb_15_col53.clone() + op1_limb_15_col82.clone())
+                + carry_tmp_f0ae_29.clone())
+                - dst_limb_15_col24.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_30.clone()
                 * ((carry_tmp_f0ae_30.clone() * carry_tmp_f0ae_30.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_31 = (((((op0_limb_16_col54.clone() + op1_limb_16_col83.clone())
-            + carry_tmp_f0ae_30.clone())
-            - dst_limb_16_col25.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_31 = eval.add_intermediate(
+            (((((op0_limb_16_col54.clone() + op1_limb_16_col83.clone())
+                + carry_tmp_f0ae_30.clone())
+                - dst_limb_16_col25.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_31.clone()
                 * ((carry_tmp_f0ae_31.clone() * carry_tmp_f0ae_31.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_32 = (((((op0_limb_17_col55.clone() + op1_limb_17_col84.clone())
-            + carry_tmp_f0ae_31.clone())
-            - dst_limb_17_col26.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_32 = eval.add_intermediate(
+            (((((op0_limb_17_col55.clone() + op1_limb_17_col84.clone())
+                + carry_tmp_f0ae_31.clone())
+                - dst_limb_17_col26.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_32.clone()
                 * ((carry_tmp_f0ae_32.clone() * carry_tmp_f0ae_32.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_33 = (((((op0_limb_18_col56.clone() + op1_limb_18_col85.clone())
-            + carry_tmp_f0ae_32.clone())
-            - dst_limb_18_col27.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_33 = eval.add_intermediate(
+            (((((op0_limb_18_col56.clone() + op1_limb_18_col85.clone())
+                + carry_tmp_f0ae_32.clone())
+                - dst_limb_18_col27.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_33.clone()
                 * ((carry_tmp_f0ae_33.clone() * carry_tmp_f0ae_33.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_34 = (((((op0_limb_19_col57.clone() + op1_limb_19_col86.clone())
-            + carry_tmp_f0ae_33.clone())
-            - dst_limb_19_col28.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_34 = eval.add_intermediate(
+            (((((op0_limb_19_col57.clone() + op1_limb_19_col86.clone())
+                + carry_tmp_f0ae_33.clone())
+                - dst_limb_19_col28.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_34.clone()
                 * ((carry_tmp_f0ae_34.clone() * carry_tmp_f0ae_34.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_35 = (((((op0_limb_20_col58.clone() + op1_limb_20_col87.clone())
-            + carry_tmp_f0ae_34.clone())
-            - dst_limb_20_col29.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_35 = eval.add_intermediate(
+            (((((op0_limb_20_col58.clone() + op1_limb_20_col87.clone())
+                + carry_tmp_f0ae_34.clone())
+                - dst_limb_20_col29.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_35.clone()
                 * ((carry_tmp_f0ae_35.clone() * carry_tmp_f0ae_35.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_36 = (((((op0_limb_21_col59.clone() + op1_limb_21_col88.clone())
-            + carry_tmp_f0ae_35.clone())
-            - dst_limb_21_col30.clone())
-            - (M31_136.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_36 = eval.add_intermediate(
+            (((((op0_limb_21_col59.clone() + op1_limb_21_col88.clone())
+                + carry_tmp_f0ae_35.clone())
+                - dst_limb_21_col30.clone())
+                - (M31_136.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_36.clone()
                 * ((carry_tmp_f0ae_36.clone() * carry_tmp_f0ae_36.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_37 = (((((op0_limb_22_col60.clone() + op1_limb_22_col89.clone())
-            + carry_tmp_f0ae_36.clone())
-            - dst_limb_22_col31.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_37 = eval.add_intermediate(
+            (((((op0_limb_22_col60.clone() + op1_limb_22_col89.clone())
+                + carry_tmp_f0ae_36.clone())
+                - dst_limb_22_col31.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_37.clone()
                 * ((carry_tmp_f0ae_37.clone() * carry_tmp_f0ae_37.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_38 = (((((op0_limb_23_col61.clone() + op1_limb_23_col90.clone())
-            + carry_tmp_f0ae_37.clone())
-            - dst_limb_23_col32.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_38 = eval.add_intermediate(
+            (((((op0_limb_23_col61.clone() + op1_limb_23_col90.clone())
+                + carry_tmp_f0ae_37.clone())
+                - dst_limb_23_col32.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_38.clone()
                 * ((carry_tmp_f0ae_38.clone() * carry_tmp_f0ae_38.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_39 = (((((op0_limb_24_col62.clone() + op1_limb_24_col91.clone())
-            + carry_tmp_f0ae_38.clone())
-            - dst_limb_24_col33.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_39 = eval.add_intermediate(
+            (((((op0_limb_24_col62.clone() + op1_limb_24_col91.clone())
+                + carry_tmp_f0ae_38.clone())
+                - dst_limb_24_col33.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_39.clone()
                 * ((carry_tmp_f0ae_39.clone() * carry_tmp_f0ae_39.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_40 = (((((op0_limb_25_col63.clone() + op1_limb_25_col92.clone())
-            + carry_tmp_f0ae_39.clone())
-            - dst_limb_25_col34.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_40 = eval.add_intermediate(
+            (((((op0_limb_25_col63.clone() + op1_limb_25_col92.clone())
+                + carry_tmp_f0ae_39.clone())
+                - dst_limb_25_col34.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_40.clone()
                 * ((carry_tmp_f0ae_40.clone() * carry_tmp_f0ae_40.clone()) - M31_1.clone())),
         );
-        let carry_tmp_f0ae_41 = (((((op0_limb_26_col64.clone() + op1_limb_26_col93.clone())
-            + carry_tmp_f0ae_40.clone())
-            - dst_limb_26_col35.clone())
-            - (M31_0.clone() * sub_p_bit_col95.clone()))
-            * M31_4194304.clone());
+        let carry_tmp_f0ae_41 = eval.add_intermediate(
+            (((((op0_limb_26_col64.clone() + op1_limb_26_col93.clone())
+                + carry_tmp_f0ae_40.clone())
+                - dst_limb_26_col35.clone())
+                - (M31_0.clone() * sub_p_bit_col95.clone()))
+                * M31_4194304.clone()),
+        );
         eval.add_constraint(
             (carry_tmp_f0ae_41.clone()
                 * ((carry_tmp_f0ae_41.clone() * carry_tmp_f0ae_41.clone()) - M31_1.clone())),
