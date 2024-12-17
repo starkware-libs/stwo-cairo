@@ -22,7 +22,7 @@ cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "3fb0344c", 
     "mod_builtin",
 ] }
 clap = { version = "4.3.10", features = ["derive"] }
-env_logger = "0.11.3"
+env_logger = { version = "0.11.5", default-features = false }
 hex = "0.4.3"
 itertools = "0.12.0"
 log = "0.4.21"
