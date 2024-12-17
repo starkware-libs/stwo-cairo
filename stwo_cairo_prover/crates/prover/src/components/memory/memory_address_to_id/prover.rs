@@ -5,6 +5,7 @@ use itertools::{izip, Itertools};
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Col, Column};
 use stwo_prover::core::channel::MerkleChannel;
@@ -155,16 +156,21 @@ impl InteractionClaimGenerator {
     {
         let packed_size = self.addresses.len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
+        let n_rows = 1 << log_size;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
-        for (i, (ids, multiplicities)) in izip!(&self.ids, &self.multiplicities).enumerate() {
+        for (i, ((ids0, mults0), (ids1, mults1))) in
+            izip!(&self.ids, &self.multiplicities).tuples().enumerate()
+        {
             let mut col_gen = logup_gen.new_col();
-            for (vec_row, (&addr, &id, &mult)) in
-                izip!(&self.addresses, ids, multiplicities).enumerate()
+            for (vec_row, (&addr, &id0, &id1, &mult0, &mult1)) in
+                izip!(&self.addresses, ids0, ids1, mults0, mults1).enumerate()
             {
-                let addr = addr + PackedM31::broadcast(M31((i * (1 << log_size)) as u32));
-                let denom = lookup_elements.combine(&[addr, id]);
-                col_gen.write_frac(vec_row, (-mult).into(), denom);
+                let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
+                let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
+                let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);
+                let p1: PackedQM31 = lookup_elements.combine(&[addr1, id1]);
+                col_gen.write_frac(vec_row, p0 * (-mult1) + p1 * (-mult0), p1 * p0);
             }
             col_gen.finalize_col();
         }
