@@ -1,4 +1,5 @@
 pub mod air;
+mod constraint_gen;
 mod debug_tools;
 pub mod opcodes_air;
 
