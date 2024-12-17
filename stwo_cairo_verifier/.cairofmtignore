@@ -1,1 +1,1 @@
-tests/verifier/proofs
+test/*_proof.cairo
