@@ -604,7 +604,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     fn new(
         subset_evals: Array<Array<QM31>>, subset_domain_initial_indexes: Span<usize>,
     ) -> SparseEvaluation {
-        assert_eq!(subset_evals.len(), subset_domain_initial_indexes.len());
+        assert!(subset_evals.len() == subset_domain_initial_indexes.len());
         SparseEvaluation { subset_evals, subset_domain_initial_indexes }
     }
 
