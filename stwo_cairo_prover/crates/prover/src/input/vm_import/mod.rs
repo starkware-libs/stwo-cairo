@@ -88,7 +88,7 @@ impl From<RelocatedTraceEntry> for TraceEntry {
 }
 
 pub struct TraceIter<'a, R: Read>(pub &'a mut R);
-impl<'a, R: Read> Iterator for TraceIter<'a, R> {
+impl<R: Read> Iterator for TraceIter<'_, R> {
     type Item = TraceEntry;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -110,7 +110,7 @@ pub struct MemEntry {
 }
 
 pub struct MemEntryIter<'a, R: Read>(pub &'a mut R);
-impl<'a, R: Read> Iterator for MemEntryIter<'a, R> {
+impl<R: Read> Iterator for MemEntryIter<'_, R> {
     type Item = MemEntry;
 
     fn next(&mut self) -> Option<Self::Item> {
