@@ -49,7 +49,7 @@ impl PackedUInt16 {
         // Safe because UInt16 is u16.
         unsafe {
             Self {
-                value: Simd::from_array(transmute(arr)),
+                value: Simd::from_array(transmute::<[UInt16; 16], [u16; 16]>(arr)),
             }
         }
     }
@@ -151,7 +151,7 @@ impl PackedUInt32 {
         // Safe because UInt32 is u32.
         unsafe {
             Self {
-                simd: Simd::from_array(transmute(arr)),
+                simd: Simd::from_array(transmute::<[UInt32; 16], [u32; 16]>(arr)),
             }
         }
     }
@@ -279,7 +279,7 @@ impl PackedUInt64 {
         // Safe because UInt64is u64.
         unsafe {
             Self {
-                value: Simd::from_array(transmute(arr)),
+                value: Simd::from_array(transmute::<[UInt64; 16], [u64; 16]>(arr)),
             }
         }
     }

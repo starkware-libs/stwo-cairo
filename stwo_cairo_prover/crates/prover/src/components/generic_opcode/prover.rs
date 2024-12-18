@@ -116,7 +116,6 @@ pub struct SubComponentInputs
 {pub memory_address_to_id_inputs: [Vec<memory_address_to_id::InputType>; 3],pub memory_id_to_big_inputs: [Vec<memory_id_to_big::InputType>; 3],pub range_check_19_inputs: [Vec<range_check_19::InputType>; 28],pub range_check_9_9_inputs: [Vec<range_check_9_9::InputType>; 28],pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],}
 
 #[allow(clippy::useless_conversion)]
-
 #[allow(unused_variables)]
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]

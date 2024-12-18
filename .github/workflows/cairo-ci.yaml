@@ -43,9 +43,9 @@ jobs:
         with:
           components: rustfmt
           profile: minimal
-          toolchain: nightly-2024-01-04
+          toolchain: nightly-2024-12-16
       - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2024-01-04 test --release
+      - run: cargo +nightly-2024-12-16 test --release
 
   format:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
-          toolchain: nightly-2024-01-04
+          toolchain: nightly-2024-12-16
       - uses: Swatinem/rust-cache@v2
       - run: scripts/rust_fmt.sh --check
 
@@ -71,6 +71,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: clippy
-          toolchain: nightly-2024-01-04
+          toolchain: nightly-2024-12-16
       - uses: Swatinem/rust-cache@v2
       - run: scripts/clippy.sh
