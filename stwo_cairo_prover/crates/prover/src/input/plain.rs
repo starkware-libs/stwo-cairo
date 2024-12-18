@@ -67,7 +67,7 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
         .filter_map(|(i, v)| {
             v.map(|v| MemEntry {
                 addr: i as u64,
-                val: bytemuck::cast_slice(&v.to_bytes_le()).try_into().unwrap(),
+                val: bytemuck::cast(v.to_bytes_le()),
             })
         });
     let trace = runner.relocated_trace.unwrap();
