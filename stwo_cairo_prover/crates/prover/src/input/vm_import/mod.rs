@@ -1,9 +1,11 @@
-mod json;
+pub mod json;
 
+use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
+use cairo_vm::air_public_input::MemorySegmentAddresses;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::{PrivateInput, PublicInput};
 use thiserror::Error;
@@ -13,7 +15,7 @@ use super::mem::MemConfig;
 use super::state_transitions::StateTransitions;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
-use crate::input::SegmentAddrs;
+use crate::input::BuiltinsSegments;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -25,11 +27,9 @@ pub enum VmImportError {
     NoMemorySegments,
 }
 
-pub fn import_from_vm_output(
-    pub_json: &Path,
-    priv_json: &Path,
-) -> Result<CairoInput, VmImportError> {
-    let _span = span!(Level::INFO, "import_from_vm_output").entered();
+// Adapts the VM's output files to the Cairo input of the prover.
+pub fn adapt_vm_output(pub_json: &Path, priv_json: &Path) -> Result<CairoInput, VmImportError> {
+    let _span = span!(Level::INFO, "adapt_vm_output").entered();
     let pub_data: PublicInput = sonic_rs::from_str(&std::fs::read_to_string(pub_json)?)?;
     let priv_data: PrivateInput = sonic_rs::from_str(&std::fs::read_to_string(priv_json)?)?;
 
@@ -40,30 +40,42 @@ pub fn import_from_vm_output(
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
     assert!(end_addr < (1 << 32));
-    let mem_config = MemConfig::default();
 
     let mem_path = priv_json.parent().unwrap().join(&priv_data.memory_path);
     let trace_path = priv_json.parent().unwrap().join(&priv_data.trace_path);
 
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
-    let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
-    let state_transitions = StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, true);
-
     let public_mem_addresses = pub_data
         .public_memory
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
+    adapter(
+        TraceIter(&mut trace_file),
+        MemoryBuilder::from_iter(MemConfig::default(), MemEntryIter(&mut mem_file)),
+        public_mem_addresses,
+        &pub_data.memory_segments,
+        true,
+    )
+}
 
+// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
+/// Creates Cairo input for Stwo, utilized by:
+/// - `adapt_vm_output` in the prover.
+/// - `adapt_finished_runner` in the validator.
+pub fn adapter(
+    trace_iter: impl Iterator<Item = TraceEntry>,
+    mut mem: MemoryBuilder,
+    public_mem_addresses: Vec<u32>,
+    memory_segments: &BTreeMap<String, MemorySegmentAddresses>,
+    dev_mode: bool,
+) -> Result<CairoInput, VmImportError> {
     Ok(CairoInput {
-        state_transitions,
+        state_transitions: StateTransitions::from_iter(trace_iter, &mut mem, dev_mode),
         mem: mem.build(),
         public_mem_addresses,
-        range_check_builtin: SegmentAddrs {
-            begin_addr: pub_data.memory_segments["range_check"].begin_addr as u32,
-            end_addr: pub_data.memory_segments["range_check"].stop_ptr as u32,
-        },
+        builtins_segments: BuiltinsSegments::from_memory_segments(memory_segments),
     })
 }
 
@@ -133,7 +145,7 @@ pub mod tests {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/large_cairo_input");
 
-        import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
             Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
         )
@@ -142,7 +154,7 @@ pub mod tests {
     pub fn small_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/small_cairo_input");
-        import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
             Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
         )
@@ -207,10 +219,11 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 8996);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
+        // TODO (Ohad): update the following counts after adding mul small.
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 11146);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 18043);
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 

@@ -1,29 +1,17 @@
 use std::collections::BTreeMap;
 
+use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicMemoryEntry};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PublicInput {
     pub layout: String,
     pub rc_min: u64,
     pub rc_max: u64,
     pub n_steps: u64,
-    pub memory_segments: BTreeMap<String, Segment>,
-    pub public_memory: Vec<PublicMemEntry>,
+    pub memory_segments: BTreeMap<String, MemorySegmentAddresses>,
+    pub public_memory: Vec<PublicMemoryEntry>,
     pub dynamic_params: Option<()>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Segment {
-    pub begin_addr: u64,
-    pub stop_ptr: u64,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct PublicMemEntry {
-    pub address: u64,
-    pub value: FeltValue,
-    pub page: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

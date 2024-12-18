@@ -4,7 +4,7 @@ use std::process::ExitCode;
 use clap::Parser;
 use stwo_cairo_prover::cairo_air::air::CairoProof;
 use stwo_cairo_prover::cairo_air::prove_cairo;
-use stwo_cairo_prover::input::vm_import::{import_from_vm_output, VmImportError};
+use stwo_cairo_prover::input::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::input::CairoInput;
 use stwo_cairo_utils::logging_utils::init_logging;
 use stwo_prover::core::prover::ProvingError;
@@ -65,8 +65,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    let vm_output: CairoInput =
-        import_from_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
+    let vm_output: CairoInput = adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
 
     let casm_states_by_opcode_count = &vm_output.state_transitions.casm_states_by_opcode.counts();
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
