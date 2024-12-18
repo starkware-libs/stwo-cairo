@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
@@ -6,10 +6,10 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
-use super::mem::{MemConfig, MemoryBuilder};
-use super::state_transitions::StateTransitions;
-use super::vm_import::MemEntry;
-use super::{CairoInput, SegmentAddrs};
+use super::vm_import::{adapter, MemEntry};
+use super::CairoInput;
+use crate::input::mem::{MemConfig, MemoryBuilder};
+use crate::input::vm_import::json::Segment;
 
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
 /// Translates a plain casm into a CairoInput by running the program and extracting the memory and
@@ -50,17 +50,17 @@ pub fn input_from_plain_casm(
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    input_from_finished_runner(runner, dev_mode)
+    adapt_finished_runner(runner, dev_mode)
 }
 
 // TODO(yuval): consider returning a result instead of panicking.
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Assumes memory and trace are already relocated. Otherwise panics.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
-pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
-    let program_len = runner.get_program().iter_data().count();
-    let mem = runner
+/// Translates a CairoRunner into a CairoInput by extracting the relevant input to the adapter.
+/// Assumes memory and trace are already relocated. Otherwise panics.
+pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
+    let mem_iter = runner
         .relocated_memory
         .iter()
         .enumerate()
@@ -70,22 +70,34 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
                 val: bytemuck::cast_slice(&v.to_bytes_le()).try_into().unwrap(),
             })
         });
-    let trace = runner.relocated_trace.unwrap();
-    let trace = trace.iter().map(|t| t.clone().into());
 
-    let mem_config = MemConfig::default();
-    let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode);
+    let trace = runner.relocated_trace.clone().unwrap();
+    let trace_iter = trace.iter().map(|t| t.clone().into());
 
-    // TODO(spapini): Add output builtin to public memory.
-    let public_mem_addresses = (0..(program_len as u32)).collect_vec();
-    CairoInput {
-        state_transitions,
-        mem: mem.build(),
+    let public_input = runner
+        .get_air_public_input()
+        .expect("Unable to get public input from the runner");
+    let public_mem_addresses = public_input
+        .public_memory
+        .into_iter()
+        .map(|s| s.address as u32)
+        .collect::<Vec<u32>>();
+
+    let memory_segments = public_input
+        .memory_segments
+        .into_iter()
+        .map(|(s, m)| (s.to_string(), Segment::from(m)))
+        .collect::<BTreeMap<String, Segment>>();
+
+    let cairo_input = adapter(
+        trace_iter,
+        MemoryBuilder::from_iter(MemConfig::default(), mem_iter),
         public_mem_addresses,
-        range_check_builtin: SegmentAddrs {
-            begin_addr: 24,
-            end_addr: 64,
-        },
+        &memory_segments,
+        dev_mode,
+    );
+    match cairo_input {
+        Ok(cairo_input) => cairo_input,
+        Err(e) => panic!("Error: {e}"),
     }
 }

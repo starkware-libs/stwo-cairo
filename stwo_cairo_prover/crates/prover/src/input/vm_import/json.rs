@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicMemoryEntry};
+use cairo_vm::Felt252;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -13,17 +15,36 @@ pub struct PublicInput {
     pub dynamic_params: Option<()>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct Segment {
     pub begin_addr: u64,
     pub stop_ptr: u64,
 }
 
+impl From<MemorySegmentAddresses> for Segment {
+    fn from(addr: MemorySegmentAddresses) -> Self {
+        Segment {
+            begin_addr: addr.begin_addr as u64,
+            stop_ptr: addr.stop_ptr as u64,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PublicMemEntry {
     pub address: u64,
-    pub value: FeltValue,
+    pub value: Option<Felt252>,
     pub page: u64,
+}
+
+impl From<PublicMemoryEntry> for PublicMemEntry {
+    fn from(entry: PublicMemoryEntry) -> Self {
+        PublicMemEntry {
+            address: entry.address as u64,
+            value: entry.value,
+            page: entry.page as u64,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
