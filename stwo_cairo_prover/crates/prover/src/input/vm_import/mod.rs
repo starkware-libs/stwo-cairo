@@ -14,7 +14,7 @@ use super::mem::MemConfig;
 use super::state_transitions::StateTransitions;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
-use crate::input::MemorySegmentAddresses;
+use crate::input::BuiltinSegments;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -61,14 +61,13 @@ pub fn import_from_vm_output(
         .map(|entry| entry.address as u32)
         .collect();
 
+    let builtins_segments = BuiltinSegments::from_memory_segments(&pub_data.memory_segments);
+
     Ok(CairoInput {
         state_transitions,
         mem: mem.build(),
         public_mem_addresses,
-        range_check_builtin: MemorySegmentAddresses {
-            begin_addr: pub_data.memory_segments["range_check"].begin_addr as usize,
-            stop_ptr: pub_data.memory_segments["range_check"].stop_ptr as usize,
-        },
+        builtins_segments,
     })
 }
 
@@ -168,6 +167,8 @@ pub mod tests {
     #[test]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
+
+        // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
         assert_eq!(components.generic_opcode.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
@@ -228,12 +229,33 @@ pub mod tests {
         assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
         assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
         assert_eq!(components.ret_opcode.len(), 49472);
+
+        // Test builtins.
+        let builtins_segments = input.builtins_segments;
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((1715768, 1757348).into())
+        );
+        assert_eq!(builtins_segments.pedersen, Some((1322552, 1337489).into()));
+        assert_eq!(builtins_segments.ecdsa, None);
+        assert_eq!(builtins_segments.keccak, None);
+        assert_eq!(builtins_segments.bitwise, None);
+        assert_eq!(builtins_segments.ec_op, Some((16428600, 16428747).into()));
+        assert_eq!(
+            builtins_segments.poseidon,
+            Some((16920120, 17444532).into())
+        );
+        assert_eq!(builtins_segments.range_check_bits_96, None);
+        assert_eq!(builtins_segments.add_mod, None);
+        assert_eq!(builtins_segments.mul_mod, None);
     }
 
     #[ignore]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
+
+        // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
         assert_eq!(components.generic_opcode.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
@@ -291,5 +313,24 @@ pub mod tests {
         assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 0);
         assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 0);
         assert_eq!(components.ret_opcode.len(), 462);
+
+        // Test builtins.
+        let builtins_segments = input.builtins_segments;
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((6000, 6050).into())
+        );
+        assert_eq!(builtins_segments.pedersen, Some((4464, 4614).into()));
+        assert_eq!(builtins_segments.ecdsa, Some((22384, 22484).into()));
+        assert_eq!(builtins_segments.keccak, Some((64368, 65168).into()));
+        assert_eq!(builtins_segments.bitwise, Some((22512, 22762).into()));
+        assert_eq!(builtins_segments.ec_op, Some((63472, 63822).into()));
+        assert_eq!(builtins_segments.poseidon, Some((65392, 65692).into()));
+        assert_eq!(
+            builtins_segments.range_check_bits_96,
+            Some((68464, 68514).into())
+        );
+        assert_eq!(builtins_segments.add_mod, None);
+        assert_eq!(builtins_segments.mul_mod, None);
     }
 }
