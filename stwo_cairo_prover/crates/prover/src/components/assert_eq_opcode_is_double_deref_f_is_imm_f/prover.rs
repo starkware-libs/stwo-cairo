@@ -1,6 +1,6 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
-use air_structs_derive::SubComponentInputs;
+use air_structs_derive::{LookupData, SubComponentInputs};
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -316,20 +316,11 @@ pub fn write_trace_simd(
     (trace, sub_components_inputs, lookup_data)
 }
 
+#[derive(LookupData)]
 pub struct LookupData {
     pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 2],
     pub opcodes: [Vec<[PackedM31; 3]>; 2],
     pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
-}
-impl LookupData {
-    #[allow(unused_variables)]
-    fn with_capacity(capacity: usize) -> Self {
-        Self {
-            memoryaddresstoid: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            opcodes: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            verifyinstruction: [Vec::with_capacity(capacity)],
-        }
-    }
 }
 
 pub struct InteractionClaimGenerator {
