@@ -9,8 +9,7 @@ use itertools::Itertools;
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::state_transitions::StateTransitions;
 use super::vm_import::MemoryEntry;
-use super::CairoInput;
-use crate::input::MemorySegmentAddresses;
+use super::{BuiltinSegments, CairoInput};
 
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
 /// Translates a plain casm into a CairoInput by running the program and extracting the memory and
@@ -72,6 +71,13 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
                 value: bytemuck::cast(v.to_bytes_le()),
             })
         });
+
+    let memory_segments = &runner
+        .get_air_public_input()
+        .expect("Unable to get public input from the runner")
+        .memory_segments;
+    let builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
+
     let trace = runner.relocated_trace.unwrap();
     let trace = trace.iter().map(|t| t.clone().into());
 
@@ -85,9 +91,6 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
         state_transitions,
         memory: memory.build(),
         public_memory_addresses,
-        range_check_builtin: MemorySegmentAddresses {
-            begin_addr: 24,
-            stop_ptr: 64,
-        },
+        builtins_segments,
     }
 }
