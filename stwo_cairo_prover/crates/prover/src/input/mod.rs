@@ -1,7 +1,8 @@
-use cairo_vm::air_public_input::MemorySegmentAddresses;
+use builtins_segments::BuiltinsSegments;
 use mem::Memory;
 use state_transitions::StateTransitions;
 
+pub mod builtins_segments;
 mod decode;
 pub mod mem;
 pub mod plain;
@@ -19,5 +20,5 @@ pub struct CairoInput {
     pub public_mem_addresses: Vec<u32>,
 
     // Builtins.
-    pub range_check_builtin: MemorySegmentAddresses,
+    pub builtins_segments: BuiltinsSegments,
 }
