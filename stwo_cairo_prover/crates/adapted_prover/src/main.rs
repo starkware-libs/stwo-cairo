@@ -65,8 +65,9 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
+    // dev_mode = true
     let vm_output: CairoInput =
-        import_from_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
+        import_from_vm_output(args.pub_json.as_path(), args.priv_json.as_path(), true)?;
 
     let casm_states_by_opcode_count = &vm_output.state_transitions.casm_states_by_opcode.counts();
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
