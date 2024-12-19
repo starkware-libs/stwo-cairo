@@ -1,3 +1,4 @@
+use num_traits::Zero;
 use prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
 
@@ -181,6 +182,7 @@ impl StateTransitions {
         iter: impl Iterator<Item = TraceEntry>,
         mem: &mut MemoryBuilder,
         dev_mode: bool,
+        filter_jrl0: bool,
     ) -> Self {
         let mut res = Self::default();
         let mut iter = iter.peekable();
@@ -189,7 +191,7 @@ impl StateTransitions {
             return res;
         };
         res.initial_state = first.into();
-        res.push_instr(mem, first.into(), dev_mode);
+        res.push_instr(mem, first.into(), dev_mode, filter_jrl0);
 
         while let Some(entry) = iter.next() {
             // TODO(Ohad): Check if the adapter outputs the final state.
@@ -197,14 +199,20 @@ impl StateTransitions {
                 res.final_state = entry.into();
                 break;
             };
-            res.push_instr(mem, entry.into(), dev_mode);
+            res.push_instr(mem, entry.into(), dev_mode, filter_jrl0);
         }
         res
     }
 
     // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
+    fn push_instr(
+        &mut self,
+        mem: &mut MemoryBuilder,
+        state: CasmState,
+        dev_mode: bool,
+        filter_jrl0: bool,
+    ) {
         let CasmState { ap, fp, pc } = state;
         let instruction = mem.get_inst(pc.0);
         let instruction = Instruction::decode(instruction);
@@ -305,9 +313,22 @@ impl StateTransitions {
                             && offset1 == -1
                             && offset2 == 1
                     );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-                        .push(state);
+                    if !filter_jrl0 {
+                        self.casm_states_by_opcode
+                            .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+                            .push(state);
+                    } else {
+                        let imm = mem.get(pc.0 + 1);
+                        match imm {
+                            MemoryValue::Small(val) if val.is_zero() => {
+                                // Skip transition.
+                            }
+                            _ => self
+                                .casm_states_by_opcode
+                                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+                                .push(state),
+                        }
+                    }
                 } else if pc_update_jump_rel {
                     // jump rel [ap/fp + offset2].
                     assert!(
@@ -655,7 +676,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -686,7 +707,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -711,7 +732,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -736,7 +757,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -755,7 +776,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -774,7 +795,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -794,7 +815,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
@@ -818,7 +839,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode.add_opcode_is_small_t_is_imm_f.len(),
@@ -843,7 +864,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode.add_opcode_is_small_f_is_imm_f.len(),
@@ -870,7 +891,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_t_is_imm_f.len(),
@@ -894,7 +915,7 @@ mod tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions, false, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_f_is_imm_f.len(),

@@ -210,7 +210,7 @@ mod tests {
         }
         .instructions;
 
-        input_from_plain_casm(instructions, true)
+        input_from_plain_casm(instructions, true, false)
     }
 
     #[test]

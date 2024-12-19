@@ -28,6 +28,7 @@ pub enum VmImportError {
 pub fn import_from_vm_output(
     pub_json: &Path,
     priv_json: &Path,
+    filter_jrl0: bool,
 ) -> Result<CairoInput, VmImportError> {
     let _span = span!(Level::INFO, "import_from_vm_output").entered();
     let pub_data: PublicInput = sonic_rs::from_str(&std::fs::read_to_string(pub_json)?)?;
@@ -48,7 +49,8 @@ pub fn import_from_vm_output(
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
     let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
-    let state_transitions = StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, true);
+    let state_transitions =
+        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, true, filter_jrl0);
 
     let public_mem_addresses = pub_data
         .public_memory
@@ -133,7 +135,12 @@ pub mod tests {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/large_cairo_input");
 
-        import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+        import_from_vm_output(
+            d.join("pub.json").as_path(),
+            d.join("priv.json").as_path(),
+            false,
+        )
+        .expect(
             "
             Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
         )
@@ -142,7 +149,12 @@ pub mod tests {
     pub fn small_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/small_cairo_input");
-        import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+        import_from_vm_output(
+            d.join("pub.json").as_path(),
+            d.join("priv.json").as_path(),
+            false,
+        )
+        .expect(
             "
             Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
         )

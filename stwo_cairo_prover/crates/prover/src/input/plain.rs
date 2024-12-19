@@ -19,6 +19,7 @@ use super::{CairoInput, SegmentAddrs};
 pub fn input_from_plain_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
     dev_mode: bool,
+    filter_jrl0: bool,
 ) -> CairoInput {
     let felt_code = casm
         .into_iter()
@@ -50,15 +51,20 @@ pub fn input_from_plain_casm(
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    input_from_finished_runner(runner, dev_mode)
+    input_from_finished_runner(runner, dev_mode, filter_jrl0)
 }
 
 // TODO(yuval): consider returning a result instead of panicking.
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
+// TODO(Ohad): move filter_jrl0 to a new config struct.
 /// Assumes memory and trace are already relocated. Otherwise panics.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
-pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
+pub fn input_from_finished_runner(
+    runner: CairoRunner,
+    dev_mode: bool,
+    filter_jrl0: bool,
+) -> CairoInput {
     let program_len = runner.get_program().iter_data().count();
     let mem = runner
         .relocated_memory
@@ -75,7 +81,7 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode);
+    let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode, filter_jrl0);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
