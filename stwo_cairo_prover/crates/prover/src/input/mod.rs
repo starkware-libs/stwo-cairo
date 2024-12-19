@@ -1,5 +1,5 @@
+use cairo_vm::air_public_input::MemorySegmentAddresses;
 use mem::Memory;
-use serde::{Deserialize, Serialize};
 use state_transitions::StateTransitions;
 
 mod decode;
@@ -19,17 +19,5 @@ pub struct CairoInput {
     pub public_mem_addresses: Vec<u32>,
 
     // Builtins.
-    pub range_check_builtin: SegmentAddrs,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SegmentAddrs {
-    pub begin_addr: u32,
-    pub end_addr: u32,
-}
-
-impl SegmentAddrs {
-    pub fn addresses(&self) -> Vec<u32> {
-        (self.begin_addr..self.end_addr).collect()
-    }
+    pub range_check_builtin: MemorySegmentAddresses,
 }
