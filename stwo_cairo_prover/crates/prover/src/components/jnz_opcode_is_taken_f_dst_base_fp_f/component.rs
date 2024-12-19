@@ -18,10 +18,10 @@ use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
-    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub opcodes_lookup_elements: relations::Opcodes,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -117,10 +117,10 @@ impl FrameworkEval for Eval {
         let dst_limb_26_col32 = eval.next_trace_mask();
         let dst_limb_27_col33 = eval.next_trace_mask();
 
-        // DecodeInstruction_d2b4cd588a3e2a7b.
+        // Decode Instruction.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
@@ -142,10 +142,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (input_ap_col1.clone() + (offset0_col3.clone() - M31_32768.clone())),
@@ -154,7 +154,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 dst_id_col5.clone(),

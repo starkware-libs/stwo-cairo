@@ -15,12 +15,12 @@ use stwo_prover::core::poly::circle::CanonicCoset;
 
 use super::air::CairoClaim;
 use crate::components::{
-    add_ap_opcode_is_imm_f_op1_base_fp_f, add_ap_opcode_is_imm_f_op1_base_fp_t,
-    add_ap_opcode_is_imm_t_op1_base_fp_f, add_opcode_is_small_f_is_imm_f,
+    add_ap_opcode_is_imm_f_op_1_base_fp_f, add_ap_opcode_is_imm_f_op_1_base_fp_t,
+    add_ap_opcode_is_imm_t_op_1_base_fp_f, add_opcode_is_small_f_is_imm_f,
     add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
     assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
-    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op1_base_fp_f,
-    call_opcode_is_rel_f_op1_base_fp_t, call_opcode_is_rel_t_op1_base_fp_f, generic_opcode,
+    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op_1_base_fp_f,
+    call_opcode_is_rel_f_op_1_base_fp_t, call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode,
     jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
     jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
@@ -61,10 +61,10 @@ where
                 tree_span_provider,
                 add_opcode_is_small_f_is_imm_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -77,10 +77,10 @@ where
                 tree_span_provider,
                 add_opcode_is_small_f_is_imm_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -93,10 +93,10 @@ where
                 tree_span_provider,
                 add_opcode_is_small_t_is_imm_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -109,10 +109,10 @@ where
                 tree_span_provider,
                 add_opcode_is_small_t_is_imm_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -123,12 +123,12 @@ where
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                add_ap_opcode_is_imm_f_op1_base_fp_f::Eval {
+                add_ap_opcode_is_imm_f_op_1_base_fp_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -139,12 +139,12 @@ where
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                add_ap_opcode_is_imm_f_op1_base_fp_t::Eval {
+                add_ap_opcode_is_imm_f_op_1_base_fp_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -155,12 +155,12 @@ where
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                add_ap_opcode_is_imm_t_op1_base_fp_f::Eval {
+                add_ap_opcode_is_imm_t_op_1_base_fp_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -174,9 +174,9 @@ where
                 tree_span_provider,
                 assert_eq_opcode_is_double_deref_f_is_imm_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -189,9 +189,9 @@ where
                 tree_span_provider,
                 assert_eq_opcode_is_double_deref_f_is_imm_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -204,10 +204,10 @@ where
                 tree_span_provider,
                 assert_eq_opcode_is_double_deref_t_is_imm_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -218,12 +218,12 @@ where
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                call_opcode_is_rel_f_op1_base_fp_f::Eval {
+                call_opcode_is_rel_f_op_1_base_fp_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -234,12 +234,12 @@ where
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                call_opcode_is_rel_f_op1_base_fp_t::Eval {
+                call_opcode_is_rel_f_op_1_base_fp_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -250,12 +250,12 @@ where
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                call_opcode_is_rel_t_op1_base_fp_f::Eval {
+                call_opcode_is_rel_t_op_1_base_fp_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -268,12 +268,12 @@ where
                 tree_span_provider,
                 generic_opcode::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
-                    rangecheck_19_lookup_elements: relations::RangeCheck_19::dummy(),
-                    rangecheck_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                    range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
                 },
                 claim.n_calls,
             )
@@ -286,10 +286,10 @@ where
                 tree_span_provider,
                 jnz_opcode_is_taken_f_dst_base_fp_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -302,10 +302,10 @@ where
                 tree_span_provider,
                 jnz_opcode_is_taken_f_dst_base_fp_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -318,10 +318,10 @@ where
                 tree_span_provider,
                 jnz_opcode_is_taken_t_dst_base_fp_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -334,10 +334,10 @@ where
                 tree_span_provider,
                 jnz_opcode_is_taken_t_dst_base_fp_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -350,10 +350,10 @@ where
                 tree_span_provider,
                 jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -366,10 +366,10 @@ where
                 tree_span_provider,
                 jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -382,10 +382,10 @@ where
                 tree_span_provider,
                 jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -398,10 +398,10 @@ where
                 tree_span_provider,
                 jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -414,11 +414,11 @@ where
                 tree_span_provider,
                 mul_opcode_is_small_f_is_imm_f::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
-                    rangecheck_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                 },
                 claim.n_calls,
             )
@@ -431,11 +431,11 @@ where
                 tree_span_provider,
                 mul_opcode_is_small_f_is_imm_t::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
-                    rangecheck_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                 },
                 claim.n_calls,
             )
@@ -448,10 +448,10 @@ where
                 tree_span_provider,
                 ret_opcode::Eval {
                     claim,
-                    memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                    memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
-                    verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
                 claim.n_calls,
             )
@@ -465,11 +465,11 @@ where
             tree_span_provider,
             verify_instruction::Eval {
                 claim: claim.verify_instruction,
-                memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-                memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
-                rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3::dummy(),
-                rangecheck_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
-                verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                range_check_4_3_lookup_elements: relations::RangeCheck_4_3::dummy(),
+                range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
+                verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
             },
             1 << claim.verify_instruction.log_size,
         )
