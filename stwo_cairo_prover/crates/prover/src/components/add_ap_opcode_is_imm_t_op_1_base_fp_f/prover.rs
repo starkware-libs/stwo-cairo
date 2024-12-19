@@ -1,6 +1,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
-use air_structs_derive::SubComponentInputs;
+use std::iter::zip;
+
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -116,11 +117,32 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(SubComponentInputs)]
 pub struct SubComponentInputs {
     pub memory_address_to_id_inputs: [Vec<memory_address_to_id::InputType>; 1],
     pub memory_id_to_big_inputs: [Vec<memory_id_to_big::InputType>; 1],
     pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],
+}
+impl SubComponentInputs {
+    #[allow(unused_variables)]
+    fn with_capacity(capacity: usize) -> Self {
+        Self {
+            memory_address_to_id_inputs: [Vec::with_capacity(capacity)],
+            memory_id_to_big_inputs: [Vec::with_capacity(capacity)],
+            verify_instruction_inputs: [Vec::with_capacity(capacity)],
+        }
+    }
+
+    fn bit_reverse_coset_to_circle_domain_order(&mut self) {
+        self.memory_address_to_id_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.memory_id_to_big_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.verify_instruction_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+    }
 }
 
 #[allow(clippy::useless_conversion)]
@@ -185,7 +207,7 @@ pub fn write_trace_simd(
                     .unpack(),
             );
 
-            lookup_data.verify_instruction[0].push([
+            lookup_data.verify_instruction_0.push([
                 input_pc_col0,
                 M31_32767,
                 M31_32767,
@@ -218,7 +240,9 @@ pub fn write_trace_simd(
             sub_components_inputs.memory_address_to_id_inputs[0]
                 .extend(((input_pc_col0) + (M31_1)).unpack());
 
-            lookup_data.memory_address_to_id[0].push([((input_pc_col0) + (M31_1)), op1_id_col3]);
+            lookup_data
+                .memory_address_to_id_0
+                .push([((input_pc_col0) + (M31_1)), op1_id_col3]);
 
             // Cond Decode Small Sign.
 
@@ -238,7 +262,7 @@ pub fn write_trace_simd(
             trace[8].data[row_index] = op1_limb_2_col8;
             sub_components_inputs.memory_id_to_big_inputs[0].extend(op1_id_col3.unpack());
 
-            lookup_data.memory_id_to_big[0].push([
+            lookup_data.memory_id_to_big_0.push([
                 op1_id_col3,
                 op1_limb_0_col6,
                 op1_limb_1_col7,
@@ -270,8 +294,10 @@ pub fn write_trace_simd(
                 ((msb_col4) * (M31_256)),
             ]);
 
-            lookup_data.opcodes[0].push([input_pc_col0, input_ap_col1, input_fp_col2]);
-            lookup_data.opcodes[1].push([
+            lookup_data
+                .opcodes_0
+                .push([input_pc_col0, input_ap_col1, input_fp_col2]);
+            lookup_data.opcodes_1.push([
                 ((input_pc_col0) + (M31_2)),
                 ((input_ap_col1)
                     + (((((op1_limb_0_col6) + ((op1_limb_1_col7) * (M31_512)))
@@ -287,19 +313,21 @@ pub fn write_trace_simd(
 }
 
 pub struct LookupData {
-    pub memory_address_to_id: [Vec<[PackedM31; 2]>; 1],
-    pub memory_id_to_big: [Vec<[PackedM31; 29]>; 1],
-    pub opcodes: [Vec<[PackedM31; 3]>; 2],
-    pub verify_instruction: [Vec<[PackedM31; 19]>; 1],
+    memory_address_to_id_0: Vec<[PackedM31; 2]>,
+    memory_id_to_big_0: Vec<[PackedM31; 29]>,
+    opcodes_0: Vec<[PackedM31; 3]>,
+    opcodes_1: Vec<[PackedM31; 3]>,
+    verify_instruction_0: Vec<[PackedM31; 19]>,
 }
 impl LookupData {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            memory_address_to_id: [Vec::with_capacity(capacity)],
-            memory_id_to_big: [Vec::with_capacity(capacity)],
-            opcodes: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            verify_instruction: [Vec::with_capacity(capacity)],
+            memory_address_to_id_0: Vec::with_capacity(capacity),
+            memory_id_to_big_0: Vec::with_capacity(capacity),
+            opcodes_0: Vec::with_capacity(capacity),
+            opcodes_1: Vec::with_capacity(capacity),
+            verify_instruction_0: Vec::with_capacity(capacity),
         }
     }
 }
@@ -312,10 +340,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
-        opcodes_lookup_elements: &relations::Opcodes,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        memory_address_to_id: &relations::MemoryAddressToId,
+        memory_id_to_big: &relations::MemoryIdToBig,
+        opcodes: &relations::Opcodes,
+        verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim
     where
         SimdBackend: BackendForChannel<MC>,
@@ -324,42 +352,35 @@ impl InteractionClaimGenerator {
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.verify_instruction[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = verify_instruction_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
+        for (i, (v0, v1)) in zip(
+            &self.lookup_data.verify_instruction_0,
+            &self.lookup_data.memory_address_to_id_0,
+        )
+        .enumerate()
+        {
+            let p0: PackedQM31 = verify_instruction.combine(v0);
+            let p1: PackedQM31 = memory_address_to_id.combine(v1);
+            col_gen.write_frac(i, p0 + p1, p0 * p1);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memory_address_to_id[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memory_address_to_id_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
+        for (i, (v0, v1)) in zip(
+            &self.lookup_data.memory_id_to_big_0,
+            &self.lookup_data.opcodes_0,
+        )
+        .enumerate()
+        {
+            let p0: PackedQM31 = memory_id_to_big.combine(v0);
+            let p1: PackedQM31 = opcodes.combine(v1);
+            col_gen.write_frac(i, p0 + p1, p0 * p1);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memory_id_to_big[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memory_id_to_big_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.opcodes[0];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = opcodes_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, PackedQM31::one(), denom);
-        }
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.opcodes[1];
-        for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = opcodes_lookup_elements.combine(lookup_values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
+        for (i, v0) in self.lookup_data.opcodes_1.iter().enumerate() {
+            let p0 = opcodes.combine(v0);
+            col_gen.write_frac(i, -PackedQM31::one(), p0);
         }
         col_gen.finalize_col();
 

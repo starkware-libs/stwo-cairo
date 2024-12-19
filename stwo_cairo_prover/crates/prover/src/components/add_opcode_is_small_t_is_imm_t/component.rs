@@ -31,8 +31,8 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 26];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 9];
+        let trace_log_sizes = vec![log_size; 28];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -95,24 +95,26 @@ impl FrameworkEval for Eval {
         let dst_base_fp_col5 = eval.next_trace_mask();
         let op0_base_fp_col6 = eval.next_trace_mask();
         let ap_update_add_1_col7 = eval.next_trace_mask();
-        let dst_id_col8 = eval.next_trace_mask();
-        let msb_col9 = eval.next_trace_mask();
-        let mid_limbs_set_col10 = eval.next_trace_mask();
-        let dst_limb_0_col11 = eval.next_trace_mask();
-        let dst_limb_1_col12 = eval.next_trace_mask();
-        let dst_limb_2_col13 = eval.next_trace_mask();
-        let op0_id_col14 = eval.next_trace_mask();
-        let msb_col15 = eval.next_trace_mask();
-        let mid_limbs_set_col16 = eval.next_trace_mask();
-        let op0_limb_0_col17 = eval.next_trace_mask();
-        let op0_limb_1_col18 = eval.next_trace_mask();
-        let op0_limb_2_col19 = eval.next_trace_mask();
-        let op1_id_col20 = eval.next_trace_mask();
-        let msb_col21 = eval.next_trace_mask();
-        let mid_limbs_set_col22 = eval.next_trace_mask();
-        let op1_limb_0_col23 = eval.next_trace_mask();
-        let op1_limb_1_col24 = eval.next_trace_mask();
-        let op1_limb_2_col25 = eval.next_trace_mask();
+        let mem_dst_base_col8 = eval.next_trace_mask();
+        let mem0_base_col9 = eval.next_trace_mask();
+        let dst_id_col10 = eval.next_trace_mask();
+        let msb_col11 = eval.next_trace_mask();
+        let mid_limbs_set_col12 = eval.next_trace_mask();
+        let dst_limb_0_col13 = eval.next_trace_mask();
+        let dst_limb_1_col14 = eval.next_trace_mask();
+        let dst_limb_2_col15 = eval.next_trace_mask();
+        let op0_id_col16 = eval.next_trace_mask();
+        let msb_col17 = eval.next_trace_mask();
+        let mid_limbs_set_col18 = eval.next_trace_mask();
+        let op0_limb_0_col19 = eval.next_trace_mask();
+        let op0_limb_1_col20 = eval.next_trace_mask();
+        let op0_limb_2_col21 = eval.next_trace_mask();
+        let op1_id_col22 = eval.next_trace_mask();
+        let msb_col23 = eval.next_trace_mask();
+        let mid_limbs_set_col24 = eval.next_trace_mask();
+        let op1_limb_0_col25 = eval.next_trace_mask();
+        let op1_limb_1_col26 = eval.next_trace_mask();
+        let op1_limb_2_col27 = eval.next_trace_mask();
 
         // Decode Instruction.
 
@@ -142,67 +144,18 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // Read Small.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (((dst_base_fp_col5.clone() * input_fp_col2.clone())
-                    + ((M31_1.clone() - dst_base_fp_col5.clone()) * input_ap_col1.clone()))
-                    + (offset0_col3.clone() - M31_32768.clone())),
-                dst_id_col8.clone(),
-            ],
-        ));
-
-        // Cond Decode Small Sign.
-
-        // msb is a bit.
-        eval.add_constraint((msb_col9.clone() * (msb_col9.clone() - M31_1.clone())));
-        // mid_limbs_set is a bit.
+        // mem_dst_base.
         eval.add_constraint(
-            (mid_limbs_set_col10.clone() * (mid_limbs_set_col10.clone() - M31_1.clone())),
+            (mem_dst_base_col8.clone()
+                - ((dst_base_fp_col5.clone() * input_fp_col2.clone())
+                    + ((M31_1.clone() - dst_base_fp_col5.clone()) * input_ap_col1.clone()))),
         );
-        // Cannot have msb equals 0 and mid_limbs_set equals 1.
+        // mem0_base.
         eval.add_constraint(
-            ((M31_1.clone() * mid_limbs_set_col10.clone()) * (msb_col9.clone() - M31_1.clone())),
+            (mem0_base_col9.clone()
+                - ((op0_base_fp_col6.clone() * input_fp_col2.clone())
+                    + ((M31_1.clone() - op0_base_fp_col6.clone()) * input_ap_col1.clone()))),
         );
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                dst_id_col8.clone(),
-                dst_limb_0_col11.clone(),
-                dst_limb_1_col12.clone(),
-                dst_limb_2_col13.clone(),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                (mid_limbs_set_col10.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col9.clone()) - mid_limbs_set_col10.clone()),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                (msb_col9.clone() * M31_256.clone()),
-            ],
-        ));
 
         // Read Small.
 
@@ -210,59 +163,117 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_base_fp_col6.clone() * input_fp_col2.clone())
-                    + ((M31_1.clone() - op0_base_fp_col6.clone()) * input_ap_col1.clone()))
-                    + (offset1_col4.clone() - M31_32768.clone())),
-                op0_id_col14.clone(),
+                (mem_dst_base_col8.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                dst_id_col10.clone(),
             ],
         ));
 
         // Cond Decode Small Sign.
 
         // msb is a bit.
-        eval.add_constraint((msb_col15.clone() * (msb_col15.clone() - M31_1.clone())));
+        eval.add_constraint((msb_col11.clone() * (msb_col11.clone() - M31_1.clone())));
         // mid_limbs_set is a bit.
         eval.add_constraint(
-            (mid_limbs_set_col16.clone() * (mid_limbs_set_col16.clone() - M31_1.clone())),
+            (mid_limbs_set_col12.clone() * (mid_limbs_set_col12.clone() - M31_1.clone())),
         );
         // Cannot have msb equals 0 and mid_limbs_set equals 1.
         eval.add_constraint(
-            ((M31_1.clone() * mid_limbs_set_col16.clone()) * (msb_col15.clone() - M31_1.clone())),
+            ((M31_1.clone() * mid_limbs_set_col12.clone()) * (msb_col11.clone() - M31_1.clone())),
         );
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
-                op0_id_col14.clone(),
-                op0_limb_0_col17.clone(),
-                op0_limb_1_col18.clone(),
-                op0_limb_2_col19.clone(),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                (mid_limbs_set_col16.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col15.clone()) - mid_limbs_set_col16.clone()),
+                dst_id_col10.clone(),
+                dst_limb_0_col13.clone(),
+                dst_limb_1_col14.clone(),
+                dst_limb_2_col15.clone(),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                (mid_limbs_set_col12.clone() * M31_511.clone()),
+                ((M31_136.clone() * msb_col11.clone()) - mid_limbs_set_col12.clone()),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
-                (msb_col15.clone() * M31_256.clone()),
+                (msb_col11.clone() * M31_256.clone()),
+            ],
+        ));
+
+        // Read Small.
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.memory_address_to_id_lookup_elements,
+            E::EF::one(),
+            &[
+                (mem0_base_col9.clone() + (offset1_col4.clone() - M31_32768.clone())),
+                op0_id_col16.clone(),
+            ],
+        ));
+
+        // Cond Decode Small Sign.
+
+        // msb is a bit.
+        eval.add_constraint((msb_col17.clone() * (msb_col17.clone() - M31_1.clone())));
+        // mid_limbs_set is a bit.
+        eval.add_constraint(
+            (mid_limbs_set_col18.clone() * (mid_limbs_set_col18.clone() - M31_1.clone())),
+        );
+        // Cannot have msb equals 0 and mid_limbs_set equals 1.
+        eval.add_constraint(
+            ((M31_1.clone() * mid_limbs_set_col18.clone()) * (msb_col17.clone() - M31_1.clone())),
+        );
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.memory_id_to_big_lookup_elements,
+            E::EF::one(),
+            &[
+                op0_id_col16.clone(),
+                op0_limb_0_col19.clone(),
+                op0_limb_1_col20.clone(),
+                op0_limb_2_col21.clone(),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                (mid_limbs_set_col18.clone() * M31_511.clone()),
+                ((M31_136.clone() * msb_col17.clone()) - mid_limbs_set_col18.clone()),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                (msb_col17.clone() * M31_256.clone()),
             ],
         ));
 
@@ -273,75 +284,75 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 (input_pc_col0.clone() + M31_1.clone()),
-                op1_id_col20.clone(),
+                op1_id_col22.clone(),
             ],
         ));
 
         // Cond Decode Small Sign.
 
         // msb is a bit.
-        eval.add_constraint((msb_col21.clone() * (msb_col21.clone() - M31_1.clone())));
+        eval.add_constraint((msb_col23.clone() * (msb_col23.clone() - M31_1.clone())));
         // mid_limbs_set is a bit.
         eval.add_constraint(
-            (mid_limbs_set_col22.clone() * (mid_limbs_set_col22.clone() - M31_1.clone())),
+            (mid_limbs_set_col24.clone() * (mid_limbs_set_col24.clone() - M31_1.clone())),
         );
         // Cannot have msb equals 0 and mid_limbs_set equals 1.
         eval.add_constraint(
-            ((M31_1.clone() * mid_limbs_set_col22.clone()) * (msb_col21.clone() - M31_1.clone())),
+            ((M31_1.clone() * mid_limbs_set_col24.clone()) * (msb_col23.clone() - M31_1.clone())),
         );
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
-                op1_id_col20.clone(),
-                op1_limb_0_col23.clone(),
-                op1_limb_1_col24.clone(),
-                op1_limb_2_col25.clone(),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                (mid_limbs_set_col22.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col21.clone()) - mid_limbs_set_col22.clone()),
+                op1_id_col22.clone(),
+                op1_limb_0_col25.clone(),
+                op1_limb_1_col26.clone(),
+                op1_limb_2_col27.clone(),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                (mid_limbs_set_col24.clone() * M31_511.clone()),
+                ((M31_136.clone() * msb_col23.clone()) - mid_limbs_set_col24.clone()),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
-                (msb_col21.clone() * M31_256.clone()),
+                (msb_col23.clone() * M31_256.clone()),
             ],
         ));
 
         // dst equals op0 + op1.
         eval.add_constraint(
-            (((((dst_limb_0_col11.clone() + (dst_limb_1_col12.clone() * M31_512.clone()))
-                + (dst_limb_2_col13.clone() * M31_262144.clone()))
-                - msb_col9.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col10.clone()))
-                - (((((op0_limb_0_col17.clone()
-                    + (op0_limb_1_col18.clone() * M31_512.clone()))
-                    + (op0_limb_2_col19.clone() * M31_262144.clone()))
-                    - msb_col15.clone())
-                    - (M31_134217728.clone() * mid_limbs_set_col16.clone()))
-                    + ((((op1_limb_0_col23.clone()
-                        + (op1_limb_1_col24.clone() * M31_512.clone()))
-                        + (op1_limb_2_col25.clone() * M31_262144.clone()))
-                        - msb_col21.clone())
-                        - (M31_134217728.clone() * mid_limbs_set_col22.clone())))),
+            (((((dst_limb_0_col13.clone() + (dst_limb_1_col14.clone() * M31_512.clone()))
+                + (dst_limb_2_col15.clone() * M31_262144.clone()))
+                - msb_col11.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col12.clone()))
+                - (((((op0_limb_0_col19.clone()
+                    + (op0_limb_1_col20.clone() * M31_512.clone()))
+                    + (op0_limb_2_col21.clone() * M31_262144.clone()))
+                    - msb_col17.clone())
+                    - (M31_134217728.clone() * mid_limbs_set_col18.clone()))
+                    + ((((op1_limb_0_col25.clone()
+                        + (op1_limb_1_col26.clone() * M31_512.clone()))
+                        + (op1_limb_2_col27.clone() * M31_262144.clone()))
+                        - msb_col23.clone())
+                        - (M31_134217728.clone() * mid_limbs_set_col24.clone())))),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
@@ -363,7 +374,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        eval.finalize_logup();
+        eval.finalize_logup_in_pairs();
         eval
     }
 }

@@ -30,8 +30,8 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 7];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
+        let trace_log_sizes = vec![log_size; 8];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -87,7 +87,8 @@ impl FrameworkEval for Eval {
         let offset0_col3 = eval.next_trace_mask();
         let dst_base_fp_col4 = eval.next_trace_mask();
         let ap_update_add_1_col5 = eval.next_trace_mask();
-        let dst_id_col6 = eval.next_trace_mask();
+        let mem_dst_base_col6 = eval.next_trace_mask();
+        let dst_id_col7 = eval.next_trace_mask();
 
         // Decode Instruction.
 
@@ -117,23 +118,28 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        // mem_dst_base.
+        eval.add_constraint(
+            (mem_dst_base_col6.clone()
+                - ((dst_base_fp_col4.clone() * input_fp_col2.clone())
+                    + ((M31_1.clone() - dst_base_fp_col4.clone()) * input_ap_col1.clone()))),
+        );
+
         // Mem Verify Equal.
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((dst_base_fp_col4.clone() * input_fp_col2.clone())
-                    + ((M31_1.clone() - dst_base_fp_col4.clone()) * input_ap_col1.clone()))
-                    + (offset0_col3.clone() - M31_32768.clone())),
-                dst_id_col6.clone(),
+                (mem_dst_base_col6.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                dst_id_col7.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[(input_pc_col0.clone() + M31_1.clone()), dst_id_col6.clone()],
+            &[(input_pc_col0.clone() + M31_1.clone()), dst_id_col7.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
@@ -156,7 +162,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        eval.finalize_logup();
+        eval.finalize_logup_in_pairs();
         eval
     }
 }
