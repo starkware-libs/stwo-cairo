@@ -4,8 +4,9 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
+use cairo_vm::air_public_input::PublicInput;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
-use json::{PrivateInput, PublicInput};
+use json::PrivateInput;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -13,7 +14,7 @@ use super::mem::MemConfig;
 use super::state_transitions::StateTransitions;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
-use crate::input::SegmentAddrs;
+use crate::input::MemorySegmentAddresses;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -30,7 +31,8 @@ pub fn import_from_vm_output(
     priv_json: &Path,
 ) -> Result<CairoInput, VmImportError> {
     let _span = span!(Level::INFO, "import_from_vm_output").entered();
-    let pub_data: PublicInput = sonic_rs::from_str(&std::fs::read_to_string(pub_json)?)?;
+    let pub_data_string = std::fs::read_to_string(pub_json)?;
+    let pub_data: PublicInput<'_> = sonic_rs::from_str(&pub_data_string)?;
     let priv_data: PrivateInput = sonic_rs::from_str(&std::fs::read_to_string(priv_json)?)?;
 
     let end_addr = pub_data
@@ -60,9 +62,9 @@ pub fn import_from_vm_output(
         state_transitions,
         mem: mem.build(),
         public_mem_addresses,
-        range_check_builtin: SegmentAddrs {
-            begin_addr: pub_data.memory_segments["range_check"].begin_addr as u32,
-            end_addr: pub_data.memory_segments["range_check"].stop_ptr as u32,
+        range_check_builtin: MemorySegmentAddresses {
+            begin_addr: pub_data.memory_segments["range_check"].begin_addr as usize,
+            stop_ptr: pub_data.memory_segments["range_check"].stop_ptr as usize,
         },
     })
 }
