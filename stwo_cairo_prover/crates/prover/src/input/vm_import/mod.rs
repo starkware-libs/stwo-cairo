@@ -131,7 +131,7 @@ pub mod tests {
 
     pub fn large_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/large_cairo_input");
+        d.push("test_data/test_read_from_large_files");
 
         import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
@@ -141,7 +141,7 @@ pub mod tests {
 
     pub fn small_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/small_cairo_input");
+        d.push("test_data/test_read_from_small_files");
         import_from_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
             Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
@@ -151,8 +151,8 @@ pub mod tests {
     // TODO (Stav): Once all the components are in, verify the proof to ensure the sort was correct.
     // TODO (Ohad): remove the following doc after deleting dev_mod.
     /// When not ignored, the test passes only with dev_mod = false.
-    #[ignore]
     #[test]
+    #[cfg(feature = "slow-test")]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
         let components = input.state_transitions.casm_states_by_opcode;
@@ -210,15 +210,15 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 8996);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 0);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 11146);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 18043);
         assert_eq!(components.ret_opcode.len(), 49472);
     }
 
     // When not ignored, the test passes only with dev_mod = false.
-    #[ignore]
+    #[cfg(feature = "slow-test")]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
