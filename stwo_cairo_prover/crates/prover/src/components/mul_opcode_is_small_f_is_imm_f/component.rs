@@ -18,11 +18,11 @@ use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
-    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub opcodes_lookup_elements: relations::Opcodes,
-    pub rangecheck_19_lookup_elements: relations::RangeCheck_19,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub range_check_19_lookup_elements: relations::RangeCheck_19,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -217,10 +217,10 @@ impl FrameworkEval for Eval {
         let carry_25_col124 = eval.next_trace_mask();
         let carry_26_col125 = eval.next_trace_mask();
 
-        // DecodeInstruction_15f7159a39884cc.
+        // Decode Instruction.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
@@ -250,10 +250,10 @@ impl FrameworkEval for Eval {
             ((op1_base_fp_col8.clone() + op1_base_ap_col9.clone()) - M31_1.clone()),
         );
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((dst_base_fp_col6.clone() * input_fp_col2.clone())
@@ -264,7 +264,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 dst_id_col11.clone(),
@@ -299,10 +299,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((op0_base_fp_col7.clone() * input_fp_col2.clone())
@@ -313,7 +313,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 op0_id_col40.clone(),
@@ -348,10 +348,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((op1_base_fp_col8.clone() * input_fp_col2.clone())
@@ -362,7 +362,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 op1_id_col69.clone(),
@@ -397,7 +397,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // VerifyMul252.
+        // Verify Mul 252.
 
         let conv_tmp_5a14_17 = eval.add_intermediate(
             ((M31_0.clone() - dst_limb_0_col12.clone())
@@ -1513,7 +1513,7 @@ impl FrameworkEval for Eval {
                 + (M31_2.clone() * conv_tmp_5a14_71.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(k_col98.clone() + M31_262144.clone())],
         ));
@@ -1524,7 +1524,7 @@ impl FrameworkEval for Eval {
                     + M31_0.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_0_col99.clone() + M31_131072.clone())],
         ));
@@ -1534,7 +1534,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_73.clone() + carry_0_col99.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_1_col100.clone() + M31_131072.clone())],
         ));
@@ -1544,7 +1544,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_74.clone() + carry_1_col100.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_2_col101.clone() + M31_131072.clone())],
         ));
@@ -1554,7 +1554,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_75.clone() + carry_2_col101.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_3_col102.clone() + M31_131072.clone())],
         ));
@@ -1564,7 +1564,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_76.clone() + carry_3_col102.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_4_col103.clone() + M31_131072.clone())],
         ));
@@ -1574,7 +1574,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_77.clone() + carry_4_col103.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_5_col104.clone() + M31_131072.clone())],
         ));
@@ -1584,7 +1584,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_78.clone() + carry_5_col104.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_6_col105.clone() + M31_131072.clone())],
         ));
@@ -1594,7 +1594,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_79.clone() + carry_6_col105.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_7_col106.clone() + M31_131072.clone())],
         ));
@@ -1604,7 +1604,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_80.clone() + carry_7_col106.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_8_col107.clone() + M31_131072.clone())],
         ));
@@ -1614,7 +1614,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_81.clone() + carry_8_col107.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_9_col108.clone() + M31_131072.clone())],
         ));
@@ -1624,7 +1624,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_82.clone() + carry_9_col108.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_10_col109.clone() + M31_131072.clone())],
         ));
@@ -1634,7 +1634,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_83.clone() + carry_10_col109.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_11_col110.clone() + M31_131072.clone())],
         ));
@@ -1644,7 +1644,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_84.clone() + carry_11_col110.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_12_col111.clone() + M31_131072.clone())],
         ));
@@ -1654,7 +1654,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_85.clone() + carry_12_col111.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_13_col112.clone() + M31_131072.clone())],
         ));
@@ -1664,7 +1664,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_86.clone() + carry_13_col112.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_14_col113.clone() + M31_131072.clone())],
         ));
@@ -1674,7 +1674,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_87.clone() + carry_14_col113.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_15_col114.clone() + M31_131072.clone())],
         ));
@@ -1684,7 +1684,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_88.clone() + carry_15_col114.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_16_col115.clone() + M31_131072.clone())],
         ));
@@ -1694,7 +1694,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_89.clone() + carry_16_col115.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_17_col116.clone() + M31_131072.clone())],
         ));
@@ -1704,7 +1704,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_90.clone() + carry_17_col116.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_18_col117.clone() + M31_131072.clone())],
         ));
@@ -1714,7 +1714,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_91.clone() + carry_18_col117.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_19_col118.clone() + M31_131072.clone())],
         ));
@@ -1724,7 +1724,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_92.clone() + carry_19_col118.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_20_col119.clone() + M31_131072.clone())],
         ));
@@ -1735,7 +1735,7 @@ impl FrameworkEval for Eval {
                     + carry_20_col119.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_21_col120.clone() + M31_131072.clone())],
         ));
@@ -1745,7 +1745,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_94.clone() + carry_21_col120.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_22_col121.clone() + M31_131072.clone())],
         ));
@@ -1755,7 +1755,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_95.clone() + carry_22_col121.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_23_col122.clone() + M31_131072.clone())],
         ));
@@ -1765,7 +1765,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_96.clone() + carry_23_col122.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_24_col123.clone() + M31_131072.clone())],
         ));
@@ -1775,7 +1775,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_97.clone() + carry_24_col123.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_25_col124.clone() + M31_131072.clone())],
         ));
@@ -1785,7 +1785,7 @@ impl FrameworkEval for Eval {
                 - (conv_mod_tmp_5a14_98.clone() + carry_25_col124.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_19_lookup_elements,
+            &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_26_col125.clone() + M31_131072.clone())],
         ));

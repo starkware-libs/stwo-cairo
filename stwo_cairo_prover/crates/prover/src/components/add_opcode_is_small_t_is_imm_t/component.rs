@@ -18,10 +18,10 @@ use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
-    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub opcodes_lookup_elements: relations::Opcodes,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -114,10 +114,10 @@ impl FrameworkEval for Eval {
         let op1_limb_1_col24 = eval.next_trace_mask();
         let op1_limb_2_col25 = eval.next_trace_mask();
 
-        // DecodeInstruction_9aed6a790187299c.
+        // Decode Instruction.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
@@ -142,10 +142,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadSmall.
+        // Read Small.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((dst_base_fp_col5.clone() * input_fp_col2.clone())
@@ -155,7 +155,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // CondDecodeSmallSign.
+        // Cond Decode Small Sign.
 
         // msb is a bit.
         eval.add_constraint((msb_col9.clone() * (msb_col9.clone() - M31_1.clone())));
@@ -169,7 +169,7 @@ impl FrameworkEval for Eval {
         );
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 dst_id_col8.clone(),
@@ -204,10 +204,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadSmall.
+        // Read Small.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((op0_base_fp_col6.clone() * input_fp_col2.clone())
@@ -217,7 +217,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // CondDecodeSmallSign.
+        // Cond Decode Small Sign.
 
         // msb is a bit.
         eval.add_constraint((msb_col15.clone() * (msb_col15.clone() - M31_1.clone())));
@@ -231,7 +231,7 @@ impl FrameworkEval for Eval {
         );
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 op0_id_col14.clone(),
@@ -266,10 +266,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadSmall.
+        // Read Small.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (input_pc_col0.clone() + M31_1.clone()),
@@ -277,7 +277,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // CondDecodeSmallSign.
+        // Cond Decode Small Sign.
 
         // msb is a bit.
         eval.add_constraint((msb_col21.clone() * (msb_col21.clone() - M31_1.clone())));
@@ -291,7 +291,7 @@ impl FrameworkEval for Eval {
         );
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 op1_id_col20.clone(),

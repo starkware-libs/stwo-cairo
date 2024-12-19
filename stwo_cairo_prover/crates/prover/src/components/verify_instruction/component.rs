@@ -22,11 +22,11 @@ use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
-    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
-    pub rangecheck_4_3_lookup_elements: relations::RangeCheck_4_3,
-    pub rangecheck_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+    pub range_check_4_3_lookup_elements: relations::RangeCheck_4_3,
+    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -145,7 +145,7 @@ impl FrameworkEval for Eval {
                 - input_col3.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_7_2_5_lookup_elements,
+            &self.range_check_7_2_5_lookup_elements,
             E::EF::one(),
             &[
                 offset0_mid_col20.clone(),
@@ -155,7 +155,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.rangecheck_4_3_lookup_elements,
+            &self.range_check_4_3_lookup_elements,
             E::EF::one(),
             &[offset2_low_col24.clone(), offset2_high_col26.clone()],
         ));
@@ -166,11 +166,11 @@ impl FrameworkEval for Eval {
         eval.add_constraint((input_col4.clone() * (M31_1.clone() - input_col4.clone())));
         // Flag op0_base_fp is a bit.
         eval.add_constraint((input_col5.clone() * (M31_1.clone() - input_col5.clone())));
-        // Flag op1_imm is a bit.
+        // Flag op_1_imm is a bit.
         eval.add_constraint((input_col6.clone() * (M31_1.clone() - input_col6.clone())));
-        // Flag op1_base_fp is a bit.
+        // Flag op_1_base_fp is a bit.
         eval.add_constraint((input_col7.clone() * (M31_1.clone() - input_col7.clone())));
-        // Flag op1_base_ap is a bit.
+        // Flag op_1_base_ap is a bit.
         eval.add_constraint((input_col8.clone() * (M31_1.clone() - input_col8.clone())));
         // Flag res_add is a bit.
         eval.add_constraint((input_col9.clone() * (M31_1.clone() - input_col9.clone())));
@@ -196,13 +196,13 @@ impl FrameworkEval for Eval {
         // mem_verify.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[input_col0.clone(), instruction_id_col27.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 instruction_id_col27.clone(),
@@ -231,7 +231,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::from(-mult),
             &[
                 input_col0.clone(),

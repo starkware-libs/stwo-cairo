@@ -13,12 +13,12 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::display_components;
 use crate::components::{
-    add_ap_opcode_is_imm_f_op1_base_fp_f, add_ap_opcode_is_imm_f_op1_base_fp_t,
-    add_ap_opcode_is_imm_t_op1_base_fp_f, add_opcode_is_small_f_is_imm_f,
+    add_ap_opcode_is_imm_f_op_1_base_fp_f, add_ap_opcode_is_imm_f_op_1_base_fp_t,
+    add_ap_opcode_is_imm_t_op_1_base_fp_f, add_opcode_is_small_f_is_imm_f,
     add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
     assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
-    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op1_base_fp_f,
-    call_opcode_is_rel_f_op1_base_fp_t, call_opcode_is_rel_t_op1_base_fp_f, generic_opcode,
+    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op_1_base_fp_f,
+    call_opcode_is_rel_f_op_1_base_fp_t, call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode,
     jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
     jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
@@ -36,15 +36,15 @@ pub struct OpcodeClaim {
     pub add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Claim>,
     pub add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Claim>,
     pub add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Claim>,
-    pub add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op1_base_fp_f::Claim>,
-    pub add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op1_base_fp_t::Claim>,
-    pub add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op1_base_fp_f::Claim>,
+    pub add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Claim>,
+    pub add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Claim>,
+    pub add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Claim>,
     pub assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Claim>,
     pub assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Claim>,
     pub assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Claim>,
-    pub call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::Claim>,
-    pub call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::Claim>,
-    pub call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::Claim>,
+    pub call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::Claim>,
+    pub call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::Claim>,
+    pub call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::Claim>,
     pub generic: Vec<generic_opcode::Claim>,
     pub jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Claim>,
     pub jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Claim>,
@@ -123,15 +123,15 @@ pub struct OpcodesClaimGenerator {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::ClaimGenerator>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::ClaimGenerator>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::ClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op1_base_fp_f::ClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op1_base_fp_t::ClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op1_base_fp_f::ClaimGenerator>,
+    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator>,
+    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator>,
+    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::ClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::ClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::ClaimGenerator>,
-    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::ClaimGenerator>,
-    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::ClaimGenerator>,
-    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::ClaimGenerator>,
+    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::ClaimGenerator>,
+    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::ClaimGenerator>,
+    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::ClaimGenerator>,
     generic: Vec<generic_opcode::ClaimGenerator>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator>,
@@ -211,35 +211,35 @@ impl OpcodesClaimGenerator {
         }
         if !input
             .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op1_base_fp_f
+            .add_ap_opcode_is_imm_f_op_1_base_fp_f
             .is_empty()
         {
-            add_ap_f_f.push(add_ap_opcode_is_imm_f_op1_base_fp_f::ClaimGenerator::new(
+            add_ap_f_f.push(add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op1_base_fp_f,
+                    .add_ap_opcode_is_imm_f_op_1_base_fp_f,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op1_base_fp_t
+            .add_ap_opcode_is_imm_f_op_1_base_fp_t
             .is_empty()
         {
-            add_ap_f_t.push(add_ap_opcode_is_imm_f_op1_base_fp_t::ClaimGenerator::new(
+            add_ap_f_t.push(add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op1_base_fp_t,
+                    .add_ap_opcode_is_imm_f_op_1_base_fp_t,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_ap_opcode_is_imm_t_op1_base_fp_f
+            .add_ap_opcode_is_imm_t_op_1_base_fp_f
             .is_empty()
         {
-            add_ap_t_f.push(add_ap_opcode_is_imm_t_op1_base_fp_f::ClaimGenerator::new(
+            add_ap_t_f.push(add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_t_op1_base_fp_f,
+                    .add_ap_opcode_is_imm_t_op_1_base_fp_f,
             ));
         }
         if !input
@@ -283,35 +283,35 @@ impl OpcodesClaimGenerator {
         }
         if !input
             .casm_states_by_opcode
-            .call_opcode_is_rel_f_op1_base_fp_f
+            .call_opcode_is_rel_f_op_1_base_fp_f
             .is_empty()
         {
-            call_f_f.push(call_opcode_is_rel_f_op1_base_fp_f::ClaimGenerator::new(
+            call_f_f.push(call_opcode_is_rel_f_op_1_base_fp_f::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .call_opcode_is_rel_f_op1_base_fp_f,
+                    .call_opcode_is_rel_f_op_1_base_fp_f,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .call_opcode_is_rel_f_op1_base_fp_t
+            .call_opcode_is_rel_f_op_1_base_fp_t
             .is_empty()
         {
-            call_f_t.push(call_opcode_is_rel_f_op1_base_fp_t::ClaimGenerator::new(
+            call_f_t.push(call_opcode_is_rel_f_op_1_base_fp_t::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .call_opcode_is_rel_f_op1_base_fp_t,
+                    .call_opcode_is_rel_f_op_1_base_fp_t,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .call_opcode_is_rel_t_op1_base_fp_f
+            .call_opcode_is_rel_t_op_1_base_fp_f
             .is_empty()
         {
-            call_t_f.push(call_opcode_is_rel_t_op1_base_fp_f::ClaimGenerator::new(
+            call_t_f.push(call_opcode_is_rel_t_op_1_base_fp_f::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .call_opcode_is_rel_t_op1_base_fp_f,
+                    .call_opcode_is_rel_t_op_1_base_fp_f,
             ));
         }
         if !input.casm_states_by_opcode.generic_opcode.is_empty() {
@@ -850,15 +850,15 @@ pub struct OpcodeInteractionClaim {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaim>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaim>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaim>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op1_base_fp_f::InteractionClaim>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op1_base_fp_t::InteractionClaim>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op1_base_fp_f::InteractionClaim>,
+    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaim>,
+    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaim>,
+    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaim>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaim>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaim>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaim>,
-    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::InteractionClaim>,
-    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::InteractionClaim>,
-    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::InteractionClaim>,
+    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::InteractionClaim>,
+    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::InteractionClaim>,
+    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::InteractionClaim>,
     generic: Vec<generic_opcode::InteractionClaim>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaim>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaim>,
@@ -1087,15 +1087,15 @@ pub struct OpcodesInteractionClaimGenerator {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaimGenerator>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaimGenerator>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op1_base_fp_f::InteractionClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op1_base_fp_t::InteractionClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op1_base_fp_f::InteractionClaimGenerator>,
+    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaimGenerator>,
+    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaimGenerator>,
+    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaimGenerator>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaimGenerator>,
-    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::InteractionClaimGenerator>,
-    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::InteractionClaimGenerator>,
-    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::InteractionClaimGenerator>,
+    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::InteractionClaimGenerator>,
+    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::InteractionClaimGenerator>,
+    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaimGenerator>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaimGenerator>,
@@ -1480,15 +1480,15 @@ pub struct OpcodeComponents {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Component>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Component>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Component>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op1_base_fp_f::Component>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op1_base_fp_t::Component>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op1_base_fp_f::Component>,
+    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Component>,
+    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Component>,
+    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Component>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Component>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Component>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Component>,
-    call_f_f: Vec<call_opcode_is_rel_f_op1_base_fp_f::Component>,
-    call_f_t: Vec<call_opcode_is_rel_f_op1_base_fp_t::Component>,
-    call_t_f: Vec<call_opcode_is_rel_t_op1_base_fp_f::Component>,
+    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::Component>,
+    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::Component>,
+    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::Component>,
     generic: Vec<generic_opcode::Component>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Component>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Component>,
@@ -1518,14 +1518,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_opcode_is_small_f_is_imm_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1542,14 +1542,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_opcode_is_small_f_is_imm_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1566,14 +1566,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_opcode_is_small_t_is_imm_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1590,14 +1590,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_opcode_is_small_t_is_imm_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1610,18 +1610,18 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op1_base_fp_f::Component::new(
+                add_ap_opcode_is_imm_f_op_1_base_fp_f::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op1_base_fp_f::Eval {
+                    add_ap_opcode_is_imm_f_op_1_base_fp_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1634,18 +1634,18 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op1_base_fp_t::Component::new(
+                add_ap_opcode_is_imm_f_op_1_base_fp_t::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op1_base_fp_t::Eval {
+                    add_ap_opcode_is_imm_f_op_1_base_fp_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1658,18 +1658,18 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_t_op1_base_fp_f::Component::new(
+                add_ap_opcode_is_imm_t_op_1_base_fp_f::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_t_op1_base_fp_f::Eval {
+                    add_ap_opcode_is_imm_t_op_1_base_fp_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1686,11 +1686,11 @@ impl OpcodeComponents {
                     tree_span_provider,
                     assert_eq_opcode_is_double_deref_f_is_imm_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1707,11 +1707,11 @@ impl OpcodeComponents {
                     tree_span_provider,
                     assert_eq_opcode_is_double_deref_f_is_imm_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1728,14 +1728,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     assert_eq_opcode_is_double_deref_t_is_imm_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1748,18 +1748,18 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_f_op1_base_fp_f::Component::new(
+                call_opcode_is_rel_f_op_1_base_fp_f::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_f_op1_base_fp_f::Eval {
+                    call_opcode_is_rel_f_op_1_base_fp_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1772,18 +1772,18 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_f_op1_base_fp_t::Component::new(
+                call_opcode_is_rel_f_op_1_base_fp_t::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_f_op1_base_fp_t::Eval {
+                    call_opcode_is_rel_f_op_1_base_fp_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1796,18 +1796,18 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_t_op1_base_fp_f::Component::new(
+                call_opcode_is_rel_t_op_1_base_fp_f::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_t_op1_base_fp_f::Eval {
+                    call_opcode_is_rel_t_op_1_base_fp_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1824,18 +1824,18 @@ impl OpcodeComponents {
                     tree_span_provider,
                     generic_opcode::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        rangecheck_19_lookup_elements: interaction_elements.range_check_19.clone(),
-                        rangecheck_9_9_lookup_elements: interaction_elements
+                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        range_check_9_9_lookup_elements: interaction_elements
                             .range_check_9_9
                             .clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1852,14 +1852,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jnz_opcode_is_taken_f_dst_base_fp_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1876,14 +1876,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jnz_opcode_is_taken_f_dst_base_fp_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1900,14 +1900,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jnz_opcode_is_taken_t_dst_base_fp_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1924,14 +1924,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jnz_opcode_is_taken_t_dst_base_fp_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1948,14 +1948,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1972,14 +1972,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -1996,14 +1996,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -2020,14 +2020,14 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -2044,15 +2044,15 @@ impl OpcodeComponents {
                     tree_span_provider,
                     mul_opcode_is_small_f_is_imm_f::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        rangecheck_19_lookup_elements: interaction_elements.range_check_19.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -2069,15 +2069,15 @@ impl OpcodeComponents {
                     tree_span_provider,
                     mul_opcode_is_small_f_is_imm_t::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        rangecheck_19_lookup_elements: interaction_elements.range_check_19.clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                     },
@@ -2094,13 +2094,13 @@ impl OpcodeComponents {
                     tree_span_provider,
                     ret_opcode::Eval {
                         claim,
-                        memoryaddresstoid_lookup_elements: interaction_elements
+                        memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
-                        memoryidtobig_lookup_elements: interaction_elements
+                        memory_id_to_big_lookup_elements: interaction_elements
                             .memory_id_to_value
                             .clone(),
-                        verifyinstruction_lookup_elements: interaction_elements
+                        verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),

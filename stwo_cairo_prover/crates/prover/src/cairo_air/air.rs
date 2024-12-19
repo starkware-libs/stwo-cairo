@@ -465,13 +465,13 @@ impl CairoComponents {
             tree_span_provider,
             verify_instruction::Eval {
                 claim: cairo_claim.verify_instruction,
-                memoryaddresstoid_lookup_elements: interaction_elements
+                memory_address_to_id_lookup_elements: interaction_elements
                     .memory_address_to_id
                     .clone(),
-                memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                rangecheck_4_3_lookup_elements: interaction_elements.range_check_4_3.clone(),
-                rangecheck_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
-                verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                range_check_4_3_lookup_elements: interaction_elements.range_check_4_3.clone(),
+                range_check_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
+                verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
             },
             interaction_claim.verify_instruction.logup_sums,
         );

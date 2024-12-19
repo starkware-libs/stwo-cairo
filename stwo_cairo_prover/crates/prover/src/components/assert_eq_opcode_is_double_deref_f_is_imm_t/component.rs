@@ -18,9 +18,9 @@ use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub opcodes_lookup_elements: relations::Opcodes,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -89,10 +89,10 @@ impl FrameworkEval for Eval {
         let ap_update_add_1_col5 = eval.next_trace_mask();
         let dst_id_col6 = eval.next_trace_mask();
 
-        // DecodeInstruction_684cf7138ce526e3.
+        // Decode Instruction.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
@@ -117,10 +117,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // MemVerifyEqual.
+        // Mem Verify Equal.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((dst_base_fp_col4.clone() * input_fp_col2.clone())
@@ -131,7 +131,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[(input_pc_col0.clone() + M31_1.clone()), dst_id_col6.clone()],
         ));
