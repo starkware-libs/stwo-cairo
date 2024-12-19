@@ -1,9 +1,9 @@
 use prover_types::simd::N_LANES;
 use stwo_prover::core::backend::simd::conversion::Pack;
 
-pub mod add_ap_opcode_is_imm_f_op1_base_fp_f;
-pub mod add_ap_opcode_is_imm_f_op1_base_fp_t;
-pub mod add_ap_opcode_is_imm_t_op1_base_fp_f;
+pub mod add_ap_opcode_is_imm_f_op_1_base_fp_f;
+pub mod add_ap_opcode_is_imm_f_op_1_base_fp_t;
+pub mod add_ap_opcode_is_imm_t_op_1_base_fp_f;
 pub mod add_opcode_is_small_f_is_imm_f;
 pub mod add_opcode_is_small_f_is_imm_t;
 pub mod add_opcode_is_small_t_is_imm_f;
@@ -11,9 +11,9 @@ pub mod add_opcode_is_small_t_is_imm_t;
 pub mod assert_eq_opcode_is_double_deref_f_is_imm_f;
 pub mod assert_eq_opcode_is_double_deref_f_is_imm_t;
 pub mod assert_eq_opcode_is_double_deref_t_is_imm_f;
-pub mod call_opcode_is_rel_f_op1_base_fp_f;
-pub mod call_opcode_is_rel_f_op1_base_fp_t;
-pub mod call_opcode_is_rel_t_op1_base_fp_f;
+pub mod call_opcode_is_rel_f_op_1_base_fp_f;
+pub mod call_opcode_is_rel_f_op_1_base_fp_t;
+pub mod call_opcode_is_rel_t_op_1_base_fp_f;
 pub mod generic_opcode;
 pub mod jnz_opcode_is_taken_f_dst_base_fp_f;
 pub mod jnz_opcode_is_taken_f_dst_base_fp_t;

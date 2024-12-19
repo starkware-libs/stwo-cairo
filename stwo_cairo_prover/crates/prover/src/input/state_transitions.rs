@@ -19,9 +19,9 @@ const SMALL_MUL_MIN_VALUE: u32 = 0;
 #[derive(Debug, Default, Clone)]
 pub struct CasmStatesByOpcode {
     pub generic_opcode: Vec<CasmState>,
-    pub add_ap_opcode_is_imm_f_op1_base_fp_f: Vec<CasmState>,
-    pub add_ap_opcode_is_imm_t_op1_base_fp_f: Vec<CasmState>,
-    pub add_ap_opcode_is_imm_f_op1_base_fp_t: Vec<CasmState>,
+    pub add_ap_opcode_is_imm_f_op_1_base_fp_f: Vec<CasmState>,
+    pub add_ap_opcode_is_imm_t_op_1_base_fp_f: Vec<CasmState>,
+    pub add_ap_opcode_is_imm_f_op_1_base_fp_t: Vec<CasmState>,
     pub add_opcode_is_small_t_is_imm_t: Vec<CasmState>,
     pub add_opcode_is_small_f_is_imm_f: Vec<CasmState>,
     pub add_opcode_is_small_t_is_imm_f: Vec<CasmState>,
@@ -29,9 +29,9 @@ pub struct CasmStatesByOpcode {
     pub assert_eq_opcode_is_double_deref_f_is_imm_f: Vec<CasmState>,
     pub assert_eq_opcode_is_double_deref_t_is_imm_f: Vec<CasmState>,
     pub assert_eq_opcode_is_double_deref_f_is_imm_t: Vec<CasmState>,
-    pub call_opcode_is_rel_f_op1_base_fp_f: Vec<CasmState>,
-    pub call_opcode_is_rel_t_op1_base_fp_f: Vec<CasmState>,
-    pub call_opcode_is_rel_f_op1_base_fp_t: Vec<CasmState>,
+    pub call_opcode_is_rel_f_op_1_base_fp_f: Vec<CasmState>,
+    pub call_opcode_is_rel_t_op_1_base_fp_f: Vec<CasmState>,
+    pub call_opcode_is_rel_f_op_1_base_fp_t: Vec<CasmState>,
     pub jnz_opcode_is_taken_t_dst_base_fp_t: Vec<CasmState>,
     pub jnz_opcode_is_taken_f_dst_base_fp_f: Vec<CasmState>,
     pub jnz_opcode_is_taken_t_dst_base_fp_f: Vec<CasmState>,
@@ -52,16 +52,16 @@ impl CasmStatesByOpcode {
         vec![
             ("genric_opcode", self.generic_opcode.len()),
             (
-                "add_ap_opcode_is_imm_f_op1_base_fp_f",
-                self.add_ap_opcode_is_imm_f_op1_base_fp_f.len(),
+                "add_ap_opcode_is_imm_f_op_1_base_fp_f",
+                self.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(),
             ),
             (
-                "add_ap_opcode_is_imm_t_op1_base_fp_f",
-                self.add_ap_opcode_is_imm_t_op1_base_fp_f.len(),
+                "add_ap_opcode_is_imm_t_op_1_base_fp_f",
+                self.add_ap_opcode_is_imm_t_op_1_base_fp_f.len(),
             ),
             (
-                "add_ap_opcode_is_imm_f_op1_base_fp_t",
-                self.add_ap_opcode_is_imm_f_op1_base_fp_t.len(),
+                "add_ap_opcode_is_imm_f_op_1_base_fp_t",
+                self.add_ap_opcode_is_imm_f_op_1_base_fp_t.len(),
             ),
             (
                 "add_opcode_is_small_t_is_imm_t",
@@ -92,16 +92,16 @@ impl CasmStatesByOpcode {
                 self.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
             ),
             (
-                "call_opcode_is_rel_f_op1_base_fp_f",
-                self.call_opcode_is_rel_f_op1_base_fp_f.len(),
+                "call_opcode_is_rel_f_op_1_base_fp_f",
+                self.call_opcode_is_rel_f_op_1_base_fp_f.len(),
             ),
             (
-                "call_opcode_is_rel_t_op1_base_fp_f",
-                self.call_opcode_is_rel_t_op1_base_fp_f.len(),
+                "call_opcode_is_rel_t_op_1_base_fp_f",
+                self.call_opcode_is_rel_t_op_1_base_fp_f.len(),
             ),
             (
-                "call_opcode_is_rel_f_op1_base_fp_t",
-                self.call_opcode_is_rel_f_op1_base_fp_t.len(),
+                "call_opcode_is_rel_f_op_1_base_fp_t",
+                self.call_opcode_is_rel_f_op_1_base_fp_t.len(),
             ),
             (
                 "jnz_opcode_is_taken_t_dst_base_fp_t",
@@ -217,9 +217,9 @@ impl StateTransitions {
                 offset2: -1,
                 dst_base_fp: true,
                 op0_base_fp: true,
-                op1_imm: false,
-                op1_base_fp: true,
-                op1_base_ap: false,
+                op_1_imm: false,
+                op_1_base_fp: true,
+                op_1_base_ap: false,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump: true,
@@ -239,9 +239,9 @@ impl StateTransitions {
                 offset2,
                 dst_base_fp: true,
                 op0_base_fp: true,
-                op1_imm,
-                op1_base_fp,
-                op1_base_ap,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump: false,
@@ -253,23 +253,23 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: false,
             } => {
-                if op1_imm {
+                if op_1_imm {
                     // ap += Imm.
-                    assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
+                    assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
                     self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_t_op1_base_fp_f
+                        .add_ap_opcode_is_imm_t_op_1_base_fp_f
                         .push(state);
-                } else if op1_base_fp {
+                } else if op_1_base_fp {
                     // ap += [fp + offset2].
-                    assert!(!op1_base_ap);
+                    assert!(!op_1_base_ap);
                     self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_f_op1_base_fp_t
+                        .add_ap_opcode_is_imm_f_op_1_base_fp_t
                         .push(state);
                 } else {
                     // ap += [ap + offset2].
-                    assert!(op1_base_ap);
+                    assert!(op_1_base_ap);
                     self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_f_op1_base_fp_f
+                        .add_ap_opcode_is_imm_f_op_1_base_fp_f
                         .push(state);
                 }
             }
@@ -280,9 +280,9 @@ impl StateTransitions {
                 offset2,
                 dst_base_fp: true,
                 op0_base_fp,
-                op1_imm,
-                op1_base_fp,
-                op1_base_ap,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump,
@@ -294,13 +294,13 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: false,
             } => {
-                if op1_imm {
+                if op_1_imm {
                     // jump rel imm.
                     assert!(
                         pc_update_jump_rel
                             && !pc_update_jump
-                            && !op1_base_fp
-                            && !op1_base_ap
+                            && !op_1_base_fp
+                            && !op_1_base_ap
                             && op0_base_fp
                             && offset1 == -1
                             && offset2 == 1
@@ -312,14 +312,14 @@ impl StateTransitions {
                     // jump rel [ap/fp + offset2].
                     assert!(
                         !pc_update_jump
-                            && (op1_base_fp || op1_base_ap)
+                            && (op_1_base_fp || op_1_base_ap)
                             && op0_base_fp
                             && offset1 == -1
                     );
                     self.casm_states_by_opcode
                         .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
                         .push(state);
-                } else if !op1_base_fp && !op1_base_ap {
+                } else if !op_1_base_fp && !op_1_base_ap {
                     // jump abs [[ap/fp + offset1] + offset2].
                     assert!(pc_update_jump);
                     self.casm_states_by_opcode
@@ -328,7 +328,7 @@ impl StateTransitions {
                 } else {
                     // jump abs [ap/fp + offset2].
                     assert!(
-                        (op1_base_fp || op1_base_ap)
+                        (op_1_base_fp || op_1_base_ap)
                             && op0_base_fp
                             && pc_update_jump
                             && offset1 == -1
@@ -346,9 +346,9 @@ impl StateTransitions {
                 offset2,
                 dst_base_fp: false,
                 op0_base_fp: false,
-                op1_imm,
-                op1_base_fp,
-                op1_base_ap,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump,
@@ -363,22 +363,26 @@ impl StateTransitions {
                 if pc_update_jump_rel {
                     // call rel imm.
                     assert!(
-                        op1_imm && !op1_base_fp && !op1_base_ap && offset2 == 1 && !pc_update_jump
+                        op_1_imm
+                            && !op_1_base_fp
+                            && !op_1_base_ap
+                            && offset2 == 1
+                            && !pc_update_jump
                     );
                     self.casm_states_by_opcode
-                        .call_opcode_is_rel_t_op1_base_fp_f
+                        .call_opcode_is_rel_t_op_1_base_fp_f
                         .push(state);
-                } else if op1_base_fp {
+                } else if op_1_base_fp {
                     // call abs [fp + offset2].
-                    assert!(!op1_base_ap && !op1_imm && pc_update_jump);
+                    assert!(!op_1_base_ap && !op_1_imm && pc_update_jump);
                     self.casm_states_by_opcode
-                        .call_opcode_is_rel_f_op1_base_fp_t
+                        .call_opcode_is_rel_f_op_1_base_fp_t
                         .push(state);
                 } else {
                     // call abs [ap + offset2].
-                    assert!(op1_base_ap && !op1_imm && pc_update_jump);
+                    assert!(op_1_base_ap && !op_1_imm && pc_update_jump);
                     self.casm_states_by_opcode
-                        .call_opcode_is_rel_f_op1_base_fp_f
+                        .call_opcode_is_rel_f_op_1_base_fp_f
                         .push(state);
                 }
             }
@@ -390,9 +394,9 @@ impl StateTransitions {
                 offset2: 1,
                 dst_base_fp,
                 op0_base_fp: true,
-                op1_imm: true,
-                op1_base_fp: false,
-                op1_base_ap: false,
+                op_1_imm: true,
+                op_1_base_fp: false,
+                op_1_base_ap: false,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump: false,
@@ -439,9 +443,9 @@ impl StateTransitions {
                 offset2,
                 dst_base_fp: _,
                 op0_base_fp,
-                op1_imm,
-                op1_base_fp,
-                op1_base_ap,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
                 res_add: false,
                 res_mul: false,
                 pc_update_jump: false,
@@ -453,11 +457,11 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                if op1_imm {
+                if op_1_imm {
                     // [ap/fp + offset0] = imm.
                     assert!(
-                        !op1_base_fp
-                            && !op1_base_ap
+                        !op_1_base_fp
+                            && !op_1_base_ap
                             && offset2 == 1
                             && op0_base_fp
                             && offset1 == -1
@@ -465,14 +469,14 @@ impl StateTransitions {
                     self.casm_states_by_opcode
                         .assert_eq_opcode_is_double_deref_f_is_imm_t
                         .push(state);
-                } else if !op1_base_fp && !op1_base_ap {
+                } else if !op_1_base_fp && !op_1_base_ap {
                     // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
                     self.casm_states_by_opcode
                         .assert_eq_opcode_is_double_deref_t_is_imm_f
                         .push(state);
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1].
-                    assert!((op1_base_fp || op1_base_ap) && offset1 == -1 && op0_base_fp);
+                    assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
                     self.casm_states_by_opcode
                         .assert_eq_opcode_is_double_deref_f_is_imm_f
                         .push(state);
@@ -486,9 +490,9 @@ impl StateTransitions {
                 offset2,
                 dst_base_fp: _,
                 op0_base_fp,
-                op1_imm,
-                op1_base_fp,
-                op1_base_ap,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
                 res_add: false,
                 res_mul: true,
                 pc_update_jump: false,
@@ -500,23 +504,23 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                let (op0_addr, op1_addr) = (
+                let (op0_addr, op_1_addr) = (
                     if op0_base_fp { fp } else { ap },
-                    if op1_base_fp { fp } else { ap },
+                    if op_1_base_fp { fp } else { ap },
                 );
-                let (op0, op1) = (
+                let (op0, op_1) = (
                     mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                    mem.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
                 );
-                if op1_imm {
+                if op_1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
-                    assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
+                    assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
                     // TODO(Ohad): remove when mul small is implemented.
                     if dev_mode {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_t
                             .push(state);
-                    } else if is_small_mul(op0, op1) {
+                    } else if is_small_mul(op0, op_1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -527,13 +531,13 @@ impl StateTransitions {
                     };
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
-                    assert!((op1_base_fp || op1_base_ap));
+                    assert!((op_1_base_fp || op_1_base_ap));
                     // TODO(Ohad): remove when mul small is implemented.
                     if dev_mode {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_f_is_imm_f
                             .push(state);
-                    } else if is_small_mul(op0, op1) {
+                    } else if is_small_mul(op0, op_1) {
                         self.casm_states_by_opcode
                             .mul_opcode_is_small_t_is_imm_f
                             .push(state);
@@ -552,9 +556,9 @@ impl StateTransitions {
                 offset2,
                 dst_base_fp,
                 op0_base_fp,
-                op1_imm,
-                op1_base_fp,
-                op1_base_ap,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
                 res_add: true,
                 res_mul: false,
                 pc_update_jump: false,
@@ -566,20 +570,20 @@ impl StateTransitions {
                 opcode_ret: false,
                 opcode_assert_eq: true,
             } => {
-                let (dst_addr, op0_addr, op1_addr) = (
+                let (dst_addr, op0_addr, op_1_addr) = (
                     if dst_base_fp { fp } else { ap },
                     if op0_base_fp { fp } else { ap },
-                    if op1_base_fp { fp } else { ap },
+                    if op_1_base_fp { fp } else { ap },
                 );
-                let (dst, op0, op1) = (
+                let (dst, op0, op_1) = (
                     mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
                     mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    mem.get(op1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                    mem.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
                 );
-                if op1_imm {
+                if op_1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
-                    assert!(!op1_base_fp && !op1_base_ap && offset2 == 1);
-                    if is_small_add(dst, op0, op1) {
+                    assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
+                    if is_small_add(dst, op0, op_1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_t
                             .push(state);
@@ -590,8 +594,8 @@ impl StateTransitions {
                     };
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
-                    assert!((op1_base_fp || op1_base_ap));
-                    if is_small_add(dst, op0, op1) {
+                    assert!((op_1_base_fp || op_1_base_ap));
+                    if is_small_add(dst, op0, op_1) {
                         self.casm_states_by_opcode
                             .add_opcode_is_small_t_is_imm_f
                             .push(state);
@@ -616,8 +620,8 @@ fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
 }
 
 // Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
-fn is_small_add(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
-    [dst, op0, op1].iter().all(|val| {
+fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
+    [dst, op0, op_1].iter().all(|val| {
         is_within_range(
             *val,
             SMALL_ADD_MIN_VALUE as i128,
@@ -627,8 +631,8 @@ fn is_small_add(dst: MemoryValue, op0: MemoryValue, op1: MemoryValue) -> bool {
 }
 
 // Returns 'true' the multiplication factors are in the range [0, 2^15-1].
-fn is_small_mul(op0: MemoryValue, op1: MemoryValue) -> bool {
-    [op0, op1].iter().all(|val| {
+fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
+    [op0, op_1].iter().all(|val| {
         is_within_range(
             *val,
             SMALL_MUL_MIN_VALUE as i128,
@@ -665,7 +669,7 @@ mod tests {
         );
         assert_eq!(
             casm_states_by_opcode
-                .call_opcode_is_rel_t_op1_base_fp_f
+                .call_opcode_is_rel_t_op_1_base_fp_f
                 .len(),
             1
         );
@@ -690,13 +694,13 @@ mod tests {
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
-                .add_ap_opcode_is_imm_f_op1_base_fp_f
+                .add_ap_opcode_is_imm_f_op_1_base_fp_f
                 .len(),
             1
         );
         assert_eq!(
             casm_states_by_opcode
-                .add_ap_opcode_is_imm_f_op1_base_fp_f
+                .add_ap_opcode_is_imm_f_op_1_base_fp_f
                 .len(),
             1
         );
@@ -715,13 +719,13 @@ mod tests {
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
-                .call_opcode_is_rel_f_op1_base_fp_t
+                .call_opcode_is_rel_f_op_1_base_fp_t
                 .len(),
             2
         );
         assert_eq!(
             casm_states_by_opcode
-                .call_opcode_is_rel_t_op1_base_fp_f
+                .call_opcode_is_rel_t_op_1_base_fp_f
                 .len(),
             1
         );
@@ -740,7 +744,7 @@ mod tests {
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(
             casm_states_by_opcode
-                .call_opcode_is_rel_f_op1_base_fp_f
+                .call_opcode_is_rel_f_op_1_base_fp_f
                 .len(),
             2
         );

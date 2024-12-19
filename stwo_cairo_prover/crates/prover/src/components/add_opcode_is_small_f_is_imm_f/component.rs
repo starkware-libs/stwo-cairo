@@ -18,10 +18,10 @@ use crate::relations;
 
 pub struct Eval {
     pub claim: Claim,
-    pub memoryaddresstoid_lookup_elements: relations::MemoryAddressToId,
-    pub memoryidtobig_lookup_elements: relations::MemoryIdToBig,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub opcodes_lookup_elements: relations::Opcodes,
-    pub verifyinstruction_lookup_elements: relations::VerifyInstruction,
+    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -182,10 +182,10 @@ impl FrameworkEval for Eval {
         let op1_limb_27_col97 = eval.next_trace_mask();
         let sub_p_bit_col98 = eval.next_trace_mask();
 
-        // DecodeInstruction_52ce7a4a3d9be19a.
+        // Decode Instruction.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verifyinstruction_lookup_elements,
+            &self.verify_instruction_lookup_elements,
             E::EF::one(),
             &[
                 input_pc_col0.clone(),
@@ -215,10 +215,10 @@ impl FrameworkEval for Eval {
             ((op1_base_fp_col8.clone() + op1_base_ap_col9.clone()) - M31_1.clone()),
         );
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((dst_base_fp_col6.clone() * input_fp_col2.clone())
@@ -229,7 +229,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 dst_id_col11.clone(),
@@ -264,10 +264,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((op0_base_fp_col7.clone() * input_fp_col2.clone())
@@ -278,7 +278,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 op0_id_col40.clone(),
@@ -313,10 +313,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // ReadPositive_num_bits_252.
+        // Read Positive Num Bits 252.
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryaddresstoid_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
                 (((op1_base_fp_col8.clone() * input_fp_col2.clone())
@@ -327,7 +327,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memoryidtobig_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
                 op1_id_col69.clone(),
@@ -362,7 +362,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // VerifyAdd252.
+        // Verify Add 252.
 
         // sub_p_bit is a bit.
         eval.add_constraint((sub_p_bit_col98.clone() * (sub_p_bit_col98.clone() - M31_1.clone())));

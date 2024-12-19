@@ -1,6 +1,5 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
-use air_structs_derive::SubComponentInputs;
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -116,11 +115,40 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(SubComponentInputs)]
 pub struct SubComponentInputs {
     pub memory_address_to_id_inputs: [Vec<memory_address_to_id::InputType>; 3],
     pub memory_id_to_big_inputs: [Vec<memory_id_to_big::InputType>; 3],
     pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],
+}
+impl SubComponentInputs {
+    #[allow(unused_variables)]
+    fn with_capacity(capacity: usize) -> Self {
+        Self {
+            memory_address_to_id_inputs: [
+                Vec::with_capacity(capacity),
+                Vec::with_capacity(capacity),
+                Vec::with_capacity(capacity),
+            ],
+            memory_id_to_big_inputs: [
+                Vec::with_capacity(capacity),
+                Vec::with_capacity(capacity),
+                Vec::with_capacity(capacity),
+            ],
+            verify_instruction_inputs: [Vec::with_capacity(capacity)],
+        }
+    }
+
+    fn bit_reverse_coset_to_circle_domain_order(&mut self) {
+        self.memory_address_to_id_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.memory_id_to_big_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+        self.verify_instruction_inputs
+            .iter_mut()
+            .for_each(|vec| bit_reverse_coset_to_circle_domain_order(vec));
+    }
 }
 
 #[allow(clippy::useless_conversion)]
@@ -173,79 +201,79 @@ pub fn write_trace_simd(
             let input_fp_col2 = input_tmp_f459_0.fp;
             trace[2].data[row_index] = input_fp_col2;
 
-            // DecodeInstruction_52ce7a4a3d9be19a.
+            // Decode Instruction.
 
-            let memoryaddresstoid_value_tmp_f459_1 =
+            let memory_address_to_id_value_tmp_f459_1 =
                 memory_address_to_id_state.deduce_output(input_pc_col0);
-            let memoryidtobig_value_tmp_f459_2 =
-                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_f459_1);
+            let memory_id_to_big_value_tmp_f459_2 =
+                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_f459_1);
             let offset0_tmp_f459_3 =
-                ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(0)))
-                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(1)))
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(0)))
+                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(1)))
                         & (UInt16_127))
                         << (UInt16_9)));
             let offset0_col3 = offset0_tmp_f459_3.as_m31();
             trace[3].data[row_index] = offset0_col3;
             let offset1_tmp_f459_4 =
-                ((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(1)))
+                ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(1)))
                     >> (UInt16_7))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(2)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(2)))
                         << (UInt16_2)))
-                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(3)))
+                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(3)))
                         & (UInt16_31))
                         << (UInt16_11)));
             let offset1_col4 = offset1_tmp_f459_4.as_m31();
             trace[4].data[row_index] = offset1_col4;
             let offset2_tmp_f459_5 =
-                ((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(3)))
+                ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(3)))
                     >> (UInt16_5))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(4)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(4)))
                         << (UInt16_4)))
-                    + (((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(5)))
+                    + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(5)))
                         & (UInt16_7))
                         << (UInt16_13)));
             let offset2_col5 = offset2_tmp_f459_5.as_m31();
             trace[5].data[row_index] = offset2_col5;
             let dst_base_fp_tmp_f459_6 =
-                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(5)))
+                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_0))
                     & (UInt16_1));
             let dst_base_fp_col6 = dst_base_fp_tmp_f459_6.as_m31();
             trace[6].data[row_index] = dst_base_fp_col6;
             let op0_base_fp_tmp_f459_7 =
-                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(5)))
+                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_1))
                     & (UInt16_1));
             let op0_base_fp_col7 = op0_base_fp_tmp_f459_7.as_m31();
             trace[7].data[row_index] = op0_base_fp_col7;
             let op1_base_fp_tmp_f459_8 =
-                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(5)))
+                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_3))
                     & (UInt16_1));
             let op1_base_fp_col8 = op1_base_fp_tmp_f459_8.as_m31();
             trace[8].data[row_index] = op1_base_fp_col8;
             let op1_base_ap_tmp_f459_9 =
-                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(5)))
+                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_4))
                     & (UInt16_1));
             let op1_base_ap_col9 = op1_base_ap_tmp_f459_9.as_m31();
             trace[9].data[row_index] = op1_base_ap_col9;
             let ap_update_add_1_tmp_f459_10 =
-                (((((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(5)))
+                (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(5)))
                     >> (UInt16_3))
-                    + ((PackedUInt16::from_m31(memoryidtobig_value_tmp_f459_2.get_m31(6)))
+                    + ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f459_2.get_m31(6)))
                         << (UInt16_6)))
                     >> (UInt16_11))
                     & (UInt16_1));
@@ -277,7 +305,7 @@ pub fn write_trace_simd(
                     .unpack(),
             );
 
-            lookup_data.verifyinstruction[0].push([
+            lookup_data.verify_instruction[0].push([
                 input_pc_col0,
                 offset0_col3,
                 offset1_col4,
@@ -299,16 +327,16 @@ pub fn write_trace_simd(
                 M31_1,
             ]);
 
-            // ReadPositive_num_bits_252.
+            // Read Positive Num Bits 252.
 
-            let memoryaddresstoid_value_tmp_f459_11 = memory_address_to_id_state.deduce_output(
+            let memory_address_to_id_value_tmp_f459_11 = memory_address_to_id_state.deduce_output(
                 ((((dst_base_fp_col6) * (input_fp_col2))
                     + (((M31_1) - (dst_base_fp_col6)) * (input_ap_col1)))
                     + ((offset0_col3) - (M31_32768))),
             );
-            let memoryidtobig_value_tmp_f459_12 =
-                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_f459_11);
-            let dst_id_col11 = memoryaddresstoid_value_tmp_f459_11;
+            let memory_id_to_big_value_tmp_f459_12 =
+                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_f459_11);
+            let dst_id_col11 = memory_address_to_id_value_tmp_f459_11;
             trace[11].data[row_index] = dst_id_col11;
             sub_components_inputs.memory_address_to_id_inputs[0].extend(
                 ((((dst_base_fp_col6) * (input_fp_col2))
@@ -317,71 +345,71 @@ pub fn write_trace_simd(
                     .unpack(),
             );
 
-            lookup_data.memoryaddresstoid[0].push([
+            lookup_data.memory_address_to_id[0].push([
                 ((((dst_base_fp_col6) * (input_fp_col2))
                     + (((M31_1) - (dst_base_fp_col6)) * (input_ap_col1)))
                     + ((offset0_col3) - (M31_32768))),
                 dst_id_col11,
             ]);
-            let dst_limb_0_col12 = memoryidtobig_value_tmp_f459_12.get_m31(0);
+            let dst_limb_0_col12 = memory_id_to_big_value_tmp_f459_12.get_m31(0);
             trace[12].data[row_index] = dst_limb_0_col12;
-            let dst_limb_1_col13 = memoryidtobig_value_tmp_f459_12.get_m31(1);
+            let dst_limb_1_col13 = memory_id_to_big_value_tmp_f459_12.get_m31(1);
             trace[13].data[row_index] = dst_limb_1_col13;
-            let dst_limb_2_col14 = memoryidtobig_value_tmp_f459_12.get_m31(2);
+            let dst_limb_2_col14 = memory_id_to_big_value_tmp_f459_12.get_m31(2);
             trace[14].data[row_index] = dst_limb_2_col14;
-            let dst_limb_3_col15 = memoryidtobig_value_tmp_f459_12.get_m31(3);
+            let dst_limb_3_col15 = memory_id_to_big_value_tmp_f459_12.get_m31(3);
             trace[15].data[row_index] = dst_limb_3_col15;
-            let dst_limb_4_col16 = memoryidtobig_value_tmp_f459_12.get_m31(4);
+            let dst_limb_4_col16 = memory_id_to_big_value_tmp_f459_12.get_m31(4);
             trace[16].data[row_index] = dst_limb_4_col16;
-            let dst_limb_5_col17 = memoryidtobig_value_tmp_f459_12.get_m31(5);
+            let dst_limb_5_col17 = memory_id_to_big_value_tmp_f459_12.get_m31(5);
             trace[17].data[row_index] = dst_limb_5_col17;
-            let dst_limb_6_col18 = memoryidtobig_value_tmp_f459_12.get_m31(6);
+            let dst_limb_6_col18 = memory_id_to_big_value_tmp_f459_12.get_m31(6);
             trace[18].data[row_index] = dst_limb_6_col18;
-            let dst_limb_7_col19 = memoryidtobig_value_tmp_f459_12.get_m31(7);
+            let dst_limb_7_col19 = memory_id_to_big_value_tmp_f459_12.get_m31(7);
             trace[19].data[row_index] = dst_limb_7_col19;
-            let dst_limb_8_col20 = memoryidtobig_value_tmp_f459_12.get_m31(8);
+            let dst_limb_8_col20 = memory_id_to_big_value_tmp_f459_12.get_m31(8);
             trace[20].data[row_index] = dst_limb_8_col20;
-            let dst_limb_9_col21 = memoryidtobig_value_tmp_f459_12.get_m31(9);
+            let dst_limb_9_col21 = memory_id_to_big_value_tmp_f459_12.get_m31(9);
             trace[21].data[row_index] = dst_limb_9_col21;
-            let dst_limb_10_col22 = memoryidtobig_value_tmp_f459_12.get_m31(10);
+            let dst_limb_10_col22 = memory_id_to_big_value_tmp_f459_12.get_m31(10);
             trace[22].data[row_index] = dst_limb_10_col22;
-            let dst_limb_11_col23 = memoryidtobig_value_tmp_f459_12.get_m31(11);
+            let dst_limb_11_col23 = memory_id_to_big_value_tmp_f459_12.get_m31(11);
             trace[23].data[row_index] = dst_limb_11_col23;
-            let dst_limb_12_col24 = memoryidtobig_value_tmp_f459_12.get_m31(12);
+            let dst_limb_12_col24 = memory_id_to_big_value_tmp_f459_12.get_m31(12);
             trace[24].data[row_index] = dst_limb_12_col24;
-            let dst_limb_13_col25 = memoryidtobig_value_tmp_f459_12.get_m31(13);
+            let dst_limb_13_col25 = memory_id_to_big_value_tmp_f459_12.get_m31(13);
             trace[25].data[row_index] = dst_limb_13_col25;
-            let dst_limb_14_col26 = memoryidtobig_value_tmp_f459_12.get_m31(14);
+            let dst_limb_14_col26 = memory_id_to_big_value_tmp_f459_12.get_m31(14);
             trace[26].data[row_index] = dst_limb_14_col26;
-            let dst_limb_15_col27 = memoryidtobig_value_tmp_f459_12.get_m31(15);
+            let dst_limb_15_col27 = memory_id_to_big_value_tmp_f459_12.get_m31(15);
             trace[27].data[row_index] = dst_limb_15_col27;
-            let dst_limb_16_col28 = memoryidtobig_value_tmp_f459_12.get_m31(16);
+            let dst_limb_16_col28 = memory_id_to_big_value_tmp_f459_12.get_m31(16);
             trace[28].data[row_index] = dst_limb_16_col28;
-            let dst_limb_17_col29 = memoryidtobig_value_tmp_f459_12.get_m31(17);
+            let dst_limb_17_col29 = memory_id_to_big_value_tmp_f459_12.get_m31(17);
             trace[29].data[row_index] = dst_limb_17_col29;
-            let dst_limb_18_col30 = memoryidtobig_value_tmp_f459_12.get_m31(18);
+            let dst_limb_18_col30 = memory_id_to_big_value_tmp_f459_12.get_m31(18);
             trace[30].data[row_index] = dst_limb_18_col30;
-            let dst_limb_19_col31 = memoryidtobig_value_tmp_f459_12.get_m31(19);
+            let dst_limb_19_col31 = memory_id_to_big_value_tmp_f459_12.get_m31(19);
             trace[31].data[row_index] = dst_limb_19_col31;
-            let dst_limb_20_col32 = memoryidtobig_value_tmp_f459_12.get_m31(20);
+            let dst_limb_20_col32 = memory_id_to_big_value_tmp_f459_12.get_m31(20);
             trace[32].data[row_index] = dst_limb_20_col32;
-            let dst_limb_21_col33 = memoryidtobig_value_tmp_f459_12.get_m31(21);
+            let dst_limb_21_col33 = memory_id_to_big_value_tmp_f459_12.get_m31(21);
             trace[33].data[row_index] = dst_limb_21_col33;
-            let dst_limb_22_col34 = memoryidtobig_value_tmp_f459_12.get_m31(22);
+            let dst_limb_22_col34 = memory_id_to_big_value_tmp_f459_12.get_m31(22);
             trace[34].data[row_index] = dst_limb_22_col34;
-            let dst_limb_23_col35 = memoryidtobig_value_tmp_f459_12.get_m31(23);
+            let dst_limb_23_col35 = memory_id_to_big_value_tmp_f459_12.get_m31(23);
             trace[35].data[row_index] = dst_limb_23_col35;
-            let dst_limb_24_col36 = memoryidtobig_value_tmp_f459_12.get_m31(24);
+            let dst_limb_24_col36 = memory_id_to_big_value_tmp_f459_12.get_m31(24);
             trace[36].data[row_index] = dst_limb_24_col36;
-            let dst_limb_25_col37 = memoryidtobig_value_tmp_f459_12.get_m31(25);
+            let dst_limb_25_col37 = memory_id_to_big_value_tmp_f459_12.get_m31(25);
             trace[37].data[row_index] = dst_limb_25_col37;
-            let dst_limb_26_col38 = memoryidtobig_value_tmp_f459_12.get_m31(26);
+            let dst_limb_26_col38 = memory_id_to_big_value_tmp_f459_12.get_m31(26);
             trace[38].data[row_index] = dst_limb_26_col38;
-            let dst_limb_27_col39 = memoryidtobig_value_tmp_f459_12.get_m31(27);
+            let dst_limb_27_col39 = memory_id_to_big_value_tmp_f459_12.get_m31(27);
             trace[39].data[row_index] = dst_limb_27_col39;
             sub_components_inputs.memory_id_to_big_inputs[0].extend(dst_id_col11.unpack());
 
-            lookup_data.memoryidtobig[0].push([
+            lookup_data.memory_id_to_big[0].push([
                 dst_id_col11,
                 dst_limb_0_col12,
                 dst_limb_1_col13,
@@ -413,16 +441,16 @@ pub fn write_trace_simd(
                 dst_limb_27_col39,
             ]);
 
-            // ReadPositive_num_bits_252.
+            // Read Positive Num Bits 252.
 
-            let memoryaddresstoid_value_tmp_f459_13 = memory_address_to_id_state.deduce_output(
+            let memory_address_to_id_value_tmp_f459_13 = memory_address_to_id_state.deduce_output(
                 ((((op0_base_fp_col7) * (input_fp_col2))
                     + (((M31_1) - (op0_base_fp_col7)) * (input_ap_col1)))
                     + ((offset1_col4) - (M31_32768))),
             );
-            let memoryidtobig_value_tmp_f459_14 =
-                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_f459_13);
-            let op0_id_col40 = memoryaddresstoid_value_tmp_f459_13;
+            let memory_id_to_big_value_tmp_f459_14 =
+                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_f459_13);
+            let op0_id_col40 = memory_address_to_id_value_tmp_f459_13;
             trace[40].data[row_index] = op0_id_col40;
             sub_components_inputs.memory_address_to_id_inputs[1].extend(
                 ((((op0_base_fp_col7) * (input_fp_col2))
@@ -431,71 +459,71 @@ pub fn write_trace_simd(
                     .unpack(),
             );
 
-            lookup_data.memoryaddresstoid[1].push([
+            lookup_data.memory_address_to_id[1].push([
                 ((((op0_base_fp_col7) * (input_fp_col2))
                     + (((M31_1) - (op0_base_fp_col7)) * (input_ap_col1)))
                     + ((offset1_col4) - (M31_32768))),
                 op0_id_col40,
             ]);
-            let op0_limb_0_col41 = memoryidtobig_value_tmp_f459_14.get_m31(0);
+            let op0_limb_0_col41 = memory_id_to_big_value_tmp_f459_14.get_m31(0);
             trace[41].data[row_index] = op0_limb_0_col41;
-            let op0_limb_1_col42 = memoryidtobig_value_tmp_f459_14.get_m31(1);
+            let op0_limb_1_col42 = memory_id_to_big_value_tmp_f459_14.get_m31(1);
             trace[42].data[row_index] = op0_limb_1_col42;
-            let op0_limb_2_col43 = memoryidtobig_value_tmp_f459_14.get_m31(2);
+            let op0_limb_2_col43 = memory_id_to_big_value_tmp_f459_14.get_m31(2);
             trace[43].data[row_index] = op0_limb_2_col43;
-            let op0_limb_3_col44 = memoryidtobig_value_tmp_f459_14.get_m31(3);
+            let op0_limb_3_col44 = memory_id_to_big_value_tmp_f459_14.get_m31(3);
             trace[44].data[row_index] = op0_limb_3_col44;
-            let op0_limb_4_col45 = memoryidtobig_value_tmp_f459_14.get_m31(4);
+            let op0_limb_4_col45 = memory_id_to_big_value_tmp_f459_14.get_m31(4);
             trace[45].data[row_index] = op0_limb_4_col45;
-            let op0_limb_5_col46 = memoryidtobig_value_tmp_f459_14.get_m31(5);
+            let op0_limb_5_col46 = memory_id_to_big_value_tmp_f459_14.get_m31(5);
             trace[46].data[row_index] = op0_limb_5_col46;
-            let op0_limb_6_col47 = memoryidtobig_value_tmp_f459_14.get_m31(6);
+            let op0_limb_6_col47 = memory_id_to_big_value_tmp_f459_14.get_m31(6);
             trace[47].data[row_index] = op0_limb_6_col47;
-            let op0_limb_7_col48 = memoryidtobig_value_tmp_f459_14.get_m31(7);
+            let op0_limb_7_col48 = memory_id_to_big_value_tmp_f459_14.get_m31(7);
             trace[48].data[row_index] = op0_limb_7_col48;
-            let op0_limb_8_col49 = memoryidtobig_value_tmp_f459_14.get_m31(8);
+            let op0_limb_8_col49 = memory_id_to_big_value_tmp_f459_14.get_m31(8);
             trace[49].data[row_index] = op0_limb_8_col49;
-            let op0_limb_9_col50 = memoryidtobig_value_tmp_f459_14.get_m31(9);
+            let op0_limb_9_col50 = memory_id_to_big_value_tmp_f459_14.get_m31(9);
             trace[50].data[row_index] = op0_limb_9_col50;
-            let op0_limb_10_col51 = memoryidtobig_value_tmp_f459_14.get_m31(10);
+            let op0_limb_10_col51 = memory_id_to_big_value_tmp_f459_14.get_m31(10);
             trace[51].data[row_index] = op0_limb_10_col51;
-            let op0_limb_11_col52 = memoryidtobig_value_tmp_f459_14.get_m31(11);
+            let op0_limb_11_col52 = memory_id_to_big_value_tmp_f459_14.get_m31(11);
             trace[52].data[row_index] = op0_limb_11_col52;
-            let op0_limb_12_col53 = memoryidtobig_value_tmp_f459_14.get_m31(12);
+            let op0_limb_12_col53 = memory_id_to_big_value_tmp_f459_14.get_m31(12);
             trace[53].data[row_index] = op0_limb_12_col53;
-            let op0_limb_13_col54 = memoryidtobig_value_tmp_f459_14.get_m31(13);
+            let op0_limb_13_col54 = memory_id_to_big_value_tmp_f459_14.get_m31(13);
             trace[54].data[row_index] = op0_limb_13_col54;
-            let op0_limb_14_col55 = memoryidtobig_value_tmp_f459_14.get_m31(14);
+            let op0_limb_14_col55 = memory_id_to_big_value_tmp_f459_14.get_m31(14);
             trace[55].data[row_index] = op0_limb_14_col55;
-            let op0_limb_15_col56 = memoryidtobig_value_tmp_f459_14.get_m31(15);
+            let op0_limb_15_col56 = memory_id_to_big_value_tmp_f459_14.get_m31(15);
             trace[56].data[row_index] = op0_limb_15_col56;
-            let op0_limb_16_col57 = memoryidtobig_value_tmp_f459_14.get_m31(16);
+            let op0_limb_16_col57 = memory_id_to_big_value_tmp_f459_14.get_m31(16);
             trace[57].data[row_index] = op0_limb_16_col57;
-            let op0_limb_17_col58 = memoryidtobig_value_tmp_f459_14.get_m31(17);
+            let op0_limb_17_col58 = memory_id_to_big_value_tmp_f459_14.get_m31(17);
             trace[58].data[row_index] = op0_limb_17_col58;
-            let op0_limb_18_col59 = memoryidtobig_value_tmp_f459_14.get_m31(18);
+            let op0_limb_18_col59 = memory_id_to_big_value_tmp_f459_14.get_m31(18);
             trace[59].data[row_index] = op0_limb_18_col59;
-            let op0_limb_19_col60 = memoryidtobig_value_tmp_f459_14.get_m31(19);
+            let op0_limb_19_col60 = memory_id_to_big_value_tmp_f459_14.get_m31(19);
             trace[60].data[row_index] = op0_limb_19_col60;
-            let op0_limb_20_col61 = memoryidtobig_value_tmp_f459_14.get_m31(20);
+            let op0_limb_20_col61 = memory_id_to_big_value_tmp_f459_14.get_m31(20);
             trace[61].data[row_index] = op0_limb_20_col61;
-            let op0_limb_21_col62 = memoryidtobig_value_tmp_f459_14.get_m31(21);
+            let op0_limb_21_col62 = memory_id_to_big_value_tmp_f459_14.get_m31(21);
             trace[62].data[row_index] = op0_limb_21_col62;
-            let op0_limb_22_col63 = memoryidtobig_value_tmp_f459_14.get_m31(22);
+            let op0_limb_22_col63 = memory_id_to_big_value_tmp_f459_14.get_m31(22);
             trace[63].data[row_index] = op0_limb_22_col63;
-            let op0_limb_23_col64 = memoryidtobig_value_tmp_f459_14.get_m31(23);
+            let op0_limb_23_col64 = memory_id_to_big_value_tmp_f459_14.get_m31(23);
             trace[64].data[row_index] = op0_limb_23_col64;
-            let op0_limb_24_col65 = memoryidtobig_value_tmp_f459_14.get_m31(24);
+            let op0_limb_24_col65 = memory_id_to_big_value_tmp_f459_14.get_m31(24);
             trace[65].data[row_index] = op0_limb_24_col65;
-            let op0_limb_25_col66 = memoryidtobig_value_tmp_f459_14.get_m31(25);
+            let op0_limb_25_col66 = memory_id_to_big_value_tmp_f459_14.get_m31(25);
             trace[66].data[row_index] = op0_limb_25_col66;
-            let op0_limb_26_col67 = memoryidtobig_value_tmp_f459_14.get_m31(26);
+            let op0_limb_26_col67 = memory_id_to_big_value_tmp_f459_14.get_m31(26);
             trace[67].data[row_index] = op0_limb_26_col67;
-            let op0_limb_27_col68 = memoryidtobig_value_tmp_f459_14.get_m31(27);
+            let op0_limb_27_col68 = memory_id_to_big_value_tmp_f459_14.get_m31(27);
             trace[68].data[row_index] = op0_limb_27_col68;
             sub_components_inputs.memory_id_to_big_inputs[1].extend(op0_id_col40.unpack());
 
-            lookup_data.memoryidtobig[1].push([
+            lookup_data.memory_id_to_big[1].push([
                 op0_id_col40,
                 op0_limb_0_col41,
                 op0_limb_1_col42,
@@ -527,15 +555,15 @@ pub fn write_trace_simd(
                 op0_limb_27_col68,
             ]);
 
-            // ReadPositive_num_bits_252.
+            // Read Positive Num Bits 252.
 
-            let memoryaddresstoid_value_tmp_f459_15 = memory_address_to_id_state.deduce_output(
+            let memory_address_to_id_value_tmp_f459_15 = memory_address_to_id_state.deduce_output(
                 ((((op1_base_fp_col8) * (input_fp_col2)) + ((op1_base_ap_col9) * (input_ap_col1)))
                     + ((offset2_col5) - (M31_32768))),
             );
-            let memoryidtobig_value_tmp_f459_16 =
-                memory_id_to_big_state.deduce_output(memoryaddresstoid_value_tmp_f459_15);
-            let op1_id_col69 = memoryaddresstoid_value_tmp_f459_15;
+            let memory_id_to_big_value_tmp_f459_16 =
+                memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_f459_15);
+            let op1_id_col69 = memory_address_to_id_value_tmp_f459_15;
             trace[69].data[row_index] = op1_id_col69;
             sub_components_inputs.memory_address_to_id_inputs[2].extend(
                 ((((op1_base_fp_col8) * (input_fp_col2)) + ((op1_base_ap_col9) * (input_ap_col1)))
@@ -543,70 +571,70 @@ pub fn write_trace_simd(
                     .unpack(),
             );
 
-            lookup_data.memoryaddresstoid[2].push([
+            lookup_data.memory_address_to_id[2].push([
                 ((((op1_base_fp_col8) * (input_fp_col2)) + ((op1_base_ap_col9) * (input_ap_col1)))
                     + ((offset2_col5) - (M31_32768))),
                 op1_id_col69,
             ]);
-            let op1_limb_0_col70 = memoryidtobig_value_tmp_f459_16.get_m31(0);
+            let op1_limb_0_col70 = memory_id_to_big_value_tmp_f459_16.get_m31(0);
             trace[70].data[row_index] = op1_limb_0_col70;
-            let op1_limb_1_col71 = memoryidtobig_value_tmp_f459_16.get_m31(1);
+            let op1_limb_1_col71 = memory_id_to_big_value_tmp_f459_16.get_m31(1);
             trace[71].data[row_index] = op1_limb_1_col71;
-            let op1_limb_2_col72 = memoryidtobig_value_tmp_f459_16.get_m31(2);
+            let op1_limb_2_col72 = memory_id_to_big_value_tmp_f459_16.get_m31(2);
             trace[72].data[row_index] = op1_limb_2_col72;
-            let op1_limb_3_col73 = memoryidtobig_value_tmp_f459_16.get_m31(3);
+            let op1_limb_3_col73 = memory_id_to_big_value_tmp_f459_16.get_m31(3);
             trace[73].data[row_index] = op1_limb_3_col73;
-            let op1_limb_4_col74 = memoryidtobig_value_tmp_f459_16.get_m31(4);
+            let op1_limb_4_col74 = memory_id_to_big_value_tmp_f459_16.get_m31(4);
             trace[74].data[row_index] = op1_limb_4_col74;
-            let op1_limb_5_col75 = memoryidtobig_value_tmp_f459_16.get_m31(5);
+            let op1_limb_5_col75 = memory_id_to_big_value_tmp_f459_16.get_m31(5);
             trace[75].data[row_index] = op1_limb_5_col75;
-            let op1_limb_6_col76 = memoryidtobig_value_tmp_f459_16.get_m31(6);
+            let op1_limb_6_col76 = memory_id_to_big_value_tmp_f459_16.get_m31(6);
             trace[76].data[row_index] = op1_limb_6_col76;
-            let op1_limb_7_col77 = memoryidtobig_value_tmp_f459_16.get_m31(7);
+            let op1_limb_7_col77 = memory_id_to_big_value_tmp_f459_16.get_m31(7);
             trace[77].data[row_index] = op1_limb_7_col77;
-            let op1_limb_8_col78 = memoryidtobig_value_tmp_f459_16.get_m31(8);
+            let op1_limb_8_col78 = memory_id_to_big_value_tmp_f459_16.get_m31(8);
             trace[78].data[row_index] = op1_limb_8_col78;
-            let op1_limb_9_col79 = memoryidtobig_value_tmp_f459_16.get_m31(9);
+            let op1_limb_9_col79 = memory_id_to_big_value_tmp_f459_16.get_m31(9);
             trace[79].data[row_index] = op1_limb_9_col79;
-            let op1_limb_10_col80 = memoryidtobig_value_tmp_f459_16.get_m31(10);
+            let op1_limb_10_col80 = memory_id_to_big_value_tmp_f459_16.get_m31(10);
             trace[80].data[row_index] = op1_limb_10_col80;
-            let op1_limb_11_col81 = memoryidtobig_value_tmp_f459_16.get_m31(11);
+            let op1_limb_11_col81 = memory_id_to_big_value_tmp_f459_16.get_m31(11);
             trace[81].data[row_index] = op1_limb_11_col81;
-            let op1_limb_12_col82 = memoryidtobig_value_tmp_f459_16.get_m31(12);
+            let op1_limb_12_col82 = memory_id_to_big_value_tmp_f459_16.get_m31(12);
             trace[82].data[row_index] = op1_limb_12_col82;
-            let op1_limb_13_col83 = memoryidtobig_value_tmp_f459_16.get_m31(13);
+            let op1_limb_13_col83 = memory_id_to_big_value_tmp_f459_16.get_m31(13);
             trace[83].data[row_index] = op1_limb_13_col83;
-            let op1_limb_14_col84 = memoryidtobig_value_tmp_f459_16.get_m31(14);
+            let op1_limb_14_col84 = memory_id_to_big_value_tmp_f459_16.get_m31(14);
             trace[84].data[row_index] = op1_limb_14_col84;
-            let op1_limb_15_col85 = memoryidtobig_value_tmp_f459_16.get_m31(15);
+            let op1_limb_15_col85 = memory_id_to_big_value_tmp_f459_16.get_m31(15);
             trace[85].data[row_index] = op1_limb_15_col85;
-            let op1_limb_16_col86 = memoryidtobig_value_tmp_f459_16.get_m31(16);
+            let op1_limb_16_col86 = memory_id_to_big_value_tmp_f459_16.get_m31(16);
             trace[86].data[row_index] = op1_limb_16_col86;
-            let op1_limb_17_col87 = memoryidtobig_value_tmp_f459_16.get_m31(17);
+            let op1_limb_17_col87 = memory_id_to_big_value_tmp_f459_16.get_m31(17);
             trace[87].data[row_index] = op1_limb_17_col87;
-            let op1_limb_18_col88 = memoryidtobig_value_tmp_f459_16.get_m31(18);
+            let op1_limb_18_col88 = memory_id_to_big_value_tmp_f459_16.get_m31(18);
             trace[88].data[row_index] = op1_limb_18_col88;
-            let op1_limb_19_col89 = memoryidtobig_value_tmp_f459_16.get_m31(19);
+            let op1_limb_19_col89 = memory_id_to_big_value_tmp_f459_16.get_m31(19);
             trace[89].data[row_index] = op1_limb_19_col89;
-            let op1_limb_20_col90 = memoryidtobig_value_tmp_f459_16.get_m31(20);
+            let op1_limb_20_col90 = memory_id_to_big_value_tmp_f459_16.get_m31(20);
             trace[90].data[row_index] = op1_limb_20_col90;
-            let op1_limb_21_col91 = memoryidtobig_value_tmp_f459_16.get_m31(21);
+            let op1_limb_21_col91 = memory_id_to_big_value_tmp_f459_16.get_m31(21);
             trace[91].data[row_index] = op1_limb_21_col91;
-            let op1_limb_22_col92 = memoryidtobig_value_tmp_f459_16.get_m31(22);
+            let op1_limb_22_col92 = memory_id_to_big_value_tmp_f459_16.get_m31(22);
             trace[92].data[row_index] = op1_limb_22_col92;
-            let op1_limb_23_col93 = memoryidtobig_value_tmp_f459_16.get_m31(23);
+            let op1_limb_23_col93 = memory_id_to_big_value_tmp_f459_16.get_m31(23);
             trace[93].data[row_index] = op1_limb_23_col93;
-            let op1_limb_24_col94 = memoryidtobig_value_tmp_f459_16.get_m31(24);
+            let op1_limb_24_col94 = memory_id_to_big_value_tmp_f459_16.get_m31(24);
             trace[94].data[row_index] = op1_limb_24_col94;
-            let op1_limb_25_col95 = memoryidtobig_value_tmp_f459_16.get_m31(25);
+            let op1_limb_25_col95 = memory_id_to_big_value_tmp_f459_16.get_m31(25);
             trace[95].data[row_index] = op1_limb_25_col95;
-            let op1_limb_26_col96 = memoryidtobig_value_tmp_f459_16.get_m31(26);
+            let op1_limb_26_col96 = memory_id_to_big_value_tmp_f459_16.get_m31(26);
             trace[96].data[row_index] = op1_limb_26_col96;
-            let op1_limb_27_col97 = memoryidtobig_value_tmp_f459_16.get_m31(27);
+            let op1_limb_27_col97 = memory_id_to_big_value_tmp_f459_16.get_m31(27);
             trace[97].data[row_index] = op1_limb_27_col97;
             sub_components_inputs.memory_id_to_big_inputs[2].extend(op1_id_col69.unpack());
 
-            lookup_data.memoryidtobig[2].push([
+            lookup_data.memory_id_to_big[2].push([
                 op1_id_col69,
                 op1_limb_0_col70,
                 op1_limb_1_col71,
@@ -638,7 +666,7 @@ pub fn write_trace_simd(
                 op1_limb_27_col97,
             ]);
 
-            // VerifyAdd252.
+            // Verify Add 252.
 
             let sub_p_bit_tmp_f459_17 = ((UInt16_1)
                 & (((PackedUInt16::from_m31(op0_limb_0_col41))
@@ -659,27 +687,27 @@ pub fn write_trace_simd(
 }
 
 pub struct LookupData {
-    pub memoryaddresstoid: [Vec<[PackedM31; 2]>; 3],
-    pub memoryidtobig: [Vec<[PackedM31; 29]>; 3],
+    pub memory_address_to_id: [Vec<[PackedM31; 2]>; 3],
+    pub memory_id_to_big: [Vec<[PackedM31; 29]>; 3],
     pub opcodes: [Vec<[PackedM31; 3]>; 2],
-    pub verifyinstruction: [Vec<[PackedM31; 19]>; 1],
+    pub verify_instruction: [Vec<[PackedM31; 19]>; 1],
 }
 impl LookupData {
     #[allow(unused_variables)]
     fn with_capacity(capacity: usize) -> Self {
         Self {
-            memoryaddresstoid: [
+            memory_address_to_id: [
                 Vec::with_capacity(capacity),
                 Vec::with_capacity(capacity),
                 Vec::with_capacity(capacity),
             ],
-            memoryidtobig: [
+            memory_id_to_big: [
                 Vec::with_capacity(capacity),
                 Vec::with_capacity(capacity),
                 Vec::with_capacity(capacity),
             ],
             opcodes: [Vec::with_capacity(capacity), Vec::with_capacity(capacity)],
-            verifyinstruction: [Vec::with_capacity(capacity)],
+            verify_instruction: [Vec::with_capacity(capacity)],
         }
     }
 }
@@ -692,10 +720,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        memoryaddresstoid_lookup_elements: &relations::MemoryAddressToId,
-        memoryidtobig_lookup_elements: &relations::MemoryIdToBig,
+        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
+        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         opcodes_lookup_elements: &relations::Opcodes,
-        verifyinstruction_lookup_elements: &relations::VerifyInstruction,
+        verify_instruction_lookup_elements: &relations::VerifyInstruction,
     ) -> InteractionClaim
     where
         SimdBackend: BackendForChannel<MC>,
@@ -704,57 +732,57 @@ impl InteractionClaimGenerator {
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.verifyinstruction[0];
+        let lookup_row = &self.lookup_data.verify_instruction[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = verifyinstruction_lookup_elements.combine(lookup_values);
+            let denom = verify_instruction_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[0];
+        let lookup_row = &self.lookup_data.memory_address_to_id[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
+            let denom = memory_address_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[0];
+        let lookup_row = &self.lookup_data.memory_id_to_big[0];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            let denom = memory_id_to_big_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[1];
+        let lookup_row = &self.lookup_data.memory_address_to_id[1];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
+            let denom = memory_address_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[1];
+        let lookup_row = &self.lookup_data.memory_id_to_big[1];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            let denom = memory_id_to_big_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryaddresstoid[2];
+        let lookup_row = &self.lookup_data.memory_address_to_id[2];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryaddresstoid_lookup_elements.combine(lookup_values);
+            let denom = memory_address_to_id_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        let lookup_row = &self.lookup_data.memoryidtobig[2];
+        let lookup_row = &self.lookup_data.memory_id_to_big[2];
         for (i, lookup_values) in lookup_row.iter().enumerate() {
-            let denom = memoryidtobig_lookup_elements.combine(lookup_values);
+            let denom = memory_id_to_big_lookup_elements.combine(lookup_values);
             col_gen.write_frac(i, PackedQM31::one(), denom);
         }
         col_gen.finalize_col();
