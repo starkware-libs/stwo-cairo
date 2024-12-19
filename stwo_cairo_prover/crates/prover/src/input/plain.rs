@@ -9,8 +9,7 @@ use itertools::Itertools;
 use super::mem::{MemConfig, MemoryBuilder};
 use super::state_transitions::StateTransitions;
 use super::vm_import::MemEntry;
-use super::CairoInput;
-use crate::input::MemorySegmentAddresses;
+use super::{BuiltinsSegments, CairoInput};
 
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
 /// Translates a plain casm into a CairoInput by running the program and extracting the memory and
@@ -71,12 +70,18 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
                 val: bytemuck::cast(v.to_bytes_le()),
             })
         });
-    let trace = runner.relocated_trace.unwrap();
+    let trace = runner.relocated_trace.clone().unwrap();
     let trace = trace.iter().map(|t| t.clone().into());
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
     let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode);
+
+    let public_input = runner
+        .get_air_public_input()
+        .expect("Unable to get public input from the runner");
+
+    let builtins_segments = BuiltinsSegments::from_memory_segments(&public_input.memory_segments);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
@@ -84,9 +89,6 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
         state_transitions,
         mem: mem.build(),
         public_mem_addresses,
-        range_check_builtin: MemorySegmentAddresses {
-            begin_addr: 24,
-            stop_ptr: 64,
-        },
+        builtins_segments,
     }
 }
