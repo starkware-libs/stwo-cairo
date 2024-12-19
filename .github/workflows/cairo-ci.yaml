@@ -39,13 +39,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           lfs: false
+      - run: ./scripts/fetch_large_files.sh 
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
           profile: minimal
           toolchain: nightly-2024-12-16
       - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2024-12-16 test --release
+      - run: cargo +nightly-2024-12-16 test --release --features slow-test
 
   format:
     runs-on: ubuntu-latest
