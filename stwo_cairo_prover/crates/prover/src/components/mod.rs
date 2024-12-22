@@ -1,5 +1,7 @@
-use prover_types::simd::N_LANES;
+use std::{alloc, ptr};
+
 use stwo_prover::core::backend::simd::conversion::Pack;
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_f;
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_t;
@@ -46,4 +48,71 @@ pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
         .array_chunks::<N_LANES>()
         .map(|c| T::pack(*c))
         .collect()
+}
+
+// TODO(Gali): Move to somewhere else.
+/// An aligned vector of `u32` that is used to store the multiplicities of the columns, for a direct
+/// transmuting to Vec<PackedM31>.
+pub struct MultiplicityColumn {
+    data: Vec<u32>,
+}
+impl MultiplicityColumn {
+    /// Creates a new `MultiplicityColumn` with the given size. The elements are initialized to 0.
+    pub fn new(size: usize) -> Self {
+        let layout = alloc::Layout::from_size_align(
+            size * std::mem::size_of::<u32>(),
+            std::mem::size_of::<PackedM31>(),
+        )
+        .unwrap();
+        let vec_ptr = unsafe { alloc::alloc(layout) as *mut u32 };
+
+        unsafe {
+            ptr::write_bytes(vec_ptr, 0, size);
+        }
+        Self {
+            data: unsafe { Vec::from_raw_parts(vec_ptr, size, size) },
+        }
+    }
+
+    /// Transmutes the internal data to a Vec<PackedM31>.
+    /// The size of the internal data must be a multiple of N_LANES.
+    /// The internal data is forgotten.
+    pub fn as_packed_m31(self) -> Vec<PackedM31> {
+        assert!(self.data.len() % N_LANES == 0);
+
+        let packed_vec = unsafe {
+            Vec::from_raw_parts(
+                self.data.as_ptr() as *mut PackedM31,
+                self.data.len() / N_LANES,
+                self.data.capacity() / N_LANES,
+            )
+        };
+        std::mem::forget(self.data);
+        packed_vec
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use stwo_prover::core::backend::simd::m31::N_LANES;
+    use stwo_prover::core::fields::m31::M31;
+
+    #[test]
+    fn test_multiplicities_column_new() {
+        let col_mults = super::MultiplicityColumn::new(N_LANES);
+
+        assert!(col_mults.data.len() == N_LANES);
+        assert!(col_mults.data.iter().sum::<u32>() == 0);
+        assert!(col_mults.data.as_ptr() as usize % std::mem::size_of::<super::PackedM31>() == 0);
+    }
+
+    #[test]
+    fn test_multiplicities_column_as_packed_m31() {
+        let col_mults = super::MultiplicityColumn::new(N_LANES);
+        let packed_vec = col_mults.as_packed_m31();
+
+        assert!(packed_vec.len() == 1);
+        assert!(packed_vec[0].to_array().iter().all(|&x| x == M31::zero()));
+    }
 }

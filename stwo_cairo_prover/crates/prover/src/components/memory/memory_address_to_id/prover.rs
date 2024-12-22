@@ -18,6 +18,7 @@ use super::component::{Claim, InteractionClaim, N_SPLIT_CHUNKS};
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
+use crate::components::MultiplicityColumn;
 use crate::input::mem::Memory;
 use crate::relations;
 
@@ -26,7 +27,7 @@ pub type InputType = M31;
 
 pub struct ClaimGenerator {
     pub ids: Vec<u32>,
-    pub multiplicities: Vec<u32>,
+    pub multiplicities: MultiplicityColumn,
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
@@ -34,7 +35,7 @@ impl ClaimGenerator {
             .map(|addr| mem.get_raw_id(addr as u32))
             .collect_vec();
 
-        let multiplicities = vec![0; ids.len()];
+        let multiplicities = MultiplicityColumn::new(ids.len());
         Self {
             ids,
             multiplicities,
@@ -66,7 +67,7 @@ impl ClaimGenerator {
 
     pub fn add_m31(&mut self, addr: BaseField) {
         let addr = addr.0 as usize;
-        self.multiplicities[addr] += 1;
+        self.multiplicities.data[addr] += 1;
     }
 
     pub fn write_trace<MC: MerkleChannel>(
@@ -84,17 +85,13 @@ impl ClaimGenerator {
         // Pad to a multiple of `N_LANES`.
         let next_multiple_of_16 = self.ids.len().next_multiple_of(16);
         self.ids.resize(next_multiple_of_16, 0);
-        self.multiplicities.resize(next_multiple_of_16, 0);
+        self.multiplicities.data.resize(next_multiple_of_16, 0);
 
-        // TODO(Ohad): avoid copy.
         let id_it = self
             .ids
             .array_chunks::<N_LANES>()
             .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
-        let multiplicities_it = self
-            .multiplicities
-            .array_chunks::<N_LANES>()
-            .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
+        let multiplicities_it = self.multiplicities.as_packed_m31();
 
         let inc =
             PackedM31::from_array(std::array::from_fn(|i| M31::from_u32_unchecked((i) as u32)));

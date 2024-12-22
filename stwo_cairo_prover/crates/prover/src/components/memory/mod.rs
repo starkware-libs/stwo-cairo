@@ -45,7 +45,10 @@ mod tests {
             memory_address_to_id_gen.add_m31(*addr);
         });
 
-        assert_eq!(memory_address_to_id_gen.multiplicities, expected_addr_mult);
-        assert_eq!(memory_id_to_big.multiplicities, expected_f252_mult);
+        assert_eq!(
+            memory_address_to_id_gen.multiplicities.data,
+            expected_addr_mult
+        );
+        assert_eq!(memory_id_to_big.multiplicities.data, expected_f252_mult);
     }
 }
