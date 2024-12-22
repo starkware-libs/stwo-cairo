@@ -1,5 +1,8 @@
-use prover_types::simd::N_LANES;
+use std::mem::transmute;
+use std::simd::Simd;
+
 use stwo_prover::core::backend::simd::conversion::Pack;
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_f;
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_t;
@@ -46,4 +49,67 @@ pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
         .array_chunks::<N_LANES>()
         .map(|c| T::pack(*c))
         .collect()
+}
+
+// TODO(Gali): Move to somewhere else.
+/// An aligned vector of `u32` that is used to store the multiplicities of the columns, for logup
+/// arguments.
+pub struct MultiplicityColumn {
+    data: Vec<Simd<u32, N_LANES>>,
+}
+impl MultiplicityColumn {
+    /// Creates a new `MultiplicityColumn` with the given size. The elements are initialized to 0.
+    pub fn new(size: usize) -> Self {
+        let vec_size = size.next_multiple_of(N_LANES) / N_LANES;
+        Self {
+            data: vec![unsafe { std::mem::zeroed() }; vec_size],
+        }
+    }
+
+    pub fn increase_at(&mut self, address: usize) {
+        self.data[address / N_LANES][address % N_LANES] += 1;
+    }
+
+    /// Returns the internal data as a Vec<PackedM31>.
+    pub fn into_vec(self) -> Vec<PackedM31> {
+        // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
+        // multiple of N_LANES.
+        unsafe { transmute(self.data) }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::{One, Zero};
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::core::backend::simd::m31::N_LANES;
+    use stwo_prover::core::fields::m31::M31;
+
+    #[test]
+    fn test_multiplicities_column() {
+        let mut multiplicity_column = super::MultiplicityColumn::new(6 * N_LANES - 2);
+        let mut vec = vec![M31::zero(); 6 * N_LANES];
+        let mut rng = SmallRng::seed_from_u64(0u64);
+
+        (0..10 * N_LANES).for_each(|_| {
+            let addr = rng.gen_range(0..N_LANES * 6);
+            multiplicity_column.increase_at(addr);
+            vec[addr] += M31::one();
+        });
+
+        assert!(multiplicity_column.data.len() == 6);
+        // The vector should be aligned to the size of PackedM31.
+        assert!(
+            multiplicity_column.data.as_ptr() as usize % std::mem::size_of::<super::PackedM31>()
+                == 0
+        );
+        for (packed_chunk, vec_chunk) in multiplicity_column
+            .into_vec()
+            .iter()
+            .zip(vec.chunks(N_LANES))
+        {
+            assert!(packed_chunk.to_array() == vec_chunk);
+        }
+    }
 }
