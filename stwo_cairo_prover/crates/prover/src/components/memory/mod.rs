@@ -7,7 +7,10 @@ pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 
 #[cfg(test)]
 mod tests {
+    use std::simd::Simd;
+
     use itertools::Itertools;
+    use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::fields::m31::BaseField;
 
     use crate::components::memory::memory_address_to_id;
@@ -31,8 +34,8 @@ mod tests {
             .into_iter()
             .map(BaseField::from)
             .collect_vec();
-        let expected_addr_mult: [u32; N_ENTRIES as usize] = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0];
-        let expected_f252_mult: [u32; N_ENTRIES as usize] = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0];
+        let expected_addr_mult: [u32; N_LANES] = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let expected_f252_mult: [u32; N_LANES] = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         address_usages.iter().for_each(|addr| {
             let decoded_id = memory.address_to_id[addr.0 as usize].decode();
@@ -45,7 +48,15 @@ mod tests {
             memory_address_to_id_gen.add_m31(*addr);
         });
 
-        assert_eq!(memory_address_to_id_gen.multiplicities, expected_addr_mult);
-        assert_eq!(memory_id_to_big.multiplicities, expected_f252_mult);
+        assert_eq!(memory_address_to_id_gen.multiplicities.data.len(), 1);
+        assert_eq!(
+            memory_address_to_id_gen.multiplicities.data[0],
+            Simd::from_array(expected_addr_mult)
+        );
+        assert_eq!(memory_id_to_big.multiplicities.data.len(), 1);
+        assert_eq!(
+            memory_id_to_big.multiplicities.data[0],
+            Simd::from_array(expected_f252_mult)
+        );
     }
 }
