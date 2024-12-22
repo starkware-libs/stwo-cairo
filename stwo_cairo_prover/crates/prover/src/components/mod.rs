@@ -1,5 +1,7 @@
-use prover_types::simd::N_LANES;
+use std::{alloc, ptr};
+
 use stwo_prover::core::backend::simd::conversion::Pack;
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_f;
 pub mod add_ap_opcode_is_imm_f_op1_base_fp_t;
@@ -46,4 +48,39 @@ pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
         .array_chunks::<N_LANES>()
         .map(|c| T::pack(*c))
         .collect()
+}
+
+// TODO(Gali): Move to somewhere else.
+/// An aligned vector of `u32` that is used to store the multiplicities of the columns, for a direct
+/// transmuting to Vec<PackedM31>.
+pub struct ColMults(Vec<u32>);
+
+impl ColMults {
+    /// Creates a new `ColMults` with the given size. The elements are initialized to 0.
+    pub fn new(size: usize) -> Self {
+        let layout = alloc::Layout::from_size_align(
+            size * std::mem::size_of::<u32>(),
+            std::mem::size_of::<PackedM31>(),
+        )
+        .unwrap();
+        let vec_ptr = unsafe { alloc::alloc(layout) as *mut u32 };
+
+        unsafe {
+            ptr::write_bytes(vec_ptr, 0, size);
+        }
+        Self(unsafe { Vec::from_raw_parts(vec_ptr, size, size) })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use stwo_prover::core::backend::simd::m31::N_LANES;
+
+    #[test]
+    fn test_col_mults() {
+        let col_mults = super::ColMults::new(N_LANES);
+        assert!(col_mults.0.len() == N_LANES);
+        assert!(col_mults.0.iter().sum::<u32>() == 0);
+        assert!(col_mults.0.as_ptr() as usize % std::mem::size_of::<super::PackedM31>() == 0);
+    }
 }
