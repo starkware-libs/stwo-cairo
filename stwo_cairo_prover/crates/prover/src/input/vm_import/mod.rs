@@ -1,20 +1,21 @@
 mod json;
 
+use std::collections::HashMap;
 use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::PublicInput;
+use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use thiserror::Error;
 use tracing::{span, Level};
 
+use super::builtin_segments::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::CairoInput;
 use crate::input::memory::MemoryBuilder;
-use crate::input::BuiltinSegments;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -27,12 +28,13 @@ pub enum VmImportError {
 }
 
 // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
-pub fn import_from_vm_output(
+/// Adapts the VM's output files to the Cairo input of the prover.
+pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
-    dev_mode: bool,
+    dev_mod: bool,
 ) -> Result<CairoInput, VmImportError> {
-    let _span = span!(Level::INFO, "import_from_vm_output").entered();
+    let _span = span!(Level::INFO, "adapt_vm_output").entered();
     let public_input_string = std::fs::read_to_string(public_input_json)?;
     let public_input: PublicInput<'_> = sonic_rs::from_str(&public_input_string)?;
     let private_input: PrivateInput =
@@ -45,7 +47,6 @@ pub fn import_from_vm_output(
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
     assert!(end_addr < (1 << 32));
-    let memory_config = MemoryConfig::default();
 
     let memory_path = private_input_json
         .parent()
@@ -56,25 +57,39 @@ pub fn import_from_vm_output(
         .unwrap()
         .join(&private_input.trace_path);
 
-    let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut memory_file = std::io::BufReader::new(std::fs::File::open(memory_path)?);
-    let mut memory = MemoryBuilder::from_iter(memory_config, MemEntryIter(&mut memory_file));
-    let state_transitions =
-        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut memory, dev_mode);
+    let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
 
     let public_memory_addresses = public_input
         .public_memory
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
+    adapt_to_stwo_input(
+        TraceIter(&mut trace_file),
+        MemoryBuilder::from_iter(MemoryConfig::default(), MemEntryIter(&mut memory_file)),
+        public_memory_addresses,
+        &public_input.memory_segments,
+        dev_mod,
+    )
+}
 
-    let builtins_segments = BuiltinSegments::from_memory_segments(&public_input.memory_segments);
-
+// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
+/// Creates Cairo input for Stwo, utilized by:
+/// - `adapt_vm_output` in the prover.
+/// - `adapt_finished_runner` in the validator.
+pub fn adapt_to_stwo_input(
+    trace_iter: impl Iterator<Item = TraceEntry>,
+    mut memory: MemoryBuilder,
+    public_memory_addresses: Vec<u32>,
+    memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    dev_mode: bool,
+) -> Result<CairoInput, VmImportError> {
     Ok(CairoInput {
-        state_transitions,
+        state_transitions: StateTransitions::from_iter(trace_iter, &mut memory, dev_mode),
         memory: memory.build(),
         public_memory_addresses,
-        builtins_segments,
+        builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),
     })
 }
 
@@ -144,7 +159,7 @@ pub mod tests {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/large_cairo_input");
 
-        import_from_vm_output(
+        adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
             false,
@@ -158,7 +173,7 @@ pub mod tests {
     pub fn small_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/small_cairo_input");
-        import_from_vm_output(
+        adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
             false,
