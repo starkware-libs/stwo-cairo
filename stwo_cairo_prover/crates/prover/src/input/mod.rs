@@ -12,7 +12,8 @@ pub mod vm_import;
 
 pub const N_REGISTERS: usize = 3;
 
-// Externally provided inputs.
+// TODO(Stav): rename to StwoInput.
+/// Externally provided inputs for the Stwo prover.
 #[derive(Debug)]
 pub struct CairoInput {
     pub state_transitions: StateTransitions,
