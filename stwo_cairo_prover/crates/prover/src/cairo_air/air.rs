@@ -110,43 +110,39 @@ pub struct PublicData {
 }
 impl PublicData {
     pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
-        // TODO(Ohad): Optimized inverse.
-        let mut sum = QM31::zero();
-        sum += self
-            .public_memory
-            .iter()
-            .map(|(addr, id, val)| {
-                let memory_address_to_id =
-                    <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
-                        &lookup_elements.memory_address_to_id,
-                        &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
-                    )
-                    .inverse();
-                let id_to_value = <relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
-                    &lookup_elements.memory_id_to_value,
-                    &[
-                        [M31::from_u32_unchecked(*id)].as_slice(),
-                        split_f252(*val).as_slice(),
-                    ]
-                    .concat(),
-                )
-                .inverse();
-                memory_address_to_id + id_to_value
-            })
-            .sum::<QM31>();
+        let mut logup_data = Vec::new();
+
+        self.public_memory.iter().for_each(|(addr, id, val)| {
+            logup_data.push(
+                <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
+                    &lookup_elements.memory_address_to_id,
+                    &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
+                ),
+            );
+            logup_data.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
+                &lookup_elements.memory_id_to_value,
+                &[
+                    [M31::from_u32_unchecked(*id)].as_slice(),
+                    split_f252(*val).as_slice(),
+                ]
+                .concat(),
+            ));
+        });
 
         // Yield initial state and use the final.
-        sum += <relations::Opcodes as Relation<M31, QM31>>::combine(
+        logup_data.push(<relations::Opcodes as Relation<M31, QM31>>::combine(
             &lookup_elements.opcodes,
             &self.final_state.values(),
-        )
-        .inverse();
-        sum -= <relations::Opcodes as Relation<M31, QM31>>::combine(
+        ));
+
+        logup_data.push(-<relations::Opcodes as Relation<M31, QM31>>::combine(
             &lookup_elements.opcodes,
             &self.initial_state.values(),
-        )
-        .inverse();
-        sum
+        ));
+
+        let mut inverse_logup_data = vec![QM31::zero(); logup_data.len()];
+        QM31::batch_inverse(&logup_data, &mut inverse_logup_data);
+        inverse_logup_data.iter().sum::<QM31>()
     }
 }
 
