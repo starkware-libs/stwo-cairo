@@ -1,20 +1,21 @@
 mod json;
 
+use std::collections::HashMap;
 use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::PublicInput;
+use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use thiserror::Error;
 use tracing::{span, Level};
 
+use super::builtins_segments::BuiltinsSegments;
 use super::mem::MemConfig;
 use super::state_transitions::StateTransitions;
 use super::CairoInput;
 use crate::input::mem::MemoryBuilder;
-use crate::input::BuiltinsSegments;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -27,7 +28,8 @@ pub enum VmImportError {
 }
 
 // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
-pub fn import_from_vm_output(
+/// Adapts the VM's output files to the Cairo input of the prover.
+pub fn adapt_vm_output(
     pub_json: &Path,
     priv_json: &Path,
     dev_mod: bool,
@@ -44,30 +46,43 @@ pub fn import_from_vm_output(
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
     assert!(end_addr < (1 << 32));
-    let mem_config = MemConfig::default();
 
     let mem_path = priv_json.parent().unwrap().join(&priv_data.memory_path);
     let trace_path = priv_json.parent().unwrap().join(&priv_data.trace_path);
 
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
-    let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
-    let state_transitions =
-        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, dev_mod);
 
     let public_mem_addresses = pub_data
         .public_memory
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
+    adapter(
+        TraceIter(&mut trace_file),
+        MemoryBuilder::from_iter(MemConfig::default(), MemEntryIter(&mut mem_file)),
+        public_mem_addresses,
+        &pub_data.memory_segments,
+        dev_mod,
+    )
+}
 
-    let builtins_segments = BuiltinsSegments::from_memory_segments(&pub_data.memory_segments);
-
+// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
+/// Creates Cairo input for Stwo, utilized by:
+/// - `adapt_vm_output` in the prover.
+/// - `adapt_finished_runner` in the validator.
+pub fn adapter(
+    trace_iter: impl Iterator<Item = TraceEntry>,
+    mut mem: MemoryBuilder,
+    public_mem_addresses: Vec<u32>,
+    memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    dev_mode: bool,
+) -> Result<CairoInput, VmImportError> {
     Ok(CairoInput {
-        state_transitions,
+        state_transitions: StateTransitions::from_iter(trace_iter, &mut mem, dev_mode),
         mem: mem.build(),
         public_mem_addresses,
-        builtins_segments,
+        builtins_segments: BuiltinsSegments::from_memory_segments(memory_segments),
     })
 }
 
@@ -137,7 +152,7 @@ pub mod tests {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/large_cairo_input");
 
-        import_from_vm_output(
+        adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
             false,
@@ -151,7 +166,7 @@ pub mod tests {
     pub fn small_cairo_input() -> CairoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/small_cairo_input");
-        import_from_vm_output(
+        adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
             false,
