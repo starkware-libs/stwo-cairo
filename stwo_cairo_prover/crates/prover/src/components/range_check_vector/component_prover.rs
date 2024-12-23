@@ -5,7 +5,7 @@ macro_rules! range_check_prover {
             use std::iter::zip;
             use std::simd::Simd;
 
-            use itertools::{chain, Itertools};
+            use itertools::chain;
             use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
             use stwo_prover::constraint_framework::Relation;
             use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -19,6 +19,7 @@ macro_rules! range_check_prover {
             use stwo_prover::core::poly::BitReversedOrder;
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
+            use $crate::components::MultiplicityColumn;
             use $crate::components::range_check_vector::{generate_partitioned_enumeration,
                                             partition_into_bit_segments, SIMD_ENUMERATION_0};
 
@@ -26,16 +27,14 @@ macro_rules! range_check_prover {
             pub type InputType = [M31; N_RANGES];
 
             pub struct ClaimGenerator {
-                // TODO(Ohad): change to alligned non-simd mults.
-                pub multiplicities: Vec<Simd<u32, N_LANES>>,
+                pub multiplicities: MultiplicityColumn,
             }
             impl ClaimGenerator {
                 #[allow(clippy::new_without_default)]
                 pub fn new() -> Self {
-                    let multiplicities = vec![
-                        Simd::<u32, N_LANES>::splat(0);
-                        1 << (RANGES.iter().sum::<u32>() - LOG_N_LANES)
-                    ];
+                    let length = 1 << (RANGES.iter().sum::<u32>()) as usize;
+                    let multiplicities = MultiplicityColumn::new(length);
+
                     Self {
                         multiplicities,
                     }
@@ -58,9 +57,7 @@ macro_rules! range_check_prover {
                         value <<= segment_n_bits;
                         value += segment.0;
                     }
-
-                    let (input_row, input_lane) = (value / N_LANES as u32, value % N_LANES as u32);
-                    self.multiplicities[input_row as usize][input_lane as usize] += 1;
+                    self.multiplicities.increase_at(value as usize);
                 }
 
                 // TODO(Ohad): test.
@@ -88,11 +85,7 @@ macro_rules! range_check_prover {
                     let log_size = self.log_size();
 
                     let fixed_columns = self.write_fixed_columns();
-                    let multiplicity_data = self
-                        .multiplicities
-                        .into_iter()
-                        .map(|m| unsafe { PackedM31::from_simd_unchecked(m) })
-                        .collect_vec();
+                    let multiplicity_data = self.multiplicities.into_simd_vec();
                     let multiplicity_column = BaseColumn {
                         data: multiplicity_data.clone(),
                         length: 1 << log_size,
