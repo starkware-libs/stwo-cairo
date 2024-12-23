@@ -1706,6 +1706,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
+name = "stwo-air-utils"
+version = "0.1.1"
+source = "git+https://github.com/starkware-libs/stwo?rev=069515d685f9ce#069515d685f9cee691a6d5517e9572dfe07c1e30"
+dependencies = [
+ "bytemuck",
+ "itertools 0.12.1",
+ "rayon",
+ "stwo-air-utils-derive",
+ "stwo-prover",
+]
+
+[[package]]
+name = "stwo-air-utils-derive"
+version = "0.1.0"
+source = "git+https://github.com/starkware-libs/stwo?rev=069515d685f9ce#069515d685f9cee691a6d5517e9572dfe07c1e30"
+dependencies = [
+ "itertools 0.13.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.90",
+]
+
+[[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
 dependencies = [
@@ -1726,7 +1749,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=f24cde6#f24cde6f8de3f1db75d04f87807f052aa889b077"
+source = "git+https://github.com/starkware-libs/stwo?rev=069515d685f9ce#069515d685f9cee691a6d5517e9572dfe07c1e30"
 dependencies = [
  "blake2",
  "blake3",
@@ -1763,6 +1786,8 @@ dependencies = [
  "serde",
  "sonic-rs",
  "starknet-ff",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
  "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_utils",

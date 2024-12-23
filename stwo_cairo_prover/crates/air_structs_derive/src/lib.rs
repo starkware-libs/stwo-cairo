@@ -26,6 +26,25 @@ pub fn derive_sub_component_inputs(input: proc_macro::TokenStream) -> proc_macro
     proc_macro::TokenStream::from(expanded)
 }
 
+#[proc_macro_derive(BitReverse)]
+pub fn derive_bit_reverse(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    assert_is_struct(&input);
+    let name = &input.ident;
+    let vec_array_fields = extract_vec_array_fields(&input);
+
+    // TODO(Ohad): deprecate with_capacity.
+    let bit_reverse_method = generate_bit_reverse_method(&vec_array_fields);
+
+    let expanded = quote! {
+        impl #name {
+            #bit_reverse_method
+        }
+    };
+
+    proc_macro::TokenStream::from(expanded)
+}
+
 #[derive(Clone)]
 struct VecArrayField {
     name: syn::Ident,

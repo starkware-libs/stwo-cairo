@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-parallel = ["rayon"]
 
 [dependencies]
 air_structs_derive = { path = "../air_structs_derive" }
@@ -16,7 +15,9 @@ itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 prover_types = { path = "../prover_types" }
-rayon = { version = "1.10.0", optional = true }
+stwo-air-utils-derive = {git = "https://github.com/starkware-libs/stwo", rev = "069515d685f9ce"}
+stwo-air-utils = {git = "https://github.com/starkware-libs/stwo", rev = "069515d685f9ce"}
+rayon = { version = "1.10.0", optional = false }
 serde.workspace = true
 sonic-rs.workspace = true
 starknet-ff.workspace = true
