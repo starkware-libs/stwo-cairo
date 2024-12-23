@@ -6,6 +6,7 @@ use stwo_verifier_core::fields::qm31::QM31;
 pub mod addr_to_id;
 pub mod genericopcode;
 pub mod id_to_f252;
+pub mod jump_f_t_opcode;
 pub mod range_check;
 pub mod ret_opcode;
 pub mod verify_instruction;

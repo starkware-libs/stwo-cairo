@@ -14,6 +14,11 @@ use components::range_check::{
 use components::ret_opcode::{
     ClaimImpl as RetOpcodeClaimImpl, InteractionClaimImpl as RetOpcodeInteractionClaimImpl,
 };
+
+use components::jump_f_t_opcode::{
+    ClaimImpl as JumpFTClaimImpl, InteractionClaimImpl as JumpFTInteractionClaimImpl,
+};
+
 use components::verify_instruction::{
     ClaimImpl as VerifyInstructionClaimImpl,
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
@@ -230,6 +235,7 @@ impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
 pub struct OpcodeInteractionClaim {
     generic: Array<components::genericopcode::InteractionClaim>,
     ret: Array<components::ret_opcode::InteractionClaim>,
+    jump_f_t: Array<components::jump_f_t_opcode::InteractionClaim>,
 }
 
 #[generate_trait]
@@ -239,7 +245,12 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             interaction_claim.mix_into(ref channel);
         };
 
+        // TODO(ilya): inconsistent order.
         for interaction_claim in self.ret.span() {
+            interaction_claim.mix_into(ref channel);
+        };
+
+        for interaction_claim in self.jump_f_t.span() {
             interaction_claim.mix_into(ref channel);
         };
     }
@@ -255,6 +266,13 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
         };
 
         for interaction_claim in self.ret.span() {
+            sum += match interaction_claim.claimed_sum {
+                Option::Some((claimed_sum, _)) => *claimed_sum,
+                Option::None => *interaction_claim.total_sum,
+            };
+        };
+
+        for interaction_claim in self.jump_f_t.span() {
             sum += match interaction_claim.claimed_sum {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
@@ -319,6 +337,7 @@ pub struct CasmState {
 pub struct OpcodeClaim {
     ret: Array<components::ret_opcode::Claim>,
     generic: Array<components::genericopcode::Claim>,
+    jump_f_t: Array<components::jump_f_t_opcode::Claim>,
 }
 
 #[generate_trait]
@@ -331,6 +350,10 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
         for generic_opcode_claim in self.generic.span() {
             generic_opcode_claim.mix_into(ref channel);
         };
+
+        for jump_f_t_opcode_claim in self.jump_f_t.span() {
+            jump_f_t_opcode_claim.mix_into(ref channel);
+        };
     }
 
     fn log_sizes(self: @OpcodeClaim) -> TreeArray<Span<u32>> {
@@ -342,6 +365,10 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
         for generic_opcode_claim in self.generic.span() {
             log_sizes.append(generic_opcode_claim.log_sizes());
+        };
+
+        for jump_f_t_opcode_claim in self.jump_f_t.span() {
+            log_sizes.append(jump_f_t_opcode_claim.log_sizes());
         };
 
         utils::tree_array_concat_cols(log_sizes)
@@ -608,6 +635,7 @@ impl CairoAirImpl of Air<CairoAir> {
 pub struct OpcodeComponents {
     generic: Array<components::genericopcode::Component>,
     ret: Array<components::ret_opcode::Component>,
+    jump_f_t: Array<components::jump_f_t_opcode::Component>,
 }
 
 #[generate_trait]
@@ -618,30 +646,40 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         interaction_claim: @OpcodeInteractionClaim,
     ) -> OpcodeComponents {
         // TODO: Handle dynamic number of components.
-        assert!(claim.generic.len() == 1);
-        assert!(claim.ret.len() == 1);
+        assert!(claim.generic.len() == 0);
+        assert!(claim.ret.len() == 0);
         assert!(interaction_claim.generic.len() == 1);
         assert!(interaction_claim.ret.len() == 1);
-        let generic_opcode_component = components::genericopcode::Component {
-            claim: *claim.generic[0],
-            interaction_claim: *interaction_claim.generic[0],
+        // let generic_opcode_component = components::genericopcode::Component {
+        //     claim: *claim.generic[0],
+        //     interaction_claim: *interaction_claim.generic[0],
+        //     memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+        //     memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+        //     verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+        //     opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+        //     range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+        //     range_check_9_9_lookup_elements: interaction_elements.range_check_9_9.clone(),
+        // };
+        // let ret_opcode_component = components::ret_opcode::Component {
+        //     claim: *claim.ret[0],
+        //     interaction_claim: *interaction_claim.ret[0],
+        //     memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+        //     memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+        //     verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+        //     opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+        // };
+
+        let jump_f_t_opcode_component = components::jump_f_t_opcode::Component {
+            claim: *claim.jump_f_t[0],
+            interaction_claim: *interaction_claim.jump_f_t[0],
             memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
             memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
             verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
             opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-            range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_check_9_9.clone(),
         };
-        let ret_opcode_component = components::ret_opcode::Component {
-            claim: *claim.ret[0],
-            interaction_claim: *interaction_claim.ret[0],
-            memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
-            memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-            opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-        };
+
         OpcodeComponents {
-            generic: array![generic_opcode_component], ret: array![ret_opcode_component],
+            generic: array![], ret: array![], jump_f_t: array![jump_f_t_opcode_component],
         }
     }
 
@@ -656,6 +694,10 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
 
         for component in self.ret.span() {
+            component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+        };
+
+        for component in self.jump_f_t.span() {
             component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
         };
     }
@@ -709,6 +751,19 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     point,
                 );
             println!("trying ret");
+        };
+
+        for component in self.jump_f_t.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+            println!("trying jump_f_t");
         };
     }
 }

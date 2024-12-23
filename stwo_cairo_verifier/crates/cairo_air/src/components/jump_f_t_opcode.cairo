@@ -96,11 +96,40 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let mut id_to_value_alpha_powers = self.memoryidtobig_lookup_elements.alpha_powers.span();
-        let id_to_value_alpha_pow_0 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_pow_1 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_pow_2 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_pow_3 = *id_to_value_alpha_powers.pop_front().unwrap();
+        let mut MemoryIdToBig_alpha0_powers = self
+            .memoryidtobig_lookup_elements
+            .alpha_powers
+            .span();
+        let MemoryIdToBig_alpha0 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha1 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha2 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha3 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha4 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha5 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha6 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha7 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha8 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha9 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha10 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha11 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha12 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha13 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha14 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha15 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha16 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha17 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha18 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha19 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha20 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha21 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha22 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha23 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha24 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha25 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha26 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha27 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha28 = *MemoryIdToBig_alpha0_powers.pop_front().unwrap();
+
         let mut addr_to_id_alpha_powers = self
             .memoryaddresstoid_lookup_elements
             .alpha_powers
@@ -128,14 +157,12 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let verify_instruction_alpha_pow_13 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_pow_14 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_pow_15 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_16 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_17 = *verify_instruction_alpha_powers.pop_front().unwrap();
 
-        let mut vm_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
-        let vm_alpha_pow_0 = *vm_alpha_powers.pop_front().unwrap();
-        let vm_alpha_pow_1 = *vm_alpha_powers.pop_front().unwrap();
-        let vm_alpha_pow_2 = *vm_alpha_powers.pop_front().unwrap();
-        let vm_z = *self.opcodes_lookup_elements.z;
+        let mut Opcodes_alpha0_powers = self.opcodes_lookup_elements.alpha_powers.span();
+        let Opcodes_alpha0 = *Opcodes_alpha0_powers.pop_front().unwrap();
+        let Opcodes_alpha1 = *Opcodes_alpha0_powers.pop_front().unwrap();
+        let Opcodes_alpha2 = *Opcodes_alpha0_powers.pop_front().unwrap();
+        let Opcodes_z = *self.opcodes_lookup_elements.z;
 
         let (claimed_sum, _) = (*self.interaction_claim.claimed_sum).unwrap();
 
@@ -145,13 +172,48 @@ pub impl ComponentImpl of CairoComponent<Component> {
             MemoryAddressToId_alpha0: addr_to_id_alpha_pow_0,
             MemoryAddressToId_alpha1: addr_to_id_alpha_pow_1,
             MemoryAddressToId_z: *self.memoryaddresstoid_lookup_elements.z,
-            MemoryIdToBig_alpha0: id_to_value_alpha_pow_0,
-            MemoryIdToBig_alpha1: id_to_value_alpha_pow_1,
-            MemoryIdToBig_alpha2: id_to_value_alpha_pow_2,
-            MemoryIdToBig_alpha3: id_to_value_alpha_pow_3,
+            MemoryIdToBig_alpha0: MemoryIdToBig_alpha0,
+            MemoryIdToBig_alpha1: MemoryIdToBig_alpha1,
+            MemoryIdToBig_alpha10: MemoryIdToBig_alpha10,
+            MemoryIdToBig_alpha11: MemoryIdToBig_alpha11,
+            MemoryIdToBig_alpha12: MemoryIdToBig_alpha12,
+            MemoryIdToBig_alpha13: MemoryIdToBig_alpha13,
+            MemoryIdToBig_alpha14: MemoryIdToBig_alpha14,
+            MemoryIdToBig_alpha15: MemoryIdToBig_alpha15,
+            MemoryIdToBig_alpha16: MemoryIdToBig_alpha16,
+            MemoryIdToBig_alpha17: MemoryIdToBig_alpha17,
+            MemoryIdToBig_alpha18: MemoryIdToBig_alpha18,
+            MemoryIdToBig_alpha19: MemoryIdToBig_alpha19,
+            MemoryIdToBig_alpha2: MemoryIdToBig_alpha2,
+            MemoryIdToBig_alpha20: MemoryIdToBig_alpha20,
+            MemoryIdToBig_alpha21: MemoryIdToBig_alpha21,
+            MemoryIdToBig_alpha22: MemoryIdToBig_alpha22,
+            MemoryIdToBig_alpha23: MemoryIdToBig_alpha23,
+            MemoryIdToBig_alpha24: MemoryIdToBig_alpha24,
+            MemoryIdToBig_alpha25: MemoryIdToBig_alpha25,
+            MemoryIdToBig_alpha26: MemoryIdToBig_alpha26,
+            MemoryIdToBig_alpha27: MemoryIdToBig_alpha27,
+            MemoryIdToBig_alpha28: MemoryIdToBig_alpha28,
+            MemoryIdToBig_alpha3: MemoryIdToBig_alpha3,
+            MemoryIdToBig_alpha4: MemoryIdToBig_alpha4,
+            MemoryIdToBig_alpha5: MemoryIdToBig_alpha5,
+            MemoryIdToBig_alpha6: MemoryIdToBig_alpha6,
+            MemoryIdToBig_alpha7: MemoryIdToBig_alpha7,
+            MemoryIdToBig_alpha8: MemoryIdToBig_alpha8,
+            MemoryIdToBig_alpha9: MemoryIdToBig_alpha9,
             MemoryIdToBig_z: *self.memoryidtobig_lookup_elements.z,
+            Opcodes_alpha0: Opcodes_alpha0,
+            Opcodes_alpha1: Opcodes_alpha1,
+            Opcodes_alpha2: Opcodes_alpha2,
+            Opcodes_z: Opcodes_z,
             VerifyInstruction_alpha0: verify_instruction_alpha_pow_0,
             VerifyInstruction_alpha1: verify_instruction_alpha_pow_1,
+            VerifyInstruction_alpha10: verify_instruction_alpha_pow_10,
+            VerifyInstruction_alpha11: verify_instruction_alpha_pow_11,
+            VerifyInstruction_alpha12: verify_instruction_alpha_pow_12,
+            VerifyInstruction_alpha13: verify_instruction_alpha_pow_13,
+            VerifyInstruction_alpha14: verify_instruction_alpha_pow_14,
+            VerifyInstruction_alpha15: verify_instruction_alpha_pow_15,
             VerifyInstruction_alpha2: verify_instruction_alpha_pow_2,
             VerifyInstruction_alpha3: verify_instruction_alpha_pow_3,
             VerifyInstruction_alpha4: verify_instruction_alpha_pow_4,
@@ -160,19 +222,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha7: verify_instruction_alpha_pow_7,
             VerifyInstruction_alpha8: verify_instruction_alpha_pow_8,
             VerifyInstruction_alpha9: verify_instruction_alpha_pow_9,
-            VerifyInstruction_alpha10: verify_instruction_alpha_pow_10,
-            VerifyInstruction_alpha11: verify_instruction_alpha_pow_11,
-            VerifyInstruction_alpha12: verify_instruction_alpha_pow_12,
-            VerifyInstruction_alpha13: verify_instruction_alpha_pow_13,
-            VerifyInstruction_alpha14: verify_instruction_alpha_pow_14,
-            VerifyInstruction_alpha15: verify_instruction_alpha_pow_15,
-            VerifyInstruction_alpha16: verify_instruction_alpha_pow_16,
-            VerifyInstruction_alpha17: verify_instruction_alpha_pow_17,
             VerifyInstruction_z: *self.verifyinstruction_lookup_elements.z,
-            Opcodes_alpha0: vm_alpha_pow_0,
-            Opcodes_alpha1: vm_alpha_pow_1,
-            Opcodes_alpha2: vm_alpha_pow_2,
-            Opcodes_z: vm_z,
             claimed_sum: claimed_sum,
             preprocessed_is_first: preprocessed_mask_values
                 .get(PreprocessedColumn::IsFirst(log_size)),
