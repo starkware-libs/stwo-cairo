@@ -8,18 +8,38 @@ mod tests {
     use stwo_prover::constraint_framework::expr::{BaseExpr, ColumnExpr, ExprEvaluator, ExtExpr};
     use stwo_prover::constraint_framework::FrameworkEval;
 
-    use crate::components::generic_opcode;
+    use crate::components::{generic_opcode, ret_opcode};
     use crate::relations;
+
+
+    #[test]
+    fn gen_ret_constraint_code() {
+        let generic_opcode_eval = ret_opcode::Eval {
+            claim: ret_opcode::Claim { n_calls: 0 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+        };
+
+        gen_cairo_constraint_code(
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, true)),
+            "components/generic_opcode/constraints.cairo",
+        )
+        .unwrap();
+
+        // ...other opcodes
+    }
 
     #[test]
     fn gen_all_cairo_constraint_code() {
         let generic_opcode_eval = generic_opcode::Eval {
             claim: generic_opcode::Claim { n_calls: 0 },
-            memoryaddresstoid_lookup_elements: relations::MemoryAddressToId::dummy(),
-            memoryidtobig_lookup_elements: relations::MemoryIdToBig::dummy(),
-            rangecheck_19_lookup_elements: relations::RangeCheck_19::dummy(),
-            rangecheck_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
-            verifyinstruction_lookup_elements: relations::VerifyInstruction::dummy(),
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
 
@@ -323,10 +343,10 @@ mod tests {
 
         format!(
             r#"
-            use stwo_cairo_verifier::{{ColumnSpan, ColumnArray}};
-            use stwo_cairo_verifier::circle::{{CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl}};
-            use stwo_cairo_verifier::fields::m31::{{m31, M31}};
-            use stwo_cairo_verifier::fields::qm31::{{QM31, QM31Impl, qm31}};
+            use stwo_verifier_core::{{ColumnSpan, ColumnArray}};
+            use stwo_verifier_core::circle::{{CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl}};
+            use stwo_verifier_core::fields::m31::{{m31, M31}};
+            use stwo_verifier_core::fields::qm31::{{QM31, QM31Impl, qm31}};
 
         {mask_function}
         {constraint_eval_function}
