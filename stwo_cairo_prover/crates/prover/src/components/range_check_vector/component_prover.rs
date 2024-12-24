@@ -70,10 +70,7 @@ macro_rules! range_check_prover {
 
                 fn write_fixed_columns(&self) -> [BaseColumn; N_RANGES] {
                     let mut fixed_columns = generate_partitioned_enumeration(RANGES).into_iter();
-                    std::array::from_fn(|_| BaseColumn {
-                        data: fixed_columns.next().unwrap(),
-                        length: 1 << self.log_size(),
-                    })
+                    std::array::from_fn(|_| BaseColumn::from_simd(fixed_columns.next().unwrap()))
                 }
 
                 pub fn write_trace<MC: MerkleChannel>(
@@ -86,11 +83,7 @@ macro_rules! range_check_prover {
 
                     let fixed_columns = self.write_fixed_columns();
                     let multiplicity_data = self.multiplicities.into_simd_vec();
-                    // TODO(Gali): Change to BaseColumn::from_simd_vec(vec: Vec<PackedM31>).
-                    let multiplicity_column = BaseColumn {
-                        data: multiplicity_data.clone(),
-                        length: 1 << log_size,
-                    };
+                    let multiplicity_column = BaseColumn::from_simd(multiplicity_data.clone());
 
                     let domain = CanonicCoset::new(log_size).circle_domain();
                     let trace = chain!(fixed_columns, [multiplicity_column])
