@@ -8,7 +8,7 @@ use cairo_vm::vm::errors::cairo_run_errors::CairoRunError;
 use cairo_vm::vm::runners::cairo_pie::CairoPie;
 use cairo_vm::vm::runners::cairo_runner::{CairoRunner, RunResources};
 use clap::{Parser, ValueHint};
-use stwo_cairo_prover::input::plain::input_from_finished_runner;
+use stwo_cairo_prover::input::plain::adapt_finished_runner;
 use stwo_cairo_prover::input::CairoInput;
 use stwo_cairo_utils::logging_utils::init_logging;
 use thiserror::Error;
@@ -150,5 +150,5 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
 /// Assumes memory and trace are already relocated. Otherwise panics.
 fn adapt_vm_output_to_stwo(runner: CairoRunner) -> CairoInput {
     let _span = tracing::info_span!("adapt_vm_output_to_stwo").entered();
-    input_from_finished_runner(runner, false)
+    adapt_finished_runner(runner, false)
 }
