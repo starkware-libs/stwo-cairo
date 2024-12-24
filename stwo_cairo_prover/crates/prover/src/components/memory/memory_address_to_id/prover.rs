@@ -76,7 +76,7 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let size = (self.ids.len() / N_SPLIT_CHUNKS).next_power_of_two();
+        let size = std::cmp::max((self.ids.len() / N_SPLIT_CHUNKS).next_power_of_two(), 16);
         let n_packed_rows = size.div_ceil(N_LANES);
         let mut trace: [_; N_TRACE_COLUMNS] =
             std::array::from_fn(|_| Col::<SimdBackend, M31>::zeros(size));
@@ -119,7 +119,7 @@ impl ClaimGenerator {
             std::array::from_fn(|i| trace[2 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
 
         // Commit on trace.
-        let log_size = size.checked_ilog2().unwrap();
+        let log_size = std::cmp::max(LOG_N_LANES, size.checked_ilog2().unwrap());
         let domain = CanonicCoset::new(log_size).circle_domain();
         let trace = trace
             .into_iter()

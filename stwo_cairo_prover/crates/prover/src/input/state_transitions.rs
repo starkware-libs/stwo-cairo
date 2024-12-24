@@ -649,7 +649,10 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 #[cfg(test)]
 mod mappings_tests {
     use cairo_lang_casm::casm;
+    use stwo_prover::core::channel::Blake2sChannel;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
+    use crate::cairo_air::{prove_cairo, verify_cairo};
     use crate::input::plain::input_from_plain_casm;
 
     // TODO(Ohad): un-ignore when the opcode is in.
@@ -797,6 +800,19 @@ mod mappings_tests {
                 .len(),
             1
         );
+    }
+
+    #[test]
+    fn test_jrl0() {
+        let instructions = casm! {
+            jmp rel 0;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions, false);
+        let proof = prove_cairo::<Blake2sMerkleChannel>(input, false, false).unwrap();
+        std::fs::write("/home/ohad/proof/proof.json", serde_json::to_string(&proof).unwrap()).unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(proof).unwrap();
     }
 
     #[test]

@@ -45,8 +45,8 @@ pub fn input_from_plain_casm(
         .expect("Runner creation failed");
     runner.initialize(true).expect("Initialization failed");
     runner
-        .run_until_pc(
-            (runner.program_base.unwrap() + program_len).unwrap(),
+        .run_for_steps(
+            1 << 10,
             &mut BuiltinHintProcessor::new_empty(),
         )
         .expect("Run failed");
