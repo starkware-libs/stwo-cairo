@@ -1,0 +1,14 @@
+[package]
+name = "fib_verifier"
+version = "0.1.0"
+edition = "2023_10"
+
+[lib]
+
+[cairo]
+
+[tool.fmt]
+sort-module-level-items = true
+
+[dependencies]
+stwo_verifier_core = { path = "../verifier_core" }

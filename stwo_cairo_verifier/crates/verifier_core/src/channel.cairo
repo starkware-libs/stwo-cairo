@@ -1,11 +1,12 @@
 use core::array::SpanTrait;
 use core::num::traits::{WrappingMul, WrappingSub};
-use core::poseidon::{hades_permutation, poseidon_hash_span};
+use core::poseidon::{hades_permutation};
 use core::traits::DivRem;
 use crate::fields::m31::M31Trait;
 use crate::fields::qm31::QM31Trait;
 use crate::utils::pack4;
 use crate::{BaseField, SecureField};
+use crate::vcs::hasher::poseidon_hash_span;
 
 /// Equals `2^31`.
 const M31_SHIFT: felt252 = 0x80000000;

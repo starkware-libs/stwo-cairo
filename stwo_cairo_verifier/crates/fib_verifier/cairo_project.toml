@@ -1,0 +1,76 @@
+[crate_roots]
+"bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)" = "/home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/src"
+"fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)" = "/home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/src"
+"stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)" = "/home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src"
+
+[config.global]
+edition = "2023_10"
+version = "0.1.0"
+cfg_set = [[
+    "target",
+    "lib",
+]]
+
+[config.global.dependencies.bounded_int]
+discriminator = "bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)"
+
+[config.global.dependencies.fib_verifier]
+discriminator = "fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)"
+
+[config.global.dependencies.stwo_verifier_core]
+discriminator = "stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)"
+
+[config.global.experimental_features]
+negative_impls = false
+associated_item_constraints = false
+coupons = false
+
+[config.override."bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)"]
+name = "bounded_int"
+edition = "2023_10"
+version = "0.1.0"
+
+[config.override."bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)".dependencies.bounded_int]
+discriminator = "bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)"
+
+[config.override."bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)".experimental_features]
+negative_impls = false
+associated_item_constraints = false
+coupons = false
+
+[config.override."fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)"]
+name = "fib_verifier"
+edition = "2023_10"
+version = "0.1.0"
+cfg_set = [[
+    "target",
+    "lib",
+]]
+
+[config.override."fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)".dependencies.fib_verifier]
+discriminator = "fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)"
+
+[config.override."fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)".dependencies.stwo_verifier_core]
+discriminator = "stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)"
+
+[config.override."fib_verifier 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/fib_verifier/Scarb.toml)".experimental_features]
+negative_impls = false
+associated_item_constraints = false
+coupons = false
+
+[config.override."stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)"]
+name = "stwo_verifier_core"
+edition = "2024_07"
+version = "0.1.0"
+
+[config.override."stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)".dependencies.bounded_int]
+discriminator = "bounded_int 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/Scarb.toml)"
+
+[config.override."stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)".dependencies.stwo_verifier_core]
+discriminator = "stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)"
+
+[config.override."stwo_verifier_core 0.1.0 (path+file:///home/shahar/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/Scarb.toml)".experimental_features]
+negative_impls = false
+associated_item_constraints = false
+coupons = false
+
