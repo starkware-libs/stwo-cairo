@@ -85,7 +85,6 @@ mod tests {
     #[test]
     fn test_packed_partition_enumerate() {
         let log_ranges = [5, 3, 3];
-        let log_size = log_ranges.iter().sum::<u32>();
         let mut expected = [vec![], vec![], vec![]];
         for i in 0..1 << 5 {
             for j in 0..1 << 3 {
@@ -98,13 +97,8 @@ mod tests {
         }
 
         let mut result = generate_partitioned_enumeration(log_ranges).into_iter();
-        let result: [Vec<M31>; 3] = std::array::from_fn(|_| {
-            BaseColumn {
-                data: result.next().unwrap(),
-                length: 1 << log_size,
-            }
-            .into_cpu_vec()
-        });
+        let result: [Vec<M31>; 3] =
+            std::array::from_fn(|_| BaseColumn::from_simd(result.next().unwrap()).into_cpu_vec());
 
         assert_eq!(result, expected)
     }
