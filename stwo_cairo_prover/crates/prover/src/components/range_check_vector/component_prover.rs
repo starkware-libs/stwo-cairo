@@ -86,11 +86,7 @@ macro_rules! range_check_prover {
 
                     let fixed_columns = self.write_fixed_columns();
                     let multiplicity_data = self.multiplicities.into_simd_vec();
-                    // TODO(Gali): Change to BaseColumn::from_simd_vec(vec: Vec<PackedM31>).
-                    let multiplicity_column = BaseColumn {
-                        data: multiplicity_data.clone(),
-                        length: 1 << log_size,
-                    };
+                    let multiplicity_column = BaseColumn::from_simd(multiplicity_data.clone());
 
                     let domain = CanonicCoset::new(log_size).circle_domain();
                     let trace = chain!(fixed_columns, [multiplicity_column])
