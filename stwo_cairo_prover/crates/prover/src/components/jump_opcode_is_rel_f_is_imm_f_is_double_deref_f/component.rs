@@ -31,8 +31,8 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 11];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 5];
+        let trace_log_sizes = vec![log_size; 12];
+        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
@@ -89,10 +89,11 @@ impl FrameworkEval for Eval {
         let op1_base_fp_col4 = eval.next_trace_mask();
         let op1_base_ap_col5 = eval.next_trace_mask();
         let ap_update_add_1_col6 = eval.next_trace_mask();
-        let next_pc_id_col7 = eval.next_trace_mask();
-        let next_pc_limb_0_col8 = eval.next_trace_mask();
-        let next_pc_limb_1_col9 = eval.next_trace_mask();
-        let next_pc_limb_2_col10 = eval.next_trace_mask();
+        let mem1_base_col7 = eval.next_trace_mask();
+        let next_pc_id_col8 = eval.next_trace_mask();
+        let next_pc_limb_0_col9 = eval.next_trace_mask();
+        let next_pc_limb_1_col10 = eval.next_trace_mask();
+        let next_pc_limb_2_col11 = eval.next_trace_mask();
 
         // Decode Instruction.
 
@@ -123,6 +124,12 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             ((op1_base_fp_col4.clone() + op1_base_ap_col5.clone()) - M31_1.clone()),
         );
+        // mem1_base.
+        eval.add_constraint(
+            (mem1_base_col7.clone()
+                - ((op1_base_fp_col4.clone() * input_fp_col2.clone())
+                    + (op1_base_ap_col5.clone() * input_ap_col1.clone()))),
+        );
 
         // Read Positive Num Bits 27.
 
@@ -130,10 +137,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op1_base_fp_col4.clone() * input_fp_col2.clone())
-                    + (op1_base_ap_col5.clone() * input_ap_col1.clone()))
-                    + (offset2_col3.clone() - M31_32768.clone())),
-                next_pc_id_col7.clone(),
+                (mem1_base_col7.clone() + (offset2_col3.clone() - M31_32768.clone())),
+                next_pc_id_col8.clone(),
             ],
         ));
 
@@ -141,10 +146,10 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             E::EF::one(),
             &[
-                next_pc_id_col7.clone(),
-                next_pc_limb_0_col8.clone(),
-                next_pc_limb_1_col9.clone(),
-                next_pc_limb_2_col10.clone(),
+                next_pc_id_col8.clone(),
+                next_pc_limb_0_col9.clone(),
+                next_pc_limb_1_col10.clone(),
+                next_pc_limb_2_col11.clone(),
             ],
         ));
 
@@ -162,14 +167,14 @@ impl FrameworkEval for Eval {
             &self.opcodes_lookup_elements,
             -E::EF::one(),
             &[
-                ((next_pc_limb_0_col8.clone() + (next_pc_limb_1_col9.clone() * M31_512.clone()))
-                    + (next_pc_limb_2_col10.clone() * M31_262144.clone())),
+                ((next_pc_limb_0_col9.clone() + (next_pc_limb_1_col10.clone() * M31_512.clone()))
+                    + (next_pc_limb_2_col11.clone() * M31_262144.clone())),
                 (input_ap_col1.clone() + ap_update_add_1_col6.clone()),
                 input_fp_col2.clone(),
             ],
         ));
 
-        eval.finalize_logup();
+        eval.finalize_logup_in_pairs();
         eval
     }
 }
