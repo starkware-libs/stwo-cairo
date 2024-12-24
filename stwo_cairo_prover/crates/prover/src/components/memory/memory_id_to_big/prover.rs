@@ -209,12 +209,7 @@ fn gen_big_memory_trace(values: Vec<[u32; 8]>, mults: MultiplicityColumn) -> Vec
         }
     }
 
-    let mults_vec = mults.into_simd_vec();
-    // TODO(Gali): Change to BaseColumn::from_simd_vec(vec: Vec<PackedM31>).
-    let multiplicities = BaseColumn {
-        length: mults_vec.len() * N_LANES,
-        data: mults_vec,
-    };
+    let multiplicities = BaseColumn::from_simd(mults.into_simd_vec());
 
     chain!(id_and_value_trace, [multiplicities]).collect_vec()
 }
@@ -254,12 +249,7 @@ fn gem_small_memory_trace(values: Vec<u128>, mults: MultiplicityColumn) -> Vec<B
         }
     }
 
-    let mults_vec = mults.into_simd_vec();
-    // TODO(Gali): Change to BaseColumn::from_simd_vec(vec: Vec<PackedM31>).
-    let multiplicities = BaseColumn {
-        length: mults_vec.len() * N_LANES,
-        data: mults_vec,
-    };
+    let multiplicities = BaseColumn::from_simd(mults.into_simd_vec());
 
     chain!(id_and_value_trace, [multiplicities]).collect_vec()
 }
