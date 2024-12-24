@@ -13,7 +13,7 @@ jobs:
 
       - name: Get commit hash prefix for PR update
         env:
-          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           echo "SHORT_HASH=${COMMIT_SHA:0:7}" >> $GITHUB_ENV
 
@@ -31,4 +31,4 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: "stwo_cairo_prover/target/release/adapted_stwo"
-          destination: "gps_artifacts/release/adapted_stwo/${{ env.SHORT_HASH }}"
+          destination: "adapted_stwo_artifacts/${{ env.SHORT_HASH }}/release"
