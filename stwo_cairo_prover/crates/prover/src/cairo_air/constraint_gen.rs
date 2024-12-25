@@ -8,8 +8,50 @@ mod tests {
     use stwo_prover::constraint_framework::expr::{BaseExpr, ColumnExpr, ExprEvaluator, ExtExpr};
     use stwo_prover::constraint_framework::FrameworkEval;
 
-    use crate::components::{generic_opcode, ret_opcode};
+    use crate::components::{generic_opcode, jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, ret_opcode, verify_instruction};
     use crate::relations;
+
+     #[test]
+    fn gen_jmp_code() {
+        let generic_opcode_eval = jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Eval {
+            claim: jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Claim { n_calls: 0 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+            opcodes_lookup_elements:  relations::Opcodes::dummy(),
+        };
+
+        gen_cairo_constraint_code(
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, true)),
+            "components/generic_opcode/constraints.cairo",
+        )
+        .unwrap();
+
+        // ...other opcodes
+    }
+
+ 
+
+
+     #[test]
+    fn gen_verify_instruction_code() {
+        let generic_opcode_eval = verify_instruction::Eval {
+            claim: verify_instruction::Claim { log_size: 0 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+            range_check_4_3_lookup_elements: relations::RangeCheck_4_3::dummy(),
+            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
+        };
+
+        gen_cairo_constraint_code(
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, true)),
+            "components/generic_opcode/constraints.cairo",
+        )
+        .unwrap();
+
+        // ...other opcodes
+    }
 
 
     #[test]
