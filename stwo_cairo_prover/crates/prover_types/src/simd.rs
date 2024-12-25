@@ -459,6 +459,16 @@ impl DivExtend for PackedM31 {
     }
 }
 
+pub trait InverseExtend {
+    fn inverse(self) -> Self;
+}
+
+impl InverseExtend for PackedM31 {
+    fn inverse(self) -> Self {
+        FieldExpOps::inverse(&self)
+    }
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct PackedCasmState {
     pub pc: PackedM31,
