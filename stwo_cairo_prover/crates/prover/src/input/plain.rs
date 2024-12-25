@@ -60,6 +60,7 @@ pub fn input_from_plain_casm(
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
 pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
+    let _span = tracing::info_span!("input_from_finished_runner").entered();
     let program_len = runner.get_program().iter_data().count();
     let mem = runner
         .relocated_memory
