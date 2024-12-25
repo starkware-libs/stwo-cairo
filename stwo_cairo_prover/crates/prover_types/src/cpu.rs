@@ -5,6 +5,7 @@ use ruint::Uint;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use stwo_cairo_serialize::CairoSerialize;
+use stwo_prover::core::fields::FieldExpOps;
 
 pub type M31 = stwo_prover::core::fields::m31::M31;
 
@@ -14,6 +15,10 @@ pub trait AlgebraicType: ProverType + Add + Sub + Mul + Div {}
 impl AlgebraicType for M31 {}
 impl AlgebraicType for Felt252 {}
 impl<const B: usize, const L: usize, const F: usize> AlgebraicType for BigUInt<B, L, F> {}
+
+pub trait Invertible {
+    fn invert(&self) -> Self;
+}
 
 pub trait NumericType: ProverType + Rem + Shl + Shr + BitAnd + BitOr + BitXor {}
 impl NumericType for UInt16 {}
@@ -40,6 +45,12 @@ impl ProverType for M31 {
     }
     fn r#type() -> String {
         "M31".to_string()
+    }
+}
+
+impl Invertible for M31 {
+    fn invert(&self) -> Self {
+        self.inverse()
     }
 }
 
@@ -535,6 +546,16 @@ impl Div for Felt252 {
         let other_ff: FieldElement = other.into();
 
         (self_ff * other_ff.invert().expect("Division by zero") * FELT252_MONT_DIV_FACTOR).into()
+    }
+}
+
+const FELT252_MONT_INV_FACTOR: FieldElement =
+    FieldElement::from_mont([0, 0, 0x1000000000000121, 0x40000000000001]);
+
+impl Invertible for Felt252 {
+    fn invert(&self) -> Self {
+        let self_ff: FieldElement = (*self).into();
+        (self_ff.invert().expect("Division by zero") * FELT252_MONT_INV_FACTOR).into()
     }
 }
 
