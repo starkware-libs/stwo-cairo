@@ -2,7 +2,7 @@ use prover_types::simd::PackedUInt32;
 use stwo_prover::core::backend::simd::m31::{LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::M31;
 
-use super::mem::Memory;
+use super::memory::Memory;
 use crate::felt::split_f252;
 
 #[derive(Debug)]

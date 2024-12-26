@@ -24,7 +24,7 @@ use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::range_check_9_9;
 use crate::components::MultiplicityColumn;
 use crate::felt::split_f252_simd;
-use crate::input::mem::{
+use crate::input::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_TAG,
 };
 use crate::relations;
@@ -365,7 +365,7 @@ mod tests {
     use crate::components::memory::memory_address_to_id;
     use crate::components::memory::memory_id_to_big::component::N_M31_IN_FELT252;
     use crate::felt::split_f252;
-    use crate::input::mem::{MemConfig, MemoryBuilder};
+    use crate::input::memory::{MemoryBuilder, MemoryConfig};
 
     #[test]
     fn test_deduce_output_simd() {
@@ -383,7 +383,7 @@ mod tests {
         let input = PackedM31::from_array(memory_addreses.map(M31::from_u32_unchecked));
 
         // Create memory.
-        let mut mem = MemoryBuilder::new(MemConfig::default());
+        let mut mem = MemoryBuilder::new(MemoryConfig::default());
         for (j, a) in memory_addreses.iter().enumerate() {
             mem.set(*a as u64, mem.value_from_felt252(expected[j]));
         }

@@ -6,9 +6,9 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
-use super::mem::{MemConfig, MemoryBuilder};
+use super::memory::{MemoryBuilder, MemoryConfig};
 use super::state_transitions::StateTransitions;
-use super::vm_import::MemEntry;
+use super::vm_import::MemoryEntry;
 use super::CairoInput;
 use crate::input::MemorySegmentAddresses;
 
@@ -62,29 +62,29 @@ pub fn input_from_plain_casm(
 pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
     let _span = tracing::info_span!("input_from_finished_runner").entered();
     let program_len = runner.get_program().iter_data().count();
-    let mem = runner
+    let memory = runner
         .relocated_memory
         .iter()
         .enumerate()
         .filter_map(|(i, v)| {
-            v.map(|v| MemEntry {
-                addr: i as u64,
-                val: bytemuck::cast(v.to_bytes_le()),
+            v.map(|v| MemoryEntry {
+                address: i as u64,
+                value: bytemuck::cast(v.to_bytes_le()),
             })
         });
     let trace = runner.relocated_trace.unwrap();
     let trace = trace.iter().map(|t| t.clone().into());
 
-    let mem_config = MemConfig::default();
-    let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode);
+    let memory_config = MemoryConfig::default();
+    let mut memory = MemoryBuilder::from_iter(memory_config, memory);
+    let state_transitions = StateTransitions::from_iter(trace, &mut memory, dev_mode);
 
     // TODO(spapini): Add output builtin to public memory.
-    let public_mem_addresses = (0..(program_len as u32)).collect_vec();
+    let public_memory_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
         state_transitions,
-        mem: mem.build(),
-        public_mem_addresses,
+        memory: memory.build(),
+        public_memory_addresses,
         range_check_builtin: MemorySegmentAddresses {
             begin_addr: 24,
             stop_ptr: 64,
