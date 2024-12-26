@@ -8,17 +8,17 @@ use itertools::Itertools;
 
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::vm_import::{adapt_to_stwo_input, MemoryEntry};
-use super::CairoInput;
+use super::ProverInput;
 
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Translates a plain casm into a CairoInput by running the program and extracting the memory and
+/// Translates a plain casm into a ProverInput by running the program and extracting the memory and
 /// the state transitions.
 /// When dev mod is enabled, the opcodes generated from the plain casm will
 /// be mapped to the generic component only.
 pub fn input_from_plain_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
     dev_mode: bool,
-) -> CairoInput {
+) -> ProverInput {
     let felt_code = casm
         .into_iter()
         .flat_map(|instruction| instruction.assemble().encode())
@@ -54,13 +54,13 @@ pub fn input_from_plain_casm(
 
 // TODO(yuval): consider returning a result instead of panicking.
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Translates a CairoRunner that finished its run into a CairoInput by extracting the relevant
+/// Translates a CairoRunner that finished its run into a ProverInput by extracting the relevant
 /// input to the adapter.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
 /// # Panics
 /// - if `memory` or 'trace' are not relocated.
-pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
+pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput {
     let _span = tracing::info_span!("adapt_finished_runner").entered();
     let memory_iter = runner
         .relocated_memory
