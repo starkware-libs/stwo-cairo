@@ -30,7 +30,7 @@ use crate::components::range_check_vector::{
 };
 use crate::components::verify_instruction;
 use crate::felt::split_f252;
-use crate::input::CairoInput;
+use crate::input::ProverInput;
 use crate::relations;
 
 #[derive(Serialize, Deserialize)]
@@ -166,7 +166,7 @@ pub struct CairoClaimGenerator {
     // ...
 }
 impl CairoClaimGenerator {
-    pub fn new(input: CairoInput) -> Self {
+    pub fn new(input: ProverInput) -> Self {
         let initial_state = input.state_transitions.initial_state;
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
