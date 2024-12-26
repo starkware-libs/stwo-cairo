@@ -18,7 +18,7 @@ use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::input::CairoInput;
+use crate::input::StwoInput;
 
 const LOG_MAX_ROWS: u32 = 22;
 
@@ -27,7 +27,7 @@ const IS_FIRST_LOG_SIZES: [u32; 19] = [
 ];
 
 pub fn prove_cairo<MC: MerkleChannel>(
-    input: CairoInput,
+    input: StwoInput,
     // TODO(Ohad): wrap these flags in a struct.
     track_relations: bool,
     display_components: bool,
@@ -185,11 +185,11 @@ mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
     use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
-    use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
+    use crate::cairo_air::{prove_cairo, verify_cairo, StwoInput};
     use crate::input::plain::input_from_plain_casm;
     use crate::input::vm_import::tests::small_cairo_input;
 
-    fn test_input() -> CairoInput {
+    fn test_input() -> StwoInput {
         let u128_max = u128::MAX;
         let instructions = casm! {
             // TODO(AlonH): Add actual range check segment.

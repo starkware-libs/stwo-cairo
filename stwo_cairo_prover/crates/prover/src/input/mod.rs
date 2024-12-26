@@ -12,10 +12,9 @@ pub mod vm_import;
 
 pub const N_REGISTERS: usize = 3;
 
-// TODO(Stav): rename to StwoInput.
 // Externally provided inputs.
 #[derive(Debug)]
-pub struct CairoInput {
+pub struct StwoInput {
     pub state_transitions: StateTransitions,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,

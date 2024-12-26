@@ -8,17 +8,17 @@ use itertools::Itertools;
 
 use super::mem::{MemConfig, MemoryBuilder};
 use super::vm_import::{adapt_to_stwo_input, MemEntry};
-use super::CairoInput;
+use super::StwoInput;
 
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Translates a plain casm into a CairoInput by running the program and extracting the memory and
+/// Translates a plain casm into a StwoInput by running the program and extracting the memory and
 /// the state transitions.
 /// When dev mod is enabled, the opcodes generated from the plain casm will
 /// be mapped to the generic component only.
 pub fn input_from_plain_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
     dev_mode: bool,
-) -> CairoInput {
+) -> StwoInput {
     let felt_code = casm
         .into_iter()
         .flat_map(|instruction| instruction.assemble().encode())
@@ -54,11 +54,11 @@ pub fn input_from_plain_casm(
 
 // TODO(yuval): consider returning a result instead of panicking.
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Translates a CairoRunner that finished its run into a CairoInput by extracting the relevant
+/// Translates a CairoRunner that finished its run into a StwoInput by extracting the relevant
 /// input to the adapter. Assumes memory and trace are already relocated. Otherwise panics.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
-pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
+pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> StwoInput {
     let mem_iter = runner
         .relocated_memory
         .iter()
