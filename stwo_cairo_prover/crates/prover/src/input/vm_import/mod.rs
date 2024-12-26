@@ -14,7 +14,7 @@ use tracing::{span, Level};
 use super::builtin_segments::BuiltinSegments;
 use super::mem::MemConfig;
 use super::state_transitions::StateTransitions;
-use super::CairoInput;
+use super::StwoInput;
 use crate::input::mem::MemoryBuilder;
 
 #[derive(Debug, Error)]
@@ -33,7 +33,7 @@ pub fn adapt_vm_output(
     pub_json: &Path,
     priv_json: &Path,
     dev_mod: bool,
-) -> Result<CairoInput, VmImportError> {
+) -> Result<StwoInput, VmImportError> {
     let _span = span!(Level::INFO, "import_from_vm_output").entered();
     let pub_data_string = std::fs::read_to_string(pub_json)?;
     let pub_data: PublicInput<'_> = sonic_rs::from_str(&pub_data_string)?;
@@ -77,8 +77,8 @@ pub fn adapt_to_stwo_input(
     public_mem_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
     dev_mode: bool,
-) -> Result<CairoInput, VmImportError> {
-    Ok(CairoInput {
+) -> Result<StwoInput, VmImportError> {
+    Ok(StwoInput {
         state_transitions: StateTransitions::from_iter(trace_iter, &mut mem, dev_mode),
         mem: mem.build(),
         public_mem_addresses,
@@ -148,7 +148,7 @@ pub mod tests {
 
     use super::*;
 
-    pub fn large_cairo_input() -> CairoInput {
+    pub fn large_cairo_input() -> StwoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/large_cairo_input");
 
@@ -163,7 +163,7 @@ pub mod tests {
         )
     }
 
-    pub fn small_cairo_input() -> CairoInput {
+    pub fn small_cairo_input() -> StwoInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/small_cairo_input");
         adapt_vm_output(

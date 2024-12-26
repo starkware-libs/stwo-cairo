@@ -9,7 +9,7 @@ use cairo_vm::vm::runners::cairo_pie::CairoPie;
 use cairo_vm::vm::runners::cairo_runner::{CairoRunner, RunResources};
 use clap::{Parser, ValueHint};
 use stwo_cairo_prover::input::plain::adapt_finished_runner;
-use stwo_cairo_prover::input::CairoInput;
+use stwo_cairo_prover::input::StwoInput;
 use stwo_cairo_utils::logging_utils::init_logging;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -92,7 +92,7 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(args: impl Iterator<Item = String>) -> Result<CairoInput, Error> {
+fn run(args: impl Iterator<Item = String>) -> Result<StwoInput, Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args)?;
@@ -148,7 +148,7 @@ fn run_vm(args: &Args) -> Result<CairoRunner, Error> {
 
 /// Adapts the Cairo VM output to the input of Stwo.
 /// Assumes memory and trace are already relocated. Otherwise panics.
-fn adapt_vm_output_to_stwo(runner: CairoRunner) -> CairoInput {
+fn adapt_vm_output_to_stwo(runner: CairoRunner) -> StwoInput {
     let _span = tracing::info_span!("adapt_vm_output_to_stwo").entered();
     adapt_finished_runner(runner, false)
 }
