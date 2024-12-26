@@ -8,8 +8,60 @@ mod tests {
     use stwo_prover::constraint_framework::expr::{BaseExpr, ColumnExpr, ExprEvaluator, ExtExpr};
     use stwo_prover::constraint_framework::FrameworkEval;
 
-    use crate::components::{generic_opcode, jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, ret_opcode, verify_instruction};
+    use crate::components::{generic_opcode, jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big, ret_opcode, verify_instruction};
     use crate::relations;
+
+    #[test]
+    fn gen_memory_id_to_big() {
+        let generic_opcode_eval = memory_id_to_big::BigEval {
+            log_n_rows:4,
+            lookup_elements: relations::MemoryIdToBig::dummy(),
+            range9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+        };
+
+        gen_cairo_constraint_code(
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, false)),
+            "components/generic_opcode/constraints.cairo",
+        )
+        .unwrap();
+
+        // ...other opcodes
+    }
+
+    #[test]
+    fn gen_memory_id_to_small() {
+        let generic_opcode_eval = memory_id_to_big::SmallEval {
+            log_n_rows:4,
+            lookup_elements: relations::MemoryIdToBig::dummy(),
+            range_check_9_9_relation: relations::RangeCheck_9_9::dummy(),
+        };
+
+        gen_cairo_constraint_code(
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, false)),
+            "components/generic_opcode/constraints.cairo",
+        )
+        .unwrap();
+
+        // ...other opcodes
+    }
+
+
+    #[test]
+    fn gen_memory_addr_to_id() {
+        let generic_opcode_eval = memory_address_to_id::Eval {
+           
+            log_size: 4,
+            lookup_elements: relations::MemoryAddressToId::dummy(),
+        };
+
+        gen_cairo_constraint_code(
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, false)),
+            "components/generic_opcode/constraints.cairo",
+        )
+        .unwrap();
+
+        // ...other opcodes
+    }
 
      #[test]
     fn gen_jmp_code() {
@@ -22,16 +74,13 @@ mod tests {
         };
 
         gen_cairo_constraint_code(
-            generic_opcode_eval.evaluate(ExprEvaluator::new(16, true)),
+            generic_opcode_eval.evaluate(ExprEvaluator::new(64, true)),
             "components/generic_opcode/constraints.cairo",
         )
         .unwrap();
 
         // ...other opcodes
     }
-
- 
-
 
      #[test]
     fn gen_verify_instruction_code() {
@@ -45,7 +94,7 @@ mod tests {
         };
 
         gen_cairo_constraint_code(
-            generic_opcode_eval.evaluate(ExprEvaluator::new(16, true)),
+            generic_opcode_eval.evaluate(ExprEvaluator::new(16, false)),
             "components/generic_opcode/constraints.cairo",
         )
         .unwrap();
