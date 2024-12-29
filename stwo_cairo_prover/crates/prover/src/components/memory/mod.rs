@@ -14,17 +14,17 @@ mod tests {
     use stwo_prover::core::fields::m31::BaseField;
 
     use crate::components::memory::memory_address_to_id;
-    use crate::input::mem::{MemConfig, MemoryBuilder, MemoryValueId};
-    use crate::input::vm_import::MemEntry;
+    use crate::input::memory::{MemoryBuilder, MemoryConfig, MemoryValueId};
+    use crate::input::vm_import::MemoryEntry;
 
     #[test]
     fn test_memory_trace_prover() {
         const N_ENTRIES: u64 = 10;
         let memory = MemoryBuilder::from_iter(
-            MemConfig::default(),
-            (0..N_ENTRIES).map(|i| MemEntry {
-                addr: i,
-                val: [i as u32; 8],
+            MemoryConfig::default(),
+            (0..N_ENTRIES).map(|i| MemoryEntry {
+                address: i,
+                value: [i as u32; 8],
             }),
         )
         .build();

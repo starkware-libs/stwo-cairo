@@ -19,7 +19,7 @@ use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
 use crate::components::MultiplicityColumn;
-use crate::input::mem::Memory;
+use crate::input::memory::Memory;
 use crate::relations;
 
 pub type PackedInputType = PackedM31;

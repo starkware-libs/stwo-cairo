@@ -172,16 +172,16 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::default();
         let mut memory_address_to_id_trace_generator =
-            memory_address_to_id::ClaimGenerator::new(&input.mem);
+            memory_address_to_id::ClaimGenerator::new(&input.memory);
         let mut memory_id_to_value_trace_generator =
-            memory_id_to_big::ClaimGenerator::new(&input.mem);
+            memory_id_to_big::ClaimGenerator::new(&input.memory);
         let range_check_19_trace_generator = range_check_19::ClaimGenerator::new();
         let range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
         let range_check_7_2_5_trace_generator = range_check_7_2_5::ClaimGenerator::new();
         let range_check_4_3_trace_generator = range_check_4_3::ClaimGenerator::new();
 
         // Yield public memory.
-        for &addr in &input.public_mem_addresses {
+        for &addr in &input.public_memory_addresses {
             let id = memory_address_to_id_trace_generator.ids[addr as usize];
             memory_address_to_id_trace_generator.add_m31(M31::from_u32_unchecked(addr));
             memory_id_to_value_trace_generator.add_m31(M31::from_u32_unchecked(id));
@@ -189,12 +189,12 @@ impl CairoClaimGenerator {
 
         // Public data.
         let public_memory = input
-            .public_mem_addresses
+            .public_memory_addresses
             .iter()
             .copied()
             .map(|addr| {
-                let id = input.mem.get_raw_id(addr);
-                (addr, id, input.mem.get(addr).as_u256())
+                let id = input.memory.get_raw_id(addr);
+                (addr, id, input.memory.get(addr).as_u256())
             })
             .collect_vec();
         let public_data = PublicData {

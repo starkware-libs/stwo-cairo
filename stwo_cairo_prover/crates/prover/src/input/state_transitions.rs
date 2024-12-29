@@ -2,7 +2,7 @@ use prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
-use super::mem::{MemoryBuilder, MemoryValue};
+use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
 // Small add operands are 27 bits.

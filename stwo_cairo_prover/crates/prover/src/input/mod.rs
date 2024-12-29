@@ -1,9 +1,9 @@
 use cairo_vm::air_public_input::MemorySegmentAddresses;
-use mem::Memory;
+use memory::Memory;
 use state_transitions::StateTransitions;
 
 mod decode;
-pub mod mem;
+pub mod memory;
 pub mod plain;
 pub mod range_check_unit;
 pub mod state_transitions;
@@ -15,8 +15,8 @@ pub const N_REGISTERS: usize = 3;
 #[derive(Debug)]
 pub struct CairoInput {
     pub state_transitions: StateTransitions,
-    pub mem: Memory,
-    pub public_mem_addresses: Vec<u32>,
+    pub memory: Memory,
+    pub public_memory_addresses: Vec<u32>,
 
     // Builtins.
     pub range_check_builtin: MemorySegmentAddresses,

@@ -10,10 +10,10 @@ use json::PrivateInput;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use super::mem::MemConfig;
+use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::CairoInput;
-use crate::input::mem::MemoryBuilder;
+use crate::input::memory::MemoryBuilder;
 use crate::input::MemorySegmentAddresses;
 
 #[derive(Debug, Error)]
@@ -28,34 +28,41 @@ pub enum VmImportError {
 
 // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
 pub fn import_from_vm_output(
-    pub_json: &Path,
-    priv_json: &Path,
-    dev_mod: bool,
+    public_input_json: &Path,
+    private_input_json: &Path,
+    dev_mode: bool,
 ) -> Result<CairoInput, VmImportError> {
     let _span = span!(Level::INFO, "import_from_vm_output").entered();
-    let pub_data_string = std::fs::read_to_string(pub_json)?;
-    let pub_data: PublicInput<'_> = sonic_rs::from_str(&pub_data_string)?;
-    let priv_data: PrivateInput = sonic_rs::from_str(&std::fs::read_to_string(priv_json)?)?;
+    let public_input_string = std::fs::read_to_string(public_input_json)?;
+    let public_input: PublicInput<'_> = sonic_rs::from_str(&public_input_string)?;
+    let private_input: PrivateInput =
+        sonic_rs::from_str(&std::fs::read_to_string(private_input_json)?)?;
 
-    let end_addr = pub_data
+    let end_addr = public_input
         .memory_segments
         .values()
         .map(|v| v.stop_ptr)
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
     assert!(end_addr < (1 << 32));
-    let mem_config = MemConfig::default();
+    let memory_config = MemoryConfig::default();
 
-    let mem_path = priv_json.parent().unwrap().join(&priv_data.memory_path);
-    let trace_path = priv_json.parent().unwrap().join(&priv_data.trace_path);
+    let memory_path = private_input_json
+        .parent()
+        .unwrap()
+        .join(&private_input.memory_path);
+    let trace_path = private_input_json
+        .parent()
+        .unwrap()
+        .join(&private_input.trace_path);
 
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
-    let mut mem_file = std::io::BufReader::new(std::fs::File::open(mem_path)?);
-    let mut mem = MemoryBuilder::from_iter(mem_config, MemEntryIter(&mut mem_file));
+    let mut memory_file = std::io::BufReader::new(std::fs::File::open(memory_path)?);
+    let mut memory = MemoryBuilder::from_iter(memory_config, MemEntryIter(&mut memory_file));
     let state_transitions =
-        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut mem, dev_mod);
+        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut memory, dev_mode);
 
-    let public_mem_addresses = pub_data
+    let public_mem_addresses = public_input
         .public_memory
         .iter()
         .map(|entry| entry.address as u32)
@@ -63,11 +70,11 @@ pub fn import_from_vm_output(
 
     Ok(CairoInput {
         state_transitions,
-        mem: mem.build(),
-        public_mem_addresses,
+        memory: memory.build(),
+        public_memory_addresses: public_mem_addresses,
         range_check_builtin: MemorySegmentAddresses {
-            begin_addr: pub_data.memory_segments["range_check"].begin_addr as usize,
-            stop_ptr: pub_data.memory_segments["range_check"].stop_ptr as usize,
+            begin_addr: public_input.memory_segments["range_check"].begin_addr as usize,
+            stop_ptr: public_input.memory_segments["range_check"].stop_ptr as usize,
         },
     })
 }
@@ -109,17 +116,17 @@ impl<R: Read> Iterator for TraceIter<'_, R> {
 /// Note: This struct must be kept in sync with the Cairo VM's memory output file.
 #[repr(C)]
 #[derive(Copy, Clone, Default, Pod, Zeroable)]
-pub struct MemEntry {
-    pub addr: u64,
-    pub val: [u32; 8],
+pub struct MemoryEntry {
+    pub address: u64,
+    pub value: [u32; 8],
 }
 
 pub struct MemEntryIter<'a, R: Read>(pub &'a mut R);
 impl<R: Read> Iterator for MemEntryIter<'_, R> {
-    type Item = MemEntry;
+    type Item = MemoryEntry;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut entry = MemEntry::default();
+        let mut entry = MemoryEntry::default();
         self.0
             .read_exact(bytes_of_mut(&mut entry))
             .ok()

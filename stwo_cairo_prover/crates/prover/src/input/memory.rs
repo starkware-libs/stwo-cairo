@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 
 use itertools::Itertools;
 
-use super::vm_import::MemEntry;
+use super::vm_import::MemoryEntry;
 use crate::components::memory::memory_id_to_big::component::N_M31_IN_SMALL_FELT252;
 use crate::components::memory::memory_id_to_big::N_BITS_PER_FELT;
 
@@ -30,18 +30,18 @@ pub const P_MIN_2: [u32; 8] = [
 ];
 
 #[derive(Debug)]
-pub struct MemConfig {
+pub struct MemoryConfig {
     pub small_max: u128,
 }
-impl MemConfig {
-    pub fn new(small_max: u128) -> MemConfig {
+impl MemoryConfig {
+    pub fn new(small_max: u128) -> MemoryConfig {
         assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * N_BITS_PER_FELT));
-        MemConfig { small_max }
+        MemoryConfig { small_max }
     }
 }
-impl Default for MemConfig {
+impl Default for MemoryConfig {
     fn default() -> Self {
-        MemConfig {
+        MemoryConfig {
             small_max: (1 << 72) - 1,
         }
     }
@@ -51,7 +51,7 @@ impl Default for MemConfig {
 // TODO(spapini): Use some struct for Felt252 (that is still memory efficient).
 #[derive(Debug)]
 pub struct Memory {
-    pub config: MemConfig,
+    pub config: MemoryConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
     pub inst_cache: HashMap<u32, u64>,
     pub f252_values: Vec<[u32; 8]>,
@@ -99,14 +99,14 @@ impl Memory {
 }
 
 pub struct MemoryBuilder {
-    mem: Memory,
+    memory: Memory,
     felt252_id_cache: HashMap<[u32; 8], usize>,
     small_values_cache: HashMap<u128, usize>,
 }
 impl MemoryBuilder {
-    pub fn new(config: MemConfig) -> Self {
+    pub fn new(config: MemoryConfig) -> Self {
         Self {
-            mem: Memory {
+            memory: Memory {
                 config,
                 address_to_id: Vec::new(),
                 inst_cache: HashMap::new(),
@@ -117,15 +117,15 @@ impl MemoryBuilder {
             small_values_cache: HashMap::new(),
         }
     }
-    pub fn from_iter<I: IntoIterator<Item = MemEntry>>(
-        config: MemConfig,
+    pub fn from_iter<I: IntoIterator<Item = MemoryEntry>>(
+        config: MemoryConfig,
         iter: I,
     ) -> MemoryBuilder {
-        let mem_entries = iter.into_iter();
+        let memory_entries = iter.into_iter();
         let mut builder = Self::new(config);
-        for entry in mem_entries {
-            let value = builder.value_from_felt252(entry.val);
-            builder.set(entry.addr, value);
+        for entry in memory_entries {
+            let value = builder.value_from_felt252(entry.value);
+            builder.set(entry.address, value);
         }
 
         builder
@@ -134,7 +134,7 @@ impl MemoryBuilder {
     pub fn get_inst(&mut self, addr: u32) -> u64 {
         let mut inst_cache = std::mem::take(&mut self.inst_cache);
         let res = *inst_cache.entry(addr).or_insert_with(|| {
-            let value = self.mem.get(addr).as_u256();
+            let value = self.memory.get(addr).as_u256();
             assert_eq!(value[2..8], [0; 6]);
             value[0] as u64 | ((value[1] as u64) << 32)
         });
@@ -168,18 +168,18 @@ impl MemoryBuilder {
         self.address_to_id[addr as usize] = res;
     }
     pub fn build(self) -> Memory {
-        self.mem
+        self.memory
     }
 }
 impl Deref for MemoryBuilder {
     type Target = Memory;
     fn deref(&self) -> &Self::Target {
-        &self.mem
+        &self.memory
     }
 }
 impl DerefMut for MemoryBuilder {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.mem
+        &mut self.memory
     }
 }
 
@@ -256,49 +256,49 @@ mod tests {
     #[test]
     fn test_memory() {
         let entries = [
-            MemEntry {
-                addr: 0,
-                val: [1; 8],
+            MemoryEntry {
+                address: 0,
+                value: [1; 8],
             },
-            MemEntry {
-                addr: 1,
-                val: [6, 0, 0, 0, 0, 0, 0, 0],
+            MemoryEntry {
+                address: 1,
+                value: [6, 0, 0, 0, 0, 0, 0, 0],
             },
-            MemEntry {
-                addr: 2,
-                val: [1, 2, 0, 0, 0, 0, 0, 0],
+            MemoryEntry {
+                address: 2,
+                value: [1, 2, 0, 0, 0, 0, 0, 0],
             },
-            MemEntry {
-                addr: 5,
-                val: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
+            MemoryEntry {
+                address: 5,
+                value: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
             },
-            MemEntry {
-                addr: 8,
-                val: P_MIN_1,
+            MemoryEntry {
+                address: 8,
+                value: P_MIN_1,
             },
-            MemEntry {
-                addr: 9,
-                val: P_MIN_2,
+            MemoryEntry {
+                address: 9,
+                value: P_MIN_2,
             },
             // Duplicates.
-            MemEntry {
-                addr: 100,
-                val: [1; 8],
+            MemoryEntry {
+                address: 100,
+                value: [1; 8],
             },
-            MemEntry {
-                addr: 105,
-                val: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
+            MemoryEntry {
+                address: 105,
+                value: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
             },
-            MemEntry {
-                addr: 200,
-                val: [1, 1, 1, 0, 0, 0, 0, 0],
+            MemoryEntry {
+                address: 200,
+                value: [1, 1, 1, 0, 0, 0, 0, 0],
             },
-            MemEntry {
-                addr: 201,
-                val: [1, 1, 1 << 10, 0, 0, 0, 0, 0],
+            MemoryEntry {
+                address: 201,
+                value: [1, 1, 1 << 10, 0, 0, 0, 0, 0],
             },
         ];
-        let memory = MemoryBuilder::from_iter(MemConfig::default(), entries.iter().cloned());
+        let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries.iter().cloned());
         assert_eq!(memory.get(0), MemoryValue::F252([1; 8]));
         assert_eq!(memory.get(1), MemoryValue::Small(6));
         assert_eq!(
@@ -318,7 +318,7 @@ mod tests {
     }
 
     #[test]
-    fn test_mem_value_casts() {
+    fn test_memory_value_casts() {
         let small = MemoryValue::Small(1);
         assert_eq!(small.as_small(), 1);
         assert_eq!(small.as_u256(), [1, 0, 0, 0, 0, 0, 0, 0]);
