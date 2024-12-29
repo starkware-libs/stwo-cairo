@@ -1,5 +1,6 @@
 use cairo_vm::air_public_input::MemorySegmentAddresses;
 use memory::Memory;
+use serde::{Deserialize, Serialize};
 use state_transitions::StateTransitions;
 
 mod decode;
@@ -12,7 +13,7 @@ pub mod vm_import;
 pub const N_REGISTERS: usize = 3;
 
 // Externally provided inputs.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CairoInput {
     pub state_transitions: StateTransitions,
     pub memory: Memory,
