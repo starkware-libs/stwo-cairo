@@ -33,7 +33,7 @@ serde = "1.0.207"
 serde_json = "1.0.1"
 sonic-rs = "0.3.10"
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "f24cde6", features = [
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "506794b", features = [
     "parallel",
 ] }
 thiserror = "1.0.63"
