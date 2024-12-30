@@ -58,11 +58,11 @@ pub fn import_from_vm_output(
 
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut memory_file = std::io::BufReader::new(std::fs::File::open(memory_path)?);
-    let mut memory = MemoryBuilder::from_iter(memory_config, MemEntryIter(&mut memory_file));
+    let mut memory = MemoryBuilder::from_iter(memory_config, MemoryEntryIter(&mut memory_file));
     let state_transitions =
         StateTransitions::from_iter(TraceIter(&mut trace_file), &mut memory, dev_mode);
 
-    let public_mem_addresses = public_input
+    let public_memory_addresses = public_input
         .public_memory
         .iter()
         .map(|entry| entry.address as u32)
@@ -71,7 +71,7 @@ pub fn import_from_vm_output(
     Ok(CairoInput {
         state_transitions,
         memory: memory.build(),
-        public_memory_addresses: public_mem_addresses,
+        public_memory_addresses,
         range_check_builtin: MemorySegmentAddresses {
             begin_addr: public_input.memory_segments["range_check"].begin_addr as usize,
             stop_ptr: public_input.memory_segments["range_check"].stop_ptr as usize,
@@ -121,8 +121,8 @@ pub struct MemoryEntry {
     pub value: [u32; 8],
 }
 
-pub struct MemEntryIter<'a, R: Read>(pub &'a mut R);
-impl<R: Read> Iterator for MemEntryIter<'_, R> {
+pub struct MemoryEntryIter<'a, R: Read>(pub &'a mut R);
+impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
     type Item = MemoryEntry;
 
     fn next(&mut self) -> Option<Self::Item> {

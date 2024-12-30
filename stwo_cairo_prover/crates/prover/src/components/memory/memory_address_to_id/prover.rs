@@ -30,9 +30,9 @@ pub struct ClaimGenerator {
     pub multiplicities: MultiplicityColumn,
 }
 impl ClaimGenerator {
-    pub fn new(mem: &Memory) -> Self {
-        let ids = (0..mem.address_to_id.len())
-            .map(|addr| mem.get_raw_id(addr as u32))
+    pub fn new(memory: &Memory) -> Self {
+        let ids = (0..memory.address_to_id.len())
+            .map(|addr| memory.get_raw_id(addr as u32))
             .collect_vec();
         let multiplicities = MultiplicityColumn::new(ids.len());
 
