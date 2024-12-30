@@ -767,3 +767,15 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
     }
 }
+
+
+#[executable]
+fn main(_p: Span<felt252>) {
+    println!("before proof");
+    // let proof = basic_with_blowup_2_proof::proof();
+
+    println!("deserialized proof");
+    // if let Result::Err(err) = stwo_cairo_air::verify_cairo(proof) {
+//     panic!("Verification failed: {:?}", err);
+// }
+}
