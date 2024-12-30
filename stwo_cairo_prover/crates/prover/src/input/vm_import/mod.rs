@@ -59,7 +59,7 @@ pub fn import_from_vm_output(
     let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut memory_file = std::io::BufReader::new(std::fs::File::open(memory_path)?);
     let mut memory = MemoryBuilder::from_iter(memory_config, MemEntryIter(&mut memory_file));
-    let state_transitions =
+    let (state_transitions, max_pc) =
         StateTransitions::from_iter(TraceIter(&mut trace_file), &mut memory, dev_mode);
 
     let public_mem_addresses = public_input
@@ -70,6 +70,7 @@ pub fn import_from_vm_output(
 
     Ok(CairoInput {
         state_transitions,
+        max_pc,
         memory: memory.build(),
         public_memory_addresses: public_mem_addresses,
         range_check_builtin: MemorySegmentAddresses {
