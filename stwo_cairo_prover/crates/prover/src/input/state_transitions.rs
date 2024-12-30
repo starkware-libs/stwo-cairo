@@ -177,16 +177,19 @@ pub struct StateTransitions {
 
 impl StateTransitions {
     /// Iterates over the casm states and splits them into the appropriate opcode components.
+    /// # Returns
+    /// A tuple of the state transitions and the maximum observed pc value.
     pub fn from_iter(
         iter: impl Iterator<Item = TraceEntry>,
         memory: &mut MemoryBuilder,
         dev_mode: bool,
-    ) -> Self {
+    ) -> (Self, u32) {
         let mut res = Self::default();
         let mut iter = iter.peekable();
+        let mut max_pc = 0_u64;
 
         let Some(first) = iter.next() else {
-            return res;
+            return (res, max_pc as u32);
         };
         res.initial_state = first.into();
         res.push_instr(memory, first.into(), dev_mode);
@@ -198,8 +201,9 @@ impl StateTransitions {
                 break;
             };
             res.push_instr(memory, entry.into(), dev_mode);
+            max_pc = std::cmp::max(max_pc, entry.pc);
         }
-        res
+        (res, max_pc as u32)
     }
 
     // TODO(Ohad): remove dev_mode after adding the rest of the instructions.

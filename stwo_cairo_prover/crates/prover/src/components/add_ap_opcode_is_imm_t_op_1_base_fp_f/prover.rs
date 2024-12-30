@@ -1,6 +1,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 use std::iter::zip;
+use std::sync::Arc;
 
 use air_structs_derive::SubComponentInputs;
 use itertools::{chain, zip_eq, Itertools};
@@ -24,7 +25,10 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
+use stwo_prover::core::utils::{
+    bit_reverse_coset_to_circle_domain_order, bit_reverse_index, coset_index_to_circle_domain_index,
+};
+use tracing::{span, Level};
 
 use super::component::{Claim, InteractionClaim};
 use crate::components::{memory_address_to_id, memory_id_to_big, pack_values, verify_instruction};
@@ -48,31 +52,46 @@ impl ClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
-        verify_instruction_state: &mut verify_instruction::ClaimGenerator,
+        verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        let span0 = span!(Level::INFO, "write_add_ap_trace").entered();
         let n_calls = self.inputs.len();
         assert_ne!(n_calls, 0);
         let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
         let need_padding = n_calls != size;
 
+        let span = span!(Level::INFO, "bit_reverse_1").entered();
         if need_padding {
             self.inputs.resize(size, *self.inputs.first().unwrap());
             bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
         }
+        span.exit();
 
         let packed_inputs = pack_values(&self.inputs);
+        let span = span!(Level::INFO, "write_trace_simd").entered();
         let (trace, mut sub_components_inputs, lookup_data) = write_trace_simd(
             packed_inputs,
             memory_address_to_id_state,
             memory_id_to_big_state,
+            verify_instruction_state,
+            n_calls,
         );
+        span.exit();
 
+        let span = span!(Level::INFO, "bit_reverse_2").entered();
         if need_padding {
-            sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
+            bit_reverse_coset_to_circle_domain_order(
+                &mut sub_components_inputs.memory_address_to_id_inputs[0],
+            );
+            bit_reverse_coset_to_circle_domain_order(
+                &mut sub_components_inputs.memory_id_to_big_inputs[0],
+            );
         }
+        span.exit();
+        let span = span!(Level::INFO, "add_inputs").entered();
         sub_components_inputs
             .memory_address_to_id_inputs
             .iter()
@@ -85,13 +104,15 @@ impl ClaimGenerator {
             .for_each(|inputs| {
                 memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
             });
-        sub_components_inputs
-            .verify_instruction_inputs
-            .iter()
-            .for_each(|inputs| {
-                verify_instruction_state.add_inputs(&inputs[..n_calls]);
-            });
+        span.exit();
+        // sub_components_inputs
+        //     .verify_instruction_inputs
+        //     .iter()
+        //     .for_each(|inputs| {
+        //         verify_instruction_state.add_inputs(&inputs[..n_calls]);
+        //     });
 
+        span0.exit();
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -123,6 +144,8 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
+    verify_instruction_state: &verify_instruction::ClaimGenerator,
+    n_calls: usize,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     SubComponentInputs,
@@ -150,15 +173,20 @@ fn write_trace_simd(
     let M31_511 = PackedM31::broadcast(M31::from(511));
     let M31_512 = PackedM31::broadcast(M31::from(512));
 
+    let verify_instruction_state = Arc::new(verify_instruction_state);
     trace
         .par_iter_mut()
         .zip(inputs.par_iter())
         .zip(lookup_data.par_iter_mut())
         .zip(sub_components_inputs.par_iter_mut().chunks(N_LANES))
+        .enumerate()
         .for_each(
             |(
-                ((row, add_ap_opcode_is_imm_t_op_1_base_fp_f_input), lookup_data),
-                mut sub_components_inputs,
+                vec_row,
+                (
+                    ((row, add_ap_opcode_is_imm_t_op_1_base_fp_f_input), lookup_data),
+                    mut sub_components_inputs,
+                ),
             )| {
                 let input_tmp_38a0f_0 = add_ap_opcode_is_imm_t_op_1_base_fp_f_input;
                 let input_pc_col0 = input_tmp_38a0f_0.pc;
@@ -187,8 +215,15 @@ fn write_trace_simd(
                     .iter()
                     .enumerate()
                 {
-                    *sub_components_inputs[i].verify_instruction_inputs[0] = input;
+                    if bit_reverse_index(
+                        coset_index_to_circle_domain_index(vec_row * N_LANES + i, log_size),
+                        log_size,
+                    ) < n_calls
+                    {
+                        verify_instruction_state.add_input(&input);
+                    }
                 }
+
                 *lookup_data.verify_instruction_0 = [
                     input_pc_col0,
                     M31_32767,

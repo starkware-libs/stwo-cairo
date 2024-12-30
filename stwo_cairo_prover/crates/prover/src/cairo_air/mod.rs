@@ -229,10 +229,10 @@ mod tests {
     }
 
     #[ignore]
-    #[test]
+    #[test_log::test]
     fn test_full_cairo_air() {
         let cairo_proof =
-            prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), true, true).unwrap();
+            prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), false, true).unwrap();
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 }

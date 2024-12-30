@@ -85,8 +85,11 @@ pub fn adapt_to_stwo_input(
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
+    let (state_transitions, max_pc) =
+        StateTransitions::from_iter(trace_iter, &mut memory, dev_mode);
     Ok(ProverInput {
-        state_transitions: StateTransitions::from_iter(trace_iter, &mut memory, dev_mode),
+        state_transitions,
+        max_pc,
         memory: memory.build(),
         public_memory_addresses,
         builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),

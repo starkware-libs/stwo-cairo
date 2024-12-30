@@ -1,7 +1,9 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
+use std::cell::UnsafeCell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::iter::zip;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::vec;
 
 use air_structs_derive::SubComponentInputs;
@@ -24,7 +26,7 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Col, Column};
 use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::fields::m31::{M31, P};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -34,20 +36,29 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 use super::component::{Claim, InteractionClaim};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, pack_values, range_check_4_3, range_check_7_2_5,
+    MultiplicityColumn,
 };
 use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);
+pub type PcReg = u32;
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
 const N_MULTIPLICITY_COLUMNS: usize = 1;
 const N_TRACE_COLUMNS: usize = 28 + N_MULTIPLICITY_COLUMNS;
 
-#[derive(Default)]
+unsafe impl Sync for ClaimGenerator {}
 pub struct ClaimGenerator {
-    /// A map from input to multiplicity.
-    inputs: BTreeMap<InputType, u32>,
+    mults: Vec<AtomicU32>,
+    values: UnsafeCell<Vec<InputType>>,
 }
 impl ClaimGenerator {
+    pub fn with_maximal_pc(max_pc: PcReg) -> Self {
+        assert!(max_pc < P);
+        Self {
+            mults: (0..=max_pc).map(|_| AtomicU32::new(0)).collect(),
+            values: UnsafeCell::new(Vec::zeros(max_pc as usize + 1)),
+        }
+    }
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
@@ -59,11 +70,20 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let (mut inputs, mut mults) = self
-            .inputs
+        // remove 0 entries.
+        let values = self.values.into_inner();
+        let (mut inputs, mut mults): (Vec<_>, Vec<_>) = values
             .into_iter()
-            .map(|(input, mult)| (input, M31(mult)))
-            .unzip::<_, _, Vec<_>, Vec<_>>();
+            .zip(self.mults)
+            .filter_map(|(v, m)| {
+                let m = unsafe { *m.as_ptr() };
+                if m == 0 {
+                    None
+                } else {
+                    Some((v, M31(m)))
+                }
+            })
+            .unzip();
         let n_calls = inputs.len();
         assert_ne!(n_calls, 0);
         let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
@@ -116,10 +136,23 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_inputs(&mut self, inputs: &[InputType]) {
+    /// # Assumptions
+    /// An [`InputType`] can be identified pc value (first coordinate).
+    /// Hence, the rest of the input is processed here only when first observed.
+    pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
-            *self.inputs.entry(*input).or_default() += 1;
+            self.add_input(input);
         }
+    }
+
+    pub fn add_input(&self, input: &InputType) {
+        let pc = input.0 .0 as usize;
+        if self.mults[pc].load(Ordering::Relaxed) == 0 {
+            unsafe {
+                (*self.values.get())[pc] = *input;
+            }
+        }
+        self.mults[pc].fetch_add(1, Ordering::Relaxed);
     }
 }
 

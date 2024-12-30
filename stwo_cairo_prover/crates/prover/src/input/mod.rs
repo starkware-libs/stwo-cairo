@@ -16,6 +16,7 @@ pub const N_REGISTERS: usize = 3;
 #[derive(Debug)]
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
+    pub max_pc: u32,
     pub memory: Memory,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
