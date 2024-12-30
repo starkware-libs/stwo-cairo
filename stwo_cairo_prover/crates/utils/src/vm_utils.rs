@@ -63,7 +63,7 @@ pub enum VmError {
 
 // This function's logic is copied-then-modified from cairo-vm-cli/src/main.rs:run in cairo-vm repo.
 /// Runs the Cairo VM according to the given arguments (which are subset of the cairo-vm arguments).
-pub fn run_vm(args: &VmArgs) -> Result<CairoRunner, VmError> {
+pub fn run_vm(args: &VmArgs, disable_trace_padding: bool) -> Result<CairoRunner, VmError> {
     let _span = span!(tracing::Level::INFO, "run_vm").entered();
     let cairo_run_config = cairo_run::CairoRunConfig {
         entrypoint: &args.entrypoint,
@@ -73,6 +73,7 @@ pub fn run_vm(args: &VmArgs) -> Result<CairoRunner, VmError> {
         proof_mode: args.proof_mode,
         secure_run: args.secure_run,
         allow_missing_builtins: args.allow_missing_builtins,
+        disable_trace_padding,
         ..Default::default()
     };
 
