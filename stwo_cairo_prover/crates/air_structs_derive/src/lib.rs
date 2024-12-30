@@ -12,13 +12,11 @@ pub fn derive_sub_component_inputs(input: proc_macro::TokenStream) -> proc_macro
 
     // TODO(Ohad): deprecate with_capacity.
     let with_capacity_method = generate_with_capacity_method(&vec_array_fields);
-    let uninitialized_method = generate_uninitialized_method(&vec_array_fields);
     let bit_reverse_method = generate_bit_reverse_method(&vec_array_fields);
 
     let expanded = quote! {
         impl #name {
             #with_capacity_method
-            #uninitialized_method
             #bit_reverse_method
         }
     };
@@ -92,34 +90,6 @@ fn generate_with_capacity_method(vec_array_fields: &[VecArrayField]) -> TokenStr
             Self {
                 #(#field_initializations),*
             }
-        }
-    }
-}
-
-fn generate_uninitialized_method(vec_array_fields: &[VecArrayField]) -> TokenStream {
-    let field_initializations = vec_array_fields
-        .iter()
-        .map(|field| {
-            let field_name = &field.name;
-            let array_length = field.array_length;
-
-            quote! {
-                #field_name: [(); #array_length].map(|_|{
-                    let mut v = Vec::with_capacity(capacity);
-                    v.set_len(capacity);
-                    v
-                })
-            }
-        })
-        .collect_vec();
-
-    quote! {
-        unsafe fn uninitialized(capacity: usize) -> Self {
-            let mut result = Self {
-                #(#field_initializations),*
-            };
-
-            result
         }
     }
 }
