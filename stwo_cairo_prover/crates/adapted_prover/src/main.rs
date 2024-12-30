@@ -61,7 +61,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let casm_states_by_opcode_count = &vm_output.state_transitions.casm_states_by_opcode.counts();
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
 
-    // TODO(Ohad): Propogate hash from CLI args.
+    // TODO(Ohad): Propagate hash from CLI args.
     let proof =
         prove_cairo::<Blake2sMerkleChannel>(vm_output, args.debug_lookup, args.display_components)?;
 
