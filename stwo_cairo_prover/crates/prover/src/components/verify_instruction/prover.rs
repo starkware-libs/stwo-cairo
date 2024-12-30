@@ -19,7 +19,7 @@ use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Col, Column};
 use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::fields::m31::{M31, P};
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -29,19 +29,28 @@ use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleH
 use super::component::{Claim, InteractionClaim};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, pack_values, range_check_4_3, range_check_7_2_5,
+    MultiplicityColumn,
 };
 use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);
+pub type PcReg = u32;
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
 const N_MULTIPLICITY_COLUMNS: usize = 1;
 const N_TRACE_COLUMNS: usize = 28 + N_MULTIPLICITY_COLUMNS;
 
-#[derive(Default)]
 pub struct ClaimGenerator {
-    pub inputs: BTreeMap<InputType, u32>,
+    mults: Vec<u32>,
+    values: Vec<InputType>,
 }
 impl ClaimGenerator {
+    pub fn with_maximal_pc(max_pc: PcReg) -> Self {
+        assert!(max_pc < P);
+        Self {
+            mults: Vec::zeros(max_pc as usize),
+            values: Vec::zeros(max_pc as usize),
+        }
+    }
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
@@ -53,7 +62,13 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let (mut inputs, mut mults) = self.inputs.into_iter().unzip::<_, _, Vec<_>, Vec<_>>();
+        // remove 0 entries.
+        let (mut inputs, mut mults): (Vec<_>, Vec<_>) = self
+            .values
+            .into_iter()
+            .zip(self.mults)
+            .filter_map(|(v, m)| if m != 0 { Some((v, m)) } else { None })
+            .unzip();
         let n_calls = inputs.len();
         assert_ne!(n_calls, 0);
         let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
@@ -118,9 +133,16 @@ impl ClaimGenerator {
         )
     }
 
+    /// # Assumptions
+    /// An [`InputType`] can be identified pc value (first coordinate).
+    /// Hence, the rest of the input is processed here only when first observed.
     pub fn add_inputs(&mut self, inputs: &[InputType]) {
         for input in inputs {
-            *self.inputs.entry(*input).or_default() += 1;
+            let pc = input.0 .0 as usize;
+            if self.mults[pc] == 0 {
+                self.values[pc] = *input;
+            }
+            self.mults[input.0 .0 as usize] += 1;
         }
     }
 }

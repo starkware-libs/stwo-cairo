@@ -15,6 +15,7 @@ pub const N_REGISTERS: usize = 3;
 #[derive(Debug)]
 pub struct CairoInput {
     pub state_transitions: StateTransitions,
+    pub max_pc: u32,
     pub mem: Memory,
     pub public_mem_addresses: Vec<u32>,
 

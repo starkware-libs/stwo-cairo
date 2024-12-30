@@ -170,7 +170,8 @@ impl CairoClaimGenerator {
         let initial_state = input.state_transitions.initial_state;
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
-        let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::default();
+        let verify_instruction_trace_generator =
+            verify_instruction::ClaimGenerator::with_maximal_pc(input.max_pc);
         let mut memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.mem);
         let mut memory_id_to_value_trace_generator =

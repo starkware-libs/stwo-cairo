@@ -77,12 +77,13 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
 
     let mem_config = MemConfig::default();
     let mut mem = MemoryBuilder::from_iter(mem_config, mem);
-    let state_transitions = StateTransitions::from_iter(trace, &mut mem, dev_mode);
+    let (state_transitions, max_pc) = StateTransitions::from_iter(trace, &mut mem, dev_mode);
 
     // TODO(spapini): Add output builtin to public memory.
     let public_mem_addresses = (0..(program_len as u32)).collect_vec();
     CairoInput {
         state_transitions,
+        max_pc,
         mem: mem.build(),
         public_mem_addresses,
         range_check_builtin: MemorySegmentAddresses {

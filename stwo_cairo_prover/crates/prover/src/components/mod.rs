@@ -29,6 +29,8 @@ pub mod jump_opcode_is_rel_t_is_imm_t_is_double_deref_f;
 pub mod memory;
 pub mod range_check_vector;
 pub mod ret_opcode;
+
+/// Manually rewritten. Do the proper adjustments when updating auto-gen'ed code.
 pub mod verify_instruction;
 
 // TODO(Ohad): mul small.
