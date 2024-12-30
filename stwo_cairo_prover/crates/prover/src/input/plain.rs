@@ -73,18 +73,20 @@ pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput 
             })
         });
 
-    let trace = runner.relocated_trace.clone().unwrap();
-    let trace_iter = trace.iter().map(|t| t.clone().into());
-
     let public_input = runner
         .get_air_public_input()
         .expect("Unable to get public input from the runner");
+
+    let trace_iter = match runner.relocated_trace {
+        Some(ref trace) => trace.iter().map(|t| t.clone().into()),
+        None => panic!("Trace is not relocated"),
+    };
 
     let memory_segments = &public_input.memory_segments;
 
     let public_memory_addresses = public_input
         .public_memory
-        .into_iter()
+        .iter()
         .map(|s| s.address as u32)
         .collect_vec();
 
