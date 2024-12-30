@@ -24,7 +24,9 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
+use stwo_prover::core::utils::{
+    bit_reverse_coset_to_circle_domain_order, bit_reverse_index, coset_index_to_circle_domain_index,
+};
 
 use super::component::{Claim, InteractionClaim};
 use crate::components::{memory_address_to_id, memory_id_to_big, pack_values, verify_instruction};
@@ -73,23 +75,49 @@ impl ClaimGenerator {
         if need_padding {
             sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
         }
+        // sub_components_inputs
+        //     .memory_address_to_id_inputs
+        //     .iter()
+        //     .for_each(|inputs| {
+        //         memory_address_to_id_state.add_inputs(&inputs[..n_calls]);
+        //     });
+        // sub_components_inputs
+        //     .memory_id_to_big_inputs
+        //     .iter()
+        //     .for_each(|inputs| {
+        //         memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
+        //     });
+        // sub_components_inputs
+        //     .verify_instruction_inputs
+        //     .iter()
+        //     .for_each(|inputs| {
+        //         verify_instruction_state.add_inputs(&inputs[..n_calls]);
+        //     });
         sub_components_inputs
-            .memory_address_to_id_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..n_calls]);
-            });
-        sub_components_inputs
-            .memory_id_to_big_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
-            });
-        sub_components_inputs
-            .verify_instruction_inputs
-            .iter()
-            .for_each(|inputs| {
-                verify_instruction_state.add_inputs(&inputs[..n_calls]);
+            .iter_mut()
+            .enumerate()
+            .for_each(|(i, mut inputs)| {
+                if bit_reverse_index(
+                    coset_index_to_circle_domain_index(i, size.ilog2()),
+                    size.ilog2(),
+                ) < n_calls
+                {
+                    inputs
+                        .memory_address_to_id_inputs
+                        .iter_mut()
+                        .for_each(|input| {
+                            memory_address_to_id_state.add_m31(**input);
+                        });
+                    inputs.memory_id_to_big_inputs.iter_mut().for_each(|input| {
+                        memory_id_to_big_state.add_m31(**input);
+                    });
+                    inputs
+                        .verify_instruction_inputs
+                        .iter_mut()
+                        .for_each(|input| {
+                            verify_instruction_state.add_inputs(&[**input]);
+                        });
+                }
             });
 
         tree_builder.extend_evals(trace.to_evals());
