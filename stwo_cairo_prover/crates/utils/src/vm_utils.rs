@@ -73,6 +73,7 @@ pub fn run_vm(args: &VmArgs) -> Result<CairoRunner, VmError> {
         proof_mode: args.proof_mode,
         secure_run: args.secure_run,
         allow_missing_builtins: args.allow_missing_builtins,
+        disable_trace_padding: true,
         ..Default::default()
     };
 
