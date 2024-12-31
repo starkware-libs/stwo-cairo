@@ -23,7 +23,7 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
-use super::IS_FIRST_LOG_SIZES;
+use super::{IS_FIRST_LOG_SIZES, SEQ_LOG_SIZES};
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
@@ -96,7 +96,11 @@ impl CairoClaim {
             .into_iter(),
         );
         // Overwrite the preprocessed trace log sizes.
-        log_sizes[PREPROCESSED_TRACE_IDX] = IS_FIRST_LOG_SIZES.to_vec();
+        log_sizes[PREPROCESSED_TRACE_IDX] = chain!(
+            IS_FIRST_LOG_SIZES.iter().cloned(),
+            SEQ_LOG_SIZES.iter().cloned()
+        )
+        .collect_vec();
         log_sizes
     }
 }
@@ -443,11 +447,19 @@ impl CairoComponents {
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &IS_FIRST_LOG_SIZES
-                .iter()
-                .copied()
-                .map(PreprocessedColumn::IsFirst)
-                .collect_vec(),
+            &chain!(
+                IS_FIRST_LOG_SIZES
+                    .iter()
+                    .cloned()
+                    .map(PreprocessedColumn::IsFirst)
+                    .collect_vec(),
+                SEQ_LOG_SIZES
+                    .iter()
+                    .cloned()
+                    .map(PreprocessedColumn::Seq)
+                    .collect_vec(),
+            )
+            .collect_vec(),
         );
 
         let opcode_components = OpcodeComponents::new(

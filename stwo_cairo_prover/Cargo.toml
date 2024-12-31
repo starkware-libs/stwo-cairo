@@ -36,7 +36,7 @@ sonic-rs = "0.3.10"
 stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "506794b", features = [
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "6153b25", features = [
     "parallel",
 ] }
 thiserror = "1.0.63"
