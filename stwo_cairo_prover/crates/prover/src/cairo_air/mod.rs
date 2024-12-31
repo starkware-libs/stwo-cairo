@@ -1,11 +1,14 @@
 pub mod air;
 mod debug_tools;
 pub mod opcodes_air;
+pub mod preprocessed;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use debug_tools::track_cairo_relations;
+use itertools::Itertools;
 use num_traits::Zero;
-use stwo_prover::constraint_framework::preprocessed_columns::{gen_is_first, gen_seq};
+use preprocessed::preprocessed_trace_columns;
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -21,13 +24,6 @@ use tracing::{span, Level};
 use crate::input::ProverInput;
 
 const LOG_MAX_ROWS: u32 = 22;
-
-const IS_FIRST_LOG_SIZES: [u32; 19] = [
-    22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
-];
-const SEQ_LOG_SIZES: [u32; 19] = [
-    22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
-];
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
@@ -60,15 +56,12 @@ where
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-
-    // TODO(ShaharS): move to a seperate function and sort tree columns by size.
     tree_builder.extend_evals(
-        IS_FIRST_LOG_SIZES
+        preprocessed_trace_columns()
             .iter()
-            .cloned()
-            .map(gen_is_first::<SimdBackend>),
+            .map(PreprocessedColumn::gen_preprocessed_column::<SimdBackend>)
+            .collect_vec(),
     );
-    tree_builder.extend_evals(SEQ_LOG_SIZES.iter().cloned().map(gen_seq::<SimdBackend>));
     tree_builder.commit(channel);
 
     // Run Cairo.
