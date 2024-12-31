@@ -5,10 +5,9 @@ use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
 
 use bytemuck::Zeroable;
-use itertools::all;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
-use stwo_prover::core::fields::{m31, FieldExpOps};
+use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
 use crate::cpu::{CasmState, Felt252};
@@ -159,18 +158,6 @@ impl PackedUInt32 {
     pub fn as_array(&self) -> [UInt32; N_LANES] {
         // Safe because UInt32 is u32.
         unsafe { transmute(self.simd.to_array()) }
-    }
-
-    // TODO(Ohad): remove.
-    pub fn as_m31_unchecked(&self) -> PackedM31 {
-        // Safe because M31 is u32 in memory.
-        // NOTE: Safety is memory-wise, it is still unchecked and might get invalid M31 values.
-        unsafe { PackedM31::from_simd_unchecked(self.simd) }
-    }
-
-    // TODO(Ohad): remove.
-    pub fn in_m31_range(&self) -> bool {
-        all(self.as_array(), |v| v.value < m31::P)
     }
 
     pub fn from_m31(val: PackedM31) -> Self {
@@ -467,7 +454,6 @@ pub struct PackedCasmState {
 }
 
 // TODO(Ohad): When there are more structs, write a proc-macro in stwo.
-// TODO(Ohad): Optimize copies.
 impl Pack for CasmState {
     type SimdType = PackedCasmState;
 
@@ -495,9 +481,9 @@ impl Unpack for PackedCasmState {
 
 #[cfg(test)]
 mod tests {
-    use m31::{M31, P};
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo_prover::core::fields::m31::{M31, P};
 
     use super::*;
 
