@@ -76,7 +76,6 @@ pub struct CairoClaim {
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
-        // TODO(Ohad): add components.
         self.opcodes.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
@@ -411,7 +410,6 @@ pub fn lookup_sum(
 
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
-    // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
     sum += interaction_claim.opcodes.sum();
     sum += interaction_claim.verify_instruction.logup_sums.value();
     sum += interaction_claim.range_check_19.claimed_sum;
