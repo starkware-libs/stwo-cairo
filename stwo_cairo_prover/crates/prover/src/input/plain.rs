@@ -25,6 +25,7 @@ pub fn input_from_plain_casm(
         .map(|felt| MaybeRelocatable::Int(felt.into()))
         .collect_vec();
 
+    // TODO(yg): revert
     let program_len = felt_code.len();
     let program = cairo_vm::types::program::Program::new_for_proof(
         vec![],
