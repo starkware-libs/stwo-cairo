@@ -3,6 +3,7 @@ use std::simd::Simd;
 
 use itertools::{izip, Itertools};
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -91,27 +92,19 @@ impl ClaimGenerator {
             .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
         let multiplicities = self.multiplicities.into_simd_vec();
 
-        let inc =
-            PackedM31::from_array(std::array::from_fn(|i| M31::from_u32_unchecked((i) as u32)));
-        for i in 0..n_packed_rows {
-            trace[0].data[i] =
-                inc + PackedM31::broadcast(M31::from_u32_unchecked((i * N_LANES) as u32));
-        }
-
         // TODO(Ohad): Replace with seq.
         for (i, (id, multiplicity)) in zip(id_it, multiplicities).enumerate() {
             let chunk_idx = i / n_packed_rows;
             let i = i % n_packed_rows;
-            trace[1 + chunk_idx * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i] = id;
-            trace[2 + chunk_idx * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i] = multiplicity;
+            trace[chunk_idx * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i] = id;
+            trace[1 + chunk_idx * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i] = multiplicity;
         }
 
         // Lookup data.
-        let addresses = trace[0].data.clone();
         let ids: [_; N_SPLIT_CHUNKS] =
-            std::array::from_fn(|i| trace[1 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
+            std::array::from_fn(|i| trace[i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
         let multiplicities: [_; N_SPLIT_CHUNKS] =
-            std::array::from_fn(|i| trace[2 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
+            std::array::from_fn(|i| trace[1 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
 
         // Commit on trace.
         let log_size = size.checked_ilog2().unwrap();
@@ -127,7 +120,6 @@ impl ClaimGenerator {
         (
             Claim { log_size },
             InteractionClaimGenerator {
-                addresses,
                 ids,
                 multiplicities,
             },
@@ -136,7 +128,6 @@ impl ClaimGenerator {
 }
 
 pub struct InteractionClaimGenerator {
-    pub addresses: Vec<PackedM31>,
     pub ids: [Vec<PackedM31>; N_SPLIT_CHUNKS],
     pub multiplicities: [Vec<PackedM31>; N_SPLIT_CHUNKS],
 }
@@ -149,7 +140,7 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let packed_size = self.addresses.len();
+        let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         let n_rows = 1 << log_size;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -158,9 +149,10 @@ impl InteractionClaimGenerator {
             izip!(&self.ids, &self.multiplicities).tuples().enumerate()
         {
             let mut col_gen = logup_gen.new_col();
-            for (vec_row, (&addr, &id0, &id1, &mult0, &mult1)) in
-                izip!(&self.addresses, ids0, ids1, mults0, mults1).enumerate()
+            for (vec_row, (&id0, &id1, &mult0, &mult1)) in
+                izip!(ids0, ids1, mults0, mults1).enumerate()
             {
+                let addr = PreprocessedColumn::Seq(log_size).packed_at(vec_row);
                 let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
                 let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
                 let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);

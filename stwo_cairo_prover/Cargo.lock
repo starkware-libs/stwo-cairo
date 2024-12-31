@@ -1708,7 +1708,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=c5c6eda#c5c6eda01db70a43bcfa04b358c246522150c567"
+source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -1720,7 +1720,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=c5c6eda#c5c6eda01db70a43bcfa04b358c246522150c567"
+source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -1749,7 +1749,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=c5c6eda#c5c6eda01db70a43bcfa04b358c246522150c567"
+source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
 dependencies = [
  "blake2",
  "blake3",
@@ -2231,9 +2231,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.20"
+version = "0.6.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36c1fec1a2bb5866f07c25f68c26e565c4c200aebb96d7e55710c19d3e8ac49b"
+checksum = "e6f5bb5257f2407a5425c6e749bfd9692192a73e70a6060516ac04f889087d68"
 dependencies = [
  "memchr",
 ]
