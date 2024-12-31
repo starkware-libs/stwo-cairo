@@ -4,7 +4,6 @@ use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::logup::LogupSumsExt;
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -23,7 +22,7 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
-use super::{IS_FIRST_LOG_SIZES, SEQ_LOG_SIZES};
+use super::preprocessed::preprocessed_trace_columns;
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
@@ -96,11 +95,10 @@ impl CairoClaim {
             .into_iter(),
         );
         // Overwrite the preprocessed trace log sizes.
-        log_sizes[PREPROCESSED_TRACE_IDX] = chain!(
-            IS_FIRST_LOG_SIZES.iter().cloned(),
-            SEQ_LOG_SIZES.iter().cloned()
-        )
-        .collect_vec();
+        log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_columns()
+            .iter()
+            .map(|column| column.log_size())
+            .collect();
         log_sizes
     }
 }
@@ -447,19 +445,7 @@ impl CairoComponents {
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &chain!(
-                IS_FIRST_LOG_SIZES
-                    .iter()
-                    .cloned()
-                    .map(PreprocessedColumn::IsFirst)
-                    .collect_vec(),
-                SEQ_LOG_SIZES
-                    .iter()
-                    .cloned()
-                    .map(PreprocessedColumn::Seq)
-                    .collect_vec(),
-            )
-            .collect_vec(),
+            &preprocessed_trace_columns(),
         );
 
         let opcode_components = OpcodeComponents::new(
