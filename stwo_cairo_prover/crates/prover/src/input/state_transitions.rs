@@ -9,9 +9,9 @@ use super::vm_import::TraceEntry;
 const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
 const SMALL_ADD_MIN_VALUE: i32 = -(2_i32.pow(27));
 
-// Small mul operands are 15 bits.
-const SMALL_MUL_MAX_VALUE: u32 = 2_u32.pow(15) - 1;
-const SMALL_MUL_MIN_VALUE: u32 = 0;
+// Small mul operands are 36 bits.
+const SMALL_MUL_MAX_VALUE: u64 = 2_u64.pow(36) - 1;
+const SMALL_MUL_MIN_VALUE: u64 = 0;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -642,7 +642,7 @@ fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
     })
 }
 
-// Returns 'true' the multiplication factors are in the range [0, 2^15-1].
+// Returns 'true' the multiplication factors are in the range [0, 2^36-1].
 fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
     [op0, op_1].iter().all(|val| {
         is_within_range(
@@ -951,12 +951,13 @@ mod mappings_tests {
     #[test]
     fn test_mul_small() {
         let instructions = casm! {
-            // 2^15-1 is the maximal factor value for a small mul.
-            [ap] =  32767, ap++;
-            // 2^15-1 is the maximal factor value for a small mul.
-            [ap] = 32767, ap++;
+            // 2^36-1 is the maximal factor value for a small mul.
+            [ap] =  262145, ap++;
+            [ap] =  [ap-1]*262143, ap++;
+            // 2^36-1 is the maximal factor value for a small mul.
+            [ap] = [ap-1], ap++;
             [ap] = [ap-1] * [ap-2], ap++;
-            [ap] = [ap-1]*7, ap++;
+            [ap] = [ap-2]*2147483647, ap++;
             [ap] = 1, ap++;
         }
         .instructions;
@@ -969,7 +970,7 @@ mod mappings_tests {
         );
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
-            1
+            2
         );
     }
 
@@ -977,9 +978,10 @@ mod mappings_tests {
     fn test_mul_big() {
         let instructions = casm! {
             [ap] =  8, ap++;
-            // 2^15 is the minimal factor value for a big mul.
-            [ap] = 32768, ap++;
-            [ap] = [ap-1] * [ap-2], ap++;
+            // 2^36 is the minimal factor value for a big mul.
+            [ap] = 262144, ap++;
+            [ap] = [ap-1] * 262144, ap++;
+            [ap] = [ap-1] * [ap-3], ap++;
             [ap] = [ap-1]* 2, ap++;
             [ap] = 1, ap++;
         }
@@ -993,6 +995,10 @@ mod mappings_tests {
         );
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
             1
         );
     }

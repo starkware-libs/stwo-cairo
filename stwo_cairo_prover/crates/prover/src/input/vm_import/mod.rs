@@ -244,10 +244,10 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 7100);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 10943);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 7234);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 7203);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 3943);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 10809);
         assert_eq!(components.ret_opcode.len(), 49472);
 
         // Test builtins.
