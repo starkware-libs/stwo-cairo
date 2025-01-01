@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
@@ -10,9 +11,6 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::relations;
-
-// TODO(Ohad): Address should be a preprocessed `seq`.
-pub const N_ADDR_COLUMNS: usize = 1;
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
 /// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
@@ -30,8 +28,7 @@ pub const N_ADDR_COLUMNS: usize = 1;
 // TODO(Ohad): Change split to 8 after seq is implemented.
 pub(super) const N_SPLIT_CHUNKS: usize = 4;
 pub(super) const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
-pub(super) const N_TRACE_COLUMNS: usize =
-    N_ADDR_COLUMNS + N_SPLIT_CHUNKS * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+pub(super) const N_TRACE_COLUMNS: usize = N_SPLIT_CHUNKS * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
 pub type Component = FrameworkComponent<Eval>;
 
@@ -65,7 +62,7 @@ impl FrameworkEval for Eval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let address = eval.next_trace_mask();
+        let address = eval.get_preprocessed_column(PreprocessedColumn::Seq(self.log_size()));
         for i in 0..N_SPLIT_CHUNKS {
             let id = eval.next_trace_mask();
             let multiplicity = eval.next_trace_mask();
