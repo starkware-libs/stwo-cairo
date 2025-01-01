@@ -111,7 +111,7 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
         let pivot = iter.next().unwrap();
 
         for v in iter {
-            if v.clone() > pivot.clone() {
+            if v.clone() >= pivot.clone() {
                 rhs.append(v);
             } else {
                 lhs.append(v);
