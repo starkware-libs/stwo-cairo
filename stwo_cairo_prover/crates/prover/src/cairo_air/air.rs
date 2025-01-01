@@ -3,7 +3,6 @@ use num_traits::Zero;
 use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::logup::LogupSumsExt;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -413,7 +412,7 @@ pub fn lookup_sum(
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     sum += interaction_claim.opcodes.sum();
-    sum += interaction_claim.verify_instruction.logup_sums.value();
+    sum += interaction_claim.verify_instruction.claimed_sum;
     sum += interaction_claim.range_check_19.claimed_sum;
     sum += interaction_claim.range_check_9_9.claimed_sum;
     sum += interaction_claim.range_check_7_2_5.claimed_sum;
@@ -466,7 +465,7 @@ impl CairoComponents {
                 range_check_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
                 verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
             },
-            interaction_claim.verify_instruction.logup_sums,
+            (interaction_claim.verify_instruction.claimed_sum, None),
         );
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,
