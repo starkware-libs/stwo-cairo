@@ -450,14 +450,10 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = {
-            let (trace, claimed_sum) = logup_gen.finalize_last();
-            (trace, claimed_sum, None)
-        };
+        let (trace, claimed_sum) = logup_gen.finalize_last();
+
         tree_builder.extend_evals(trace);
 
-        InteractionClaim {
-            logup_sums: (total_sum, claimed_sum),
-        }
+        InteractionClaim { claimed_sum }
     }
 }
