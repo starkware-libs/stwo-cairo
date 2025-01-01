@@ -27,8 +27,11 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
+    /// Show the relations that do not sum to 0.
+    /// Used for debugging the lookup argument. NOTE: Negatively affects performance.
     #[structopt(long = "debug_lookup")]
     debug_lookup: bool,
+    /// Display components' metadata.
     #[structopt(long = "display_components")]
     display_components: bool,
 }
