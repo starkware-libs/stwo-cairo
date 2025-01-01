@@ -53,6 +53,7 @@ pub impl ChannelImpl of ChannelTrait {
 
     fn draw_felt252(ref self: Channel) -> felt252 {
         let (res, _, _) = hades_permutation(self.digest, self.channel_time.n_sent.into(), 2);
+        println!("draw_felt252: res = {}", res);
         self.channel_time.inc_sent();
         res
     }
