@@ -46,11 +46,10 @@ pub struct InteractionClaim {
 #[generate_trait]
 pub impl InteractionClaimImpl of InteractionClaimTrait {
     fn mix_into(self: @InteractionClaim, ref channel: Channel) {
+        channel.mix_felts([*self.total_sum].span());
         if let Option::Some((sum_at_index, index)) = *self.claimed_sum {
-            channel.mix_felts([*self.total_sum, sum_at_index].span());
+            channel.mix_felts([sum_at_index].span());
             channel.mix_nonce(index.into());
-        } else {
-            channel.mix_felts([*self.total_sum].span());
         }
     }
 }
