@@ -28,8 +28,11 @@ struct Args {
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
     #[structopt(long = "debug_lookup")]
+    /// Show the relations that do not sum to 0.
+    /// Used for debugging the lookup argument. NOTE: Negatively affects performance.
     debug_lookup: bool,
     #[structopt(long = "display_components")]
+    /// Display components' metadata.
     display_components: bool,
 }
 
