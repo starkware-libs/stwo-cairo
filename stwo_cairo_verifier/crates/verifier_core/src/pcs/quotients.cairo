@@ -177,8 +177,10 @@ pub fn fri_answers(
 
     let mut answers = array![];
     let mut log_size = M31_CIRCLE_LOG_ORDER;
-    let one_per_tree = [1, 1, 1].span();
-    assert!(n_columns_per_tree.len() == one_per_tree.len());
+    let mut one_per_tree = array![];
+    for _ in 0..n_columns_per_tree.len() {
+        one_per_tree.append(1);
+    };
     loop {
         let columns = match columns_per_log_size_rev.next() {
             Option::Some(columns) => columns,
@@ -186,7 +188,7 @@ pub fn fri_answers(
         };
         log_size -= 1;
 
-        let n_columns = tree_take_n(ref n_columns_per_tree, one_per_tree);
+        let n_columns = tree_take_n(ref n_columns_per_tree, one_per_tree.span());
 
         if columns.is_empty() {
             continue;
@@ -296,6 +298,7 @@ fn accumulate_row_quotients(
         for sample_i in 0..batch_size {
             let (column_index, _) = sample_batch_columns_and_values[sample_i];
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
+
             let ComplexConjugateLineCoeffs {
                 alpha_mul_a, alpha_mul_b, alpha_mul_c,
             } = *line_coeffs[sample_i];
@@ -434,6 +437,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
             let point_key = CirclePointQM31Key::encode(@point);
             let (entry, columns_and_values) = grouped_samples.entry(point_key);
             let columns_and_values = columns_and_values.deref();
+
             grouped_samples = entry.finalize(null());
             groups.append(ColumnSampleBatch { point, columns_and_values });
         };

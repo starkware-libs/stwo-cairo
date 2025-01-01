@@ -557,9 +557,12 @@ fn compute_decommitment_positions_and_rebuild_evals(
             subset_eval
                 .append(
                     *match query_positions.next_if_eq(@decommitment_position) {
-                        Option::Some(_) => query_evals_iter.next().unwrap(),
+                        Option::Some(_) => {
+                            let res = query_evals_iter.next().unwrap();
+                            res
+                        },
                         Option::None => match witness_evals_iter.next() {
-                            Option::Some(witness_eval) => witness_eval,
+                            Option::Some(witness_eval) => { witness_eval },
                             Option::None => { break Result::Err(InsufficientWitnessError {}); },
                         },
                     },
@@ -573,6 +576,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
         }
 
         subset_evals.append(subset_eval);
+
         subset_domain_index_initials
             .append(bit_reverse_index(subset_start, queries.log_domain_size));
     }?;
