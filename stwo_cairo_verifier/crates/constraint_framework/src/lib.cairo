@@ -1,3 +1,4 @@
+use stwo_verifier_core::utils::SpanExTrait;
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
@@ -64,12 +65,14 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
 
         for preprocessed_column in preprocessed_columns {
             let column_mask_values = preprocessed_mask_values.pop_front().unwrap().span();
-            let [mask_value]: [QM31; 1] = (*column_mask_values.try_into().unwrap()).unbox();
-            values
-                .insert(
-                    PreprocessedColumnKey::encode(preprocessed_column),
-                    NullableTrait::new(mask_value),
-                );
+
+            if let Option::Some(mask_value) = column_mask_values.first() {
+                values
+                    .insert(
+                        PreprocessedColumnKey::encode(preprocessed_column),
+                        NullableTrait::new(*mask_value),
+                    );
+            }
         };
 
         assert!(preprocessed_mask_values.is_empty());
