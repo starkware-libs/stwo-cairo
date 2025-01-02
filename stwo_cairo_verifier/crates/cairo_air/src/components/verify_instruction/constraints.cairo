@@ -11,11 +11,8 @@ pub fn mask_points(
     ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
     point: CirclePoint<QM31>,
     trace_gen: CirclePointIndex,
-    claimed_sum_offset: usize,
 ) {
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-    let point_offset_claimed_sum = point
-        .add_circle_point_m31(trace_gen.mul(claimed_sum_offset).to_point());
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
@@ -53,14 +50,10 @@ pub fn mask_points(
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
 }
 
 #[derive(Drop)]
@@ -104,7 +97,6 @@ pub struct ConstraintParams {
     pub VerifyInstruction_alpha8: QM31,
     pub VerifyInstruction_alpha9: QM31,
     pub VerifyInstruction_z: QM31,
-    pub claimed_sum: QM31,
     pub preprocessed_is_first: QM31,
     pub total_sum: QM31,
 }
@@ -156,10 +148,11 @@ pub fn evaluate_constraints_at_point(
     VerifyInstruction_alpha8,
     VerifyInstruction_alpha9,
     VerifyInstruction_z,
-    claimed_sum,
     preprocessed_is_first,
     total_sum } =
         params;
+
+    println!("evaluate_constraints_at_point");
 
     let mut trace_1_column_0 = trace_mask_values.pop_front().unwrap().span();
     let trace_1_column_0_offset_0 = *trace_1_column_0.pop_front().unwrap();
@@ -238,19 +231,17 @@ pub fn evaluate_constraints_at_point(
     let mut trace_2_column_37 = interaction_mask_values.pop_front().unwrap().span();
     let trace_2_column_37_offset_neg_1 = *trace_2_column_37.pop_front().unwrap();
     let trace_2_column_37_offset_0 = *trace_2_column_37.pop_front().unwrap();
-    let trace_2_column_37_offset_claimed_sum = *trace_2_column_37.pop_front().unwrap();
     let mut trace_2_column_38 = interaction_mask_values.pop_front().unwrap().span();
     let trace_2_column_38_offset_neg_1 = *trace_2_column_38.pop_front().unwrap();
     let trace_2_column_38_offset_0 = *trace_2_column_38.pop_front().unwrap();
-    let trace_2_column_38_offset_claimed_sum = *trace_2_column_38.pop_front().unwrap();
     let mut trace_2_column_39 = interaction_mask_values.pop_front().unwrap().span();
     let trace_2_column_39_offset_neg_1 = *trace_2_column_39.pop_front().unwrap();
     let trace_2_column_39_offset_0 = *trace_2_column_39.pop_front().unwrap();
-    let trace_2_column_39_offset_claimed_sum = *trace_2_column_39.pop_front().unwrap();
     let mut trace_2_column_40 = interaction_mask_values.pop_front().unwrap().span();
     let trace_2_column_40_offset_neg_1 = *trace_2_column_40.pop_front().unwrap();
     let trace_2_column_40_offset_0 = *trace_2_column_40.pop_front().unwrap();
-    let trace_2_column_40_offset_claimed_sum = *trace_2_column_40.pop_front().unwrap();
+
+    println!("done popping");
     let intermediate0 = (RangeCheck_7_2_5_alpha0) * (trace_1_column_20_offset_0)
         + (RangeCheck_7_2_5_alpha1) * (trace_1_column_21_offset_0)
         + (RangeCheck_7_2_5_alpha2) * (trace_1_column_23_offset_0)
@@ -392,15 +383,6 @@ pub fn evaluate_constraints_at_point(
 
     let constraint_20 = (QM31Impl::from_partial_evals(
         [
-            trace_2_column_37_offset_claimed_sum, trace_2_column_38_offset_claimed_sum,
-            trace_2_column_39_offset_claimed_sum, trace_2_column_40_offset_claimed_sum,
-        ],
-    )
-        - (claimed_sum))
-        * (preprocessed_is_first);
-
-    let constraint_21 = (QM31Impl::from_partial_evals(
-        [
             trace_2_column_37_offset_0, trace_2_column_38_offset_0, trace_2_column_39_offset_0,
             trace_2_column_40_offset_0,
         ],
@@ -462,6 +444,4 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_19 * domain_vanish_at_point_inv;
     // TODO: Batch `domain_vanish_at_point_inv` multiplication.
     sum = sum * random_coeff + constraint_20 * domain_vanish_at_point_inv;
-    // TODO: Batch `domain_vanish_at_point_inv` multiplication.
-    sum = sum * random_coeff + constraint_21 * domain_vanish_at_point_inv;
 }

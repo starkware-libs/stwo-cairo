@@ -33,6 +33,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     ref commitment_scheme: CommitmentSchemeVerifier,
 ) -> Result<(), VerificationError> {
     let random_coeff = channel.draw_felt();
+    println!("random_coeff: {}", random_coeff);
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Read composition polynomial commitment.
@@ -65,8 +66,11 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // values. This is a sanity check.
     if composition_oods_eval != air
         .eval_composition_polynomial_at_point(oods_point, sampled_oods_values, random_coeff) {
+        println!("OodsNotMatching");
         return Result::Err(VerificationError::OodsNotMatching);
     }
+
+    println!("after oods check");
 
     commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)
 }

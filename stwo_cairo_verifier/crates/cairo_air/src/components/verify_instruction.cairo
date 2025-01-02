@@ -1,3 +1,4 @@
+use super::super::Invertible;
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
@@ -14,26 +15,26 @@ mod constraints;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
-    pub n_calls: usize,
+    pub log_size: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_size(self: @Claim) -> u32 {
-        (*self.n_calls).next_power_of_two().ilog2()
+        *self.log_size
     }
 
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = self.log_size();
         let preprocesed_trace_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(28, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 5, log_size)
+        let trace_log_sizes = ArrayImpl::new_repeated(29, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 3, log_size)
             .span();
         array![preprocesed_trace_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_nonce((*self.n_calls).into());
+        channel.mix_nonce((*self.log_size).into());
     }
 }
 
@@ -68,14 +69,9 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let claimed_sum_offset = *self.claim.n_calls;
         let trace_gen = CanonicCosetImpl::new(self.claim.log_size()).coset.step_size;
         constraints::mask_points(
-            ref trace_mask_points,
-            ref interaction_trace_mask_points,
-            point,
-            trace_gen,
-            claimed_sum_offset,
+            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
         );
     }
 
@@ -92,13 +88,16 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
+        println!("evaluate_constraints_at_point");
         let mut addr_to_id_alpha_powers = self
             .memoryaddresstoid_lookup_elements
             .alpha_powers
             .span();
+
         let addr_to_id_alpha_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
+
         let addr_to_id_alpha_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_z = *addr_to_id_alpha_powers.pop_front().unwrap();
+        let addr_to_id_z = *self.memoryaddresstoid_lookup_elements.z;
 
         let mut id_to_value_alpha_powers = self.memoryidtobig_lookup_elements.alpha_powers.span();
         let id_to_value_alpha_0 = *id_to_value_alpha_powers.pop_front().unwrap();
@@ -109,7 +108,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let id_to_value_alpha_5 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_6 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_7 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_z = *id_to_value_alpha_powers.pop_front().unwrap();
+        let id_to_value_z = *self.memoryidtobig_lookup_elements.z;
 
         let mut range_check_4_3_alpha_powers = self
             .rangecheck_4_3_lookup_elements
@@ -117,7 +116,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             .span();
         let range_check_4_3_alpha_0 = *range_check_4_3_alpha_powers.pop_front().unwrap();
         let range_check_4_3_alpha_1 = *range_check_4_3_alpha_powers.pop_front().unwrap();
-        let range_check_4_3_z = *range_check_4_3_alpha_powers.pop_front().unwrap();
+        let range_check_4_3_z = *self.rangecheck_4_3_lookup_elements.z;
+        println!("01");
 
         let mut range_check_7_2_5_alpha_powers = self
             .range_check_7_2_5_lookup_elements
@@ -126,12 +126,13 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let range_check_7_2_5_alpha_0 = *range_check_7_2_5_alpha_powers.pop_front().unwrap();
         let range_check_7_2_5_alpha_1 = *range_check_7_2_5_alpha_powers.pop_front().unwrap();
         let range_check_7_2_5_alpha_2 = *range_check_7_2_5_alpha_powers.pop_front().unwrap();
-        let range_check_7_2_5_z = *range_check_7_2_5_alpha_powers.pop_front().unwrap();
+        let range_check_7_2_5_z = *self.range_check_7_2_5_lookup_elements.z;
 
         let mut verify_instruction_alpha_powers = self
             .verifyinstruction_lookup_elements
             .alpha_powers
             .span();
+
         let verify_instruction_alpha_0 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_1 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_2 = *verify_instruction_alpha_powers.pop_front().unwrap();
@@ -151,11 +152,15 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let verify_instruction_alpha_16 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_17 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_18 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_z = *verify_instruction_alpha_powers.pop_front().unwrap();
-
-        let (claimed_sum, _) = (*self.interaction_claim.claimed_sum).unwrap();
+        let verify_instruction_z = *self.verifyinstruction_lookup_elements.z;
 
         let log_size = self.claim.log_size();
+        println!("log_size: {}", log_size);
+
+        let _preprocessed_is_first = preprocessed_mask_values
+            .get(PreprocessedColumn::IsFirst(log_size));
+
+        println!("here");
 
         let params = constraints::ConstraintParams {
             MemoryAddressToId_alpha0: addr_to_id_alpha_0,
@@ -197,8 +202,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha8: verify_instruction_alpha_8,
             VerifyInstruction_alpha9: verify_instruction_alpha_9,
             VerifyInstruction_z: verify_instruction_z,
-            claimed_sum: claimed_sum,
-            // TODO
             preprocessed_is_first: preprocessed_mask_values
                 .get(PreprocessedColumn::IsFirst(log_size)),
             total_sum: *self.interaction_claim.total_sum,
@@ -213,7 +216,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         );
     }
 }

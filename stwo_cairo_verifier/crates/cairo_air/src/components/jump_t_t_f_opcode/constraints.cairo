@@ -342,6 +342,7 @@ pub fn evaluate_constraints_at_point(
         )))
         * (intermediate4)
         - (qm31(2147483646, 0, 0, 0));
+
     // TODO: Batch `domain_vanish_at_point_inv` multiplication.
     sum = sum * random_coeff + constraint_0 * domain_vanish_at_point_inv;
     // TODO: Batch `domain_vanish_at_point_inv` multiplication.

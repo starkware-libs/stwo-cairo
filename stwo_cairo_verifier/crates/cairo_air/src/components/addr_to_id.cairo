@@ -1,3 +1,4 @@
+use super::super::Invertible;
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
@@ -12,7 +13,7 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 
 mod constraints;
 
-pub const N_ADDR_TO_ID_COLUMNS: usize = 3;
+pub const N_ADDR_TO_ID_COLUMNS: usize = 9;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -25,7 +26,8 @@ pub impl ClaimImpl of ClaimTrait {
         let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = ArrayImpl::new_repeated(N_ADDR_TO_ID_COLUMNS, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 2, log_size)
+            .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -82,14 +84,14 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let mut addr_to_id_alpha_powers = self.lookup_elements.alpha_powers.span();
         let addr_to_id_alpha_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
         let addr_to_id_alpha_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_z = *addr_to_id_alpha_powers.pop_front().unwrap();
+        let addr_to_id_z = *self.lookup_elements.z;
 
         let log_size = *self.claim.log_size;
 
         let params = constraints::ConstraintParams {
-            AddrToId_alpha0: addr_to_id_alpha_0,
-            AddrToId_alpha1: addr_to_id_alpha_1,
-            AddrToId_z: addr_to_id_z,
+            MemoryAddressToId_alpha0: addr_to_id_alpha_0,
+            MemoryAddressToId_alpha1: addr_to_id_alpha_1,
+            MemoryAddressToId_z: addr_to_id_z,
             preprocessed_is_first: preprocessed_mask_values
                 .get(PreprocessedColumn::IsFirst(log_size)),
             total_sum: *self.interaction_claim.claimed_sum,
@@ -104,7 +106,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         );
     }
 }

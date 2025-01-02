@@ -47,7 +47,7 @@ impl Claim {
         ])
     }
 
-    pub fn mix_into(&self, channel: &mut impl Channel) {
+    pub fn mix_into(&self, channel: &mut impl Channel) 
         channel.mix_u64(self.log_size as u64);
     }
 }

@@ -1,10 +1,9 @@
+use stwo_verifier_core::{ColumnSpan, ColumnArray};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_verifier_core::fields::m31::{M31, m31};
+use stwo_verifier_core::fields::m31::{m31, M31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
-
-use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
 pub fn mask_points(
@@ -48,16 +47,16 @@ pub fn mask_points(
 
 #[derive(Drop)]
 pub struct ConstraintParams {
-    pub IdToValue_alpha0: QM31,
-    pub IdToValue_alpha1: QM31,
-    pub IdToValue_alpha2: QM31,
-    pub IdToValue_alpha3: QM31,
-    pub IdToValue_alpha4: QM31,
-    pub IdToValue_alpha5: QM31,
-    pub IdToValue_alpha6: QM31,
-    pub IdToValue_alpha7: QM31,
-    pub IdToValue_alpha8: QM31,
-    pub IdToValue_z: QM31,
+    pub MemoryIdToBig_alpha0: QM31,
+    pub MemoryIdToBig_alpha1: QM31,
+    pub MemoryIdToBig_alpha2: QM31,
+    pub MemoryIdToBig_alpha3: QM31,
+    pub MemoryIdToBig_alpha4: QM31,
+    pub MemoryIdToBig_alpha5: QM31,
+    pub MemoryIdToBig_alpha6: QM31,
+    pub MemoryIdToBig_alpha7: QM31,
+    pub MemoryIdToBig_alpha8: QM31,
+    pub MemoryIdToBig_z: QM31,
     pub RangeCheck_9_9_alpha0: QM31,
     pub RangeCheck_9_9_alpha1: QM31,
     pub RangeCheck_9_9_z: QM31,
@@ -73,23 +72,24 @@ pub fn evaluate_constraints_at_point(
     random_coeff: QM31,
     domain_vanish_at_point_inv: QM31,
 ) {
-    let ConstraintParams {
-        IdToValue_alpha0,
-        IdToValue_alpha1,
-        IdToValue_alpha2,
-        IdToValue_alpha3,
-        IdToValue_alpha4,
-        IdToValue_alpha5,
-        IdToValue_alpha6,
-        IdToValue_alpha7,
-        IdToValue_alpha8,
-        IdToValue_z,
-        RangeCheck_9_9_alpha0,
-        RangeCheck_9_9_alpha1,
-        RangeCheck_9_9_z,
-        preprocessed_is_first,
-        total_sum,
-    } = params;
+    let ConstraintParams { MemoryIdToBig_alpha0,
+    MemoryIdToBig_alpha1,
+    MemoryIdToBig_alpha2,
+    MemoryIdToBig_alpha3,
+    MemoryIdToBig_alpha4,
+    MemoryIdToBig_alpha5,
+    MemoryIdToBig_alpha6,
+    MemoryIdToBig_alpha7,
+    MemoryIdToBig_alpha8,
+    MemoryIdToBig_z,
+    RangeCheck_9_9_alpha0,
+    RangeCheck_9_9_alpha1,
+    RangeCheck_9_9_z,
+    preprocessed_is_first,
+    total_sum } =
+        params;
+
+    println!("before");
 
     let mut trace_1_column_0 = trace_mask_values.pop_front().unwrap().span();
     let trace_1_column_0_offset_0 = *trace_1_column_0.pop_front().unwrap();
@@ -155,16 +155,18 @@ pub fn evaluate_constraints_at_point(
     let mut trace_2_column_29 = interaction_mask_values.pop_front().unwrap().span();
     let trace_2_column_29_offset_neg_1 = *trace_2_column_29.pop_front().unwrap();
     let trace_2_column_29_offset_0 = *trace_2_column_29.pop_front().unwrap();
-    let intermediate0 = (IdToValue_alpha0) * (trace_1_column_0_offset_0)
-        + (IdToValue_alpha1) * (trace_1_column_1_offset_0)
-        + (IdToValue_alpha2) * (trace_1_column_2_offset_0)
-        + (IdToValue_alpha3) * (trace_1_column_3_offset_0)
-        + (IdToValue_alpha4) * (trace_1_column_4_offset_0)
-        + (IdToValue_alpha5) * (trace_1_column_5_offset_0)
-        + (IdToValue_alpha6) * (trace_1_column_6_offset_0)
-        + (IdToValue_alpha7) * (trace_1_column_7_offset_0)
-        + (IdToValue_alpha8) * (trace_1_column_8_offset_0)
-        - (IdToValue_z);
+
+    println!("after pops");
+    let intermediate0 = (MemoryIdToBig_alpha0) * (trace_1_column_0_offset_0)
+        + (MemoryIdToBig_alpha1) * (trace_1_column_1_offset_0)
+        + (MemoryIdToBig_alpha2) * (trace_1_column_2_offset_0)
+        + (MemoryIdToBig_alpha3) * (trace_1_column_3_offset_0)
+        + (MemoryIdToBig_alpha4) * (trace_1_column_4_offset_0)
+        + (MemoryIdToBig_alpha5) * (trace_1_column_5_offset_0)
+        + (MemoryIdToBig_alpha6) * (trace_1_column_6_offset_0)
+        + (MemoryIdToBig_alpha7) * (trace_1_column_7_offset_0)
+        + (MemoryIdToBig_alpha8) * (trace_1_column_8_offset_0)
+        - (MemoryIdToBig_z);
 
     let intermediate1 = (RangeCheck_9_9_alpha0) * (trace_1_column_1_offset_0)
         + (RangeCheck_9_9_alpha1) * (trace_1_column_2_offset_0)
@@ -268,4 +270,3 @@ pub fn evaluate_constraints_at_point(
     // TODO: Batch `domain_vanish_at_point_inv` multiplication.
     sum = sum * random_coeff + constraint_4 * domain_vanish_at_point_inv;
 }
-

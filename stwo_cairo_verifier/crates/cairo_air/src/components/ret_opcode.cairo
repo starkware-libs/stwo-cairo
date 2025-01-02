@@ -1,3 +1,4 @@
+use super::super::Invertible;
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
@@ -188,7 +189,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         )
     }
 }

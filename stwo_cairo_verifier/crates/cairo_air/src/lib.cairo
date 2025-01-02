@@ -44,7 +44,9 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 pub mod components;
 pub mod utils;
 
-const IS_FIRST_LOG_SIZES: [u32; 7] = [18, 4, 14, 19, 7, 6, 5];
+const IS_FIRST_LOG_SIZES: [u32; 19] = [
+    22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
+];
 
 // (Address, Id, Value)
 pub type PublicMemory = Array<(u32, u32, [u32; 8])>;
@@ -77,9 +79,9 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     // Verify.
     let config = PcsConfig {
-        pow_bits: 5,
+        pow_bits: 0,
         fri_config: FriConfig {
-            log_blowup_factor: 0, log_last_layer_degree_bound: 1, n_queries: 3,
+            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 15,
         },
     };
     let mut channel = ChannelImpl::new(0);
@@ -93,21 +95,20 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     commitment_scheme
         .commit(*stark_proof.commitment_scheme_proof.commitments[0], *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
-    println!("Made here 1");
+
     commitment_scheme
         .commit(*stark_proof.commitment_scheme_proof.commitments[1], *log_sizes[1], ref channel);
     let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
-    println!("Made here 2");
+
     if lookup_sum(@claim, @interaction_elements, @interaction_claim).is_non_zero() {
         return Result::Err(CairoVerificationError::InvalidLogupSum);
     }
-    println!("Made here 3");
+
     interaction_claim.mix_into(ref channel);
     commitment_scheme
         .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
 
     let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
-
     if let Result::Err(err) = verify(cairo_air, ref channel, stark_proof, ref commitment_scheme) {
         return Result::Err(CairoVerificationError::Stark(err));
     }
@@ -121,12 +122,15 @@ pub fn lookup_sum(
     interaction_claim: @CairoInteractionClaim,
 ) -> QM31 {
     let mut sum = claim.public_data.logup_sum(elements);
+    println!("sum: {}", sum);
 
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
     sum += interaction_claim.opcodes.sum();
-    let (claimed_sum, _) = (*interaction_claim.verify_instruction.claimed_sum).unwrap();
+    println!("sum: {}", sum);
+    let (claimed_sum, _) = (*interaction_claim.verify_instruction.claimed_sum)
+        .unwrap_or((*interaction_claim.verify_instruction.total_sum, 0));
     sum += claimed_sum;
     sum += *interaction_claim.range_check_19.claimed_sum;
     sum += *interaction_claim.range_check_9_9.claimed_sum;
@@ -135,6 +139,7 @@ pub fn lookup_sum(
     sum += *interaction_claim.memory_addr_to_id.claimed_sum;
     sum += *interaction_claim.memory_id_to_value.big_claimed_sum;
     sum += *interaction_claim.memory_id_to_value.small_claimed_sum;
+    println!("sum: {}", sum);
     sum
 }
 
@@ -194,6 +199,16 @@ impl CairoClaimImpl of CairoClaimTrait {
                 self.range_check_4_3.log_sizes(),
             ],
         );
+
+        println!("{}", (*self.opcodes.log_sizes()[2]).len());
+        println!("{}", (*self.verify_instruction.log_sizes()[2]).len());
+        println!("{}", (*self.memory_addr_to_id.log_sizes()[2]).len());
+        println!("{}", (*self.memory_id_to_value.log_sizes()[2]).len());
+        println!("{}", (*self.range_check_19.log_sizes()[2]).len());
+        println!("{}", (*self.range_check_9_9.log_sizes()[2]).len());
+        println!("{}", (*self.range_check_7_2_5.log_sizes()[2]).len());
+        println!("{}", (*self.range_check_4_3.log_sizes()[2]).len());
+
         // Overwrite the preprocessed trace log sizes.
         let _invalid_preprocessed_trace_log_sizes = aggregated_log_sizes.pop_front();
         let preprocessed_trace_log_sizes = IS_FIRST_LOG_SIZES.span();
@@ -286,14 +301,14 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             };
         };
 
-        for interaction_claim in self.ret.span() {
+        for interaction_claim in self.jump_t_t_f.span() {
             sum += match interaction_claim.claimed_sum {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
             };
         };
 
-        for interaction_claim in self.jump_t_t_f.span() {
+        for interaction_claim in self.ret.span() {
             sum += match interaction_claim.claimed_sum {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
@@ -528,7 +543,8 @@ impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
         let composition_log_degree_bound = self.opcodes.max_constraint_log_degree_bound();
         // TODO: ...
-        composition_log_degree_bound
+        //composition_log_degree_bound
+        20
     }
 
     fn mask_points(
@@ -547,9 +563,9 @@ impl CairoAirImpl of Air<CairoAir> {
             .memory_addr_to_id
             .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        memory_id_to_value_small
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
         memory_id_to_value_big
+            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+        memory_id_to_value_small
             .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
         self
             .range_check_19
@@ -572,12 +588,12 @@ impl CairoAirImpl of Air<CairoAir> {
         mask_values: @TreeArray<ColumnArray<Array<QM31>>>,
         random_coeff: QM31,
     ) -> QM31 {
-        println!("evaluating composition");
-
         let mut sum = QM31Zero::zero();
+
         let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
             mask_values[0].span(), self.preprocessed_columns.span(),
         );
+
         let mut trace_mask_values = mask_values[1].span();
         let mut interaction_trace_mask_values = mask_values[2].span();
 
@@ -591,6 +607,9 @@ impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
+        println!("eval: {}", sum);
+
         self
             .verify_instruction
             .evaluate_constraints_at_point(
@@ -601,6 +620,7 @@ impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
         self
             .memory_addr_to_id
             .evaluate_constraints_at_point(
@@ -611,8 +631,10 @@ impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        memory_id_to_value_small
+
+        memory_id_to_value_big
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -622,7 +644,7 @@ impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
 
-        memory_id_to_value_big
+        memory_id_to_value_small
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -692,9 +714,12 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     ) -> OpcodeComponents {
         // TODO: Handle dynamic number of components.
         assert!(claim.generic.len() == 0);
+
+        assert!(claim.jump_t_t_f.len() == 1);
         assert!(claim.ret.len() == 0);
-        assert!(interaction_claim.generic.len() == 1);
-        assert!(interaction_claim.ret.len() == 1);
+        assert!(interaction_claim.generic.len() == 0);
+        assert!(interaction_claim.jump_t_t_f.len() == 1);
+        assert!(interaction_claim.ret.len() == 0);
         // let generic_opcode_component = components::genericopcode::Component {
         //     claim: *claim.generic[0],
         //     interaction_claim: *interaction_claim.generic[0],
@@ -812,18 +837,11 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
     }
 }
-#[executable]
-fn main(mut p: Span<felt252>) {
-    println!("before proof");
-
-    println!("{}", p.len());
-    let opt_proof: Option<CairoProof> = Serde::deserialize(ref p);
-    println!("{}", p.len());
-
-    let proof = opt_proof.unwrap();
-
-    println!("deserialized proof");
-    if let Result::Err(err) = stwo_cairo_air::verify_cairo(proof) {
-        panic!("Verification failed: {:?}", err);
-    }
-}
+//#[cfg(not(test))]
+// #[executable]
+// fn main(proof: CairoProof) {
+//     println!("deserialized proof");
+//     if let Result::Err(err) = stwo_cairo_air::verify_cairo(proof) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }

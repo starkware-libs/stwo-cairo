@@ -1,3 +1,4 @@
+use super::super::Invertible;
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
@@ -26,8 +27,8 @@ pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = self.log_size();
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(11, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 7, log_size)
+        let trace_log_sizes = ArrayImpl::new_repeated(10, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 3, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
@@ -157,10 +158,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let verify_instruction_alpha_pow_14 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_pow_15 = *verify_instruction_alpha_powers.pop_front().unwrap();
 
-        let mut Opcodes_alpha0_powers = self.opcodes_lookup_elements.alpha_powers.span();
-        let Opcodes_alpha0 = *Opcodes_alpha0_powers.pop_front().unwrap();
-        let Opcodes_alpha1 = *Opcodes_alpha0_powers.pop_front().unwrap();
-        let Opcodes_alpha2 = *Opcodes_alpha0_powers.pop_front().unwrap();
+        let mut Opcodes_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
+        let Opcodes_alpha0 = *Opcodes_alpha_powers.pop_front().unwrap();
+        let Opcodes_alpha1 = *Opcodes_alpha_powers.pop_front().unwrap();
+        let Opcodes_alpha2 = *Opcodes_alpha_powers.pop_front().unwrap();
         let Opcodes_z = *self.opcodes_lookup_elements.z;
 
         let (claimed_sum, _) = (*self.interaction_claim.claimed_sum).unwrap();
@@ -237,7 +238,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         )
     }
 }

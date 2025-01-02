@@ -74,14 +74,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
-        let CommitmentSchemeProof {
-            commitments: _,
-            sampled_values,
-            decommitments,
-            queried_values,
-            proof_of_work_nonce,
-            fri_proof,
-        } = proof;
+        let CommitmentSchemeProof { commitments: _,
+        sampled_values,
+        decommitments,
+        queried_values,
+        proof_of_work_nonce,
+        fri_proof } =
+            proof;
 
         let mut flattened_sampled_values = array![];
 
@@ -115,11 +114,17 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             return Result::Err(VerificationError::ProofOfWork);
         }
 
+        println!("Proof of work passed");
+
         // Get FRI query positions.
         let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
             .sample_query_positions(ref channel);
 
         let n_trees = self.trees.len();
+
+        for log_sizes in column_log_sizes.span() {
+            println!("log_sizes: {:?}", log_sizes);
+        };
 
         // Verify merkle decommitments.
         let mut decommitments = decommitments.into_iter();
@@ -142,6 +147,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                     queried_values,
                     decommitment,
                 ) {
+                println!("tree_i: {}", tree_i);
+                // println!("root: {}", tree.root);
+                // println!("queried_values: {:?}", queried_values.len());
+                // println!("queried_values: {:?}", queried_values);
+                println!("Result::Err(VerificationError::Merkle(err))");
+
                 break Result::Err(VerificationError::Merkle(err));
             }
 
@@ -151,9 +162,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Check iterators have been fully consumed.
         assert!(decommitments.next().is_none());
 
+        println!("decommitments empy");
+
         // Answer FRI queries.
         let samples = get_flattened_samples(sampled_points, sampled_values);
 
+        println!("before  fri_answers");
         let fri_answers = fri_answers(
             column_log_sizes.span(),
             samples.span(),
@@ -221,7 +235,8 @@ fn get_flattened_samples(
         while column_i < n_columns {
             let column_points = tree_points[column_i];
             let column_values = tree_values[column_i];
-            let n_samples = column_points.len();
+            // TODO:(ilya): why is column_points.len() > column_values.len() for preprocessed.
+            let n_samples = column_values.len();
             let mut column_samples = array![];
 
             let mut sample_i = 0;

@@ -1,3 +1,4 @@
+use super::super::Invertible;
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
@@ -116,7 +117,7 @@ pub impl Rc19BitComponentImpl of CairoComponent<Rc19BitComponent> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         );
     }
 }
@@ -176,7 +177,7 @@ pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         );
     }
 }
@@ -236,7 +237,7 @@ pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         );
     }
 }
@@ -297,7 +298,7 @@ pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> 
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval,
+            vanish_eval.inverse(),
         );
     }
 }

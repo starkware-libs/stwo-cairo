@@ -31,6 +31,7 @@ pub fn fri_answers(
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeArray<Span<M31>>,
 ) -> Result<Array<Span<QM31>>, VerificationError> {
+    println!("fri_answers");
     // Group columns by log size.
     // TODO(andrew): Refactor. When columns are in descending order this is not needed.
     let mut log_size_00_columns = array![];
@@ -177,7 +178,8 @@ pub fn fri_answers(
 
     let mut answers = array![];
     let mut log_size = M31_CIRCLE_LOG_ORDER;
-    let one_per_tree = [1, 1, 1].span();
+    println!("n_columns_per_tree: {}", n_columns_per_tree.len());
+    let one_per_tree = [1, 1, 1, 1].span();
     assert!(n_columns_per_tree.len() == one_per_tree.len());
     loop {
         let columns = match columns_per_log_size_rev.next() {
@@ -296,9 +298,9 @@ fn accumulate_row_quotients(
         for sample_i in 0..batch_size {
             let (column_index, _) = sample_batch_columns_and_values[sample_i];
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
-            let ComplexConjugateLineCoeffs {
-                alpha_mul_a, alpha_mul_b, alpha_mul_c,
-            } = *line_coeffs[sample_i];
+            println!("query_eval_at_column: {}", query_eval_at_column);
+            let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } =
+                *line_coeffs[sample_i];
             // The numerator is a line equation passing through
             //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
             // evaluated at (domain_point.y, value).
