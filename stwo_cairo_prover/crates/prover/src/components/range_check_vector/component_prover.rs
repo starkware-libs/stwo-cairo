@@ -19,7 +19,7 @@ macro_rules! range_check_prover {
             use stwo_prover::core::poly::BitReversedOrder;
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
-            use $crate::components::MultiplicityColumn;
+            use $crate::components::AtomicMultiplicityColumn;
             use $crate::components::range_check_vector::{generate_partitioned_enumeration,
                                             partition_into_bit_segments, SIMD_ENUMERATION_0};
 
@@ -27,13 +27,13 @@ macro_rules! range_check_prover {
             pub type InputType = [M31; N_RANGES];
 
             pub struct ClaimGenerator {
-                pub multiplicities: MultiplicityColumn,
+                multiplicities: AtomicMultiplicityColumn,
             }
             impl ClaimGenerator {
                 #[allow(clippy::new_without_default)]
                 pub fn new() -> Self {
                     let length = 1 << (RANGES.iter().sum::<u32>()) as usize;
-                    let multiplicities = MultiplicityColumn::new(length);
+                    let multiplicities = AtomicMultiplicityColumn::new(length);
 
                     Self {
                         multiplicities,
@@ -44,14 +44,14 @@ macro_rules! range_check_prover {
                     RANGES.iter().sum()
                 }
 
-                pub fn add_inputs(&mut self, inputs: &[[M31; N_RANGES]]) {
+                pub fn add_inputs(&self, inputs: &[[M31; N_RANGES]]) {
                     for input in inputs {
                         self.add_m31(*input);
                     }
                 }
 
                 // TODO(Ohad): test.
-                pub fn add_m31(&mut self, input: InputType) {
+                pub fn add_m31(&self, input: InputType) {
                     let mut value = 0_u32;
                     for (segment, segment_n_bits) in zip(input, RANGES) {
                         value <<= segment_n_bits;
@@ -61,7 +61,7 @@ macro_rules! range_check_prover {
                 }
 
                 // TODO(Ohad): test.
-                pub fn add_packed_m31(&mut self, input: &PackedInputType) {
+                pub fn add_packed_m31(&self, input: &PackedInputType) {
                     let arrays: [_; N_RANGES] = std::array::from_fn(|i| input[i].to_array());
                     for i in 0..N_LANES {
                         self.add_m31(std::array::from_fn(|j| arrays[j][i]));
@@ -104,7 +104,7 @@ macro_rules! range_check_prover {
                     (claim, interaction_claim_prover)
                 }
             }
-
+            unsafe impl Send for ClaimGenerator {}
 
             #[derive(Debug)]
             pub struct InteractionClaimGenerator {
@@ -177,7 +177,7 @@ mod tests {
         const LOG_HEIGHT: u32 = 14;
         const LOG_BLOWUP_FACTOR: u32 = 1;
         let log_ranges = [7, 2, 5];
-        let mut claim_generator = range_check_7_2_5::ClaimGenerator::new();
+        let claim_generator = range_check_7_2_5::ClaimGenerator::new();
 
         let twiddles = SimdBackend::precompute_twiddles(
             CanonicCoset::new(LOG_HEIGHT + LOG_BLOWUP_FACTOR)

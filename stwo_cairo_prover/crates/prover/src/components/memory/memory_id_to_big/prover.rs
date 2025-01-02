@@ -1,8 +1,9 @@
 use std::iter::zip;
 use std::simd::Simd;
 
-use itertools::{chain, zip_eq, Itertools};
+use itertools::{chain,  Itertools};
 use prover_types::simd::PackedFelt252;
+use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -114,7 +115,7 @@ impl ClaimGenerator {
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        range_check_9_9_trace_generator: &mut range_check_9_9::ClaimGenerator,
+        range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
@@ -132,14 +133,18 @@ impl ClaimGenerator {
 
         // Add inputs to range check that all the values are 9-bit felts.
         for (col0, col1) in big_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
-            for (val0, val1) in zip_eq(col0, col1) {
-                range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
-            }
+            col0.par_iter()
+                .zip(col1.par_iter())
+                .for_each(|(val0, val1)| {
+                    range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
+                });
         }
         for (col0, col1) in small_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
-            for (val0, val1) in zip_eq(col0, col1) {
-                range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
-            }
+            col0.par_iter()
+                .zip(col1.par_iter())
+                .for_each(|(val0, val1)| {
+                    range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
+                });
         }
 
         // Extend trace.
