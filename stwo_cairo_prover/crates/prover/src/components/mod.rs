@@ -1,6 +1,8 @@
 use std::mem::transmute;
 use std::simd::Simd;
+use std::sync::atomic::{AtomicU32, Ordering};
 
+use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 
@@ -37,6 +39,7 @@ pub mod mul_opcode_is_small_f_is_imm_t;
 
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9};
+use stwo_prover::core::fields::m31::M31;
 
 // When padding is needed, the inputs must be arranged in the order defined by the neighbor
 // function. This order allows using the partial sum mechanism to sum only the first n_call inputs.
@@ -76,6 +79,38 @@ impl MultiplicityColumn {
         // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
         // multiple of N_LANES.
         unsafe { transmute(self.data) }
+    }
+}
+
+/// A column of multiplicities for lookup arguments. Allows increasing the multiplicity at a given
+/// index. This version uses atomic operations to increase the multiplicity, and is `Send`.
+pub struct AtomicMultiplicityColumn {
+    data: Vec<AtomicU32>,
+}
+impl AtomicMultiplicityColumn {
+    /// Creates a new `MultiplicityColumn` with the given size. The elements are initialized to 0.
+    pub fn new(size: usize) -> Self {
+        Self {
+            data: (0..size as u32).map(|_| AtomicU32::new(0)).collect(),
+        }
+    }
+
+    pub fn increase_at(&self, address: u32) {
+        self.data[address as usize].fetch_add(1, Ordering::Relaxed);
+    }
+
+    /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with
+    /// zeros if needed. This function performs a copy, use [`MultiplicityColumn`] for a zero-copy
+    /// non-atomic version.
+    pub fn into_simd_vec(self) -> Vec<PackedM31> {
+        // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
+        // multiple of N_LANES.
+        BaseColumn::from_iter(
+            self.data
+                .into_iter()
+                .map(|a| M31(a.load(Ordering::Relaxed))),
+        )
+        .data
     }
 }
 

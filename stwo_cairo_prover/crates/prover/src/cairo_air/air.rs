@@ -247,7 +247,7 @@ impl CairoClaimGenerator {
             .write_trace(tree_builder);
         let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) = self
             .memory_id_to_value_trace_generator
-            .write_trace(tree_builder, &mut self.range_check_9_9_trace_generator);
+            .write_trace(tree_builder, &self.range_check_9_9_trace_generator);
         let (range_check_19_claim, range_check_19_interaction_gen) = self
             .range_check_19_trace_generator
             .write_trace(tree_builder);
