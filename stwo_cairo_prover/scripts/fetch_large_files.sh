@@ -1,8 +1,17 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 # Ensure the input file is provided
 if [[ $# -ne 1 ]]; then
     echo "Usage: $0 <input_json>"
+    exit 1
+fi
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "Error: 'jq' is not installed. Run: sudo apt-get install js."
     exit 1
 fi
 
