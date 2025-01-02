@@ -48,14 +48,16 @@ mod tests {
             memory_address_to_id_gen.add_m31(*addr);
         });
 
-        assert_eq!(memory_address_to_id_gen.multiplicities.data.len(), 1);
+        let addr_to_id_mults = memory_address_to_id_gen.multiplicities.into_simd_vec();
+        let id_to_big_mults = memory_id_to_big.multiplicities.into_simd_vec();
+        assert_eq!(addr_to_id_mults.len(), 1);
         assert_eq!(
-            memory_address_to_id_gen.multiplicities.data[0],
-            Simd::from_array(expected_addr_mult)
+            addr_to_id_mults[0].into_simd(),
+            Simd::from_array(expected_addr_mult),
         );
-        assert_eq!(memory_id_to_big.multiplicities.data.len(), 1);
+        assert_eq!(id_to_big_mults.len(), 1);
         assert_eq!(
-            memory_id_to_big.multiplicities.data[0],
+            id_to_big_mults[0].into_simd(),
             Simd::from_array(expected_f252_mult)
         );
     }
