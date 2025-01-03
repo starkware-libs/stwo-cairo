@@ -1,6 +1,6 @@
 use cairo_vm::air_public_input::MemorySegmentAddresses;
+use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
-use hashbrown::HashMap;
 use serde::{Deserialize, Serialize};
 
 /// This struct holds the builtins used in a Cairo program.

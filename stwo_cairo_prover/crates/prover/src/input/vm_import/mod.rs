@@ -5,8 +5,8 @@ use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
+use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
-use hashbrown::HashMap;
 use json::PrivateInput;
 use thiserror_no_std::Error;
 use tracing::{span, Level};

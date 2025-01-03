@@ -1568,7 +1568,6 @@ dependencies = [
  "bytemuck",
  "cairo-lang-casm",
  "cairo-vm",
- "hashbrown 0.15.2",
  "hex",
  "itertools 0.12.1",
  "num-traits",
