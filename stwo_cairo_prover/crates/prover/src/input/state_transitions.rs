@@ -506,7 +506,13 @@ impl StateTransitions {
             } => {
                 let (op0_addr, op_1_addr) = (
                     if op0_base_fp { fp } else { ap },
-                    if op_1_base_fp { fp } else { ap },
+                    if op_1_imm {
+                        pc
+                    } else if op_1_base_fp {
+                        fp
+                    } else {
+                        ap
+                    },
                 );
                 let (op0, op_1) = (
                     memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
@@ -573,7 +579,13 @@ impl StateTransitions {
                 let (dst_addr, op0_addr, op_1_addr) = (
                     if dst_base_fp { fp } else { ap },
                     if op0_base_fp { fp } else { ap },
-                    if op_1_base_fp { fp } else { ap },
+                    if op_1_imm {
+                        pc
+                    } else if op_1_base_fp {
+                        fp
+                    } else {
+                        ap
+                    },
                 );
                 let (dst, op0, op_1) = (
                     memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
