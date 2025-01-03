@@ -8,6 +8,6 @@ cairo-vm.workspace = true
 clap.workspace = true
 env_logger.workspace = true
 log.workspace = true
-thiserror.workspace = true
+thiserror-no-std.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true

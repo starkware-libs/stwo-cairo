@@ -10,7 +10,7 @@ use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
-use thiserror::Error;
+use thiserror_no_std::Error;
 use tracing::{span, Level};
 
 /// Command line arguments for run_and_prove.

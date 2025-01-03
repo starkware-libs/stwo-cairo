@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
 use itertools::Itertools;
+use serde::{Deserialize, Serialize};
 
 use super::vm_import::MemoryEntry;
 use crate::components::memory::memory_id_to_big::component::N_M31_IN_SMALL_FELT252;
@@ -29,7 +30,7 @@ pub const P_MIN_2: [u32; 8] = [
     0x0800_0000,
 ];
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MemoryConfig {
     pub small_max: u128,
 }
@@ -49,7 +50,7 @@ impl Default for MemoryConfig {
 
 // TODO(spapini): Add U26 for addresses and U128 for range checks.
 // TODO(spapini): Use some struct for Felt252 (that is still memory efficient).
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Memory {
     pub config: MemoryConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
@@ -184,7 +185,7 @@ impl DerefMut for MemoryBuilder {
 }
 
 pub const LARGE_MEMORY_VALUE_ID_TAG: u32 = 0x4000_0000;
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct EncodedMemoryValueId(pub u32);
 impl EncodedMemoryValueId {
     pub fn encode(value: MemoryValueId) -> EncodedMemoryValueId {
