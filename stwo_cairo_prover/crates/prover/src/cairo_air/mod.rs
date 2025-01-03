@@ -1,11 +1,13 @@
 pub mod air;
 mod debug_tools;
 pub mod opcodes_air;
+pub mod preprocessed;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
-use stwo_prover::constraint_framework::preprocessed_columns::gen_is_first;
+use preprocessed::preprocessed_trace_columns;
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -18,16 +20,12 @@ use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
 use thiserror_no_std::Error;
 use tracing::{span, Level};
 
-use crate::input::CairoInput;
+use crate::input::ProverInput;
 
 const LOG_MAX_ROWS: u32 = 22;
 
-const IS_FIRST_LOG_SIZES: [u32; 19] = [
-    22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
-];
-
 pub fn prove_cairo<MC: MerkleChannel>(
-    input: CairoInput,
+    input: ProverInput,
     // TODO(Ohad): wrap these flags in a struct.
     track_relations: bool,
     display_components: bool,
@@ -57,12 +55,10 @@ where
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-
     tree_builder.extend_evals(
-        IS_FIRST_LOG_SIZES
+        preprocessed_trace_columns()
             .iter()
-            .cloned()
-            .map(gen_is_first::<SimdBackend>),
+            .map(PreprocessedColumn::gen_preprocessed_column::<SimdBackend>),
     );
     tree_builder.commit(channel);
 
@@ -185,11 +181,11 @@ mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
     use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
-    use crate::cairo_air::{prove_cairo, verify_cairo, CairoInput};
+    use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
     use crate::input::plain::input_from_plain_casm;
     use crate::input::vm_import::tests::small_cairo_input;
 
-    fn test_input() -> CairoInput {
+    fn test_input() -> ProverInput {
         let u128_max = u128::MAX;
         let instructions = casm! {
             // TODO(AlonH): Add actual range check segment.

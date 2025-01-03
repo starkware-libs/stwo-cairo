@@ -6,20 +6,18 @@ use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
 use super::memory::{MemoryBuilder, MemoryConfig};
-use super::state_transitions::StateTransitions;
-use super::vm_import::MemoryEntry;
-use super::CairoInput;
-use crate::input::MemorySegmentAddresses;
+use super::vm_import::{adapt_to_stwo_input, MemoryEntry};
+use super::ProverInput;
 
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Translates a plain casm into a CairoInput by running the program and extracting the memory and
+/// Translates a plain casm into a ProverInput by running the program and extracting the memory and
 /// the state transitions.
 /// When dev mod is enabled, the opcodes generated from the plain casm will
 /// be mapped to the generic component only.
 pub fn input_from_plain_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
     dev_mode: bool,
-) -> CairoInput {
+) -> ProverInput {
     let felt_code = casm
         .into_iter()
         .flat_map(|instruction| instruction.assemble().encode())
@@ -50,18 +48,20 @@ pub fn input_from_plain_casm(
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    input_from_finished_runner(runner, dev_mode)
+    adapt_finished_runner(runner, dev_mode)
 }
 
 // TODO(yuval): consider returning a result instead of panicking.
 // TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
-/// Assumes memory and trace are already relocated. Otherwise panics.
+/// Translates a CairoRunner that finished its run into a ProverInput by extracting the relevant
+/// input to the adapter.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
-pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoInput {
-    let _span = tracing::info_span!("input_from_finished_runner").entered();
-    let program_len = runner.get_program().iter_data().count();
-    let memory = runner
+/// # Panics
+/// - if the memory or the trace are not relocated.
+pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput {
+    let _span = tracing::info_span!("adapt_finished_runner").entered();
+    let memory_iter = runner
         .relocated_memory
         .iter()
         .enumerate()
@@ -71,22 +71,31 @@ pub fn input_from_finished_runner(runner: CairoRunner, dev_mode: bool) -> CairoI
                 value: bytemuck::cast(v.to_bytes_le()),
             })
         });
-    let trace = runner.relocated_trace.unwrap();
-    let trace = trace.iter().map(|t| t.clone().into());
 
-    let memory_config = MemoryConfig::default();
-    let mut memory = MemoryBuilder::from_iter(memory_config, memory);
-    let state_transitions = StateTransitions::from_iter(trace, &mut memory, dev_mode);
+    let public_input = runner
+        .get_air_public_input()
+        .expect("Unable to get public input from the runner");
+
+    let trace_iter = match runner.relocated_trace {
+        Some(ref trace) => trace.iter().map(|t| t.clone().into()),
+        None => panic!("Trace is not relocated"),
+    };
+
+    let memory_segments = &public_input.memory_segments;
+
+    let public_memory_addresses = public_input
+        .public_memory
+        .iter()
+        .map(|s| s.address as u32)
+        .collect_vec();
 
     // TODO(spapini): Add output builtin to public memory.
-    let public_memory_addresses = (0..(program_len as u32)).collect_vec();
-    CairoInput {
-        state_transitions,
-        memory: memory.build(),
+    adapt_to_stwo_input(
+        trace_iter,
+        MemoryBuilder::from_iter(MemoryConfig::default(), memory_iter),
         public_memory_addresses,
-        range_check_builtin: MemorySegmentAddresses {
-            begin_addr: 24,
-            stop_ptr: 64,
-        },
-    }
+        memory_segments,
+        dev_mode,
+    )
+    .unwrap()
 }

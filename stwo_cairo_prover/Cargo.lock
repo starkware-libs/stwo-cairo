@@ -1498,6 +1498,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
+name = "stwo-air-utils"
+version = "0.1.1"
+source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
+dependencies = [
+ "bytemuck",
+ "itertools 0.12.1",
+ "rayon",
+ "stwo-air-utils-derive",
+ "stwo-prover",
+]
+
+[[package]]
+name = "stwo-air-utils-derive"
+version = "0.1.0"
+source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
+dependencies = [
+ "itertools 0.13.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.93",
+]
+
+[[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
 dependencies = [
@@ -1518,7 +1541,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=5c53025#5c53025ba2e08044872782966c46a63a702bbdcc"
+source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
 dependencies = [
  "blake2",
  "blake3",
@@ -1545,6 +1568,7 @@ dependencies = [
  "bytemuck",
  "cairo-lang-casm",
  "cairo-vm",
+ "hashbrown 0.15.2",
  "hex",
  "itertools 0.12.1",
  "num-traits",
@@ -1555,6 +1579,8 @@ dependencies = [
  "serde",
  "serde_json",
  "starknet-ff",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
  "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_utils",
@@ -1977,9 +2003,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.20"
+version = "0.6.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36c1fec1a2bb5866f07c25f68c26e565c4c200aebb96d7e55710c19d3e8ac49b"
+checksum = "e6f5bb5257f2407a5425c6e749bfd9692192a73e70a6060516ac04f889087d68"
 dependencies = [
  "memchr",
 ]

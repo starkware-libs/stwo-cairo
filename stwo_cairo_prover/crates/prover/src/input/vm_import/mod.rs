@@ -4,17 +4,18 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::PublicInput;
+use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
+use hashbrown::HashMap;
 use json::PrivateInput;
 use thiserror_no_std::Error;
 use tracing::{span, Level};
 
+use super::builtin_segments::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
-use super::CairoInput;
+use super::ProverInput;
 use crate::input::memory::MemoryBuilder;
-use crate::input::MemorySegmentAddresses;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -27,12 +28,13 @@ pub enum VmImportError {
 }
 
 // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
-pub fn import_from_vm_output(
+/// Adapts the VM's output files to the Cairo input of the prover.
+pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
     dev_mode: bool,
-) -> Result<CairoInput, VmImportError> {
-    let _span = span!(Level::INFO, "import_from_vm_output").entered();
+) -> Result<ProverInput, VmImportError> {
+    let _span = span!(Level::INFO, "adapt_vm_output").entered();
     let public_input_string = std::fs::read_to_string(public_input_json)?;
     let public_input: PublicInput<'_> = serde_json::from_str(&public_input_string)?;
     let private_input: PrivateInput =
@@ -45,7 +47,6 @@ pub fn import_from_vm_output(
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
     assert!(end_addr < 1 << (usize::BITS - 1));
-    let memory_config = MemoryConfig::default();
 
     let memory_path = private_input_json
         .parent()
@@ -56,26 +57,39 @@ pub fn import_from_vm_output(
         .unwrap()
         .join(&private_input.trace_path);
 
-    let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
     let mut memory_file = std::io::BufReader::new(std::fs::File::open(memory_path)?);
-    let mut memory = MemoryBuilder::from_iter(memory_config, MemEntryIter(&mut memory_file));
-    let state_transitions =
-        StateTransitions::from_iter(TraceIter(&mut trace_file), &mut memory, dev_mode);
+    let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
 
-    let public_mem_addresses = public_input
+    let public_memory_addresses = public_input
         .public_memory
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
+    adapt_to_stwo_input(
+        TraceIter(&mut trace_file),
+        MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
+        public_memory_addresses,
+        &public_input.memory_segments,
+        dev_mode,
+    )
+}
 
-    Ok(CairoInput {
-        state_transitions,
+// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
+/// Creates Cairo input for Stwo, utilized by:
+/// - `adapt_vm_output` in the prover.
+/// - `adapt_finished_runner` in the validator.
+pub fn adapt_to_stwo_input(
+    trace_iter: impl Iterator<Item = TraceEntry>,
+    mut memory: MemoryBuilder,
+    public_memory_addresses: Vec<u32>,
+    memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    dev_mode: bool,
+) -> Result<ProverInput, VmImportError> {
+    Ok(ProverInput {
+        state_transitions: StateTransitions::from_iter(trace_iter, &mut memory, dev_mode),
         memory: memory.build(),
-        public_memory_addresses: public_mem_addresses,
-        range_check_builtin: MemorySegmentAddresses {
-            begin_addr: public_input.memory_segments["range_check"].begin_addr as usize,
-            stop_ptr: public_input.memory_segments["range_check"].stop_ptr as usize,
-        },
+        public_memory_addresses,
+        builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),
     })
 }
 
@@ -121,8 +135,8 @@ pub struct MemoryEntry {
     pub value: [u32; 8],
 }
 
-pub struct MemEntryIter<'a, R: Read>(pub &'a mut R);
-impl<R: Read> Iterator for MemEntryIter<'_, R> {
+pub struct MemoryEntryIter<'a, R: Read>(pub &'a mut R);
+impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
     type Item = MemoryEntry;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -136,45 +150,45 @@ impl<R: Read> Iterator for MemEntryIter<'_, R> {
 
 #[cfg(test)]
 pub mod tests {
-
     use std::path::PathBuf;
 
     use super::*;
 
-    pub fn large_cairo_input() -> CairoInput {
+    pub fn large_cairo_input() -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/large_cairo_input");
+        d.push("test_data/test_read_from_large_files");
 
-        import_from_vm_output(
+        adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
             false,
         )
         .expect(
             "
-            Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
+            Failed to read test files. Checkout input/README.md.",
         )
     }
 
-    pub fn small_cairo_input() -> CairoInput {
+    pub fn small_cairo_input() -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/small_cairo_input");
-        import_from_vm_output(
+        d.push("test_data/test_read_from_small_files");
+        adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
             false,
         )
         .expect(
             "
-            Failed to read test files. Maybe git-lfs is not installed? Checkout README.md.",
+            Failed to read test files. Checkout input/README.md.",
         )
     }
 
-    // TODO (Stav): Once all the components are in, verify the proof to ensure the sort was correct.
-    #[ignore]
     #[test]
+    #[cfg(feature = "slow-tests")]
     fn test_read_from_large_files() {
         let input = large_cairo_input();
+
+        // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
         assert_eq!(components.generic_opcode.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
@@ -235,12 +249,33 @@ pub mod tests {
         assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
         assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
         assert_eq!(components.ret_opcode.len(), 49472);
+
+        // Test builtins.
+        let builtins_segments = input.builtins_segments;
+        assert_eq!(builtins_segments.add_mod, None);
+        assert_eq!(builtins_segments.bitwise, None);
+        assert_eq!(builtins_segments.ec_op, Some((16428600, 16428747).into()));
+        assert_eq!(builtins_segments.ecdsa, None);
+        assert_eq!(builtins_segments.keccak, None);
+        assert_eq!(builtins_segments.mul_mod, None);
+        assert_eq!(builtins_segments.pedersen, Some((1322552, 1337489).into()));
+        assert_eq!(
+            builtins_segments.poseidon,
+            Some((16920120, 17444532).into())
+        );
+        assert_eq!(builtins_segments.range_check_bits_96, None);
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((1715768, 1757348).into())
+        );
     }
 
-    #[ignore]
+    #[cfg(feature = "slow-tests")]
     #[test]
     fn test_read_from_small_files() {
         let input = small_cairo_input();
+
+        // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
         assert_eq!(components.generic_opcode.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
@@ -298,5 +333,24 @@ pub mod tests {
         assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 0);
         assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 0);
         assert_eq!(components.ret_opcode.len(), 462);
+
+        // Test builtins.
+        let builtins_segments = input.builtins_segments;
+        assert_eq!(builtins_segments.add_mod, None);
+        assert_eq!(builtins_segments.bitwise, Some((22512, 22762).into()));
+        assert_eq!(builtins_segments.ec_op, Some((63472, 63822).into()));
+        assert_eq!(builtins_segments.ecdsa, Some((22384, 22484).into()));
+        assert_eq!(builtins_segments.keccak, Some((64368, 65168).into()));
+        assert_eq!(builtins_segments.mul_mod, None);
+        assert_eq!(builtins_segments.pedersen, Some((4464, 4614).into()));
+        assert_eq!(builtins_segments.poseidon, Some((65392, 65692).into()));
+        assert_eq!(
+            builtins_segments.range_check_bits_96,
+            Some((68464, 68514).into())
+        );
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((6000, 6050).into())
+        );
     }
 }

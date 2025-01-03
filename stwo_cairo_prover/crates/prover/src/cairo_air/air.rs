@@ -3,8 +3,6 @@ use num_traits::Zero;
 use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::logup::LogupSumsExt;
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -23,14 +21,14 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
-use super::IS_FIRST_LOG_SIZES;
+use super::preprocessed::preprocessed_trace_columns;
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
 };
 use crate::components::verify_instruction;
 use crate::felt::split_f252;
-use crate::input::CairoInput;
+use crate::input::ProverInput;
 use crate::relations;
 
 #[derive(Serialize, Deserialize)]
@@ -76,7 +74,6 @@ pub struct CairoClaim {
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
-        // TODO(Ohad): add components.
         self.opcodes.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
@@ -97,7 +94,10 @@ impl CairoClaim {
             .into_iter(),
         );
         // Overwrite the preprocessed trace log sizes.
-        log_sizes[PREPROCESSED_TRACE_IDX] = IS_FIRST_LOG_SIZES.to_vec();
+        log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_columns()
+            .iter()
+            .map(|column| column.log_size())
+            .collect();
         log_sizes
     }
 }
@@ -166,7 +166,7 @@ pub struct CairoClaimGenerator {
     // ...
 }
 impl CairoClaimGenerator {
-    pub fn new(input: CairoInput) -> Self {
+    pub fn new(input: ProverInput) -> Self {
         let initial_state = input.state_transitions.initial_state;
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
@@ -247,7 +247,7 @@ impl CairoClaimGenerator {
             .write_trace(tree_builder);
         let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) = self
             .memory_id_to_value_trace_generator
-            .write_trace(tree_builder, &mut self.range_check_9_9_trace_generator);
+            .write_trace(tree_builder, &self.range_check_9_9_trace_generator);
         let (range_check_19_claim, range_check_19_interaction_gen) = self
             .range_check_19_trace_generator
             .write_trace(tree_builder);
@@ -411,9 +411,8 @@ pub fn lookup_sum(
 
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
-    // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
     sum += interaction_claim.opcodes.sum();
-    sum += interaction_claim.verify_instruction.logup_sums.value();
+    sum += interaction_claim.verify_instruction.claimed_sum;
     sum += interaction_claim.range_check_19.claimed_sum;
     sum += interaction_claim.range_check_9_9.claimed_sum;
     sum += interaction_claim.range_check_7_2_5.claimed_sum;
@@ -445,11 +444,7 @@ impl CairoComponents {
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &IS_FIRST_LOG_SIZES
-                .iter()
-                .copied()
-                .map(PreprocessedColumn::IsFirst)
-                .collect_vec(),
+            &preprocessed_trace_columns(),
         );
 
         let opcode_components = OpcodeComponents::new(
@@ -470,7 +465,7 @@ impl CairoComponents {
                 range_check_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
                 verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
             },
-            interaction_claim.verify_instruction.logup_sums,
+            (interaction_claim.verify_instruction.claimed_sum, None),
         );
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,

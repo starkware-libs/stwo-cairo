@@ -37,15 +37,14 @@ jobs:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v3
-        with:
-          lfs: false
+      - run: ./scripts/fetch_large_files.sh ./scripts/slow_tests.json
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
           profile: minimal
-          toolchain: nightly-2024-12-16
+          toolchain: nightly-2025-01-02
       - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2024-12-16 test --release
+      - run: cargo +nightly-2025-01-02 test --release --features slow-tests
 
   format:
     runs-on: ubuntu-latest
@@ -57,7 +56,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
-          toolchain: nightly-2024-12-16
+          toolchain: nightly-2025-01-02
       - uses: Swatinem/rust-cache@v2
       - run: scripts/rust_fmt.sh --check
 
@@ -71,6 +70,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: clippy
-          toolchain: nightly-2024-12-16
+          toolchain: nightly-2025-01-02
       - uses: Swatinem/rust-cache@v2
       - run: scripts/clippy.sh

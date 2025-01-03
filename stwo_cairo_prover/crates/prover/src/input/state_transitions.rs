@@ -180,7 +180,7 @@ impl StateTransitions {
     /// Iterates over the casm states and splits them into the appropriate opcode components.
     pub fn from_iter(
         iter: impl Iterator<Item = TraceEntry>,
-        mem: &mut MemoryBuilder,
+        memory: &mut MemoryBuilder,
         dev_mode: bool,
     ) -> Self {
         let mut res = Self::default();
@@ -190,7 +190,7 @@ impl StateTransitions {
             return res;
         };
         res.initial_state = first.into();
-        res.push_instr(mem, first.into(), dev_mode);
+        res.push_instr(memory, first.into(), dev_mode);
 
         while let Some(entry) = iter.next() {
             // TODO(Ohad): Check if the adapter outputs the final state.
@@ -198,16 +198,16 @@ impl StateTransitions {
                 res.final_state = entry.into();
                 break;
             };
-            res.push_instr(mem, entry.into(), dev_mode);
+            res.push_instr(memory, entry.into(), dev_mode);
         }
         res
     }
 
     // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, mem: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
+    fn push_instr(&mut self, memory: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
         let CasmState { ap, fp, pc } = state;
-        let instruction = mem.get_inst(pc.0);
+        let instruction = memory.get_inst(pc.0);
         let instruction = Instruction::decode(instruction);
 
         match instruction {
@@ -410,7 +410,7 @@ impl StateTransitions {
                 opcode_assert_eq: false,
             } => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
-                let dst = mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
                 let taken = dst != MemoryValue::Small(0);
                 if taken {
                     if dst_base_fp {
@@ -510,8 +510,8 @@ impl StateTransitions {
                     if op_1_base_fp { fp } else { ap },
                 );
                 let (op0, op_1) = (
-                    mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    mem.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                    memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                    memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
                 );
                 if op_1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
@@ -577,9 +577,9 @@ impl StateTransitions {
                     if op_1_base_fp { fp } else { ap },
                 );
                 let (dst, op0, op_1) = (
-                    mem.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
-                    mem.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    mem.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                    memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                    memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                    memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
                 );
                 if op_1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
