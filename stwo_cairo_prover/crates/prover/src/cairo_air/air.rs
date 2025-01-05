@@ -231,8 +231,8 @@ impl CairoClaimGenerator {
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
-            &mut self.memory_address_to_id_trace_generator,
-            &mut self.memory_id_to_value_trace_generator,
+            &self.memory_address_to_id_trace_generator,
+            &self.memory_id_to_value_trace_generator,
             &mut self.range_check_19_trace_generator,
             &mut self.range_check_9_9_trace_generator,
             &mut self.verify_instruction_trace_generator,
@@ -242,8 +242,8 @@ impl CairoClaimGenerator {
         let (verify_instruction_claim, verify_instruction_interaction_gen) =
             self.verify_instruction_trace_generator.write_trace(
                 tree_builder,
-                &mut self.memory_address_to_id_trace_generator,
-                &mut self.memory_id_to_value_trace_generator,
+                &self.memory_address_to_id_trace_generator,
+                &self.memory_id_to_value_trace_generator,
                 &mut self.range_check_4_3_trace_generator,
                 &mut self.range_check_7_2_5_trace_generator,
             );
