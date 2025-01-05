@@ -27,8 +27,8 @@ pub type PackedInputType = PackedM31;
 pub type InputType = M31;
 
 pub struct ClaimGenerator {
-    pub ids: Vec<u32>,
-    pub multiplicities: MultiplicityColumn,
+    ids: Vec<u32>,
+    multiplicities: MultiplicityColumn,
 }
 impl ClaimGenerator {
     pub fn new(memory: &Memory) -> Self {
@@ -45,11 +45,11 @@ impl ClaimGenerator {
 
     pub fn deduce_output(&self, input: PackedBaseField) -> PackedBaseField {
         let indices = input.to_array().map(|i| i.0);
-        let memory_ids = std::array::from_fn(|j| self.deduce_output_cpu(M31(indices[j])));
+        let memory_ids = std::array::from_fn(|j| self.get_id(M31(indices[j])));
         PackedBaseField::from_array(memory_ids)
     }
 
-    fn deduce_output_cpu(&self, input: BaseField) -> M31 {
+    pub fn get_id(&self, input: BaseField) -> M31 {
         M31(self.ids[input.0 as usize])
     }
 
