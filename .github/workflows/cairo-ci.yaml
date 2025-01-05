@@ -73,3 +73,30 @@ jobs:
           toolchain: nightly-2025-01-02
       - uses: Swatinem/rust-cache@v2
       - run: scripts/clippy.sh
+
+  merge-gatekeeper:
+    runs-on: ubuntu-latest
+    # Restrict permissions of the GITHUB_TOKEN.
+    # Docs: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      checks: read
+      statuses: read
+    steps:
+      - name: Run Merge Gatekeeper on pull request
+        if: github.event_name == 'pull_request'
+        uses: upsidr/merge-gatekeeper@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          timeout: 1500
+          interval: 30
+          ignored: "code-review/reviewable"
+
+      - name: Run Merge Gatekeeper on Merge Queue || push
+        if: github.event_name == 'merge_group' || github.event_name == 'push'
+        uses: upsidr/merge-gatekeeper@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{github.ref}}
+          timeout: 1500
+          interval: 30
+          ignored: "code-review/reviewable"
