@@ -23,7 +23,7 @@ use super::component::{
 };
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::range_check_9_9;
-use crate::components::MultiplicityColumn;
+use crate::components::AtomicMultiplicityColumn;
 use crate::felt::split_f252_simd;
 use crate::input::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_TAG,
@@ -39,9 +39,9 @@ pub type InputType = BaseField;
 /// The separation is done to reduce zeroed out ('unused') trace cells.
 pub struct ClaimGenerator {
     pub big_values: Vec<[u32; 8]>,
-    pub big_mults: MultiplicityColumn,
+    pub big_mults: AtomicMultiplicityColumn,
     pub small_values: Vec<u128>,
-    pub small_mults: MultiplicityColumn,
+    pub small_mults: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
@@ -49,12 +49,12 @@ impl ClaimGenerator {
         let mut big_values = mem.f252_values.clone();
         let big_size = std::cmp::max(big_values.len().next_power_of_two(), N_LANES);
         big_values.resize(big_size, [0; 8]);
-        let big_mults = MultiplicityColumn::new(big_size);
+        let big_mults = AtomicMultiplicityColumn::new(big_size);
 
         let mut small_values = mem.small_values.clone();
         let small_size = std::cmp::max(small_values.len().next_power_of_two(), N_LANES);
         small_values.resize(small_size, 0);
-        let small_mults = MultiplicityColumn::new(small_size);
+        let small_mults = AtomicMultiplicityColumn::new(small_size);
         assert!(big_size + small_size <= MEMORY_ADDRESS_BOUND);
 
         Self {
@@ -120,8 +120,9 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let big_table_trace = gen_big_memory_trace(self.big_values, self.big_mults);
-        let small_table_trace = gem_small_memory_trace(self.small_values, self.small_mults);
+        let big_table_trace = gen_big_memory_trace(self.big_values, self.big_mults.into_simd_vec());
+        let small_table_trace =
+            gen_small_memory_trace(self.small_values, self.small_mults.into_simd_vec());
 
         // Lookup data.
         let big_ids_and_values: [_; BIG_N_ID_AND_VALUE_COLUMNS] =
@@ -187,7 +188,7 @@ impl ClaimGenerator {
 }
 
 // Generates the trace of the large value memory table.
-fn gen_big_memory_trace(values: Vec<[u32; 8]>, mults: MultiplicityColumn) -> Vec<BaseColumn> {
+fn gen_big_memory_trace(values: Vec<[u32; 8]>, mults: Vec<PackedM31>) -> Vec<BaseColumn> {
     let column_length = values.len();
     let packed_values = values
         .into_iter()
@@ -214,13 +215,13 @@ fn gen_big_memory_trace(values: Vec<[u32; 8]>, mults: MultiplicityColumn) -> Vec
         }
     }
 
-    let multiplicities = BaseColumn::from_simd(mults.into_simd_vec());
+    let multiplicities = BaseColumn::from_simd(mults);
 
     chain!(id_and_value_trace, [multiplicities]).collect_vec()
 }
 
 // Generates the trace of the small value memory table.
-fn gem_small_memory_trace(values: Vec<u128>, mults: MultiplicityColumn) -> Vec<BaseColumn> {
+fn gen_small_memory_trace(values: Vec<u128>, mults: Vec<PackedM31>) -> Vec<BaseColumn> {
     let column_length = values.len();
     let packed_values: Vec<[Simd<u32, N_LANES>; 4]> = values
         .into_iter()
@@ -254,7 +255,7 @@ fn gem_small_memory_trace(values: Vec<u128>, mults: MultiplicityColumn) -> Vec<B
         }
     }
 
-    let multiplicities = BaseColumn::from_simd(mults.into_simd_vec());
+    let multiplicities = BaseColumn::from_simd(mults);
 
     chain!(id_and_value_trace, [multiplicities]).collect_vec()
 }
