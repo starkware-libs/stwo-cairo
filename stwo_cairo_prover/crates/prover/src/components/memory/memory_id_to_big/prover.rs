@@ -1,7 +1,7 @@
 use std::iter::zip;
 use std::simd::Simd;
 
-use itertools::{chain, Itertools};
+use itertools::{chain, izip, Itertools};
 use prover_types::simd::PackedFelt252;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
@@ -313,15 +313,12 @@ impl InteractionClaimGenerator {
         let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
 
         // Every element is 9-bit.
-        for (l, r) in self.big_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
+        for (l0, r0, l1, r1) in self.big_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
             let mut col_gen = big_values_logup_gen.new_col();
-            for (vec_row, (l1, l2)) in zip(l, r).enumerate() {
-                // TOOD(alont) Add 2-batching.
-                col_gen.write_frac(
-                    vec_row,
-                    PackedQM31::broadcast(M31(1).into()),
-                    range9_9_lookup_elements.combine(&[*l1, *l2]),
-                );
+            for (vec_row, (l0, r0, l1, r1)) in izip!(l0, r0, l1, r1).enumerate() {
+                let denom0: PackedQM31 = range9_9_lookup_elements.combine(&[*l0, *r0]);
+                let denom1: PackedQM31 = range9_9_lookup_elements.combine(&[*l1, *r1]);
+                col_gen.write_frac(vec_row, denom0 + denom1, denom0 * denom1);
             }
             col_gen.finalize_col();
         }
