@@ -7,11 +7,8 @@ pub const MEMORY_ADDRESS_BOUND: usize = 1 << LOG_MEMORY_ADDRESS_BOUND;
 
 #[cfg(test)]
 mod tests {
-    use std::simd::Simd;
-
     use itertools::Itertools;
-    use stwo_prover::core::backend::simd::m31::N_LANES;
-    use stwo_prover::core::fields::m31::BaseField;
+    use stwo_prover::core::fields::m31::{BaseField, M31};
 
     use crate::components::memory::memory_address_to_id;
     use crate::input::memory::{MemoryBuilder, MemoryConfig, MemoryValueId};
@@ -34,8 +31,8 @@ mod tests {
             .into_iter()
             .map(BaseField::from)
             .collect_vec();
-        let expected_addr_mult: [u32; N_LANES] = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let expected_f252_mult: [u32; N_LANES] = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let expected_addr_to_id_mult = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
+        let expected_id_to_big_mult = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
 
         address_usages.iter().for_each(|addr| {
             let decoded_id = memory.address_to_id[addr.0 as usize].decode();
@@ -47,16 +44,12 @@ mod tests {
             }
             memory_address_to_id_gen.add_m31(*addr);
         });
+        let addr_to_id_mults = memory_address_to_id_gen.multiplicities.into_simd_vec();
+        let id_to_big_mults = memory_id_to_big.multiplicities.into_simd_vec();
 
-        assert_eq!(memory_address_to_id_gen.multiplicities.data.len(), 1);
-        assert_eq!(
-            memory_address_to_id_gen.multiplicities.data[0],
-            Simd::from_array(expected_addr_mult)
-        );
-        assert_eq!(memory_id_to_big.multiplicities.data.len(), 1);
-        assert_eq!(
-            memory_id_to_big.multiplicities.data[0],
-            Simd::from_array(expected_f252_mult)
-        );
+        assert_eq!(addr_to_id_mults.len(), 1);
+        assert_eq!(addr_to_id_mults[0].to_array(), expected_addr_to_id_mult,);
+        assert_eq!(id_to_big_mults.len(), 1);
+        assert_eq!(id_to_big_mults[0].to_array(), expected_id_to_big_mult);
     }
 }
