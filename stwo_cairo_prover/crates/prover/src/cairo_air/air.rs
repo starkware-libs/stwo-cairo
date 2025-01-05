@@ -171,9 +171,9 @@ impl CairoClaimGenerator {
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::default();
-        let mut memory_address_to_id_trace_generator =
+        let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
-        let mut memory_id_to_value_trace_generator =
+        let memory_id_to_value_trace_generator =
             memory_id_to_big::ClaimGenerator::new(&input.memory);
         let range_check_19_trace_generator = range_check_19::ClaimGenerator::new();
         let range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
