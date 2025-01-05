@@ -173,6 +173,7 @@ pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
     pub casm_states_by_opcode: CasmStatesByOpcode,
+    pub pc_instruction_pairs: Vec<(M31, u64)>,
 }
 
 impl StateTransitions {
@@ -207,6 +208,7 @@ impl StateTransitions {
     fn push_instr(&mut self, memory: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
         let CasmState { ap, fp, pc } = state;
         let instruction = memory.get_inst(pc.0);
+        self.pc_instruction_pairs.push((pc, instruction));
         let instruction = Instruction::decode(instruction);
 
         match instruction {
