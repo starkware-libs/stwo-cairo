@@ -50,7 +50,7 @@ impl ClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_19_state: &mut range_check_19::ClaimGenerator,
+        range_check_19_state: &range_check_19::ClaimGenerator,
         verify_instruction_state: &mut verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
