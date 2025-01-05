@@ -22,6 +22,7 @@ use tracing::{span, Level};
 
 use crate::input::ProverInput;
 
+// TODO(Ohad): decide dynamically.
 const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
