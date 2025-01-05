@@ -71,13 +71,8 @@ impl FrameworkEval for BigEval {
         let id_and_value: [E::F; MEMORY_ID_SIZE + N_M31_IN_FELT252] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        eval.add_to_relation(RelationEntry::new(
-            &self.lookup_elements,
-            E::EF::from(-multiplicity),
-            &id_and_value,
-        ));
 
-        // Range check elements.
+        // Range check limbs.
         for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
             eval.add_to_relation(RelationEntry::new(
                 &self.range9_9_lookup_elements,
@@ -85,6 +80,13 @@ impl FrameworkEval for BigEval {
                 &[l.clone(), r.clone()],
             ));
         }
+
+        // Yield the value.
+        eval.add_to_relation(RelationEntry::new(
+            &self.lookup_elements,
+            E::EF::from(-multiplicity),
+            &id_and_value,
+        ));
 
         eval.finalize_logup();
         eval
@@ -125,13 +127,8 @@ impl FrameworkEval for SmallEval {
         let id_and_value: [E::F; SMALL_N_ID_AND_VALUE_COLUMNS] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        eval.add_to_relation(RelationEntry::new(
-            &self.lookup_elements,
-            E::EF::from(-multiplicity),
-            &id_and_value,
-        ));
 
-        // Range check elements.
+        // Range check limbs.
         for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
             eval.add_to_relation(RelationEntry::new(
                 &self.range_check_9_9_relation,
@@ -139,6 +136,13 @@ impl FrameworkEval for SmallEval {
                 &[l.clone(), r.clone()],
             ));
         }
+
+        // Yield the value.
+        eval.add_to_relation(RelationEntry::new(
+            &self.lookup_elements,
+            E::EF::from(-multiplicity),
+            &id_and_value,
+        ));
 
         eval.finalize_logup();
         eval
