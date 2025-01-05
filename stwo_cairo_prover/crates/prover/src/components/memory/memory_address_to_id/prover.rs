@@ -168,3 +168,52 @@ impl InteractionClaimGenerator {
         InteractionClaim { claimed_sum }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use itertools::Itertools;
+    use stwo_prover::core::fields::m31::{BaseField, M31};
+
+    use crate::components::memory::memory_address_to_id;
+    use crate::input::memory::{MemoryBuilder, MemoryConfig, MemoryValueId};
+    use crate::input::vm_import::MemoryEntry;
+
+    #[test]
+    fn test_memory_multiplicities() {
+        const N_ENTRIES: u64 = 10;
+        let memory = MemoryBuilder::from_iter(
+            MemoryConfig::default(),
+            (0..N_ENTRIES).map(|i| MemoryEntry {
+                address: i,
+                value: [i as u32; 8],
+            }),
+        )
+        .build();
+        let mut memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(&memory);
+        let mut memory_id_to_big = memory_address_to_id::ClaimGenerator::new(&memory);
+        let address_usages = [0, 1, 1, 2, 2, 2]
+            .into_iter()
+            .map(BaseField::from)
+            .collect_vec();
+        let expected_small_mults = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
+        let expected_big_mults = [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
+
+        address_usages.iter().for_each(|addr| {
+            let decoded_id = memory.address_to_id[addr.0 as usize].decode();
+            match decoded_id {
+                MemoryValueId::F252(id) => {
+                    memory_id_to_big.add_m31(BaseField::from_u32_unchecked(id));
+                }
+                MemoryValueId::Small(_id) => {}
+            }
+            memory_address_to_id_gen.add_m31(*addr);
+        });
+        let small_mults = memory_address_to_id_gen.multiplicities.into_simd_vec();
+        let big_mults = memory_id_to_big.multiplicities.into_simd_vec();
+
+        assert_eq!(small_mults.len(), 1);
+        assert_eq!(small_mults[0].to_array(), expected_small_mults,);
+        assert_eq!(big_mults.len(), 1);
+        assert_eq!(big_mults[0].to_array(), expected_big_mults);
+    }
+}
