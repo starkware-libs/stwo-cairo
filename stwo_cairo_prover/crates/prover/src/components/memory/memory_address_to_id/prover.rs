@@ -19,7 +19,7 @@ use super::component::{Claim, InteractionClaim, N_SPLIT_CHUNKS};
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
-use crate::components::MultiplicityColumn;
+use crate::components::AtomicMultiplicityColumn;
 use crate::input::memory::Memory;
 use crate::relations;
 
@@ -28,14 +28,14 @@ pub type InputType = M31;
 
 pub struct ClaimGenerator {
     ids: Vec<u32>,
-    multiplicities: MultiplicityColumn,
+    multiplicities: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
     pub fn new(memory: &Memory) -> Self {
         let ids = (0..memory.address_to_id.len())
             .map(|addr| memory.get_raw_id(addr as u32))
             .collect_vec();
-        let multiplicities = MultiplicityColumn::new(ids.len());
+        let multiplicities = AtomicMultiplicityColumn::new(ids.len());
 
         Self {
             ids,
@@ -53,20 +53,20 @@ impl ClaimGenerator {
         M31(self.ids[input.0 as usize])
     }
 
-    pub fn add_inputs(&mut self, inputs: &[InputType]) {
+    pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
             self.add_m31(*input);
         }
     }
 
-    pub fn add_packed_m31(&mut self, inputs: &PackedBaseField) {
+    pub fn add_packed_m31(&self, inputs: &PackedBaseField) {
         let addresses = inputs.to_array();
         for address in addresses {
             self.add_m31(address);
         }
     }
 
-    pub fn add_m31(&mut self, addr: BaseField) {
+    pub fn add_m31(&self, addr: BaseField) {
         self.multiplicities.increase_at(addr.0);
     }
 
@@ -189,7 +189,7 @@ mod tests {
             }),
         )
         .build();
-        let mut memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(&memory);
+        let memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(&memory);
         let address_usages = [0, 1, 1, 2, 2, 2]
             .into_iter()
             .map(BaseField::from)
