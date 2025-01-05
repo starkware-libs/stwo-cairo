@@ -96,6 +96,7 @@ pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput
         MemoryBuilder::from_iter(MemoryConfig::default(), memory_iter),
         public_memory_addresses,
         memory_segments,
+        public_input.n_steps,
         dev_mode,
     )
     .unwrap()

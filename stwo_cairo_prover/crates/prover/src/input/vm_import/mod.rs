@@ -70,6 +70,7 @@ pub fn adapt_vm_output(
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
         &public_input.memory_segments,
+        public_input.n_steps,
         dev_mode,
     )
 }
@@ -83,6 +84,7 @@ pub fn adapt_to_stwo_input(
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    program_len: usize,
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     Ok(ProverInput {
@@ -94,6 +96,7 @@ pub fn adapt_to_stwo_input(
             .get("program")
             .expect("Expected a \"program\" memory segment.")
             .stop_ptr,
+        program_len,
     })
 }
 
