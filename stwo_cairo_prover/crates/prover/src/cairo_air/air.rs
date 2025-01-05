@@ -181,10 +181,15 @@ impl CairoClaimGenerator {
         let range_check_4_3_trace_generator = range_check_4_3::ClaimGenerator::new();
 
         // Yield public memory.
-        for &addr in &input.public_memory_addresses {
-            let id = memory_address_to_id_trace_generator.ids[addr as usize];
-            memory_address_to_id_trace_generator.add_m31(M31::from_u32_unchecked(addr));
-            memory_id_to_value_trace_generator.add_m31(M31::from_u32_unchecked(id));
+        for addr in input
+            .public_memory_addresses
+            .iter()
+            .copied()
+            .map(M31::from_u32_unchecked)
+        {
+            let id = memory_address_to_id_trace_generator.get_id(addr);
+            memory_address_to_id_trace_generator.add_m31(addr);
+            memory_id_to_value_trace_generator.add_m31(id);
         }
 
         // Public data.

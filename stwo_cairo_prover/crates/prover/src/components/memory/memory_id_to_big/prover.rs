@@ -38,10 +38,10 @@ pub type InputType = BaseField;
 /// limb Felt252. The small values are currently 8 limbs, for a maximum of 72 bits.
 /// The separation is done to reduce zeroed out ('unused') trace cells.
 pub struct ClaimGenerator {
-    pub big_values: Vec<[u32; 8]>,
-    pub big_mults: AtomicMultiplicityColumn,
-    pub small_values: Vec<u128>,
-    pub small_mults: AtomicMultiplicityColumn,
+    big_values: Vec<[u32; 8]>,
+    big_mults: AtomicMultiplicityColumn,
+    small_values: Vec<u128>,
+    small_mults: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
