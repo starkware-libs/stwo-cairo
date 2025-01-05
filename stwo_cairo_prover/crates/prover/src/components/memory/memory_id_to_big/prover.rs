@@ -311,16 +311,6 @@ impl InteractionClaimGenerator {
     ) {
         let big_table_log_size = self.big_ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
-        let mut col_gen = big_values_logup_gen.new_col();
-
-        // Yield large values.
-        for vec_row in 0..1 << (big_table_log_size - LOG_N_LANES) {
-            let values: [PackedM31; BIG_N_ID_AND_VALUE_COLUMNS] =
-                std::array::from_fn(|i| self.big_ids_and_values[i][vec_row]);
-            let denom: PackedQM31 = lookup_elements.combine(&values);
-            col_gen.write_frac(vec_row, (-self.big_multiplicities[vec_row]).into(), denom);
-        }
-        col_gen.finalize_col();
 
         // Every element is 9-bit.
         for (l, r) in self.big_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
@@ -335,6 +325,17 @@ impl InteractionClaimGenerator {
             }
             col_gen.finalize_col();
         }
+
+        // Yield large values.
+        let mut col_gen = big_values_logup_gen.new_col();
+        for vec_row in 0..1 << (big_table_log_size - LOG_N_LANES) {
+            let values: [_; BIG_N_ID_AND_VALUE_COLUMNS] =
+                std::array::from_fn(|i| self.big_ids_and_values[i][vec_row]);
+            let denom: PackedQM31 = lookup_elements.combine(&values);
+            col_gen.write_frac(vec_row, (-self.big_multiplicities[vec_row]).into(), denom);
+        }
+        col_gen.finalize_col();
+
         big_values_logup_gen.finalize_last()
     }
 
@@ -348,16 +349,6 @@ impl InteractionClaimGenerator {
     ) {
         let small_table_log_size = self.small_ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut small_values_logup_gen = LogupTraceGenerator::new(small_table_log_size);
-        let mut col_gen = small_values_logup_gen.new_col();
-
-        // Yield small values.
-        for vec_row in 0..1 << (small_table_log_size - LOG_N_LANES) {
-            let values: [PackedM31; SMALL_N_ID_AND_VALUE_COLUMNS] =
-                std::array::from_fn(|i| self.small_ids_and_values[i][vec_row]);
-            let denom: PackedQM31 = lookup_elements.combine(&values);
-            col_gen.write_frac(vec_row, (-self.small_multiplicities[vec_row]).into(), denom);
-        }
-        col_gen.finalize_col();
 
         // Every element is 9-bit.
         for (l, r) in self.small_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
@@ -372,6 +363,16 @@ impl InteractionClaimGenerator {
             }
             col_gen.finalize_col();
         }
+
+        // Yield small values.
+        let mut col_gen = small_values_logup_gen.new_col();
+        for vec_row in 0..1 << (small_table_log_size - LOG_N_LANES) {
+            let values: [_; SMALL_N_ID_AND_VALUE_COLUMNS] =
+                std::array::from_fn(|i| self.small_ids_and_values[i][vec_row]);
+            let denom: PackedQM31 = lookup_elements.combine(&values);
+            col_gen.write_frac(vec_row, (-self.small_multiplicities[vec_row]).into(), denom);
+        }
+        col_gen.finalize_col();
 
         small_values_logup_gen.finalize_last()
     }
