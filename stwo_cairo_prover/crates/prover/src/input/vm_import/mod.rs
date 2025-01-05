@@ -90,6 +90,10 @@ pub fn adapt_to_stwo_input(
         memory: memory.build(),
         public_memory_addresses,
         builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),
+        max_pc: memory_segments
+            .get("program")
+            .expect("Expected a \"program\" memory segment.")
+            .stop_ptr,
     })
 }
 
