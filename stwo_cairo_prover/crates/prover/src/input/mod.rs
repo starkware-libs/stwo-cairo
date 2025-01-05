@@ -19,4 +19,5 @@ pub struct ProverInput {
     pub memory: Memory,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
+    pub max_pc: usize,
 }
