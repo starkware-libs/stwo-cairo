@@ -13,6 +13,7 @@ use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Column};
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
@@ -286,6 +287,28 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        let (big_trace, big_claimed_sum) =
+            self.gen_big_memory_interaction_trace(lookup_elements, range9_9_lookup_elements);
+        tree_builder.extend_evals(big_trace);
+
+        let (small_trace, small_claimed_sum) =
+            self.gen_small_memory_interaction_trace(lookup_elements, range9_9_lookup_elements);
+        tree_builder.extend_evals(small_trace);
+
+        InteractionClaim {
+            small_claimed_sum,
+            big_claimed_sum,
+        }
+    }
+
+    fn gen_big_memory_interaction_trace(
+        &self,
+        lookup_elements: &relations::MemoryIdToBig,
+        range9_9_lookup_elements: &relations::RangeCheck_9_9,
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        QM31,
+    ) {
         let big_table_log_size = self.big_ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
         let mut col_gen = big_values_logup_gen.new_col();
@@ -299,7 +322,7 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        // Range check every limb.
+        // Every element is 9-bit.
         for (l, r) in self.big_ids_and_values[MEMORY_ID_SIZE..].iter().tuples() {
             let mut col_gen = big_values_logup_gen.new_col();
             for (vec_row, (l1, l2)) in zip(l, r).enumerate() {
@@ -312,14 +335,22 @@ impl InteractionClaimGenerator {
             }
             col_gen.finalize_col();
         }
-        let (trace, big_claimed_sum) = big_values_logup_gen.finalize_last();
-        tree_builder.extend_evals(trace);
+        big_values_logup_gen.finalize_last()
+    }
 
-        // Yield small values.
-        let small_table_log_size =
-            self.small_ids_and_values[0].len().checked_ilog2().unwrap() + LOG_N_LANES;
+    fn gen_small_memory_interaction_trace(
+        &self,
+        lookup_elements: &relations::MemoryIdToBig,
+        range9_9_lookup_elements: &relations::RangeCheck_9_9,
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        QM31,
+    ) {
+        let small_table_log_size = self.small_ids_and_values[0].len().ilog2() + LOG_N_LANES;
         let mut small_values_logup_gen = LogupTraceGenerator::new(small_table_log_size);
         let mut col_gen = small_values_logup_gen.new_col();
+
+        // Yield small values.
         for vec_row in 0..1 << (small_table_log_size - LOG_N_LANES) {
             let values: [PackedM31; SMALL_N_ID_AND_VALUE_COLUMNS] =
                 std::array::from_fn(|i| self.small_ids_and_values[i][vec_row]);
@@ -342,13 +373,7 @@ impl InteractionClaimGenerator {
             col_gen.finalize_col();
         }
 
-        let (trace, small_claimed_sum) = small_values_logup_gen.finalize_last();
-        tree_builder.extend_evals(trace);
-
-        InteractionClaim {
-            small_claimed_sum,
-            big_claimed_sum,
-        }
+        small_values_logup_gen.finalize_last()
     }
 }
 
