@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
 
@@ -173,6 +175,7 @@ pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
     pub casm_states_by_opcode: CasmStatesByOpcode,
+    pub instruction_by_pc: HashMap<M31, u64>,
 }
 
 impl StateTransitions {
@@ -207,6 +210,7 @@ impl StateTransitions {
     fn push_instr(&mut self, memory: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
         let CasmState { ap, fp, pc } = state;
         let instruction = memory.get_inst(pc.0);
+        self.instruction_by_pc.entry(pc).or_insert(instruction);
         let instruction = Instruction::decode(instruction);
 
         match instruction {
