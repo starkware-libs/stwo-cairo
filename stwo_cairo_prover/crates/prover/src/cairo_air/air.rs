@@ -233,8 +233,8 @@ impl CairoClaimGenerator {
             tree_builder,
             &self.memory_address_to_id_trace_generator,
             &self.memory_id_to_value_trace_generator,
-            &mut self.range_check_19_trace_generator,
-            &mut self.range_check_9_9_trace_generator,
+            &self.range_check_19_trace_generator,
+            &self.range_check_9_9_trace_generator,
             &mut self.verify_instruction_trace_generator,
         );
         span.exit();
@@ -244,8 +244,8 @@ impl CairoClaimGenerator {
                 tree_builder,
                 &self.memory_address_to_id_trace_generator,
                 &self.memory_id_to_value_trace_generator,
-                &mut self.range_check_4_3_trace_generator,
-                &mut self.range_check_7_2_5_trace_generator,
+                &self.range_check_4_3_trace_generator,
+                &self.range_check_7_2_5_trace_generator,
             );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator

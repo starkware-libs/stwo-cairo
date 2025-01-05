@@ -474,8 +474,8 @@ impl OpcodesClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
-        range_check_19_trace_generator: &mut range_check_19::ClaimGenerator,
-        range_check_9_9_trace_generator: &mut range_check_9_9::ClaimGenerator,
+        range_check_19_trace_generator: &range_check_19::ClaimGenerator,
+        range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         verify_instruction_trace_generator: &mut verify_instruction::ClaimGenerator,
     ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator)
     where
