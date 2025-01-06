@@ -92,7 +92,6 @@ impl ClaimGenerator {
             .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
         let multiplicities = self.multiplicities.into_simd_vec();
 
-        // TODO(Ohad): Replace with seq.
         for (i, (id, multiplicity)) in zip(id_it, multiplicities).enumerate() {
             let chunk_idx = i / n_packed_rows;
             let i = i % n_packed_rows;
