@@ -31,7 +31,7 @@ use crate::felt::split_f252;
 use crate::input::ProverInput;
 use crate::relations;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
     pub interaction_claim: CairoInteractionClaim,
@@ -57,7 +57,7 @@ where
 // (Address, Id, Value)
 pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
@@ -102,7 +102,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -387,7 +387,7 @@ impl CairoInteractionElements {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,

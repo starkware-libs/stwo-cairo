@@ -30,7 +30,7 @@ use crate::components::{
 };
 use crate::input::state_transitions::StateTransitions;
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {
     pub add_f_f: Vec<add_opcode_is_small_f_is_imm_f::Claim>,
     pub add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Claim>,
@@ -844,7 +844,7 @@ impl OpcodesClaimGenerator {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeInteractionClaim {
     add_f_f: Vec<add_opcode_is_small_f_is_imm_f::InteractionClaim>,
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaim>,

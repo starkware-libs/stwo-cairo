@@ -3,7 +3,7 @@ use std::process::ExitCode;
 
 use clap::Parser;
 use stwo_cairo_prover::cairo_air::air::CairoProof;
-use stwo_cairo_prover::cairo_air::{prove_cairo, ConfigBuilder};
+use stwo_cairo_prover::cairo_air::{prove_cairo, CairoVerificationError, ConfigBuilder};
 use stwo_cairo_prover::input::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::input::ProverInput;
 use stwo_cairo_utils::binary_utils::run_binary;
@@ -31,6 +31,8 @@ struct Args {
     track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
+    #[structopt(long = "verify")]
+    verify: bool,
 }
 
 #[derive(Debug, Error)]
@@ -41,6 +43,8 @@ enum Error {
     VmImport(#[from] VmImportError),
     #[error("Proving failed: {0}")]
     Proving(#[from] ProvingError),
+    #[error("Verification failed: {0}")]
+    Verification(#[from] CairoVerificationError),
     #[error("Serialization failed: {0}")]
     Serde(#[from] serde_json::error::Error),
     #[error("IO failed: {0}")]
@@ -67,6 +71,10 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
 
     // TODO(Ohad): Propagate hash from CLI args.
     let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config)?;
+
+    if args.verify {
+        stwo_cairo_prover::cairo_air::verify_cairo::<Blake2sMerkleChannel>(proof.clone())?;
+    }
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 

@@ -160,7 +160,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         &components,
         channel,
         commitment_scheme_verifier,
-        stark_proof,
+        stark_proof.clone(),
     )
     .map_err(CairoVerificationError::Stark)
 }
