@@ -8,8 +8,8 @@ slow-tests = []
 
 [dependencies]
 air_structs_derive = { path = "../air_structs_derive" }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "9d3afa43" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "9d3afa43" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "af5475cb" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "af5475cb" }
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
 cairo-vm.workspace = true
