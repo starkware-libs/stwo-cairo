@@ -27,8 +27,8 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
-    #[structopt(long = "debug_lookup")]
-    debug_lookup: bool,
+    #[structopt(long = "track_relations")]
+    track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
 }
@@ -62,8 +62,11 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
 
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof =
-        prove_cairo::<Blake2sMerkleChannel>(vm_output, args.debug_lookup, args.display_components)?;
+    let proof = prove_cairo::<Blake2sMerkleChannel>(
+        vm_output,
+        args.track_relations,
+        args.display_components,
+    )?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
