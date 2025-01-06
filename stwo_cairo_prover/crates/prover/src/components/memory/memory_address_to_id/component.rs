@@ -25,8 +25,7 @@ use crate::relations;
 /// ID1 = [id3, id4, id5, 0]
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
-// TODO(Ohad): Change split to 8 after seq is implemented.
-pub(super) const N_SPLIT_CHUNKS: usize = 4;
+pub(super) const N_SPLIT_CHUNKS: usize = 8;
 pub(super) const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub(super) const N_TRACE_COLUMNS: usize = N_SPLIT_CHUNKS * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
@@ -39,7 +38,6 @@ pub struct Eval {
     pub lookup_elements: relations::MemoryAddressToId,
 }
 impl Eval {
-    // TODO(ShaharS): use Seq column for address, and also use repititions.
     pub const fn n_columns(&self) -> usize {
         N_TRACE_COLUMNS
     }
