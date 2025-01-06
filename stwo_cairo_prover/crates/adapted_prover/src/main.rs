@@ -2,13 +2,14 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Parser;
-use stwo_cairo_prover::cairo_air::air::CairoProof;
-use stwo_cairo_prover::cairo_air::{prove_cairo, ConfigBuilder};
+use stwo_cairo_prover::cairo_air::{
+    prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
+};
 use stwo_cairo_prover::input::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::input::ProverInput;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_prover::core::prover::ProvingError;
-use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -31,6 +32,8 @@ struct Args {
     track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
+    #[structopt(long = "verify")]
+    verify: bool,
 }
 
 #[derive(Debug, Error)]
@@ -41,6 +44,8 @@ enum Error {
     VmImport(#[from] VmImportError),
     #[error("Proving failed: {0}")]
     Proving(#[from] ProvingError),
+    #[error("Verification failed: {0}")]
+    Verification(#[from] CairoVerificationError),
     #[error("Serialization failed: {0}")]
     Serde(#[from] serde_json::error::Error),
     #[error("IO failed: {0}")]
@@ -51,7 +56,7 @@ fn main() -> ExitCode {
     run_binary(run)
 }
 
-fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHasher>, Error> {
+fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
@@ -70,5 +75,10 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
-    Ok(proof)
+    if args.verify {
+        verify_cairo::<Blake2sMerkleChannel>(proof)?;
+        log::info!("Proof verified successfully");
+    }
+
+    Ok(())
 }
