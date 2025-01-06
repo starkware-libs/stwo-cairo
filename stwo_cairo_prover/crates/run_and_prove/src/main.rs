@@ -27,8 +27,8 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
-    #[structopt(long = "debug_lookup")]
-    debug_lookup: bool,
+    #[structopt(long = "track_relations")]
+    track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
 }
@@ -64,7 +64,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
 
     let proof = prove_cairo::<Blake2sMerkleChannel>(
         cairo_input,
-        args.debug_lookup,
+        args.track_relations,
         args.display_components,
     )?;
 
