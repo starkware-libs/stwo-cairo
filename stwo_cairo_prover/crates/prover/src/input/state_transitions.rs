@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt::Display;
 
 use prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
@@ -155,6 +156,18 @@ impl CasmStatesByOpcode {
             ),
             ("ret_opcode", self.ret_opcode.len()),
         ]
+    }
+}
+
+impl Display for CasmStatesByOpcode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let counts = self.counts();
+        for (name, count) in &counts {
+            writeln!(f, "{}: {}", name, count)?;
+        }
+        let total_steps = counts.iter().map(|(_, count)| count).sum::<usize>();
+        writeln!(f, "Total steps: {}", total_steps)?;
+        Ok(())
     }
 }
 
