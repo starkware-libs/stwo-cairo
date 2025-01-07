@@ -1,3 +1,5 @@
+use stwo_prover::core::fields::m31::M31;
+
 #[derive(Clone, Debug)]
 pub struct Instruction {
     pub offset0: i16,
@@ -57,4 +59,31 @@ impl Instruction {
             opcode_assert_eq: next_bit(),
         }
     }
+}
+
+/// Constructs the input for the DecodeInstruction routine.
+///
+/// # Arguments
+///
+/// - `encoded_instr`: The encoded instruction.
+///
+/// # Returns
+///
+/// The Deconstructed instruction in the form of (offsets, flags): ([M31;3], [M31;15]).
+pub fn deconstruct_instruction_into_felts(mut encoded_instr: u64) -> ([M31; 3], [M31; 15]) {
+    let mut next_offset = || {
+        let offset = (encoded_instr & 0xffff) as u16;
+        encoded_instr >>= 16;
+        offset
+    };
+    let offsets = std::array::from_fn(|_| M31(next_offset() as u32));
+
+    let mut next_bit = || {
+        let bit = encoded_instr & 1;
+        encoded_instr >>= 1;
+        bit
+    };
+    let flags = std::array::from_fn(|_| M31(next_bit() as u32));
+
+    (offsets, flags)
 }

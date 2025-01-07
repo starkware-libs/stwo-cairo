@@ -175,7 +175,6 @@ pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
     pub casm_states_by_opcode: CasmStatesByOpcode,
-    pub instruction_by_pc: HashMap<M31, u64>,
 }
 
 impl StateTransitions {
