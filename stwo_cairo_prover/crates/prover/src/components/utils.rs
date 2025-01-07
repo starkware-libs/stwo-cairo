@@ -81,12 +81,23 @@ impl AtomicMultiplicityColumn {
     }
 }
 
+/// Generates a padding column for the given padding offset.
+/// The padding column is a MultiplicityColumn of length next_power_of_two(padding_offset) where
+/// 1. The first `padding_offset` elements set to 1;
+/// 2. Otherwise set to 0.
+pub fn gen_padding_column(padding_offset: usize) -> MultiplicityColumn {
+    let log_size = padding_offset.next_power_of_two().ilog2();
+    let mut padding_column = MultiplicityColumn::new(1 << log_size);
+    (0..padding_offset).for_each(|i| padding_column.increase_at(i as u32));
+    padding_column
+}
+
 #[cfg(test)]
 mod tests {
     use num_traits::{One, Zero};
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::core::backend::simd::m31::N_LANES;
+    use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
     use stwo_prover::core::fields::m31::M31;
 
     #[test]
@@ -105,6 +116,26 @@ mod tests {
         assert!(res.len() == 6);
         for (res_chunk, expected_chunk) in res.iter().zip(expected.chunks(N_LANES)) {
             assert!(res_chunk.to_array() == expected_chunk);
+        }
+    }
+
+    #[test]
+    fn test_gen_padding_column() {
+        let n_calls = 30;
+
+        let enabler_column = super::gen_padding_column(n_calls);
+
+        for (i, val) in enabler_column
+            .into_simd_vec()
+            .into_iter()
+            .flat_map(PackedM31::to_array)
+            .enumerate()
+        {
+            if i < n_calls {
+                assert_eq!(val, M31::one());
+            } else {
+                assert_eq!(val, M31::zero());
+            }
         }
     }
 }
