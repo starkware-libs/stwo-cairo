@@ -29,7 +29,7 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 
 use super::component::{Claim, InteractionClaim};
-use crate::components::pack_values;
+use crate::components::utils::pack_values;
 use crate::relations;
 use crate::components::memory_address_to_id;use crate::components::memory_id_to_big;use crate::components::verify_instruction;use crate::components::range_check_9_9;use crate::components::range_check_19;
 

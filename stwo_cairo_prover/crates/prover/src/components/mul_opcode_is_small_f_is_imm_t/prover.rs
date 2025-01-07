@@ -27,8 +27,9 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 
 use super::component::{Claim, InteractionClaim};
+use crate::components::utils::pack_values;
 use crate::components::{
-    memory_address_to_id, memory_id_to_big, pack_values, range_check_19, verify_instruction,
+    memory_address_to_id, memory_id_to_big, range_check_19, verify_instruction,
 };
 use crate::relations;
 

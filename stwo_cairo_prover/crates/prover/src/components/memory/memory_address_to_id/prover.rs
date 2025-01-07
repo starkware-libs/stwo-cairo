@@ -19,7 +19,7 @@ use super::component::{Claim, InteractionClaim, N_SPLIT_CHUNKS};
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
-use crate::components::AtomicMultiplicityColumn;
+use crate::components::utils::AtomicMultiplicityColumn;
 use crate::input::memory::Memory;
 use crate::relations;
 
