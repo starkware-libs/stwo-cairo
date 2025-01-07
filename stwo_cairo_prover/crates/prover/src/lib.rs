@@ -1,4 +1,5 @@
 #![feature(
+    exact_size_is_empty,
     trait_upcasting,
     portable_simd,
     iter_array_chunks,
