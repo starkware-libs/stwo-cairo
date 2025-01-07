@@ -1,3 +1,5 @@
+use stwo_prover::core::fields::m31::M31;
+
 #[derive(Clone, Debug)]
 pub struct Instruction {
     pub offset0: i16,
@@ -56,5 +58,51 @@ impl Instruction {
             opcode_ret: next_bit(),
             opcode_assert_eq: next_bit(),
         }
+    }
+}
+
+/// Constructs the input for the DecodeInstruction routine.
+///
+/// # Arguments
+///
+/// - `encoded_instr`: The encoded instruction.
+///
+/// # Returns
+///
+/// The Deconstructed instruction in the form of (offsets, flags): ([M31;3], [M31;15]).
+pub fn deconstruct_instruction(mut encoded_instr: u64) -> ([M31; 3], [M31; 15]) {
+    let mut next_offset = || {
+        let offset = (encoded_instr & 0xffff) as u16;
+        encoded_instr >>= 16;
+        offset
+    };
+    let offsets = std::array::from_fn(|_| M31(next_offset() as u32));
+
+    let mut next_bit = || {
+        let bit = encoded_instr & 1;
+        encoded_instr >>= 1;
+        bit
+    };
+    let flags = std::array::from_fn(|_| M31(next_bit() as u32));
+
+    (offsets, flags)
+}
+
+#[cfg(test)]
+mod tests {
+    use stwo_prover::core::fields::m31::M31;
+
+    use crate::input::decode::deconstruct_instruction;
+
+    #[test]
+    fn test_deconstruct_instruction() {
+        let encoded_instr = 0b0010101010101010000000000000000100000000000000110000000000000111;
+        let expected_flags = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0].map(M31);
+        let expected_offsets = [7, 3, 1].map(M31);
+
+        let (offsets, flags) = deconstruct_instruction(encoded_instr);
+
+        assert_eq!(offsets, expected_offsets);
+        assert_eq!(flags, expected_flags);
     }
 }
