@@ -1,7 +1,8 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::iter::zip;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::vec;
 
 use air_structs_derive::SubComponentInputs;
@@ -35,6 +36,7 @@ use super::component::{Claim, InteractionClaim};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, pack_values, range_check_4_3, range_check_7_2_5,
 };
+use crate::input::decode::Instruction;
 use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);
@@ -44,10 +46,22 @@ const N_TRACE_COLUMNS: usize = 28 + N_MULTIPLICITY_COLUMNS;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
+    instructions_by_pc: HashMap<M31, u64>,
     /// A map from input to multiplicity.
-    inputs: BTreeMap<InputType, u32>,
+    multiplicities: HashMap<M31, AtomicU32>,
 }
 impl ClaimGenerator {
+    pub fn new(instructions_by_pc: HashMap<M31, u64>) -> Self {
+        let keys = instructions_by_pc.keys().copied();
+        let mut multiplicities = HashMap::with_capacity(keys.len());
+        multiplicities.extend(keys.zip(std::iter::repeat_with(|| AtomicU32::new(0))));
+
+        Self {
+            multiplicities,
+            instructions_by_pc,
+        }
+    }
+
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
@@ -60,9 +74,13 @@ impl ClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let (mut inputs, mut mults) = self
-            .inputs
+            .multiplicities
             .into_iter()
-            .map(|(input, mult)| (input, M31(mult)))
+            .map(|(pc, multiplicity)| {
+                let input = construct_input(pc, *self.instructions_by_pc.get(&pc).unwrap());
+                let multiplicity = M31(multiplicity.into_inner());
+                (input, multiplicity)
+            })
             .unzip::<_, _, Vec<_>, Vec<_>>();
         let n_calls = inputs.len();
         assert_ne!(n_calls, 0);
@@ -116,10 +134,18 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_inputs(&mut self, inputs: &[InputType]) {
+    pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
-            *self.inputs.entry(*input).or_default() += 1;
+            self.add_input(input);
         }
+    }
+
+    // We only care about PC, the the instruction is propagated by the adapter.
+    fn add_input(&self, (pc, ..): &InputType) {
+        self.multiplicities
+            .get(pc)
+            .unwrap()
+            .fetch_add(1, Ordering::Relaxed);
     }
 }
 
@@ -456,4 +482,22 @@ impl InteractionClaimGenerator {
 
         InteractionClaim { claimed_sum }
     }
+}
+
+fn construct_input(pc: M31, mut encoded_instr: u64) -> InputType {
+    let mut next_offset = || {
+        let offset = (encoded_instr & 0xffff) as u16;
+        encoded_instr >>= 16;
+        offset
+    };
+    let offsets = std::array::from_fn(|_| M31(next_offset() as u32));
+
+    let mut next_bit = || {
+        let bit = encoded_instr & 1;
+        encoded_instr >>= 1;
+        bit
+    };
+    let flags = std::array::from_fn(|_| M31(next_bit() as u32));
+
+    (pc, offsets, flags)
 }

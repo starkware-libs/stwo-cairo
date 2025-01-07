@@ -175,24 +175,30 @@ pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
     pub casm_states_by_opcode: CasmStatesByOpcode,
-    pub instruction_by_pc: HashMap<M31, u64>,
 }
 
 impl StateTransitions {
     /// Iterates over the casm states and splits them into the appropriate opcode components.
+    ///
+    /// # Returns
+    ///
+    /// - StateTransitions, used to feed the opcodes' air.
+    /// - A map from pc to instruction that is used to feed
+    ///   [`crate::components::verify_instruction::ClaimGenerator`].
     pub fn from_iter(
         iter: impl Iterator<Item = TraceEntry>,
         memory: &mut MemoryBuilder,
         dev_mode: bool,
-    ) -> Self {
+    ) -> (Self, HashMap<M31, u64>) {
         let mut res = Self::default();
+        let mut instruction_by_pc = HashMap::new();
         let mut iter = iter.peekable();
 
         let Some(first) = iter.next() else {
-            return res;
+            return (res, instruction_by_pc);
         };
         res.initial_state = first.into();
-        res.push_instr(memory, first.into(), dev_mode);
+        res.push_instr(memory, first.into(), dev_mode, &mut instruction_by_pc);
 
         while let Some(entry) = iter.next() {
             // TODO(Ohad): Check if the adapter outputs the final state.
@@ -200,18 +206,24 @@ impl StateTransitions {
                 res.final_state = entry.into();
                 break;
             };
-            res.push_instr(memory, entry.into(), dev_mode);
+            res.push_instr(memory, entry.into(), dev_mode, &mut instruction_by_pc);
         }
-        res
+        (res, instruction_by_pc)
     }
 
     // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, memory: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
+    fn push_instr(
+        &mut self,
+        memory: &mut MemoryBuilder,
+        state: CasmState,
+        dev_mode: bool,
+        instruction_by_pc: &mut HashMap<M31, u64>,
+    ) {
         let CasmState { ap, fp, pc } = state;
-        let instruction = memory.get_inst(pc.0);
-        self.instruction_by_pc.entry(pc).or_insert(instruction);
-        let instruction = Instruction::decode(instruction);
+        let encoded_instruction = memory.get_inst(pc.0);
+        instruction_by_pc.entry(pc).or_insert(encoded_instruction);
+        let instruction = Instruction::decode(encoded_instruction);
 
         match instruction {
             // ret.
