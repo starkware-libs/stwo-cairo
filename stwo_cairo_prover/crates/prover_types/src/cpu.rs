@@ -422,6 +422,7 @@ pub const P_FELTS: [u32; FELT252_N_WORDS] = [
 // modulo the prime 2**251 + 17 * 2**192 + 1.
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
 pub struct Felt252 {
+    // Ordered least to most significant.
     pub limbs: [u64; 4],
 }
 
