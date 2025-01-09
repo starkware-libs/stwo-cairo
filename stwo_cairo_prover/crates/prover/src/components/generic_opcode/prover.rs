@@ -49,7 +49,7 @@ impl ClaimGenerator {
     pub fn write_trace<MC: MerkleChannel>(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,range_check_19_state: &range_check_19::ClaimGenerator,range_check_9_9_state: &range_check_9_9::ClaimGenerator,verify_instruction_state: &mut verify_instruction::ClaimGenerator,
+        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,range_check_19_state: &range_check_19::ClaimGenerator,range_check_9_9_state: &range_check_9_9::ClaimGenerator,verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>

@@ -476,7 +476,7 @@ impl OpcodesClaimGenerator {
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_check_19_trace_generator: &range_check_19::ClaimGenerator,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
-        verify_instruction_trace_generator: &mut verify_instruction::ClaimGenerator,
+        verify_instruction_trace_generator: &verify_instruction::ClaimGenerator,
     ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
