@@ -223,7 +223,7 @@ impl CairoClaimGenerator {
     }
 
     pub fn write_trace<MC: MerkleChannel>(
-        mut self,
+        self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator)
     where
@@ -236,7 +236,7 @@ impl CairoClaimGenerator {
             &self.memory_id_to_value_trace_generator,
             &self.range_check_19_trace_generator,
             &self.range_check_9_9_trace_generator,
-            &mut self.verify_instruction_trace_generator,
+            &self.verify_instruction_trace_generator,
         );
         span.exit();
         let span = span!(Level::INFO, "internal component trace").entered();
