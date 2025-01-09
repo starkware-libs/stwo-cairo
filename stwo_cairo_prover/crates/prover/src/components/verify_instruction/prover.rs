@@ -85,11 +85,11 @@ impl ClaimGenerator {
                 ((pc, offsets, flags), multiplicity)
             })
             .unzip::<_, _, Vec<_>, Vec<_>>();
-        let n_calls = inputs.len();
-        assert_ne!(n_calls, 0);
-        let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
+        let n_rows = inputs.len();
+        assert_ne!(n_rows, 0);
+        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
         let log_size = size.ilog2();
-        let need_padding = n_calls != size;
+        let need_padding = n_rows != size;
 
         if need_padding {
             inputs.resize(size, *inputs.first().unwrap());
