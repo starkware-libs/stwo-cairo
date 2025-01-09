@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::fmt::Display;
+
 use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_prover::core::fields::m31::M31;
@@ -10,9 +13,9 @@ use super::vm_import::TraceEntry;
 const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
 const SMALL_ADD_MIN_VALUE: i32 = -(2_i32.pow(27));
 
-// Small mul operands are 15 bits.
-const SMALL_MUL_MAX_VALUE: u32 = 2_u32.pow(15) - 1;
-const SMALL_MUL_MIN_VALUE: u32 = 0;
+// Small mul operands are 36 bits.
+const SMALL_MUL_MAX_VALUE: u64 = 2_u64.pow(36) - 1;
+const SMALL_MUL_MIN_VALUE: u64 = 0;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -157,6 +160,18 @@ impl CasmStatesByOpcode {
     }
 }
 
+impl Display for CasmStatesByOpcode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let counts = self.counts();
+        let total_steps = counts.iter().map(|(_, count)| count).sum::<usize>();
+        writeln!(f, "Total steps: {total_steps}")?;
+        for (name, count) in &counts {
+            writeln!(f, "{name}: {count}")?;
+        }
+        Ok(())
+    }
+}
+
 impl From<TraceEntry> for CasmState {
     fn from(entry: TraceEntry) -> Self {
         Self {
@@ -174,23 +189,31 @@ pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
     pub casm_states_by_opcode: CasmStatesByOpcode,
+    pub instruction_by_pc: HashMap<M31, u64>,
 }
 
 impl StateTransitions {
     /// Iterates over the casm states and splits them into the appropriate opcode components.
+    ///
+    /// # Returns
+    ///
+    /// - StateTransitions, used to feed the opcodes' air.
+    /// - A map from pc to instruction that is used to feed
+    ///   [`crate::components::verify_instruction::ClaimGenerator`].
     pub fn from_iter(
         iter: impl Iterator<Item = TraceEntry>,
         memory: &mut MemoryBuilder,
         dev_mode: bool,
-    ) -> Self {
+    ) -> (Self, HashMap<M31, u64>) {
         let mut res = Self::default();
+        let mut instruction_by_pc = HashMap::new();
         let mut iter = iter.peekable();
 
         let Some(first) = iter.next() else {
-            return res;
+            return (res, instruction_by_pc);
         };
         res.initial_state = first.into();
-        res.push_instr(memory, first.into(), dev_mode);
+        res.push_instr(memory, first.into(), dev_mode, &mut instruction_by_pc);
 
         while let Some(entry) = iter.next() {
             // TODO(Ohad): Check if the adapter outputs the final state.
@@ -198,17 +221,24 @@ impl StateTransitions {
                 res.final_state = entry.into();
                 break;
             };
-            res.push_instr(memory, entry.into(), dev_mode);
+            res.push_instr(memory, entry.into(), dev_mode, &mut instruction_by_pc);
         }
-        res
+        (res, instruction_by_pc)
     }
 
     // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, memory: &mut MemoryBuilder, state: CasmState, dev_mode: bool) {
+    fn push_instr(
+        &mut self,
+        memory: &mut MemoryBuilder,
+        state: CasmState,
+        dev_mode: bool,
+        instruction_by_pc: &mut HashMap<M31, u64>,
+    ) {
         let CasmState { ap, fp, pc } = state;
-        let instruction = memory.get_inst(pc.0);
-        let instruction = Instruction::decode(instruction);
+        let encoded_instruction = memory.get_inst(pc.0);
+        instruction_by_pc.entry(pc).or_insert(encoded_instruction);
+        let instruction = Instruction::decode(encoded_instruction);
 
         match instruction {
             // ret.
@@ -507,7 +537,13 @@ impl StateTransitions {
             } => {
                 let (op0_addr, op_1_addr) = (
                     if op0_base_fp { fp } else { ap },
-                    if op_1_base_fp { fp } else { ap },
+                    if op_1_imm {
+                        pc
+                    } else if op_1_base_fp {
+                        fp
+                    } else {
+                        ap
+                    },
                 );
                 let (op0, op_1) = (
                     memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
@@ -574,7 +610,13 @@ impl StateTransitions {
                 let (dst_addr, op0_addr, op_1_addr) = (
                     if dst_base_fp { fp } else { ap },
                     if op0_base_fp { fp } else { ap },
-                    if op_1_base_fp { fp } else { ap },
+                    if op_1_imm {
+                        pc
+                    } else if op_1_base_fp {
+                        fp
+                    } else {
+                        ap
+                    },
                 );
                 let (dst, op0, op_1) = (
                     memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
@@ -631,7 +673,7 @@ fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
     })
 }
 
-// Returns 'true' the multiplication factors are in the range [0, 2^15-1].
+// Returns 'true' the multiplication factors are in the range [0, 2^36-1].
 fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
     [op0, op_1].iter().all(|val| {
         is_within_range(
@@ -940,12 +982,13 @@ mod mappings_tests {
     #[test]
     fn test_mul_small() {
         let instructions = casm! {
-            // 2^15-1 is the maximal factor value for a small mul.
-            [ap] =  32767, ap++;
-            // 2^15-1 is the maximal factor value for a small mul.
-            [ap] = 32767, ap++;
+            // 2^36-1 is the maximal factor value for a small mul.
+            [ap] =  262145, ap++;
+            [ap] =  [ap-1]*262143, ap++;
+            // 2^36-1 is the maximal factor value for a small mul.
+            [ap] = [ap-1], ap++;
             [ap] = [ap-1] * [ap-2], ap++;
-            [ap] = [ap-1]*7, ap++;
+            [ap] = [ap-2]*2147483647, ap++;
             [ap] = 1, ap++;
         }
         .instructions;
@@ -958,7 +1001,7 @@ mod mappings_tests {
         );
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
-            1
+            2
         );
     }
 
@@ -966,10 +1009,11 @@ mod mappings_tests {
     fn test_mul_big() {
         let instructions = casm! {
             [ap] =  8, ap++;
-            // 2^15 is the minimal factor value for a big mul.
-            [ap] = 32768, ap++;
-            [ap] = [ap-1] * [ap-2], ap++;
-            [ap] = [ap-1]* 2, ap++;
+            // 2^36 is the minimal factor value for a big mul.
+            [ap] = 262144, ap++;
+            [ap] = [ap-1] * 262144, ap++;
+            [ap] = [ap-1] * [ap-3], ap++;
+            [ap] = [ap-2]* 2, ap++;
             [ap] = 1, ap++;
         }
         .instructions;
@@ -982,6 +1026,10 @@ mod mappings_tests {
         );
         assert_eq!(
             casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t.len(),
+            1
+        );
+        assert_eq!(
+            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
             1
         );
     }

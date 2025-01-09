@@ -71,13 +71,8 @@ impl FrameworkEval for BigEval {
         let id_and_value: [E::F; MEMORY_ID_SIZE + N_M31_IN_FELT252] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        eval.add_to_relation(RelationEntry::new(
-            &self.lookup_elements,
-            E::EF::from(-multiplicity),
-            &id_and_value,
-        ));
 
-        // Range check elements.
+        // Range check limbs.
         for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
             eval.add_to_relation(RelationEntry::new(
                 &self.range9_9_lookup_elements,
@@ -86,7 +81,14 @@ impl FrameworkEval for BigEval {
             ));
         }
 
-        eval.finalize_logup();
+        // Yield the value.
+        eval.add_to_relation(RelationEntry::new(
+            &self.lookup_elements,
+            E::EF::from(-multiplicity),
+            &id_and_value,
+        ));
+
+        eval.finalize_logup_in_pairs();
         eval
     }
 }
@@ -125,13 +127,8 @@ impl FrameworkEval for SmallEval {
         let id_and_value: [E::F; SMALL_N_ID_AND_VALUE_COLUMNS] =
             std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
-        eval.add_to_relation(RelationEntry::new(
-            &self.lookup_elements,
-            E::EF::from(-multiplicity),
-            &id_and_value,
-        ));
 
-        // Range check elements.
+        // Range check limbs.
         for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
             eval.add_to_relation(RelationEntry::new(
                 &self.range_check_9_9_relation,
@@ -139,6 +136,13 @@ impl FrameworkEval for SmallEval {
                 &[l.clone(), r.clone()],
             ));
         }
+
+        // Yield the value.
+        eval.add_to_relation(RelationEntry::new(
+            &self.lookup_elements,
+            E::EF::from(-multiplicity),
+            &id_and_value,
+        ));
 
         eval.finalize_logup();
         eval
@@ -159,8 +163,14 @@ impl Claim {
         )
         .collect();
         let interaction_log_sizes = chain!(
-            // A lookup for every pair of limbs, and a yield of the value.
-            vec![self.big_log_size; SECURE_EXTENSION_DEGREE * (N_M31_IN_FELT252.div_ceil(2) + 1)],
+            // A range-check for every pair of limbs, batched in pairs.
+            // And a yield of the value.
+            vec![
+                self.big_log_size;
+                SECURE_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))
+            ],
+            // Not batched range-check.
+            // TODO(Ohad): Batch.
             vec![
                 self.small_log_size;
                 SECURE_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)

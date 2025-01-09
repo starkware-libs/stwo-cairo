@@ -122,6 +122,12 @@ impl CM31PartialOrd of PartialOrd<CM31> {
     }
 }
 
+impl DisplayCM31 of core::fmt::Display<CM31> {
+    fn fmt(self: @CM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        write!(f, "{} + {}i", self.a, self.b)
+    }
+}
+
 #[inline]
 pub fn cm31(a: u32, b: u32) -> CM31 {
     CM31 { a: m31(a), b: m31(b) }

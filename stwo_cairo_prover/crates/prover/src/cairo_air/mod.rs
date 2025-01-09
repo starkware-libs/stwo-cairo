@@ -22,13 +22,15 @@ use tracing::{span, Level};
 
 use crate::input::ProverInput;
 
+// TODO(Ohad): decide dynamically.
 const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
-    // TODO(Ohad): wrap these flags in a struct.
-    track_relations: bool,
-    display_components: bool,
+    ProverConfig {
+        track_relations,
+        display_components,
+    }: ProverConfig,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
@@ -163,6 +165,47 @@ pub fn verify_cairo<MC: MerkleChannel>(
     .map_err(CairoVerificationError::Stark)
 }
 
+#[derive(Default)]
+pub struct ProverConfig {
+    /// Display components' metadata.
+    pub display_components: bool,
+    /// Show the relations that do not sum to 0.
+    /// `Relation` is a proof related concept, and will be properly documented in the future.
+    /// Used for internal debugging of the lookup argument.
+    /// NOTE: Negatively affects performance.
+    // TODO(Ohad): Remove this flag.
+    pub track_relations: bool,
+}
+impl ProverConfig {
+    pub fn builder() -> ConfigBuilder {
+        ConfigBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct ConfigBuilder {
+    track_relations: bool,
+    display_components: bool,
+}
+impl ConfigBuilder {
+    pub fn track_relations(mut self, value: bool) -> Self {
+        self.track_relations = value;
+        self
+    }
+
+    pub fn display_components(mut self, value: bool) -> Self {
+        self.display_components = value;
+        self
+    }
+
+    pub fn build(self) -> ProverConfig {
+        ProverConfig {
+            track_relations: self.track_relations,
+            display_components: self.display_components,
+        }
+    }
+}
+
 #[derive(Error, Debug)]
 pub enum CairoVerificationError {
     #[error("Invalid logup sum")]
@@ -181,6 +224,7 @@ mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
     use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
+    use super::ProverConfig;
     use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
     use crate::input::plain::input_from_plain_casm;
     use crate::input::vm_import::tests::small_cairo_input;
@@ -209,9 +253,16 @@ mod tests {
         input_from_plain_casm(instructions, true)
     }
 
+    fn test_cfg() -> ProverConfig {
+        ProverConfig {
+            track_relations: true,
+            display_components: true,
+        }
+    }
+
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(test_input(), true, true).unwrap();
+        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(test_input(), test_cfg()).unwrap();
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 
@@ -219,7 +270,7 @@ mod tests {
     #[test]
     fn generate_and_serialise_proof() {
         let cairo_proof =
-            prove_cairo::<Poseidon252MerkleChannel>(test_input(), true, true).unwrap();
+            prove_cairo::<Poseidon252MerkleChannel>(test_input(), test_cfg()).unwrap();
         let mut output = Vec::new();
         CairoSerialize::serialize(&cairo_proof, &mut output);
         let proof_str = output.iter().map(|v| v.to_string()).join(",");
@@ -232,7 +283,7 @@ mod tests {
     #[test]
     fn test_full_cairo_air() {
         let cairo_proof =
-            prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), true, true).unwrap();
+            prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), test_cfg()).unwrap();
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 }

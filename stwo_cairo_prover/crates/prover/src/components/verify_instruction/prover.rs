@@ -51,10 +51,10 @@ impl ClaimGenerator {
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
-        memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
-        range_check_4_3_state: &mut range_check_4_3::ClaimGenerator,
-        range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
+        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
+        memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+        range_check_4_3_state: &range_check_4_3::ClaimGenerator,
+        range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
@@ -148,7 +148,7 @@ struct LookupData {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
-    memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
+    memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     SubComponentInputs,
