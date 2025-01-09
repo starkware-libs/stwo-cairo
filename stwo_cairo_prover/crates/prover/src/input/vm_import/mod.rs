@@ -6,6 +6,7 @@ use std::path::Path;
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use thiserror::Error;
@@ -88,12 +89,15 @@ pub fn adapt_to_stwo_input(
 ) -> Result<ProverInput, VmImportError> {
     let (state_transitions, instruction_by_pc) =
         StateTransitions::from_iter(trace_iter, &mut memory, dev_mode);
+    let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
+    // TODO (ohadn): fill in the memory segments of the rest of the builtins.
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check);
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
         memory: memory.build(),
         public_memory_addresses,
-        builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),
+        builtins_segments,
     })
 }
 
@@ -187,113 +191,173 @@ pub mod tests {
         )
     }
 
-    #[test]
+    #[cfg(test)]
     #[cfg(feature = "slow-tests")]
-    fn test_read_from_large_files() {
-        let input = large_cairo_input();
+    pub mod slow_tests {
+        use cairo_vm::types::builtin_name::BuiltinName;
 
-        // Test opcode components.
-        let components = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(components.generic_opcode.len(), 0);
-        assert_eq!(components.add_ap_opcode.len(), 0);
-        assert_eq!(components.add_ap_opcode_imm.len(), 36895);
-        assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 33);
-        assert_eq!(components.add_opcode_small_imm.len(), 84732);
-        assert_eq!(components.add_opcode.len(), 189425);
-        assert_eq!(components.add_opcode_small.len(), 36623);
-        assert_eq!(components.add_opcode_imm.len(), 22089);
-        assert_eq!(components.assert_eq_opcode.len(), 233432);
-        assert_eq!(components.assert_eq_opcode_double_deref.len(), 811061);
-        assert_eq!(components.assert_eq_opcode_imm.len(), 43184);
-        assert_eq!(components.call_opcode.len(), 0);
-        assert_eq!(components.call_opcode_rel.len(), 49439);
-        assert_eq!(components.call_opcode_op_1_base_fp.len(), 33);
-        assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 11235);
-        assert_eq!(components.jnz_opcode.len(), 27032);
-        assert_eq!(components.jnz_opcode_taken.len(), 51060);
-        assert_eq!(components.jnz_opcode_dst_base_fp.len(), 5100);
-        assert_eq!(components.jump_opcode_rel_imm.len(), 31873865);
-        assert_eq!(components.jump_opcode_rel.len(), 500);
-        assert_eq!(components.jump_opcode_double_deref.len(), 32);
-        assert_eq!(components.jump_opcode.len(), 0);
-        assert_eq!(components.mul_opcode_small_imm.len(), 7234);
-        assert_eq!(components.mul_opcode_small.len(), 7203);
-        assert_eq!(components.mul_opcode.len(), 3943);
-        assert_eq!(components.mul_opcode_imm.len(), 10809);
-        assert_eq!(components.ret_opcode.len(), 49472);
+        use super::*;
+        use crate::input::memory::{EncodedMemoryValueId, Memory};
 
-        // Test builtins.
-        let builtins_segments = input.builtins_segments;
-        assert_eq!(builtins_segments.add_mod, None);
-        assert_eq!(builtins_segments.bitwise, None);
-        assert_eq!(builtins_segments.ec_op, Some((16428600, 16428747).into()));
-        assert_eq!(builtins_segments.ecdsa, None);
-        assert_eq!(builtins_segments.keccak, None);
-        assert_eq!(builtins_segments.mul_mod, None);
-        assert_eq!(builtins_segments.pedersen, Some((1322552, 1337489).into()));
-        assert_eq!(
-            builtins_segments.poseidon,
-            Some((16920120, 17444532).into())
-        );
-        assert_eq!(builtins_segments.range_check_bits_96, None);
-        assert_eq!(
-            builtins_segments.range_check_bits_128,
-            Some((1715768, 1757348).into())
-        );
-    }
+        /// Verifies that the builtin segment is padded with copies of the golden_instance to the
+        /// next power of 2 instances.
+        fn verify_segment_is_padded(
+            segment: &Option<MemorySegmentAddresses>,
+            builtin_name: BuiltinName,
+            memory: &Memory,
+            original_stop_ptr: usize,
+            golden_instance: &[u32],
+        ) {
+            if let Some(segment) = segment {
+                let cells_per_instance =
+                    BuiltinSegments::builtin_memory_cells_per_instance(builtin_name);
+                assert_eq!(golden_instance.len(), cells_per_instance);
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                assert_eq!(segment_length % cells_per_instance, 0);
+                let num_instances = segment_length / cells_per_instance;
+                // Assert that num_instances is a power of 2.
+                assert_eq!((num_instances & (num_instances - 1)), 0);
 
-    #[cfg(feature = "slow-tests")]
-    #[test]
-    fn test_read_from_small_files() {
-        let input = small_cairo_input();
+                let original_segment_length = original_stop_ptr - segment.begin_addr;
+                assert_eq!(original_segment_length % cells_per_instance, 0);
+                let original_num_instances = original_segment_length / cells_per_instance;
+                // Assert that num_instances is the next power of 2 after original_num_instances.
+                assert!(original_num_instances * 2 > num_instances);
+                assert!(original_num_instances <= num_instances);
 
-        // Test opcode components.
-        let components = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(components.generic_opcode.len(), 0);
-        assert_eq!(components.add_ap_opcode.len(), 0);
-        assert_eq!(components.add_ap_opcode_imm.len(), 2);
-        assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 1);
-        assert_eq!(components.add_opcode_small_imm.len(), 500);
-        assert_eq!(components.add_opcode.len(), 0);
-        assert_eq!(components.add_opcode_small.len(), 0);
-        assert_eq!(components.add_opcode_imm.len(), 450);
-        assert_eq!(components.assert_eq_opcode.len(), 55);
-        assert_eq!(components.assert_eq_opcode_double_deref.len(), 2100);
-        assert_eq!(components.assert_eq_opcode_imm.len(), 1952);
-        assert_eq!(components.call_opcode.len(), 0);
-        assert_eq!(components.call_opcode_rel.len(), 462);
-        assert_eq!(components.call_opcode_op_1_base_fp.len(), 0);
-        assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 450);
-        assert_eq!(components.jnz_opcode.len(), 0);
-        assert_eq!(components.jnz_opcode_taken.len(), 0);
-        assert_eq!(components.jnz_opcode_dst_base_fp.len(), 11);
-        assert_eq!(components.jump_opcode_rel_imm.len(), 124626);
-        assert_eq!(components.jump_opcode_rel.len(), 0);
-        assert_eq!(components.jump_opcode_double_deref.len(), 0);
-        assert_eq!(components.jump_opcode.len(), 0);
-        assert_eq!(components.mul_opcode_small_imm.len(), 0);
-        assert_eq!(components.mul_opcode_small.len(), 0);
-        assert_eq!(components.mul_opcode.len(), 0);
-        assert_eq!(components.mul_opcode_imm.len(), 0);
-        assert_eq!(components.ret_opcode.len(), 462);
+                assert!(segment.stop_ptr < memory.address_to_id.len());
+                for instance in original_num_instances..num_instances {
+                    for (j, &golden_value) in golden_instance.iter().enumerate() {
+                        let address = segment.begin_addr + instance * cells_per_instance + j;
+                        assert_eq!(
+                            memory.address_to_id[address],
+                            EncodedMemoryValueId(golden_value)
+                        );
+                    }
+                }
+            }
+        }
 
-        // Test builtins.
-        let builtins_segments = input.builtins_segments;
-        assert_eq!(builtins_segments.add_mod, None);
-        assert_eq!(builtins_segments.bitwise, Some((22512, 22762).into()));
-        assert_eq!(builtins_segments.ec_op, Some((63472, 63822).into()));
-        assert_eq!(builtins_segments.ecdsa, Some((22384, 22484).into()));
-        assert_eq!(builtins_segments.keccak, Some((64368, 65168).into()));
-        assert_eq!(builtins_segments.mul_mod, None);
-        assert_eq!(builtins_segments.pedersen, Some((4464, 4614).into()));
-        assert_eq!(builtins_segments.poseidon, Some((65392, 65692).into()));
-        assert_eq!(
-            builtins_segments.range_check_bits_96,
-            Some((68464, 68514).into())
-        );
-        assert_eq!(
-            builtins_segments.range_check_bits_128,
-            Some((6000, 6050).into())
-        );
+        #[test]
+        fn test_read_from_large_files() {
+            let input = large_cairo_input();
+
+            // Test opcode components.
+            let components = input.state_transitions.casm_states_by_opcode;
+            assert_eq!(components.generic_opcode.len(), 0);
+            assert_eq!(components.add_ap_opcode.len(), 0);
+            assert_eq!(components.add_ap_opcode_imm.len(), 36895);
+            assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 33);
+            assert_eq!(components.add_opcode_small_imm.len(), 84732);
+            assert_eq!(components.add_opcode.len(), 189425);
+            assert_eq!(components.add_opcode_small.len(), 36623);
+            assert_eq!(components.add_opcode_imm.len(), 22089);
+            assert_eq!(components.assert_eq_opcode.len(), 233432);
+            assert_eq!(components.assert_eq_opcode_double_deref.len(), 811061);
+            assert_eq!(components.assert_eq_opcode_imm.len(), 43184);
+            assert_eq!(components.call_opcode.len(), 0);
+            assert_eq!(components.call_opcode_rel.len(), 49439);
+            assert_eq!(components.call_opcode_op_1_base_fp.len(), 33);
+            assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 11235);
+            assert_eq!(components.jnz_opcode.len(), 27032);
+            assert_eq!(components.jnz_opcode_taken.len(), 51060);
+            assert_eq!(components.jnz_opcode_dst_base_fp.len(), 5100);
+            assert_eq!(components.jump_opcode_rel_imm.len(), 31873865);
+            assert_eq!(components.jump_opcode_rel.len(), 500);
+            assert_eq!(components.jump_opcode_double_deref.len(), 32);
+            assert_eq!(components.jump_opcode.len(), 0);
+            assert_eq!(components.mul_opcode_small_imm.len(), 7234);
+            assert_eq!(components.mul_opcode_small.len(), 7203);
+            assert_eq!(components.mul_opcode.len(), 3943);
+            assert_eq!(components.mul_opcode_imm.len(), 10809);
+            assert_eq!(components.ret_opcode.len(), 49472);
+
+            // Test builtins.
+            let builtins_segments = input.builtins_segments;
+            assert_eq!(builtins_segments.add_mod, None);
+            assert_eq!(builtins_segments.bitwise, None);
+            assert_eq!(builtins_segments.ec_op, Some((16428600, 16428747).into()));
+            assert_eq!(builtins_segments.ecdsa, None);
+            assert_eq!(builtins_segments.keccak, None);
+            assert_eq!(builtins_segments.mul_mod, None);
+            assert_eq!(builtins_segments.pedersen, Some((1322552, 1337489).into()));
+            assert_eq!(
+                builtins_segments.poseidon,
+                Some((16920120, 17444532).into())
+            );
+            assert_eq!(builtins_segments.range_check_bits_96, None);
+            assert_eq!(
+                builtins_segments.range_check_bits_128,
+                Some((1715768, 1781304).into())
+            );
+            verify_segment_is_padded(
+                &builtins_segments.range_check_bits_128,
+                BuiltinName::range_check,
+                &input.memory,
+                1757348,
+                &[117061],
+            );
+        }
+
+        #[test]
+        fn test_read_from_small_files() {
+            let input = small_cairo_input();
+
+            // Test opcode components.
+            let components = input.state_transitions.casm_states_by_opcode;
+            assert_eq!(components.generic_opcode.len(), 0);
+            assert_eq!(components.add_ap_opcode.len(), 0);
+            assert_eq!(components.add_ap_opcode_imm.len(), 2);
+            assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 1);
+            assert_eq!(components.add_opcode_small_imm.len(), 500);
+            assert_eq!(components.add_opcode.len(), 0);
+            assert_eq!(components.add_opcode_small.len(), 0);
+            assert_eq!(components.add_opcode_imm.len(), 450);
+            assert_eq!(components.assert_eq_opcode.len(), 55);
+            assert_eq!(components.assert_eq_opcode_double_deref.len(), 2100);
+            assert_eq!(components.assert_eq_opcode_imm.len(), 1952);
+            assert_eq!(components.call_opcode.len(), 0);
+            assert_eq!(components.call_opcode_rel.len(), 462);
+            assert_eq!(components.call_opcode_op_1_base_fp.len(), 0);
+            assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 450);
+            assert_eq!(components.jnz_opcode.len(), 0);
+            assert_eq!(components.jnz_opcode_taken.len(), 0);
+            assert_eq!(components.jnz_opcode_dst_base_fp.len(), 11);
+            assert_eq!(components.jump_opcode_rel_imm.len(), 124626);
+            assert_eq!(components.jump_opcode_rel.len(), 0);
+            assert_eq!(components.jump_opcode_double_deref.len(), 0);
+            assert_eq!(components.jump_opcode.len(), 0);
+            assert_eq!(components.mul_opcode_small_imm.len(), 0);
+            assert_eq!(components.mul_opcode_small.len(), 0);
+            assert_eq!(components.mul_opcode.len(), 0);
+            assert_eq!(components.mul_opcode_imm.len(), 0);
+            assert_eq!(components.ret_opcode.len(), 462);
+
+            // Test builtins.
+            let builtins_segments = input.builtins_segments;
+            assert_eq!(builtins_segments.add_mod, None);
+            assert_eq!(builtins_segments.bitwise, Some((22512, 22762).into()));
+            assert_eq!(builtins_segments.ec_op, Some((63472, 63822).into()));
+            assert_eq!(builtins_segments.ecdsa, Some((22384, 22484).into()));
+            assert_eq!(builtins_segments.keccak, Some((64368, 65168).into()));
+            assert_eq!(builtins_segments.mul_mod, None);
+            assert_eq!(builtins_segments.pedersen, Some((4464, 4614).into()));
+            assert_eq!(builtins_segments.poseidon, Some((65392, 65692).into()));
+            assert_eq!(
+                builtins_segments.range_check_bits_96,
+                Some((68464, 68514).into())
+            );
+            assert_eq!(
+                builtins_segments.range_check_bits_128,
+                Some((6000, 6064).into())
+            );
+            verify_segment_is_padded(
+                &builtins_segments.range_check_bits_128,
+                BuiltinName::range_check,
+                &input.memory,
+                6050,
+                &[7],
+            );
+        }
     }
 }
