@@ -54,10 +54,10 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>
     {
-        let n_calls = self.inputs.len();
-        assert_ne!(n_calls, 0);
-        let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
-        let need_padding = n_calls != size;
+        let n_rows = self.inputs.len();
+        assert_ne!(n_rows, 0);
+        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
+        let need_padding = n_rows != size;
 
         if need_padding {
             self.inputs.resize(size, *self.inputs.first().unwrap());
@@ -72,25 +72,25 @@ impl ClaimGenerator {
             sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
         }
         sub_components_inputs.memory_address_to_id_inputs.iter().for_each(|inputs| {
-            memory_address_to_id_state.add_inputs(&inputs[..n_calls]);
+            memory_address_to_id_state.add_inputs(&inputs[..n_rows]);
         });sub_components_inputs.memory_id_to_big_inputs.iter().for_each(|inputs| {
-            memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
+            memory_id_to_big_state.add_inputs(&inputs[..n_rows]);
         });sub_components_inputs.range_check_19_inputs.iter().for_each(|inputs| {
-            range_check_19_state.add_inputs(&inputs[..n_calls]);
+            range_check_19_state.add_inputs(&inputs[..n_rows]);
         });sub_components_inputs.range_check_9_9_inputs.iter().for_each(|inputs| {
-            range_check_9_9_state.add_inputs(&inputs[..n_calls]);
+            range_check_9_9_state.add_inputs(&inputs[..n_rows]);
         });sub_components_inputs.verify_instruction_inputs.iter().for_each(|inputs| {
-            verify_instruction_state.add_inputs(&inputs[..n_calls]);
+            verify_instruction_state.add_inputs(&inputs[..n_rows]);
         });
 
         tree_builder.extend_evals(trace.to_evals());
 
         (
         Claim {
-            n_calls
+            n_rows
         },
         InteractionClaimGenerator {
-            n_calls,
+            n_rows,
             lookup_data,
         },
         )
@@ -1260,7 +1260,7 @@ struct LookupData
 {memory_address_to_id_0: Vec<[PackedM31; 2]>,memory_address_to_id_1: Vec<[PackedM31; 2]>,memory_address_to_id_2: Vec<[PackedM31; 2]>,memory_id_to_big_0: Vec<[PackedM31; 29]>,memory_id_to_big_1: Vec<[PackedM31; 29]>,memory_id_to_big_2: Vec<[PackedM31; 29]>,opcodes_0: Vec<[PackedM31; 3]>,opcodes_1: Vec<[PackedM31; 3]>,range_check_19_0: Vec<[PackedM31; 1]>,range_check_19_1: Vec<[PackedM31; 1]>,range_check_19_2: Vec<[PackedM31; 1]>,range_check_19_3: Vec<[PackedM31; 1]>,range_check_19_4: Vec<[PackedM31; 1]>,range_check_19_5: Vec<[PackedM31; 1]>,range_check_19_6: Vec<[PackedM31; 1]>,range_check_19_7: Vec<[PackedM31; 1]>,range_check_19_8: Vec<[PackedM31; 1]>,range_check_19_9: Vec<[PackedM31; 1]>,range_check_19_10: Vec<[PackedM31; 1]>,range_check_19_11: Vec<[PackedM31; 1]>,range_check_19_12: Vec<[PackedM31; 1]>,range_check_19_13: Vec<[PackedM31; 1]>,range_check_19_14: Vec<[PackedM31; 1]>,range_check_19_15: Vec<[PackedM31; 1]>,range_check_19_16: Vec<[PackedM31; 1]>,range_check_19_17: Vec<[PackedM31; 1]>,range_check_19_18: Vec<[PackedM31; 1]>,range_check_19_19: Vec<[PackedM31; 1]>,range_check_19_20: Vec<[PackedM31; 1]>,range_check_19_21: Vec<[PackedM31; 1]>,range_check_19_22: Vec<[PackedM31; 1]>,range_check_19_23: Vec<[PackedM31; 1]>,range_check_19_24: Vec<[PackedM31; 1]>,range_check_19_25: Vec<[PackedM31; 1]>,range_check_19_26: Vec<[PackedM31; 1]>,range_check_19_27: Vec<[PackedM31; 1]>,range_check_9_9_0: Vec<[PackedM31; 2]>,range_check_9_9_1: Vec<[PackedM31; 2]>,range_check_9_9_2: Vec<[PackedM31; 2]>,range_check_9_9_3: Vec<[PackedM31; 2]>,range_check_9_9_4: Vec<[PackedM31; 2]>,range_check_9_9_5: Vec<[PackedM31; 2]>,range_check_9_9_6: Vec<[PackedM31; 2]>,range_check_9_9_7: Vec<[PackedM31; 2]>,range_check_9_9_8: Vec<[PackedM31; 2]>,range_check_9_9_9: Vec<[PackedM31; 2]>,range_check_9_9_10: Vec<[PackedM31; 2]>,range_check_9_9_11: Vec<[PackedM31; 2]>,range_check_9_9_12: Vec<[PackedM31; 2]>,range_check_9_9_13: Vec<[PackedM31; 2]>,range_check_9_9_14: Vec<[PackedM31; 2]>,range_check_9_9_15: Vec<[PackedM31; 2]>,range_check_9_9_16: Vec<[PackedM31; 2]>,range_check_9_9_17: Vec<[PackedM31; 2]>,range_check_9_9_18: Vec<[PackedM31; 2]>,range_check_9_9_19: Vec<[PackedM31; 2]>,range_check_9_9_20: Vec<[PackedM31; 2]>,range_check_9_9_21: Vec<[PackedM31; 2]>,range_check_9_9_22: Vec<[PackedM31; 2]>,range_check_9_9_23: Vec<[PackedM31; 2]>,range_check_9_9_24: Vec<[PackedM31; 2]>,range_check_9_9_25: Vec<[PackedM31; 2]>,range_check_9_9_26: Vec<[PackedM31; 2]>,range_check_9_9_27: Vec<[PackedM31; 2]>,verify_instruction_0: Vec<[PackedM31; 19]>,}
 
 pub struct InteractionClaimGenerator {
-    n_calls: usize,
+    n_rows: usize,
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -1284,7 +1284,7 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>
     {
-        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
+        let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         //Sum logup terms in pairs.
@@ -1778,13 +1778,13 @@ let mut col_gen = logup_gen.new_col();
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_calls == 1 << log_size {
+        let (trace, total_sum, claimed_sum) = if self.n_rows == 1 << log_size {
             let (trace, claimed_sum) = logup_gen.finalize_last();
             (trace, claimed_sum, None)
         } else {
             let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
+                logup_gen.finalize_at([(1 << log_size) - 1, self.n_rows - 1]);
+            (trace, total_sum, Some((claimed_sum, self.n_rows - 1)))
         };
         tree_builder.extend_evals(trace);
 

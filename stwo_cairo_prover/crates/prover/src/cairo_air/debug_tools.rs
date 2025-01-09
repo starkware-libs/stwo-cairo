@@ -66,7 +66,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -82,7 +82,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -98,7 +98,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -114,7 +114,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -130,7 +130,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -146,7 +146,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -162,7 +162,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -178,7 +178,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -193,7 +193,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -209,7 +209,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         )
@@ -225,7 +225,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -241,7 +241,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -257,7 +257,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -275,7 +275,7 @@ where
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                     range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -291,7 +291,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -307,7 +307,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -323,7 +323,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -339,7 +339,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -355,7 +355,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -371,7 +371,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -387,7 +387,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -403,7 +403,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -420,7 +420,7 @@ where
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -437,7 +437,7 @@ where
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
@@ -453,7 +453,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_calls,
+                claim.n_rows,
             )
             .entries(trace),
         );
