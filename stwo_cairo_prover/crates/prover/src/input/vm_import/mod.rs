@@ -6,6 +6,7 @@ use std::path::Path;
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use thiserror::Error;
@@ -88,12 +89,16 @@ pub fn adapt_to_stwo_input(
 ) -> Result<ProverInput, VmImportError> {
     let (state_transitions, instruction_by_pc) =
         StateTransitions::from_iter(trace_iter, &mut memory, dev_mode);
+    let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
+    // TODO (ohadn): fill in the memory segments of the rest of the builtins.
+    // Different logic might be required for add_mod and mul_mod.
+    memory = builtins_segments.fill_builtin_segment(memory, BuiltinName::range_check);
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
         memory: memory.build(),
         public_memory_addresses,
-        builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),
+        builtins_segments,
     })
 }
 
@@ -156,7 +161,10 @@ impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
 pub mod tests {
     use std::path::PathBuf;
 
+    use cairo_vm::types::builtin_name::BuiltinName;
+
     use super::*;
+    use crate::input::memory::Memory;
 
     pub fn large_cairo_input() -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -185,6 +193,43 @@ pub mod tests {
             "
             Failed to read test files. Checkout input/README.md.",
         )
+    }
+
+    /// Verifies that the builtin segment is padded with copies of the first instance to the next
+    /// power of 2 instances.
+    pub fn verify_segment_is_padded(
+        segment: &Option<MemorySegmentAddresses>,
+        builtin_name: BuiltinName,
+        memory: &Memory,
+        original_stop_ptr: usize,
+    ) {
+        if let Some(segment) = segment {
+            let cells_per_instance =
+                BuiltinSegments::builtin_memory_cells_per_instance(builtin_name);
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(segment_length % cells_per_instance == 0);
+            let num_instances = segment_length / cells_per_instance;
+            // Assert that num_instances is a power of 2.
+            assert!((num_instances & (num_instances - 1)) == 0);
+
+            let original_segment_length = original_stop_ptr - segment.begin_addr;
+            assert!(original_segment_length % cells_per_instance == 0);
+            let original_num_instances = original_segment_length / cells_per_instance;
+            // Assert that num_instances is the next power of 2 after original_num_instances.
+            assert!(original_num_instances * 2 > num_instances);
+            assert!(original_num_instances <= num_instances);
+
+            assert!(segment.stop_ptr < memory.address_to_id.len());
+            for instance in original_num_instances..num_instances {
+                for j in 0..cells_per_instance {
+                    let address = segment.begin_addr + instance * cells_per_instance + j;
+                    assert!(
+                        memory.address_to_id[address]
+                            == memory.address_to_id[segment.begin_addr + j]
+                    );
+                }
+            }
+        }
     }
 
     #[test]
@@ -270,7 +315,13 @@ pub mod tests {
         assert_eq!(builtins_segments.range_check_bits_96, None);
         assert_eq!(
             builtins_segments.range_check_bits_128,
-            Some((1715768, 1757348).into())
+            Some((1715768, 1781304).into())
+        );
+        verify_segment_is_padded(
+            &builtins_segments.range_check_bits_128,
+            BuiltinName::range_check,
+            &input.memory,
+            1757348,
         );
     }
 
@@ -354,7 +405,13 @@ pub mod tests {
         );
         assert_eq!(
             builtins_segments.range_check_bits_128,
-            Some((6000, 6050).into())
+            Some((6000, 6064).into())
+        );
+        verify_segment_is_padded(
+            &builtins_segments.range_check_bits_128,
+            BuiltinName::range_check,
+            &input.memory,
+            6050,
         );
     }
 }
