@@ -1,0 +1,10 @@
+[package]
+name = "recursion-bridge"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stwo_cairo_prover = { path = "../prover" }
+cairo-lang-casm.workspace = true
+stwo-prover.workspace = true
+serde_json.workspace = true

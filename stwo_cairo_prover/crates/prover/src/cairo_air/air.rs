@@ -171,9 +171,9 @@ impl CairoClaimGenerator {
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::default();
-        let mut memory_address_to_id_trace_generator =
+        let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
-        let mut memory_id_to_value_trace_generator =
+        let memory_id_to_value_trace_generator =
             memory_id_to_big::ClaimGenerator::new(&input.memory);
         let range_check_19_trace_generator = range_check_19::ClaimGenerator::new();
         let range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
@@ -181,10 +181,15 @@ impl CairoClaimGenerator {
         let range_check_4_3_trace_generator = range_check_4_3::ClaimGenerator::new();
 
         // Yield public memory.
-        for &addr in &input.public_memory_addresses {
-            let id = memory_address_to_id_trace_generator.ids[addr as usize];
-            memory_address_to_id_trace_generator.add_m31(M31::from_u32_unchecked(addr));
-            memory_id_to_value_trace_generator.add_m31(M31::from_u32_unchecked(id));
+        for addr in input
+            .public_memory_addresses
+            .iter()
+            .copied()
+            .map(M31::from_u32_unchecked)
+        {
+            let id = memory_address_to_id_trace_generator.get_id(addr);
+            memory_address_to_id_trace_generator.add_m31(addr);
+            memory_id_to_value_trace_generator.add_m31(id);
         }
 
         // Public data.
@@ -226,10 +231,10 @@ impl CairoClaimGenerator {
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
-            &mut self.memory_address_to_id_trace_generator,
-            &mut self.memory_id_to_value_trace_generator,
-            &mut self.range_check_19_trace_generator,
-            &mut self.range_check_9_9_trace_generator,
+            &self.memory_address_to_id_trace_generator,
+            &self.memory_id_to_value_trace_generator,
+            &self.range_check_19_trace_generator,
+            &self.range_check_9_9_trace_generator,
             &mut self.verify_instruction_trace_generator,
         );
         span.exit();
@@ -237,10 +242,10 @@ impl CairoClaimGenerator {
         let (verify_instruction_claim, verify_instruction_interaction_gen) =
             self.verify_instruction_trace_generator.write_trace(
                 tree_builder,
-                &mut self.memory_address_to_id_trace_generator,
-                &mut self.memory_id_to_value_trace_generator,
-                &mut self.range_check_4_3_trace_generator,
-                &mut self.range_check_7_2_5_trace_generator,
+                &self.memory_address_to_id_trace_generator,
+                &self.memory_id_to_value_trace_generator,
+                &self.range_check_4_3_trace_generator,
+                &self.range_check_7_2_5_trace_generator,
             );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator

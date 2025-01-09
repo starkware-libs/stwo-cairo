@@ -424,6 +424,12 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
     }
 }
 
+impl DisplayQM31 of core::fmt::Display<QM31> {
+    fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        write!(f, "({}) + ({})u", self.a, self.b)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::Invertible;

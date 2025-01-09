@@ -104,7 +104,6 @@ macro_rules! range_check_prover {
                     (claim, interaction_claim_prover)
                 }
             }
-            unsafe impl Send for ClaimGenerator {}
 
             #[derive(Debug)]
             pub struct InteractionClaimGenerator {
