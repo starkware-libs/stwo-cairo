@@ -85,8 +85,11 @@ pub fn adapt_to_stwo_input(
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
+    let (state_transitions, instruction_by_pc) =
+        StateTransitions::from_iter(trace_iter, &mut memory, dev_mode);
     Ok(ProverInput {
-        state_transitions: StateTransitions::from_iter(trace_iter, &mut memory, dev_mode),
+        state_transitions,
+        instruction_by_pc,
         memory: memory.build(),
         public_memory_addresses,
         builtins_segments: BuiltinSegments::from_memory_segments(memory_segments),
@@ -197,10 +200,10 @@ pub mod tests {
             36895
         );
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_t.len(), 33);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 83399);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 84732);
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 189425);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 36623);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 23422);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 22089);
         assert_eq!(
             components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
             233432
@@ -244,10 +247,10 @@ pub mod tests {
                 .len(),
             0
         );
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 8996);
-        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 6563);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 4583);
-        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 9047);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 7234);
+        assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 7203);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 3943);
+        assert_eq!(components.mul_opcode_is_small_f_is_imm_t.len(), 10809);
         assert_eq!(components.ret_opcode.len(), 49472);
 
         // Test builtins.
@@ -281,10 +284,10 @@ pub mod tests {
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
         assert_eq!(components.add_ap_opcode_is_imm_t_op_1_base_fp_f.len(), 2);
         assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_t.len(), 1);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 950);
+        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 500);
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 0);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 0);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 0);
+        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 450);
         assert_eq!(
             components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
             55

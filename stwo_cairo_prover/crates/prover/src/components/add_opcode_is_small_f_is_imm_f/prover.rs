@@ -46,17 +46,17 @@ impl ClaimGenerator {
     pub fn write_trace<MC: MerkleChannel>(
         mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
-        memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
-        verify_instruction_state: &mut verify_instruction::ClaimGenerator,
+        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
+        memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+        verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let n_calls = self.inputs.len();
-        assert_ne!(n_calls, 0);
-        let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
-        let need_padding = n_calls != size;
+        let n_rows = self.inputs.len();
+        assert_ne!(n_rows, 0);
+        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
+        let need_padding = n_rows != size;
 
         if need_padding {
             self.inputs.resize(size, *self.inputs.first().unwrap());
@@ -77,27 +77,27 @@ impl ClaimGenerator {
             .memory_address_to_id_inputs
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..n_calls]);
+                memory_address_to_id_state.add_inputs(&inputs[..n_rows]);
             });
         sub_components_inputs
             .memory_id_to_big_inputs
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
+                memory_id_to_big_state.add_inputs(&inputs[..n_rows]);
             });
         sub_components_inputs
             .verify_instruction_inputs
             .iter()
             .for_each(|inputs| {
-                verify_instruction_state.add_inputs(&inputs[..n_calls]);
+                verify_instruction_state.add_inputs(&inputs[..n_rows]);
             });
 
         tree_builder.extend_evals(trace.to_evals());
 
         (
-            Claim { n_calls },
+            Claim { n_rows },
             InteractionClaimGenerator {
-                n_calls,
+                n_rows,
                 lookup_data,
             },
         )
@@ -121,8 +121,8 @@ pub struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
-    memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
+    memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
+    memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     SubComponentInputs,
@@ -686,7 +686,7 @@ struct LookupData {
 }
 
 pub struct InteractionClaimGenerator {
-    n_calls: usize,
+    n_rows: usize,
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -701,7 +701,7 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
+        let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         // Sum logup terms in pairs.
@@ -765,13 +765,13 @@ impl InteractionClaimGenerator {
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_calls == 1 << log_size {
+        let (trace, total_sum, claimed_sum) = if self.n_rows == 1 << log_size {
             let (trace, claimed_sum) = logup_gen.finalize_last();
             (trace, claimed_sum, None)
         } else {
             let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
+                logup_gen.finalize_at([(1 << log_size) - 1, self.n_rows - 1]);
+            (trace, total_sum, Some((claimed_sum, self.n_rows - 1)))
         };
         tree_builder.extend_evals(trace);
 

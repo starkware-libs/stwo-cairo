@@ -18,12 +18,47 @@ pub fn input_from_plain_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
     dev_mode: bool,
 ) -> ProverInput {
+    let (program, program_len) = program_from_casm(casm);
+
+    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
+        .expect("Runner creation failed");
+    runner.initialize(true).expect("Initialization failed");
+    runner
+        .run_until_pc(
+            (runner.program_base.unwrap() + program_len).unwrap(),
+            &mut BuiltinHintProcessor::new_empty(),
+        )
+        .expect("Run failed");
+    runner.relocate(true).unwrap();
+    adapt_finished_runner(runner, dev_mode)
+}
+
+// NOTE: the proof will include `step_limit -1` steps.
+pub fn input_from_plain_casm_with_step_limit(
+    casm: Vec<cairo_lang_casm::instructions::Instruction>,
+    step_limit: usize,
+) -> ProverInput {
+    let (program, _) = program_from_casm(casm);
+
+    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
+        .expect("Runner creation failed");
+    runner.initialize(true).expect("Initialization failed");
+    runner
+        .run_for_steps(step_limit, &mut BuiltinHintProcessor::new_empty())
+        .expect("Run failed");
+    runner.relocate(true).unwrap();
+
+    adapt_finished_runner(runner, true)
+}
+
+fn program_from_casm(
+    casm: Vec<cairo_lang_casm::instructions::Instruction>,
+) -> (cairo_vm::types::program::Program, usize) {
     let felt_code = casm
         .into_iter()
         .flat_map(|instruction| instruction.assemble().encode())
         .map(|felt| MaybeRelocatable::Int(felt.into()))
         .collect_vec();
-
     let program_len = felt_code.len();
     let program = cairo_vm::types::program::Program::new_for_proof(
         vec![],
@@ -37,18 +72,7 @@ pub fn input_from_plain_casm(
         Default::default(),
     )
     .expect("Program creation failed");
-
-    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
-        .expect("Runner creation failed");
-    runner.initialize(true).expect("Initialization failed");
-    runner
-        .run_until_pc(
-            (runner.program_base.unwrap() + program_len).unwrap(),
-            &mut BuiltinHintProcessor::new_empty(),
-        )
-        .expect("Run failed");
-    runner.relocate(true).unwrap();
-    adapt_finished_runner(runner, dev_mode)
+    (program, program_len)
 }
 
 // TODO(yuval): consider returning a result instead of panicking.

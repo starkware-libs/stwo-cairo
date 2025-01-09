@@ -1,7 +1,8 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::iter::zip;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::vec;
 
 use air_structs_derive::SubComponentInputs;
@@ -35,6 +36,7 @@ use super::component::{Claim, InteractionClaim};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, pack_values, range_check_4_3, range_check_7_2_5,
 };
+use crate::input::decode::{deconstruct_instruction, Instruction};
 use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);
@@ -44,31 +46,50 @@ const N_TRACE_COLUMNS: usize = 28 + N_MULTIPLICITY_COLUMNS;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
-    /// A map from input to multiplicity.
-    inputs: BTreeMap<InputType, u32>,
+    /// pc -> encoded instruction.
+    instructions: HashMap<M31, u64>,
+
+    /// pc -> multiplicity.
+    multiplicities: HashMap<M31, AtomicU32>,
 }
 impl ClaimGenerator {
+    pub fn new(instructions: HashMap<M31, u64>) -> Self {
+        let keys = instructions.keys().copied();
+        let mut multiplicities = HashMap::with_capacity(keys.len());
+        multiplicities.extend(keys.zip(std::iter::repeat_with(|| AtomicU32::new(0))));
+
+        Self {
+            multiplicities,
+            instructions,
+        }
+    }
+
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-        memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
-        memory_id_to_big_state: &mut memory_id_to_big::ClaimGenerator,
-        range_check_4_3_state: &mut range_check_4_3::ClaimGenerator,
-        range_check_7_2_5_state: &mut range_check_7_2_5::ClaimGenerator,
+        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
+        memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+        range_check_4_3_state: &range_check_4_3::ClaimGenerator,
+        range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
     {
         let (mut inputs, mut mults) = self
-            .inputs
+            .multiplicities
             .into_iter()
-            .map(|(input, mult)| (input, M31(mult)))
+            .map(|(pc, multiplicity)| {
+                let (offsets, flags) =
+                    deconstruct_instruction(*self.instructions.get(&pc).unwrap());
+                let multiplicity = M31(multiplicity.into_inner());
+                ((pc, offsets, flags), multiplicity)
+            })
             .unzip::<_, _, Vec<_>, Vec<_>>();
-        let n_calls = inputs.len();
-        assert_ne!(n_calls, 0);
-        let size = std::cmp::max(n_calls.next_power_of_two(), N_LANES);
+        let n_rows = inputs.len();
+        assert_ne!(n_rows, 0);
+        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
         let log_size = size.ilog2();
-        let need_padding = n_calls != size;
+        let need_padding = n_rows != size;
 
         if need_padding {
             inputs.resize(size, *inputs.first().unwrap());
@@ -116,10 +137,18 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_inputs(&mut self, inputs: &[InputType]) {
+    pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
-            *self.inputs.entry(*input).or_default() += 1;
+            self.add_input(input);
         }
+    }
+
+    // Instruction is determined by PC.
+    fn add_input(&self, (pc, ..): &InputType) {
+        self.multiplicities
+            .get(pc)
+            .unwrap()
+            .fetch_add(1, Ordering::Relaxed);
     }
 }
 
@@ -148,7 +177,7 @@ struct LookupData {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
-    memory_address_to_id_state: &mut memory_address_to_id::ClaimGenerator,
+    memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     SubComponentInputs,

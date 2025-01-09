@@ -1174,6 +1174,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "recursion-bridge"
+version = "0.1.0"
+dependencies = [
+ "cairo-lang-casm",
+ "serde_json",
+ "stwo-prover",
+ "stwo_cairo_prover",
+]
+
+[[package]]
 name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1500,7 +1510,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
+source = "git+https://github.com/starkware-libs/stwo?rev=af5475cb#af5475cb946a29de7d04dfa8c77a17034f888df4"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -1512,7 +1522,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
+source = "git+https://github.com/starkware-libs/stwo?rev=af5475cb#af5475cb946a29de7d04dfa8c77a17034f888df4"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -1541,7 +1551,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=9d3afa43#9d3afa43d724577ae5d50da90992f55382755626"
+source = "git+https://github.com/starkware-libs/stwo?rev=af5475cb#af5475cb946a29de7d04dfa8c77a17034f888df4"
 dependencies = [
  "blake2",
  "blake3",
