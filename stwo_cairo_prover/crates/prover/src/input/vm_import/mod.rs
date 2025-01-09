@@ -15,6 +15,7 @@ use super::builtin_segments::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::ProverInput;
+use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
@@ -46,7 +47,7 @@ pub fn adapt_vm_output(
         .map(|v| v.stop_ptr)
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
-    assert!(end_addr < 1 << (usize::BITS - 1));
+    assert!(end_addr < MEMORY_ADDRESS_BOUND);
 
     let memory_path = private_input_json
         .parent()
