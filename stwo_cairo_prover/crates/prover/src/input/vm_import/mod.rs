@@ -8,6 +8,7 @@ use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
+use prover_types::cpu::PRIME;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -46,7 +47,7 @@ pub fn adapt_vm_output(
         .map(|v| v.stop_ptr)
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
-    assert!(end_addr < 1 << (usize::BITS - 1));
+    assert!(end_addr < PRIME as usize);
 
     let memory_path = private_input_json
         .parent()
