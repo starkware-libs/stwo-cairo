@@ -21,7 +21,7 @@ paste.workspace = true
 prover_types = { path = "../prover_types" }
 rayon = { version = "1.10.0" }
 serde.workspace = true
-sonic-rs.workspace = true
+serde_json.workspace = true
 starknet-ff.workspace = true
 stwo_cairo_utils = { path = "../utils" }
 stwo-cairo-serialize = { path = "../cairo-serialize" }
