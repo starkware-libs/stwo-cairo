@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use builtin_segments::BuiltinSegments;
 use memory::Memory;
-use serde::{Deserialize, Serialize};
 use prover_types::cpu::M31;
+use serde::{Deserialize, Serialize};
 use state_transitions::StateTransitions;
 
 pub mod builtin_segments;
