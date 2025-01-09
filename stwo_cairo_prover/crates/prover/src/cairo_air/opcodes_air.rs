@@ -13,49 +13,42 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::display_components;
 use crate::components::{
-    add_ap_opcode_is_imm_f_op_1_base_fp_f, add_ap_opcode_is_imm_f_op_1_base_fp_t,
-    add_ap_opcode_is_imm_t_op_1_base_fp_f, add_opcode_is_small_f_is_imm_f,
-    add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
-    assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
-    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op_1_base_fp_f,
-    call_opcode_is_rel_f_op_1_base_fp_t, call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode,
-    jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
-    jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
-    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
-    jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
-    jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
-    jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big,
-    mul_opcode_is_small_f_is_imm_f, mul_opcode_is_small_f_is_imm_t, range_check_19,
+    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
+    add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
+    assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
+    jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
+    jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_19,
     range_check_9_9, ret_opcode, verify_instruction,
 };
 use crate::input::state_transitions::StateTransitions;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {
-    pub add_f_f: Vec<add_opcode_is_small_f_is_imm_f::Claim>,
-    pub add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Claim>,
-    pub add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Claim>,
-    pub add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Claim>,
-    pub add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Claim>,
-    pub add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Claim>,
-    pub add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Claim>,
-    pub assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Claim>,
-    pub assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Claim>,
-    pub assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Claim>,
-    pub call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::Claim>,
-    pub call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::Claim>,
-    pub call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::Claim>,
+    pub add_f_f: Vec<add_opcode::Claim>,
+    pub add_f_t: Vec<add_opcode_imm::Claim>,
+    pub add_t_f: Vec<add_opcode_small::Claim>,
+    pub add_t_t: Vec<add_opcode_small_imm::Claim>,
+    pub add_ap_f_f: Vec<add_ap_opcode::Claim>,
+    pub add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::Claim>,
+    pub add_ap_t_f: Vec<add_ap_opcode_imm::Claim>,
+    pub assert_eq_f_f: Vec<assert_eq_opcode::Claim>,
+    pub assert_eq_f_t: Vec<assert_eq_opcode_imm::Claim>,
+    pub assert_eq_t_f: Vec<assert_eq_opcode_double_deref::Claim>,
+    pub call_f_f: Vec<call_opcode::Claim>,
+    pub call_f_t: Vec<call_opcode_op_1_base_fp::Claim>,
+    pub call_t_f: Vec<call_opcode_rel::Claim>,
     pub generic: Vec<generic_opcode::Claim>,
-    pub jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Claim>,
-    pub jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Claim>,
-    pub jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::Claim>,
-    pub jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::Claim>,
-    pub jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Claim>,
-    pub jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Claim>,
-    pub jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Claim>,
-    pub jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Claim>,
-    pub mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::Claim>,
-    pub mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::Claim>,
+    pub jnz_f_f: Vec<jnz_opcode::Claim>,
+    pub jnz_f_t: Vec<jnz_opcode_dst_base_fp::Claim>,
+    pub jnz_t_f: Vec<jnz_opcode_taken::Claim>,
+    pub jnz_t_t: Vec<jnz_opcode_taken_dst_base_fp::Claim>,
+    pub jump_f_f_f: Vec<jump_opcode::Claim>,
+    pub jump_f_f_t: Vec<jump_opcode_double_deref::Claim>,
+    pub jump_t_f_f: Vec<jump_opcode_rel::Claim>,
+    pub jump_t_t_f: Vec<jump_opcode_rel_imm::Claim>,
+    pub mul_f_f: Vec<mul_opcode::Claim>,
+    pub mul_f_t: Vec<mul_opcode_imm::Claim>,
     pub ret: Vec<ret_opcode::Claim>,
 }
 impl OpcodeClaim {
@@ -119,30 +112,30 @@ impl OpcodeClaim {
 }
 
 pub struct OpcodesClaimGenerator {
-    add_f_f: Vec<add_opcode_is_small_f_is_imm_f::ClaimGenerator>,
-    add_f_t: Vec<add_opcode_is_small_f_is_imm_t::ClaimGenerator>,
-    add_t_f: Vec<add_opcode_is_small_t_is_imm_f::ClaimGenerator>,
-    add_t_t: Vec<add_opcode_is_small_t_is_imm_t::ClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator>,
-    assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::ClaimGenerator>,
-    assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::ClaimGenerator>,
-    assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::ClaimGenerator>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::ClaimGenerator>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::ClaimGenerator>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::ClaimGenerator>,
+    add_f_f: Vec<add_opcode::ClaimGenerator>,
+    add_f_t: Vec<add_opcode_imm::ClaimGenerator>,
+    add_t_f: Vec<add_opcode_small::ClaimGenerator>,
+    add_t_t: Vec<add_opcode_small_imm::ClaimGenerator>,
+    add_ap_f_f: Vec<add_ap_opcode::ClaimGenerator>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::ClaimGenerator>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::ClaimGenerator>,
+    assert_eq_f_f: Vec<assert_eq_opcode::ClaimGenerator>,
+    assert_eq_f_t: Vec<assert_eq_opcode_imm::ClaimGenerator>,
+    assert_eq_t_f: Vec<assert_eq_opcode_double_deref::ClaimGenerator>,
+    call_f_f: Vec<call_opcode::ClaimGenerator>,
+    call_f_t: Vec<call_opcode_op_1_base_fp::ClaimGenerator>,
+    call_t_f: Vec<call_opcode_rel::ClaimGenerator>,
     generic: Vec<generic_opcode::ClaimGenerator>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::ClaimGenerator>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::ClaimGenerator>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::ClaimGenerator>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::ClaimGenerator>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::ClaimGenerator>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator>,
-    mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::ClaimGenerator>,
-    mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::ClaimGenerator>,
+    jnz_f_f: Vec<jnz_opcode::ClaimGenerator>,
+    jnz_f_t: Vec<jnz_opcode_dst_base_fp::ClaimGenerator>,
+    jnz_t_f: Vec<jnz_opcode_taken::ClaimGenerator>,
+    jnz_t_t: Vec<jnz_opcode_taken_dst_base_fp::ClaimGenerator>,
+    jump_f_f_f: Vec<jump_opcode::ClaimGenerator>,
+    jump_f_f_t: Vec<jump_opcode_double_deref::ClaimGenerator>,
+    jump_t_f_f: Vec<jump_opcode_rel::ClaimGenerator>,
+    jump_t_t_f: Vec<jump_opcode_rel_imm::ClaimGenerator>,
+    mul_f_f: Vec<mul_opcode::ClaimGenerator>,
+    mul_f_t: Vec<mul_opcode_imm::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
@@ -173,145 +166,81 @@ impl OpcodesClaimGenerator {
         let mut mul_f_f = vec![];
         let mut mul_f_t = vec![];
         let mut ret = vec![];
-        if !input
-            .casm_states_by_opcode
-            .add_opcode_is_small_f_is_imm_f
-            .is_empty()
-        {
-            add_f_f.push(add_opcode_is_small_f_is_imm_f::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_opcode_is_small_f_is_imm_f,
+        if !input.casm_states_by_opcode.add_opcode.is_empty() {
+            add_f_f.push(add_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_opcode,
+            ));
+        }
+        if !input.casm_states_by_opcode.add_opcode_imm.is_empty() {
+            add_f_t.push(add_opcode_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_opcode_imm,
+            ));
+        }
+        if !input.casm_states_by_opcode.add_opcode_small.is_empty() {
+            add_t_f.push(add_opcode_small::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_opcode_small,
+            ));
+        }
+        if !input.casm_states_by_opcode.add_opcode_small_imm.is_empty() {
+            add_t_t.push(add_opcode_small_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_opcode_small_imm,
+            ));
+        }
+        if !input.casm_states_by_opcode.add_ap_opcode.is_empty() {
+            add_ap_f_f.push(add_ap_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_opcode_is_small_f_is_imm_t
+            .add_ap_opcode_op_1_base_fp
             .is_empty()
         {
-            add_f_t.push(add_opcode_is_small_f_is_imm_t::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_opcode_is_small_f_is_imm_t,
+            add_ap_f_t.push(add_ap_opcode_op_1_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode_op_1_base_fp,
+            ));
+        }
+        if !input.casm_states_by_opcode.add_ap_opcode_imm.is_empty() {
+            add_ap_t_f.push(add_ap_opcode_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode_imm,
+            ));
+        }
+        if !input.casm_states_by_opcode.assert_eq_opcode.is_empty() {
+            assert_eq_f_f.push(assert_eq_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.assert_eq_opcode,
+            ));
+        }
+        if !input.casm_states_by_opcode.assert_eq_opcode_imm.is_empty() {
+            assert_eq_f_t.push(assert_eq_opcode_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.assert_eq_opcode_imm,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_opcode_is_small_t_is_imm_f
+            .assert_eq_opcode_double_deref
             .is_empty()
         {
-            add_t_f.push(add_opcode_is_small_t_is_imm_f::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_opcode_is_small_t_is_imm_f,
+            assert_eq_t_f.push(assert_eq_opcode_double_deref::ClaimGenerator::new(
+                input.casm_states_by_opcode.assert_eq_opcode_double_deref,
+            ));
+        }
+        if !input.casm_states_by_opcode.call_opcode.is_empty() {
+            call_f_f.push(call_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_opcode_is_small_t_is_imm_t
+            .call_opcode_op_1_base_fp
             .is_empty()
         {
-            add_t_t.push(add_opcode_is_small_t_is_imm_t::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_opcode_is_small_t_is_imm_t,
+            call_f_t.push(call_opcode_op_1_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode_op_1_base_fp,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op_1_base_fp_f
-            .is_empty()
-        {
-            add_ap_f_f.push(add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op_1_base_fp_f,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op_1_base_fp_t
-            .is_empty()
-        {
-            add_ap_f_t.push(add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op_1_base_fp_t,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_is_imm_t_op_1_base_fp_f
-            .is_empty()
-        {
-            add_ap_t_f.push(add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_t_op_1_base_fp_f,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .assert_eq_opcode_is_double_deref_f_is_imm_f
-            .is_empty()
-        {
-            assert_eq_f_f.push(
-                assert_eq_opcode_is_double_deref_f_is_imm_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_f_is_imm_f,
-                ),
-            );
-        }
-        if !input
-            .casm_states_by_opcode
-            .assert_eq_opcode_is_double_deref_f_is_imm_t
-            .is_empty()
-        {
-            assert_eq_f_t.push(
-                assert_eq_opcode_is_double_deref_f_is_imm_t::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_f_is_imm_t,
-                ),
-            );
-        }
-        if !input
-            .casm_states_by_opcode
-            .assert_eq_opcode_is_double_deref_t_is_imm_f
-            .is_empty()
-        {
-            assert_eq_t_f.push(
-                assert_eq_opcode_is_double_deref_t_is_imm_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_t_is_imm_f,
-                ),
-            );
-        }
-        if !input
-            .casm_states_by_opcode
-            .call_opcode_is_rel_f_op_1_base_fp_f
-            .is_empty()
-        {
-            call_f_f.push(call_opcode_is_rel_f_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .call_opcode_is_rel_f_op_1_base_fp_f,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .call_opcode_is_rel_f_op_1_base_fp_t
-            .is_empty()
-        {
-            call_f_t.push(call_opcode_is_rel_f_op_1_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .call_opcode_is_rel_f_op_1_base_fp_t,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .call_opcode_is_rel_t_op_1_base_fp_f
-            .is_empty()
-        {
-            call_t_f.push(call_opcode_is_rel_t_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .call_opcode_is_rel_t_op_1_base_fp_f,
+        if !input.casm_states_by_opcode.call_opcode_rel.is_empty() {
+            call_t_f.push(call_opcode_rel::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode_rel,
             ));
         }
         if !input.casm_states_by_opcode.generic_opcode.is_empty() {
@@ -319,120 +248,68 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.generic_opcode,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jnz_opcode_is_taken_f_dst_base_fp_f
-            .is_empty()
-        {
-            jnz_f_f.push(jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_f_dst_base_fp_f,
+        if !input.casm_states_by_opcode.jnz_opcode.is_empty() {
+            jnz_f_f.push(jnz_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .jnz_opcode_is_taken_f_dst_base_fp_t
+            .jnz_opcode_dst_base_fp
             .is_empty()
         {
-            jnz_f_t.push(jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_f_dst_base_fp_t,
+            jnz_f_t.push(jnz_opcode_dst_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_dst_base_fp,
+            ));
+        }
+        if !input.casm_states_by_opcode.jnz_opcode_taken.is_empty() {
+            jnz_t_f.push(jnz_opcode_taken::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_taken,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .jnz_opcode_is_taken_t_dst_base_fp_f
+            .jnz_opcode_taken_dst_base_fp
             .is_empty()
         {
-            jnz_t_f.push(jnz_opcode_is_taken_t_dst_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_t_dst_base_fp_f,
+            jnz_t_t.push(jnz_opcode_taken_dst_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_taken_dst_base_fp,
+            ));
+        }
+        if !input.casm_states_by_opcode.jump_opcode.is_empty() {
+            jump_f_f_f.push(jump_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .jnz_opcode_is_taken_t_dst_base_fp_t
+            .jump_opcode_double_deref
             .is_empty()
         {
-            jnz_t_t.push(jnz_opcode_is_taken_t_dst_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_t_dst_base_fp_t,
+            jump_f_f_t.push(jump_opcode_double_deref::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_double_deref,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-            .is_empty()
-        {
-            jump_f_f_f.push(
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
-                ),
-            );
+        if !input.casm_states_by_opcode.jump_opcode_rel.is_empty() {
+            jump_t_f_f.push(jump_opcode_rel::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_rel,
+            ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
-            .is_empty()
-        {
-            jump_f_f_t.push(
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
-                ),
-            );
-        }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
-            .is_empty()
-        {
-            jump_t_f_f.push(
-                jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
-                ),
-            );
-        }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-            .is_empty()
-        {
-            jump_t_t_f.push(
-                jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f,
-                ),
-            );
+        if !input.casm_states_by_opcode.jump_opcode_rel_imm.is_empty() {
+            jump_t_t_f.push(jump_opcode_rel_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_rel_imm,
+            ));
         }
         // Handle small mul in big mul component. Temporary until airs are written with Rc_3_6_6.
         // TODO(Ohad): mul small.
-        if !input
-            .casm_states_by_opcode
-            .mul_opcode_is_small_f_is_imm_f
-            .is_empty()
-        {
-            mul_f_f.push(mul_opcode_is_small_f_is_imm_f::ClaimGenerator::new(
-                input.casm_states_by_opcode.mul_opcode_is_small_f_is_imm_f,
+        if !input.casm_states_by_opcode.mul_opcode.is_empty() {
+            mul_f_f.push(mul_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.mul_opcode,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .mul_opcode_is_small_f_is_imm_t
-            .is_empty()
-        {
-            mul_f_t.push(mul_opcode_is_small_f_is_imm_t::ClaimGenerator::new(
-                input.casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t,
+        if !input.casm_states_by_opcode.mul_opcode_imm.is_empty() {
+            mul_f_t.push(mul_opcode_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.mul_opcode_imm,
             ));
         }
         if !input.casm_states_by_opcode.ret_opcode.is_empty() {
@@ -846,30 +723,30 @@ impl OpcodesClaimGenerator {
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeInteractionClaim {
-    add_f_f: Vec<add_opcode_is_small_f_is_imm_f::InteractionClaim>,
-    add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaim>,
-    add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaim>,
-    add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaim>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaim>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaim>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaim>,
-    assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaim>,
-    assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaim>,
-    assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaim>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::InteractionClaim>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::InteractionClaim>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::InteractionClaim>,
+    add_f_f: Vec<add_opcode::InteractionClaim>,
+    add_f_t: Vec<add_opcode_imm::InteractionClaim>,
+    add_t_f: Vec<add_opcode_small::InteractionClaim>,
+    add_t_t: Vec<add_opcode_small_imm::InteractionClaim>,
+    add_ap_f_f: Vec<add_ap_opcode::InteractionClaim>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::InteractionClaim>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::InteractionClaim>,
+    assert_eq_f_f: Vec<assert_eq_opcode::InteractionClaim>,
+    assert_eq_f_t: Vec<assert_eq_opcode_imm::InteractionClaim>,
+    assert_eq_t_f: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
+    call_f_f: Vec<call_opcode::InteractionClaim>,
+    call_f_t: Vec<call_opcode_op_1_base_fp::InteractionClaim>,
+    call_t_f: Vec<call_opcode_rel::InteractionClaim>,
     generic: Vec<generic_opcode::InteractionClaim>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaim>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaim>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::InteractionClaim>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::InteractionClaim>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::InteractionClaim>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::InteractionClaim>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::InteractionClaim>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaim>,
-    mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::InteractionClaim>,
-    mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::InteractionClaim>,
+    jnz_f_f: Vec<jnz_opcode::InteractionClaim>,
+    jnz_f_t: Vec<jnz_opcode_dst_base_fp::InteractionClaim>,
+    jnz_t_f: Vec<jnz_opcode_taken::InteractionClaim>,
+    jnz_t_t: Vec<jnz_opcode_taken_dst_base_fp::InteractionClaim>,
+    jump_f_f_f: Vec<jump_opcode::InteractionClaim>,
+    jump_f_f_t: Vec<jump_opcode_double_deref::InteractionClaim>,
+    jump_t_f_f: Vec<jump_opcode_rel::InteractionClaim>,
+    jump_t_t_f: Vec<jump_opcode_rel_imm::InteractionClaim>,
+    mul_f_f: Vec<mul_opcode::InteractionClaim>,
+    mul_f_t: Vec<mul_opcode_imm::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
 }
 impl OpcodeInteractionClaim {
@@ -1083,30 +960,30 @@ impl OpcodeInteractionClaim {
 }
 
 pub struct OpcodesInteractionClaimGenerator {
-    add_f_f: Vec<add_opcode_is_small_f_is_imm_f::InteractionClaimGenerator>,
-    add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaimGenerator>,
-    add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaimGenerator>,
-    add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaimGenerator>,
-    assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaimGenerator>,
-    assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaimGenerator>,
-    assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaimGenerator>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::InteractionClaimGenerator>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::InteractionClaimGenerator>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::InteractionClaimGenerator>,
+    add_f_f: Vec<add_opcode::InteractionClaimGenerator>,
+    add_f_t: Vec<add_opcode_imm::InteractionClaimGenerator>,
+    add_t_f: Vec<add_opcode_small::InteractionClaimGenerator>,
+    add_t_t: Vec<add_opcode_small_imm::InteractionClaimGenerator>,
+    add_ap_f_f: Vec<add_ap_opcode::InteractionClaimGenerator>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::InteractionClaimGenerator>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::InteractionClaimGenerator>,
+    assert_eq_f_f: Vec<assert_eq_opcode::InteractionClaimGenerator>,
+    assert_eq_f_t: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
+    assert_eq_t_f: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
+    call_f_f: Vec<call_opcode::InteractionClaimGenerator>,
+    call_f_t: Vec<call_opcode_op_1_base_fp::InteractionClaimGenerator>,
+    call_t_f: Vec<call_opcode_rel::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaimGenerator>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaimGenerator>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::InteractionClaimGenerator>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::InteractionClaimGenerator>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::InteractionClaimGenerator>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::InteractionClaimGenerator>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::InteractionClaimGenerator>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaimGenerator>,
-    mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::InteractionClaimGenerator>,
-    mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::InteractionClaimGenerator>,
+    jnz_f_f: Vec<jnz_opcode::InteractionClaimGenerator>,
+    jnz_f_t: Vec<jnz_opcode_dst_base_fp::InteractionClaimGenerator>,
+    jnz_t_f: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
+    jnz_t_t: Vec<jnz_opcode_taken_dst_base_fp::InteractionClaimGenerator>,
+    jump_f_f_f: Vec<jump_opcode::InteractionClaimGenerator>,
+    jump_f_f_t: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
+    jump_t_f_f: Vec<jump_opcode_rel::InteractionClaimGenerator>,
+    jump_t_t_f: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
+    mul_f_f: Vec<mul_opcode::InteractionClaimGenerator>,
+    mul_f_t: Vec<mul_opcode_imm::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
 impl OpcodesInteractionClaimGenerator {
@@ -1476,30 +1353,30 @@ impl OpcodesInteractionClaimGenerator {
 }
 
 pub struct OpcodeComponents {
-    add_f_f: Vec<add_opcode_is_small_f_is_imm_f::Component>,
-    add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Component>,
-    add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Component>,
-    add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Component>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Component>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Component>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Component>,
-    assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Component>,
-    assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Component>,
-    assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Component>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::Component>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::Component>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::Component>,
+    add_f_f: Vec<add_opcode::Component>,
+    add_f_t: Vec<add_opcode_imm::Component>,
+    add_t_f: Vec<add_opcode_small::Component>,
+    add_t_t: Vec<add_opcode_small_imm::Component>,
+    add_ap_f_f: Vec<add_ap_opcode::Component>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::Component>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::Component>,
+    assert_eq_f_f: Vec<assert_eq_opcode::Component>,
+    assert_eq_f_t: Vec<assert_eq_opcode_imm::Component>,
+    assert_eq_t_f: Vec<assert_eq_opcode_double_deref::Component>,
+    call_f_f: Vec<call_opcode::Component>,
+    call_f_t: Vec<call_opcode_op_1_base_fp::Component>,
+    call_t_f: Vec<call_opcode_rel::Component>,
     generic: Vec<generic_opcode::Component>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Component>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Component>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::Component>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::Component>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Component>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Component>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Component>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Component>,
-    mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::Component>,
-    mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::Component>,
+    jnz_f_f: Vec<jnz_opcode::Component>,
+    jnz_f_t: Vec<jnz_opcode_dst_base_fp::Component>,
+    jnz_t_f: Vec<jnz_opcode_taken::Component>,
+    jnz_t_t: Vec<jnz_opcode_taken_dst_base_fp::Component>,
+    jump_f_f_f: Vec<jump_opcode::Component>,
+    jump_f_f_t: Vec<jump_opcode_double_deref::Component>,
+    jump_t_f_f: Vec<jump_opcode_rel::Component>,
+    jump_t_t_f: Vec<jump_opcode_rel_imm::Component>,
+    mul_f_f: Vec<mul_opcode::Component>,
+    mul_f_t: Vec<mul_opcode_imm::Component>,
     ret: Vec<ret_opcode::Component>,
 }
 impl OpcodeComponents {
@@ -1514,9 +1391,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_opcode_is_small_f_is_imm_f::Component::new(
+                add_opcode::Component::new(
                     tree_span_provider,
-                    add_opcode_is_small_f_is_imm_f::Eval {
+                    add_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1538,9 +1415,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_opcode_is_small_f_is_imm_t::Component::new(
+                add_opcode_imm::Component::new(
                     tree_span_provider,
-                    add_opcode_is_small_f_is_imm_t::Eval {
+                    add_opcode_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1562,9 +1439,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_opcode_is_small_t_is_imm_f::Component::new(
+                add_opcode_small::Component::new(
                     tree_span_provider,
-                    add_opcode_is_small_t_is_imm_f::Eval {
+                    add_opcode_small::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1586,9 +1463,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_t_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_opcode_is_small_t_is_imm_t::Component::new(
+                add_opcode_small_imm::Component::new(
                     tree_span_provider,
-                    add_opcode_is_small_t_is_imm_t::Eval {
+                    add_opcode_small_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1610,9 +1487,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op_1_base_fp_f::Component::new(
+                add_ap_opcode::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op_1_base_fp_f::Eval {
+                    add_ap_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1634,9 +1511,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op_1_base_fp_t::Component::new(
+                add_ap_opcode_op_1_base_fp::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op_1_base_fp_t::Eval {
+                    add_ap_opcode_op_1_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1658,9 +1535,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_t_op_1_base_fp_f::Component::new(
+                add_ap_opcode_imm::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_t_op_1_base_fp_f::Eval {
+                    add_ap_opcode_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1682,9 +1559,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.assert_eq_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                assert_eq_opcode_is_double_deref_f_is_imm_f::Component::new(
+                assert_eq_opcode::Component::new(
                     tree_span_provider,
-                    assert_eq_opcode_is_double_deref_f_is_imm_f::Eval {
+                    assert_eq_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1703,9 +1580,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.assert_eq_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                assert_eq_opcode_is_double_deref_f_is_imm_t::Component::new(
+                assert_eq_opcode_imm::Component::new(
                     tree_span_provider,
-                    assert_eq_opcode_is_double_deref_f_is_imm_t::Eval {
+                    assert_eq_opcode_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1724,9 +1601,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.assert_eq_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                assert_eq_opcode_is_double_deref_t_is_imm_f::Component::new(
+                assert_eq_opcode_double_deref::Component::new(
                     tree_span_provider,
-                    assert_eq_opcode_is_double_deref_t_is_imm_f::Eval {
+                    assert_eq_opcode_double_deref::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1748,9 +1625,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_f_op_1_base_fp_f::Component::new(
+                call_opcode::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_f_op_1_base_fp_f::Eval {
+                    call_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1772,9 +1649,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_f_op_1_base_fp_t::Component::new(
+                call_opcode_op_1_base_fp::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_f_op_1_base_fp_t::Eval {
+                    call_opcode_op_1_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1796,9 +1673,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_t_op_1_base_fp_f::Component::new(
+                call_opcode_rel::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_t_op_1_base_fp_f::Eval {
+                    call_opcode_rel::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1848,9 +1725,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jnz_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_f_dst_base_fp_f::Component::new(
+                jnz_opcode::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_f_dst_base_fp_f::Eval {
+                    jnz_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1872,9 +1749,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jnz_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_f_dst_base_fp_t::Component::new(
+                jnz_opcode_dst_base_fp::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_f_dst_base_fp_t::Eval {
+                    jnz_opcode_dst_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1896,9 +1773,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jnz_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_t_dst_base_fp_f::Component::new(
+                jnz_opcode_taken::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_t_dst_base_fp_f::Eval {
+                    jnz_opcode_taken::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1920,9 +1797,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jnz_t_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_t_dst_base_fp_t::Component::new(
+                jnz_opcode_taken_dst_base_fp::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_t_dst_base_fp_t::Eval {
+                    jnz_opcode_taken_dst_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1944,9 +1821,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jump_f_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Component::new(
+                jump_opcode::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Eval {
+                    jump_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1968,9 +1845,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jump_f_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Component::new(
+                jump_opcode_double_deref::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Eval {
+                    jump_opcode_double_deref::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1992,9 +1869,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jump_t_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Component::new(
+                jump_opcode_rel::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Eval {
+                    jump_opcode_rel::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2016,9 +1893,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jump_t_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Component::new(
+                jump_opcode_rel_imm::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Eval {
+                    jump_opcode_rel_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2040,9 +1917,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.mul_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                mul_opcode_is_small_f_is_imm_f::Component::new(
+                mul_opcode::Component::new(
                     tree_span_provider,
-                    mul_opcode_is_small_f_is_imm_f::Eval {
+                    mul_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2065,9 +1942,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.mul_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                mul_opcode_is_small_f_is_imm_t::Component::new(
+                mul_opcode_imm::Component::new(
                     tree_span_provider,
-                    mul_opcode_is_small_f_is_imm_t::Eval {
+                    mul_opcode_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
