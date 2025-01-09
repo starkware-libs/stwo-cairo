@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fmt::Display;
 
 use prover_types::cpu::CasmState;
+use serde::{Deserialize, Serialize};
 use stwo_prover::core::fields::m31::M31;
 
 use super::decode::Instruction;
@@ -19,7 +20,7 @@ const SMALL_MUL_MIN_VALUE: u64 = 0;
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
 /// and should match the opcode's air used by `stwo-cairo-air`.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct CasmStatesByOpcode {
     pub generic_opcode: Vec<CasmState>,
     pub add_ap_opcode_is_imm_f_op_1_base_fp_f: Vec<CasmState>,
@@ -183,7 +184,7 @@ impl From<TraceEntry> for CasmState {
 
 /// Holds the state transitions of a Cairo program, split according to the components responsible
 /// for proving each transition.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,
