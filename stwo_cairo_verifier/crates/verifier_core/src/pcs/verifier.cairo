@@ -119,11 +119,10 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
             .sample_query_positions(ref channel);
 
-        let n_trees = self.trees.len();
-
         // Verify merkle decommitments.
         let mut decommitments = decommitments.into_iter();
 
+        let n_trees = self.trees.len();
         let mut tree_i = 0;
         loop {
             if tree_i == n_trees {
@@ -221,7 +220,9 @@ fn get_flattened_samples(
         while column_i < n_columns {
             let column_points = tree_points[column_i];
             let column_values = tree_values[column_i];
+
             let n_samples = column_points.len();
+            assert!(column_points.len() == column_values.len());
             let mut column_samples = array![];
 
             let mut sample_i = 0;

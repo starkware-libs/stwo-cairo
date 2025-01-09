@@ -149,6 +149,17 @@ impl M31IntoFelt252 of Into<M31, felt252> {
     }
 }
 
+impl U32TryIntoM31 of TryInto<u32, M31> {
+    #[inline]
+    fn try_into(self: u32) -> Option<M31> {
+        if self >= P_U32 {
+            return Option::None;
+        }
+
+        Option::Some(M31Impl::reduce_u32(self))
+    }
+}
+
 impl M31PartialOrd of PartialOrd<M31> {
     fn ge(lhs: M31, rhs: M31) -> bool {
         upcast::<_, u32>(lhs.inner) >= upcast(rhs.inner)

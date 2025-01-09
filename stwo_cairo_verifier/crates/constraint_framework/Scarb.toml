@@ -1,0 +1,16 @@
+[package]
+name = "stwo_constraint_framework"
+version = "0.1.0"
+edition = "2024_07"
+
+[lib]
+casm = true
+
+[tool.fmt]
+sort-module-level-items = true
+
+[dependencies]
+stwo_verifier_core = { path = "../verifier_core" }
+
+[dev-dependencies]
+cairo_test = "2.9.2"
