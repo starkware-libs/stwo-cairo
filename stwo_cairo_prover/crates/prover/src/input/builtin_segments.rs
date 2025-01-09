@@ -3,6 +3,8 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use serde::{Deserialize, Serialize};
 
+use super::memory::*;
+
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct BuiltinSegments {
@@ -37,6 +39,75 @@ impl BuiltinSegments {
             BuiltinName::mul_mod => self.mul_mod = segment,
             // Not builtins.
             BuiltinName::output | BuiltinName::segment_arena => {}
+        }
+    }
+
+    fn get_segment(&mut self, builtin_name: BuiltinName) -> &Option<MemorySegmentAddresses> {
+        match builtin_name {
+            BuiltinName::range_check => &self.range_check_bits_128,
+            BuiltinName::pedersen => &self.pedersen,
+            BuiltinName::ecdsa => &self.ecdsa,
+            BuiltinName::keccak => &self.keccak,
+            BuiltinName::bitwise => &self.bitwise,
+            BuiltinName::ec_op => &self.ec_op,
+            BuiltinName::poseidon => &self.poseidon,
+            BuiltinName::range_check96 => &self.range_check_bits_96,
+            BuiltinName::add_mod => &self.add_mod,
+            BuiltinName::mul_mod => &self.mul_mod,
+            // Not builtins.
+            BuiltinName::output | BuiltinName::segment_arena => &None,
+        }
+    }
+
+    pub fn builtin_memory_cells_per_instance(builtin_name: BuiltinName) -> usize {
+        match builtin_name {
+            BuiltinName::range_check => 1,
+            BuiltinName::pedersen => 3,
+            BuiltinName::ecdsa => 2,
+            BuiltinName::keccak => 16,
+            BuiltinName::bitwise => 5,
+            BuiltinName::ec_op => 7,
+            BuiltinName::poseidon => 6,
+            BuiltinName::range_check96 => 1,
+            BuiltinName::add_mod => 7,
+            BuiltinName::mul_mod => 7,
+            // Not builtins.
+            BuiltinName::output | BuiltinName::segment_arena => 0,
+        }
+    }
+
+    pub fn fill_builtin_segment(
+        &mut self,
+        mut memory: MemoryBuilder,
+        builtin_name: BuiltinName,
+    ) -> MemoryBuilder {
+        if let &Some(MemorySegmentAddresses {
+            begin_addr,
+            stop_ptr,
+        }) = self.get_segment(builtin_name)
+        {
+            let initial_length = stop_ptr - begin_addr;
+            let cells_per_instance = Self::builtin_memory_cells_per_instance(builtin_name);
+            assert!(initial_length % cells_per_instance == 0);
+            let num_instances = initial_length / cells_per_instance;
+            let nearest_power_of_two = num_instances.next_power_of_two();
+            for i in num_instances..nearest_power_of_two {
+                for j in 0..cells_per_instance {
+                    let address_to_fill = (begin_addr + i * cells_per_instance + j) as u64;
+                    let value_to_fill = memory.get((begin_addr + j) as u32);
+                    memory.set(address_to_fill, value_to_fill);
+                }
+            }
+            self.add_segment(
+                builtin_name,
+                Some(MemorySegmentAddresses {
+                    begin_addr,
+                    stop_ptr: begin_addr + cells_per_instance * nearest_power_of_two,
+                }),
+            );
+            memory
+        } else {
+            memory
         }
     }
 

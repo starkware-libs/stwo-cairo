@@ -168,6 +168,11 @@ impl MemoryBuilder {
         });
         self.address_to_id[addr as usize] = res;
     }
+
+    pub fn get(&self, addr: u32) -> MemoryValue {
+        self.memory.get(addr)
+    }
+
     pub fn build(self) -> Memory {
         self.memory
     }
