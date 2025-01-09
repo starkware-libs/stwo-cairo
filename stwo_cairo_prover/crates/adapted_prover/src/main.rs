@@ -9,7 +9,7 @@ use stwo_cairo_prover::input::ProverInput;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
-use thiserror_no_std::Error;
+use thiserror::Error;
 use tracing::{span, Level};
 
 /// Command line arguments for adapted_stwo.

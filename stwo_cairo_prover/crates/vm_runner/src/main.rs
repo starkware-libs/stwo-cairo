@@ -6,7 +6,7 @@ use stwo_cairo_prover::input::plain::adapt_finished_runner;
 use stwo_cairo_prover::input::ProverInput;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
-use thiserror_no_std::Error;
+use thiserror::Error;
 use tracing::{span, Level};
 
 /// Command line arguments for stwo_vm_runner.
