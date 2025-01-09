@@ -50,7 +50,7 @@ enum Error {
 }
 
 fn main() -> ExitCode {
-    run_binary(run)
+    run_binary(run, "run_and_prove")
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHasher>, Error> {

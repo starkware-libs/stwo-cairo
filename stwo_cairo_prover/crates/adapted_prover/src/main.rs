@@ -53,7 +53,7 @@ enum Error {
 }
 
 fn main() -> ExitCode {
-    run_binary(run)
+    run_binary(run, "adapted_stwo")
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
