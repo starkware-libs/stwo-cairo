@@ -9,6 +9,7 @@ members = [
     "crates/vm_runner",
     "crates/prover_types",
     "crates/air_structs_derive",
+    "crates/recursion_bridge",
 ]
 resolver = "2"
 
@@ -35,7 +36,7 @@ serde_json = "1.0.1"
 stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "9d3afa43", features = [
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "af5475cb", features = [
     "parallel",
 ], default-features = false}
 thiserror = { version = "2.0.10", default-features = false }

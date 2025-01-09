@@ -3,7 +3,7 @@ use std::process::ExitCode;
 
 use clap::Parser;
 use stwo_cairo_prover::cairo_air::air::CairoProof;
-use stwo_cairo_prover::cairo_air::prove_cairo;
+use stwo_cairo_prover::cairo_air::{prove_cairo, ConfigBuilder};
 use stwo_cairo_prover::input::plain::adapt_finished_runner;
 use stwo_cairo_prover::input::vm_import::VmImportError;
 use stwo_cairo_utils::binary_utils::run_binary;
@@ -27,8 +27,8 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
-    #[structopt(long = "debug_lookup")]
-    debug_lookup: bool,
+    #[structopt(long = "track_relations")]
+    track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
 }
@@ -58,15 +58,15 @@ fn run(args: impl Iterator<Item = String>) -> Result<CairoProof<Blake2sMerkleHas
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args.vm_args)?;
     let cairo_input = adapt_finished_runner(cairo_runner, false);
+    let prover_config = ConfigBuilder::default()
+        .track_relations(args.track_relations)
+        .display_components(args.display_components)
+        .build();
 
     let casm_states_by_opcode_count = &cairo_input.state_transitions.casm_states_by_opcode.counts();
     log::info!("Casm states by opcode count: {casm_states_by_opcode_count:?}");
 
-    let proof = prove_cairo::<Blake2sMerkleChannel>(
-        cairo_input,
-        args.debug_lookup,
-        args.display_components,
-    )?;
+    let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
