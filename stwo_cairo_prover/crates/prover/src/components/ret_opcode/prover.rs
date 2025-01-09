@@ -27,7 +27,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 
 use super::component::{Claim, InteractionClaim};
-use crate::components::utils::pack_values;
+use crate::components::utils::{gen_padding_column, pack_values};
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::relations;
 
@@ -61,39 +61,43 @@ impl ClaimGenerator {
 
         if need_padding {
             self.inputs.resize(size, *self.inputs.first().unwrap());
-            bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
         }
 
         let packed_inputs = pack_values(&self.inputs);
-        let (trace, mut sub_components_inputs, lookup_data) = write_trace_simd(
+        let (trace, sub_components_inputs, lookup_data) = write_trace_simd(
             packed_inputs,
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
 
-        if need_padding {
-            sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
-        }
         sub_components_inputs
             .memory_address_to_id_inputs
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..n_calls]);
+                memory_address_to_id_state.add_inputs(inputs);
             });
         sub_components_inputs
             .memory_id_to_big_inputs
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..n_calls]);
+                memory_id_to_big_state.add_inputs(inputs);
             });
         sub_components_inputs
             .verify_instruction_inputs
             .iter()
             .for_each(|inputs| {
-                verify_instruction_state.add_inputs(&inputs[..n_calls]);
+                verify_instruction_state.add_inputs(inputs);
             });
 
+        let domain = CanonicCoset::new(trace.log_size()).circle_domain();
         tree_builder.extend_evals(trace.to_evals());
+        let padding_column = BaseColumn::from_simd(
+            gen_padding_column(domain.log_size() as usize, n_calls).into_simd_vec(),
+        );
+        tree_builder.extend_evals([CircleEvaluation::<_, M31, BitReversedOrder>::new(
+            domain,
+            padding_column,
+        )]);
 
         (
             Claim { n_calls },
@@ -355,8 +359,8 @@ impl InteractionClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let log_size = std::cmp::max(self.n_calls.next_power_of_two().ilog2(), LOG_N_LANES);
+        let padding_col = gen_padding_column(log_size as usize, self.n_calls).into_simd_vec();
         let mut logup_gen = LogupTraceGenerator::new(log_size);
-
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
         for (i, (values0, values1)) in zip(
@@ -393,7 +397,7 @@ impl InteractionClaimGenerator {
         {
             let denom0: PackedQM31 = memory_id_to_big.combine(values0);
             let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
+            col_gen.write_frac(i, (denom0 * padding_col[i]) + denom1, denom0 * denom1);
         }
         col_gen.finalize_col();
 
@@ -401,22 +405,15 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         for (i, values) in self.lookup_data.opcodes_1.iter().enumerate() {
             let denom = opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            col_gen.write_frac(i, -PackedQM31::one() * padding_col[i], denom);
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_calls == 1 << log_size {
-            let (trace, claimed_sum) = logup_gen.finalize_last();
-            (trace, claimed_sum, None)
-        } else {
-            let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_calls - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_calls - 1)))
-        };
+        let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
-            logup_sums: (total_sum, claimed_sum),
+            logup_sums: (claimed_sum, None),
         }
     }
 }
