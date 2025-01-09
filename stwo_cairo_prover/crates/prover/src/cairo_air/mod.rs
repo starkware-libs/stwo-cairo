@@ -17,7 +17,7 @@ use stwo_prover::core::fri::FriConfig;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
-use thiserror_no_std::Error;
+use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::input::ProverInput;

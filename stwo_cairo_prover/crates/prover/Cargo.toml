@@ -26,7 +26,7 @@ starknet-ff.workspace = true
 stwo_cairo_utils = { path = "../utils" }
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
-thiserror-no-std.workspace = true
+thiserror.workspace = true
 tracing.workspace = true
 
 [dev-dependencies]

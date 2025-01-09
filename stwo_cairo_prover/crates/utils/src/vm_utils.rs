@@ -3,10 +3,9 @@ use std::path::PathBuf;
 use cairo_vm::cairo_run;
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
-use cairo_vm::vm::errors::cairo_run_errors::CairoRunError;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use clap::{Parser, ValueHint};
-use thiserror_no_std::Error;
+use thiserror::Error;
 use tracing::span;
 
 // This struct is copied-then-modified from cairo-vm repo.
@@ -54,10 +53,10 @@ pub struct VmArgs {
 
 #[derive(Debug, Error)]
 pub enum VmError {
-    #[error("Failed to interact with the file system")]
+    #[error("File system interaction failed: {0}")]
     IO(#[from] std::io::Error),
-    #[error("The cairo program execution failed")]
-    Runner(#[from] CairoRunError),
+    #[error("Cairo program execution failed: {0}")]
+    Runner(String),
 }
 
 // This function's logic is copied-then-modified from cairo-vm-cli/src/main.rs:run in cairo-vm repo.
@@ -83,8 +82,7 @@ pub fn run_vm(args: &VmArgs) -> Result<CairoRunner, VmError> {
     let cairo_runner = match cairo_runner_result {
         Ok(runner) => runner,
         Err(error) => {
-            eprintln!("{error}");
-            return Err(VmError::Runner(error));
+            return Err(VmError::Runner(error.to_string()));
         }
     };
 
