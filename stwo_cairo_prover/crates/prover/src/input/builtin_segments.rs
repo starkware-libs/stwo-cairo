@@ -3,6 +3,8 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use serde::{Deserialize, Serialize};
 
+use super::memory::MemoryBuilder;
+
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct BuiltinSegments {
@@ -19,11 +21,8 @@ pub struct BuiltinSegments {
 }
 
 impl BuiltinSegments {
-    pub fn add_segment(
-        &mut self,
-        builtin_name: BuiltinName,
-        segment: Option<MemorySegmentAddresses>,
-    ) {
+    /// Adds a segment to the builtin segments.
+    fn set_segment(&mut self, builtin_name: BuiltinName, segment: Option<MemorySegmentAddresses>) {
         match builtin_name {
             BuiltinName::range_check => self.range_check_bits_128 = segment,
             BuiltinName::pedersen => self.pedersen = segment,
@@ -38,6 +37,81 @@ impl BuiltinSegments {
             // Not builtins.
             BuiltinName::output | BuiltinName::segment_arena => {}
         }
+    }
+
+    // TODO(ohadn): change return type to non reference once MemorySegmentAddresses implements
+    // clone.
+    /// Returns the segment for a given builtin name.
+    fn get_segment(&self, builtin_name: BuiltinName) -> &Option<MemorySegmentAddresses> {
+        match builtin_name {
+            BuiltinName::range_check => &self.range_check_bits_128,
+            BuiltinName::pedersen => &self.pedersen,
+            BuiltinName::ecdsa => &self.ecdsa,
+            BuiltinName::keccak => &self.keccak,
+            BuiltinName::bitwise => &self.bitwise,
+            BuiltinName::ec_op => &self.ec_op,
+            BuiltinName::poseidon => &self.poseidon,
+            BuiltinName::range_check96 => &self.range_check_bits_96,
+            BuiltinName::add_mod => &self.add_mod,
+            BuiltinName::mul_mod => &self.mul_mod,
+            // Not builtins.
+            BuiltinName::output | BuiltinName::segment_arena => &None,
+        }
+    }
+
+    /// Returns the number of memory cells per instance for a given builtin name.
+    pub fn builtin_memory_cells_per_instance(builtin_name: BuiltinName) -> usize {
+        match builtin_name {
+            BuiltinName::range_check => 1,
+            BuiltinName::pedersen => 3,
+            BuiltinName::ecdsa => 2,
+            BuiltinName::keccak => 16,
+            BuiltinName::bitwise => 5,
+            BuiltinName::ec_op => 7,
+            BuiltinName::poseidon => 6,
+            BuiltinName::range_check96 => 1,
+            BuiltinName::add_mod => 7,
+            BuiltinName::mul_mod => 7,
+            // Not builtins.
+            BuiltinName::output | BuiltinName::segment_arena => 0,
+        }
+    }
+
+    /// Pads a builtin segment with additional valid instances.
+    /// The segment is padded to the next power of 2 number of instances.
+    pub fn fill_builtin_segment(
+        &mut self,
+        mut memory: MemoryBuilder,
+        builtin_name: BuiltinName,
+    ) -> MemoryBuilder {
+        let &Some(MemorySegmentAddresses {
+            begin_addr,
+            stop_ptr,
+        }) = self.get_segment(builtin_name)
+        else {
+            return memory;
+        };
+        let initial_length = stop_ptr - begin_addr;
+        assert!(initial_length > 0);
+        let cells_per_instance = Self::builtin_memory_cells_per_instance(builtin_name);
+        assert!(initial_length % cells_per_instance == 0);
+        let num_instances = initial_length / cells_per_instance;
+        let next_power_of_two = num_instances.next_power_of_two();
+        let mut address_to_fill = stop_ptr as u64;
+        for _ in num_instances..next_power_of_two {
+            for j in 0..cells_per_instance {
+                memory.copy_value((begin_addr + j) as u32, address_to_fill as u32);
+                address_to_fill += 1;
+            }
+        }
+        self.set_segment(
+            builtin_name,
+            Some(MemorySegmentAddresses {
+                begin_addr,
+                stop_ptr: begin_addr + cells_per_instance * next_power_of_two,
+            }),
+        );
+        memory
     }
 
     /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
@@ -57,7 +131,7 @@ impl BuiltinSegments {
                     );
                     Some((value.begin_addr, value.stop_ptr).into())
                 };
-                res.add_segment(builtin_name, segment);
+                res.set_segment(builtin_name, segment);
             };
         }
         res
@@ -69,8 +143,10 @@ impl BuiltinSegments {
 mod test_builtin_segments {
     use std::path::PathBuf;
 
-    use cairo_vm::air_public_input::PublicInput;
+    use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
+    use cairo_vm::types::builtin_name::BuiltinName;
 
+    use crate::input::memory::{MemoryBuilder, MemoryConfig, MemoryValue};
     use crate::input::BuiltinSegments;
 
     #[test]
@@ -96,5 +172,61 @@ mod test_builtin_segments {
             builtin_segments.range_check_bits_128,
             Some((7069, 7187).into())
         );
+    }
+
+    #[test]
+    fn test_fill_builtin_segment() {
+        let mut dummy_builtin_segments = BuiltinSegments::default();
+        let mut dummy_memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        let builtin_name = BuiltinName::bitwise;
+        let instance_example = [12345, 54321, 4145, 58376, 62521];
+        let cells_per_instance = BuiltinSegments::builtin_memory_cells_per_instance(builtin_name);
+        assert!(cells_per_instance == instance_example.len());
+        let num_instances = 71;
+        let begin_addr = 23581;
+        let stop_ptr = begin_addr + cells_per_instance * num_instances;
+        dummy_builtin_segments.set_segment(
+            builtin_name,
+            Some(MemorySegmentAddresses {
+                begin_addr,
+                stop_ptr,
+            }),
+        );
+        for (i, &value) in instance_example.iter().enumerate() {
+            dummy_memory_builder.set((begin_addr + i) as u64, MemoryValue::Small(value));
+        }
+
+        dummy_memory_builder =
+            dummy_builtin_segments.fill_builtin_segment(dummy_memory_builder, builtin_name);
+
+        let &Some(MemorySegmentAddresses {
+            begin_addr: new_begin_addr,
+            stop_ptr: new_stop_ptr,
+        }) = dummy_builtin_segments.get_segment(builtin_name)
+        else {
+            panic!("Expected nonempty segment for builtin '{}'.", builtin_name);
+        };
+        assert!(new_begin_addr == begin_addr);
+        let segment_length = new_stop_ptr - new_begin_addr;
+        assert!(segment_length % cells_per_instance == 0);
+        let new_num_instances = segment_length / cells_per_instance;
+        // Assert that new_num_instances is a power of 2.
+        assert!((new_num_instances & (new_num_instances - 1)) == 0);
+        // Assert that new_num_instances is the next power of 2 after num_instances.
+        assert!(num_instances * 2 > new_num_instances);
+        assert!(num_instances <= new_num_instances);
+
+        let dummy_memory = dummy_memory_builder.build();
+        assert!(dummy_memory.address_to_id.len() == new_stop_ptr);
+
+        for instance in num_instances..new_num_instances {
+            for j in 0..cells_per_instance {
+                let address = begin_addr + instance * cells_per_instance + j;
+                assert!(
+                    dummy_memory.address_to_id[address]
+                        == dummy_memory.address_to_id[begin_addr + j]
+                );
+            }
+        }
     }
 }
