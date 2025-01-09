@@ -168,6 +168,11 @@ impl MemoryBuilder {
         });
         self.address_to_id[addr as usize] = res;
     }
+
+    pub fn copy_value(&mut self, src_addr: u32, dst_addr: u32) {
+        self.set(dst_addr as u64, self.memory.get(src_addr));
+    }
+
     pub fn build(self) -> Memory {
         self.memory
     }
