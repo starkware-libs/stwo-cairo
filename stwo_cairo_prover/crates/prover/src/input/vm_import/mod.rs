@@ -8,7 +8,6 @@ use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
-use prover_types::cpu::PRIME;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -17,6 +16,8 @@ use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::ProverInput;
 use crate::input::memory::MemoryBuilder;
+
+pub const REAL_MEMORY_BOUND: usize = 1 << 27; // 2^27 ((M31 + 1) >> 4)
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -47,7 +48,7 @@ pub fn adapt_vm_output(
         .map(|v| v.stop_ptr)
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
-    assert!(end_addr < PRIME as usize);
+    assert!(end_addr < REAL_MEMORY_BOUND);
 
     let memory_path = private_input_json
         .parent()
