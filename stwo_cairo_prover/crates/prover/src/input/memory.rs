@@ -30,7 +30,7 @@ pub const P_MIN_2: [u32; 8] = [
     0x0800_0000,
 ];
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
     pub small_max: u128,
 }
@@ -97,8 +97,20 @@ impl Memory {
         values.resize(size, MemoryValue::F252([0; 8]));
         values.into_iter()
     }
+
+    pub fn assert_identical_segments(
+        &self,
+        src_start_addr: u32,
+        dst_start_addr: u32,
+        segment_length: u32,
+    ) {
+        for i in 0..segment_length {
+            assert_eq!(self.get(dst_start_addr + i), self.get(src_start_addr + i));
+        }
+    }
 }
 
+// TODO(ohadn): derive or impl a default for MemoryBuilder.
 pub struct MemoryBuilder {
     memory: Memory,
     felt252_id_cache: HashMap<[u32; 8], usize>,
@@ -168,6 +180,16 @@ impl MemoryBuilder {
         });
         self.address_to_id[addr as usize] = res;
     }
+
+    pub fn copy_segment(&mut self, src_start_addr: u32, dst_start_addr: u32, segment_length: u32) {
+        for i in 0..segment_length {
+            self.set(
+                (dst_start_addr + i) as u64,
+                self.memory.get(src_start_addr + i),
+            );
+        }
+    }
+
     pub fn build(self) -> Memory {
         self.memory
     }
