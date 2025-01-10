@@ -22,9 +22,9 @@ const SMALL_MUL_MIN_VALUE: u64 = 0;
 #[derive(Debug, Default, Clone)]
 pub struct CasmStatesByOpcode {
     pub generic_opcode: Vec<CasmState>,
-    pub add_ap_opcode_is_imm_f_op_1_base_fp_f: Vec<CasmState>,
-    pub add_ap_opcode_is_imm_t_op_1_base_fp_f: Vec<CasmState>,
-    pub add_ap_opcode_is_imm_f_op_1_base_fp_t: Vec<CasmState>,
+    pub add_ap_opcode: Vec<CasmState>,
+    pub add_ap_opcode_imm: Vec<CasmState>,
+    pub add_ap_opcode_op_1_base_fp: Vec<CasmState>,
     pub add_opcode_is_small_t_is_imm_t: Vec<CasmState>,
     pub add_opcode_is_small_f_is_imm_f: Vec<CasmState>,
     pub add_opcode_is_small_t_is_imm_f: Vec<CasmState>,
@@ -54,17 +54,11 @@ impl CasmStatesByOpcode {
     pub fn counts(&self) -> Vec<(&str, usize)> {
         vec![
             ("genric_opcode", self.generic_opcode.len()),
+            ("add_ap_opcode", self.add_ap_opcode.len()),
+            ("add_ap_opcode_imm", self.add_ap_opcode_imm.len()),
             (
-                "add_ap_opcode_is_imm_f_op_1_base_fp_f",
-                self.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(),
-            ),
-            (
-                "add_ap_opcode_is_imm_t_op_1_base_fp_f",
-                self.add_ap_opcode_is_imm_t_op_1_base_fp_f.len(),
-            ),
-            (
-                "add_ap_opcode_is_imm_f_op_1_base_fp_t",
-                self.add_ap_opcode_is_imm_f_op_1_base_fp_t.len(),
+                "add_ap_opcode_op_1_base_fp",
+                self.add_ap_opcode_op_1_base_fp.len(),
             ),
             (
                 "add_opcode_is_small_t_is_imm_t",
@@ -285,21 +279,17 @@ impl StateTransitions {
                 if op_1_imm {
                     // ap += Imm.
                     assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
-                    self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_t_op_1_base_fp_f
-                        .push(state);
+                    self.casm_states_by_opcode.add_ap_opcode_imm.push(state);
                 } else if op_1_base_fp {
                     // ap += [fp + offset2].
                     assert!(!op_1_base_ap);
                     self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_f_op_1_base_fp_t
+                        .add_ap_opcode_op_1_base_fp
                         .push(state);
                 } else {
                     // ap += [ap + offset2].
                     assert!(op_1_base_ap);
-                    self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_f_op_1_base_fp_f
-                        .push(state);
+                    self.casm_states_by_opcode.add_ap_opcode.push(state);
                 }
             }
             // jump.
@@ -757,24 +747,9 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .add_ap_opcode_is_imm_f_op_1_base_fp_f
-                .len(),
-            1
-        );
-        assert_eq!(
-            casm_states_by_opcode
-                .add_ap_opcode_is_imm_f_op_1_base_fp_t
-                .len(),
-            1
-        );
-        assert_eq!(
-            casm_states_by_opcode
-                .add_ap_opcode_is_imm_t_op_1_base_fp_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
+        assert_eq!(casm_states_by_opcode.add_ap_opcode_op_1_base_fp.len(), 1);
+        assert_eq!(casm_states_by_opcode.add_ap_opcode_imm.len(), 1);
     }
 
     #[test]

@@ -13,15 +13,14 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::display_components;
 use crate::components::{
-    add_ap_opcode_is_imm_f_op_1_base_fp_f, add_ap_opcode_is_imm_f_op_1_base_fp_t,
-    add_ap_opcode_is_imm_t_op_1_base_fp_f, add_opcode_is_small_f_is_imm_f,
-    add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
-    assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
-    assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op_1_base_fp_f,
-    call_opcode_is_rel_f_op_1_base_fp_t, call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode,
-    jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
-    jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
-    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
+    add_ap_opcode, add_ap_opcode_op_1_base_fp, add_ap_opcode_imm,
+    add_opcode_is_small_f_is_imm_f, add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f,
+    add_opcode_is_small_t_is_imm_t, assert_eq_opcode_is_double_deref_f_is_imm_f,
+    assert_eq_opcode_is_double_deref_f_is_imm_t, assert_eq_opcode_is_double_deref_t_is_imm_f,
+    call_opcode_is_rel_f_op_1_base_fp_f, call_opcode_is_rel_f_op_1_base_fp_t,
+    call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode, jnz_opcode_is_taken_f_dst_base_fp_f,
+    jnz_opcode_is_taken_f_dst_base_fp_t, jnz_opcode_is_taken_t_dst_base_fp_f,
+    jnz_opcode_is_taken_t_dst_base_fp_t, jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big,
@@ -36,9 +35,9 @@ pub struct OpcodeClaim {
     pub add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Claim>,
     pub add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Claim>,
     pub add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Claim>,
-    pub add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Claim>,
-    pub add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Claim>,
-    pub add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Claim>,
+    pub add_ap_f_f: Vec<add_ap_opcode::Claim>,
+    pub add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::Claim>,
+    pub add_ap_t_f: Vec<add_ap_opcode_imm::Claim>,
     pub assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Claim>,
     pub assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Claim>,
     pub assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Claim>,
@@ -123,9 +122,9 @@ pub struct OpcodesClaimGenerator {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::ClaimGenerator>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::ClaimGenerator>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::ClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator>,
+    add_ap_f_f: Vec<add_ap_opcode::ClaimGenerator>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::ClaimGenerator>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::ClaimGenerator>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::ClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::ClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::ClaimGenerator>,
@@ -209,37 +208,31 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.add_opcode_is_small_t_is_imm_t,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op_1_base_fp_f
-            .is_empty()
-        {
-            add_ap_f_f.push(add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op_1_base_fp_f,
+        if !input.casm_states_by_opcode.add_ap_opcode.is_empty() {
+            add_ap_f_f.push(add_ap_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op_1_base_fp_t
+            .add_ap_opcode_op_1_base_fp
             .is_empty()
         {
-            add_ap_f_t.push(add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator::new(
+            add_ap_f_t.push(add_ap_opcode_op_1_base_fp::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op_1_base_fp_t,
+                    .add_ap_opcode_op_1_base_fp,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_ap_opcode_is_imm_t_op_1_base_fp_f
+            .add_ap_opcode_imm
             .is_empty()
         {
-            add_ap_t_f.push(add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator::new(
+            add_ap_t_f.push(add_ap_opcode_imm::ClaimGenerator::new(
                 input
                     .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_t_op_1_base_fp_f,
+                    .add_ap_opcode_imm,
             ));
         }
         if !input
@@ -850,9 +843,9 @@ pub struct OpcodeInteractionClaim {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaim>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaim>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaim>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaim>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaim>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaim>,
+    add_ap_f_f: Vec<add_ap_opcode::InteractionClaim>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::InteractionClaim>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::InteractionClaim>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaim>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaim>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaim>,
@@ -1087,9 +1080,9 @@ pub struct OpcodesInteractionClaimGenerator {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaimGenerator>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaimGenerator>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaimGenerator>,
+    add_ap_f_f: Vec<add_ap_opcode::InteractionClaimGenerator>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::InteractionClaimGenerator>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::InteractionClaimGenerator>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaimGenerator>,
@@ -1480,9 +1473,9 @@ pub struct OpcodeComponents {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Component>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Component>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Component>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Component>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Component>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Component>,
+    add_ap_f_f: Vec<add_ap_opcode::Component>,
+    add_ap_f_t: Vec<add_ap_opcode_op_1_base_fp::Component>,
+    add_ap_t_f: Vec<add_ap_opcode_imm::Component>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Component>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Component>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Component>,
@@ -1610,9 +1603,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_f_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op_1_base_fp_f::Component::new(
+                add_ap_opcode::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op_1_base_fp_f::Eval {
+                    add_ap_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1634,9 +1627,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_f_t.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op_1_base_fp_t::Component::new(
+                add_ap_opcode_op_1_base_fp::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op_1_base_fp_t::Eval {
+                    add_ap_opcode_op_1_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1658,9 +1651,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.add_ap_t_f.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_t_op_1_base_fp_f::Component::new(
+                add_ap_opcode_imm::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_t_op_1_base_fp_f::Eval {
+                    add_ap_opcode_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
