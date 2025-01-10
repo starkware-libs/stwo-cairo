@@ -1,11 +1,11 @@
 mod json;
 
-use std::collections::HashMap;
 use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
+use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use thiserror::Error;
@@ -15,6 +15,7 @@ use super::builtin_segments::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::ProverInput;
+use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::input::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
@@ -22,7 +23,7 @@ pub enum VmImportError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
     #[error("JSON error: {0}")]
-    Json(#[from] sonic_rs::Error),
+    Json(#[from] serde_json::Error),
     #[error("No memory segments")]
     NoMemorySegments,
 }
@@ -36,9 +37,9 @@ pub fn adapt_vm_output(
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
     let public_input_string = std::fs::read_to_string(public_input_json)?;
-    let public_input: PublicInput<'_> = sonic_rs::from_str(&public_input_string)?;
+    let public_input: PublicInput<'_> = serde_json::from_str(&public_input_string)?;
     let private_input: PrivateInput =
-        sonic_rs::from_str(&std::fs::read_to_string(private_input_json)?)?;
+        serde_json::from_str(&std::fs::read_to_string(private_input_json)?)?;
 
     let end_addr = public_input
         .memory_segments
@@ -46,7 +47,7 @@ pub fn adapt_vm_output(
         .map(|v| v.stop_ptr)
         .max()
         .ok_or(VmImportError::NoMemorySegments)?;
-    assert!(end_addr < (1 << 32));
+    assert!(end_addr < MEMORY_ADDRESS_BOUND);
 
     let memory_path = private_input_json
         .parent()

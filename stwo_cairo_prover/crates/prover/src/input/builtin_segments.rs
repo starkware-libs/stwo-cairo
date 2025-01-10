@@ -1,10 +1,10 @@
-use std::collections::HashMap;
-
 use cairo_vm::air_public_input::MemorySegmentAddresses;
+use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
+use serde::{Deserialize, Serialize};
 
 /// This struct holds the builtins used in a Cairo program.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct BuiltinSegments {
     pub add_mod: Option<MemorySegmentAddresses>,
     pub bitwise: Option<MemorySegmentAddresses>,
@@ -80,7 +80,7 @@ mod test_builtin_segments {
         let pub_data_string = std::fs::read_to_string(&path)
             .unwrap_or_else(|_| panic!("Unable to read file: {}", path.display()));
         let pub_data: PublicInput<'_> =
-            sonic_rs::from_str(&pub_data_string).expect("Unable to parse JSON");
+            serde_json::from_str(&pub_data_string).expect("Unable to parse JSON");
 
         let builtin_segments = BuiltinSegments::from_memory_segments(&pub_data.memory_segments);
         assert_eq!(builtin_segments.add_mod, None);
