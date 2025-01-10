@@ -205,18 +205,9 @@ pub mod tests {
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 189425);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 36623);
         assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 22089);
-        assert_eq!(
-            components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
-            233432
-        );
-        assert_eq!(
-            components.assert_eq_opcode_is_double_deref_t_is_imm_f.len(),
-            811061
-        );
-        assert_eq!(
-            components.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
-            43184
-        );
+        assert_eq!(components.assert_eq_opcode.len(), 233432);
+        assert_eq!(components.assert_eq_opcode_double_deref.len(), 811061);
+        assert_eq!(components.assert_eq_opcode_imm.len(), 43184);
         assert_eq!(components.call_opcode_is_rel_f_op_1_base_fp_f.len(), 0);
         assert_eq!(components.call_opcode_is_rel_t_op_1_base_fp_f.len(), 49439);
         assert_eq!(components.call_opcode_is_rel_f_op_1_base_fp_t.len(), 33);
@@ -289,18 +280,9 @@ pub mod tests {
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 0);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 0);
         assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 450);
-        assert_eq!(
-            components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
-            55
-        );
-        assert_eq!(
-            components.assert_eq_opcode_is_double_deref_t_is_imm_f.len(),
-            2100
-        );
-        assert_eq!(
-            components.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
-            1952
-        );
+        assert_eq!(components.assert_eq_opcode.len(), 55);
+        assert_eq!(components.assert_eq_opcode_double_deref.len(), 2100);
+        assert_eq!(components.assert_eq_opcode_imm.len(), 1952);
         assert_eq!(components.call_opcode_is_rel_f_op_1_base_fp_f.len(), 0);
         assert_eq!(components.call_opcode_is_rel_t_op_1_base_fp_f.len(), 462);
         assert_eq!(components.call_opcode_is_rel_f_op_1_base_fp_t.len(), 0);

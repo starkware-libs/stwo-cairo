@@ -30,9 +30,9 @@ pub struct CasmStatesByOpcode {
     pub add_opcode_is_small_f_is_imm_f: Vec<CasmState>,
     pub add_opcode_is_small_t_is_imm_f: Vec<CasmState>,
     pub add_opcode_is_small_f_is_imm_t: Vec<CasmState>,
-    pub assert_eq_opcode_is_double_deref_f_is_imm_f: Vec<CasmState>,
-    pub assert_eq_opcode_is_double_deref_t_is_imm_f: Vec<CasmState>,
-    pub assert_eq_opcode_is_double_deref_f_is_imm_t: Vec<CasmState>,
+    pub assert_eq_opcode: Vec<CasmState>,
+    pub assert_eq_opcode_double_deref: Vec<CasmState>,
+    pub assert_eq_opcode_imm: Vec<CasmState>,
     pub call_opcode_is_rel_f_op_1_base_fp_f: Vec<CasmState>,
     pub call_opcode_is_rel_t_op_1_base_fp_f: Vec<CasmState>,
     pub call_opcode_is_rel_f_op_1_base_fp_t: Vec<CasmState>,
@@ -83,18 +83,12 @@ impl CasmStatesByOpcode {
                 "add_opcode_is_small_f_is_imm_t",
                 self.add_opcode_is_small_f_is_imm_t.len(),
             ),
+            ("assert_eq_opcode", self.assert_eq_opcode.len()),
             (
-                "assert_eq_opcode_is_double_deref_f_is_imm_f",
-                self.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
+                "assert_eq_opcode_double_deref",
+                self.assert_eq_opcode_double_deref.len(),
             ),
-            (
-                "assert_eq_opcode_is_double_deref_t_is_imm_f",
-                self.assert_eq_opcode_is_double_deref_t_is_imm_f.len(),
-            ),
-            (
-                "assert_eq_opcode_is_double_deref_f_is_imm_t",
-                self.assert_eq_opcode_is_double_deref_f_is_imm_t.len(),
-            ),
+            ("assert_eq_opcode_imm", self.assert_eq_opcode_imm.len()),
             (
                 "call_opcode_is_rel_f_op_1_base_fp_f",
                 self.call_opcode_is_rel_f_op_1_base_fp_f.len(),
@@ -496,20 +490,16 @@ impl StateTransitions {
                             && op0_base_fp
                             && offset1 == -1
                     );
-                    self.casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_f_is_imm_t
-                        .push(state);
+                    self.casm_states_by_opcode.assert_eq_opcode_imm.push(state);
                 } else if !op_1_base_fp && !op_1_base_ap {
                     // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
                     self.casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_t_is_imm_f
+                        .assert_eq_opcode_double_deref
                         .push(state);
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1].
                     assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
-                    self.casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_f_is_imm_f
-                        .push(state);
+                    self.casm_states_by_opcode.assert_eq_opcode.push(state);
                 }
             }
 
@@ -911,12 +901,7 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .assert_eq_opcode_is_double_deref_f_is_imm_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.assert_eq_opcode.len(), 1);
     }
 
     #[test]
@@ -939,12 +924,7 @@ mod mappings_tests {
             casm_states_by_opcode.add_opcode_is_small_t_is_imm_f.len(),
             1
         );
-        assert_eq!(
-            casm_states_by_opcode
-                .assert_eq_opcode_is_double_deref_f_is_imm_t
-                .len(),
-            2
-        );
+        assert_eq!(casm_states_by_opcode.assert_eq_opcode_imm.len(), 2);
         assert_eq!(
             casm_states_by_opcode.add_opcode_is_small_t_is_imm_t.len(),
             1
@@ -1080,11 +1060,6 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .assert_eq_opcode_is_double_deref_t_is_imm_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.assert_eq_opcode_double_deref.len(), 1);
     }
 }
