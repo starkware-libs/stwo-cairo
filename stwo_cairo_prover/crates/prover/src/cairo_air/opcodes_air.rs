@@ -16,8 +16,7 @@ use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
-    jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
-    jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
+    jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
@@ -43,10 +42,10 @@ pub struct OpcodeClaim {
     pub call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::Claim>,
     pub call_rel: Vec<call_opcode_rel::Claim>,
     pub generic: Vec<generic_opcode::Claim>,
-    pub jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Claim>,
-    pub jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Claim>,
-    pub jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::Claim>,
-    pub jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::Claim>,
+    pub jnz: Vec<jnz_opcode::Claim>,
+    pub jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::Claim>,
+    pub jnz_taken: Vec<jnz_opcode_taken::Claim>,
+    pub jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::Claim>,
     pub jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Claim>,
     pub jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Claim>,
     pub jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Claim>,
@@ -77,10 +76,14 @@ impl OpcodeClaim {
             .for_each(|c| c.mix_into(channel));
         self.call_rel.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_t_f.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_t_t.iter().for_each(|c| c.mix_into(channel));
+        self.jnz.iter().for_each(|c| c.mix_into(channel));
+        self.jnz_dst_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.jnz_taken.iter().for_each(|c| c.mix_into(channel));
+        self.jnz_taken_dst_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
         self.jump_f_f_f.iter().for_each(|c| c.mix_into(channel));
         self.jump_f_f_t.iter().for_each(|c| c.mix_into(channel));
         self.jump_t_f_f.iter().for_each(|c| c.mix_into(channel));
@@ -106,10 +109,10 @@ impl OpcodeClaim {
             self.call_op_1_base_fp.iter().map(|c| c.log_sizes()),
             self.call_rel.iter().map(|c| c.log_sizes()),
             self.generic.iter().map(|c| c.log_sizes()),
-            self.jnz_f_f.iter().map(|c| c.log_sizes()),
-            self.jnz_f_t.iter().map(|c| c.log_sizes()),
-            self.jnz_t_f.iter().map(|c| c.log_sizes()),
-            self.jnz_t_t.iter().map(|c| c.log_sizes()),
+            self.jnz.iter().map(|c| c.log_sizes()),
+            self.jnz_dst_base_fp.iter().map(|c| c.log_sizes()),
+            self.jnz_taken.iter().map(|c| c.log_sizes()),
+            self.jnz_taken_dst_base_fp.iter().map(|c| c.log_sizes()),
             self.jump_f_f_f.iter().map(|c| c.log_sizes()),
             self.jump_f_f_t.iter().map(|c| c.log_sizes()),
             self.jump_t_f_f.iter().map(|c| c.log_sizes()),
@@ -136,10 +139,10 @@ pub struct OpcodesClaimGenerator {
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::ClaimGenerator>,
     call_rel: Vec<call_opcode_rel::ClaimGenerator>,
     generic: Vec<generic_opcode::ClaimGenerator>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::ClaimGenerator>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::ClaimGenerator>,
+    jnz: Vec<jnz_opcode::ClaimGenerator>,
+    jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::ClaimGenerator>,
+    jnz_taken: Vec<jnz_opcode_taken::ClaimGenerator>,
+    jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::ClaimGenerator>,
     jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::ClaimGenerator>,
     jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::ClaimGenerator>,
     jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::ClaimGenerator>,
@@ -165,10 +168,10 @@ impl OpcodesClaimGenerator {
         let mut call_op_1_base_fp = vec![];
         let mut call_rel = vec![];
         let mut generic = vec![];
-        let mut jnz_f_f = vec![];
-        let mut jnz_f_t = vec![];
-        let mut jnz_t_f = vec![];
-        let mut jnz_t_t = vec![];
+        let mut jnz = vec![];
+        let mut jnz_dst_base_fp = vec![];
+        let mut jnz_taken = vec![];
+        let mut jnz_taken_dst_base_fp = vec![];
         let mut jump_f_f_f = vec![];
         let mut jump_f_f_t = vec![];
         let mut jump_t_f_f = vec![];
@@ -258,48 +261,32 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.generic_opcode,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jnz_opcode_is_taken_f_dst_base_fp_f
-            .is_empty()
-        {
-            jnz_f_f.push(jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_f_dst_base_fp_f,
+        if !input.casm_states_by_opcode.jnz_opcode.is_empty() {
+            jnz.push(jnz_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .jnz_opcode_is_taken_f_dst_base_fp_t
+            .jnz_opcode_dst_base_fp
             .is_empty()
         {
-            jnz_f_t.push(jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_f_dst_base_fp_t,
+            jnz_dst_base_fp.push(jnz_opcode_dst_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_dst_base_fp,
+            ));
+        }
+        if !input.casm_states_by_opcode.jnz_opcode_taken.is_empty() {
+            jnz_taken.push(jnz_opcode_taken::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_taken,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .jnz_opcode_is_taken_t_dst_base_fp_f
+            .jnz_opcode_taken_dst_base_fp
             .is_empty()
         {
-            jnz_t_f.push(jnz_opcode_is_taken_t_dst_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_t_dst_base_fp_f,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .jnz_opcode_is_taken_t_dst_base_fp_t
-            .is_empty()
-        {
-            jnz_t_t.push(jnz_opcode_is_taken_t_dst_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .jnz_opcode_is_taken_t_dst_base_fp_t,
+            jnz_taken_dst_base_fp.push(jnz_opcode_taken_dst_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_taken_dst_base_fp,
             ));
         }
         if !input
@@ -394,10 +381,10 @@ impl OpcodesClaimGenerator {
             call_op_1_base_fp,
             call_rel,
             generic,
-            jnz_f_f,
-            jnz_f_t,
-            jnz_t_f,
-            jnz_t_t,
+            jnz,
+            jnz_dst_base_fp,
+            jnz_taken,
+            jnz_taken_dst_base_fp,
             jump_f_f_f,
             jump_f_f_t,
             jump_t_f_f,
@@ -590,8 +577,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jnz_f_f_claims, jnz_f_f_interaction_gens) = self
-            .jnz_f_f
+        let (jnz_claims, jnz_interaction_gens) = self
+            .jnz
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -602,8 +589,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jnz_f_t_claims, jnz_f_t_interaction_gens) = self
-            .jnz_f_t
+        let (jnz_dst_base_fp_claims, jnz_dst_base_fp_interaction_gens) = self
+            .jnz_dst_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -614,8 +601,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jnz_t_f_claims, jnz_t_f_interaction_gens) = self
-            .jnz_t_f
+        let (jnz_taken_claims, jnz_taken_interaction_gens) = self
+            .jnz_taken
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -626,8 +613,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jnz_t_t_claims, jnz_t_t_interaction_gens) = self
-            .jnz_t_t
+        let (jnz_taken_dst_base_fp_claims, jnz_taken_dst_base_fp_interaction_gens) = self
+            .jnz_taken_dst_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -740,10 +727,10 @@ impl OpcodesClaimGenerator {
                 call_op_1_base_fp: call_op_1_base_fp_claims,
                 call_rel: call_rel_claims,
                 generic: generic_opcode_claims,
-                jnz_f_f: jnz_f_f_claims,
-                jnz_f_t: jnz_f_t_claims,
-                jnz_t_f: jnz_t_f_claims,
-                jnz_t_t: jnz_t_t_claims,
+                jnz: jnz_claims,
+                jnz_dst_base_fp: jnz_dst_base_fp_claims,
+                jnz_taken: jnz_taken_claims,
+                jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_claims,
                 jump_f_f_f: jump_f_f_f_claims,
                 jump_f_f_t: jump_f_f_t_claims,
                 jump_t_f_f: jump_t_f_f_claims,
@@ -767,10 +754,10 @@ impl OpcodesClaimGenerator {
                 call_op_1_base_fp: call_op_1_base_fp_interaction_gens,
                 call_rel: call_rel_interaction_gens,
                 generic_opcode_interaction_gens,
-                jnz_f_f: jnz_f_f_interaction_gens,
-                jnz_f_t: jnz_f_t_interaction_gens,
-                jnz_t_f: jnz_t_f_interaction_gens,
-                jnz_t_t: jnz_t_t_interaction_gens,
+                jnz: jnz_interaction_gens,
+                jnz_dst_base_fp: jnz_dst_base_fp_interaction_gens,
+                jnz_taken: jnz_taken_interaction_gens,
+                jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_interaction_gens,
                 jump_f_f_f: jump_f_f_f_interaction_gens,
                 jump_f_f_t: jump_f_f_t_interaction_gens,
                 jump_t_f_f: jump_t_f_f_interaction_gens,
@@ -799,10 +786,10 @@ pub struct OpcodeInteractionClaim {
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::InteractionClaim>,
     call_rel: Vec<call_opcode_rel::InteractionClaim>,
     generic: Vec<generic_opcode::InteractionClaim>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaim>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaim>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::InteractionClaim>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::InteractionClaim>,
+    jnz: Vec<jnz_opcode::InteractionClaim>,
+    jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::InteractionClaim>,
+    jnz_taken: Vec<jnz_opcode_taken::InteractionClaim>,
+    jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::InteractionClaim>,
     jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::InteractionClaim>,
     jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::InteractionClaim>,
     jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::InteractionClaim>,
@@ -833,10 +820,14 @@ impl OpcodeInteractionClaim {
             .for_each(|c| c.mix_into(channel));
         self.call_rel.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_t_f.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_t_t.iter().for_each(|c| c.mix_into(channel));
+        self.jnz.iter().for_each(|c| c.mix_into(channel));
+        self.jnz_dst_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.jnz_taken.iter().for_each(|c| c.mix_into(channel));
+        self.jnz_taken_dst_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
         self.jump_f_f_f.iter().for_each(|c| c.mix_into(channel));
         self.jump_f_f_t.iter().for_each(|c| c.mix_into(channel));
         self.jump_t_f_f.iter().for_each(|c| c.mix_into(channel));
@@ -946,28 +937,28 @@ impl OpcodeInteractionClaim {
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jnz_f_f {
+        for interaction_claim in &self.jnz {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jnz_f_t {
+        for interaction_claim in &self.jnz_dst_base_fp {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jnz_t_f {
+        for interaction_claim in &self.jnz_taken {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jnz_t_t {
+        for interaction_claim in &self.jnz_taken_dst_base_fp {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
@@ -1042,10 +1033,10 @@ pub struct OpcodesInteractionClaimGenerator {
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::InteractionClaimGenerator>,
     call_rel: Vec<call_opcode_rel::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaimGenerator>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaimGenerator>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::InteractionClaimGenerator>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::InteractionClaimGenerator>,
+    jnz: Vec<jnz_opcode::InteractionClaimGenerator>,
+    jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::InteractionClaimGenerator>,
+    jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
+    jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::InteractionClaimGenerator>,
     jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::InteractionClaimGenerator>,
     jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::InteractionClaimGenerator>,
     jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::InteractionClaimGenerator>,
@@ -1245,8 +1236,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jnz_f_f_interaction_claims = self
-            .jnz_f_f
+        let jnz_interaction_claims = self
+            .jnz
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1258,8 +1249,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jnz_f_t_interaction_claims = self
-            .jnz_f_t
+        let jnz_dst_base_fp_interaction_claims = self
+            .jnz_dst_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1271,8 +1262,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jnz_t_f_interaction_claims = self
-            .jnz_t_f
+        let jnz_taken_interaction_claims = self
+            .jnz_taken
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1284,8 +1275,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jnz_t_t_interaction_claims = self
-            .jnz_t_t
+        let jnz_taken_dst_base_fp_interaction_claims = self
+            .jnz_taken_dst_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1405,10 +1396,10 @@ impl OpcodesInteractionClaimGenerator {
             call_op_1_base_fp: call_op_1_base_fp_interaction_claims,
             call_rel: call_rel_interaction_claims,
             generic: generic_opcode_interaction_claims,
-            jnz_f_f: jnz_f_f_interaction_claims,
-            jnz_f_t: jnz_f_t_interaction_claims,
-            jnz_t_f: jnz_t_f_interaction_claims,
-            jnz_t_t: jnz_t_t_interaction_claims,
+            jnz: jnz_interaction_claims,
+            jnz_dst_base_fp: jnz_dst_base_fp_interaction_claims,
+            jnz_taken: jnz_taken_interaction_claims,
+            jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_interaction_claims,
             jump_f_f_f: jump_f_f_f_interaction_claims,
             jump_f_f_t: jump_f_f_t_interaction_claims,
             jump_t_f_f: jump_t_f_f_interaction_claims,
@@ -1435,10 +1426,10 @@ pub struct OpcodeComponents {
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::Component>,
     call_rel: Vec<call_opcode_rel::Component>,
     generic: Vec<generic_opcode::Component>,
-    jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Component>,
-    jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Component>,
-    jnz_t_f: Vec<jnz_opcode_is_taken_t_dst_base_fp_f::Component>,
-    jnz_t_t: Vec<jnz_opcode_is_taken_t_dst_base_fp_t::Component>,
+    jnz: Vec<jnz_opcode::Component>,
+    jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::Component>,
+    jnz_taken: Vec<jnz_opcode_taken::Component>,
+    jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::Component>,
     jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Component>,
     jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Component>,
     jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Component>,
@@ -1788,14 +1779,14 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jnz_f_f_components = claim
-            .jnz_f_f
+        let jnz_components = claim
+            .jnz
             .iter()
-            .zip(interaction_claim.jnz_f_f.iter())
+            .zip(interaction_claim.jnz.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_f_dst_base_fp_f::Component::new(
+                jnz_opcode::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_f_dst_base_fp_f::Eval {
+                    jnz_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1812,14 +1803,14 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jnz_f_t_components = claim
-            .jnz_f_t
+        let jnz_dst_base_fp_components = claim
+            .jnz_dst_base_fp
             .iter()
-            .zip(interaction_claim.jnz_f_t.iter())
+            .zip(interaction_claim.jnz_dst_base_fp.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_f_dst_base_fp_t::Component::new(
+                jnz_opcode_dst_base_fp::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_f_dst_base_fp_t::Eval {
+                    jnz_opcode_dst_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1836,14 +1827,14 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jnz_t_f_components = claim
-            .jnz_t_f
+        let jnz_taken_components = claim
+            .jnz_taken
             .iter()
-            .zip(interaction_claim.jnz_t_f.iter())
+            .zip(interaction_claim.jnz_taken.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_t_dst_base_fp_f::Component::new(
+                jnz_opcode_taken::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_t_dst_base_fp_f::Eval {
+                    jnz_opcode_taken::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1860,14 +1851,14 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jnz_t_t_components = claim
-            .jnz_t_t
+        let jnz_taken_dst_base_fp_components = claim
+            .jnz_taken_dst_base_fp
             .iter()
-            .zip(interaction_claim.jnz_t_t.iter())
+            .zip(interaction_claim.jnz_taken_dst_base_fp.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode_is_taken_t_dst_base_fp_t::Component::new(
+                jnz_opcode_taken_dst_base_fp::Component::new(
                     tree_span_provider,
-                    jnz_opcode_is_taken_t_dst_base_fp_t::Eval {
+                    jnz_opcode_taken_dst_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2069,10 +2060,10 @@ impl OpcodeComponents {
             call_op_1_base_fp: call_op_1_base_fp_components,
             call_rel: call_rel_components,
             generic: generic_components,
-            jnz_f_f: jnz_f_f_components,
-            jnz_f_t: jnz_f_t_components,
-            jnz_t_f: jnz_t_f_components,
-            jnz_t_t: jnz_t_t_components,
+            jnz: jnz_components,
+            jnz_dst_base_fp: jnz_dst_base_fp_components,
+            jnz_taken: jnz_taken_components,
+            jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_components,
             jump_f_f_f: jump_f_f_f_components,
             jump_f_f_t: jump_f_f_t_components,
             jump_t_f_f: jump_t_f_f_components,
@@ -2156,22 +2147,22 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jnz_f_f
+            self.jnz
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jnz_f_t
+            self.jnz_dst_base_fp
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jnz_t_f
+            self.jnz_taken
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jnz_t_t
+            self.jnz_taken_dst_base_fp
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
@@ -2244,14 +2235,14 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.call_rel))?;
         writeln!(f, "generic:")?;
         writeln!(f, "{}", display_components(&self.generic))?;
-        writeln!(f, "jnz_f_f:")?;
-        writeln!(f, "{}", display_components(&self.jnz_f_f))?;
-        writeln!(f, "jnz_f_t:")?;
-        writeln!(f, "{}", display_components(&self.jnz_f_t))?;
-        writeln!(f, "jnz_t_f:")?;
-        writeln!(f, "{}", display_components(&self.jnz_t_f))?;
-        writeln!(f, "jnz_t_t:")?;
-        writeln!(f, "{}", display_components(&self.jnz_t_t))?;
+        writeln!(f, "jnz:")?;
+        writeln!(f, "{}", display_components(&self.jnz))?;
+        writeln!(f, "jnz_dst_base_fp:")?;
+        writeln!(f, "{}", display_components(&self.jnz_dst_base_fp))?;
+        writeln!(f, "jnz_taken:")?;
+        writeln!(f, "{}", display_components(&self.jnz_taken))?;
+        writeln!(f, "jnz_taken_dst_base_fp:")?;
+        writeln!(f, "{}", display_components(&self.jnz_taken_dst_base_fp))?;
         writeln!(f, "jump_f_f_f:")?;
         writeln!(f, "{}", display_components(&self.jump_f_f_f))?;
         writeln!(f, "jump_f_f_t:")?;
