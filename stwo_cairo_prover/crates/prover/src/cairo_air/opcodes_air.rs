@@ -13,8 +13,7 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::display_components;
 use crate::components::{
-    add_ap_opcode_is_imm_f_op_1_base_fp_f, add_ap_opcode_is_imm_f_op_1_base_fp_t,
-    add_ap_opcode_is_imm_t_op_1_base_fp_f, add_opcode_is_small_f_is_imm_f,
+    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode_is_small_f_is_imm_f,
     add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
     assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
     assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op_1_base_fp_f,
@@ -36,9 +35,9 @@ pub struct OpcodeClaim {
     pub add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Claim>,
     pub add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Claim>,
     pub add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Claim>,
-    pub add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Claim>,
-    pub add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Claim>,
-    pub add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Claim>,
+    pub add_ap: Vec<add_ap_opcode::Claim>,
+    pub add_ap_op_1_base_fp: Vec<add_ap_opcode_op_1_base_fp::Claim>,
+    pub add_ap_imm: Vec<add_ap_opcode_imm::Claim>,
     pub assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Claim>,
     pub assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Claim>,
     pub assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Claim>,
@@ -64,9 +63,11 @@ impl OpcodeClaim {
         self.add_f_t.iter().for_each(|c| c.mix_into(channel));
         self.add_t_f.iter().for_each(|c| c.mix_into(channel));
         self.add_t_t.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.add_ap.iter().for_each(|c| c.mix_into(channel));
+        self.add_ap_op_1_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.add_ap_imm.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_f_f.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_f_t.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_t_f.iter().for_each(|c| c.mix_into(channel));
@@ -93,9 +94,9 @@ impl OpcodeClaim {
             self.add_f_t.iter().map(|c| c.log_sizes()),
             self.add_t_f.iter().map(|c| c.log_sizes()),
             self.add_t_t.iter().map(|c| c.log_sizes()),
-            self.add_ap_f_f.iter().map(|c| c.log_sizes()),
-            self.add_ap_f_t.iter().map(|c| c.log_sizes()),
-            self.add_ap_t_f.iter().map(|c| c.log_sizes()),
+            self.add_ap.iter().map(|c| c.log_sizes()),
+            self.add_ap_op_1_base_fp.iter().map(|c| c.log_sizes()),
+            self.add_ap_imm.iter().map(|c| c.log_sizes()),
             self.assert_eq_f_f.iter().map(|c| c.log_sizes()),
             self.assert_eq_f_t.iter().map(|c| c.log_sizes()),
             self.assert_eq_t_f.iter().map(|c| c.log_sizes()),
@@ -123,9 +124,9 @@ pub struct OpcodesClaimGenerator {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::ClaimGenerator>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::ClaimGenerator>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::ClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator>,
+    add_ap: Vec<add_ap_opcode::ClaimGenerator>,
+    add_ap_op_1_base_fp: Vec<add_ap_opcode_op_1_base_fp::ClaimGenerator>,
+    add_ap_imm: Vec<add_ap_opcode_imm::ClaimGenerator>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::ClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::ClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::ClaimGenerator>,
@@ -152,9 +153,9 @@ impl OpcodesClaimGenerator {
         let mut add_f_t = vec![];
         let mut add_t_f = vec![];
         let mut add_t_t = vec![];
-        let mut add_ap_f_f = vec![];
-        let mut add_ap_f_t = vec![];
-        let mut add_ap_t_f = vec![];
+        let mut add_ap = vec![];
+        let mut add_ap_op_1_base_fp = vec![];
+        let mut add_ap_imm = vec![];
         let mut assert_eq_f_f = vec![];
         let mut assert_eq_f_t = vec![];
         let mut assert_eq_t_f = vec![];
@@ -209,37 +210,23 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.add_opcode_is_small_t_is_imm_t,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op_1_base_fp_f
-            .is_empty()
-        {
-            add_ap_f_f.push(add_ap_opcode_is_imm_f_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op_1_base_fp_f,
+        if !input.casm_states_by_opcode.add_ap_opcode.is_empty() {
+            add_ap.push(add_ap_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .add_ap_opcode_is_imm_f_op_1_base_fp_t
+            .add_ap_opcode_op_1_base_fp
             .is_empty()
         {
-            add_ap_f_t.push(add_ap_opcode_is_imm_f_op_1_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_f_op_1_base_fp_t,
+            add_ap_op_1_base_fp.push(add_ap_opcode_op_1_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode_op_1_base_fp,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_is_imm_t_op_1_base_fp_f
-            .is_empty()
-        {
-            add_ap_t_f.push(add_ap_opcode_is_imm_t_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .add_ap_opcode_is_imm_t_op_1_base_fp_f,
+        if !input.casm_states_by_opcode.add_ap_opcode_imm.is_empty() {
+            add_ap_imm.push(add_ap_opcode_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.add_ap_opcode_imm,
             ));
         }
         if !input
@@ -445,9 +432,9 @@ impl OpcodesClaimGenerator {
             add_f_t,
             add_t_f,
             add_t_t,
-            add_ap_f_f,
-            add_ap_f_t,
-            add_ap_t_f,
+            add_ap,
+            add_ap_op_1_base_fp,
+            add_ap_imm,
             assert_eq_f_f,
             assert_eq_f_t,
             assert_eq_t_f,
@@ -530,7 +517,7 @@ impl OpcodesClaimGenerator {
             })
             .unzip();
         let (add_ap_f_f_claims, add_ap_f_f_interaction_gens) = self
-            .add_ap_f_f
+            .add_ap
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -542,7 +529,7 @@ impl OpcodesClaimGenerator {
             })
             .unzip();
         let (add_ap_f_t_claims, add_ap_f_t_interaction_gens) = self
-            .add_ap_f_t
+            .add_ap_op_1_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -554,7 +541,7 @@ impl OpcodesClaimGenerator {
             })
             .unzip();
         let (add_ap_t_f_claims, add_ap_t_f_interaction_gens) = self
-            .add_ap_t_f
+            .add_ap_imm
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -791,9 +778,9 @@ impl OpcodesClaimGenerator {
                 add_f_t: add_f_t_claims,
                 add_t_f: add_t_f_claims,
                 add_t_t: add_t_t_claims,
-                add_ap_f_f: add_ap_f_f_claims,
-                add_ap_f_t: add_ap_f_t_claims,
-                add_ap_t_f: add_ap_t_f_claims,
+                add_ap: add_ap_f_f_claims,
+                add_ap_op_1_base_fp: add_ap_f_t_claims,
+                add_ap_imm: add_ap_t_f_claims,
                 assert_eq_f_f: assert_eq_f_f_claims,
                 assert_eq_f_t: assert_eq_f_t_claims,
                 assert_eq_t_f: assert_eq_t_f_claims,
@@ -818,9 +805,9 @@ impl OpcodesClaimGenerator {
                 add_f_t: add_f_t_interaction_gens,
                 add_t_f: add_t_f_interaction_gens,
                 add_t_t: add_t_t_interaction_gens,
-                add_ap_f_f: add_ap_f_f_interaction_gens,
-                add_ap_f_t: add_ap_f_t_interaction_gens,
-                add_ap_t_f: add_ap_t_f_interaction_gens,
+                add_ap: add_ap_f_f_interaction_gens,
+                add_ap_op_1_base_fp: add_ap_f_t_interaction_gens,
+                add_ap_imm: add_ap_t_f_interaction_gens,
                 assert_eq_f_f: assert_eq_f_f_interaction_gens,
                 assert_eq_f_t: assert_eq_f_t_interaction_gens,
                 assert_eq_t_f: assert_eq_t_f_interaction_gens,
@@ -850,9 +837,9 @@ pub struct OpcodeInteractionClaim {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaim>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaim>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaim>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaim>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaim>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaim>,
+    add_ap: Vec<add_ap_opcode::InteractionClaim>,
+    add_ap_op_1_base_fp: Vec<add_ap_opcode_op_1_base_fp::InteractionClaim>,
+    add_ap_imm: Vec<add_ap_opcode_imm::InteractionClaim>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaim>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaim>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaim>,
@@ -878,9 +865,11 @@ impl OpcodeInteractionClaim {
         self.add_f_t.iter().for_each(|c| c.mix_into(channel));
         self.add_t_f.iter().for_each(|c| c.mix_into(channel));
         self.add_t_t.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.add_ap.iter().for_each(|c| c.mix_into(channel));
+        self.add_ap_op_1_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.add_ap_imm.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_f_f.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_f_t.iter().for_each(|c| c.mix_into(channel));
         self.assert_eq_t_f.iter().for_each(|c| c.mix_into(channel));
@@ -931,21 +920,21 @@ impl OpcodeInteractionClaim {
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.add_ap_f_f {
+        for interaction_claim in &self.add_ap {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.add_ap_f_t {
+        for interaction_claim in &self.add_ap_op_1_base_fp {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.add_ap_t_f {
+        for interaction_claim in &self.add_ap_imm {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
@@ -1087,9 +1076,9 @@ pub struct OpcodesInteractionClaimGenerator {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::InteractionClaimGenerator>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::InteractionClaimGenerator>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::InteractionClaimGenerator>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::InteractionClaimGenerator>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::InteractionClaimGenerator>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::InteractionClaimGenerator>,
+    add_ap: Vec<add_ap_opcode::InteractionClaimGenerator>,
+    add_ap_op_1_base_fp: Vec<add_ap_opcode_op_1_base_fp::InteractionClaimGenerator>,
+    add_ap_imm: Vec<add_ap_opcode_imm::InteractionClaimGenerator>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::InteractionClaimGenerator>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::InteractionClaimGenerator>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::InteractionClaimGenerator>,
@@ -1171,7 +1160,7 @@ impl OpcodesInteractionClaimGenerator {
             })
             .collect();
         let add_ap_f_f_interaction_claims = self
-            .add_ap_f_f
+            .add_ap
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1184,7 +1173,7 @@ impl OpcodesInteractionClaimGenerator {
             })
             .collect();
         let add_ap_f_t_interaction_claims = self
-            .add_ap_f_t
+            .add_ap_op_1_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1197,7 +1186,7 @@ impl OpcodesInteractionClaimGenerator {
             })
             .collect();
         let add_ap_t_f_interaction_claims = self
-            .add_ap_t_f
+            .add_ap_imm
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1450,9 +1439,9 @@ impl OpcodesInteractionClaimGenerator {
             add_f_t: add_f_t_interaction_claims,
             add_t_f: add_t_f_interaction_claims,
             add_t_t: add_t_t_interaction_claims,
-            add_ap_f_f: add_ap_f_f_interaction_claims,
-            add_ap_f_t: add_ap_f_t_interaction_claims,
-            add_ap_t_f: add_ap_t_f_interaction_claims,
+            add_ap: add_ap_f_f_interaction_claims,
+            add_ap_op_1_base_fp: add_ap_f_t_interaction_claims,
+            add_ap_imm: add_ap_t_f_interaction_claims,
             assert_eq_f_f: assert_eq_f_f_interaction_claims,
             assert_eq_f_t: assert_eq_f_t_interaction_claims,
             assert_eq_t_f: assert_eq_t_f_interaction_claims,
@@ -1480,9 +1469,9 @@ pub struct OpcodeComponents {
     add_f_t: Vec<add_opcode_is_small_f_is_imm_t::Component>,
     add_t_f: Vec<add_opcode_is_small_t_is_imm_f::Component>,
     add_t_t: Vec<add_opcode_is_small_t_is_imm_t::Component>,
-    add_ap_f_f: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_f::Component>,
-    add_ap_f_t: Vec<add_ap_opcode_is_imm_f_op_1_base_fp_t::Component>,
-    add_ap_t_f: Vec<add_ap_opcode_is_imm_t_op_1_base_fp_f::Component>,
+    add_ap: Vec<add_ap_opcode::Component>,
+    add_ap_op_1_base_fp: Vec<add_ap_opcode_op_1_base_fp::Component>,
+    add_ap_imm: Vec<add_ap_opcode_imm::Component>,
     assert_eq_f_f: Vec<assert_eq_opcode_is_double_deref_f_is_imm_f::Component>,
     assert_eq_f_t: Vec<assert_eq_opcode_is_double_deref_f_is_imm_t::Component>,
     assert_eq_t_f: Vec<assert_eq_opcode_is_double_deref_t_is_imm_f::Component>,
@@ -1606,13 +1595,13 @@ impl OpcodeComponents {
             })
             .collect_vec();
         let add_ap_f_f_components = claim
-            .add_ap_f_f
+            .add_ap
             .iter()
-            .zip(interaction_claim.add_ap_f_f.iter())
+            .zip(interaction_claim.add_ap.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op_1_base_fp_f::Component::new(
+                add_ap_opcode::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op_1_base_fp_f::Eval {
+                    add_ap_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1630,13 +1619,13 @@ impl OpcodeComponents {
             })
             .collect_vec();
         let add_ap_f_t_components = claim
-            .add_ap_f_t
+            .add_ap_op_1_base_fp
             .iter()
-            .zip(interaction_claim.add_ap_f_t.iter())
+            .zip(interaction_claim.add_ap_op_1_base_fp.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_f_op_1_base_fp_t::Component::new(
+                add_ap_opcode_op_1_base_fp::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_f_op_1_base_fp_t::Eval {
+                    add_ap_opcode_op_1_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1654,13 +1643,13 @@ impl OpcodeComponents {
             })
             .collect_vec();
         let add_ap_t_f_components = claim
-            .add_ap_t_f
+            .add_ap_imm
             .iter()
-            .zip(interaction_claim.add_ap_t_f.iter())
+            .zip(interaction_claim.add_ap_imm.iter())
             .map(|(&claim, &interaction_claim)| {
-                add_ap_opcode_is_imm_t_op_1_base_fp_f::Component::new(
+                add_ap_opcode_imm::Component::new(
                     tree_span_provider,
-                    add_ap_opcode_is_imm_t_op_1_base_fp_f::Eval {
+                    add_ap_opcode_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2114,9 +2103,9 @@ impl OpcodeComponents {
             add_f_t: add_f_t_components,
             add_t_f: add_t_f_components,
             add_t_t: add_t_t_components,
-            add_ap_f_f: add_ap_f_f_components,
-            add_ap_f_t: add_ap_f_t_components,
-            add_ap_t_f: add_ap_t_f_components,
+            add_ap: add_ap_f_f_components,
+            add_ap_op_1_base_fp: add_ap_f_t_components,
+            add_ap_imm: add_ap_t_f_components,
             assert_eq_f_f: assert_eq_f_f_components,
             assert_eq_f_t: assert_eq_f_t_components,
             assert_eq_t_f: assert_eq_t_f_components,
@@ -2161,17 +2150,17 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.add_ap_f_f
+            self.add_ap
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.add_ap_f_t
+            self.add_ap_op_1_base_fp
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.add_ap_t_f
+            self.add_ap_imm
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
@@ -2279,12 +2268,12 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.add_t_f))?;
         writeln!(f, "add_t_t:")?;
         writeln!(f, "{}", display_components(&self.add_t_t))?;
-        writeln!(f, "add_ap_f_f:")?;
-        writeln!(f, "{}", display_components(&self.add_ap_f_f))?;
-        writeln!(f, "add_ap_f_t:")?;
-        writeln!(f, "{}", display_components(&self.add_ap_f_t))?;
-        writeln!(f, "add_ap_t_f:")?;
-        writeln!(f, "{}", display_components(&self.add_ap_t_f))?;
+        writeln!(f, "add_ap:")?;
+        writeln!(f, "{}", display_components(&self.add_ap))?;
+        writeln!(f, "add_ap_op_1_base_fp:")?;
+        writeln!(f, "{}", display_components(&self.add_ap_op_1_base_fp))?;
+        writeln!(f, "add_ap_imm:")?;
+        writeln!(f, "{}", display_components(&self.add_ap_imm))?;
         writeln!(f, "assert_eq_f_f:")?;
         writeln!(f, "{}", display_components(&self.assert_eq_f_f))?;
         writeln!(f, "assert_eq_f_t:")?;

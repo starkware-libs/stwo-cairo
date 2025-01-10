@@ -6,9 +6,9 @@ use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 
-pub mod add_ap_opcode_is_imm_f_op_1_base_fp_f;
-pub mod add_ap_opcode_is_imm_f_op_1_base_fp_t;
-pub mod add_ap_opcode_is_imm_t_op_1_base_fp_f;
+pub mod add_ap_opcode;
+pub mod add_ap_opcode_imm;
+pub mod add_ap_opcode_op_1_base_fp;
 pub mod add_opcode_is_small_f_is_imm_f;
 pub mod add_opcode_is_small_f_is_imm_t;
 pub mod add_opcode_is_small_t_is_imm_f;
