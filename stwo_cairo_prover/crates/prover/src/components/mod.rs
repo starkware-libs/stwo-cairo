@@ -34,8 +34,8 @@ pub mod ret_opcode;
 pub mod verify_instruction;
 
 // TODO(Ohad): mul small.
-pub mod mul_opcode_is_small_f_is_imm_f;
-pub mod mul_opcode_is_small_f_is_imm_t;
+pub mod mul_opcode;
+pub mod mul_opcode_imm;
 
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9};
