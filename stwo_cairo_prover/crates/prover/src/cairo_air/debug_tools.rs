@@ -15,8 +15,7 @@ use stwo_prover::core::poly::circle::CanonicCoset;
 
 use super::air::CairoClaim;
 use crate::components::{
-    add_ap_opcode_is_imm_f_op_1_base_fp_f, add_ap_opcode_is_imm_f_op_1_base_fp_t,
-    add_ap_opcode_is_imm_t_op_1_base_fp_f, add_opcode_is_small_f_is_imm_f,
+    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode_is_small_f_is_imm_f,
     add_opcode_is_small_f_is_imm_t, add_opcode_is_small_t_is_imm_f, add_opcode_is_small_t_is_imm_t,
     assert_eq_opcode_is_double_deref_f_is_imm_f, assert_eq_opcode_is_double_deref_f_is_imm_t,
     assert_eq_opcode_is_double_deref_t_is_imm_f, call_opcode_is_rel_f_op_1_base_fp_f,
@@ -119,11 +118,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.add_ap_f_f.clone() {
+    for claim in claim.opcodes.add_ap.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                add_ap_opcode_is_imm_f_op_1_base_fp_f::Eval {
+                add_ap_opcode::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -135,11 +134,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.add_ap_f_t.clone() {
+    for claim in claim.opcodes.add_ap_op_1_base_fp.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                add_ap_opcode_is_imm_f_op_1_base_fp_t::Eval {
+                add_ap_opcode_op_1_base_fp::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -151,11 +150,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.add_ap_t_f.clone() {
+    for claim in claim.opcodes.add_ap_imm.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                add_ap_opcode_is_imm_t_op_1_base_fp_f::Eval {
+                add_ap_opcode_imm::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),

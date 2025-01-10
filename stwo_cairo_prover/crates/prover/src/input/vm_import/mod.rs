@@ -195,12 +195,9 @@ pub mod tests {
         // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
         assert_eq!(components.generic_opcode.len(), 0);
-        assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
-        assert_eq!(
-            components.add_ap_opcode_is_imm_t_op_1_base_fp_f.len(),
-            36895
-        );
-        assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_t.len(), 33);
+        assert_eq!(components.add_ap_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode_imm.len(), 36895);
+        assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 33);
         assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 84732);
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 189425);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 36623);
@@ -282,9 +279,9 @@ pub mod tests {
         // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
         assert_eq!(components.generic_opcode.len(), 0);
-        assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_f.len(), 0);
-        assert_eq!(components.add_ap_opcode_is_imm_t_op_1_base_fp_f.len(), 2);
-        assert_eq!(components.add_ap_opcode_is_imm_f_op_1_base_fp_t.len(), 1);
+        assert_eq!(components.add_ap_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode_imm.len(), 2);
+        assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 1);
         assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 500);
         assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 0);
         assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 0);
