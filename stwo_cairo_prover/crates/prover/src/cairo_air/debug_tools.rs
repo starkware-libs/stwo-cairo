@@ -17,10 +17,10 @@ use super::air::CairoClaim;
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, call_opcode_is_rel_f_op_1_base_fp_f, call_opcode_is_rel_f_op_1_base_fp_t,
-    call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode, jnz_opcode_is_taken_f_dst_base_fp_f,
-    jnz_opcode_is_taken_f_dst_base_fp_t, jnz_opcode_is_taken_t_dst_base_fp_f,
-    jnz_opcode_is_taken_t_dst_base_fp_t, jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
+    assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
+    jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
+    jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
+    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big,
@@ -211,11 +211,11 @@ where
             .entries(trace),
         )
     }
-    for claim in claim.opcodes.call_f_f.clone() {
+    for claim in claim.opcodes.call.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                call_opcode_is_rel_f_op_1_base_fp_f::Eval {
+                call_opcode::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -227,11 +227,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.call_f_t.clone() {
+    for claim in claim.opcodes.call_op_1_base_fp.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                call_opcode_is_rel_f_op_1_base_fp_t::Eval {
+                call_opcode_op_1_base_fp::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -243,11 +243,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.call_t_f.clone() {
+    for claim in claim.opcodes.call_rel.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                call_opcode_is_rel_t_op_1_base_fp_f::Eval {
+                call_opcode_rel::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
