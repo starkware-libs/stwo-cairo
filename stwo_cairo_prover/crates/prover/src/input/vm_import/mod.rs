@@ -212,30 +212,10 @@ pub mod tests {
         assert_eq!(components.jnz_opcode.len(), 27032);
         assert_eq!(components.jnz_opcode_taken.len(), 51060);
         assert_eq!(components.jnz_opcode_dst_base_fp.len(), 5100);
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-                .len(),
-            31873865
-        );
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
-                .len(),
-            500
-        );
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
-                .len(),
-            32
-        );
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-                .len(),
-            0
-        );
+        assert_eq!(components.jump_opcode_rel_imm.len(), 31873865);
+        assert_eq!(components.jump_opcode_rel.len(), 500);
+        assert_eq!(components.jump_opcode_double_deref.len(), 32);
+        assert_eq!(components.jump_opcode.len(), 0);
         assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 7234);
         assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 7203);
         assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 3943);
@@ -287,30 +267,10 @@ pub mod tests {
         assert_eq!(components.jnz_opcode.len(), 0);
         assert_eq!(components.jnz_opcode_taken.len(), 0);
         assert_eq!(components.jnz_opcode_dst_base_fp.len(), 11);
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-                .len(),
-            124626
-        );
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
-                .len(),
-            0
-        );
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
-                .len(),
-            0
-        );
-        assert_eq!(
-            components
-                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-                .len(),
-            0
-        );
+        assert_eq!(components.jump_opcode_rel_imm.len(), 124626);
+        assert_eq!(components.jump_opcode_rel.len(), 0);
+        assert_eq!(components.jump_opcode_double_deref.len(), 0);
+        assert_eq!(components.jump_opcode.len(), 0);
         assert_eq!(components.mul_opcode_is_small_t_is_imm_t.len(), 0);
         assert_eq!(components.mul_opcode_is_small_t_is_imm_f.len(), 0);
         assert_eq!(components.mul_opcode_is_small_f_is_imm_f.len(), 0);
