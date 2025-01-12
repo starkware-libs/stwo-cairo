@@ -1605,6 +1605,7 @@ dependencies = [
  "clap",
  "env_logger",
  "log",
+ "serde",
  "thiserror 2.0.10",
  "tracing",
  "tracing-subscriber",
