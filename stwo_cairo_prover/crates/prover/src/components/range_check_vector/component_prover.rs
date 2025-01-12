@@ -19,7 +19,7 @@ macro_rules! range_check_prover {
             use stwo_prover::core::poly::BitReversedOrder;
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
-            use $crate::components::AtomicMultiplicityColumn;
+            use $crate::components::utils::AtomicMultiplicityColumn;
             use $crate::components::range_check_vector::{generate_partitioned_enumeration,
                                             partition_into_bit_segments, SIMD_ENUMERATION_0};
 

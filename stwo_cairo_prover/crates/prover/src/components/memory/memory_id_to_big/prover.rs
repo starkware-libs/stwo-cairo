@@ -24,7 +24,7 @@ use super::component::{
 };
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::range_check_9_9;
-use crate::components::AtomicMultiplicityColumn;
+use crate::components::utils::AtomicMultiplicityColumn;
 use crate::felt::split_f252_simd;
 use crate::input::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_TAG,

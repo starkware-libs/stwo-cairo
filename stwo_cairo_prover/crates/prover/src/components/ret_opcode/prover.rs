@@ -27,7 +27,8 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 
 use super::component::{Claim, InteractionClaim};
-use crate::components::{memory_address_to_id, memory_id_to_big, pack_values, verify_instruction};
+use crate::components::utils::pack_values;
+use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::relations;
 
 pub type InputType = CasmState;
