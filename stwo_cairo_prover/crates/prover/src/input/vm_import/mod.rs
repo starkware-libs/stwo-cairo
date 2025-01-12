@@ -8,6 +8,7 @@ use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
+use stwo_cairo_utils::file_utils::{open_file, read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -21,7 +22,7 @@ use crate::input::memory::MemoryBuilder;
 #[derive(Debug, Error)]
 pub enum VmImportError {
     #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(#[from] IoErrorWithPath),
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
     #[error("No memory segments")]
@@ -36,10 +37,10 @@ pub fn adapt_vm_output(
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
-    let public_input_string = std::fs::read_to_string(public_input_json)?;
+    let public_input_string = read_to_string(public_input_json)?;
     let public_input: PublicInput<'_> = serde_json::from_str(&public_input_string)?;
-    let private_input: PrivateInput =
-        serde_json::from_str(&std::fs::read_to_string(private_input_json)?)?;
+
+    let private_input: PrivateInput = serde_json::from_reader(&open_file(private_input_json)?)?;
 
     let end_addr = public_input
         .memory_segments
@@ -58,8 +59,8 @@ pub fn adapt_vm_output(
         .unwrap()
         .join(&private_input.trace_path);
 
-    let mut memory_file = std::io::BufReader::new(std::fs::File::open(memory_path)?);
-    let mut trace_file = std::io::BufReader::new(std::fs::File::open(trace_path)?);
+    let mut memory_file = std::io::BufReader::new(open_file(memory_path.as_path())?);
+    let mut trace_file = std::io::BufReader::new(open_file(trace_path.as_path())?);
 
     let public_memory_addresses = public_input
         .public_memory
