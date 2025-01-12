@@ -2,9 +2,11 @@ use std::mem::transmute;
 use std::simd::Simd;
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use num_traits::One;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
+use stwo_prover::core::backend::Column;
 use stwo_prover::core::fields::m31::M31;
 
 // When padding is needed, the inputs must be arranged in the order defined by the neighbor
@@ -81,6 +83,19 @@ impl AtomicMultiplicityColumn {
     }
 }
 
+/// Generates a column for the given padding offset.
+/// The enabler column is a column of length next_power_of_two(padding_offset) where
+/// 1. The first `padding_offset` elements set to 1;
+/// 2. Otherwise set to 0.
+pub fn gen_enabler_column(padding_offset: usize) -> BaseColumn {
+    let log_size = padding_offset.next_power_of_two().ilog2();
+    let mut res = BaseColumn::zeros(1 << log_size);
+    for i in 0..padding_offset {
+        res.set(i, M31::one());
+    }
+    res
+}
+
 #[cfg(test)]
 mod tests {
     use num_traits::{One, Zero};
@@ -105,6 +120,21 @@ mod tests {
         assert!(res.len() == 6);
         for (res_chunk, expected_chunk) in res.iter().zip(expected.chunks(N_LANES)) {
             assert!(res_chunk.to_array() == expected_chunk);
+        }
+    }
+
+    #[test]
+    fn test_gen_enabler_column() {
+        let n_calls = 30;
+
+        let enabler_column = super::gen_enabler_column(n_calls);
+
+        for (i, val) in enabler_column.into_cpu_vec().into_iter().enumerate() {
+            if i < n_calls {
+                assert_eq!(val, M31::one());
+            } else {
+                assert_eq!(val, M31::zero());
+            }
         }
     }
 }
