@@ -28,7 +28,8 @@ use crate::components::{
     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big,
     mul_opcode_is_small_f_is_imm_f, mul_opcode_is_small_f_is_imm_t, range_check_19,
-    range_check_4_3, range_check_7_2_5, range_check_9_9, ret_opcode, verify_instruction,
+    range_check_4_3, range_check_7_2_5, range_check_9_9, range_check_builtin_bits_128, ret_opcode,
+    verify_instruction,
 };
 use crate::felt::split_f252;
 use crate::relations;
@@ -475,6 +476,21 @@ where
         )
         .entries(trace),
     );
+
+    if let Some(range_check_builtin_bits_128) = claim.range_check_128_builtin {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                range_check_builtin_bits_128::Eval {
+                    claim: range_check_builtin_bits_128,
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                },
+                range_check_builtin_bits_128.n_rows,
+            )
+            .entries(trace),
+        );
+    }
 
     // Memory.
     entries.extend(
