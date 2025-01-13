@@ -77,6 +77,11 @@ impl CairoClaim {
         self.opcodes.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
+        self.verify_instruction.mix_into(channel);
+        self.range_check_19.mix_into(channel);
+        self.range_check9_9.mix_into(channel);
+        self.range_check7_2_5.mix_into(channel);
+        self.range_check4_3.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -403,6 +408,10 @@ impl CairoInteractionClaim {
         self.opcodes.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
+        self.range_check_19.mix_into(channel);
+        self.range_check_9_9.mix_into(channel);
+        self.range_check_7_2_5.mix_into(channel);
+        self.range_check_4_3.mix_into(channel);
     }
 }
 
