@@ -4,6 +4,10 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use serde::{Deserialize, Serialize};
 
 use super::memory::MemoryBuilder;
+use crate::input::memory::MemoryValue;
+
+// The offset of n within the memory of an add_mod or mul_mod instance.
+pub const MOD_BUILTIN_N_IN_INSTANCE: usize = 6;
 
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -110,6 +114,13 @@ impl BuiltinSegments {
                 stop_ptr: begin_addr + cells_per_instance * next_power_of_two,
             }),
         );
+        if builtin_name == BuiltinName::add_mod || builtin_name == BuiltinName::mul_mod {
+            address_to_fill = (stop_ptr + MOD_BUILTIN_N_IN_INSTANCE) as u64;
+            for _ in num_instances..next_power_of_two {
+                memory.set(address_to_fill, MemoryValue::Small(1));
+                address_to_fill += cells_per_instance as u64;
+            }
+        }
         memory
     }
 
