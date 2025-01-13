@@ -61,9 +61,9 @@ pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
+    pub verify_instruction: verify_instruction::Claim,
     pub memory_address_to_id: memory_address_to_id::Claim,
     pub memory_id_to_value: memory_id_to_big::Claim,
-    pub verify_instruction: verify_instruction::Claim,
     pub range_check_19: range_check_19::Claim,
     pub range_check9_9: range_check_9_9::Claim,
     pub range_check7_2_5: range_check_7_2_5::Claim,
@@ -75,8 +75,13 @@ impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
         self.opcodes.mix_into(channel);
+        self.verify_instruction.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
+        self.range_check_19.mix_into(channel);
+        self.range_check9_9.mix_into(channel);
+        self.range_check7_2_5.mix_into(channel);
+        self.range_check4_3.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -212,9 +217,9 @@ impl CairoClaimGenerator {
         Self {
             public_data,
             opcodes,
+            verify_instruction_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
-            verify_instruction_trace_generator,
             range_check_19_trace_generator,
             range_check_9_9_trace_generator,
             range_check_7_2_5_trace_generator,
@@ -402,8 +407,13 @@ pub struct CairoInteractionClaim {
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.opcodes.mix_into(channel);
+        self.verify_instruction.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
+        self.range_check_19.mix_into(channel);
+        self.range_check_9_9.mix_into(channel);
+        self.range_check_7_2_5.mix_into(channel);
+        self.range_check_4_3.mix_into(channel);
     }
 }
 
@@ -419,13 +429,13 @@ pub fn lookup_sum(
     // Otherwise, the claimed_sum is the total_sum.
     sum += interaction_claim.opcodes.sum();
     sum += interaction_claim.verify_instruction.claimed_sum;
+    sum += interaction_claim.memory_address_to_id.claimed_sum;
+    sum += interaction_claim.memory_id_to_value.big_claimed_sum;
+    sum += interaction_claim.memory_id_to_value.small_claimed_sum;
     sum += interaction_claim.range_check_19.claimed_sum;
     sum += interaction_claim.range_check_9_9.claimed_sum;
     sum += interaction_claim.range_check_7_2_5.claimed_sum;
     sum += interaction_claim.range_check_4_3.claimed_sum;
-    sum += interaction_claim.memory_address_to_id.claimed_sum;
-    sum += interaction_claim.memory_id_to_value.big_claimed_sum;
-    sum += interaction_claim.memory_id_to_value.small_claimed_sum;
     sum
 }
 
@@ -466,10 +476,10 @@ impl CairoComponents {
                 memory_address_to_id_lookup_elements: interaction_elements
                     .memory_address_to_id
                     .clone(),
+                verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
                 memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
                 range_check_4_3_lookup_elements: interaction_elements.range_check_4_3.clone(),
                 range_check_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
-                verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
             },
             (interaction_claim.verify_instruction.claimed_sum, None),
         );
