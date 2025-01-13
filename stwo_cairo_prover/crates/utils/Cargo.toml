@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cairo-vm.workspace = true
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "83bfdcf", features = [
+    "mod_builtin",
+] }
 clap.workspace = true
 env_logger.workspace = true
 log.workspace = true

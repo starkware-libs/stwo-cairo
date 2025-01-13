@@ -3,7 +3,8 @@ use std::path::PathBuf;
 use cairo_vm::cairo_run;
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
-use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+use cairo_vm::vm::runners::cairo_pie::CairoPie;
+use cairo_vm::vm::runners::cairo_runner::{CairoRunner, RunResources};
 use clap::{Parser, ValueHint};
 use thiserror::Error;
 use tracing::span;
@@ -74,10 +75,18 @@ pub fn run_vm(args: &VmArgs) -> Result<CairoRunner, VmError> {
         ..Default::default()
     };
 
-    let program_content = std::fs::read(args.filename.clone()).map_err(VmError::IO)?;
-    let mut hint_processor = BuiltinHintProcessor::new_empty();
-    let cairo_runner_result =
-        cairo_run::cairo_run(&program_content, &cairo_run_config, &mut hint_processor);
+    let cairo_runner_result = if args.run_from_cairo_pie {
+        let pie = CairoPie::read_zip_file(&args.filename)?;
+        let mut hint_processor = BuiltinHintProcessor::new(
+            Default::default(),
+            RunResources::new(pie.execution_resources.n_steps),
+        );
+        cairo_run::cairo_run_pie(&pie, &cairo_run_config, &mut hint_processor)
+    } else {
+        let program_content = std::fs::read(args.filename.clone()).map_err(VmError::IO)?;
+        let mut hint_processor = BuiltinHintProcessor::new_empty();
+        cairo_run::cairo_run(&program_content, &cairo_run_config, &mut hint_processor)
+    };
 
     let cairo_runner = match cairo_runner_result {
         Ok(runner) => runner,
