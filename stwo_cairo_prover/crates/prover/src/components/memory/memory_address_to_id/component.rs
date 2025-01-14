@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
@@ -10,6 +9,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
+use crate::components::memory::Seq;
 use crate::relations;
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
@@ -60,7 +60,7 @@ impl FrameworkEval for Eval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let address = eval.get_preprocessed_column(PreprocessedColumn::Seq(self.log_size()));
+        let address = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         for i in 0..N_SPLIT_CHUNKS {
             let id = eval.next_trace_mask();
             let multiplicity = eval.next_trace_mask();

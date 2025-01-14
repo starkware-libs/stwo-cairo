@@ -1,3 +1,4 @@
+use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::Col;
@@ -37,7 +38,9 @@ impl Seq {
         CircleEvaluation::new(CanonicCoset::new(self.log_size).circle_domain(), col)
     }
 
-    pub fn id(&self) -> String {
-        format!("preprocessed_seq_{}", self.log_size).to_string()
+    pub fn id(&self) -> PreProcessedColumnId {
+        PreProcessedColumnId {
+            id: format!("preprocessed_seq_{}", self.log_size).to_string(),
+        }
     }
 }
