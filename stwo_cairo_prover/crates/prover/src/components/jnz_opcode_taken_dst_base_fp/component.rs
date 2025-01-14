@@ -4,6 +4,7 @@ use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::logup::{LogupAtRow, LogupSums, LookupElements};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
@@ -140,7 +141,7 @@ impl FrameworkEval for Eval {
                 offset0_col3.clone(),
                 M31_32767.clone(),
                 M31_32769.clone(),
-                M31_0.clone(),
+                M31_1.clone(),
                 M31_1.clone(),
                 M31_1.clone(),
                 M31_0.clone(),
@@ -161,7 +162,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (input_ap_col1.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                (input_fp_col2.clone() + (offset0_col3.clone() - M31_32768.clone())),
                 dst_id_col5.clone(),
             ],
         ));
@@ -236,17 +237,17 @@ impl FrameworkEval for Eval {
                 * res_col34.clone())
                 - M31_1.clone()),
         );
-        let diff_from_p_tmp_490d5_7 =
+        let diff_from_p_tmp_8b848_7 =
             eval.add_intermediate((dst_limb_0_col6.clone() - M31_1.clone()));
-        let diff_from_p_tmp_490d5_8 =
+        let diff_from_p_tmp_8b848_8 =
             eval.add_intermediate((dst_limb_21_col27.clone() - M31_136.clone()));
-        let diff_from_p_tmp_490d5_9 =
+        let diff_from_p_tmp_8b848_9 =
             eval.add_intermediate((dst_limb_27_col33.clone() - M31_256.clone()));
         // dst doesn't equal P.
         eval.add_constraint(
             ((((((((((((((((((((((((((((((M31_0.clone()
-                + (diff_from_p_tmp_490d5_7.clone()
-                    * diff_from_p_tmp_490d5_7.clone()))
+                + (diff_from_p_tmp_8b848_7.clone()
+                    * diff_from_p_tmp_8b848_7.clone()))
                 + dst_limb_1_col7.clone())
                 + dst_limb_2_col8.clone())
                 + dst_limb_3_col9.clone())
@@ -267,13 +268,13 @@ impl FrameworkEval for Eval {
                 + dst_limb_18_col24.clone())
                 + dst_limb_19_col25.clone())
                 + dst_limb_20_col26.clone())
-                + (diff_from_p_tmp_490d5_8.clone() * diff_from_p_tmp_490d5_8.clone()))
+                + (diff_from_p_tmp_8b848_8.clone() * diff_from_p_tmp_8b848_8.clone()))
                 + dst_limb_22_col28.clone())
                 + dst_limb_23_col29.clone())
                 + dst_limb_24_col30.clone())
                 + dst_limb_25_col31.clone())
                 + dst_limb_26_col32.clone())
-                + (diff_from_p_tmp_490d5_9.clone() * diff_from_p_tmp_490d5_9.clone()))
+                + (diff_from_p_tmp_8b848_9.clone() * diff_from_p_tmp_8b848_9.clone()))
                 * res_squares_col35.clone())
                 - M31_1.clone()),
         );

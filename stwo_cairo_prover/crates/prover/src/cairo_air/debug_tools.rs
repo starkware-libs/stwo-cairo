@@ -18,8 +18,7 @@ use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
-    jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
-    jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
+    jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
@@ -277,11 +276,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.jnz_f_f.clone() {
+    for claim in claim.opcodes.jnz.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                jnz_opcode_is_taken_f_dst_base_fp_f::Eval {
+                jnz_opcode::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -293,11 +292,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.jnz_f_t.clone() {
+    for claim in claim.opcodes.jnz_dst_base_fp.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                jnz_opcode_is_taken_f_dst_base_fp_t::Eval {
+                jnz_opcode_dst_base_fp::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -309,11 +308,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.jnz_t_f.clone() {
+    for claim in claim.opcodes.jnz_taken.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                jnz_opcode_is_taken_t_dst_base_fp_f::Eval {
+                jnz_opcode_taken::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -325,11 +324,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.jnz_t_t.clone() {
+    for claim in claim.opcodes.jnz_taken_dst_base_fp.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                jnz_opcode_is_taken_t_dst_base_fp_t::Eval {
+                jnz_opcode_taken_dst_base_fp::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),

@@ -208,10 +208,10 @@ pub mod tests {
         assert_eq!(components.call_opcode.len(), 0);
         assert_eq!(components.call_opcode_rel.len(), 49439);
         assert_eq!(components.call_opcode_op_1_base_fp.len(), 33);
-        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_t.len(), 11235);
-        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_f.len(), 27032);
-        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_f.len(), 51060);
-        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_t.len(), 5100);
+        assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 11235);
+        assert_eq!(components.jnz_opcode.len(), 27032);
+        assert_eq!(components.jnz_opcode_taken.len(), 51060);
+        assert_eq!(components.jnz_opcode_dst_base_fp.len(), 5100);
         assert_eq!(
             components
                 .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
@@ -283,10 +283,10 @@ pub mod tests {
         assert_eq!(components.call_opcode.len(), 0);
         assert_eq!(components.call_opcode_rel.len(), 462);
         assert_eq!(components.call_opcode_op_1_base_fp.len(), 0);
-        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_t.len(), 450);
-        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_f.len(), 0);
-        assert_eq!(components.jnz_opcode_is_taken_t_dst_base_fp_f.len(), 0);
-        assert_eq!(components.jnz_opcode_is_taken_f_dst_base_fp_t.len(), 11);
+        assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 450);
+        assert_eq!(components.jnz_opcode.len(), 0);
+        assert_eq!(components.jnz_opcode_taken.len(), 0);
+        assert_eq!(components.jnz_opcode_dst_base_fp.len(), 11);
         assert_eq!(
             components
                 .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
