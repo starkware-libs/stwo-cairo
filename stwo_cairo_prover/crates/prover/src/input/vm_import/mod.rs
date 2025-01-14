@@ -198,10 +198,10 @@ pub mod tests {
         assert_eq!(components.add_ap_opcode.len(), 0);
         assert_eq!(components.add_ap_opcode_imm.len(), 36895);
         assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 33);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 84732);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 189425);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 36623);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 22089);
+        assert_eq!(components.add_opcode_small_imm.len(), 84732);
+        assert_eq!(components.add_opcode.len(), 189425);
+        assert_eq!(components.add_opcode_small.len(), 36623);
+        assert_eq!(components.add_opcode_imm.len(), 22089);
         assert_eq!(
             components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
             233432
@@ -282,10 +282,10 @@ pub mod tests {
         assert_eq!(components.add_ap_opcode.len(), 0);
         assert_eq!(components.add_ap_opcode_imm.len(), 2);
         assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 1);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_t.len(), 500);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_f.len(), 0);
-        assert_eq!(components.add_opcode_is_small_t_is_imm_f.len(), 0);
-        assert_eq!(components.add_opcode_is_small_f_is_imm_t.len(), 450);
+        assert_eq!(components.add_opcode_small_imm.len(), 500);
+        assert_eq!(components.add_opcode.len(), 0);
+        assert_eq!(components.add_opcode_small.len(), 0);
+        assert_eq!(components.add_opcode_imm.len(), 450);
         assert_eq!(
             components.assert_eq_opcode_is_double_deref_f_is_imm_f.len(),
             55
