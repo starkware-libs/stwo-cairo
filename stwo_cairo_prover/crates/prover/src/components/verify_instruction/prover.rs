@@ -145,7 +145,7 @@ impl ClaimGenerator {
     }
 
     // Instruction is determined by PC.
-    fn add_input(&self, (pc, ..): &InputType) {
+    pub fn add_input(&self, (pc, ..): &InputType) {
         self.multiplicities
             .get(pc)
             .unwrap()

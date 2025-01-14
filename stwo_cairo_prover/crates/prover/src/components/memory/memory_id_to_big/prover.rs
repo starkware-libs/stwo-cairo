@@ -90,8 +90,8 @@ impl ClaimGenerator {
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
-        for &input in inputs {
-            self.add_input(&input);
+        for input in inputs {
+            self.add_input(input);
         }
     }
 

@@ -53,7 +53,7 @@ macro_rules! range_check_prover {
                 // TODO(Ohad): test.
                 pub fn add_input(&self, input: &InputType) {
                     let mut value = 0_u32;
-                    for (segment, segment_n_bits) in zip(input, RANGES) {
+                    for (segment, segment_n_bits) in zip(*input, RANGES) {
                         value <<= segment_n_bits;
                         value += segment.0;
                     }
