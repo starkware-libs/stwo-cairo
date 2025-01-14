@@ -2,7 +2,6 @@
 #![allow(unused_imports)]
 use std::iter::zip;
 
-use air_structs_derive::SubComponentInputs;
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -28,7 +27,9 @@ use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
+use stwo_prover::core::utils::{
+    bit_reverse_coset_to_circle_domain_order, bit_reverse_index, coset_index_to_circle_domain_index,
+};
 
 use super::component::{Claim, InteractionClaim};
 use crate::components::utils::pack_values;
@@ -69,34 +70,13 @@ impl ClaimGenerator {
         }
 
         let packed_inputs = pack_values(&self.inputs);
-        let (trace, mut sub_components_inputs, lookup_data) = write_trace_simd(
+        let (trace, lookup_data) = write_trace_simd(
             n_rows,
             packed_inputs,
             memory_address_to_id_state,
             memory_id_to_big_state,
+            verify_instruction_state,
         );
-
-        if need_padding {
-            sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
-        }
-        sub_components_inputs
-            .memory_address_to_id_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..n_rows]);
-            });
-        sub_components_inputs
-            .memory_id_to_big_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..n_rows]);
-            });
-        sub_components_inputs
-            .verify_instruction_inputs
-            .iter()
-            .for_each(|inputs| {
-                verify_instruction_state.add_inputs(&inputs[..n_rows]);
-            });
 
         tree_builder.extend_evals(trace.to_evals());
 
@@ -109,16 +89,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_inputs(&self, _inputs: &[InputType]) {
-        unimplemented!("Implement manually");
-    }
-}
 
-#[derive(SubComponentInputs, Uninitialized, IterMut, ParIterMut)]
-pub struct SubComponentInputs {
-    pub memory_address_to_id_inputs: [Vec<memory_address_to_id::InputType>; 3],
-    pub memory_id_to_big_inputs: [Vec<memory_id_to_big::InputType>; 1],
-    pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -130,18 +101,14 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    SubComponentInputs,
-    LookupData,
-) {
+    verify_instruction_state: &verify_instruction::ClaimGenerator,
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
-    let (mut trace, mut lookup_data, mut sub_components_inputs) = unsafe {
+    let (mut trace, mut lookup_data) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_size),
         )
     };
 
@@ -169,12 +136,8 @@ fn write_trace_simd(
         .enumerate()
         .zip(inputs.into_par_iter())
         .zip(lookup_data.par_iter_mut())
-        .zip(sub_components_inputs.par_iter_mut().chunks(N_LANES))
         .for_each(
-            |(
-                (((row_index, row), assert_eq_opcode_double_deref_input), lookup_data),
-                mut sub_components_inputs,
-            )| {
+            |(((row_index, row), assert_eq_opcode_double_deref_input), lookup_data)| {
                 let input_tmp_26616_0 = assert_eq_opcode_double_deref_input;
                 let input_pc_col0 = input_tmp_26616_0.pc;
                 *row[0] = input_pc_col0;
@@ -251,7 +214,7 @@ fn write_trace_simd(
                         & (UInt16_1));
                 let ap_update_add_1_col8 = ap_update_add_1_tmp_26616_8.as_m31();
                 *row[8] = ap_update_add_1_col8;
-                for (i, &input) in (
+                let verify_instruction_inputs_0 = (
                     input_pc_col0,
                     [offset0_col3, offset1_col4, offset2_col5],
                     [
@@ -272,12 +235,7 @@ fn write_trace_simd(
                         M31_1,
                     ],
                 )
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].verify_instruction_inputs[0] = input;
-                }
+                    .unpack();
                 *lookup_data.verify_instruction_0 = [
                     input_pc_col0,
                     offset0_col3,
@@ -315,13 +273,8 @@ fn write_trace_simd(
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_26616_9);
                 let mem1_base_id_col11 = memory_address_to_id_value_tmp_26616_9;
                 *row[11] = mem1_base_id_col11;
-                for (i, &input) in ((mem0_base_col10) + ((offset1_col4) - (M31_32768)))
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].memory_address_to_id_inputs[0] = input;
-                }
+                let memory_address_to_id_inputs_0 =
+                    ((mem0_base_col10) + ((offset1_col4) - (M31_32768))).unpack();
                 *lookup_data.memory_address_to_id_0 = [
                     ((mem0_base_col10) + ((offset1_col4) - (M31_32768))),
                     mem1_base_id_col11,
@@ -332,9 +285,7 @@ fn write_trace_simd(
                 *row[13] = mem1_base_limb_1_col13;
                 let mem1_base_limb_2_col14 = memory_id_to_big_value_tmp_26616_10.get_m31(2);
                 *row[14] = mem1_base_limb_2_col14;
-                for (i, &input) in mem1_base_id_col11.unpack().iter().enumerate() {
-                    *sub_components_inputs[i].memory_id_to_big_inputs[0] = input;
-                }
+                let memory_id_to_big_inputs_0 = mem1_base_id_col11.unpack();
                 *lookup_data.memory_id_to_big_0 = [
                     mem1_base_id_col11,
                     mem1_base_limb_0_col12,
@@ -373,27 +324,17 @@ fn write_trace_simd(
                     .deduce_output(((mem_dst_base_col9) + ((offset0_col3) - (M31_32768))));
                 let dst_id_col15 = memory_address_to_id_value_tmp_26616_11;
                 *row[15] = dst_id_col15;
-                for (i, &input) in ((mem_dst_base_col9) + ((offset0_col3) - (M31_32768)))
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].memory_address_to_id_inputs[1] = input;
-                }
+                let memory_address_to_id_inputs_1 =
+                    ((mem_dst_base_col9) + ((offset0_col3) - (M31_32768))).unpack();
                 *lookup_data.memory_address_to_id_1 = [
                     ((mem_dst_base_col9) + ((offset0_col3) - (M31_32768))),
                     dst_id_col15,
                 ];
-                for (i, &input) in ((((mem1_base_limb_0_col12)
+                let memory_address_to_id_inputs_2 = ((((mem1_base_limb_0_col12)
                     + ((mem1_base_limb_1_col13) * (M31_512)))
                     + ((mem1_base_limb_2_col14) * (M31_262144)))
                     + ((offset2_col5) - (M31_32768)))
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].memory_address_to_id_inputs[2] = input;
-                }
+                    .unpack();
                 *lookup_data.memory_address_to_id_2 = [
                     ((((mem1_base_limb_0_col12) + ((mem1_base_limb_1_col13) * (M31_512)))
                         + ((mem1_base_limb_2_col14) * (M31_262144)))
@@ -407,10 +348,26 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col8)),
                     input_fp_col2,
                 ];
+
+                // Add sub-components inputs.
+                #[allow(clippy::needless_range_loop)]
+                for i in 0..N_LANES {
+                    if bit_reverse_index(
+                        coset_index_to_circle_domain_index(row_index * N_LANES + i, log_size),
+                        log_size,
+                    ) < n_rows
+                    {
+                        verify_instruction_state.add_input(&verify_instruction_inputs_0[i]);
+                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_0[i]);
+                        memory_id_to_big_state.add_input(&memory_id_to_big_inputs_0[i]);
+                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_1[i]);
+                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_2[i]);
+                    }
+                }
             },
         );
 
-    (trace, sub_components_inputs, lookup_data)
+    (trace, lookup_data)
 }
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
