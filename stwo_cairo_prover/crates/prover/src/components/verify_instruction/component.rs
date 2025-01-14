@@ -7,7 +7,6 @@ use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::logup::{
     ClaimedPrefixSum, LogupAtRow, LogupSums, LookupElements,
 };
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
