@@ -38,7 +38,7 @@ enum Error {
 }
 
 fn main() -> ExitCode {
-    run_binary(run)
+    run_binary(run, "stwo_vm_runner")
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<ProverInput, Error> {
