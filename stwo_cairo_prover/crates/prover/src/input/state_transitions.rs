@@ -240,414 +240,414 @@ impl StateTransitions {
         let instruction = Instruction::decode(encoded_instruction);
 
         match instruction {
-            // ret.
-            Instruction {
-                offset0: -2,
-                offset1: -1,
-                offset2: -1,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op_1_imm: false,
-                op_1_base_fp: true,
-                op_1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: false,
-                opcode_ret: true,
-                opcode_assert_eq: false,
-            } => self.casm_states_by_opcode.ret_opcode.push(state),
+            // // ret.
+            // Instruction {
+            //     offset0: -2,
+            //     offset1: -1,
+            //     offset2: -1,
+            //     dst_base_fp: true,
+            //     op0_base_fp: true,
+            //     op_1_imm: false,
+            //     op_1_base_fp: true,
+            //     op_1_base_ap: false,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: true,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: false,
+            //     opcode_call: false,
+            //     opcode_ret: true,
+            //     opcode_assert_eq: false,
+            // } => self.casm_states_by_opcode.ret_opcode.push(state),
 
-            // add ap.
-            Instruction {
-                offset0: -1,
-                offset1: -1,
-                offset2,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: true,
-                ap_update_add_1: false,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } => {
-                if op_1_imm {
-                    // ap += Imm.
-                    assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
-                    self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_t_op_1_base_fp_f
-                        .push(state);
-                } else if op_1_base_fp {
-                    // ap += [fp + offset2].
-                    assert!(!op_1_base_ap);
-                    self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_f_op_1_base_fp_t
-                        .push(state);
-                } else {
-                    // ap += [ap + offset2].
-                    assert!(op_1_base_ap);
-                    self.casm_states_by_opcode
-                        .add_ap_opcode_is_imm_f_op_1_base_fp_f
-                        .push(state);
-                }
-            }
-            // jump.
-            Instruction {
-                offset0: -1,
-                offset1,
-                offset2,
-                dst_base_fp: true,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump,
-                pc_update_jump_rel,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } => {
-                if op_1_imm {
-                    // jump rel imm.
-                    assert!(
-                        pc_update_jump_rel
-                            && !pc_update_jump
-                            && !op_1_base_fp
-                            && !op_1_base_ap
-                            && op0_base_fp
-                            && offset1 == -1
-                            && offset2 == 1
-                    );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-                        .push(state);
-                } else if pc_update_jump_rel {
-                    // jump rel [ap/fp + offset2].
-                    assert!(
-                        !pc_update_jump
-                            && (op_1_base_fp || op_1_base_ap)
-                            && op0_base_fp
-                            && offset1 == -1
-                    );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
-                        .push(state);
-                } else if !op_1_base_fp && !op_1_base_ap {
-                    // jump abs [[ap/fp + offset1] + offset2].
-                    assert!(pc_update_jump);
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
-                        .push(state);
-                } else {
-                    // jump abs [ap/fp + offset2].
-                    assert!(
-                        (op_1_base_fp || op_1_base_ap)
-                            && op0_base_fp
-                            && pc_update_jump
-                            && offset1 == -1
-                    );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-                        .push(state);
-                }
-            }
+            // // add ap.
+            // Instruction {
+            //     offset0: -1,
+            //     offset1: -1,
+            //     offset2,
+            //     dst_base_fp: true,
+            //     op0_base_fp: true,
+            //     op_1_imm,
+            //     op_1_base_fp,
+            //     op_1_base_ap,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: true,
+            //     ap_update_add_1: false,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: false,
+            // } => {
+            //     if op_1_imm {
+            //         // ap += Imm.
+            //         assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
+            //         self.casm_states_by_opcode
+            //             .add_ap_opcode_is_imm_t_op_1_base_fp_f
+            //             .push(state);
+            //     } else if op_1_base_fp {
+            //         // ap += [fp + offset2].
+            //         assert!(!op_1_base_ap);
+            //         self.casm_states_by_opcode
+            //             .add_ap_opcode_is_imm_f_op_1_base_fp_t
+            //             .push(state);
+            //     } else {
+            //         // ap += [ap + offset2].
+            //         assert!(op_1_base_ap);
+            //         self.casm_states_by_opcode
+            //             .add_ap_opcode_is_imm_f_op_1_base_fp_f
+            //             .push(state);
+            //     }
+            // }
+            // // jump.
+            // Instruction {
+            //     offset0: -1,
+            //     offset1,
+            //     offset2,
+            //     dst_base_fp: true,
+            //     op0_base_fp,
+            //     op_1_imm,
+            //     op_1_base_fp,
+            //     op_1_base_ap,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump,
+            //     pc_update_jump_rel,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: false,
+            // } => {
+            //     if op_1_imm {
+            //         // jump rel imm.
+            //         assert!(
+            //             pc_update_jump_rel
+            //                 && !pc_update_jump
+            //                 && !op_1_base_fp
+            //                 && !op_1_base_ap
+            //                 && op0_base_fp
+            //                 && offset1 == -1
+            //                 && offset2 == 1
+            //         );
+            //         self.casm_states_by_opcode
+            //             .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
+            //             .push(state);
+            //     } else if pc_update_jump_rel {
+            //         // jump rel [ap/fp + offset2].
+            //         assert!(
+            //             !pc_update_jump
+            //                 && (op_1_base_fp || op_1_base_ap)
+            //                 && op0_base_fp
+            //                 && offset1 == -1
+            //         );
+            //         self.casm_states_by_opcode
+            //             .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
+            //             .push(state);
+            //     } else if !op_1_base_fp && !op_1_base_ap {
+            //         // jump abs [[ap/fp + offset1] + offset2].
+            //         assert!(pc_update_jump);
+            //         self.casm_states_by_opcode
+            //             .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
+            //             .push(state);
+            //     } else {
+            //         // jump abs [ap/fp + offset2].
+            //         assert!(
+            //             (op_1_base_fp || op_1_base_ap)
+            //                 && op0_base_fp
+            //                 && pc_update_jump
+            //                 && offset1 == -1
+            //         );
+            //         self.casm_states_by_opcode
+            //             .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
+            //             .push(state);
+            //     }
+            // }
 
-            // call.
-            Instruction {
-                offset0: 0,
-                offset1: 1,
-                offset2,
-                dst_base_fp: false,
-                op0_base_fp: false,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump,
-                pc_update_jump_rel,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: true,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } => {
-                if pc_update_jump_rel {
-                    // call rel imm.
-                    assert!(
-                        op_1_imm
-                            && !op_1_base_fp
-                            && !op_1_base_ap
-                            && offset2 == 1
-                            && !pc_update_jump
-                    );
-                    self.casm_states_by_opcode
-                        .call_opcode_is_rel_t_op_1_base_fp_f
-                        .push(state);
-                } else if op_1_base_fp {
-                    // call abs [fp + offset2].
-                    assert!(!op_1_base_ap && !op_1_imm && pc_update_jump);
-                    self.casm_states_by_opcode
-                        .call_opcode_is_rel_f_op_1_base_fp_t
-                        .push(state);
-                } else {
-                    // call abs [ap + offset2].
-                    assert!(op_1_base_ap && !op_1_imm && pc_update_jump);
-                    self.casm_states_by_opcode
-                        .call_opcode_is_rel_f_op_1_base_fp_f
-                        .push(state);
-                }
-            }
+            // // call.
+            // Instruction {
+            //     offset0: 0,
+            //     offset1: 1,
+            //     offset2,
+            //     dst_base_fp: false,
+            //     op0_base_fp: false,
+            //     op_1_imm,
+            //     op_1_base_fp,
+            //     op_1_base_ap,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump,
+            //     pc_update_jump_rel,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: false,
+            //     opcode_call: true,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: false,
+            // } => {
+            //     if pc_update_jump_rel {
+            //         // call rel imm.
+            //         assert!(
+            //             op_1_imm
+            //                 && !op_1_base_fp
+            //                 && !op_1_base_ap
+            //                 && offset2 == 1
+            //                 && !pc_update_jump
+            //         );
+            //         self.casm_states_by_opcode
+            //             .call_opcode_is_rel_t_op_1_base_fp_f
+            //             .push(state);
+            //     } else if op_1_base_fp {
+            //         // call abs [fp + offset2].
+            //         assert!(!op_1_base_ap && !op_1_imm && pc_update_jump);
+            //         self.casm_states_by_opcode
+            //             .call_opcode_is_rel_f_op_1_base_fp_t
+            //             .push(state);
+            //     } else {
+            //         // call abs [ap + offset2].
+            //         assert!(op_1_base_ap && !op_1_imm && pc_update_jump);
+            //         self.casm_states_by_opcode
+            //             .call_opcode_is_rel_f_op_1_base_fp_f
+            //             .push(state);
+            //     }
+            // }
 
-            // jnz.
-            Instruction {
-                offset0,
-                offset1: -1,
-                offset2: 1,
-                dst_base_fp,
-                op0_base_fp: true,
-                op_1_imm: true,
-                op_1_base_fp: false,
-                op_1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: true,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-            } => {
-                let dst_addr = if dst_base_fp { fp } else { ap };
-                let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                let taken = dst != MemoryValue::Small(0);
-                if taken {
-                    if dst_base_fp {
-                        // jump rel imm if [fp + offset0] != 0.
-                        self.casm_states_by_opcode
-                            .jnz_opcode_is_taken_t_dst_base_fp_t
-                            .push(state);
-                    } else {
-                        // jump rel imm if [ap + offset0] != 0.
-                        self.casm_states_by_opcode
-                            .jnz_opcode_is_taken_t_dst_base_fp_f
-                            .push(state);
-                    };
-                } else if dst_base_fp {
-                    // jump rel imm if [fp + offset0] != 0.
-                    self.casm_states_by_opcode
-                        .jnz_opcode_is_taken_f_dst_base_fp_t
-                        .push(state);
-                } else {
-                    // jump rel imm if [ap + offset] != 0.
-                    self.casm_states_by_opcode
-                        .jnz_opcode_is_taken_f_dst_base_fp_f
-                        .push(state);
-                };
-            }
+            // // jnz.
+            // Instruction {
+            //     offset0,
+            //     offset1: -1,
+            //     offset2: 1,
+            //     dst_base_fp,
+            //     op0_base_fp: true,
+            //     op_1_imm: true,
+            //     op_1_base_fp: false,
+            //     op_1_base_ap: false,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: true,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: false,
+            // } => {
+            //     let dst_addr = if dst_base_fp { fp } else { ap };
+            //     let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
+            //     let taken = dst != MemoryValue::Small(0);
+            //     if taken {
+            //         if dst_base_fp {
+            //             // jump rel imm if [fp + offset0] != 0.
+            //             self.casm_states_by_opcode
+            //                 .jnz_opcode_is_taken_t_dst_base_fp_t
+            //                 .push(state);
+            //         } else {
+            //             // jump rel imm if [ap + offset0] != 0.
+            //             self.casm_states_by_opcode
+            //                 .jnz_opcode_is_taken_t_dst_base_fp_f
+            //                 .push(state);
+            //         };
+            //     } else if dst_base_fp {
+            //         // jump rel imm if [fp + offset0] != 0.
+            //         self.casm_states_by_opcode
+            //             .jnz_opcode_is_taken_f_dst_base_fp_t
+            //             .push(state);
+            //     } else {
+            //         // jump rel imm if [ap + offset] != 0.
+            //         self.casm_states_by_opcode
+            //             .jnz_opcode_is_taken_f_dst_base_fp_f
+            //             .push(state);
+            //     };
+            // }
 
-            // assert equal.
-            Instruction {
-                offset0: _,
-                offset1,
-                offset2,
-                dst_base_fp: _,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-            } => {
-                if op_1_imm {
-                    // [ap/fp + offset0] = imm.
-                    assert!(
-                        !op_1_base_fp
-                            && !op_1_base_ap
-                            && offset2 == 1
-                            && op0_base_fp
-                            && offset1 == -1
-                    );
-                    self.casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_f_is_imm_t
-                        .push(state);
-                } else if !op_1_base_fp && !op_1_base_ap {
-                    // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
-                    self.casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_t_is_imm_f
-                        .push(state);
-                } else {
-                    // [ap/fp + offset0] = [ap/fp + offset1].
-                    assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
-                    self.casm_states_by_opcode
-                        .assert_eq_opcode_is_double_deref_f_is_imm_f
-                        .push(state);
-                }
-            }
+            // // assert equal.
+            // Instruction {
+            //     offset0: _,
+            //     offset1,
+            //     offset2,
+            //     dst_base_fp: _,
+            //     op0_base_fp,
+            //     op_1_imm,
+            //     op_1_base_fp,
+            //     op_1_base_ap,
+            //     res_add: false,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: true,
+            // } => {
+            //     if op_1_imm {
+            //         // [ap/fp + offset0] = imm.
+            //         assert!(
+            //             !op_1_base_fp
+            //                 && !op_1_base_ap
+            //                 && offset2 == 1
+            //                 && op0_base_fp
+            //                 && offset1 == -1
+            //         );
+            //         self.casm_states_by_opcode
+            //             .assert_eq_opcode_is_double_deref_f_is_imm_t
+            //             .push(state);
+            //     } else if !op_1_base_fp && !op_1_base_ap {
+            //         // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
+            //         self.casm_states_by_opcode
+            //             .assert_eq_opcode_is_double_deref_t_is_imm_f
+            //             .push(state);
+            //     } else {
+            //         // [ap/fp + offset0] = [ap/fp + offset1].
+            //         assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
+            //         self.casm_states_by_opcode
+            //             .assert_eq_opcode_is_double_deref_f_is_imm_f
+            //             .push(state);
+            //     }
+            // }
 
-            // mul.
-            Instruction {
-                offset0: _,
-                offset1,
-                offset2,
-                dst_base_fp: _,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: true,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-            } => {
-                let (op0_addr, op_1_addr) = (
-                    if op0_base_fp { fp } else { ap },
-                    if op_1_imm {
-                        pc
-                    } else if op_1_base_fp {
-                        fp
-                    } else {
-                        ap
-                    },
-                );
-                let (op0, op_1) = (
-                    memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
-                );
-                if op_1_imm {
-                    // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
-                    assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
-                    // TODO(Ohad): remove when mul small is implemented.
-                    if dev_mode {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_t
-                            .push(state);
-                    } else if is_small_mul(op0, op_1) {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_t_is_imm_t
-                            .push(state);
-                    } else {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_t
-                            .push(state);
-                    };
-                } else {
-                    // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
-                    assert!((op_1_base_fp || op_1_base_ap));
-                    // TODO(Ohad): remove when mul small is implemented.
-                    if dev_mode {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_f
-                            .push(state);
-                    } else if is_small_mul(op0, op_1) {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_t_is_imm_f
-                            .push(state);
-                    } else {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_f
-                            .push(state);
-                    }
-                }
-            }
+            // // mul.
+            // Instruction {
+            //     offset0: _,
+            //     offset1,
+            //     offset2,
+            //     dst_base_fp: _,
+            //     op0_base_fp,
+            //     op_1_imm,
+            //     op_1_base_fp,
+            //     op_1_base_ap,
+            //     res_add: false,
+            //     res_mul: true,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: true,
+            // } => {
+            //     let (op0_addr, op_1_addr) = (
+            //         if op0_base_fp { fp } else { ap },
+            //         if op_1_imm {
+            //             pc
+            //         } else if op_1_base_fp {
+            //             fp
+            //         } else {
+            //             ap
+            //         },
+            //     );
+            //     let (op0, op_1) = (
+            //         memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+            //         memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+            //     );
+            //     if op_1_imm {
+            //         // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
+            //         assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
+            //         // TODO(Ohad): remove when mul small is implemented.
+            //         if dev_mode {
+            //             self.casm_states_by_opcode
+            //                 .mul_opcode_is_small_f_is_imm_t
+            //                 .push(state);
+            //         } else if is_small_mul(op0, op_1) {
+            //             self.casm_states_by_opcode
+            //                 .mul_opcode_is_small_t_is_imm_t
+            //                 .push(state);
+            //         } else {
+            //             self.casm_states_by_opcode
+            //                 .mul_opcode_is_small_f_is_imm_t
+            //                 .push(state);
+            //         };
+            //     } else {
+            //         // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
+            //         assert!((op_1_base_fp || op_1_base_ap));
+            //         // TODO(Ohad): remove when mul small is implemented.
+            //         if dev_mode {
+            //             self.casm_states_by_opcode
+            //                 .mul_opcode_is_small_f_is_imm_f
+            //                 .push(state);
+            //         } else if is_small_mul(op0, op_1) {
+            //             self.casm_states_by_opcode
+            //                 .mul_opcode_is_small_t_is_imm_f
+            //                 .push(state);
+            //         } else {
+            //             self.casm_states_by_opcode
+            //                 .mul_opcode_is_small_f_is_imm_f
+            //                 .push(state);
+            //         }
+            //     }
+            // }
 
-            // add.
-            Instruction {
-                offset0,
-                offset1,
-                offset2,
-                dst_base_fp,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: true,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-            } => {
-                let (dst_addr, op0_addr, op_1_addr) = (
-                    if dst_base_fp { fp } else { ap },
-                    if op0_base_fp { fp } else { ap },
-                    if op_1_imm {
-                        pc
-                    } else if op_1_base_fp {
-                        fp
-                    } else {
-                        ap
-                    },
-                );
-                let (dst, op0, op_1) = (
-                    memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
-                    memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
-                );
-                if op_1_imm {
-                    // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
-                    assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
-                    if is_small_add(dst, op0, op_1) {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_t
-                            .push(state);
-                    } else {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_f_is_imm_t
-                            .push(state);
-                    };
-                } else {
-                    // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
-                    assert!((op_1_base_fp || op_1_base_ap));
-                    if is_small_add(dst, op0, op_1) {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_t_is_imm_f
-                            .push(state);
-                    } else {
-                        self.casm_states_by_opcode
-                            .add_opcode_is_small_f_is_imm_f
-                            .push(state);
-                    }
-                }
-            }
+            // // add.
+            // Instruction {
+            //     offset0,
+            //     offset1,
+            //     offset2,
+            //     dst_base_fp,
+            //     op0_base_fp,
+            //     op_1_imm,
+            //     op_1_base_fp,
+            //     op_1_base_ap,
+            //     res_add: true,
+            //     res_mul: false,
+            //     pc_update_jump: false,
+            //     pc_update_jump_rel: false,
+            //     pc_update_jnz: false,
+            //     ap_update_add: false,
+            //     ap_update_add_1: _,
+            //     opcode_call: false,
+            //     opcode_ret: false,
+            //     opcode_assert_eq: true,
+            // } => {
+            //     let (dst_addr, op0_addr, op_1_addr) = (
+            //         if dst_base_fp { fp } else { ap },
+            //         if op0_base_fp { fp } else { ap },
+            //         if op_1_imm {
+            //             pc
+            //         } else if op_1_base_fp {
+            //             fp
+            //         } else {
+            //             ap
+            //         },
+            //     );
+            //     let (dst, op0, op_1) = (
+            //         memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+            //         memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+            //         memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+            //     );
+            //     if op_1_imm {
+            //         // [ap/fp + offset0] = [ap/fp + offset1] + Imm.
+            //         assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
+            //         if is_small_add(dst, op0, op_1) {
+            //             self.casm_states_by_opcode
+            //                 .add_opcode_is_small_t_is_imm_t
+            //                 .push(state);
+            //         } else {
+            //             self.casm_states_by_opcode
+            //                 .add_opcode_is_small_f_is_imm_t
+            //                 .push(state);
+            //         };
+            //     } else {
+            //         // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
+            //         assert!((op_1_base_fp || op_1_base_ap));
+            //         if is_small_add(dst, op0, op_1) {
+            //             self.casm_states_by_opcode
+            //                 .add_opcode_is_small_t_is_imm_f
+            //                 .push(state);
+            //         } else {
+            //             self.casm_states_by_opcode
+            //                 .add_opcode_is_small_f_is_imm_f
+            //                 .push(state);
+            //         }
+            //     }
+            // }
 
             // generic opcode.
             _ => {
