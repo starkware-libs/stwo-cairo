@@ -17,12 +17,10 @@ use crate::components::{
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
-    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
-    jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
-    jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
-    jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big,
-    mul_opcode_is_small_f_is_imm_f, mul_opcode_is_small_f_is_imm_t, range_check_19,
-    range_check_9_9, ret_opcode, verify_instruction,
+    jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
+    memory_address_to_id, memory_id_to_big, mul_opcode_is_small_f_is_imm_f,
+    mul_opcode_is_small_f_is_imm_t, range_check_19, range_check_9_9, ret_opcode,
+    verify_instruction,
 };
 use crate::input::state_transitions::StateTransitions;
 
@@ -46,10 +44,10 @@ pub struct OpcodeClaim {
     pub jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::Claim>,
     pub jnz_taken: Vec<jnz_opcode_taken::Claim>,
     pub jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::Claim>,
-    pub jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Claim>,
-    pub jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Claim>,
-    pub jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Claim>,
-    pub jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Claim>,
+    pub jump: Vec<jump_opcode::Claim>,
+    pub jump_double_deref: Vec<jump_opcode_double_deref::Claim>,
+    pub jump_rel: Vec<jump_opcode_rel::Claim>,
+    pub jump_rel_imm: Vec<jump_opcode_rel_imm::Claim>,
     pub mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::Claim>,
     pub mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::Claim>,
     pub ret: Vec<ret_opcode::Claim>,
@@ -84,10 +82,12 @@ impl OpcodeClaim {
         self.jnz_taken_dst_base_fp
             .iter()
             .for_each(|c| c.mix_into(channel));
-        self.jump_f_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.jump_f_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.jump_t_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.jump_t_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.jump.iter().for_each(|c| c.mix_into(channel));
+        self.jump_double_deref
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.jump_rel.iter().for_each(|c| c.mix_into(channel));
+        self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul_f_f.iter().for_each(|c| c.mix_into(channel));
         self.mul_f_t.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
@@ -113,10 +113,10 @@ impl OpcodeClaim {
             self.jnz_dst_base_fp.iter().map(|c| c.log_sizes()),
             self.jnz_taken.iter().map(|c| c.log_sizes()),
             self.jnz_taken_dst_base_fp.iter().map(|c| c.log_sizes()),
-            self.jump_f_f_f.iter().map(|c| c.log_sizes()),
-            self.jump_f_f_t.iter().map(|c| c.log_sizes()),
-            self.jump_t_f_f.iter().map(|c| c.log_sizes()),
-            self.jump_t_t_f.iter().map(|c| c.log_sizes()),
+            self.jump.iter().map(|c| c.log_sizes()),
+            self.jump_double_deref.iter().map(|c| c.log_sizes()),
+            self.jump_rel.iter().map(|c| c.log_sizes()),
+            self.jump_rel_imm.iter().map(|c| c.log_sizes()),
             self.mul_f_f.iter().map(|c| c.log_sizes()),
             self.mul_f_t.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
@@ -143,10 +143,10 @@ pub struct OpcodesClaimGenerator {
     jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::ClaimGenerator>,
     jnz_taken: Vec<jnz_opcode_taken::ClaimGenerator>,
     jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::ClaimGenerator>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::ClaimGenerator>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::ClaimGenerator>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::ClaimGenerator>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator>,
+    jump: Vec<jump_opcode::ClaimGenerator>,
+    jump_double_deref: Vec<jump_opcode_double_deref::ClaimGenerator>,
+    jump_rel: Vec<jump_opcode_rel::ClaimGenerator>,
+    jump_rel_imm: Vec<jump_opcode_rel_imm::ClaimGenerator>,
     mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::ClaimGenerator>,
     mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
@@ -172,10 +172,10 @@ impl OpcodesClaimGenerator {
         let mut jnz_dst_base_fp = vec![];
         let mut jnz_taken = vec![];
         let mut jnz_taken_dst_base_fp = vec![];
-        let mut jump_f_f_f = vec![];
-        let mut jump_f_f_t = vec![];
-        let mut jump_t_f_f = vec![];
-        let mut jump_t_t_f = vec![];
+        let mut jump = vec![];
+        let mut jump_double_deref = vec![];
+        let mut jump_rel = vec![];
+        let mut jump_rel_imm = vec![];
         let mut mul_f_f = vec![];
         let mut mul_f_t = vec![];
         let mut ret = vec![];
@@ -289,57 +289,29 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.jnz_opcode_taken_dst_base_fp,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-            .is_empty()
-        {
-            jump_f_f_f.push(
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
-                ),
-            );
+        if !input.casm_states_by_opcode.jump_opcode.is_empty() {
+            jump.push(jump_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode,
+            ));
         }
         if !input
             .casm_states_by_opcode
-            .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
+            .jump_opcode_double_deref
             .is_empty()
         {
-            jump_f_f_t.push(
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
-                ),
-            );
+            jump_double_deref.push(jump_opcode_double_deref::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_double_deref,
+            ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
-            .is_empty()
-        {
-            jump_t_f_f.push(
-                jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
-                ),
-            );
+        if !input.casm_states_by_opcode.jump_opcode_rel.is_empty() {
+            jump_rel.push(jump_opcode_rel::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_rel,
+            ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-            .is_empty()
-        {
-            jump_t_t_f.push(
-                jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::ClaimGenerator::new(
-                    input
-                        .casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f,
-                ),
-            );
+        if !input.casm_states_by_opcode.jump_opcode_rel_imm.is_empty() {
+            jump_rel_imm.push(jump_opcode_rel_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_rel_imm,
+            ));
         }
         // Handle small mul in big mul component. Temporary until airs are written with Rc_3_6_6.
         // TODO(Ohad): mul small.
@@ -385,10 +357,10 @@ impl OpcodesClaimGenerator {
             jnz_dst_base_fp,
             jnz_taken,
             jnz_taken_dst_base_fp,
-            jump_f_f_f,
-            jump_f_f_t,
-            jump_t_f_f,
-            jump_t_t_f,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
             mul_f_f,
             mul_f_t,
             ret,
@@ -625,8 +597,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jump_f_f_f_claims, jump_f_f_f_interaction_gens) = self
-            .jump_f_f_f
+        let (jump_claims, jump_interaction_gens) = self
+            .jump
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -637,8 +609,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jump_f_f_t_claims, jump_f_f_t_interaction_gens) = self
-            .jump_f_f_t
+        let (jump_double_deref_claims, jump_double_deref_interaction_gens) = self
+            .jump_double_deref
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -649,8 +621,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jump_t_f_f_claims, jump_t_f_f_interaction_gens) = self
-            .jump_t_f_f
+        let (jump_rel_claims, jump_rel_interaction_gens) = self
+            .jump_rel
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -661,8 +633,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (jump_t_t_f_claims, jump_t_t_f_interaction_gens) = self
-            .jump_t_t_f
+        let (jump_rel_imm_claims, jump_rel_imm_interaction_gens) = self
+            .jump_rel_imm
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -731,10 +703,10 @@ impl OpcodesClaimGenerator {
                 jnz_dst_base_fp: jnz_dst_base_fp_claims,
                 jnz_taken: jnz_taken_claims,
                 jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_claims,
-                jump_f_f_f: jump_f_f_f_claims,
-                jump_f_f_t: jump_f_f_t_claims,
-                jump_t_f_f: jump_t_f_f_claims,
-                jump_t_t_f: jump_t_t_f_claims,
+                jump: jump_claims,
+                jump_double_deref: jump_double_deref_claims,
+                jump_rel: jump_rel_claims,
+                jump_rel_imm: jump_rel_imm_claims,
                 mul_f_f: mul_f_f_claims,
                 mul_f_t: mul_f_t_claims,
                 ret: ret_claims,
@@ -758,10 +730,10 @@ impl OpcodesClaimGenerator {
                 jnz_dst_base_fp: jnz_dst_base_fp_interaction_gens,
                 jnz_taken: jnz_taken_interaction_gens,
                 jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_interaction_gens,
-                jump_f_f_f: jump_f_f_f_interaction_gens,
-                jump_f_f_t: jump_f_f_t_interaction_gens,
-                jump_t_f_f: jump_t_f_f_interaction_gens,
-                jump_t_t_f: jump_t_t_f_interaction_gens,
+                jump: jump_interaction_gens,
+                jump_double_deref: jump_double_deref_interaction_gens,
+                jump_rel: jump_rel_interaction_gens,
+                jump_rel_imm: jump_rel_imm_interaction_gens,
                 mul_f_f: mul_f_f_interaction_gens,
                 mul_f_t: mul_f_t_interaction_gens,
                 ret_interaction_gens,
@@ -790,10 +762,10 @@ pub struct OpcodeInteractionClaim {
     jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::InteractionClaim>,
     jnz_taken: Vec<jnz_opcode_taken::InteractionClaim>,
     jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::InteractionClaim>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::InteractionClaim>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::InteractionClaim>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::InteractionClaim>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaim>,
+    jump: Vec<jump_opcode::InteractionClaim>,
+    jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaim>,
+    jump_rel: Vec<jump_opcode_rel::InteractionClaim>,
+    jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaim>,
     mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::InteractionClaim>,
     mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
@@ -828,10 +800,12 @@ impl OpcodeInteractionClaim {
         self.jnz_taken_dst_base_fp
             .iter()
             .for_each(|c| c.mix_into(channel));
-        self.jump_f_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.jump_f_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.jump_t_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.jump_t_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.jump.iter().for_each(|c| c.mix_into(channel));
+        self.jump_double_deref
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.jump_rel.iter().for_each(|c| c.mix_into(channel));
+        self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul_f_f.iter().for_each(|c| c.mix_into(channel));
         self.mul_f_t.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
@@ -965,28 +939,28 @@ impl OpcodeInteractionClaim {
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jump_f_f_f {
+        for interaction_claim in &self.jump {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jump_f_f_t {
+        for interaction_claim in &self.jump_double_deref {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jump_t_f_f {
+        for interaction_claim in &self.jump_rel {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.jump_t_t_f {
+        for interaction_claim in &self.jump_rel_imm {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
@@ -1037,10 +1011,10 @@ pub struct OpcodesInteractionClaimGenerator {
     jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::InteractionClaimGenerator>,
     jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
     jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::InteractionClaimGenerator>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::InteractionClaimGenerator>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::InteractionClaimGenerator>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::InteractionClaimGenerator>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::InteractionClaimGenerator>,
+    jump: Vec<jump_opcode::InteractionClaimGenerator>,
+    jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
+    jump_rel: Vec<jump_opcode_rel::InteractionClaimGenerator>,
+    jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
     mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::InteractionClaimGenerator>,
     mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
@@ -1288,8 +1262,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jump_f_f_f_interaction_claims = self
-            .jump_f_f_f
+        let jump_interaction_claims = self
+            .jump
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1301,8 +1275,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jump_f_f_t_interaction_claims = self
-            .jump_f_f_t
+        let jump_double_deref_interaction_claims = self
+            .jump_double_deref
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1314,8 +1288,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jump_t_f_f_interaction_claims = self
-            .jump_t_f_f
+        let jump_rel_interaction_claims = self
+            .jump_rel
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1327,8 +1301,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let jump_t_t_f_interaction_claims = self
-            .jump_t_t_f
+        let jump_rel_imm_interaction_claims = self
+            .jump_rel_imm
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1400,10 +1374,10 @@ impl OpcodesInteractionClaimGenerator {
             jnz_dst_base_fp: jnz_dst_base_fp_interaction_claims,
             jnz_taken: jnz_taken_interaction_claims,
             jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_interaction_claims,
-            jump_f_f_f: jump_f_f_f_interaction_claims,
-            jump_f_f_t: jump_f_f_t_interaction_claims,
-            jump_t_f_f: jump_t_f_f_interaction_claims,
-            jump_t_t_f: jump_t_t_f_interaction_claims,
+            jump: jump_interaction_claims,
+            jump_double_deref: jump_double_deref_interaction_claims,
+            jump_rel: jump_rel_interaction_claims,
+            jump_rel_imm: jump_rel_imm_interaction_claims,
             mul_f_f: mul_f_f_interaction_claims,
             mul_f_t: mul_f_t_interaction_claims,
             ret: ret_interaction_claims,
@@ -1430,10 +1404,10 @@ pub struct OpcodeComponents {
     jnz_dst_base_fp: Vec<jnz_opcode_dst_base_fp::Component>,
     jnz_taken: Vec<jnz_opcode_taken::Component>,
     jnz_taken_dst_base_fp: Vec<jnz_opcode_taken_dst_base_fp::Component>,
-    jump_f_f_f: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Component>,
-    jump_f_f_t: Vec<jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Component>,
-    jump_t_f_f: Vec<jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Component>,
-    jump_t_t_f: Vec<jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Component>,
+    jump: Vec<jump_opcode::Component>,
+    jump_double_deref: Vec<jump_opcode_double_deref::Component>,
+    jump_rel: Vec<jump_opcode_rel::Component>,
+    jump_rel_imm: Vec<jump_opcode_rel_imm::Component>,
     mul_f_f: Vec<mul_opcode_is_small_f_is_imm_f::Component>,
     mul_f_t: Vec<mul_opcode_is_small_f_is_imm_t::Component>,
     ret: Vec<ret_opcode::Component>,
@@ -1875,14 +1849,14 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jump_f_f_f_components = claim
-            .jump_f_f_f
+        let jump_components = claim
+            .jump
             .iter()
-            .zip(interaction_claim.jump_f_f_f.iter())
+            .zip(interaction_claim.jump.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Component::new(
+                jump_opcode::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f::Eval {
+                    jump_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1899,14 +1873,14 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let jump_f_f_t_components = claim
-            .jump_f_f_t
+        let jump_double_deref_components = claim
+            .jump_double_deref
             .iter()
-            .zip(interaction_claim.jump_f_f_t.iter())
+            .zip(interaction_claim.jump_double_deref.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Component::new(
+                jump_opcode_double_deref::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_f_is_imm_f_is_double_deref_t::Eval {
+                    jump_opcode_double_deref::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1923,14 +1897,14 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let jump_t_f_f_components = claim
-            .jump_t_f_f
+        let jump_rel_components = claim
+            .jump_rel
             .iter()
-            .zip(interaction_claim.jump_t_f_f.iter())
+            .zip(interaction_claim.jump_rel.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Component::new(
+                jump_opcode_rel::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_t_is_imm_f_is_double_deref_f::Eval {
+                    jump_opcode_rel::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1947,14 +1921,14 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let jump_t_t_f_components = claim
-            .jump_t_t_f
+        let jump_rel_imm_components = claim
+            .jump_rel_imm
             .iter()
-            .zip(interaction_claim.jump_t_t_f.iter())
+            .zip(interaction_claim.jump_rel_imm.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Component::new(
+                jump_opcode_rel_imm::Component::new(
                     tree_span_provider,
-                    jump_opcode_is_rel_t_is_imm_t_is_double_deref_f::Eval {
+                    jump_opcode_rel_imm::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2064,10 +2038,10 @@ impl OpcodeComponents {
             jnz_dst_base_fp: jnz_dst_base_fp_components,
             jnz_taken: jnz_taken_components,
             jnz_taken_dst_base_fp: jnz_taken_dst_base_fp_components,
-            jump_f_f_f: jump_f_f_f_components,
-            jump_f_f_t: jump_f_f_t_components,
-            jump_t_f_f: jump_t_f_f_components,
-            jump_t_t_f: jump_t_t_f_components,
+            jump: jump_components,
+            jump_double_deref: jump_double_deref_components,
+            jump_rel: jump_rel_components,
+            jump_rel_imm: jump_rel_imm_components,
             mul_f_f: mul_f_f_components,
             mul_f_t: mul_f_t_components,
             ret: ret_components,
@@ -2167,22 +2141,22 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jump_f_f_f
+            self.jump
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jump_f_f_t
+            self.jump_double_deref
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jump_t_f_f
+            self.jump_rel
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.jump_t_t_f
+            self.jump_rel_imm
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
@@ -2243,14 +2217,14 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.jnz_taken))?;
         writeln!(f, "jnz_taken_dst_base_fp:")?;
         writeln!(f, "{}", display_components(&self.jnz_taken_dst_base_fp))?;
-        writeln!(f, "jump_f_f_f:")?;
-        writeln!(f, "{}", display_components(&self.jump_f_f_f))?;
-        writeln!(f, "jump_f_f_t:")?;
-        writeln!(f, "{}", display_components(&self.jump_f_f_t))?;
-        writeln!(f, "jump_t_f_f:")?;
-        writeln!(f, "{}", display_components(&self.jump_t_f_f))?;
-        writeln!(f, "jump_t_t_f:")?;
-        writeln!(f, "{}", display_components(&self.jump_t_t_f))?;
+        writeln!(f, "jump:")?;
+        writeln!(f, "{}", display_components(&self.jump))?;
+        writeln!(f, "jump_double_deref:")?;
+        writeln!(f, "{}", display_components(&self.jump_double_deref))?;
+        writeln!(f, "jump_rel:")?;
+        writeln!(f, "{}", display_components(&self.jump_rel))?;
+        writeln!(f, "jump_rel_imm:")?;
+        writeln!(f, "{}", display_components(&self.jump_rel_imm))?;
         writeln!(f, "mul_f_f:")?;
         writeln!(f, "{}", display_components(&self.mul_f_f))?;
         writeln!(f, "mul_f_t:")?;

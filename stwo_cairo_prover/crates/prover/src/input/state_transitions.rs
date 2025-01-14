@@ -40,10 +40,10 @@ pub struct CasmStatesByOpcode {
     pub jnz_opcode: Vec<CasmState>,
     pub jnz_opcode_taken: Vec<CasmState>,
     pub jnz_opcode_dst_base_fp: Vec<CasmState>,
-    pub jump_opcode_is_rel_t_is_imm_t_is_double_deref_f: Vec<CasmState>,
-    pub jump_opcode_is_rel_t_is_imm_f_is_double_deref_f: Vec<CasmState>,
-    pub jump_opcode_is_rel_f_is_imm_f_is_double_deref_t: Vec<CasmState>,
-    pub jump_opcode_is_rel_f_is_imm_f_is_double_deref_f: Vec<CasmState>,
+    pub jump_opcode_rel_imm: Vec<CasmState>,
+    pub jump_opcode_rel: Vec<CasmState>,
+    pub jump_opcode_double_deref: Vec<CasmState>,
+    pub jump_opcode: Vec<CasmState>,
     pub mul_opcode_is_small_t_is_imm_t: Vec<CasmState>,
     pub mul_opcode_is_small_t_is_imm_f: Vec<CasmState>,
     pub mul_opcode_is_small_f_is_imm_f: Vec<CasmState>,
@@ -84,22 +84,13 @@ impl CasmStatesByOpcode {
             ("jnz_opcode", self.jnz_opcode.len()),
             ("jnz_opcode_taken", self.jnz_opcode_taken.len()),
             ("jnz_opcode_dst_base_fp", self.jnz_opcode_dst_base_fp.len()),
+            ("jump_opcode_rel_imm", self.jump_opcode_rel_imm.len()),
+            ("jump_opcode_rel", self.jump_opcode_rel.len()),
             (
-                "jump_opcode_is_rel_t_is_imm_t_is_double_deref_f",
-                self.jump_opcode_is_rel_t_is_imm_t_is_double_deref_f.len(),
+                "jump_opcode_double_deref",
+                self.jump_opcode_double_deref.len(),
             ),
-            (
-                "jump_opcode_is_rel_t_is_imm_f_is_double_deref_f",
-                self.jump_opcode_is_rel_t_is_imm_f_is_double_deref_f.len(),
-            ),
-            (
-                "jump_opcode_is_rel_f_is_imm_f_is_double_deref_t",
-                self.jump_opcode_is_rel_f_is_imm_f_is_double_deref_t.len(),
-            ),
-            (
-                "jump_opcode_is_rel_f_is_imm_f_is_double_deref_f",
-                self.jump_opcode_is_rel_f_is_imm_f_is_double_deref_f.len(),
-            ),
+            ("jump_opcode", self.jump_opcode.len()),
             (
                 "mul_opcode_is_small_t_is_imm_t",
                 self.mul_opcode_is_small_t_is_imm_t.len(),
@@ -292,9 +283,7 @@ impl StateTransitions {
                             && offset1 == -1
                             && offset2 == 1
                     );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-                        .push(state);
+                    self.casm_states_by_opcode.jump_opcode_rel_imm.push(state);
                 } else if pc_update_jump_rel {
                     // jump rel [ap/fp + offset2].
                     assert!(
@@ -303,14 +292,12 @@ impl StateTransitions {
                             && op0_base_fp
                             && offset1 == -1
                     );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_t_is_imm_f_is_double_deref_f
-                        .push(state);
+                    self.casm_states_by_opcode.jump_opcode_rel.push(state);
                 } else if !op_1_base_fp && !op_1_base_ap {
                     // jump abs [[ap/fp + offset1] + offset2].
                     assert!(pc_update_jump);
                     self.casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_t
+                        .jump_opcode_double_deref
                         .push(state);
                 } else {
                     // jump abs [ap/fp + offset2].
@@ -320,9 +307,7 @@ impl StateTransitions {
                             && pc_update_jump
                             && offset1 == -1
                     );
-                    self.casm_states_by_opcode
-                        .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-                        .push(state);
+                    self.casm_states_by_opcode.jump_opcode.push(state);
                 }
             }
 
@@ -645,12 +630,7 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .jump_opcode_is_rel_f_is_imm_f_is_double_deref_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.jump_opcode.len(), 1);
         assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
         assert_eq!(casm_states_by_opcode.add_opcode_small_imm.len(), 1);
     }
@@ -665,12 +645,7 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .jump_opcode_is_rel_t_is_imm_t_is_double_deref_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.jump_opcode_rel_imm.len(), 1);
     }
 
     #[test]
