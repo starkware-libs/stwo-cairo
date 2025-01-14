@@ -44,10 +44,10 @@ pub struct CasmStatesByOpcode {
     pub jump_opcode_rel: Vec<CasmState>,
     pub jump_opcode_double_deref: Vec<CasmState>,
     pub jump_opcode: Vec<CasmState>,
-    pub mul_opcode_is_small_t_is_imm_t: Vec<CasmState>,
-    pub mul_opcode_is_small_t_is_imm_f: Vec<CasmState>,
-    pub mul_opcode_is_small_f_is_imm_f: Vec<CasmState>,
-    pub mul_opcode_is_small_f_is_imm_t: Vec<CasmState>,
+    pub mul_opcode_small_imm: Vec<CasmState>,
+    pub mul_opcode_small: Vec<CasmState>,
+    pub mul_opcode: Vec<CasmState>,
+    pub mul_opcode_imm: Vec<CasmState>,
     pub ret_opcode: Vec<CasmState>,
 }
 
@@ -91,22 +91,10 @@ impl CasmStatesByOpcode {
                 self.jump_opcode_double_deref.len(),
             ),
             ("jump_opcode", self.jump_opcode.len()),
-            (
-                "mul_opcode_is_small_t_is_imm_t",
-                self.mul_opcode_is_small_t_is_imm_t.len(),
-            ),
-            (
-                "mul_opcode_is_small_t_is_imm_f",
-                self.mul_opcode_is_small_t_is_imm_f.len(),
-            ),
-            (
-                "mul_opcode_is_small_f_is_imm_f",
-                self.mul_opcode_is_small_f_is_imm_f.len(),
-            ),
-            (
-                "mul_opcode_is_small_f_is_imm_t",
-                self.mul_opcode_is_small_f_is_imm_t.len(),
-            ),
+            ("mul_opcode_small_imm", self.mul_opcode_small_imm.len()),
+            ("mul_opcode_small", self.mul_opcode_small.len()),
+            ("mul_opcode", self.mul_opcode.len()),
+            ("mul_opcode_imm", self.mul_opcode_imm.len()),
             ("ret_opcode", self.ret_opcode.len()),
         ]
     }
@@ -483,34 +471,22 @@ impl StateTransitions {
                     assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
                     // TODO(Ohad): remove when mul small is implemented.
                     if dev_mode {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_t
-                            .push(state);
+                        self.casm_states_by_opcode.mul_opcode_imm.push(state);
                     } else if is_small_mul(op0, op_1) {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_t_is_imm_t
-                            .push(state);
+                        self.casm_states_by_opcode.mul_opcode_small_imm.push(state);
                     } else {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_t
-                            .push(state);
+                        self.casm_states_by_opcode.mul_opcode_imm.push(state);
                     };
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                     assert!((op_1_base_fp || op_1_base_ap));
                     // TODO(Ohad): remove when mul small is implemented.
                     if dev_mode {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_f
-                            .push(state);
+                        self.casm_states_by_opcode.mul_opcode.push(state);
                     } else if is_small_mul(op0, op_1) {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_t_is_imm_f
-                            .push(state);
+                        self.casm_states_by_opcode.mul_opcode_small.push(state);
                     } else {
-                        self.casm_states_by_opcode
-                            .mul_opcode_is_small_f_is_imm_f
-                            .push(state);
+                        self.casm_states_by_opcode.mul_opcode.push(state);
                     }
                 }
             }
@@ -826,14 +802,8 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_f.len(),
-            1
-        );
-        assert_eq!(
-            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
-            2
-        );
+        assert_eq!(casm_states_by_opcode.mul_opcode_small.len(), 1);
+        assert_eq!(casm_states_by_opcode.mul_opcode_small_imm.len(), 2);
     }
 
     #[test]
@@ -851,18 +821,9 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode.mul_opcode_is_small_f_is_imm_f.len(),
-            1
-        );
-        assert_eq!(
-            casm_states_by_opcode.mul_opcode_is_small_f_is_imm_t.len(),
-            1
-        );
-        assert_eq!(
-            casm_states_by_opcode.mul_opcode_is_small_t_is_imm_t.len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.mul_opcode.len(), 1);
+        assert_eq!(casm_states_by_opcode.mul_opcode_imm.len(), 1);
+        assert_eq!(casm_states_by_opcode.mul_opcode_small_imm.len(), 1);
     }
 
     #[test]

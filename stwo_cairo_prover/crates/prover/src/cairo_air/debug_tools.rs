@@ -20,9 +20,8 @@ use crate::components::{
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, mul_opcode_is_small_f_is_imm_f,
-    mul_opcode_is_small_f_is_imm_t, range_check_19, range_check_4_3, range_check_7_2_5,
-    range_check_9_9, ret_opcode, verify_instruction,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_19,
+    range_check_4_3, range_check_7_2_5, range_check_9_9, ret_opcode, verify_instruction,
 };
 use crate::felt::split_f252;
 use crate::relations;
@@ -402,11 +401,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.mul_f_f.clone() {
+    for claim in claim.opcodes.mul.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                mul_opcode_is_small_f_is_imm_f::Eval {
+                mul_opcode::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -419,11 +418,11 @@ where
             .entries(trace),
         );
     }
-    for claim in claim.opcodes.mul_f_t.clone() {
+    for claim in claim.opcodes.mul_imm.clone() {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                mul_opcode_is_small_f_is_imm_t::Eval {
+                mul_opcode_imm::Eval {
                     claim,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
