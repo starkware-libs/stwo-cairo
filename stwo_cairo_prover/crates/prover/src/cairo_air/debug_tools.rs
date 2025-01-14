@@ -20,8 +20,9 @@ use crate::components::{
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_19,
-    range_check_4_3, range_check_7_2_5, range_check_9_9, ret_opcode, verify_instruction,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_11,
+    range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9, ret_opcode,
+    verify_instruction,
 };
 use crate::felt::split_f252;
 use crate::relations;
@@ -507,6 +508,16 @@ where
     );
 
     // Range Checks.
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_11::Eval {
+                lookup_elements: relations::RangeCheck_11::dummy(),
+            },
+            1 << 11,
+        )
+        .entries(trace),
+    );
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
