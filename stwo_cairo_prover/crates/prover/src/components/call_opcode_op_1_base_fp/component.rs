@@ -4,6 +4,7 @@ use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::logup::{LogupAtRow, LogupSums, LookupElements};
+use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
@@ -113,8 +114,8 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
-                M31_0.clone(),
                 M31_1.clone(),
+                M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_1.clone(),
@@ -188,7 +189,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (input_ap_col1.clone() + (offset2_col3.clone() - M31_32768.clone())),
+                (input_fp_col2.clone() + (offset2_col3.clone() - M31_32768.clone())),
                 next_pc_id_col12.clone(),
             ],
         ));

@@ -15,10 +15,10 @@ use super::debug_tools::display_components;
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, call_opcode_is_rel_f_op_1_base_fp_f, call_opcode_is_rel_f_op_1_base_fp_t,
-    call_opcode_is_rel_t_op_1_base_fp_f, generic_opcode, jnz_opcode_is_taken_f_dst_base_fp_f,
-    jnz_opcode_is_taken_f_dst_base_fp_t, jnz_opcode_is_taken_t_dst_base_fp_f,
-    jnz_opcode_is_taken_t_dst_base_fp_t, jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
+    assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
+    jnz_opcode_is_taken_f_dst_base_fp_f, jnz_opcode_is_taken_f_dst_base_fp_t,
+    jnz_opcode_is_taken_t_dst_base_fp_f, jnz_opcode_is_taken_t_dst_base_fp_t,
+    jump_opcode_is_rel_f_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_f_is_imm_f_is_double_deref_t,
     jump_opcode_is_rel_t_is_imm_f_is_double_deref_f,
     jump_opcode_is_rel_t_is_imm_t_is_double_deref_f, memory_address_to_id, memory_id_to_big,
@@ -39,9 +39,9 @@ pub struct OpcodeClaim {
     pub assert_eq: Vec<assert_eq_opcode::Claim>,
     pub assert_eq_imm: Vec<assert_eq_opcode_imm::Claim>,
     pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Claim>,
-    pub call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::Claim>,
-    pub call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::Claim>,
-    pub call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::Claim>,
+    pub call: Vec<call_opcode::Claim>,
+    pub call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::Claim>,
+    pub call_rel: Vec<call_opcode_rel::Claim>,
     pub generic: Vec<generic_opcode::Claim>,
     pub jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Claim>,
     pub jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Claim>,
@@ -71,9 +71,11 @@ impl OpcodeClaim {
         self.assert_eq_double_deref
             .iter()
             .for_each(|c| c.mix_into(channel));
-        self.call_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.call_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.call_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.call.iter().for_each(|c| c.mix_into(channel));
+        self.call_op_1_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.call_rel.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_f.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_t.iter().for_each(|c| c.mix_into(channel));
@@ -100,9 +102,9 @@ impl OpcodeClaim {
             self.assert_eq.iter().map(|c| c.log_sizes()),
             self.assert_eq_imm.iter().map(|c| c.log_sizes()),
             self.assert_eq_double_deref.iter().map(|c| c.log_sizes()),
-            self.call_f_f.iter().map(|c| c.log_sizes()),
-            self.call_f_t.iter().map(|c| c.log_sizes()),
-            self.call_t_f.iter().map(|c| c.log_sizes()),
+            self.call.iter().map(|c| c.log_sizes()),
+            self.call_op_1_base_fp.iter().map(|c| c.log_sizes()),
+            self.call_rel.iter().map(|c| c.log_sizes()),
             self.generic.iter().map(|c| c.log_sizes()),
             self.jnz_f_f.iter().map(|c| c.log_sizes()),
             self.jnz_f_t.iter().map(|c| c.log_sizes()),
@@ -130,9 +132,9 @@ pub struct OpcodesClaimGenerator {
     assert_eq: Vec<assert_eq_opcode::ClaimGenerator>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::ClaimGenerator>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::ClaimGenerator>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::ClaimGenerator>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::ClaimGenerator>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::ClaimGenerator>,
+    call: Vec<call_opcode::ClaimGenerator>,
+    call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::ClaimGenerator>,
+    call_rel: Vec<call_opcode_rel::ClaimGenerator>,
     generic: Vec<generic_opcode::ClaimGenerator>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::ClaimGenerator>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::ClaimGenerator>,
@@ -159,9 +161,9 @@ impl OpcodesClaimGenerator {
         let mut assert_eq = vec![];
         let mut assert_eq_imm = vec![];
         let mut assert_eq_double_deref = vec![];
-        let mut call_f_f = vec![];
-        let mut call_f_t = vec![];
-        let mut call_t_f = vec![];
+        let mut call = vec![];
+        let mut call_op_1_base_fp = vec![];
+        let mut call_rel = vec![];
         let mut generic = vec![];
         let mut jnz_f_f = vec![];
         let mut jnz_f_t = vec![];
@@ -232,37 +234,23 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.assert_eq_opcode_double_deref,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .call_opcode_is_rel_f_op_1_base_fp_f
-            .is_empty()
-        {
-            call_f_f.push(call_opcode_is_rel_f_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .call_opcode_is_rel_f_op_1_base_fp_f,
+        if !input.casm_states_by_opcode.call_opcode.is_empty() {
+            call.push(call_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode,
             ));
         }
         if !input
             .casm_states_by_opcode
-            .call_opcode_is_rel_f_op_1_base_fp_t
+            .call_opcode_op_1_base_fp
             .is_empty()
         {
-            call_f_t.push(call_opcode_is_rel_f_op_1_base_fp_t::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .call_opcode_is_rel_f_op_1_base_fp_t,
+            call_op_1_base_fp.push(call_opcode_op_1_base_fp::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode_op_1_base_fp,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .call_opcode_is_rel_t_op_1_base_fp_f
-            .is_empty()
-        {
-            call_t_f.push(call_opcode_is_rel_t_op_1_base_fp_f::ClaimGenerator::new(
-                input
-                    .casm_states_by_opcode
-                    .call_opcode_is_rel_t_op_1_base_fp_f,
+        if !input.casm_states_by_opcode.call_opcode_rel.is_empty() {
+            call_rel.push(call_opcode_rel::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode_rel,
             ));
         }
         if !input.casm_states_by_opcode.generic_opcode.is_empty() {
@@ -402,9 +390,9 @@ impl OpcodesClaimGenerator {
             assert_eq,
             assert_eq_imm,
             assert_eq_double_deref,
-            call_f_f,
-            call_f_t,
-            call_t_f,
+            call,
+            call_op_1_base_fp,
+            call_rel,
             generic,
             jnz_f_f,
             jnz_f_t,
@@ -552,8 +540,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (call_f_f_claims, call_f_f_interaction_gens) = self
-            .call_f_f
+        let (call_claims, call_interaction_gens) = self
+            .call
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -564,8 +552,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (call_f_t_claims, call_f_t_interaction_gens) = self
-            .call_f_t
+        let (call_op_1_base_fp_claims, call_op_1_base_fp_interaction_gens) = self
+            .call_op_1_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -576,8 +564,8 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
-        let (call_t_f_claims, call_t_f_interaction_gens) = self
-            .call_t_f
+        let (call_rel_claims, call_rel_interaction_gens) = self
+            .call_rel
             .into_iter()
             .map(|gen| {
                 gen.write_trace(
@@ -748,9 +736,9 @@ impl OpcodesClaimGenerator {
                 assert_eq: assert_eq_claims,
                 assert_eq_imm: assert_eq_imm_claims,
                 assert_eq_double_deref: assert_eq_double_deref_claims,
-                call_f_f: call_f_f_claims,
-                call_f_t: call_f_t_claims,
-                call_t_f: call_t_f_claims,
+                call: call_claims,
+                call_op_1_base_fp: call_op_1_base_fp_claims,
+                call_rel: call_rel_claims,
                 generic: generic_opcode_claims,
                 jnz_f_f: jnz_f_f_claims,
                 jnz_f_t: jnz_f_t_claims,
@@ -775,9 +763,9 @@ impl OpcodesClaimGenerator {
                 assert_eq: assert_eq_interaction_gens,
                 assert_eq_imm: assert_eq_imm_interaction_gens,
                 assert_eq_double_deref: assert_eq_double_deref_interaction_gens,
-                call_f_f: call_f_f_interaction_gens,
-                call_f_t: call_f_t_interaction_gens,
-                call_t_f: call_t_f_interaction_gens,
+                call: call_interaction_gens,
+                call_op_1_base_fp: call_op_1_base_fp_interaction_gens,
+                call_rel: call_rel_interaction_gens,
                 generic_opcode_interaction_gens,
                 jnz_f_f: jnz_f_f_interaction_gens,
                 jnz_f_t: jnz_f_t_interaction_gens,
@@ -807,9 +795,9 @@ pub struct OpcodeInteractionClaim {
     assert_eq: Vec<assert_eq_opcode::InteractionClaim>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaim>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::InteractionClaim>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::InteractionClaim>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::InteractionClaim>,
+    call: Vec<call_opcode::InteractionClaim>,
+    call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::InteractionClaim>,
+    call_rel: Vec<call_opcode_rel::InteractionClaim>,
     generic: Vec<generic_opcode::InteractionClaim>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaim>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaim>,
@@ -839,9 +827,11 @@ impl OpcodeInteractionClaim {
         self.assert_eq_double_deref
             .iter()
             .for_each(|c| c.mix_into(channel));
-        self.call_f_f.iter().for_each(|c| c.mix_into(channel));
-        self.call_f_t.iter().for_each(|c| c.mix_into(channel));
-        self.call_t_f.iter().for_each(|c| c.mix_into(channel));
+        self.call.iter().for_each(|c| c.mix_into(channel));
+        self.call_op_1_base_fp
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.call_rel.iter().for_each(|c| c.mix_into(channel));
         self.generic.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_f.iter().for_each(|c| c.mix_into(channel));
         self.jnz_f_t.iter().for_each(|c| c.mix_into(channel));
@@ -928,21 +918,21 @@ impl OpcodeInteractionClaim {
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.call_f_f {
+        for interaction_claim in &self.call {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.call_f_t {
+        for interaction_claim in &self.call_op_1_base_fp {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
                 None => total_sum,
             };
         }
-        for interaction_claim in &self.call_t_f {
+        for interaction_claim in &self.call_rel {
             let (total_sum, claimed_sum) = interaction_claim.logup_sums;
             sum += match claimed_sum {
                 Some((claimed_sum, ..)) => claimed_sum,
@@ -1048,9 +1038,9 @@ pub struct OpcodesInteractionClaimGenerator {
     assert_eq: Vec<assert_eq_opcode::InteractionClaimGenerator>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::InteractionClaimGenerator>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::InteractionClaimGenerator>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::InteractionClaimGenerator>,
+    call: Vec<call_opcode::InteractionClaimGenerator>,
+    call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::InteractionClaimGenerator>,
+    call_rel: Vec<call_opcode_rel::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::InteractionClaimGenerator>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::InteractionClaimGenerator>,
@@ -1201,8 +1191,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let call_f_f_interaction_claims = self
-            .call_f_f
+        let call_interaction_claims = self
+            .call
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1214,8 +1204,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let call_f_t_interaction_claims = self
-            .call_f_t
+        let call_op_1_base_fp_interaction_claims = self
+            .call_op_1_base_fp
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1227,8 +1217,8 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
-        let call_t_f_interaction_claims = self
-            .call_t_f
+        let call_rel_interaction_claims = self
+            .call_rel
             .into_iter()
             .map(|gen| {
                 gen.write_interaction_trace(
@@ -1411,9 +1401,9 @@ impl OpcodesInteractionClaimGenerator {
             assert_eq: assert_eq_interaction_claims,
             assert_eq_imm: assert_eq_imm_interaction_claims,
             assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
-            call_f_f: call_f_f_interaction_claims,
-            call_f_t: call_f_t_interaction_claims,
-            call_t_f: call_t_f_interaction_claims,
+            call: call_interaction_claims,
+            call_op_1_base_fp: call_op_1_base_fp_interaction_claims,
+            call_rel: call_rel_interaction_claims,
             generic: generic_opcode_interaction_claims,
             jnz_f_f: jnz_f_f_interaction_claims,
             jnz_f_t: jnz_f_t_interaction_claims,
@@ -1441,9 +1431,9 @@ pub struct OpcodeComponents {
     assert_eq: Vec<assert_eq_opcode::Component>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::Component>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Component>,
-    call_f_f: Vec<call_opcode_is_rel_f_op_1_base_fp_f::Component>,
-    call_f_t: Vec<call_opcode_is_rel_f_op_1_base_fp_t::Component>,
-    call_t_f: Vec<call_opcode_is_rel_t_op_1_base_fp_f::Component>,
+    call: Vec<call_opcode::Component>,
+    call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::Component>,
+    call_rel: Vec<call_opcode_rel::Component>,
     generic: Vec<generic_opcode::Component>,
     jnz_f_f: Vec<jnz_opcode_is_taken_f_dst_base_fp_f::Component>,
     jnz_f_t: Vec<jnz_opcode_is_taken_f_dst_base_fp_t::Component>,
@@ -1698,14 +1688,14 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let call_f_f_components = claim
-            .call_f_f
+        let call_components = claim
+            .call
             .iter()
-            .zip(interaction_claim.call_f_f.iter())
+            .zip(interaction_claim.call.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_f_op_1_base_fp_f::Component::new(
+                call_opcode::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_f_op_1_base_fp_f::Eval {
+                    call_opcode::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1722,14 +1712,14 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let call_f_t_components = claim
-            .call_f_t
+        let call_op_1_base_fp_components = claim
+            .call_op_1_base_fp
             .iter()
-            .zip(interaction_claim.call_f_t.iter())
+            .zip(interaction_claim.call_op_1_base_fp.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_f_op_1_base_fp_t::Component::new(
+                call_opcode_op_1_base_fp::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_f_op_1_base_fp_t::Eval {
+                    call_opcode_op_1_base_fp::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -1746,14 +1736,14 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let call_t_f_components = claim
-            .call_t_f
+        let call_rel_components = claim
+            .call_rel
             .iter()
-            .zip(interaction_claim.call_t_f.iter())
+            .zip(interaction_claim.call_rel.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode_is_rel_t_op_1_base_fp_f::Component::new(
+                call_opcode_rel::Component::new(
                     tree_span_provider,
-                    call_opcode_is_rel_t_op_1_base_fp_f::Eval {
+                    call_opcode_rel::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -2075,9 +2065,9 @@ impl OpcodeComponents {
             assert_eq: assert_eq_components,
             assert_eq_imm: assert_eq_imm_components,
             assert_eq_double_deref: assert_eq_double_deref_components,
-            call_f_f: call_f_f_components,
-            call_f_t: call_f_t_components,
-            call_t_f: call_t_f_components,
+            call: call_components,
+            call_op_1_base_fp: call_op_1_base_fp_components,
+            call_rel: call_rel_components,
             generic: generic_components,
             jnz_f_f: jnz_f_f_components,
             jnz_f_t: jnz_f_t_components,
@@ -2146,17 +2136,17 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.call_f_f
+            self.call
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.call_f_t
+            self.call_op_1_base_fp
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
-            self.call_t_f
+            self.call_rel
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
@@ -2246,12 +2236,12 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.assert_eq_imm))?;
         writeln!(f, "assert_eq_double_deref:")?;
         writeln!(f, "{}", display_components(&self.assert_eq_double_deref))?;
-        writeln!(f, "call_f_f:")?;
-        writeln!(f, "{}", display_components(&self.call_f_f))?;
-        writeln!(f, "call_f_t:")?;
-        writeln!(f, "{}", display_components(&self.call_f_t))?;
-        writeln!(f, "call_t_f:")?;
-        writeln!(f, "{}", display_components(&self.call_t_f))?;
+        writeln!(f, "call:")?;
+        writeln!(f, "{}", display_components(&self.call))?;
+        writeln!(f, "call_op_1_base_fp:")?;
+        writeln!(f, "{}", display_components(&self.call_op_1_base_fp))?;
+        writeln!(f, "call_rel:")?;
+        writeln!(f, "{}", display_components(&self.call_rel))?;
         writeln!(f, "generic:")?;
         writeln!(f, "{}", display_components(&self.generic))?;
         writeln!(f, "jnz_f_f:")?;

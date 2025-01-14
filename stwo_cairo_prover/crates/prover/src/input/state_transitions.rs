@@ -33,9 +33,9 @@ pub struct CasmStatesByOpcode {
     pub assert_eq_opcode: Vec<CasmState>,
     pub assert_eq_opcode_double_deref: Vec<CasmState>,
     pub assert_eq_opcode_imm: Vec<CasmState>,
-    pub call_opcode_is_rel_f_op_1_base_fp_f: Vec<CasmState>,
-    pub call_opcode_is_rel_t_op_1_base_fp_f: Vec<CasmState>,
-    pub call_opcode_is_rel_f_op_1_base_fp_t: Vec<CasmState>,
+    pub call_opcode: Vec<CasmState>,
+    pub call_opcode_rel: Vec<CasmState>,
+    pub call_opcode_op_1_base_fp: Vec<CasmState>,
     pub jnz_opcode_is_taken_t_dst_base_fp_t: Vec<CasmState>,
     pub jnz_opcode_is_taken_f_dst_base_fp_f: Vec<CasmState>,
     pub jnz_opcode_is_taken_t_dst_base_fp_f: Vec<CasmState>,
@@ -71,17 +71,11 @@ impl CasmStatesByOpcode {
                 self.assert_eq_opcode_double_deref.len(),
             ),
             ("assert_eq_opcode_imm", self.assert_eq_opcode_imm.len()),
+            ("call_opcode", self.call_opcode.len()),
+            ("call_opcode_rel", self.call_opcode_rel.len()),
             (
-                "call_opcode_is_rel_f_op_1_base_fp_f",
-                self.call_opcode_is_rel_f_op_1_base_fp_f.len(),
-            ),
-            (
-                "call_opcode_is_rel_t_op_1_base_fp_f",
-                self.call_opcode_is_rel_t_op_1_base_fp_f.len(),
-            ),
-            (
-                "call_opcode_is_rel_f_op_1_base_fp_t",
-                self.call_opcode_is_rel_f_op_1_base_fp_t.len(),
+                "call_opcode_op_1_base_fp",
+                self.call_opcode_op_1_base_fp.len(),
             ),
             (
                 "jnz_opcode_is_taken_t_dst_base_fp_t",
@@ -371,21 +365,17 @@ impl StateTransitions {
                             && offset2 == 1
                             && !pc_update_jump
                     );
-                    self.casm_states_by_opcode
-                        .call_opcode_is_rel_t_op_1_base_fp_f
-                        .push(state);
+                    self.casm_states_by_opcode.call_opcode_rel.push(state);
                 } else if op_1_base_fp {
                     // call abs [fp + offset2].
                     assert!(!op_1_base_ap && !op_1_imm && pc_update_jump);
                     self.casm_states_by_opcode
-                        .call_opcode_is_rel_f_op_1_base_fp_t
+                        .call_opcode_op_1_base_fp
                         .push(state);
                 } else {
                     // call abs [ap + offset2].
                     assert!(op_1_base_ap && !op_1_imm && pc_update_jump);
-                    self.casm_states_by_opcode
-                        .call_opcode_is_rel_f_op_1_base_fp_f
-                        .push(state);
+                    self.casm_states_by_opcode.call_opcode.push(state);
                 }
             }
 
@@ -674,12 +664,7 @@ mod mappings_tests {
                 .len(),
             1
         );
-        assert_eq!(
-            casm_states_by_opcode
-                .call_opcode_is_rel_t_op_1_base_fp_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
         assert_eq!(casm_states_by_opcode.add_opcode_small_imm.len(), 1);
     }
 
@@ -731,18 +716,8 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .call_opcode_is_rel_f_op_1_base_fp_t
-                .len(),
-            2
-        );
-        assert_eq!(
-            casm_states_by_opcode
-                .call_opcode_is_rel_t_op_1_base_fp_f
-                .len(),
-            1
-        );
+        assert_eq!(casm_states_by_opcode.call_opcode_op_1_base_fp.len(), 2);
+        assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
     }
 
     #[test]
@@ -756,12 +731,7 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions, false);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(
-            casm_states_by_opcode
-                .call_opcode_is_rel_f_op_1_base_fp_f
-                .len(),
-            2
-        );
+        assert_eq!(casm_states_by_opcode.call_opcode.len(), 2);
     }
 
     #[test]
