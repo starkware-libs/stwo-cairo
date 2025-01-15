@@ -460,7 +460,10 @@ impl CairoComponents {
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &preprocessed_trace_columns(),
+            &preprocessed_trace_columns()
+                .iter()
+                .map(|column| column.id())
+                .collect_vec(),
         );
 
         let opcode_components = OpcodeComponents::new(

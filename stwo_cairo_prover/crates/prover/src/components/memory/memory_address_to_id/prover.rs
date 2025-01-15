@@ -3,7 +3,6 @@ use std::simd::Simd;
 
 use itertools::{izip, Itertools};
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
@@ -16,6 +15,7 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, N_SPLIT_CHUNKS};
+use crate::components::memory::Seq;
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
@@ -154,7 +154,7 @@ impl InteractionClaimGenerator {
             for (vec_row, (&id0, &id1, &mult0, &mult1)) in
                 izip!(ids0, ids1, mults0, mults1).enumerate()
             {
-                let addr = PreprocessedColumn::Seq(log_size).packed_at(vec_row);
+                let addr = Seq::new(log_size).packed_at(vec_row);
                 let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
                 let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
                 let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);

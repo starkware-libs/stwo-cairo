@@ -7,7 +7,6 @@ use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElem
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::preprocessed_trace_columns;
-use stwo_prover::constraint_framework::preprocessed_columns::PreprocessedColumn;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -60,7 +59,7 @@ where
     tree_builder.extend_evals(
         preprocessed_trace_columns()
             .iter()
-            .map(PreprocessedColumn::gen_preprocessed_column::<SimdBackend>),
+            .map(|column| column.gen_column_simd()),
     );
     tree_builder.commit(channel);
 
