@@ -1,4 +1,5 @@
 pub mod air;
+pub mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
 pub mod preprocessed;
@@ -280,7 +281,6 @@ mod tests {
         verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
     }
 
-    #[ignore]
     #[test]
     fn test_full_cairo_air() {
         let cairo_proof =
