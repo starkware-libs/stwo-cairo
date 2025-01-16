@@ -15,7 +15,7 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, N_SPLIT_CHUNKS};
-use crate::components::memory::Seq;
+use crate::cairo_air::preprocessed::Seq;
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
