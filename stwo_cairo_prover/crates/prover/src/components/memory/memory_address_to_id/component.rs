@@ -60,11 +60,14 @@ impl FrameworkEval for Eval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let address = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        // Addresses are offseted by 1, as 0 address is reserved.
+        let seq_plus_one =
+            eval.get_preprocessed_column(Seq::new(self.log_size()).id()) + E::F::from(M31(1));
         for i in 0..N_SPLIT_CHUNKS {
             let id = eval.next_trace_mask();
             let multiplicity = eval.next_trace_mask();
-            let address = address.clone() + E::F::from(M31((i * (1 << self.log_size())) as u32));
+            let address =
+                seq_plus_one.clone() + E::F::from(M31((i * (1 << self.log_size())) as u32));
             eval.add_to_relation(RelationEntry::new(
                 &self.lookup_elements,
                 E::EF::from(-multiplicity),
