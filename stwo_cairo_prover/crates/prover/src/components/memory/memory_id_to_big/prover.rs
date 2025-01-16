@@ -392,13 +392,13 @@ mod tests {
     #[test]
     fn test_deduce_output_simd() {
         // Set up data.
-        let memory_addreses = [0, 1, 2, 3, 4, 5, 6, 7, 15, 16, 17, 18, 0, 0, 0, 0];
+        let memory_addreses = [1, 2, 3, 4, 5, 6, 7, 8, 15, 16, 17, 18, 1, 1, 1, 1];
         let expected = memory_addreses
             .iter()
             .enumerate()
             .map(|(j, addr)| {
                 let arr: [_; 8] =
-                    std::array::from_fn(|i| if i > 0 && j % 2 == 0 { 0 } else { *addr });
+                    std::array::from_fn(|i| if i > 1 && j % 2 == 0 { 1 } else { *addr });
                 arr
             })
             .collect_vec();
