@@ -3,6 +3,7 @@ pub mod circle;
 mod circle_mul_table;
 pub mod fields;
 pub mod fri;
+pub mod mock_verifier;
 pub mod pcs;
 pub mod poly;
 mod queries;

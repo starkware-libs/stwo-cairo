@@ -25,13 +25,20 @@ pub trait Air<T> {
     ) -> QM31;
 }
 
+/// The output of a verification.
+#[derive(Drop, Serde)]
+pub struct VerificationOutput {
+    program_hash: felt252,
+    output_hash: felt252,
+}
+
 // TODO: Deal with preprocessed columns.
 pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A,
     ref channel: Channel,
     proof: StarkProof,
     ref commitment_scheme: CommitmentSchemeVerifier,
-) -> Result<(), VerificationError> {
+) -> Result<VerificationOutput, VerificationError> {
     let random_coeff = channel.draw_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
@@ -68,7 +75,10 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         return Result::Err(VerificationError::OodsNotMatching);
     }
 
-    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)
+    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)?;
+
+    // TODO(yuval/andrew): return real values
+    Result::Ok(VerificationOutput { program_hash: 0, output_hash: 0 })
 }
 
 /// Extracts the composition trace evaluation from the mask.
