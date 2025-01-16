@@ -64,7 +64,9 @@ impl FrameworkEval for Eval {
         for i in 0..N_SPLIT_CHUNKS {
             let id = eval.next_trace_mask();
             let multiplicity = eval.next_trace_mask();
-            let address = address.clone() + E::F::from(M31((i * (1 << self.log_size())) as u32));
+            // Addresses are offseted by 1, as 0 address is reserved.
+            let address =
+                address.clone() + E::F::from(M31((i * (1 << self.log_size()) + 1) as u32));
             eval.add_to_relation(RelationEntry::new(
                 &self.lookup_elements,
                 E::EF::from(-multiplicity),
