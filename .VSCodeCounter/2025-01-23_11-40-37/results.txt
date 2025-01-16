@@ -1,0 +1,315 @@
+Date : 2025-01-23 11:40:37
+Directory : /home/alonf/workspace/stwo-cairo
+Total : 184 files,  52410 codes, 1601 comments, 4053 blanks, all 58064 lines
+
+Languages
++--------------+------------+------------+------------+------------+------------+
+| language     | files      | code       | comment    | blank      | total      |
++--------------+------------+------------+------------+------------+------------+
+| Rust         |        123 |     38,400 |        973 |      2,664 |     42,037 |
+| Cairo        |         51 |     10,746 |        618 |      1,326 |     12,690 |
+| JSON         |          2 |      3,050 |          0 |          2 |      3,052 |
+| YAML         |          2 |        120 |          2 |         16 |        138 |
+| Markdown     |          3 |         65 |          0 |         31 |         96 |
+| Shell Script |          3 |         29 |          8 |         14 |         51 |
++--------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                  |        184 |     52,410 |      1,601 |      4,053 |     58,064 |
+| . (Files)                                                                                                                          |          1 |          1 |          0 |          1 |          2 |
+| .github                                                                                                                            |          2 |        120 |          2 |         16 |        138 |
+| .github/workflows                                                                                                                  |          2 |        120 |          2 |         16 |        138 |
+| stwo_cairo_prover                                                                                                                  |        129 |     41,502 |        981 |      2,692 |     45,175 |
+| stwo_cairo_prover/crates                                                                                                           |        125 |     41,459 |        973 |      2,677 |     45,109 |
+| stwo_cairo_prover/crates/adapted_prover                                                                                            |          1 |         67 |          8 |         12 |         87 |
+| stwo_cairo_prover/crates/adapted_prover/src                                                                                        |          1 |         67 |          8 |         12 |         87 |
+| stwo_cairo_prover/crates/air_structs_derive                                                                                        |          1 |         96 |          4 |         17 |        117 |
+| stwo_cairo_prover/crates/air_structs_derive/src                                                                                    |          1 |         96 |          4 |         17 |        117 |
+| stwo_cairo_prover/crates/cairo-serialize                                                                                           |          1 |        164 |          2 |         20 |        186 |
+| stwo_cairo_prover/crates/cairo-serialize-derive                                                                                    |          1 |         44 |          4 |          7 |         55 |
+| stwo_cairo_prover/crates/cairo-serialize-derive/src                                                                                |          1 |         44 |          4 |          7 |         55 |
+| stwo_cairo_prover/crates/cairo-serialize/src                                                                                       |          1 |        164 |          2 |         20 |        186 |
+| stwo_cairo_prover/crates/prover                                                                                                    |        109 |     39,665 |        885 |      2,397 |     42,947 |
+| stwo_cairo_prover/crates/prover/src                                                                                                |        109 |     39,665 |        885 |      2,397 |     42,947 |
+| stwo_cairo_prover/crates/prover/src (Files)                                                                                        |          2 |         61 |         15 |         12 |         88 |
+| stwo_cairo_prover/crates/prover/src/cairo_air                                                                                      |          5 |      3,705 |         58 |        110 |      3,873 |
+| stwo_cairo_prover/crates/prover/src/components                                                                                     |         90 |     30,982 |        662 |      2,072 |     33,716 |
+| stwo_cairo_prover/crates/prover/src/components (Files)                                                                             |          2 |        159 |         26 |         25 |        210 |
+| stwo_cairo_prover/crates/prover/src/components/add_ap_opcode                                                                       |          3 |        554 |         11 |         54 |        619 |
+| stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_imm                                                                   |          3 |        529 |         11 |         54 |        594 |
+| stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_op_1_base_fp                                                          |          3 |        554 |         11 |         54 |        619 |
+| stwo_cairo_prover/crates/prover/src/components/add_opcode                                                                          |          3 |      1,421 |         17 |         67 |      1,505 |
+| stwo_cairo_prover/crates/prover/src/components/add_opcode_imm                                                                      |          3 |      1,369 |         15 |         67 |      1,451 |
+| stwo_cairo_prover/crates/prover/src/components/add_opcode_small                                                                    |          3 |        957 |         30 |         78 |      1,065 |
+| stwo_cairo_prover/crates/prover/src/components/add_opcode_small_imm                                                                |          3 |        904 |         28 |         78 |      1,010 |
+| stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode                                                                    |          3 |        545 |          9 |         51 |        605 |
+| stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_double_deref                                                       |          3 |        658 |         10 |         57 |        725 |
+| stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_imm                                                                |          3 |        488 |          7 |         51 |        546 |
+| stwo_cairo_prover/crates/prover/src/components/call_opcode                                                                         |          3 |        680 |         12 |         63 |        755 |
+| stwo_cairo_prover/crates/prover/src/components/call_opcode_op_1_base_fp                                                            |          3 |        683 |         12 |         63 |        758 |
+| stwo_cairo_prover/crates/prover/src/components/call_opcode_rel                                                                     |          3 |        720 |         17 |         68 |        805 |
+| stwo_cairo_prover/crates/prover/src/components/generic_opcode                                                                      |          3 |      4,872 |        239 |        293 |      5,404 |
+| stwo_cairo_prover/crates/prover/src/components/jnz_opcode                                                                          |          3 |        647 |          7 |         49 |        703 |
+| stwo_cairo_prover/crates/prover/src/components/jnz_opcode_dst_base_fp                                                              |          3 |        650 |          7 |         49 |        706 |
+| stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken                                                                    |          3 |        907 |         15 |         62 |        984 |
+| stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken_dst_base_fp                                                        |          3 |        907 |         15 |         62 |        984 |
+| stwo_cairo_prover/crates/prover/src/components/jump_opcode                                                                         |          3 |        558 |          8 |         51 |        617 |
+| stwo_cairo_prover/crates/prover/src/components/jump_opcode_double_deref                                                            |          3 |        667 |          9 |         57 |        733 |
+| stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel                                                                     |          3 |        617 |         13 |         56 |        686 |
+| stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel_imm                                                                 |          3 |        560 |         11 |         54 |        625 |
+| stwo_cairo_prover/crates/prover/src/components/memory                                                                              |          7 |        832 |         46 |        115 |        993 |
+| stwo_cairo_prover/crates/prover/src/components/memory (Files)                                                                      |          1 |          4 |          1 |          2 |          7 |
+| stwo_cairo_prover/crates/prover/src/components/memory/memory_address_to_id                                                         |          3 |        269 |         17 |         43 |        329 |
+| stwo_cairo_prover/crates/prover/src/components/memory/memory_id_to_big                                                             |          3 |        559 |         28 |         70 |        657 |
+| stwo_cairo_prover/crates/prover/src/components/mul_opcode                                                                          |          3 |      4,002 |         16 |        109 |      4,127 |
+| stwo_cairo_prover/crates/prover/src/components/mul_opcode_imm                                                                      |          3 |      3,945 |         14 |        109 |      4,068 |
+| stwo_cairo_prover/crates/prover/src/components/range_check_vector                                                                  |          3 |        361 |         12 |         64 |        437 |
+| stwo_cairo_prover/crates/prover/src/components/ret_opcode                                                                          |          3 |        566 |          8 |         55 |        629 |
+| stwo_cairo_prover/crates/prover/src/components/verify_instruction                                                                  |          3 |        670 |         26 |         57 |        753 |
+| stwo_cairo_prover/crates/prover/src/input                                                                                          |         11 |      4,904 |        150 |        201 |      5,255 |
+| stwo_cairo_prover/crates/prover/src/input (Files)                                                                                  |          8 |      1,590 |        133 |        166 |      1,889 |
+| stwo_cairo_prover/crates/prover/src/input/test_builtins_segments                                                                   |          1 |      3,036 |          0 |          1 |      3,037 |
+| stwo_cairo_prover/crates/prover/src/input/vm_import                                                                                |          2 |        278 |         17 |         34 |        329 |
+| stwo_cairo_prover/crates/prover/src/relations                                                                                      |          1 |         13 |          0 |          2 |         15 |
+| stwo_cairo_prover/crates/prover_types                                                                                              |          3 |      1,159 |         41 |        179 |      1,379 |
+| stwo_cairo_prover/crates/prover_types/src                                                                                          |          3 |      1,159 |         41 |        179 |      1,379 |
+| stwo_cairo_prover/crates/recursion_bridge                                                                                          |          2 |         25 |          1 |          8 |         34 |
+| stwo_cairo_prover/crates/recursion_bridge/src                                                                                      |          2 |         25 |          1 |          8 |         34 |
+| stwo_cairo_prover/crates/recursion_bridge/src (Files)                                                                              |          1 |          1 |          0 |          1 |          2 |
+| stwo_cairo_prover/crates/recursion_bridge/src/proof_generation                                                                     |          1 |         24 |          1 |          7 |         32 |
+| stwo_cairo_prover/crates/run_and_prove                                                                                             |          1 |         58 |          7 |         10 |         75 |
+| stwo_cairo_prover/crates/run_and_prove/src                                                                                         |          1 |         58 |          7 |         10 |         75 |
+| stwo_cairo_prover/crates/utils                                                                                                     |          5 |        138 |         14 |         19 |        171 |
+| stwo_cairo_prover/crates/utils/src                                                                                                 |          5 |        138 |         14 |         19 |        171 |
+| stwo_cairo_prover/crates/vm_runner                                                                                                 |          1 |         43 |          7 |          8 |         58 |
+| stwo_cairo_prover/crates/vm_runner/src                                                                                             |          1 |         43 |          7 |          8 |         58 |
+| stwo_cairo_prover/scripts                                                                                                          |          4 |         43 |          8 |         15 |         66 |
+| stwo_cairo_verifier                                                                                                                |         52 |     10,787 |        618 |      1,344 |     12,749 |
+| stwo_cairo_verifier (Files)                                                                                                        |          1 |         41 |          0 |         18 |         59 |
+| stwo_cairo_verifier/crates                                                                                                         |         51 |     10,746 |        618 |      1,326 |     12,690 |
+| stwo_cairo_verifier/crates/bounded_int                                                                                             |          1 |          4 |          2 |          2 |          8 |
+| stwo_cairo_verifier/crates/bounded_int/src                                                                                         |          1 |          4 |          2 |          2 |          8 |
+| stwo_cairo_verifier/crates/cairo_air                                                                                               |         23 |      5,117 |        114 |        495 |      5,726 |
+| stwo_cairo_verifier/crates/cairo_air/src                                                                                           |         21 |      5,094 |        114 |        491 |      5,699 |
+| stwo_cairo_verifier/crates/cairo_air/src (Files)                                                                                   |          3 |        849 |         56 |        134 |      1,039 |
+| stwo_cairo_verifier/crates/cairo_air/src/components                                                                                |         18 |      4,245 |         58 |        357 |      4,660 |
+| stwo_cairo_verifier/crates/cairo_air/src/components (Files)                                                                        |          7 |      1,471 |          4 |        189 |      1,664 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/addr_to_id                                                                     |          1 |        229 |          4 |         17 |        250 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/genericopcode                                                                  |          1 |        458 |          0 |          5 |        463 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/id_to_f252                                                                     |          2 |        731 |         13 |         47 |        791 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/jump_t_t_f_opcode                                                              |          1 |        337 |          7 |         17 |        361 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/range_check                                                                    |          4 |        324 |          4 |         30 |        358 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/ret_opcode                                                                     |          1 |        302 |          5 |         19 |        326 |
+| stwo_cairo_verifier/crates/cairo_air/src/components/verify_instruction                                                             |          1 |        393 |         21 |         33 |        447 |
+| stwo_cairo_verifier/crates/cairo_air/tests                                                                                         |          2 |         23 |          0 |          4 |         27 |
+| stwo_cairo_verifier/crates/cairo_air/tests (Files)                                                                                 |          1 |         17 |          0 |          3 |         20 |
+| stwo_cairo_verifier/crates/cairo_air/tests/verify                                                                                  |          1 |          6 |          0 |          1 |          7 |
+| stwo_cairo_verifier/crates/cairo_verifier                                                                                          |          1 |          7 |          0 |          2 |          9 |
+| stwo_cairo_verifier/crates/cairo_verifier/src                                                                                      |          1 |          7 |          0 |          2 |          9 |
+| stwo_cairo_verifier/crates/constraint_framework                                                                                    |          1 |        115 |          9 |         20 |        144 |
+| stwo_cairo_verifier/crates/constraint_framework/src                                                                                |          1 |        115 |          9 |         20 |        144 |
+| stwo_cairo_verifier/crates/verifier_core                                                                                           |         25 |      5,503 |        493 |        807 |      6,803 |
+| stwo_cairo_verifier/crates/verifier_core/src                                                                                       |         22 |      5,391 |        489 |        788 |      6,668 |
+| stwo_cairo_verifier/crates/verifier_core/src (Files)                                                                               |         12 |      3,092 |        191 |        385 |      3,668 |
+| stwo_cairo_verifier/crates/verifier_core/src/fields                                                                                |          3 |        750 |         42 |        156 |        948 |
+| stwo_cairo_verifier/crates/verifier_core/src/pcs                                                                                   |          2 |        761 |         82 |        117 |        960 |
+| stwo_cairo_verifier/crates/verifier_core/src/poly                                                                                  |          3 |        425 |        113 |         78 |        616 |
+| stwo_cairo_verifier/crates/verifier_core/src/vcs                                                                                   |          2 |        363 |         61 |         52 |        476 |
+| stwo_cairo_verifier/crates/verifier_core/tests                                                                                     |          3 |        112 |          4 |         19 |        135 |
+| stwo_cairo_verifier/crates/verifier_core/tests (Files)                                                                             |          1 |        100 |          4 |         17 |        121 |
+| stwo_cairo_verifier/crates/verifier_core/tests/verifier                                                                            |          2 |         12 |          0 |          2 |         14 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| filename                                                                                                                           | language     | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| /home/alonf/workspace/stwo-cairo/.github/workflows/cairo-ci.yaml                                                                   | YAML         |         92 |          2 |          9 |        103 |
+| /home/alonf/workspace/stwo-cairo/.github/workflows/upload_artifacts_workflow.yml                                                   | YAML         |         28 |          0 |          7 |         35 |
+| /home/alonf/workspace/stwo-cairo/README.md                                                                                         | Markdown     |          1 |          0 |          1 |          2 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/adapted_prover/src/main.rs                                               | Rust         |         67 |          8 |         12 |         87 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/air_structs_derive/src/lib.rs                                            | Rust         |         96 |          4 |         17 |        117 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/cairo-serialize-derive/src/lib.rs                                        | Rust         |         44 |          4 |          7 |         55 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/cairo-serialize/src/lib.rs                                               | Rust         |        164 |          2 |         20 |        186 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/cairo_air/air.rs                                              | Rust         |        585 |         19 |         30 |        634 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/cairo_air/debug_tools.rs                                      | Rust         |        582 |          7 |         13 |        602 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/cairo_air/mod.rs                                              | Rust         |        228 |         24 |         39 |        291 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/cairo_air/opcodes_air.rs                                      | Rust         |      2,213 |          3 |         12 |      2,228 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/cairo_air/preprocessed.rs                                     | Rust         |         97 |          5 |         16 |        118 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode/component.rs                         | Rust         |        187 |          6 |         20 |        213 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode/mod.rs                               | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode/prover.rs                            | Rust         |        363 |          5 |         32 |        400 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_imm/component.rs                     | Rust         |        184 |          6 |         20 |        210 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_imm/mod.rs                           | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_imm/prover.rs                        | Rust         |        341 |          5 |         32 |        378 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_op_1_base_fp/component.rs            | Rust         |        187 |          6 |         20 |        213 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_op_1_base_fp/mod.rs                  | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_ap_opcode_op_1_base_fp/prover.rs               | Rust         |        363 |          5 |         32 |        400 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode/component.rs                            | Rust         |        676 |         10 |         27 |        713 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode/mod.rs                                  | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode/prover.rs                               | Rust         |        741 |          7 |         38 |        786 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_imm/component.rs                        | Rust         |        664 |          8 |         27 |        699 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_imm/mod.rs                              | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_imm/prover.rs                           | Rust         |        701 |          7 |         38 |        746 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_small/component.rs                      | Rust         |        341 |         21 |         31 |        393 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_small/mod.rs                            | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_small/prover.rs                         | Rust         |        612 |          9 |         45 |        666 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_small_imm/component.rs                  | Rust         |        331 |         19 |         31 |        381 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_small_imm/mod.rs                        | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/add_opcode_small_imm/prover.rs                     | Rust         |        569 |          9 |         45 |        623 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode/component.rs                      | Rust         |        160 |          5 |         19 |        184 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode/mod.rs                            | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode/prover.rs                         | Rust         |        381 |          4 |         30 |        415 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_double_deref/component.rs         | Rust         |        184 |          5 |         22 |        211 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_double_deref/mod.rs               | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_double_deref/prover.rs            | Rust         |        470 |          5 |         33 |        508 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_imm/component.rs                  | Rust         |        147 |          3 |         19 |        169 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_imm/mod.rs                        | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/assert_eq_opcode_imm/prover.rs                     | Rust         |        337 |          4 |         30 |        371 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode/component.rs                           | Rust         |        200 |          6 |         26 |        232 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode/mod.rs                                 | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode/prover.rs                              | Rust         |        476 |          6 |         35 |        517 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode_op_1_base_fp/component.rs              | Rust         |        200 |          6 |         26 |        232 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode_op_1_base_fp/mod.rs                    | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode_op_1_base_fp/prover.rs                 | Rust         |        479 |          6 |         35 |        520 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode_rel/component.rs                       | Rust         |        241 |         10 |         28 |        279 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode_rel/mod.rs                             | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/call_opcode_rel/prover.rs                          | Rust         |        475 |          7 |         38 |        520 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/generic_opcode/component.rs                        | Rust         |      3,327 |        220 |        117 |      3,664 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/generic_opcode/mod.rs                              | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/generic_opcode/prover.rs                           | Rust         |      1,541 |         19 |        174 |      1,734 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode/component.rs                            | Rust         |        227 |          3 |         18 |        248 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode/mod.rs                                  | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode/prover.rs                               | Rust         |        416 |          4 |         29 |        449 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_dst_base_fp/component.rs                | Rust         |        227 |          3 |         18 |        248 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_dst_base_fp/mod.rs                      | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_dst_base_fp/prover.rs                   | Rust         |        419 |          4 |         29 |        452 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken/component.rs                      | Rust         |        337 |          9 |         24 |        370 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken/mod.rs                            | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken/prover.rs                         | Rust         |        566 |          6 |         36 |        608 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken_dst_base_fp/component.rs          | Rust         |        337 |          9 |         24 |        370 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken_dst_base_fp/mod.rs                | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jnz_opcode_taken_dst_base_fp/prover.rs             | Rust         |        566 |          6 |         36 |        608 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode/component.rs                           | Rust         |        158 |          4 |         19 |        181 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode/mod.rs                                 | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode/prover.rs                              | Rust         |        396 |          4 |         30 |        430 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_double_deref/component.rs              | Rust         |        180 |          4 |         22 |        206 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_double_deref/mod.rs                    | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_double_deref/prover.rs                 | Rust         |        483 |          5 |         33 |        521 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel/component.rs                       | Rust         |        200 |          8 |         21 |        229 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel/mod.rs                             | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel/prover.rs                          | Rust         |        413 |          5 |         33 |        451 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel_imm/component.rs                   | Rust         |        188 |          6 |         20 |        214 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel_imm/mod.rs                         | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/jump_opcode_rel_imm/prover.rs                      | Rust         |        368 |          5 |         32 |        405 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/memory_address_to_id/component.rs           | Rust         |         84 |         14 |         13 |        111 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/memory_address_to_id/mod.rs                 | Rust         |          5 |          0 |          3 |          8 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/memory_address_to_id/prover.rs              | Rust         |        180 |          3 |         27 |        210 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/memory_id_to_big/component.rs               | Rust         |        181 |         11 |         24 |        216 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/memory_id_to_big/mod.rs                     | Rust         |          8 |          0 |          3 |         11 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/memory_id_to_big/prover.rs                  | Rust         |        370 |         17 |         43 |        430 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/memory/mod.rs                                      | Rust         |          4 |          1 |          2 |          7 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mod.rs                                             | Rust         |         31 |          1 |          3 |         35 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mul_opcode/component.rs                            | Rust         |      1,775 |          9 |         55 |      1,839 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mul_opcode/mod.rs                                  | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mul_opcode/prover.rs                               | Rust         |      2,223 |          7 |         52 |      2,282 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mul_opcode_imm/component.rs                        | Rust         |      1,762 |          7 |         55 |      1,824 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mul_opcode_imm/mod.rs                              | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/mul_opcode_imm/prover.rs                           | Rust         |      2,179 |          7 |         52 |      2,238 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/range_check_vector/component.rs                    | Rust         |         80 |          0 |         10 |         90 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/range_check_vector/component_prover.rs             | Rust         |        202 |          4 |         39 |        245 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/range_check_vector/mod.rs                          | Rust         |         79 |          8 |         15 |        102 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/ret_opcode/component.rs                            | Rust         |        171 |          3 |         21 |        195 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/ret_opcode/mod.rs                                  | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/ret_opcode/prover.rs                               | Rust         |        391 |          5 |         32 |        428 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/utils.rs                                           | Rust         |        128 |         25 |         22 |        175 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/verify_instruction/component.rs                    | Rust         |        216 |         21 |         20 |        257 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/verify_instruction/mod.rs                          | Rust         |          4 |          0 |          2 |          6 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/components/verify_instruction/prover.rs                       | Rust         |        450 |          5 |         35 |        490 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/felt.rs                                                       | Rust         |         48 |         14 |         10 |         72 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/README.md                                               | Markdown     |         23 |          0 |         12 |         35 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/builtin_segments.rs                                     | Rust         |        225 |         27 |         22 |        274 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/decode.rs                                               | Rust         |         88 |          9 |         12 |        109 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/memory.rs                                               | Rust         |        314 |         15 |         29 |        358 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/mod.rs                                                  | Rust         |         22 |          1 |          5 |         28 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/plain.rs                                                | Rust         |         97 |         15 |         14 |        126 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/range_check_unit.rs                                     | Rust         |         68 |          2 |         10 |         80 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/state_transitions.rs                                    | Rust         |        753 |         64 |         62 |        879 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/test_builtins_segments/test_public_input.json           | JSON         |      3,036 |          0 |          1 |      3,037 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/vm_import/json.rs                                       | Rust         |          6 |          3 |          2 |         11 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/input/vm_import/mod.rs                                        | Rust         |        272 |         14 |         32 |        318 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/lib.rs                                                        | Rust         |         13 |          1 |          2 |         16 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover/src/relations/mod.rs                                              | Rust         |         13 |          0 |          2 |         15 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover_types/src/cpu.rs                                                  | Rust         |        695 |         30 |         94 |        819 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover_types/src/lib.rs                                                  | Rust         |          3 |          0 |          1 |          4 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/prover_types/src/simd.rs                                                 | Rust         |        461 |         11 |         84 |        556 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/recursion_bridge/src/lib.rs                                              | Rust         |          1 |          0 |          1 |          2 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/recursion_bridge/src/proof_generation/mod.rs                             | Rust         |         24 |          1 |          7 |         32 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/run_and_prove/src/main.rs                                                | Rust         |         58 |          7 |         10 |         75 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/utils/src/binary_utils.rs                                                | Rust         |         20 |          1 |          3 |         24 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/utils/src/file_utils.rs                                                  | Rust         |         30 |          3 |          4 |         37 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/utils/src/lib.rs                                                         | Rust         |          4 |          0 |          1 |          5 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/utils/src/logging_utils.rs                                               | Rust         |          8 |          3 |          3 |         14 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/utils/src/vm_utils.rs                                                    | Rust         |         76 |          7 |          8 |         91 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/crates/vm_runner/src/main.rs                                                    | Rust         |         43 |          7 |          8 |         58 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/scripts/clippy.sh                                                               | Shell Script |          2 |          1 |          2 |          5 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/scripts/fetch_large_files.sh                                                    | Shell Script |         26 |          6 |         10 |         42 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/scripts/rust_fmt.sh                                                             | Shell Script |          1 |          1 |          2 |          4 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_prover/scripts/slow_tests.json                                                         | JSON         |         14 |          0 |          1 |         15 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/README.md                                                                     | Markdown     |         41 |          0 |         18 |         59 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/bounded_int/src/lib.cairo                                              | Cairo        |          4 |          2 |          2 |          8 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components.cairo                                         | Cairo        |         29 |          0 |          5 |         34 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/addr_to_id.cairo                              | Cairo        |         98 |          0 |         16 |        114 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/addr_to_id/constraints.cairo                  | Cairo        |        229 |          4 |         17 |        250 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/genericopcode.cairo                           | Cairo        |        246 |          0 |         24 |        270 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/genericopcode/constraints.cairo               | Cairo        |        458 |          0 |          5 |        463 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/id_to_f252.cairo                              | Cairo        |        256 |          1 |         44 |        301 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/id_to_f252/constraints_big.cairo              | Cairo        |        481 |          8 |         30 |        519 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/id_to_f252/constraints_small.cairo            | Cairo        |        250 |          5 |         17 |        272 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/jump_t_t_f_opcode.cairo                       | Cairo        |        225 |          0 |         20 |        245 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/jump_t_t_f_opcode/constraints.cairo           | Cairo        |        337 |          7 |         17 |        361 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/range_check.cairo                             | Cairo        |        276 |          3 |         42 |        321 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/range_check/rc_19_constraints.cairo           | Cairo        |         72 |          1 |          7 |         80 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/range_check/rc_4_3_constraints.cairo          | Cairo        |         82 |          1 |          9 |         92 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/range_check/rc_7_2_5_constraints.cairo        | Cairo        |         88 |          1 |          7 |         96 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/range_check/rc_9_9_constraints.cairo          | Cairo        |         82 |          1 |          7 |         90 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/ret_opcode.cairo                              | Cairo        |        177 |          0 |         19 |        196 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/ret_opcode/constraints.cairo                  | Cairo        |        302 |          5 |         19 |        326 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/verify_instruction.cairo                      | Cairo        |        193 |          0 |         24 |        217 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/components/verify_instruction/constraints.cairo          | Cairo        |        393 |         21 |         33 |        447 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/lib.cairo                                                | Cairo        |        724 |         33 |        109 |        866 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/src/utils.cairo                                              | Cairo        |         96 |         23 |         20 |        139 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/tests/verify.cairo                                           | Cairo        |         17 |          0 |          3 |         20 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_air/tests/verify/basic_with_blowup_2_proof.cairo                 | Cairo        |          6 |          0 |          1 |          7 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/cairo_verifier/src/lib.cairo                                           | Cairo        |          7 |          0 |          2 |          9 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/constraint_framework/src/lib.cairo                                     | Cairo        |        115 |          9 |         20 |        144 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/channel.cairo                                        | Cairo        |        309 |         11 |         59 |        379 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/circle.cairo                                         | Cairo        |        329 |         33 |         74 |        436 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/circle_mul_table.cairo                               | Cairo        |        374 |          5 |         12 |        391 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/fields.cairo                                         | Cairo        |         66 |          6 |         21 |         93 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/fields/cm31.cairo                                    | Cairo        |        132 |          2 |         25 |        159 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/fields/m31.cairo                                     | Cairo        |        235 |          4 |         56 |        295 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/fields/qm31.cairo                                    | Cairo        |        383 |         36 |         75 |        494 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/fri.cairo                                            | Cairo        |      1,475 |         89 |        136 |      1,700 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/lib.cairo                                            | Cairo        |         16 |          4 |          6 |         26 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/pcs.cairo                                            | Cairo        |          7 |          0 |          2 |          9 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/pcs/quotients.cairo                                  | Cairo        |        574 |         63 |         79 |        716 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/pcs/verifier.cairo                                   | Cairo        |        187 |         19 |         38 |        244 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/poly.cairo                                           | Cairo        |          3 |          0 |          2 |          5 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/poly/circle.cairo                                    | Cairo        |        109 |         33 |         22 |        164 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/poly/line.cairo                                      | Cairo        |        290 |         62 |         51 |        403 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/poly/utils.cairo                                     | Cairo        |         26 |         18 |          5 |         49 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/queries.cairo                                        | Cairo        |        190 |         11 |         14 |        215 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/utils.cairo                                          | Cairo        |        222 |         15 |         36 |        273 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/vcs.cairo                                            | Cairo        |          2 |          0 |          1 |          3 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/vcs/hasher.cairo                                     | Cairo        |         83 |         19 |         17 |        119 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/vcs/verifier.cairo                                   | Cairo        |        280 |         42 |         35 |        357 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/src/verifier.cairo                                       | Cairo        |         99 |         17 |         22 |        138 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/tests/verifier.cairo                                     | Cairo        |        100 |          4 |         17 |        121 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/tests/verifier/fib_128_column_with_blowup_16_proof.cairo | Cairo        |          6 |          0 |          1 |          7 |
+| /home/alonf/workspace/stwo-cairo/stwo_cairo_verifier/crates/verifier_core/tests/verifier/fib_128_column_with_blowup_2_proof.cairo  | Cairo        |          6 |          0 |          1 |          7 |
+| Total                                                                                                                              |              |     52,410 |      1,601 |      4,053 |     58,064 |
++------------------------------------------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
