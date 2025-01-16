@@ -26,13 +26,15 @@ use crate::relations;
 pub type PackedInputType = PackedM31;
 pub type InputType = M31;
 
+/// A struct to generate the memory address to ID trace.
+/// `ids` contains the memory ids of the consequtive adrresses offseted by 1.
 pub struct ClaimGenerator {
     ids: Vec<u32>,
     multiplicities: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
     pub fn new(memory: &Memory) -> Self {
-        let ids = (0..memory.address_to_id.len())
+        let ids = (1..memory.address_to_id.len())
             .map(|addr| memory.get_raw_id(addr as u32))
             .collect_vec();
         let multiplicities = AtomicMultiplicityColumn::new(ids.len());
@@ -50,7 +52,7 @@ impl ClaimGenerator {
     }
 
     pub fn get_id(&self, input: BaseField) -> M31 {
-        M31(self.ids[input.0 as usize])
+        M31(self.ids[input.0 as usize - 1])
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
@@ -67,7 +69,7 @@ impl ClaimGenerator {
     }
 
     pub fn add_input(&self, addr: &BaseField) {
-        self.multiplicities.increase_at(addr.0);
+        self.multiplicities.increase_at(addr.0 - 1);
     }
 
     pub fn write_trace<MC: MerkleChannel>(
@@ -154,7 +156,7 @@ impl InteractionClaimGenerator {
             for (vec_row, (&id0, &id1, &mult0, &mult1)) in
                 izip!(ids0, ids1, mults0, mults1).enumerate()
             {
-                let addr = Seq::new(log_size).packed_at(vec_row);
+                let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));
                 let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
                 let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
                 let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);
@@ -192,11 +194,12 @@ mod tests {
         )
         .build();
         let memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(&memory);
-        let address_usages = [0, 1, 1, 2, 2, 2]
+        let address_usages = [1, 1, 2, 2, 2, 3]
             .into_iter()
             .map(BaseField::from)
             .collect_vec();
-        let expected_mults = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
+        // Multiplicites are of addresses offseted by 1.
+        let expected_mults = [2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
 
         address_usages.iter().for_each(|addr| {
             memory_address_to_id_gen.add_input(addr);

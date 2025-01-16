@@ -391,18 +391,26 @@ mod tests {
 
     #[test]
     fn test_deduce_output_simd() {
-        // Set up data.
-        let memory_addreses = [0, 1, 2, 3, 4, 5, 6, 7, 15, 16, 17, 18, 0, 0, 0, 0];
-        let expected = memory_addreses
-            .iter()
-            .enumerate()
-            .map(|(j, addr)| {
-                let arr: [_; 8] =
-                    std::array::from_fn(|i| if i > 0 && j % 2 == 0 { 0 } else { *addr });
+        // Set up memory addresses, padded by ones at the end.
+        let memory_addreses = [1, 2, 3, 4, 5, 6, 7, 8, 15, 16, 17, 18, 1, 1, 1, 1];
+        let input = PackedM31::from_array(memory_addreses.map(M31::from_u32_unchecked));
+
+        // The expected values will alternate between small felts and big felts.
+        let mut expected = (0..memory_addreses.len() as u32)
+            .map(|i| {
+                let arr: [u32; 8] = if i % 2 == 0 {
+                    [i, 0, 0, 0, 0, 0, 0, 0]
+                } else {
+                    [i; 8]
+                };
                 arr
             })
             .collect_vec();
-        let input = PackedM31::from_array(memory_addreses.map(M31::from_u32_unchecked));
+
+        // Correct the padded-by-ones area at the end to the correct value.
+        let value_at_one = expected[0];
+        expected[12..].fill(value_at_one);
+
 
         // Create memory.
         let mut mem = MemoryBuilder::new(MemoryConfig::default());
