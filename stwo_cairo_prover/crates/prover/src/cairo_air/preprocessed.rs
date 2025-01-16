@@ -1,13 +1,15 @@
 use itertools::{chain, Itertools};
 use prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::{IsFirst, PreProcessedColumnId};
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::poly::circle::CircleEvaluation;
+use stwo_prover::core::backend::Col;
+use stwo_prover::core::fields::m31::{BaseField, M31};
+use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::LOG_MAX_ROWS;
-use crate::components::memory::Seq;
+use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
 const N_PREPROCESSED_COLUMN_SIZES: usize = (LOG_MAX_ROWS - LOG_N_LANES) as usize + 1;
 
@@ -61,6 +63,36 @@ pub fn preprocessed_trace_columns() -> Vec<PreProcessedColumn> {
     chain![is_first_columns, seq_columns]
         .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
         .collect_vec()
+}
+
+/// A column with the numbers [0..(2^log_size)-1].
+#[derive(Debug, Clone)]
+pub struct Seq {
+    pub log_size: u32,
+}
+impl Seq {
+    pub const fn new(log_size: u32) -> Self {
+        Self { log_size }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        assert!(vec_row < (1 << self.log_size) / N_LANES);
+        PackedM31::broadcast(M31::from(vec_row * N_LANES))
+            + unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) }
+    }
+
+    pub fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+        let col = Col::<SimdBackend, BaseField>::from_iter(
+            (0..(1 << self.log_size)).map(BaseField::from),
+        );
+        CircleEvaluation::new(CanonicCoset::new(self.log_size).circle_domain(), col)
+    }
+
+    pub fn id(&self) -> PreProcessedColumnId {
+        PreProcessedColumnId {
+            id: format!("preprocessed_seq_{}", self.log_size).to_string(),
+        }
+    }
 }
 
 #[cfg(test)]
