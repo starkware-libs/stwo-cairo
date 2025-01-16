@@ -4,6 +4,7 @@
 "stwo_constraint_framework" = "crates/constraint_framework/src"
 "stwo_verifier_core" = "crates/verifier_core/src"
 "stwo_cairo_verifier" = "crates/cairo_verifier/src"
+"stwo_cairo_verifier_mock" = "crates/cairo_verifier_mock/src"
 
 [config.global]
 edition = "2024_07"
@@ -105,4 +106,12 @@ edition = "2024_07"
 version = "0.1.0"
 
 [config.override."stwo_cairo_verifier".dependencies.stwo_cairo_air]
+discriminator = "stwo_cairo_air"
+
+[config.override."stwo_cairo_verifier_mock"]
+name = "stwo_cairo_verifier_mock"
+edition = "2024_07"
+version = "0.1.0"
+
+[config.override."stwo_cairo_verifier_mock".dependencies.stwo_cairo_air]
 discriminator = "stwo_cairo_air"

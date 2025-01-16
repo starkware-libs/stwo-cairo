@@ -72,7 +72,14 @@ pub struct CairoProof {
     pub stark_proof: StarkProof,
 }
 
-pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
+/// The output of a verification.
+#[derive(Drop, Serde)]
+pub struct VerificationOutput {
+    program_hash: felt252,
+    output_hash: felt252,
+}
+
+pub fn verify_cairo(proof: CairoProof) -> Result<VerificationOutput, CairoVerificationError> {
     let CairoProof { claim, interaction_claim, stark_proof } = proof;
 
     // Verify.
@@ -87,7 +94,7 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     let log_sizes = claim.log_sizes();
 
-    // Preproccessed trace.
+    // Preprocessed trace.
     commitment_scheme
         .commit(*stark_proof.commitment_scheme_proof.commitments[0], *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
@@ -109,7 +116,8 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
         return Result::Err(CairoVerificationError::Stark(err));
     }
 
-    Result::Ok(())
+    // TODO(yuval/andrew): return real values
+    Result::Ok(VerificationOutput { program_hash: 0, output_hash: 0 })
 }
 
 pub fn lookup_sum(

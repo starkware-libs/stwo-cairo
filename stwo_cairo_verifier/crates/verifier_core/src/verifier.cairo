@@ -68,7 +68,9 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         return Result::Err(VerificationError::OodsNotMatching);
     }
 
-    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)
+    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)?;
+
+    Result::Ok(())
 }
 
 /// Extracts the composition trace evaluation from the mask.
