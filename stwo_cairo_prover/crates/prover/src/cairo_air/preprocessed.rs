@@ -53,6 +53,13 @@ impl PreProcessedColumn {
             PreProcessedColumn::Seq(column) => column.gen_column_simd(),
         }
     }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        match self {
+            PreProcessedColumn::IsFirst(column) => column.packed_at(vec_row),
+            PreProcessedColumn::Seq(column) => column.packed_at(vec_row),
+        }
+    }
 }
 
 /// Returns column info for the preprocessed trace.
