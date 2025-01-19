@@ -53,6 +53,10 @@ impl ClaimGenerator {
         M31(self.ids[input.0 as usize])
     }
 
+    pub fn add_input(&self, input: &InputType) {
+        self.add_m31(*input);
+    }
+
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
             self.add_m31(*input);

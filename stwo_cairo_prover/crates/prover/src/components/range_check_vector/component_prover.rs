@@ -44,6 +44,10 @@ macro_rules! range_check_prover {
                     RANGES.iter().sum()
                 }
 
+                pub fn add_input(&self, input: &[M31; N_RANGES]) {
+                    self.add_m31(*input);
+                }
+
                 pub fn add_inputs(&self, inputs: &[[M31; N_RANGES]]) {
                     for input in inputs {
                         self.add_m31(*input);
