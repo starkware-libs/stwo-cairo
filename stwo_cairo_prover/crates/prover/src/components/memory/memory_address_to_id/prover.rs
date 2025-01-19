@@ -55,18 +55,18 @@ impl ClaimGenerator {
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
-            self.add_m31(*input);
+            self.add_input(*input);
         }
     }
 
     pub fn add_packed_m31(&self, inputs: &PackedBaseField) {
         let addresses = inputs.to_array();
         for address in addresses {
-            self.add_m31(address);
+            self.add_input(address);
         }
     }
 
-    pub fn add_m31(&self, addr: BaseField) {
+    pub fn add_input(&self, addr: BaseField) {
         self.multiplicities.increase_at(addr.0);
     }
 
@@ -199,7 +199,7 @@ mod tests {
         let expected_mults = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
 
         address_usages.iter().for_each(|addr| {
-            memory_address_to_id_gen.add_m31(*addr);
+            memory_address_to_id_gen.add_input(*addr);
         });
         let actual_mults = memory_address_to_id_gen.multiplicities.into_simd_vec();
 

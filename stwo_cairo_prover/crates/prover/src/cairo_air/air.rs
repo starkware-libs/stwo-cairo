@@ -194,8 +194,8 @@ impl CairoClaimGenerator {
             .map(M31::from_u32_unchecked)
         {
             let id = memory_address_to_id_trace_generator.get_id(addr);
-            memory_address_to_id_trace_generator.add_m31(addr);
-            memory_id_to_value_trace_generator.add_m31(id);
+            memory_address_to_id_trace_generator.add_input(addr);
+            memory_id_to_value_trace_generator.add_input(id);
         }
 
         // Public data.

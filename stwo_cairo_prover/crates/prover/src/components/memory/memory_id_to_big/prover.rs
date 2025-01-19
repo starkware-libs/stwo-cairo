@@ -91,18 +91,18 @@ impl ClaimGenerator {
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for &input in inputs {
-            self.add_m31(input);
+            self.add_input(input);
         }
     }
 
     pub fn add_packed_m31(&self, inputs: &PackedM31) {
         let memory_ids = inputs.to_array();
         for memory_id in memory_ids {
-            self.add_m31(memory_id);
+            self.add_input(memory_id);
         }
     }
 
-    pub fn add_m31(&self, M31(encoded_memory_id): M31) {
+    pub fn add_input(&self, M31(encoded_memory_id): M31) {
         match EncodedMemoryValueId(encoded_memory_id).decode() {
             MemoryValueId::F252(id) => {
                 self.big_mults.increase_at(id);
