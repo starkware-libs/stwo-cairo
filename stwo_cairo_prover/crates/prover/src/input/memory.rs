@@ -30,7 +30,7 @@ pub const P_MIN_2: [u32; 8] = [
     0x0800_0000,
 ];
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
     pub small_max: u128,
 }
@@ -99,6 +99,7 @@ impl Memory {
     }
 }
 
+// TODO(ohadn): derive or impl a default for MemoryBuilder.
 pub struct MemoryBuilder {
     memory: Memory,
     felt252_id_cache: HashMap<[u32; 8], usize>,
@@ -143,6 +144,7 @@ impl MemoryBuilder {
         res
     }
 
+    // TODO(ohadn): settle on an address integer type, and use it consistently.
     pub fn set(&mut self, addr: u64, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
@@ -168,6 +170,19 @@ impl MemoryBuilder {
         });
         self.address_to_id[addr as usize] = res;
     }
+
+    /// Copies a block of memory from one location to another.
+    /// The values at addresses src_start_addr to src_start_addr + segment_length - 1 are copied to
+    /// the addresses dst_start_addr to dst_start_addr + segment_length - 1.
+    pub fn copy_block(&mut self, src_start_addr: u32, dst_start_addr: u32, segment_length: u32) {
+        for i in 0..segment_length {
+            self.set(
+                (dst_start_addr + i) as u64,
+                self.memory.get(src_start_addr + i),
+            );
+        }
+    }
+
     pub fn build(self) -> Memory {
         self.memory
     }
