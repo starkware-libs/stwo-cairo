@@ -23,6 +23,9 @@ const M31_IN_HASH_SHIFT_POW_4: felt252 = 0x10000000000000000000000000000000;
 /// Each node in that layer contains one value from each column.
 pub trait MerkleHasher {
     type Hash;
+    impl HashSerdeImpl: Serde<Self::Hash>;
+    // TODO(yg): bound type Hash to have an impl of Drop?.
+    // impl HashDropImpl: Drop<Self::Hash>;
 
     /// Hashes a single Merkle node.
     fn hash_node(

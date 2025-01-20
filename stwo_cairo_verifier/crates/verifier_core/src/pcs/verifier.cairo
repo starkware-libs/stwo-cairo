@@ -28,7 +28,7 @@ pub struct CommitmentSchemeProof {
 
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
 // TODO(andrew): Make generic on MerkleChannel.
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct CommitmentSchemeVerifier {
     pub trees: Array<MerkleVerifier<PoseidonMerkleHasher>>,
     pub config: PcsConfig,
@@ -74,24 +74,26 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
-        let CommitmentSchemeProof {
-            commitments: _,
-            sampled_values,
-            decommitments,
-            queried_values,
-            proof_of_work_nonce,
-            fri_proof,
-        } = proof;
+        let CommitmentSchemeProof { commitments: _,
+        sampled_values,
+        decommitments,
+        queried_values,
+        proof_of_work_nonce,
+        fri_proof, } =
+            proof;
 
         let mut flattened_sampled_values = array![];
 
-        for sampled_values in sampled_values.span() {
-            for column_sampled_values in sampled_values.span() {
-                for sampled_value in column_sampled_values.span() {
-                    flattened_sampled_values.append(*sampled_value);
-                };
+        for sampled_values in sampled_values
+            .span() {
+                for column_sampled_values in sampled_values
+                    .span() {
+                        for sampled_value in column_sampled_values
+                            .span() {
+                                flattened_sampled_values.append(*sampled_value);
+                            };
+                    };
             };
-        };
 
         channel.mix_felts(flattened_sampled_values.span());
 
@@ -179,13 +181,15 @@ fn get_column_log_bounds(
 
     let mut bounds_set: Felt252Dict<bool> = Default::default();
 
-    for tree_column_log_sizes in column_log_sizes.span() {
-        for column_log_size in (*tree_column_log_sizes).span() {
-            let column_log_bound = *column_log_size - log_blowup_factor;
-            assert!(column_log_bound <= MAX_LOG_BOUND);
-            bounds_set.insert(column_log_bound.into(), true);
+    for tree_column_log_sizes in column_log_sizes
+        .span() {
+            for column_log_size in (*tree_column_log_sizes)
+                .span() {
+                    let column_log_bound = *column_log_size - log_blowup_factor;
+                    assert!(column_log_bound <= MAX_LOG_BOUND);
+                    bounds_set.insert(column_log_bound.into(), true);
+                };
         };
-    };
 
     let mut bounds = array![];
 

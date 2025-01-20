@@ -62,13 +62,14 @@ impl MerkleDecommitmentSerde<
     }
 }
 
-pub struct MerkleVerifier<impl H: MerkleHasher> {
+#[derive(Serde)]
+pub struct MerkleVerifier<impl H: MerkleHasher, impl D: Drop<H::Hash>> {
     pub root: H::Hash,
     pub column_log_sizes: Array<u32>,
 }
-impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
+impl MerkleVerifierDrop<impl H: MerkleHasher, impl D: Drop<H::Hash>> of Drop<MerkleVerifier<H, D>>;
 
-pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
+pub trait MerkleVerifierTrait<impl H: MerkleHasher, impl D: Drop<H::Hash>> {
     /// Verifies the decommitment of the columns.
     ///
     /// # Arguments
