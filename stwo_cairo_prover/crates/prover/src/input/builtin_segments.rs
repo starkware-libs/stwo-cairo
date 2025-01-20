@@ -101,6 +101,13 @@ impl BuiltinSegments {
         assert!(initial_length % cells_per_instance == 0);
         let num_instances = initial_length / cells_per_instance;
         let next_power_of_two = num_instances.next_power_of_two();
+
+        // Verify that the segment we intend to pad is empty.
+        memory.verify_empty_segment(
+            stop_ptr as u32,
+            ((next_power_of_two - num_instances) * cells_per_instance) as u32,
+        );
+
         let mut instance_to_fill_start = stop_ptr as u32;
         let last_instance_start = (stop_ptr - cells_per_instance) as u32;
         for _ in num_instances..next_power_of_two {

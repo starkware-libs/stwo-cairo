@@ -183,6 +183,18 @@ impl MemoryBuilder {
         }
     }
 
+    /// Verify that a segment of memory cells of length segment_length starting at address
+    /// start_addr is empty. This means each address in the segment is either beyond
+    /// address_to_id.len() or holds the value EncodedMemoryValueId::default().
+    // TODO(ohadn): make sure only empty cells can have value EncodedMemoryValueId::default().
+    pub fn verify_empty_segment(&self, start_addr: u32, segment_length: u32) {
+        let len = self.address_to_id.len();
+        let cell_tests_stop = std::cmp::min(len, (start_addr + segment_length) as usize);
+        for i in start_addr as usize..cell_tests_stop {
+            assert_eq!(self.address_to_id[i], EncodedMemoryValueId::default());
+        }
+    }
+
     pub fn build(self) -> Memory {
         self.memory
     }
