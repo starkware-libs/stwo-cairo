@@ -7,7 +7,6 @@ use num_traits::{One, Zero};
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
-use stwo_prover::core::backend::Column;
 use stwo_prover::core::fields::m31::M31;
 
 // When padding is needed, the inputs must be arranged in the order defined by the neighbor
@@ -97,23 +96,14 @@ impl Enabler {
     }
 
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        let packed_row_offset = vec_row * N_LANES;
+        let row_offset = vec_row * N_LANES;
         PackedM31::from_array(array::from_fn(|i| {
-            if i < self.padding_offset - packed_row_offset {
+            if i < self.padding_offset - row_offset {
                 M31::one()
             } else {
                 M31::zero()
             }
         }))
-    }
-
-    pub fn gen_column_simd(&self) -> BaseColumn {
-        let log_size = self.padding_offset.next_power_of_two().ilog2();
-        let mut col = BaseColumn::zeros(1 << log_size);
-        for i in 0..self.padding_offset {
-            col.set(i, M31::one());
-        }
-        col
     }
 }
 
@@ -124,6 +114,8 @@ mod tests {
     use rand::{Rng, SeedableRng};
     use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::fields::m31::M31;
+
+    use super::Enabler;
 
     #[test]
     fn test_multiplicities_column() {
@@ -145,29 +137,17 @@ mod tests {
     }
 
     #[test]
-    fn test_enabler_column() {
-        let n_calls = 30;
-        let padding = super::Enabler::new(n_calls);
-
-        let enabler_column = padding.gen_column_simd();
-
-        for (i, val) in enabler_column.into_cpu_vec().into_iter().enumerate() {
-            if i < n_calls {
-                assert_eq!(val, M31::one());
-            } else {
-                assert_eq!(val, M31::zero());
-            }
-        }
-    }
-
-    #[test]
     fn test_enabler_packed_at() {
         let n_calls = 30;
-        let padding = super::Enabler::new(n_calls);
 
-        assert_eq!(padding.packed_at(0).to_array(), [1; N_LANES].map(M31::from));
+        let enabler_column = Enabler::new(n_calls);
+
         assert_eq!(
-            padding.packed_at(1).to_array(),
+            enabler_column.packed_at(0).to_array(),
+            [1; N_LANES].map(M31::from)
+        );
+        assert_eq!(
+            enabler_column.packed_at(1).to_array(),
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0].map(M31::from)
         );
     }
