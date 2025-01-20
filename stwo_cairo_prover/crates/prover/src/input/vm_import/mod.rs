@@ -92,6 +92,15 @@ pub fn adapt_to_stwo_input(
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     // TODO (ohadn): fill in the memory segments of the rest of the builtins.
     builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::pedersen);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::ecdsa);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::keccak);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::bitwise);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::ec_op);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::poseidon);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check96);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::add_mod);
+    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::mul_mod);
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
@@ -235,14 +244,14 @@ pub mod tests {
             let builtins_segments = input.builtins_segments;
             assert_eq!(builtins_segments.add_mod, None);
             assert_eq!(builtins_segments.bitwise, None);
-            assert_eq!(builtins_segments.ec_op, Some((16428600, 16428747).into()));
+            assert_eq!(builtins_segments.ec_op, Some((16428600, 16428824).into()));
             assert_eq!(builtins_segments.ecdsa, None);
             assert_eq!(builtins_segments.keccak, None);
             assert_eq!(builtins_segments.mul_mod, None);
-            assert_eq!(builtins_segments.pedersen, Some((1322552, 1337489).into()));
+            assert_eq!(builtins_segments.pedersen, Some((1322552, 1347128).into()));
             assert_eq!(
                 builtins_segments.poseidon,
-                Some((16920120, 17444532).into())
+                Some((16920120, 17706552).into())
             );
             assert_eq!(builtins_segments.range_check_bits_96, None);
             assert_eq!(
@@ -288,16 +297,16 @@ pub mod tests {
             // Test builtins.
             let builtins_segments = input.builtins_segments;
             assert_eq!(builtins_segments.add_mod, None);
-            assert_eq!(builtins_segments.bitwise, Some((22512, 22762).into()));
-            assert_eq!(builtins_segments.ec_op, Some((63472, 63822).into()));
-            assert_eq!(builtins_segments.ecdsa, Some((22384, 22484).into()));
-            assert_eq!(builtins_segments.keccak, Some((64368, 65168).into()));
+            assert_eq!(builtins_segments.bitwise, Some((22512, 22832).into()));
+            assert_eq!(builtins_segments.ec_op, Some((63472, 63920).into()));
+            assert_eq!(builtins_segments.ecdsa, Some((22384, 22512).into()));
+            assert_eq!(builtins_segments.keccak, Some((64368, 65392).into()));
             assert_eq!(builtins_segments.mul_mod, None);
-            assert_eq!(builtins_segments.pedersen, Some((4464, 4614).into()));
-            assert_eq!(builtins_segments.poseidon, Some((65392, 65692).into()));
+            assert_eq!(builtins_segments.pedersen, Some((4464, 4656).into()));
+            assert_eq!(builtins_segments.poseidon, Some((65392, 65776).into()));
             assert_eq!(
                 builtins_segments.range_check_bits_96,
-                Some((68464, 68514).into())
+                Some((68464, 68528).into())
             );
             assert_eq!(
                 builtins_segments.range_check_bits_128,
