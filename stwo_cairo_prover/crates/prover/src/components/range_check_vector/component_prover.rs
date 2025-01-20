@@ -46,12 +46,12 @@ macro_rules! range_check_prover {
 
                 pub fn add_inputs(&self, inputs: &[[M31; N_RANGES]]) {
                     for input in inputs {
-                        self.add_input(*input);
+                        self.add_input(input);
                     }
                 }
 
                 // TODO(Ohad): test.
-                pub fn add_input(&self, input: InputType) {
+                pub fn add_input(&self, input: &InputType) {
                     let mut value = 0_u32;
                     for (segment, segment_n_bits) in zip(input, RANGES) {
                         value <<= segment_n_bits;
@@ -64,7 +64,7 @@ macro_rules! range_check_prover {
                 pub fn add_packed_m31(&self, input: &PackedInputType) {
                     let arrays: [_; N_RANGES] = std::array::from_fn(|i| input[i].to_array());
                     for i in 0..N_LANES {
-                        self.add_input(std::array::from_fn(|j| arrays[j][i]));
+                        self.add_input(&std::array::from_fn(|j| arrays[j][i]));
                     }
                 }
 
