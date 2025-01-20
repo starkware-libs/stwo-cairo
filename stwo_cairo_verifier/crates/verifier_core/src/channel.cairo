@@ -17,7 +17,7 @@ pub const EXTENSION_FELTS_PER_HASH: usize = 2;
 
 pub const FELTS_PER_HASH: usize = 8;
 
-#[derive(Default, Drop)]
+#[derive(Default, Drop, Serde)]
 pub struct ChannelTime {
     n_challenges: usize,
     n_sent: usize,
@@ -35,7 +35,7 @@ impl ChannelTimeImpl of ChannelTimeTrait {
     }
 }
 
-#[derive(Drop)]
+#[derive(Drop, Serde)]
 pub struct Channel {
     digest: felt252,
     channel_time: ChannelTime,

@@ -28,7 +28,7 @@ pub const FOLD_STEP: u32 = 1;
 /// Equals `2^FOLD_STEP`.
 pub const FOLD_FACTOR: usize = 2;
 
-#[derive(Clone, Copy, Drop, Debug)]
+#[derive(Clone, Copy, Drop, Debug, Serde)]
 pub struct FriConfig {
     pub log_blowup_factor: u32,
     pub log_last_layer_degree_bound: u32,
