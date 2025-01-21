@@ -33,31 +33,47 @@ const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
 pub enum PreProcessedColumn {
     IsFirst(IsFirst),
     Seq(Seq),
+    BitwiseXor(BitwiseXor),
 }
 impl PreProcessedColumn {
     pub fn log_size(&self) -> u32 {
         match self {
             PreProcessedColumn::IsFirst(column) => column.log_size,
             PreProcessedColumn::Seq(column) => column.log_size,
+            PreProcessedColumn::BitwiseXor(column) => column.log_size(),
         }
     }
+
     pub fn id(&self) -> PreProcessedColumnId {
         match self {
             PreProcessedColumn::IsFirst(column) => column.id(),
             PreProcessedColumn::Seq(column) => column.id(),
+            PreProcessedColumn::BitwiseXor(column) => column.id(),
         }
     }
+
+    /// Generates a column according to the preprocessed column chosen.
     pub fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         match self {
             PreProcessedColumn::IsFirst(column) => column.gen_column_simd(),
             PreProcessedColumn::Seq(column) => column.gen_column_simd(),
+            PreProcessedColumn::BitwiseXor(column) => {
+                let col: Col<SimdBackend, BaseField> = Col::<SimdBackend, BaseField>::from_iter(
+                    (0..((1 << column.log_size()) / N_LANES))
+                        .flat_map(|i| column.packed_at(i).to_array()),
+                );
+                CircleEvaluation::new(CanonicCoset::new(column.log_size()).circle_domain(), col)
+            }
         }
     }
 
+    /// Returns the values of the column at the given row.
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        assert!(vec_row < (1 << self.log_size()) / N_LANES);
         match self {
             PreProcessedColumn::IsFirst(column) => column.packed_at(vec_row),
             PreProcessedColumn::Seq(column) => column.packed_at(vec_row),
+            PreProcessedColumn::BitwiseXor(column) => column.packed_at(vec_row),
         }
     }
 }
@@ -83,7 +99,6 @@ impl Seq {
     }
 
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        assert!(vec_row < (1 << self.log_size) / N_LANES);
         PackedM31::broadcast(M31::from(vec_row * N_LANES))
             + unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) }
     }
