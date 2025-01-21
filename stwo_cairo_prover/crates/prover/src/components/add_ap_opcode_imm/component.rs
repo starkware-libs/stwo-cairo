@@ -14,6 +14,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
+use crate::cairo_air::preprocessed::PreProcessedColumn;
 use crate::relations;
 
 pub struct Eval {
@@ -31,7 +32,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 9];
+        let trace_log_sizes = vec![log_size; 10];
         let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
@@ -96,6 +97,9 @@ impl FrameworkEval for Eval {
         let op1_limb_0_col6 = eval.next_trace_mask();
         let op1_limb_1_col7 = eval.next_trace_mask();
         let op1_limb_2_col8 = eval.next_trace_mask();
+        let padding = eval.next_trace_mask();
+
+        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
 
         // Decode Instruction.
 
@@ -132,12 +136,10 @@ impl FrameworkEval for Eval {
         // Cond Decode Small Sign.
 
         // msb is a bit.
-        eval.add_constraint((msb_col4.clone() * (msb_col4.clone() - M31_1.clone())));
-        // mid_limbs_set is a bit.
+        eval.add_constraint((msb_col4.clone() * (msb_col4.clone() - M31_1.clone()))); // mid_limbs_set is a bit.
         eval.add_constraint(
             (mid_limbs_set_col5.clone() * (mid_limbs_set_col5.clone() - M31_1.clone())),
-        );
-        // Cannot have msb equals 0 and mid_limbs_set equals 1.
+        ); // Cannot have msb equals 0 and mid_limbs_set equals 1.
         eval.add_constraint(
             ((M31_1.clone() * mid_limbs_set_col5.clone()) * (msb_col4.clone() - M31_1.clone())),
         );
@@ -180,17 +182,16 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::one(),
+            E::EF::one() * padding.clone(),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
             ],
         ));
-
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::one(),
+            -E::EF::one() * padding.clone(),
             &[
                 (input_pc_col0.clone() + M31_2.clone()),
                 (input_ap_col1.clone()
