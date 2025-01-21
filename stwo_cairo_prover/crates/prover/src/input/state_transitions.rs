@@ -54,7 +54,7 @@ pub struct CasmStatesByOpcode {
 impl CasmStatesByOpcode {
     pub fn counts(&self) -> Vec<(&str, usize)> {
         vec![
-            ("genric_opcode", self.generic_opcode.len()),
+            ("generic_opcode", self.generic_opcode.len()),
             ("add_ap_opcode", self.add_ap_opcode.len()),
             ("add_ap_opcode_imm", self.add_ap_opcode_imm.len()),
             (
