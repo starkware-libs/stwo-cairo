@@ -8,6 +8,7 @@ pub mod add_opcode_small_imm;
 pub mod assert_eq_opcode;
 pub mod assert_eq_opcode_double_deref;
 pub mod assert_eq_opcode_imm;
+pub mod bitwise_builtin;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
@@ -25,6 +26,7 @@ pub mod range_check_builtin_bits_128;
 pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod utils;
+pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
 // TODO(Ohad): mul small.
