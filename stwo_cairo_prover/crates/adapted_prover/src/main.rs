@@ -32,6 +32,7 @@ struct Args {
     track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
+    /// Whether to also verify the generated proof.
     #[structopt(long = "verify")]
     verify: bool,
 }
@@ -40,16 +41,16 @@ struct Args {
 enum Error {
     #[error("Invalid arguments: {0}")]
     Cli(#[from] clap::Error),
-    #[error("VM import failed: {0}")]
-    VmImport(#[from] VmImportError),
-    #[error("Proving failed: {0}")]
-    Proving(#[from] ProvingError),
-    #[error("Verification failed: {0}")]
-    Verification(#[from] CairoVerificationError),
-    #[error("Serialization failed: {0}")]
-    Serde(#[from] serde_json::error::Error),
     #[error("IO failed: {0}")]
     IO(#[from] std::io::Error),
+    #[error("Proving failed: {0}")]
+    Proving(#[from] ProvingError),
+    #[error("Serialization failed: {0}")]
+    Serde(#[from] serde_json::error::Error),
+    #[error("Verification failed: {0}")]
+    Verification(#[from] CairoVerificationError),
+    #[error("VM import failed: {0}")]
+    VmImport(#[from] VmImportError),
 }
 
 fn main() -> ExitCode {
@@ -68,7 +69,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         .build();
 
     log::info!(
-        "Casm states by opcode:\n {},",
+        "Casm states by opcode:\n{}",
         vm_output.state_transitions.casm_states_by_opcode
     );
 
