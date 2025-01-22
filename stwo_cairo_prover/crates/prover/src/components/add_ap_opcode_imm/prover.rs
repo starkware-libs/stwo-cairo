@@ -74,7 +74,6 @@ impl ClaimGenerator {
         );
 
         tree_builder.extend_evals(trace.to_evals());
-
         (
             Claim { n_rows },
             InteractionClaimGenerator {
