@@ -12,6 +12,7 @@ use rayon::iter::{
 use stwo_air_utils::trace::component_trace::ComponentTrace;
 use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
+use crate::cairo_air::preprocessed::PreProcessedColumn;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::air::Component;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -30,13 +31,13 @@ use stwo_prover::core::utils::bit_reverse_index;
 use stwo_prover::core::utils::coset_index_to_circle_domain_index;
 use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 use super::component::{Claim, InteractionClaim};
-use crate::components::utils::pack_values;
+use crate::components::utils::{pack_values, Enabler};
 use crate::relations;
 use crate::components::memory_address_to_id;use crate::components::memory_id_to_big;use crate::components::verify_instruction;use crate::components::range_check_9_9;use crate::components::range_check_19;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
-const N_TRACE_COLUMNS: usize = 229;
+const N_TRACE_COLUMNS: usize = 230;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -57,20 +58,14 @@ impl ClaimGenerator {
     {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
+
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
-        let need_padding = n_rows != size;
-
-        if need_padding {
-            self.inputs.resize(size, *self.inputs.first().unwrap());
-            bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
-        }
-
+        self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
         let (trace, lookup_data) =
             write_trace_simd(n_rows,packed_inputs,memory_address_to_id_state,memory_id_to_big_state,range_check_19_state,range_check_9_9_state,verify_instruction_state,);
 
         tree_builder.extend_evals(trace.to_evals());
-
         (
         Claim {
             n_rows,
@@ -548,145 +543,136 @@ fn write_trace_simd(
             let next_pc_jnz_col228 = ((((dst_is_zero_tmp_57455_153.as_m31()) * (((input_pc_col0) + (((M31_1) + (op1_imm_col8))))))) + (((((M31_1) - (dst_is_zero_tmp_57455_153.as_m31()))) * (((input_pc_col0) + (((((((((op1_limb_0_col80) + (((op1_limb_1_col81) * (M31_512))))) + (((op1_limb_2_col82) * (M31_262144))))) - (msb_col226))) - (((M31_134217728) * (mid_limbs_set_col227))))))))));
             *row[228] = next_pc_jnz_col228;
 
-            *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];*lookup_data.opcodes_1 = [((((((((pc_update_regular_tmp_57455_23) * (((input_pc_col0) + (((M31_1) + (op1_imm_col8))))))) + (((pc_update_jump_col13) * (((((res_limb_0_col193) + (((res_limb_1_col194) * (M31_512))))) + (((res_limb_2_col195) * (M31_262144))))))))) + (((pc_update_jump_rel_col14) * (((input_pc_col0) + (((((((((res_limb_0_col193) + (((res_limb_1_col194) * (M31_512))))) + (((res_limb_2_col195) * (M31_262144))))) - (msb_col221))) - (((M31_134217728) * (mid_limbs_set_col222))))))))))) + (((pc_update_jnz_col15) * (next_pc_jnz_col228)))), ((((((input_ap_col1) + (((ap_update_add_col16) * (((((((((res_limb_0_col193) + (((res_limb_1_col194) * (M31_512))))) + (((res_limb_2_col195) * (M31_262144))))) - (msb_col221))) - (((M31_134217728) * (mid_limbs_set_col222))))))))) + (((ap_update_add_1_col17) * (M31_1))))) + (((opcode_call_col18) * (M31_2)))), ((((((fp_update_regular_tmp_57455_25) * (input_fp_col2))) + (((opcode_ret_col19) * (((((dst_limb_0_col22) + (((dst_limb_1_col23) * (M31_512))))) + (((dst_limb_2_col24) * (M31_262144))))))))) + (((opcode_call_col18) * (((input_ap_col1) + (M31_2))))))];
+        *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];*lookup_data.opcodes_1 = [((((((((pc_update_regular_tmp_57455_23) * (((input_pc_col0) + (((M31_1) + (op1_imm_col8))))))) + (((pc_update_jump_col13) * (((((res_limb_0_col193) + (((res_limb_1_col194) * (M31_512))))) + (((res_limb_2_col195) * (M31_262144))))))))) + (((pc_update_jump_rel_col14) * (((input_pc_col0) + (((((((((res_limb_0_col193) + (((res_limb_1_col194) * (M31_512))))) + (((res_limb_2_col195) * (M31_262144))))) - (msb_col221))) - (((M31_134217728) * (mid_limbs_set_col222))))))))))) + (((pc_update_jnz_col15) * (next_pc_jnz_col228)))), ((((((input_ap_col1) + (((ap_update_add_col16) * (((((((((res_limb_0_col193) + (((res_limb_1_col194) * (M31_512))))) + (((res_limb_2_col195) * (M31_262144))))) - (msb_col221))) - (((M31_134217728) * (mid_limbs_set_col222))))))))) + (((ap_update_add_1_col17) * (M31_1))))) + (((opcode_call_col18) * (M31_2)))), ((((((fp_update_regular_tmp_57455_25) * (input_fp_col2))) + (((opcode_ret_col19) * (((((dst_limb_0_col22) + (((dst_limb_1_col23) * (M31_512))))) + (((dst_limb_2_col24) * (M31_262144))))))))) + (((opcode_call_col18) * (((input_ap_col1) + (M31_2))))))];*row[229] = Enabler::new(n_rows).packed_at(row_index);
 
             // Add sub-components inputs.
-#[allow(clippy::needless_range_loop)]
-                for i in 0..N_LANES {
-                    if bit_reverse_index(
-                        coset_index_to_circle_domain_index(row_index * N_LANES + i, log_size),
-                        log_size,
-                    ) < n_rows
-                    {
-                        verify_instruction_state.add_input(
-                            &verify_instruction_inputs_0[i]
-                        );memory_address_to_id_state.add_input(
-                            &memory_address_to_id_inputs_0[i]
-                        );memory_id_to_big_state.add_input(
-                            &memory_id_to_big_inputs_0[i]
-                        );memory_address_to_id_state.add_input(
-                            &memory_address_to_id_inputs_1[i]
-                        );memory_id_to_big_state.add_input(
-                            &memory_id_to_big_inputs_1[i]
-                        );memory_address_to_id_state.add_input(
-                            &memory_address_to_id_inputs_2[i]
-                        );memory_id_to_big_state.add_input(
-                            &memory_id_to_big_inputs_2[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_0[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_1[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_2[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_3[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_4[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_5[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_6[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_7[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_8[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_9[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_10[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_11[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_12[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_13[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_14[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_15[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_16[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_17[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_18[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_19[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_20[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_21[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_22[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_23[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_24[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_25[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_26[i]
-                        );range_check_9_9_state.add_input(
-                            &range_check_9_9_inputs_27[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_0[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_1[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_2[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_3[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_4[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_5[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_6[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_7[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_8[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_9[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_10[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_11[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_12[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_13[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_14[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_15[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_16[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_17[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_18[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_19[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_20[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_21[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_22[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_23[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_24[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_25[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_26[i]
-                        );range_check_19_state.add_input(
-                            &range_check_19_inputs_27[i]
-                        );
-                    }
-                }
+verify_instruction_state.add_inputs(
+                &verify_instruction_inputs_0
+            );memory_address_to_id_state.add_inputs(
+                &memory_address_to_id_inputs_0
+            );memory_id_to_big_state.add_inputs(
+                &memory_id_to_big_inputs_0
+            );memory_address_to_id_state.add_inputs(
+                &memory_address_to_id_inputs_1
+            );memory_id_to_big_state.add_inputs(
+                &memory_id_to_big_inputs_1
+            );memory_address_to_id_state.add_inputs(
+                &memory_address_to_id_inputs_2
+            );memory_id_to_big_state.add_inputs(
+                &memory_id_to_big_inputs_2
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_0
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_1
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_2
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_3
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_4
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_5
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_6
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_7
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_8
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_9
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_10
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_11
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_12
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_13
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_14
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_15
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_16
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_17
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_18
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_19
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_20
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_21
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_22
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_23
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_24
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_25
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_26
+            );range_check_9_9_state.add_inputs(
+                &range_check_9_9_inputs_27
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_0
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_1
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_2
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_3
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_4
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_5
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_6
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_7
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_8
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_9
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_10
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_11
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_12
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_13
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_14
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_15
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_16
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_17
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_18
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_19
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_20
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_21
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_22
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_23
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_24
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_25
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_26
+            );range_check_19_state.add_inputs(
+                &range_check_19_inputs_27
+            );
         });
 
     (trace, lookup_data)
@@ -1201,7 +1187,7 @@ let mut col_gen = logup_gen.new_col();
         {
             let denom0: PackedQM31 = range_check_19.combine(values0);
             let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(i,denom0 + denom1, denom0 * denom1);
+            col_gen.write_frac(i,denom0 * Enabler::new(self.n_rows).packed_at(i) + denom1, denom0 * denom1);
         }
         col_gen.finalize_col();
 
@@ -1211,22 +1197,15 @@ let mut col_gen = logup_gen.new_col();
             .opcodes_1.iter().enumerate() {
             let denom =
                 opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            col_gen.write_frac(i, -PackedQM31::one() * Enabler::new(self.n_rows).packed_at(i), denom);
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_rows == 1 << log_size {
-            let (trace, claimed_sum) = logup_gen.finalize_last();
-            (trace, claimed_sum, None)
-        } else {
-            let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_rows - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_rows - 1)))
-        };
+        let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
-            logup_sums: (total_sum,claimed_sum)
+            logup_sums: (claimed_sum, None)
         }
     }
 }
