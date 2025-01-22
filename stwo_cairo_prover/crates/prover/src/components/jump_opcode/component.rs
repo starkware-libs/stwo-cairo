@@ -14,6 +14,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
+use crate::cairo_air::preprocessed::PreProcessedColumn;
 use crate::relations;
 
 pub struct Eval {
@@ -31,7 +32,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 12];
+        let trace_log_sizes = vec![log_size; 13];
         let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
         let preprocessed_log_sizes = vec![log_size];
         TreeVec::new(vec![
@@ -94,6 +95,9 @@ impl FrameworkEval for Eval {
         let next_pc_limb_0_col9 = eval.next_trace_mask();
         let next_pc_limb_1_col10 = eval.next_trace_mask();
         let next_pc_limb_2_col11 = eval.next_trace_mask();
+        let padding = eval.next_trace_mask();
+
+        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
 
         // Decode Instruction.
 
@@ -155,7 +159,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::one(),
+            E::EF::from(padding.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -165,7 +169,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::one(),
+            -E::EF::from(padding.clone()),
             &[
                 ((next_pc_limb_0_col9.clone() + (next_pc_limb_1_col10.clone() * M31_512.clone()))
                     + (next_pc_limb_2_col11.clone() * M31_262144.clone())),

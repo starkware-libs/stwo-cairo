@@ -2,7 +2,6 @@
 #![allow(unused_imports)]
 use std::iter::zip;
 
-use air_structs_derive::SubComponentInputs;
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;
@@ -27,16 +26,19 @@ use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
+use stwo_prover::core::utils::{
+    bit_reverse_coset_to_circle_domain_order, bit_reverse_index, coset_index_to_circle_domain_index,
+};
 
 use super::component::{Claim, InteractionClaim};
-use crate::components::utils::pack_values;
+use crate::cairo_air::preprocessed::PreProcessedColumn;
+use crate::components::utils::{pack_values, Enabler};
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::relations;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
-const N_TRACE_COLUMNS: usize = 10;
+const N_TRACE_COLUMNS: usize = 11;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -59,46 +61,19 @@ impl ClaimGenerator {
     {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
+
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
-        let need_padding = n_rows != size;
-
-        if need_padding {
-            self.inputs.resize(size, *self.inputs.first().unwrap());
-            bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
-        }
-
+        self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
-        let (trace, mut sub_components_inputs, lookup_data) = write_trace_simd(
+        let (trace, lookup_data) = write_trace_simd(
             n_rows,
             packed_inputs,
             memory_address_to_id_state,
             memory_id_to_big_state,
+            verify_instruction_state,
         );
 
-        if need_padding {
-            sub_components_inputs.bit_reverse_coset_to_circle_domain_order();
-        }
-        sub_components_inputs
-            .memory_address_to_id_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..n_rows]);
-            });
-        sub_components_inputs
-            .memory_id_to_big_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..n_rows]);
-            });
-        sub_components_inputs
-            .verify_instruction_inputs
-            .iter()
-            .for_each(|inputs| {
-                verify_instruction_state.add_inputs(&inputs[..n_rows]);
-            });
-
         tree_builder.extend_evals(trace.to_evals());
-
         (
             Claim { n_rows },
             InteractionClaimGenerator {
@@ -108,16 +83,15 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_inputs(&self, _inputs: &[InputType]) {
+    pub fn add_input(&self, _input: &InputType) {
         unimplemented!("Implement manually");
     }
-}
 
-#[derive(SubComponentInputs, Uninitialized, IterMut, ParIterMut)]
-pub struct SubComponentInputs {
-    pub memory_address_to_id_inputs: [Vec<memory_address_to_id::InputType>; 1],
-    pub memory_id_to_big_inputs: [Vec<memory_id_to_big::InputType>; 1],
-    pub verify_instruction_inputs: [Vec<verify_instruction::InputType>; 1],
+    pub fn add_inputs(&self, inputs: &[InputType]) {
+        for input in inputs {
+            self.add_input(input);
+        }
+    }
 }
 
 #[allow(clippy::useless_conversion)]
@@ -129,18 +103,14 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    SubComponentInputs,
-    LookupData,
-) {
+    verify_instruction_state: &verify_instruction::ClaimGenerator,
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
-    let (mut trace, mut lookup_data, mut sub_components_inputs) = unsafe {
+    let (mut trace, mut lookup_data) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_size),
         )
     };
 
@@ -164,12 +134,8 @@ fn write_trace_simd(
         .enumerate()
         .zip(inputs.into_par_iter())
         .zip(lookup_data.par_iter_mut())
-        .zip(sub_components_inputs.par_iter_mut().chunks(N_LANES))
         .for_each(
-            |(
-                (((row_index, row), jump_opcode_rel_imm_input), lookup_data),
-                mut sub_components_inputs,
-            )| {
+            |(((row_index, row), jump_opcode_rel_imm_input), lookup_data)| {
                 let input_tmp_ff4f6_0 = jump_opcode_rel_imm_input;
                 let input_pc_col0 = input_tmp_ff4f6_0.pc;
                 *row[0] = input_pc_col0;
@@ -194,7 +160,7 @@ fn write_trace_simd(
                         & (UInt16_1));
                 let ap_update_add_1_col3 = ap_update_add_1_tmp_ff4f6_3.as_m31();
                 *row[3] = ap_update_add_1_col3;
-                for (i, &input) in (
+                let verify_instruction_inputs_0 = (
                     input_pc_col0,
                     [M31_32767, M31_32767, M31_32769],
                     [
@@ -215,12 +181,7 @@ fn write_trace_simd(
                         M31_0,
                     ],
                 )
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].verify_instruction_inputs[0] = input;
-                }
+                    .unpack();
                 *lookup_data.verify_instruction_0 = [
                     input_pc_col0,
                     M31_32767,
@@ -251,9 +212,7 @@ fn write_trace_simd(
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_ff4f6_4);
                 let next_pc_id_col4 = memory_address_to_id_value_tmp_ff4f6_4;
                 *row[4] = next_pc_id_col4;
-                for (i, &input) in ((input_pc_col0) + (M31_1)).unpack().iter().enumerate() {
-                    *sub_components_inputs[i].memory_address_to_id_inputs[0] = input;
-                }
+                let memory_address_to_id_inputs_0 = ((input_pc_col0) + (M31_1)).unpack();
                 *lookup_data.memory_address_to_id_0 =
                     [((input_pc_col0) + (M31_1)), next_pc_id_col4];
 
@@ -273,9 +232,7 @@ fn write_trace_simd(
                 *row[8] = next_pc_limb_1_col8;
                 let next_pc_limb_2_col9 = memory_id_to_big_value_tmp_ff4f6_5.get_m31(2);
                 *row[9] = next_pc_limb_2_col9;
-                for (i, &input) in next_pc_id_col4.unpack().iter().enumerate() {
-                    *sub_components_inputs[i].memory_id_to_big_inputs[0] = input;
-                }
+                let memory_id_to_big_inputs_0 = next_pc_id_col4.unpack();
                 *lookup_data.memory_id_to_big_0 = [
                     next_pc_id_col4,
                     next_pc_limb_0_col7,
@@ -318,10 +275,16 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col3)),
                     input_fp_col2,
                 ];
+                *row[10] = Enabler::new(n_rows).packed_at(row_index);
+
+                // Add sub-components inputs.
+                verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_0);
+                memory_id_to_big_state.add_inputs(&memory_id_to_big_inputs_0);
             },
         );
 
-    (trace, sub_components_inputs, lookup_data)
+    (trace, lookup_data)
 }
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
@@ -375,7 +338,11 @@ impl InteractionClaimGenerator {
         {
             let denom0: PackedQM31 = memory_id_to_big.combine(values0);
             let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
+            col_gen.write_frac(
+                i,
+                denom0 * Enabler::new(self.n_rows).packed_at(i) + denom1,
+                denom0 * denom1,
+            );
         }
         col_gen.finalize_col();
 
@@ -383,22 +350,19 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         for (i, values) in self.lookup_data.opcodes_1.iter().enumerate() {
             let denom = opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            col_gen.write_frac(
+                i,
+                -PackedQM31::one() * Enabler::new(self.n_rows).packed_at(i),
+                denom,
+            );
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_rows == 1 << log_size {
-            let (trace, claimed_sum) = logup_gen.finalize_last();
-            (trace, claimed_sum, None)
-        } else {
-            let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_rows - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_rows - 1)))
-        };
+        let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
-            logup_sums: (total_sum, claimed_sum),
+            logup_sums: (claimed_sum, None),
         }
     }
 }
