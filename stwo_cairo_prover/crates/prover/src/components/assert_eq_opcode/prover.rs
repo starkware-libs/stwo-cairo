@@ -31,13 +31,14 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim};
-use crate::components::utils::pack_values;
+use crate::cairo_air::preprocessed::PreProcessedColumn;
+use crate::components::utils::{pack_values, Enabler};
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::relations;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
-const N_TRACE_COLUMNS: usize = 12;
+const N_TRACE_COLUMNS: usize = 13;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -61,14 +62,9 @@ impl ClaimGenerator {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
-        let need_padding = n_rows != size;
-
-        if need_padding {
-            self.inputs.resize(size, *self.inputs.first().unwrap());
-            bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
-        }
-
+        self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
+
         let (trace, lookup_data) = write_trace_simd(
             n_rows,
             packed_inputs,
@@ -76,7 +72,6 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             verify_instruction_state,
         );
-
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -124,6 +119,7 @@ fn write_trace_simd(
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
+    let padding = Enabler::new(n_rows);
 
     trace
         .par_iter_mut()
@@ -282,20 +278,12 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col8)),
                     input_fp_col2,
                 ];
+                *row[12] = padding.packed_at(row_index);
 
                 // Add sub-components inputs.
-                #[allow(clippy::needless_range_loop)]
-                for i in 0..N_LANES {
-                    if bit_reverse_index(
-                        coset_index_to_circle_domain_index(row_index * N_LANES + i, log_size),
-                        log_size,
-                    ) < n_rows
-                    {
-                        verify_instruction_state.add_input(&verify_instruction_inputs_0[i]);
-                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_0[i]);
-                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_1[i]);
-                    }
-                }
+                verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_0);
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_1);
             },
         );
 
@@ -327,6 +315,7 @@ impl InteractionClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
+        let padding = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         // Sum logup terms in pairs.
@@ -352,7 +341,7 @@ impl InteractionClaimGenerator {
         {
             let denom0: PackedQM31 = memory_address_to_id.combine(values0);
             let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
+            col_gen.write_frac(i, denom0 * padding.packed_at(i) + denom1, denom0 * denom1);
         }
         col_gen.finalize_col();
 
@@ -360,22 +349,15 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         for (i, values) in self.lookup_data.opcodes_1.iter().enumerate() {
             let denom = opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one(), denom);
+            col_gen.write_frac(i, -PackedQM31::one() * padding.packed_at(i), denom);
         }
         col_gen.finalize_col();
 
-        let (trace, total_sum, claimed_sum) = if self.n_rows == 1 << log_size {
-            let (trace, claimed_sum) = logup_gen.finalize_last();
-            (trace, claimed_sum, None)
-        } else {
-            let (trace, [total_sum, claimed_sum]) =
-                logup_gen.finalize_at([(1 << log_size) - 1, self.n_rows - 1]);
-            (trace, total_sum, Some((claimed_sum, self.n_rows - 1)))
-        };
+        let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
         InteractionClaim {
-            logup_sums: (total_sum, claimed_sum),
+            logup_sums: (claimed_sum, None),
         }
     }
 }

@@ -69,7 +69,6 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             self.range_check_builtin_segment_start,
         );
-
         tree_builder.extend_evals(trace.to_evals());
 
         (
