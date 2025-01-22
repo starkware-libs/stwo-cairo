@@ -215,18 +215,12 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Write;
-
     use cairo_lang_casm::casm;
-    use itertools::Itertools;
-    use stwo_cairo_serialize::CairoSerialize;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-    use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
     use super::ProverConfig;
     use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
     use crate::input::plain::input_from_plain_casm;
-    use crate::input::vm_import::tests::small_cairo_input;
 
     fn test_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -267,24 +261,35 @@ mod tests {
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 
-    #[ignore]
-    #[test]
-    fn generate_and_serialise_proof() {
-        let cairo_proof =
-            prove_cairo::<Poseidon252MerkleChannel>(test_input(), test_cfg()).unwrap();
-        let mut output = Vec::new();
-        CairoSerialize::serialize(&cairo_proof, &mut output);
-        let proof_str = output.iter().map(|v| v.to_string()).join(",");
-        let mut file = std::fs::File::create("proof.cairo").unwrap();
-        file.write_all(proof_str.as_bytes()).unwrap();
-        verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
-    }
+    #[cfg(feature = "slow-tests")]
+    pub mod slow_tests {
+        use std::io::Write;
 
-    #[ignore]
-    #[test]
-    fn test_full_cairo_air() {
-        let cairo_proof =
-            prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), test_cfg()).unwrap();
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        use itertools::Itertools;
+        use stwo_cairo_serialize::CairoSerialize;
+        use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+        use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+
+        use super::*;
+        use crate::input::vm_import::tests::small_cairo_input;
+
+        #[test]
+        fn generate_and_serialise_proof() {
+            let cairo_proof =
+                prove_cairo::<Poseidon252MerkleChannel>(test_input(), test_cfg()).unwrap();
+            let mut output = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut output);
+            let proof_str = output.iter().map(|v| v.to_string()).join(",");
+            let mut file = std::fs::File::create("proof.cairo").unwrap();
+            file.write_all(proof_str.as_bytes()).unwrap();
+            verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
+        }
+
+        #[test]
+        fn test_full_cairo_air() {
+            let cairo_proof =
+                prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), test_cfg()).unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
     }
 }
