@@ -211,6 +211,8 @@ pub enum CairoVerificationError {
     InvalidLogupSum,
     #[error("Stark verification error: {0}")]
     Stark(#[from] VerificationError),
+    #[error("Not enough security bits")]
+    LowSecurityBits,
 }
 
 #[cfg(test)]

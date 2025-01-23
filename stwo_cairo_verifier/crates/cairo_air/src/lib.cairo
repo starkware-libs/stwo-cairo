@@ -32,8 +32,8 @@ use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Zero};
 use stwo_verifier_core::fri::FriConfig;
-use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
+use stwo_verifier_core::pcs::{PcsConfig, SecurityBitsTrait};
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::verifier::Air;
 use stwo_verifier_core::verifier::{StarkProof, VerificationError, verify};
@@ -45,6 +45,9 @@ pub mod utils;
 const PREPROCESSED_COLUMNS_LOG_SIZES: [u32; 19] = [
     22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
 ];
+
+// TODO(alonf): Increase to 96 bits.
+const SECURITY_BITS: u32 = 1;
 
 // (Address, Id, Value)
 pub type PublicMemory = Array<(u32, u32, [u32; 8])>;
@@ -82,6 +85,11 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 15,
         },
     };
+    // TODO(alonf): Add a security_bits parameter to this function, and a wrapper function that
+    // calls this function with the required security_bits.
+    if config.security_bits() < SECURITY_BITS {
+        return Result::Err(CairoVerificationError::LowSecurityBits);
+    }
     let mut channel = ChannelImpl::new(0);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
@@ -429,6 +437,8 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 pub enum CairoVerificationError {
     InvalidLogupSum,
     Stark: VerificationError,
+    /// Not enough security bits.
+    LowSecurityBits,
 }
 
 #[derive(Drop)]
