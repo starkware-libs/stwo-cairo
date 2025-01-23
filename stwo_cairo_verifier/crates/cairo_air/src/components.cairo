@@ -16,7 +16,7 @@ pub mod assert_eq_opcode_imm;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
-// pub mod generic_opcode;
+pub mod generic_opcode;
 pub mod jnz_opcode;
 pub mod jnz_opcode_dst_base_fp;
 pub mod jnz_opcode_taken;

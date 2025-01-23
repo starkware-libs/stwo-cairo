@@ -46,10 +46,9 @@ use components::call_opcode_op_1_base_fp::{
 use components::call_opcode_rel::{
     ClaimImpl as CallOpcodeRelClaimImpl, InteractionClaimImpl as CallOpcodeRelInteractionClaimImpl,
 };
-// use components::generic_opcode::{
-//     ClaimImpl as GenericOpcodeClaimImpl, InteractionClaimImpl as
-//     GenericOpcodeInteractionClaimImpl,
-// };
+use components::generic_opcode::{
+    ClaimImpl as GenericOpcodeClaimImpl, InteractionClaimImpl as GenericOpcodeInteractionClaimImpl,
+};
 use components::jnz_opcode::{
     ClaimImpl as JnzOpcodeClaimImpl, InteractionClaimImpl as JnzOpcodeInteractionClaimImpl,
 };
@@ -365,8 +364,8 @@ pub struct OpcodeInteractionClaim {
     call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::InteractionClaim>,
     // call_rel: Array<PlaceHolder>,
     call_rel: Array<components::call_opcode_rel::InteractionClaim>,
-    // generic: Array<components::generic_opcode::InteractionClaim>,
-    generic: Array<PlaceHolder>,
+    // generic: Array<PlaceHolder>,
+    generic: Array<components::generic_opcode::InteractionClaim>,
     // jnz: Array<PlaceHolder>,
     jnz: Array<components::jnz_opcode::InteractionClaim>,
     // jnz_dst_base_fp: Array<PlaceHolder>,
@@ -446,9 +445,9 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             interaction_claim.mix_into(ref channel);
         };
 
-        // for interaction_claim in self.generic.span() {
-        //     interaction_claim.mix_into(ref channel);
-        // };
+        for interaction_claim in self.generic.span() {
+            interaction_claim.mix_into(ref channel);
+        };
 
         for interaction_claim in self.jnz.span() {
             interaction_claim.mix_into(ref channel);
@@ -589,12 +588,12 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             };
         };
 
-        // for interaction_claim in self.generic.span() {
-        //     sum += match interaction_claim.claimed_sum {
-        //         Option::Some((claimed_sum, _)) => *claimed_sum,
-        //         Option::None => *interaction_claim.total_sum,
-        //     };
-        // };
+        for interaction_claim in self.generic.span() {
+            sum += match interaction_claim.claimed_sum {
+                Option::Some((claimed_sum, _)) => *claimed_sum,
+                Option::None => *interaction_claim.total_sum,
+            };
+        };
 
         for interaction_claim in self.jnz.span() {
             sum += match interaction_claim.claimed_sum {
@@ -745,8 +744,8 @@ pub struct OpcodeClaim {
     pub call: Array<components::call_opcode::Claim>,
     pub call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::Claim>,
     pub call_rel: Array<components::call_opcode_rel::Claim>,
-    // pub generic: Array<components::generic_opcode::Claim>,
-    pub generic: Array<PlaceHolder>,
+    // pub generic: Array<PlaceHolder>,
+    pub generic: Array<components::generic_opcode::Claim>,
     pub jnz: Array<components::jnz_opcode::Claim>,
     pub jnz_dst_base_fp: Array<components::jnz_opcode_dst_base_fp::Claim>,
     pub jnz_taken: Array<components::jnz_opcode_taken::Claim>,
@@ -817,9 +816,9 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
             claim.mix_into(ref channel);
         };
 
-        // for claim in self.generic.span() {
-        //     claim.mix_into(ref channel);
-        // };
+        for claim in self.generic.span() {
+            claim.mix_into(ref channel);
+        };
 
         for claim in self.jnz.span() {
             claim.mix_into(ref channel);
@@ -921,9 +920,9 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
             log_sizes.append(claim.log_sizes());
         };
 
-        // for claim in self.generic.span() {
-        //     log_sizes.append(claim.log_sizes());
-        // };
+        for claim in self.generic.span() {
+            log_sizes.append(claim.log_sizes());
+        };
 
         for claim in self.jnz.span() {
             log_sizes.append(claim.log_sizes());
@@ -1307,8 +1306,8 @@ pub struct OpcodeComponents {
     call: Array<components::call_opcode::Component>,
     call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::Component>,
     call_rel: Array<components::call_opcode_rel::Component>,
-    // generic: Array<components::generic_opcode::Component>,
-    generic: Array<PlaceHolder>,
+    // generic: Array<PlaceHolder>,
+    generic: Array<components::generic_opcode::Component>,
     jnz: Array<components::jnz_opcode::Component>,
     jnz_dst_base_fp: Array<components::jnz_opcode_dst_base_fp::Component>,
     jnz_taken: Array<components::jnz_opcode_taken::Component>,
@@ -1691,35 +1690,34 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 
         // Generic components
         let mut generic_components = array![];
-        // let mut generic_claims = claim.generic.span();
-        // let mut generic_interaction_claims = interaction_claim.generic.span();
-        // while let (Option::Some(claim), Option::Some(interaction_claim)) =
-        //     (generic_claims.pop_front(), generic_interaction_claims.pop_front()) {
-        //     generic_components
-        //         .append(
-        //             components::generic_opcode::Component {
-        //                 claim: *claim,
-        //                 interaction_claim: *interaction_claim,
-        //                 memory_address_to_id_lookup_elements: interaction_elements
-        //                     .memory_address_to_id
-        //                     .clone(),
-        //                 memory_id_to_big_lookup_elements: interaction_elements
-        //                     .memory_id_to_value
-        //                     .clone(),
-        //                 opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-        //                 verify_instruction_lookup_elements: interaction_elements
-        //                     .verify_instruction
-        //                     .clone(),
-        //                 range_check_19_lookup_elements:
-        //                 interaction_elements.range_check_19.clone(),
-        //                 range_check_9_9_lookup_elements: interaction_elements
-        //                     .range_check_9_9
-        //                     .clone(),
-        //             },
-        //         );
-        // };
-        // assert!(generic_claims.is_empty());
-        // assert!(generic_interaction_claims.is_empty());
+        let mut generic_claims = claim.generic.span();
+        let mut generic_interaction_claims = interaction_claim.generic.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (generic_claims.pop_front(), generic_interaction_claims.pop_front()) {
+            generic_components
+                .append(
+                    components::generic_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        range_check_9_9_lookup_elements: interaction_elements
+                            .range_check_9_9
+                            .clone(),
+                    },
+                );
+        };
+        assert!(generic_claims.is_empty());
+        assert!(generic_interaction_claims.is_empty());
 
         // Jnz components
         let mut jnz_components = array![];
@@ -2117,10 +2115,9 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
         };
 
-        // for component in self.generic.span() {
-        //     component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points,
-        //     point);
-        // };
+        for component in self.generic.span() {
+            component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+        };
 
         for component in self.jnz.span() {
             component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
@@ -2224,9 +2221,9 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         };
 
-        // for component in self.generic.span() {
-        //     max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        // };
+        for component in self.generic.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        };
 
         for component in self.jnz.span() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
@@ -2440,17 +2437,17 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                 );
         };
 
-        // for component in self.generic.span() {
-        //     component
-        //         .evaluate_constraints_at_point(
-        //             ref sum,
-        //             ref preprocessed_mask_values,
-        //             ref trace_mask_values,
-        //             ref interaction_trace_mask_values,
-        //             random_coeff,
-        //             point,
-        //         );
-        // };
+        for component in self.generic.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        };
 
         for component in self.jnz.span() {
             component
