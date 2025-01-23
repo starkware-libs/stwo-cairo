@@ -79,7 +79,8 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
     }
 
     fn get(ref self: PreprocessedMaskValues, preprocessed_column: PreprocessedColumn) -> QM31 {
-        self.values.get(PreprocessedColumnKey::encode(@preprocessed_column)).deref()
+        let v = self.values.get(PreprocessedColumnKey::encode(@preprocessed_column)).deref();
+        v
     }
 }
 

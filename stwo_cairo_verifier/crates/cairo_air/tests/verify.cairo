@@ -1,6 +1,7 @@
+use stwo_constraint_framework::{PreprocessedMaskValues, PreprocessedMaskValuesImpl};
 use stwo_verifier_core::channel::ChannelImpl;
 use stwo_verifier_core::circle::{CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl};
-use stwo_verifier_core::fields::qm31::{QM31Impl, QM31One};
+use stwo_verifier_core::fields::qm31::{QM31Impl, QM31One, QM31Zero};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;

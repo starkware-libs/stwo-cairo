@@ -1,5 +1,3 @@
-use crate::components::CairoComponent;
-use crate::utils::U32Impl;
 use stwo_constraint_framework::{
     ClaimedPrefixSum, PreprocessedColumn, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
@@ -9,32 +7,34 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::components::CairoComponent;
+use crate::utils::U32Impl;
 use super::super::Invertible;
 
 mod constraints;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
-    n_calls: u32,
+    n_rows: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_size(self: @Claim) -> u32 {
-        (*self.n_calls).next_power_of_two().ilog2()
+        core::cmp::max((*self.n_rows).next_power_of_two().ilog2(), 4)
     }
 
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = self.log_size();
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = ArrayImpl::new_repeated(11, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 7, log_size)
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 4, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_nonce((*self.n_calls).into());
+        channel.mix_nonce((*self.n_rows).into());
     }
 }
 
@@ -47,11 +47,10 @@ pub struct InteractionClaim {
 #[generate_trait]
 pub impl InteractionClaimImpl of InteractionClaimTrait {
     fn mix_into(self: @InteractionClaim, ref channel: Channel) {
+        channel.mix_felts([*self.total_sum].span());
         if let Option::Some((sum_at_index, index)) = *self.claimed_sum {
-            channel.mix_felts([*self.total_sum, sum_at_index].span());
+            channel.mix_felts([sum_at_index].span());
             channel.mix_nonce(index.into());
-        } else {
-            channel.mix_felts([*self.total_sum].span());
         }
     }
 }
@@ -60,10 +59,10 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memoryaddresstoid_lookup_elements: super::super::AddrToIdElements,
-    pub memoryidtobig_lookup_elements: super::super::IdToValueElements,
-    pub verifyinstruction_lookup_elements: super::super::VerifyInstructionElements,
-    pub opcodes_lookup_elements: super::super::VmElements,
+    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
+    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
+    pub opcodes_lookup_elements: crate::OpcodeElements,
+    pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
@@ -73,7 +72,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let claimed_sum_offset = *self.claim.n_calls;
+        let claimed_sum_offset = *self.claim.n_rows - 1;
         let trace_gen = CanonicCosetImpl::new(self.claim.log_size()).coset.step_size;
         constraints::mask_points(
             ref trace_mask_points,
@@ -97,91 +96,124 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let mut id_to_value_alpha_powers = self.memoryidtobig_lookup_elements.alpha_powers.span();
-        let id_to_value_alpha_pow_0 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_pow_1 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_pow_2 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_pow_3 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let mut addr_to_id_alpha_powers = self
-            .memoryaddresstoid_lookup_elements
-            .alpha_powers
-            .span();
-        let addr_to_id_alpha_pow_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_alpha_pow_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
+        let log_size = self.claim.log_size();
+        let trace_domain = CanonicCosetImpl::new(log_size);
+        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
 
+        let VerifyInstruction_z = *self.verify_instruction_lookup_elements.z;
         let mut verify_instruction_alpha_powers = self
-            .verifyinstruction_lookup_elements
+            .verify_instruction_lookup_elements
             .alpha_powers
             .span();
-        let verify_instruction_alpha_pow_0 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_1 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_2 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_3 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_4 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_5 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_6 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_7 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_8 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_9 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_10 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_11 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_12 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_13 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_14 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_15 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_16 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_alpha_pow_17 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha0 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha1 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha2 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha3 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha4 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha5 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha6 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha7 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha8 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha9 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha10 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha11 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha12 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha13 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha14 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha15 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha16 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha17 = *verify_instruction_alpha_powers.pop_front().unwrap();
+        let VerifyInstruction_alpha18 = *verify_instruction_alpha_powers.pop_front().unwrap();
 
-        let mut vm_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
-        let vm_alpha_pow_0 = *vm_alpha_powers.pop_front().unwrap();
-        let vm_alpha_pow_1 = *vm_alpha_powers.pop_front().unwrap();
-        let vm_alpha_pow_2 = *vm_alpha_powers.pop_front().unwrap();
-        let vm_z = *self.opcodes_lookup_elements.z;
+        let MemoryAddressToId_z = *self.memory_address_to_id_lookup_elements.z;
+        let mut memory_address_to_id_alpha_powers = self
+            .memory_address_to_id_lookup_elements
+            .alpha_powers
+            .span();
+        let MemoryAddressToId_alpha0 = *memory_address_to_id_alpha_powers.pop_front().unwrap();
+        let MemoryAddressToId_alpha1 = *memory_address_to_id_alpha_powers.pop_front().unwrap();
+
+        let MemoryIdToBig_z = *self.memory_id_to_big_lookup_elements.z;
+        let mut memory_id_to_big_alpha_powers = self
+            .memory_id_to_big_lookup_elements
+            .alpha_powers
+            .span();
+        let MemoryIdToBig_alpha0 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha1 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha2 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha3 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha4 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha5 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha6 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha7 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha8 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha9 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha10 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha11 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha12 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha13 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha14 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha15 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha16 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha17 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha18 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha19 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha20 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha21 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha22 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha23 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha24 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha25 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha26 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+        let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
+
+        let Opcodes_z = *self.opcodes_lookup_elements.z;
+        let mut opcodes_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
+        let Opcodes_alpha0 = *opcodes_alpha_powers.pop_front().unwrap();
+        let Opcodes_alpha1 = *opcodes_alpha_powers.pop_front().unwrap();
+        let Opcodes_alpha2 = *opcodes_alpha_powers.pop_front().unwrap();
 
         let (claimed_sum, _) = (*self.interaction_claim.claimed_sum).unwrap();
-
-        let log_size = self.claim.log_size();
+        let total_sum = *self.interaction_claim.total_sum;
 
         let params = constraints::ConstraintParams {
-            MemoryAddressToId_alpha0: addr_to_id_alpha_pow_0,
-            MemoryAddressToId_alpha1: addr_to_id_alpha_pow_1,
-            MemoryAddressToId_z: *self.memoryaddresstoid_lookup_elements.z,
-            MemoryIdToBig_alpha0: id_to_value_alpha_pow_0,
-            MemoryIdToBig_alpha1: id_to_value_alpha_pow_1,
-            MemoryIdToBig_alpha2: id_to_value_alpha_pow_2,
-            MemoryIdToBig_alpha3: id_to_value_alpha_pow_3,
-            MemoryIdToBig_z: *self.memoryidtobig_lookup_elements.z,
-            VerifyInstruction_alpha0: verify_instruction_alpha_pow_0,
-            VerifyInstruction_alpha1: verify_instruction_alpha_pow_1,
-            VerifyInstruction_alpha2: verify_instruction_alpha_pow_2,
-            VerifyInstruction_alpha3: verify_instruction_alpha_pow_3,
-            VerifyInstruction_alpha4: verify_instruction_alpha_pow_4,
-            VerifyInstruction_alpha5: verify_instruction_alpha_pow_5,
-            VerifyInstruction_alpha6: verify_instruction_alpha_pow_6,
-            VerifyInstruction_alpha7: verify_instruction_alpha_pow_7,
-            VerifyInstruction_alpha8: verify_instruction_alpha_pow_8,
-            VerifyInstruction_alpha9: verify_instruction_alpha_pow_9,
-            VerifyInstruction_alpha10: verify_instruction_alpha_pow_10,
-            VerifyInstruction_alpha11: verify_instruction_alpha_pow_11,
-            VerifyInstruction_alpha12: verify_instruction_alpha_pow_12,
-            VerifyInstruction_alpha13: verify_instruction_alpha_pow_13,
-            VerifyInstruction_alpha14: verify_instruction_alpha_pow_14,
-            VerifyInstruction_alpha15: verify_instruction_alpha_pow_15,
-            VerifyInstruction_alpha16: verify_instruction_alpha_pow_16,
-            VerifyInstruction_alpha17: verify_instruction_alpha_pow_17,
-            VerifyInstruction_z: *self.verifyinstruction_lookup_elements.z,
-            Opcodes_alpha0: vm_alpha_pow_0,
-            Opcodes_alpha1: vm_alpha_pow_1,
-            Opcodes_alpha2: vm_alpha_pow_2,
-            Opcodes_z: vm_z,
-            claimed_sum: claimed_sum,
+            VerifyInstruction_z,
+            VerifyInstruction_alpha0,
+            VerifyInstruction_alpha1,
+            VerifyInstruction_alpha2,
+            VerifyInstruction_alpha3,
+            VerifyInstruction_alpha4,
+            VerifyInstruction_alpha5,
+            VerifyInstruction_alpha6,
+            VerifyInstruction_alpha7,
+            VerifyInstruction_alpha8,
+            VerifyInstruction_alpha9,
+            VerifyInstruction_alpha10,
+            VerifyInstruction_alpha11,
+            VerifyInstruction_alpha12,
+            VerifyInstruction_alpha13,
+            VerifyInstruction_alpha14,
+            VerifyInstruction_alpha15,
+            VerifyInstruction_alpha16,
+            VerifyInstruction_alpha17,
+            MemoryAddressToId_z,
+            MemoryAddressToId_alpha0,
+            MemoryAddressToId_alpha1,
+            MemoryIdToBig_z,
+            MemoryIdToBig_alpha0,
+            MemoryIdToBig_alpha1,
+            MemoryIdToBig_alpha2,
+            MemoryIdToBig_alpha3,
+            Opcodes_z,
+            Opcodes_alpha0,
+            Opcodes_alpha1,
+            Opcodes_alpha2,
             preprocessed_is_first: preprocessed_mask_values
                 .get(PreprocessedColumn::IsFirst(log_size)),
-            total_sum: *self.interaction_claim.total_sum,
+            claimed_sum,
+            total_sum,
         };
-
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let vanish_eval = trace_domain.eval_vanishing(point);
 
         constraints::evaluate_constraints_at_point(
             ref sum,
@@ -189,7 +221,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            vanish_eval.inverse(),
+            domain_vanishing_eval_inv,
         )
     }
 }
