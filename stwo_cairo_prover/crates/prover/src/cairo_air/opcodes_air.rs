@@ -806,179 +806,79 @@ impl OpcodeInteractionClaim {
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
         for interaction_claim in &self.add {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.add_imm {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.add_small {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.add_small_imm {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.add_ap {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.add_ap_op_1_base_fp {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.add_ap_imm {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.assert_eq {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.assert_eq_imm {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.assert_eq_double_deref {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.call {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.call_op_1_base_fp {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.call_rel {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.generic {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jnz {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jnz_dst_base_fp {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jnz_taken {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jnz_taken_dst_base_fp {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jump {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jump_double_deref {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jump_rel {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.jump_rel_imm {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.mul {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.mul_imm {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.ret {
-            let (total_sum, claimed_sum) = interaction_claim.logup_sums;
-            sum += match claimed_sum {
-                Some((claimed_sum, ..)) => claimed_sum,
-                None => total_sum,
-            };
+            sum += interaction_claim.claimed_sum;
         }
         sum
     }
@@ -1431,7 +1331,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1455,7 +1355,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1479,7 +1379,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1503,7 +1403,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1527,7 +1427,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1551,7 +1451,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1575,7 +1475,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1596,7 +1496,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1617,7 +1517,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1641,7 +1541,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1665,7 +1565,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1689,7 +1589,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1713,7 +1613,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1741,7 +1641,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1765,7 +1665,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1789,7 +1689,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1813,7 +1713,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1837,7 +1737,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1861,7 +1761,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1885,7 +1785,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1909,7 +1809,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1933,7 +1833,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect();
@@ -1958,7 +1858,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -1983,7 +1883,7 @@ impl OpcodeComponents {
                             .verify_instruction
                             .clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();
@@ -2007,7 +1907,7 @@ impl OpcodeComponents {
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
                     },
-                    interaction_claim.logup_sums,
+                    interaction_claim.claimed_sum,
                 )
             })
             .collect_vec();

@@ -3,7 +3,7 @@
 use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::logup::{LogupAtRow, LogupSums, LookupElements};
+use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
@@ -49,19 +49,13 @@ impl Claim {
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct InteractionClaim {
-    pub logup_sums: LogupSums,
+    pub claimed_sum: SecureField,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        let (total_sum, claimed_sum) = self.logup_sums;
-        channel.mix_felts(&[total_sum]);
-        if let Some(claimed_sum) = claimed_sum {
-            channel.mix_felts(&[claimed_sum.0]);
-            channel.mix_u64(claimed_sum.1 as u64);
-        }
+        channel.mix_felts(&[self.claimed_sum]);
     }
 }
-
 pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
