@@ -106,7 +106,7 @@ impl BuiltinsInteractionClaim {
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
-            sum += range_check_128_builtin.logup_sums.0;
+            sum += range_check_128_builtin.claimed_sum;
         }
         sum
     }
@@ -168,7 +168,7 @@ impl BuiltinComponents {
                         interaction_claim
                             .range_check_128_builtin
                             .unwrap()
-                            .logup_sums,
+                            .claimed_sum,
                     )
                 });
         Self {
