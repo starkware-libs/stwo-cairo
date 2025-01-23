@@ -116,8 +116,6 @@ pub struct StarkProof {
 pub enum VerificationError {
     /// Proof has invalid structure.
     InvalidStructure: felt252,
-    /// Lookup values do not match.
-    InvalidLookup: felt252,
     /// Merkle proof invalid.
     Merkle: MerkleVerificationError,
     /// Proof of work verification failed.
