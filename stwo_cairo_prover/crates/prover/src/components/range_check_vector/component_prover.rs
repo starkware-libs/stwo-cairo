@@ -224,7 +224,7 @@ mod tests {
         let component = FrameworkComponent::new(
             tree_span_provider,
             range_check_7_2_5::Eval { lookup_elements },
-            (interaction_claim.claimed_sum, None),
+            interaction_claim.claimed_sum,
         );
 
         let trace_polys = commitment_scheme
@@ -238,7 +238,7 @@ mod tests {
             |eval| {
                 component.evaluate(eval);
             },
-            (interaction_claim.claimed_sum, None),
+            interaction_claim.claimed_sum,
         )
     }
 }

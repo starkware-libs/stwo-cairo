@@ -4,9 +4,7 @@ use num_traits::{One, Zero};
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::logup::{
-    ClaimedPrefixSum, LogupAtRow, LogupSums, LookupElements,
-};
+use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };

@@ -311,52 +311,52 @@ impl RangeChecksComponents {
         let rc_6_component = range_check_6::Component::new(
             tree_span_provider,
             range_check_6::Eval::new(interaction_elements.rc_6.clone()),
-            (interaction_claim.rc_6.claimed_sum, None),
+            interaction_claim.rc_6.claimed_sum,
         );
         let rc_11_component = range_check_11::Component::new(
             tree_span_provider,
             range_check_11::Eval::new(interaction_elements.rc_11.clone()),
-            (interaction_claim.rc_11.claimed_sum, None),
+            interaction_claim.rc_11.claimed_sum,
         );
         let rc_12_component = range_check_12::Component::new(
             tree_span_provider,
             range_check_12::Eval::new(interaction_elements.rc_12.clone()),
-            (interaction_claim.rc_12.claimed_sum, None),
+            interaction_claim.rc_12.claimed_sum,
         );
         let rc_18_component = range_check_18::Component::new(
             tree_span_provider,
             range_check_18::Eval::new(interaction_elements.rc_18.clone()),
-            (interaction_claim.rc_18.claimed_sum, None),
+            interaction_claim.rc_18.claimed_sum,
         );
         let rc_19_component = range_check_19::Component::new(
             tree_span_provider,
             range_check_19::Eval::new(interaction_elements.rc_19.clone()),
-            (interaction_claim.rc_19.claimed_sum, None),
+            interaction_claim.rc_19.claimed_sum,
         );
         let rc_3_6_component = range_check_3_6::Component::new(
             tree_span_provider,
             range_check_3_6::Eval::new(interaction_elements.rc_3_6.clone()),
-            (interaction_claim.rc_3_6.claimed_sum, None),
+            interaction_claim.rc_3_6.claimed_sum,
         );
         let rc_4_3_component = range_check_4_3::Component::new(
             tree_span_provider,
             range_check_4_3::Eval::new(interaction_elements.rc_4_3.clone()),
-            (interaction_claim.rc_4_3.claimed_sum, None),
+            interaction_claim.rc_4_3.claimed_sum,
         );
         let rc_9_9_component = range_check_9_9::Component::new(
             tree_span_provider,
             range_check_9_9::Eval::new(interaction_elements.rc_9_9.clone()),
-            (interaction_claim.rc_9_9.claimed_sum, None),
+            interaction_claim.rc_9_9.claimed_sum,
         );
         let rc_7_2_5_component = range_check_7_2_5::Component::new(
             tree_span_provider,
             range_check_7_2_5::Eval::new(interaction_elements.rc_7_2_5.clone()),
-            (interaction_claim.rc_7_2_5.claimed_sum, None),
+            interaction_claim.rc_7_2_5.claimed_sum,
         );
         let rc_3_6_6_3_component = range_check_3_6_6_3::Component::new(
             tree_span_provider,
             range_check_3_6_6_3::Eval::new(interaction_elements.rc_3_6_6_3.clone()),
-            (interaction_claim.rc_3_6_6_3.claimed_sum, None),
+            interaction_claim.rc_3_6_6_3.claimed_sum,
         );
         Self {
             rc_6: rc_6_component,
