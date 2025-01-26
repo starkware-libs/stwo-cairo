@@ -32,6 +32,9 @@ pub trait ProverType: Debug + Clone + Copy + Default {
     fn calc(&self) -> String;
     // Returns the type of the prover type as a string.
     fn r#type() -> String;
+    // Returns the name of the from static method that converts the basic rust type to the prover
+    // type.
+    fn from_basic_type_method() -> String;
 }
 
 impl ProverType for M31 {
@@ -40,6 +43,9 @@ impl ProverType for M31 {
     }
     fn r#type() -> String {
         "M31".to_string()
+    }
+    fn from_basic_type_method() -> String {
+        "M31::from_u32_unchecked".to_string()
     }
 }
 
@@ -58,12 +64,25 @@ impl CasmState {
     }
 }
 
+impl From<[u32; 3]> for CasmState {
+    fn from(values: [u32; 3]) -> CasmState {
+        CasmState {
+            pc: M31::from_u32_unchecked(values[0]),
+            ap: M31::from_u32_unchecked(values[1]),
+            fp: M31::from_u32_unchecked(values[2]),
+        }
+    }
+}
+
 impl ProverType for CasmState {
     fn calc(&self) -> String {
         format!("{{ pc: {}, ap: {}, fp: {} }}", self.pc, self.ap, self.fp)
     }
     fn r#type() -> String {
         "CasmState".to_string()
+    }
+    fn from_basic_type_method() -> String {
+        "CasmState::from".to_string()
     }
 }
 
@@ -85,6 +104,9 @@ impl ProverType for Bool {
     }
     fn r#type() -> String {
         "Bool".to_string()
+    }
+    fn from_basic_type_method() -> String {
+        "Bool::from".to_string()
     }
 }
 
@@ -136,6 +158,9 @@ impl ProverType for UInt16 {
     }
     fn r#type() -> String {
         "UInt16".to_string()
+    }
+    fn from_basic_type_method() -> String {
+        "UInt16::from".to_string()
     }
 }
 
@@ -260,6 +285,9 @@ impl ProverType for UInt32 {
     fn r#type() -> String {
         "UInt32".to_string()
     }
+    fn from_basic_type_method() -> String {
+        "UInt32::from".to_string()
+    }
 }
 
 impl Add for UInt32 {
@@ -350,6 +378,9 @@ impl ProverType for UInt64 {
     }
     fn r#type() -> String {
         "UInt64".to_string()
+    }
+    fn from_basic_type_method() -> String {
+        "UInt64::from".to_string()
     }
 }
 
@@ -562,6 +593,9 @@ impl ProverType for Felt252 {
     fn r#type() -> String {
         "Felt252".to_string()
     }
+    fn from_basic_type_method() -> String {
+        "Felt252::from".to_string()
+    }
 }
 
 pub const FELT252PACKED27_N_WORDS: usize = 10;
@@ -630,6 +664,19 @@ impl From<Felt252Packed27> for Felt252 {
     }
 }
 
+impl From<[u64; 4]> for Felt252Packed27 {
+    fn from(limbs: [u64; 4]) -> Felt252Packed27 {
+        Felt252Packed27 {
+            limbs: [
+                limbs[0],
+                limbs[1],
+                limbs[2],
+                limbs[3] & 0x0fffffff_ffffffffu64,
+            ],
+        }
+    }
+}
+
 impl ProverType for Felt252Packed27 {
     fn calc(&self) -> String {
         format!(
@@ -639,6 +686,9 @@ impl ProverType for Felt252Packed27 {
     }
     fn r#type() -> String {
         "Felt252Packed27".to_string()
+    }
+    fn from_basic_type_method() -> String {
+        "Felt252Packed27::from".to_string()
     }
 }
 
@@ -670,6 +720,9 @@ impl<const B: usize, const L: usize, const F: usize> ProverType for BigUInt<B, L
             6 | 12 => format!("BigUInt<{}, {}>", 64 * L, L),
             _ => panic!("Unsupported BigUInt size"),
         }
+    }
+    fn from_basic_type_method() -> String {
+        format!("BigUInt::<{}, {}, {}>::from", B, L, F)
     }
 }
 
