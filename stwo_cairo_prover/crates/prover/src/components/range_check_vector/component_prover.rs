@@ -157,7 +157,6 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::preprocessed_columns::IsFirst;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
@@ -193,8 +192,7 @@ mod tests {
 
         // Preprocessed trace.
         let mut tree_builder = commitment_scheme.tree_builder();
-        let range_check_preprocessed_trace = IsFirst::new(LOG_HEIGHT).gen_column_simd();
-        tree_builder.extend_evals([range_check_preprocessed_trace]);
+        tree_builder.extend_evals(vec![]);
         tree_builder.commit(channel);
 
         let inputs: [[PackedM31; 3]; 30] = std::array::from_fn(|_| {
