@@ -70,7 +70,9 @@ pub fn preprocessed_trace_columns() -> Vec<PreProcessedColumn> {
     let is_first_columns =
         IS_FIRST_LOG_SIZES.map(|log_size| PreProcessedColumn::IsFirst(IsFirst::new(log_size)));
     let seq_columns = SEQ_LOG_SIZES.map(|log_size| PreProcessedColumn::Seq(Seq::new(log_size)));
-    chain![is_first_columns, seq_columns]
+    let bitwise_xor_columns =
+        (0..3).map(move |col_index| PreProcessedColumn::BitwiseXor(BitwiseXor::new(9, col_index)));
+    chain![is_first_columns, seq_columns, bitwise_xor_columns]
         .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
         .collect_vec()
 }
