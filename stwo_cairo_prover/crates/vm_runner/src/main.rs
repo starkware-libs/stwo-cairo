@@ -3,7 +3,7 @@ use std::process::ExitCode;
 
 use clap::Parser;
 use stwo_cairo_prover::input::plain::adapt_finished_runner;
-use stwo_cairo_prover::input::ProverInput;
+use stwo_cairo_prover::input::{ExecutionResources, ProverInput};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
 use thiserror::Error;
@@ -47,10 +47,10 @@ fn run(args: impl Iterator<Item = String>) -> Result<ProverInput, Error> {
     let cairo_runner = run_vm(&args.vm_args)?;
     let cairo_input = adapt_finished_runner(cairo_runner, false);
 
-    let execution_resources = &cairo_input.state_transitions.casm_states_by_opcode.counts();
+    let execution_resources = ExecutionResources::from_prover_input(&cairo_input);
     std::fs::write(
         args.output_path,
-        serde_json::to_string(execution_resources)?,
+        serde_json::to_string(&execution_resources)?,
     )?;
 
     Ok(cairo_input)
