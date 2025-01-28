@@ -49,6 +49,34 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
     }
 }
 
+
+#[derive(Destruct, Default)]
+pub struct PreprocessedColumnSet {
+    /// Unique list of preprocessed columns in the set.
+    pub values: Array<PreprocessedColumn>,
+    /// Map indicating if a preprocessed column is already in the set.
+    pub contains: Felt252Dict<bool>,
+}
+
+#[generate_trait]
+pub impl PreprocessedColumnSetImpl of PreprocessedColumnSetTrait {
+    fn insert(ref self: PreprocessedColumnSet, preprocessed_column: PreprocessedColumn) {
+        let column_key = PreprocessedColumnKey::encode(@preprocessed_column);
+
+        if self.contains.get(column_key) {
+            return;
+        }
+
+        self.values.append(preprocessed_column);
+        self.contains.insert(column_key, true);
+    }
+
+    fn contains(ref self: PreprocessedColumnSet, preprocessed_column: PreprocessedColumn) -> bool {
+        let column_key = PreprocessedColumnKey::encode(@preprocessed_column);
+        self.contains.get(column_key)
+    }
+}
+
 #[derive(Destruct)]
 pub struct PreprocessedMaskValues {
     pub values: Felt252Dict<Nullable<QM31>>,
@@ -60,7 +88,7 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
         mut preprocessed_mask_values: Span<Array<QM31>>,
         preprocessed_columns: Span<PreprocessedColumn>,
     ) -> PreprocessedMaskValues {
-        let mut values = Default::default();
+        let mut values: Felt252Dict<Nullable<QM31>> = Default::default();
 
         for preprocessed_column in preprocessed_columns {
             let mut column_mask_values = preprocessed_mask_values.pop_front().unwrap().span();
@@ -90,7 +118,7 @@ enum PreprocessedColumnsAllocationMode {
     Static,
 }
 
-#[derive(Drop, Debug, Copy)]
+#[derive(Drop, Debug, Copy, PartialEq)]
 pub enum PreprocessedColumn {
     /// Symbolic representation of xor lookup table of the form: `(elem_bits, expand_bits, term)`.
     /// Where term is `{ 0 = left operand, 1 = right operand, 2 = xor result }`.
@@ -139,5 +167,24 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
                 res
             },
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl};
+
+    #[test]
+    fn test_preprocessed_column_set() {
+        let mut set: PreprocessedColumnSet = Default::default();
+        let is_first_16_column = PreprocessedColumn::IsFirst(16);
+        let is_first_10_column = PreprocessedColumn::IsFirst(10);
+
+        set.insert(is_first_16_column);
+        set.insert(is_first_16_column);
+
+        assert!(set.contains(is_first_16_column));
+        assert!(!set.contains(is_first_10_column));
+        assert_eq!(set.values, array![is_first_16_column]);
     }
 }
