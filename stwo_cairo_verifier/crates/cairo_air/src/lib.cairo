@@ -49,13 +49,19 @@ const PREPROCESSED_COLUMNS_LOG_SIZES: [u32; 19] = [
 // (Address, Id, Value)
 pub type PublicMemory = Array<(u32, u32, [u32; 8])>;
 
-type VmElements = LookupElements<3>;
+type OpcodeElements = LookupElements<3>;
 
 type VerifyInstructionElements = LookupElements<29>;
 
-type AddrToIdElements = LookupElements<2>;
+type MemoryAddressToIdElements = LookupElements<2>;
 
-type IdToValueElements = LookupElements<29>;
+type MemoryIdToBigElements = LookupElements<29>;
+
+type RangeCheck3BitElements = LookupElements<1>;
+
+type RangeCheck6BitElements = LookupElements<1>;
+
+type RangeCheck18BitElements = LookupElements<1>;
 
 type RangeCheck19BitElements = LookupElements<1>;
 
@@ -64,6 +70,7 @@ type RangeCheck9Bit9BitElements = LookupElements<2>;
 type RangeCheck7Bit2Bit5BitElements = LookupElements<3>;
 
 type RangeCheck4Bit3BitElements = LookupElements<2>;
+
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
@@ -146,10 +153,10 @@ pub fn lookup_sum(
 
 #[derive(Drop)]
 struct CairoInteractionElements {
-    pub opcodes: VmElements,
+    pub opcodes: OpcodeElements,
     pub verify_instruction: VerifyInstructionElements,
-    pub memory_addr_to_id: AddrToIdElements,
-    pub memory_id_to_value: IdToValueElements,
+    pub memory_addr_to_id: MemoryAddressToIdElements,
+    pub memory_id_to_value: MemoryIdToBigElements,
     pub range_check_19: RangeCheck19BitElements,
     pub range_check_9_9: RangeCheck9Bit9BitElements,
     pub range_check_7_2_5: RangeCheck7Bit2Bit5BitElements,

@@ -52,7 +52,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub lookup_elements: super::super::AddrToIdElements,
+    pub lookup_elements: super::super::MemoryAddressToIdElements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
