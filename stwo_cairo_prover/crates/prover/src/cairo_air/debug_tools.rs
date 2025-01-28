@@ -25,7 +25,8 @@ use crate::components::{
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
     memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode, verify_instruction,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9,
+    verify_instruction,
 };
 use crate::felt::split_f252;
 use crate::relations;
@@ -504,6 +505,17 @@ where
         );
     }
 
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            verify_bitwise_xor_9::Eval {
+                claim: claim.verify_bitwise_xor_9,
+                verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
+            },
+            1 << crate::components::verify_bitwise_xor_9::component::LOG_SIZE,
+        )
+        .entries(trace),
+    );
     // Memory.
     entries.extend(
         RelationTrackerComponent::new(
