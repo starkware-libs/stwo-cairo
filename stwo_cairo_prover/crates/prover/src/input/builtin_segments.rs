@@ -80,6 +80,38 @@ impl BuiltinSegments {
         }
     }
 
+    /// Returns the number of instances for each builtin.
+    pub fn get_builtin_counts(&self) -> HashMap<BuiltinName, usize> {
+        let builtin_names = &[
+            BuiltinName::range_check,
+            BuiltinName::pedersen,
+            BuiltinName::ecdsa,
+            BuiltinName::keccak,
+            BuiltinName::bitwise,
+            BuiltinName::ec_op,
+            BuiltinName::poseidon,
+            BuiltinName::range_check96,
+            BuiltinName::add_mod,
+            BuiltinName::mul_mod,
+        ];
+
+        builtin_names
+            .iter()
+            .filter_map(|&builtin_name| self.get_builtin_count(builtin_name))
+            .collect()
+    }
+
+    fn get_builtin_count(&self, builtin_name: BuiltinName) -> Option<(BuiltinName, usize)> {
+        let segment = self.get_segment(builtin_name).as_ref();
+        segment.map(|segment| {
+            (
+                builtin_name,
+                (segment.stop_ptr - segment.begin_addr)
+                    / Self::builtin_memory_cells_per_instance(builtin_name),
+            )
+        })
+    }
+
     /// Pads a builtin segment with copies of its last instance if that segment isn't None, in
     /// which case at least one instance is guaranteed to exist.
     /// The segment is padded to the next power of 2 number of instances.
