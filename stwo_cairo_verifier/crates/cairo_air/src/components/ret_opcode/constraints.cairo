@@ -1,19 +1,24 @@
+use stwo_constraint_framework::{
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
+};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
 use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
-
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
 pub fn mask_points(
+    ref preprocessed_column_set: PreprocessedColumnSet,
     ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
     ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
     point: CirclePoint<QM31>,
     trace_gen: CirclePointIndex,
     claimed_sum_offset: usize,
+    log_size: u32,
 ) {
+    preprocessed_column_set.insert(PreprocessedColumn::IsFirst(log_size));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
     let point_offset_claimed_sum = point
         .add_circle_point_m31(trace_gen.mul(claimed_sum_offset).to_point());

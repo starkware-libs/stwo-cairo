@@ -1,7 +1,7 @@
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
-    PreprocessedColumn, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -73,13 +73,20 @@ pub struct Rc19BitComponent {
 pub impl Rc19BitComponentImpl of CairoComponent<Rc19BitComponent> {
     fn mask_points(
         self: @Rc19BitComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(rc_19_log_size()).coset.step_size;
+        let log_size = rc_19_log_size();
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         rc_19_constraints::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            log_size,
         );
     }
 
@@ -131,13 +138,20 @@ pub struct Rc9Bit9BitComponent {
 pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
     fn mask_points(
         self: @Rc9Bit9BitComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(rc_9_9_log_size()).coset.step_size;
+        let log_size = rc_9_9_log_size();
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         rc_9_9_constraints::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            log_size,
         );
     }
 
@@ -191,13 +205,20 @@ pub struct Rc4Bit3BitComponent {
 pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
     fn mask_points(
         self: @Rc4Bit3BitComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(rc_4_3_log_size()).coset.step_size;
+        let log_size = rc_4_3_log_size();
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         rc_4_3_constraints::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            log_size,
         );
     }
 
@@ -251,13 +272,20 @@ pub struct Rc7Bit2Bit5BitComponent {
 pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> {
     fn mask_points(
         self: @Rc7Bit2Bit5BitComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(rc_7_2_5_log_size()).coset.step_size;
+        let log_size = rc_7_2_5_log_size();
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         rc_7_2_5_constraints::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            log_size,
         );
     }
 
