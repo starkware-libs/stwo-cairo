@@ -22,7 +22,8 @@ use crate::components::{
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
     memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_11,
     range_check_19, range_check_4_3, range_check_6, range_check_7_2_5, range_check_9_9,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode, verify_instruction,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9,
+    verify_instruction,
 };
 use crate::felt::split_f252;
 use crate::relations;
@@ -501,6 +502,33 @@ where
         );
     }
 
+    if let Some(range_check_96_builtin) = claim.builtins.range_check_96_builtin {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                range_check_builtin_bits_96::Eval {
+                    claim: range_check_96_builtin,
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    range_check_6_lookup_elements: relations::RangeCheck_6::dummy(),
+                },
+                1 << range_check_96_builtin.log_size,
+            )
+            .entries(trace),
+        );
+    }
+
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            verify_bitwise_xor_9::Eval {
+                claim: claim.verify_bitwise_xor_9,
+                verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
+            },
+            1 << claim.verify_bitwise_xor_9.log_size,
+        )
+        .entries(trace),
+    );
     // Memory.
     entries.extend(
         RelationTrackerComponent::new(
