@@ -56,7 +56,11 @@ impl ClaimGenerator {
         let small_size = std::cmp::max(small_values.len().next_power_of_two(), N_LANES);
         small_values.resize(small_size, 0);
         let small_mults = AtomicMultiplicityColumn::new(small_size);
-        assert!(big_size + small_size <= MEMORY_ADDRESS_BOUND);
+        assert!(
+            big_size + small_size <= MEMORY_ADDRESS_BOUND,
+            "Assertion failed, condition `big_size ({big_size}) + small_size ({small_size}) <= \
+            MEMORY_ADDRESS_BOUND ({MEMORY_ADDRESS_BOUND})` is not satisfied."
+        );
 
         Self {
             small_values,
