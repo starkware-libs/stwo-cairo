@@ -22,6 +22,9 @@ const IS_FIRST_LOG_SIZES: [u32; N_PREPROCESSED_COLUMN_SIZES] = preprocessed_log_
 // List of sizes to initialize the preprocessed trace with for `PreprocessedColumn::Seq`.
 const SEQ_LOG_SIZES: [u32; N_PREPROCESSED_COLUMN_SIZES] = preprocessed_log_sizes();
 
+// Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
+const XOR_N_BITS: u32 = 9;
+
 /// [LOG_MAX_ROWS, LOG_MAX_ROWS - 1, ..., LOG_N_LANES]
 const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
     let mut arr = [0; N_PREPROCESSED_COLUMN_SIZES];
@@ -70,7 +73,10 @@ pub fn preprocessed_trace_columns() -> Vec<PreProcessedColumn> {
     let is_first_columns =
         IS_FIRST_LOG_SIZES.map(|log_size| PreProcessedColumn::IsFirst(IsFirst::new(log_size)));
     let seq_columns = SEQ_LOG_SIZES.map(|log_size| PreProcessedColumn::Seq(Seq::new(log_size)));
-    chain![is_first_columns, seq_columns]
+    let bitwise_xor_columns = (0..3).map(move |col_index| {
+        PreProcessedColumn::BitwiseXor(BitwiseXor::new(XOR_N_BITS, col_index))
+    });
+    chain![is_first_columns, seq_columns, bitwise_xor_columns]
         .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
         .collect_vec()
 }
