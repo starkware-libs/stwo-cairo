@@ -23,8 +23,8 @@ use components::verify_instruction::{
 };
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedMaskValues,
-    PreprocessedMaskValuesImpl,
+    LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnKey,
+    PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -548,77 +548,88 @@ impl CairoAirImpl of Air<CairoAir> {
     fn mask_points(
         self: @CairoAir, point: CirclePoint<QM31>,
     ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>> {
-        // TODO(andrew): auto generate.
-        let mut preprocessed_trace_mask_points = array![
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![point],
-            array![],
-            array![point],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![point],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![point],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![],
-            array![point],
-            array![point],
-        ];
-
+        let mut preprocessed_column_set: PreprocessedColumnSet = Default::default();
         let mut trace_mask_points = array![];
         let mut interaction_trace_mask_points = array![];
-        self.opcodes.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+        self
+            .opcodes
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
 
         self
             .verify_instruction
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
 
         self
             .memory_addr_to_id
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
 
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
         memory_id_to_value_big
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         memory_id_to_value_small
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         self
             .range_check_19
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         self
             .range_check_9_9
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         self
             .range_check_7_2_5
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         self
             .range_check_4_3
-            .mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+
+        let preprocessed_trace_mask_points = preprocessed_trace_mask_points(
+            preprocessed_column_set, point,
+        );
+
         array![preprocessed_trace_mask_points, trace_mask_points, interaction_trace_mask_points]
     }
 
@@ -736,6 +747,48 @@ impl CairoAirImpl of Air<CairoAir> {
     }
 }
 
+/// Returns the preprocessed trace mask points from a set of used preprocessed column.
+fn preprocessed_trace_mask_points(
+    preprocessed_column_set: PreprocessedColumnSet, point: CirclePoint<QM31>,
+) -> ColumnArray<Array<CirclePoint<QM31>>> {
+    let mut mask_points = array![];
+
+    let PreprocessedColumnSet { values: original_values, mut contains } = preprocessed_column_set;
+
+    for log_size in PREPROCESSED_COLUMNS_LOG_SIZES.span() {
+        // TODO(andrew): Remove is_first preprocessed column.
+        let is_first = PreprocessedColumn::IsFirst(*log_size);
+        let is_first_key = PreprocessedColumnKey::encode(@is_first);
+
+        if contains.get(is_first_key) {
+            mask_points.append(array![point]);
+            // Remove the item from the set.
+            contains.insert(is_first_key, false);
+        } else {
+            mask_points.append(array![]);
+        }
+
+        let seq = PreprocessedColumn::Seq(*log_size);
+        let seq_key = PreprocessedColumnKey::encode(@seq);
+
+        if contains.get(seq_key) {
+            mask_points.append(array![point]);
+            // Remove the item from the set.
+            contains.insert(seq_key, false);
+        } else {
+            mask_points.append(array![]);
+        }
+    }
+
+    // Assert/Sanity check all the original values have been handled.
+    for value in original_values {
+        let column_key = PreprocessedColumnKey::encode(@value);
+        assert!(!contains.get(column_key));
+    }
+
+    mask_points
+}
+
 #[derive(Drop)]
 pub struct OpcodeComponents {
     generic: Array<components::genericopcode::Component>,
@@ -752,7 +805,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     ) -> OpcodeComponents {
         // TODO: Handle dynamic number of components.
         assert!(claim.generic.len() == 0);
-
         assert!(claim.jump_t_t_f.len() == 1);
         assert!(claim.ret.len() == 0);
         assert!(interaction_claim.generic.len() == 0);
@@ -793,20 +845,39 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 
     fn mask_points(
         self: @OpcodeComponents,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
         for component in self.generic.span() {
-            component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
         }
 
         for component in self.ret.span() {
-            component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
         }
 
         for component in self.jump_t_t_f.span() {
-            component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
         };
     }
 
