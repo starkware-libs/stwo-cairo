@@ -30,7 +30,7 @@ use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::range_check_vector::{
     range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
 };
-use crate::components::{range_check_11, verify_instruction};
+use crate::components::{range_check_11, verify_bitwise_xor_9, verify_instruction};
 use crate::felt::split_f252;
 use crate::input::ProverInput;
 use crate::relations;
@@ -67,6 +67,7 @@ pub struct CairoClaim {
     pub opcodes: OpcodeClaim,
     pub verify_instruction: verify_instruction::Claim,
     pub builtins: BuiltinsClaim,
+    pub verify_bitwise_xor_9: verify_bitwise_xor_9::Claim,
     pub memory_address_to_id: memory_address_to_id::Claim,
     pub memory_id_to_value: memory_id_to_big::Claim,
     pub range_check_11: range_check_11::Claim,
@@ -83,6 +84,7 @@ impl CairoClaim {
         self.opcodes.mix_into(channel);
         self.verify_instruction.mix_into(channel);
         self.builtins.mix_into(channel);
+        self.verify_bitwise_xor_9.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
         self.range_check_11.mix_into(channel);
@@ -97,6 +99,7 @@ impl CairoClaim {
             self.opcodes.log_sizes(),
             self.verify_instruction.log_sizes(),
             self.builtins.log_sizes(),
+            self.verify_bitwise_xor_9.log_sizes(),
             self.memory_address_to_id.log_sizes(),
             self.memory_id_to_value.log_sizes(),
             self.range_check_11.log_sizes(),
@@ -171,6 +174,7 @@ pub struct CairoClaimGenerator {
     // Internal components.
     verify_instruction_trace_generator: verify_instruction::ClaimGenerator,
     builtins: BuiltinsClaimGenerator,
+    verify_bitwise_xor_9_trace_generator: verify_bitwise_xor_9::ClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
     range_check_11_trace_generator: range_check_11::ClaimGenerator,
@@ -188,6 +192,7 @@ impl CairoClaimGenerator {
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
         let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
+        let verify_bitwise_xor_9_trace_generator = verify_bitwise_xor_9::ClaimGenerator::new();
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
         let memory_id_to_value_trace_generator =
@@ -231,6 +236,7 @@ impl CairoClaimGenerator {
             opcodes,
             verify_instruction_trace_generator,
             builtins,
+            verify_bitwise_xor_9_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
             range_check_11_trace_generator,
@@ -272,7 +278,11 @@ impl CairoClaimGenerator {
             tree_builder,
             &self.memory_address_to_id_trace_generator,
             &self.memory_id_to_value_trace_generator,
+            &self.verify_bitwise_xor_9_trace_generator,
         );
+        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
+            .verify_bitwise_xor_9_trace_generator
+            .write_trace(tree_builder);
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator
             .write_trace(tree_builder);
@@ -301,6 +311,7 @@ impl CairoClaimGenerator {
                 opcodes: opcodes_claim,
                 verify_instruction: verify_instruction_claim,
                 builtins: builtins_claim,
+                verify_bitwise_xor_9: verify_bitwise_xor_9_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
                 range_check_11: range_check_11_claim,
@@ -313,6 +324,7 @@ impl CairoClaimGenerator {
                 opcodes_interaction_gen,
                 verify_instruction_interaction_gen,
                 builtins_interaction_gen,
+                verify_bitwise_xor_9_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
                 range_check_11_interaction_gen,
@@ -329,6 +341,7 @@ pub struct CairoInteractionClaimGenerator {
     opcodes_interaction_gen: OpcodesInteractionClaimGenerator,
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
+    verify_bitwise_xor_9_interaction_gen: verify_bitwise_xor_9::InteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
     range_check_11_interaction_gen: range_check_11::InteractionClaimGenerator,
@@ -363,6 +376,9 @@ impl CairoInteractionClaimGenerator {
         let builtins_interaction_claims = self
             .builtins_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
+        let verify_bitwise_xor_9_interaction_claim = self
+            .verify_bitwise_xor_9_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_xor_9);
         let memory_address_to_id_interaction_claim = self
             .memory_address_to_id_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.memory_address_to_id);
@@ -394,6 +410,7 @@ impl CairoInteractionClaimGenerator {
             opcodes: opcodes_interaction_claims,
             verify_instruction: verify_instruction_interaction_claim,
             builtins: builtins_interaction_claims,
+            verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
             range_check_11: range_check_11_interaction_claim,
@@ -408,6 +425,7 @@ impl CairoInteractionClaimGenerator {
 pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
     pub verify_instruction: relations::VerifyInstruction,
+    pub verify_bitwise_xor_9: relations::VerifyBitwiseXor_9,
     pub memory_address_to_id: relations::MemoryAddressToId,
     pub memory_id_to_value: relations::MemoryIdToBig,
     pub range_check_11: relations::RangeCheck_11,
@@ -422,6 +440,7 @@ impl CairoInteractionElements {
         CairoInteractionElements {
             opcodes: relations::Opcodes::draw(channel),
             verify_instruction: relations::VerifyInstruction::draw(channel),
+            verify_bitwise_xor_9: relations::VerifyBitwiseXor_9::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
             range_check_11: relations::RangeCheck_11::draw(channel),
@@ -438,6 +457,7 @@ pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
+    pub verify_bitwise_xor_9: verify_bitwise_xor_9::InteractionClaim,
     pub memory_address_to_id: memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: memory_id_to_big::InteractionClaim,
     pub range_check_11: range_check_11::InteractionClaim,
@@ -451,6 +471,7 @@ impl CairoInteractionClaim {
         self.opcodes.mix_into(channel);
         self.verify_instruction.mix_into(channel);
         self.builtins.mix_into(channel);
+        self.verify_bitwise_xor_9.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
         self.range_check_11.mix_into(channel);
@@ -474,6 +495,7 @@ pub fn lookup_sum(
     sum += interaction_claim.opcodes.sum();
     sum += interaction_claim.verify_instruction.claimed_sum;
     sum += interaction_claim.builtins.sum();
+    sum += interaction_claim.verify_bitwise_xor_9.logup_sums.0;
     sum += interaction_claim.memory_address_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
     sum += interaction_claim.memory_id_to_value.small_claimed_sum;
@@ -489,6 +511,7 @@ pub struct CairoComponents {
     opcodes: OpcodeComponents,
     verify_instruction: verify_instruction::Component,
     builtins: BuiltinComponents,
+    verify_bitwise_xor_9: verify_bitwise_xor_9::Component,
     memory_address_to_id: memory_address_to_id::Component,
     memory_id_to_value: (
         memory_id_to_big::BigComponent,
@@ -539,6 +562,16 @@ impl CairoComponents {
             &cairo_claim.builtins,
             interaction_elements,
             &interaction_claim.builtins,
+        );
+        let verify_bitwise_xor_9_component = verify_bitwise_xor_9::Component::new(
+            tree_span_provider,
+            verify_bitwise_xor_9::Eval {
+                claim: cairo_claim.verify_bitwise_xor_9,
+                verify_bitwise_xor_9_lookup_elements: interaction_elements
+                    .verify_bitwise_xor_9
+                    .clone(),
+            },
+            interaction_claim.verify_bitwise_xor_9.logup_sums,
         );
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,
@@ -607,6 +640,7 @@ impl CairoComponents {
             opcodes: opcode_components,
             verify_instruction: verify_instruction_component,
             builtins: builtin_components,
+            verify_bitwise_xor_9: verify_bitwise_xor_9_component,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (
                 memory_id_to_value_component,
@@ -626,6 +660,7 @@ impl CairoComponents {
             [&self.verify_instruction as &dyn ComponentProver<SimdBackend>,],
             self.builtins.provers(),
             [
+                &self.verify_bitwise_xor_9 as &dyn ComponentProver<SimdBackend>,
                 &self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.0 as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,
@@ -657,6 +692,11 @@ impl std::fmt::Display for CairoComponents {
             indented_component_display(&self.verify_instruction)
         )?;
         writeln!(f, "Builtins: {}", self.builtins)?;
+        writeln!(
+            f,
+            "VerifyBitwiseXor9: {}",
+            indented_component_display(&self.verify_bitwise_xor_9)
+        )?;
         writeln!(
             f,
             "MemoryAddressToId: {}",

@@ -12,30 +12,42 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
-use crate::components::{memory_address_to_id, memory_id_to_big, range_check_builtin_bits_128};
+use crate::components::{
+    bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_builtin_bits_128,
+    verify_bitwise_xor_9,
+};
 use crate::input::builtin_segments::BuiltinSegments;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
+    pub bitwise_builtin: Option<bitwise_builtin::Claim>,
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             range_check_128_builtin.mix_into(channel);
         }
+        if let Some(bitwise_builtin) = &self.bitwise_builtin {
+            bitwise_builtin.mix_into(channel);
+        }
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols(chain!(self
-            .range_check_128_builtin
-            .map(|range_check_128_builtin| range_check_128_builtin.log_sizes())
-            .into_iter()))
+        TreeVec::concat_cols(chain!(
+            self.range_check_128_builtin
+                .map(|range_check_128_builtin| range_check_128_builtin.log_sizes())
+                .into_iter(),
+            self.bitwise_builtin
+                .map(|bitwise_builtin| bitwise_builtin.log_sizes())
+                .into_iter(),
+        ))
     }
 }
 
 pub struct BuiltinsClaimGenerator {
     range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
+    bitwise_builtin_trace_generator: Option<bitwise_builtin::ClaimGenerator>,
 }
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
@@ -53,9 +65,20 @@ impl BuiltinsClaimGenerator {
                         range_check_bits_128.begin_addr as u32,
                     )
                 });
+        let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|bitwise| {
+            assert!(
+                (bitwise.stop_ptr - bitwise.begin_addr).is_power_of_two(),
+                "bitwise segment length is not a power of two"
+            );
+            bitwise_builtin::ClaimGenerator::new(
+                (bitwise.stop_ptr - bitwise.begin_addr).ilog2(),
+                bitwise.begin_addr as u32,
+            )
+        });
 
         Self {
             range_check_128_builtin_trace_generator,
+            bitwise_builtin_trace_generator,
         }
     }
 
@@ -64,6 +87,7 @@ impl BuiltinsClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
+        verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
@@ -81,12 +105,26 @@ impl BuiltinsClaimGenerator {
             } else {
                 (None, None)
             };
+        let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) =
+            if let Some(bitwise_builtin_trace_generator) = self.bitwise_builtin_trace_generator {
+                let (claim, interaction_gen) = bitwise_builtin_trace_generator.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    verify_bitwise_xor_9_trace_generator,
+                );
+                (Some(claim), Some(interaction_gen))
+            } else {
+                (None, None)
+            };
         (
             BuiltinsClaim {
                 range_check_128_builtin: range_check_128_builtin_claim,
+                bitwise_builtin: bitwise_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
                 range_check_128_builtin_interaction_gen,
+                bitwise_builtin_interaction_gen,
             },
         )
     }
@@ -95,11 +133,15 @@ impl BuiltinsClaimGenerator {
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsInteractionClaim {
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
+    pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
 }
 impl BuiltinsInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         if let Some(range_check_128_builtin) = self.range_check_128_builtin {
             range_check_128_builtin.mix_into(channel)
+        }
+        if let Some(bitwise_builtin) = self.bitwise_builtin {
+            bitwise_builtin.mix_into(channel)
         }
     }
 
@@ -108,6 +150,9 @@ impl BuiltinsInteractionClaim {
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             sum += range_check_128_builtin.logup_sums.0;
         }
+        if let Some(bitwise_builtin) = &self.bitwise_builtin {
+            sum += bitwise_builtin.logup_sums.0;
+        }
         sum
     }
 }
@@ -115,6 +160,7 @@ impl BuiltinsInteractionClaim {
 pub struct BuiltinsInteractionClaimGenerator {
     range_check_128_builtin_interaction_gen:
         Option<range_check_builtin_bits_128::InteractionClaimGenerator>,
+    bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
 }
 impl BuiltinsInteractionClaimGenerator {
     pub fn write_interaction_trace<MC: MerkleChannel>(
@@ -134,14 +180,26 @@ impl BuiltinsInteractionClaimGenerator {
                     &interaction_elements.memory_id_to_value,
                 )
             });
+        let bitwise_builtin_interaction_claim =
+            self.bitwise_builtin_interaction_gen
+                .map(|bitwise_builtin_interaction_gen| {
+                    bitwise_builtin_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.memory_address_to_id,
+                        &interaction_elements.memory_id_to_value,
+                        &interaction_elements.verify_bitwise_xor_9,
+                    )
+                });
         BuiltinsInteractionClaim {
             range_check_128_builtin: range_check_128_builtin_interaction_claim,
+            bitwise_builtin: bitwise_builtin_interaction_claim,
         }
     }
 }
 
 pub struct BuiltinComponents {
     range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
+    bitwise_builtin: Option<bitwise_builtin::Component>,
 }
 impl BuiltinComponents {
     pub fn new(
@@ -171,8 +229,27 @@ impl BuiltinComponents {
                             .logup_sums,
                     )
                 });
+        let bitwise_builtin_component = claim.bitwise_builtin.map(|bitwise_builtin| {
+            bitwise_builtin::Component::new(
+                tree_span_provider,
+                bitwise_builtin::Eval {
+                    claim: bitwise_builtin,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    verify_bitwise_xor_9_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_9
+                        .clone(),
+                },
+                interaction_claim.bitwise_builtin.unwrap().logup_sums,
+            )
+        });
         Self {
             range_check_128_builtin: range_check_128_builtin_component,
+            bitwise_builtin: bitwise_builtin_component,
         }
     }
 
@@ -180,6 +257,9 @@ impl BuiltinComponents {
         let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             vec.push(range_check_128_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(bitwise_builtin) = &self.bitwise_builtin {
+            vec.push(bitwise_builtin as &dyn ComponentProver<SimdBackend>);
         }
         vec
     }
@@ -192,6 +272,13 @@ impl std::fmt::Display for BuiltinComponents {
                 f,
                 "RangeCheck128Builtin: {}",
                 indented_component_display(range_check_128_builtin)
+            )?;
+        }
+        if let Some(bitwise_builtin) = &self.bitwise_builtin {
+            writeln!(
+                f,
+                "BitwiseBuiltin: {}",
+                indented_component_display(bitwise_builtin)
             )?;
         }
         Ok(())
