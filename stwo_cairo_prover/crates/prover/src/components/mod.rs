@@ -8,6 +8,7 @@ pub mod add_opcode_small_imm;
 pub mod assert_eq_opcode;
 pub mod assert_eq_opcode_double_deref;
 pub mod assert_eq_opcode_imm;
+pub mod bitwise_builtin;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
