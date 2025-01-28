@@ -64,7 +64,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args.vm_args)?;
-    let cairo_input = adapt_finished_runner(cairo_runner, false);
+    let cairo_input = adapt_finished_runner(cairo_runner);
     let prover_config = ConfigBuilder::default()
         .track_relations(args.track_relations)
         .display_components(args.display_components)

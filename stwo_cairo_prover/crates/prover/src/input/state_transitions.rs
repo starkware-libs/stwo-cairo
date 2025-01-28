@@ -142,7 +142,6 @@ impl StateTransitions {
     pub fn from_iter(
         iter: impl Iterator<Item = TraceEntry>,
         memory: &mut MemoryBuilder,
-        dev_mode: bool,
     ) -> (Self, HashMap<M31, u64>) {
         let mut res = Self::default();
         let mut instruction_by_pc = HashMap::new();
@@ -152,7 +151,7 @@ impl StateTransitions {
             return (res, instruction_by_pc);
         };
         res.initial_state = first.into();
-        res.push_instr(memory, first.into(), dev_mode, &mut instruction_by_pc);
+        res.push_instr(memory, first.into(), &mut instruction_by_pc);
 
         while let Some(entry) = iter.next() {
             // TODO(Ohad): Check if the adapter outputs the final state.
@@ -160,18 +159,16 @@ impl StateTransitions {
                 res.final_state = entry.into();
                 break;
             };
-            res.push_instr(memory, entry.into(), dev_mode, &mut instruction_by_pc);
+            res.push_instr(memory, entry.into(), &mut instruction_by_pc);
         }
         (res, instruction_by_pc)
     }
 
-    // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
     /// Pushes the state transition at pc into the appropriate opcode component.
     fn push_instr(
         &mut self,
         memory: &mut MemoryBuilder,
         state: CasmState,
-        dev_mode: bool,
         instruction_by_pc: &mut HashMap<M31, u64>,
     ) {
         let CasmState { ap, fp, pc } = state;
@@ -470,9 +467,7 @@ impl StateTransitions {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
                     assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
                     // TODO(Ohad): remove when mul small is implemented.
-                    if dev_mode {
-                        self.casm_states_by_opcode.mul_opcode_imm.push(state);
-                    } else if is_small_mul(op0, op_1) {
+                    if is_small_mul(op0, op_1) {
                         self.casm_states_by_opcode.mul_opcode_small_imm.push(state);
                     } else {
                         self.casm_states_by_opcode.mul_opcode_imm.push(state);
@@ -481,9 +476,7 @@ impl StateTransitions {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                     assert!((op_1_base_fp || op_1_base_ap));
                     // TODO(Ohad): remove when mul small is implemented.
-                    if dev_mode {
-                        self.casm_states_by_opcode.mul_opcode.push(state);
-                    } else if is_small_mul(op0, op_1) {
+                    if is_small_mul(op0, op_1) {
                         self.casm_states_by_opcode.mul_opcode_small.push(state);
                     } else {
                         self.casm_states_by_opcode.mul_opcode.push(state);
@@ -604,7 +597,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jump_opcode.len(), 1);
         assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
@@ -619,7 +612,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jump_opcode_rel_imm.len(), 1);
     }
@@ -636,7 +629,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
         assert_eq!(casm_states_by_opcode.add_ap_opcode_op_1_base_fp.len(), 1);
@@ -652,7 +645,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.call_opcode_op_1_base_fp.len(), 2);
         assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
@@ -667,7 +660,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.call_opcode.len(), 2);
     }
@@ -681,7 +674,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jnz_opcode.len(), 1);
     }
@@ -696,7 +689,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jnz_opcode_dst_base_fp.len(), 1);
     }
@@ -710,7 +703,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jnz_opcode_taken_dst_base_fp.len(), 1);
     }
@@ -724,7 +717,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jnz_opcode_taken.len(), 1);
     }
@@ -739,7 +732,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.assert_eq_opcode.len(), 1);
     }
@@ -758,7 +751,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 1);
         assert_eq!(casm_states_by_opcode.assert_eq_opcode_imm.len(), 2);
@@ -778,7 +771,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.add_opcode.len(), 1);
         assert_eq!(casm_states_by_opcode.add_opcode_imm.len(), 1);
@@ -800,7 +793,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.mul_opcode_small.len(), 1);
         assert_eq!(casm_states_by_opcode.mul_opcode_small_imm.len(), 2);
@@ -819,7 +812,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.mul_opcode.len(), 1);
         assert_eq!(casm_states_by_opcode.mul_opcode_imm.len(), 1);
@@ -836,7 +829,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.generic_opcode.len(), 1);
     }
@@ -856,7 +849,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.ret_opcode.len(), 11);
     }
@@ -871,7 +864,7 @@ mod mappings_tests {
         }
         .instructions;
 
-        let input = input_from_plain_casm(instructions, false);
+        let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.assert_eq_opcode_double_deref.len(), 1);
     }
