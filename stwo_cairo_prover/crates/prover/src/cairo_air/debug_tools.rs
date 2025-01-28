@@ -25,8 +25,8 @@ use crate::components::{
     generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken,
     jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
     jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9,
-    verify_instruction,
+    mul_opcode_small, mul_opcode_small_imm, range_check_builtin_bits_128,
+    range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
 use crate::relations;
@@ -434,6 +434,40 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                },
+                claim.n_rows,
+            )
+            .entries(trace),
+        );
+    }
+    for claim in claim.opcodes.mul_small.clone() {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                mul_opcode_small::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    opcodes_lookup_elements: relations::Opcodes::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
+                },
+                claim.n_rows,
+            )
+            .entries(trace),
+        );
+    }
+    for claim in claim.opcodes.mul_small_imm.clone() {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                mul_opcode_small_imm::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    opcodes_lookup_elements: relations::Opcodes::dummy(),
+                    verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+                    range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
                 },
                 claim.n_rows,
             )

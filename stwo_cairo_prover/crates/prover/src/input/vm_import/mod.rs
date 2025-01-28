@@ -56,12 +56,10 @@ fn deserialize_inputs<'a>(
     }
 }
 
-// TODO(Ohad): remove dev_mode after adding the rest of the instructions.
 /// Adapts the VM's output files to the Cairo input of the prover.
 pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
-    dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
 
@@ -102,11 +100,9 @@ pub fn adapt_vm_output(
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
         &public_input.memory_segments,
-        dev_mode,
     )
 }
 
-// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
 /// Creates Cairo input for Stwo, utilized by:
 /// - `adapt_vm_output` in the prover.
 /// - `adapt_finished_runner` in the validator.
@@ -115,10 +111,9 @@ pub fn adapt_to_stwo_input(
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
-    dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let (state_transitions, instruction_by_pc) =
-        StateTransitions::from_iter(trace_iter, &mut memory, dev_mode);
+        StateTransitions::from_iter(trace_iter, &mut memory);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check);
     builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::pedersen);
@@ -204,12 +199,7 @@ pub mod tests {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/test_read_from_large_files");
 
-        adapt_vm_output(
-            d.join("pub.json").as_path(),
-            d.join("priv.json").as_path(),
-            false,
-        )
-        .expect(
+        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
             Failed to read test files. Checkout input/README.md.",
         )
@@ -218,12 +208,7 @@ pub mod tests {
     pub fn small_cairo_input() -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/test_read_from_small_files");
-        adapt_vm_output(
-            d.join("pub.json").as_path(),
-            d.join("priv.json").as_path(),
-            false,
-        )
-        .expect(
+        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
             Failed to read test files. Checkout input/README.md.",
         )
