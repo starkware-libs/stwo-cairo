@@ -15,3 +15,4 @@ relation!(RangeCheck_9_9, 2);
 relation!(RangeCheck_7_2_5, 3);
 relation!(RangeCheck_3_6_6_3, 4);
 relation!(VerifyInstruction, 29);
+relation!(VerifyBitwiseXor_9, 3);
