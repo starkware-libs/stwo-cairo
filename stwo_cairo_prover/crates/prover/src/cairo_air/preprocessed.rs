@@ -1,6 +1,6 @@
 use std::simd::{u32x16, Simd};
 
-use itertools::Itertools;
+use itertools::{chain, Itertools};
 use prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -18,6 +18,9 @@ const N_PREPROCESSED_COLUMN_SIZES: usize = (LOG_MAX_ROWS - LOG_N_LANES) as usize
 
 // List of sizes to initialize the preprocessed trace with for `PreprocessedColumn::Seq`.
 const SEQ_LOG_SIZES: [u32; N_PREPROCESSED_COLUMN_SIZES] = preprocessed_log_sizes();
+
+// Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
+const XOR_N_BITS: u32 = 9;
 
 /// [LOG_MAX_ROWS, LOG_MAX_ROWS - 1, ..., LOG_N_LANES]
 const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
@@ -61,8 +64,10 @@ impl PreProcessedColumn {
 /// Returns column info for the preprocessed trace.
 pub fn preprocessed_trace_columns() -> Vec<PreProcessedColumn> {
     let seq_columns = SEQ_LOG_SIZES.map(|log_size| PreProcessedColumn::Seq(Seq::new(log_size)));
-    seq_columns
-        .into_iter()
+    let bitwise_xor_columns = (0..3).map(move |col_index| {
+        PreProcessedColumn::BitwiseXor(BitwiseXor::new(XOR_N_BITS, col_index))
+    });
+    chain![seq_columns, bitwise_xor_columns]
         .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
         .collect_vec()
 }
