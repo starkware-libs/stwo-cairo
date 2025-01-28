@@ -18,8 +18,8 @@ use crate::components::{
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_19,
-    range_check_9_9, ret_opcode, verify_instruction,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_11,
+    range_check_19, range_check_9_9, ret_opcode, verify_instruction,
 };
 use crate::input::state_transitions::StateTransitions;
 
@@ -363,6 +363,7 @@ impl OpcodesClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
+        _range_check_11_trace_generator: &range_check_11::ClaimGenerator,
         range_check_19_trace_generator: &range_check_19::ClaimGenerator,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         verify_instruction_trace_generator: &verify_instruction::ClaimGenerator,
