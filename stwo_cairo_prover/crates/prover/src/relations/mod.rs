@@ -4,6 +4,7 @@ use stwo_prover::relation;
 relation!(MemoryAddressToId, 2);
 relation!(MemoryIdToBig, 29);
 relation!(Opcodes, 3);
+relation!(RangeCheck_6, 1);
 relation!(RangeCheck_11, 1);
 relation!(RangeCheck_18, 1);
 relation!(RangeCheck_19, 1);
