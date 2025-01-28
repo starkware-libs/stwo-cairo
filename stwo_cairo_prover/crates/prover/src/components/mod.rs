@@ -26,6 +26,7 @@ pub mod range_check_builtin_bits_96;
 pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod utils;
+pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
 // TODO(Ohad): mul small.
