@@ -51,6 +51,7 @@ impl MultiplicityColumn {
     }
 }
 
+#[derive(Default)]
 /// A column of multiplicities for lookup arguments. Allows increasing the multiplicity at a given
 /// index. This version uses atomic operations to increase the multiplicity, and is `Send`.
 pub struct AtomicMultiplicityColumn {
