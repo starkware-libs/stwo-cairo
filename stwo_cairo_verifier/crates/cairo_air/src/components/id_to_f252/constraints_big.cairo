@@ -1,3 +1,6 @@
+use stwo_constraint_framework::{
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
+};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };

@@ -1,4 +1,4 @@
-use stwo_constraint_framework::PreprocessedMaskValues;
+use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
@@ -11,9 +11,14 @@ pub mod range_check;
 pub mod ret_opcode;
 pub mod verify_instruction;
 
+/// A component is a set of trace columns of the same sizes along with a set of constraints on them.
 pub trait CairoComponent<T> {
+    /// Specifies the component's mask points.
+    ///
+    /// Preprocessed columns that the component needs should be added to `preprocessed_column_set`.
     fn mask_points(
         self: @T,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
