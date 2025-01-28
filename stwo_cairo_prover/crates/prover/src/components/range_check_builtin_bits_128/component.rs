@@ -30,7 +30,6 @@ pub struct Claim {
 }
 impl Claim {
     pub fn new(log_size: u32, range_check_builtin_segment_start: u32) -> Self {
-        assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,
             range_check_builtin_segment_start,
