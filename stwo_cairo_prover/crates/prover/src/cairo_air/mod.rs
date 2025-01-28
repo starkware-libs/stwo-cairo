@@ -274,8 +274,9 @@ mod tests {
         use super::*;
         use crate::input::vm_import::tests::small_cairo_input;
 
+        #[ignore = "very slow"]
         #[test]
-        fn generate_and_serialise_proof() {
+        fn generate_and_serialize_proof() {
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(test_input(), test_cfg()).unwrap();
             let mut output = Vec::new();

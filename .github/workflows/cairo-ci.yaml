@@ -46,6 +46,24 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo +nightly-2025-01-02 test --release --features slow-tests
 
+  test-generate-and-serialize:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./scripts/fetch_large_files.sh ./scripts/slow_tests.json
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: rustfmt
+          profile: minimal
+          toolchain: nightly-2025-01-02
+      - uses: Swatinem/rust-cache@v2
+      - run: >
+          cargo +nightly-2025-01-02 test generate_and_serialize_proof 
+          --release --features slow-tests -- --exact --ignored
+
   format:
     runs-on: ubuntu-latest
     defaults:
@@ -89,7 +107,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           timeout: 1500
           interval: 30
-          ignored: "code-review/reviewable"
+          ignored: "code-review/reviewable, test-generate-and-serialize"
 
       - name: Run Merge Gatekeeper on Merge Queue || push
         if: github.event_name == 'merge_group' || github.event_name == 'push'
@@ -99,4 +117,4 @@ jobs:
           ref: ${{github.ref}}
           timeout: 1500
           interval: 30
-          ignored: "code-review/reviewable"
+          ignored: "code-review/reviewable, test-generate-and-serialize"
