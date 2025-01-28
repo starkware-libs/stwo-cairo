@@ -1,6 +1,6 @@
 use crate::components::CairoComponent;
 use stwo_constraint_framework::{
-    PreprocessedColumn, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -105,6 +105,7 @@ pub struct BigComponent {
 pub impl BigComponentImpl of CairoComponent<BigComponent> {
     fn mask_points(
         self: @BigComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
@@ -228,13 +229,20 @@ pub struct SmallComponent {
 pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
     fn mask_points(
         self: @SmallComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(*self.log_n_rows).coset.step_size;
+        let log_size = *self.log_n_rows;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         constraints_small::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            log_size,
         );
     }
 

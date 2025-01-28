@@ -172,7 +172,7 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
 
 #[cfg(test)]
 mod tests {
-    use super::{PreprocessedColumn, PreprocessedColumnSetImpl, PreprocessedColumnSet};
+    use super::{PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl};
 
     #[test]
     fn test_preprocessed_column_set() {

@@ -1,7 +1,8 @@
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
-    ClaimedPrefixSum, PreprocessedColumn, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    ClaimedPrefixSum, PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues,
+    PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -64,13 +65,20 @@ pub struct Component {
 pub impl ComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
+        ref preprocessed_column_set: PreprocessedColumnSet,
         ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(self.claim.log_size()).coset.step_size;
+        let log_size = self.claim.log_size();
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         constraints::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            log_size,
         );
     }
 
