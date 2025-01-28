@@ -245,7 +245,7 @@ mod tests {
         }
         .instructions;
 
-        input_from_plain_casm(instructions, true)
+        input_from_plain_casm(instructions)
     }
 
     fn test_cfg() -> ProverConfig {

@@ -9,15 +9,11 @@ use super::memory::{MemoryBuilder, MemoryConfig};
 use super::vm_import::{adapt_to_stwo_input, MemoryEntry};
 use super::ProverInput;
 
-// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
 /// Translates a plain casm into a ProverInput by running the program and extracting the memory and
 /// the state transitions.
 /// When dev mod is enabled, the opcodes generated from the plain casm will
 /// be mapped to the generic component only.
-pub fn input_from_plain_casm(
-    casm: Vec<cairo_lang_casm::instructions::Instruction>,
-    dev_mode: bool,
-) -> ProverInput {
+pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> ProverInput {
     let (program, program_len) = program_from_casm(casm);
 
     let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
@@ -30,7 +26,7 @@ pub fn input_from_plain_casm(
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    adapt_finished_runner(runner, dev_mode)
+    adapt_finished_runner(runner)
 }
 
 // NOTE: the proof will include `step_limit -1` steps.
@@ -48,7 +44,7 @@ pub fn input_from_plain_casm_with_step_limit(
         .expect("Run failed");
     runner.relocate(true).unwrap();
 
-    adapt_finished_runner(runner, true)
+    adapt_finished_runner(runner)
 }
 
 fn program_from_casm(
@@ -76,14 +72,13 @@ fn program_from_casm(
 }
 
 // TODO(yuval): consider returning a result instead of panicking.
-// TODO(Ohad): remove dev_mode after adding the rest of the opcodes.
 /// Translates a CairoRunner that finished its run into a ProverInput by extracting the relevant
 /// input to the adapter.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
 /// # Panics
 /// - if the memory or the trace are not relocated.
-pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput {
+pub fn adapt_finished_runner(runner: CairoRunner) -> ProverInput {
     let _span = tracing::info_span!("adapt_finished_runner").entered();
     let memory_iter = runner
         .relocated_memory
@@ -119,7 +114,6 @@ pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput
         MemoryBuilder::from_iter(MemoryConfig::default(), memory_iter),
         public_memory_addresses,
         memory_segments,
-        dev_mode,
     )
     .unwrap()
 }

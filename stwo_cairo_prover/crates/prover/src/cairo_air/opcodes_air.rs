@@ -18,8 +18,9 @@ use crate::components::{
     assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, range_check_11,
-    range_check_19, range_check_9_9, ret_opcode, verify_instruction,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small,
+    mul_opcode_small_imm, range_check_11, range_check_19, range_check_9_9, ret_opcode,
+    verify_instruction,
 };
 use crate::input::state_transitions::StateTransitions;
 
@@ -49,6 +50,8 @@ pub struct OpcodeClaim {
     pub jump_rel_imm: Vec<jump_opcode_rel_imm::Claim>,
     pub mul: Vec<mul_opcode::Claim>,
     pub mul_imm: Vec<mul_opcode_imm::Claim>,
+    pub mul_small: Vec<mul_opcode_small::Claim>,
+    pub mul_small_imm: Vec<mul_opcode_small_imm::Claim>,
     pub ret: Vec<ret_opcode::Claim>,
 }
 impl OpcodeClaim {
@@ -89,6 +92,8 @@ impl OpcodeClaim {
         self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul.iter().for_each(|c| c.mix_into(channel));
         self.mul_imm.iter().for_each(|c| c.mix_into(channel));
+        self.mul_small.iter().for_each(|c| c.mix_into(channel));
+        self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
@@ -118,6 +123,8 @@ impl OpcodeClaim {
             self.jump_rel_imm.iter().map(|c| c.log_sizes()),
             self.mul.iter().map(|c| c.log_sizes()),
             self.mul_imm.iter().map(|c| c.log_sizes()),
+            self.mul_small.iter().map(|c| c.log_sizes()),
+            self.mul_small_imm.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
         ))
     }
@@ -148,6 +155,8 @@ pub struct OpcodesClaimGenerator {
     jump_rel_imm: Vec<jump_opcode_rel_imm::ClaimGenerator>,
     mul: Vec<mul_opcode::ClaimGenerator>,
     mul_imm: Vec<mul_opcode_imm::ClaimGenerator>,
+    mul_small: Vec<mul_opcode_small::ClaimGenerator>,
+    mul_small_imm: Vec<mul_opcode_small_imm::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
@@ -177,6 +186,8 @@ impl OpcodesClaimGenerator {
         let mut jump_rel_imm = vec![];
         let mut mul = vec![];
         let mut mul_imm = vec![];
+        let mut mul_small = vec![];
+        let mut mul_small_imm = vec![];
         let mut ret = vec![];
         if !input.casm_states_by_opcode.add_opcode.is_empty() {
             add.push(add_opcode::ClaimGenerator::new(
@@ -324,6 +335,16 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.mul_opcode_imm,
             ));
         }
+        if !input.casm_states_by_opcode.mul_opcode_small.is_empty() {
+            mul_small.push(mul_opcode_small::ClaimGenerator::new(
+                input.casm_states_by_opcode.mul_opcode_small,
+            ));
+        }
+        if !input.casm_states_by_opcode.mul_opcode_small_imm.is_empty() {
+            mul_small_imm.push(mul_opcode_small_imm::ClaimGenerator::new(
+                input.casm_states_by_opcode.mul_opcode_small_imm,
+            ));
+        }
         if !input.casm_states_by_opcode.ret_opcode.is_empty() {
             ret.push(ret_opcode::ClaimGenerator::new(
                 input.casm_states_by_opcode.ret_opcode,
@@ -354,6 +375,8 @@ impl OpcodesClaimGenerator {
             jump_rel_imm,
             mul,
             mul_imm,
+            mul_small,
+            mul_small_imm,
             ret,
         }
     }
@@ -363,7 +386,7 @@ impl OpcodesClaimGenerator {
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
-        _range_check_11_trace_generator: &range_check_11::ClaimGenerator,
+        range_check_11_trace_generator: &range_check_11::ClaimGenerator,
         range_check_19_trace_generator: &range_check_19::ClaimGenerator,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         verify_instruction_trace_generator: &verify_instruction::ClaimGenerator,
@@ -663,6 +686,32 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
+        let (mul_small_claims, mul_small_interaction_gens) = self
+            .mul_small
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    range_check_11_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (mul_small_imm_claims, mul_small_imm_interaction_gens) = self
+            .mul_small_imm
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    range_check_11_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
         let (ret_claims, ret_interaction_gens) = self
             .ret
             .into_iter()
@@ -701,6 +750,8 @@ impl OpcodesClaimGenerator {
                 jump_rel_imm: jump_rel_imm_claims,
                 mul: mul_claims,
                 mul_imm: mul_imm_claims,
+                mul_small: mul_small_claims,
+                mul_small_imm: mul_small_imm_claims,
                 ret: ret_claims,
             },
             OpcodesInteractionClaimGenerator {
@@ -728,6 +779,8 @@ impl OpcodesClaimGenerator {
                 jump_rel_imm: jump_rel_imm_interaction_gens,
                 mul: mul_interaction_gens,
                 mul_imm: mul_imm_interaction_gens,
+                mul_small: mul_small_interaction_gens,
+                mul_small_imm: mul_small_imm_interaction_gens,
                 ret_interaction_gens,
             },
         )
@@ -760,6 +813,8 @@ pub struct OpcodeInteractionClaim {
     jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaim>,
     mul: Vec<mul_opcode::InteractionClaim>,
     mul_imm: Vec<mul_opcode_imm::InteractionClaim>,
+    mul_small: Vec<mul_opcode_small::InteractionClaim>,
+    mul_small_imm: Vec<mul_opcode_small_imm::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
 }
 impl OpcodeInteractionClaim {
@@ -800,6 +855,8 @@ impl OpcodeInteractionClaim {
         self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul.iter().for_each(|c| c.mix_into(channel));
         self.mul_imm.iter().for_each(|c| c.mix_into(channel));
+        self.mul_small.iter().for_each(|c| c.mix_into(channel));
+        self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
@@ -877,6 +934,12 @@ impl OpcodeInteractionClaim {
         for interaction_claim in &self.mul_imm {
             sum += interaction_claim.claimed_sum;
         }
+        for interaction_claim in &self.mul_small {
+            sum += interaction_claim.claimed_sum;
+        }
+        for interaction_claim in &self.mul_small_imm {
+            sum += interaction_claim.claimed_sum;
+        }
         for interaction_claim in &self.ret {
             sum += interaction_claim.claimed_sum;
         }
@@ -909,6 +972,8 @@ pub struct OpcodesInteractionClaimGenerator {
     jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
     mul: Vec<mul_opcode::InteractionClaimGenerator>,
     mul_imm: Vec<mul_opcode_imm::InteractionClaimGenerator>,
+    mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
+    mul_small_imm: Vec<mul_opcode_small_imm::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
 impl OpcodesInteractionClaimGenerator {
@@ -1234,6 +1299,34 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
+        let mul_small_interaction_claims = self
+            .mul_small
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.range_checks.rc_11,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
+        let mul_small_imm_interaction_claims = self
+            .mul_small_imm
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.range_checks.rc_11,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
         let ret_interaction_claims = self
             .ret_interaction_gens
             .into_iter()
@@ -1272,6 +1365,8 @@ impl OpcodesInteractionClaimGenerator {
             jump_rel_imm: jump_rel_imm_interaction_claims,
             mul: mul_interaction_claims,
             mul_imm: mul_imm_interaction_claims,
+            mul_small: mul_small_interaction_claims,
+            mul_small_imm: mul_small_imm_interaction_claims,
             ret: ret_interaction_claims,
         }
     }
@@ -1302,6 +1397,8 @@ pub struct OpcodeComponents {
     jump_rel_imm: Vec<jump_opcode_rel_imm::Component>,
     mul: Vec<mul_opcode::Component>,
     mul_imm: Vec<mul_opcode_imm::Component>,
+    mul_small: Vec<mul_opcode_small::Component>,
+    mul_small_imm: Vec<mul_opcode_small_imm::Component>,
     ret: Vec<ret_opcode::Component>,
 }
 impl OpcodeComponents {
@@ -1897,6 +1994,62 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
+        let mul_small_components = claim
+            .mul_small
+            .iter()
+            .zip(interaction_claim.mul_small.iter())
+            .map(|(&claim, &interaction_claim)| {
+                mul_opcode_small::Component::new(
+                    tree_span_provider,
+                    mul_opcode_small::Eval {
+                        claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_11_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_11
+                            .clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect_vec();
+        let mul_small_imm_components = claim
+            .mul_small_imm
+            .iter()
+            .zip(interaction_claim.mul_small_imm.iter())
+            .map(|(&claim, &interaction_claim)| {
+                mul_opcode_small_imm::Component::new(
+                    tree_span_provider,
+                    mul_opcode_small_imm::Eval {
+                        claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_11_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_11
+                            .clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect_vec();
         let ret_components = claim
             .ret
             .iter()
@@ -1946,6 +2099,8 @@ impl OpcodeComponents {
             jump_rel_imm: jump_rel_imm_components,
             mul: mul_components,
             mul_imm: mul_imm_components,
+            mul_small: mul_small_components,
+            mul_small_imm: mul_small_imm_components,
             ret: ret_components,
         }
     }
@@ -2073,6 +2228,16 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
+            self.mul_small
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.mul_small_imm
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
             self.ret
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
@@ -2131,6 +2296,10 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.mul))?;
         writeln!(f, "mul_imm:")?;
         writeln!(f, "{}", display_components(&self.mul_imm))?;
+        writeln!(f, "mul_small:")?;
+        writeln!(f, "{}", display_components(&self.mul_small))?;
+        writeln!(f, "mul_small_imm:")?;
+        writeln!(f, "{}", display_components(&self.mul_small_imm))?;
         writeln!(f, "ret:")?;
         writeln!(f, "{}", display_components(&self.ret))?;
         Ok(())
