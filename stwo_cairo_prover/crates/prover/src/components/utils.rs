@@ -1,4 +1,3 @@
-use std::array;
 use std::mem::transmute;
 use std::simd::Simd;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -97,13 +96,19 @@ impl Enabler {
 
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
         let row_offset = vec_row * N_LANES;
-        PackedM31::from_array(array::from_fn(|i| {
-            if i < self.padding_offset - row_offset {
-                M31::one()
-            } else {
-                M31::zero()
-            }
-        }))
+        if self.padding_offset <= row_offset {
+            return PackedM31::zero();
+        }
+        if self.padding_offset >= row_offset + N_LANES {
+            return PackedM31::one();
+        }
+
+        // The row is partially enabled.
+        let mut res = [M31::zero(); N_LANES];
+        for v in res.iter_mut().take(self.padding_offset - row_offset) {
+            *v = M31::one();
+        }
+        PackedM31::from_array(res)
     }
 }
 
@@ -137,6 +142,32 @@ mod tests {
     }
 
     #[test]
+    fn test_enabler_packed_at_single_row() {
+        let n_calls = 1;
+
+        let enabler_column = Enabler::new(n_calls);
+
+        assert_eq!(
+            enabler_column.packed_at(0).to_array(),
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31::from)
+        );
+    }
+
+    #[test]
+    fn test_enabler_packed_row_n_lanes() {
+        let enabler_column = Enabler::new(N_LANES);
+
+        assert_eq!(
+            enabler_column.packed_at(0).to_array(),
+            [1; N_LANES].map(M31::from)
+        );
+        assert_eq!(
+            enabler_column.packed_at(1).to_array(),
+            [0; N_LANES].map(M31::from)
+        );
+    }
+
+    #[test]
     fn test_enabler_packed_at() {
         let n_calls = 30;
 
@@ -149,6 +180,10 @@ mod tests {
         assert_eq!(
             enabler_column.packed_at(1).to_array(),
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0].map(M31::from)
+        );
+        assert_eq!(
+            enabler_column.packed_at(2).to_array(),
+            [0; N_LANES].map(M31::from)
         );
     }
 }
