@@ -2,14 +2,22 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Parser;
+use serde::Serialize;
 use stwo_cairo_prover::cairo_air::{
-    prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
+    prove_cairo, verify_cairo, CairoVerificationError, ChannelHash, ConfigBuilder, ProverConfig,
+    ProverParameters,
 };
 use stwo_cairo_prover::input::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::input::ProverInput;
 use stwo_cairo_utils::binary_utils::run_binary;
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::backend::BackendForChannel;
+use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::fri::FriConfig;
+use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -35,6 +43,9 @@ struct Args {
     pub_json: PathBuf,
     #[structopt(long = "priv_json")]
     priv_json: PathBuf,
+    /// The path to the JSON file containing the prover parameters (optional).
+    #[structopt(long = "params_json")]
+    params_json: Option<PathBuf>,
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
@@ -67,6 +78,30 @@ fn main() -> ExitCode {
     run_binary(run, "adapted_stwo")
 }
 
+/// Generates proof given the Cairo VM output and prover config/parameters.  
+/// Serializes the proof as JSON and write to the output path.
+/// Verifies the proof in case the respective flag is set.
+fn run_inner<MC: MerkleChannel>(
+    vm_output: ProverInput,
+    prover_config: ProverConfig,
+    pcs_config: PcsConfig,
+    verify: bool,
+    proof_path: PathBuf,
+) -> Result<(), Error>
+where
+    SimdBackend: BackendForChannel<MC>,
+    MC::H: Serialize,
+{
+    let proof = prove_cairo::<MC>(vm_output, prover_config, pcs_config)?;
+    std::fs::write(&proof_path, serde_json::to_string(&proof)?)?;
+
+    if verify {
+        verify_cairo::<MC>(proof, pcs_config)?;
+        log::info!("Proof verified successfully");
+    }
+    Ok(())
+}
+
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
@@ -83,15 +118,37 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         vm_output.state_transitions.casm_states_by_opcode
     );
 
-    // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config)?;
+    let params: ProverParameters = match args.params_json {
+        Some(path) => serde_json::from_str(&std::fs::read_to_string(path)?)?,
+        None => default_parameters(),
+    };
 
-    std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
+    let run_inner_fn = match params.channel_hash {
+        ChannelHash::Blake2s => run_inner::<Blake2sMerkleChannel>,
+        ChannelHash::Poseidon252 => run_inner::<Poseidon252MerkleChannel>,
+    };
 
-    if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof)?;
-        log::info!("Proof verified successfully");
-    }
-
+    run_inner_fn(
+        vm_output,
+        prover_config,
+        params.pcs_config,
+        args.verify,
+        args.proof_path,
+    )?;
     Ok(())
+}
+
+/// The default prover paramters (96 bits of security).
+pub fn default_parameters() -> ProverParameters {
+    ProverParameters {
+        channel_hash: ChannelHash::Blake2s,
+        pcs_config: PcsConfig {
+            pow_bits: 26,
+            fri_config: FriConfig {
+                log_last_layer_degree_bound: 7,
+                log_blowup_factor: 1,
+                n_queries: 70,
+            },
+        },
+    }
 }

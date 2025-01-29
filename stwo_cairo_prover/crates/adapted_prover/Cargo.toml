@@ -15,3 +15,4 @@ stwo_cairo_utils.workspace = true
 stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+serde.workspace = true
