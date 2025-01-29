@@ -26,11 +26,13 @@ use super::opcodes_air::{
     OpcodesInteractionClaimGenerator,
 };
 use super::preprocessed::preprocessed_trace_columns;
-use crate::components::memory::{memory_address_to_id, memory_id_to_big};
-use crate::components::range_check_vector::{
-    range_check_19, range_check_4_3, range_check_7_2_5, range_check_9_9,
+use super::range_checks_air::{
+    RangeChecksClaim, RangeChecksClaimGenerator, RangeChecksComponents,
+    RangeChecksInteractionClaim, RangeChecksInteractionClaimGenerator,
+    RangeChecksInteractionElements,
 };
-use crate::components::{range_check_11, verify_instruction};
+use crate::components::memory::{memory_address_to_id, memory_id_to_big};
+use crate::components::verify_instruction;
 use crate::felt::split_f252;
 use crate::input::ProverInput;
 use crate::relations;
@@ -69,11 +71,7 @@ pub struct CairoClaim {
     pub builtins: BuiltinsClaim,
     pub memory_address_to_id: memory_address_to_id::Claim,
     pub memory_id_to_value: memory_id_to_big::Claim,
-    pub range_check_11: range_check_11::Claim,
-    pub range_check_19: range_check_19::Claim,
-    pub range_check9_9: range_check_9_9::Claim,
-    pub range_check7_2_5: range_check_7_2_5::Claim,
-    pub range_check4_3: range_check_4_3::Claim,
+    pub range_checks: RangeChecksClaim,
     // ...
 }
 
@@ -85,11 +83,7 @@ impl CairoClaim {
         self.builtins.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
-        self.range_check_11.mix_into(channel);
-        self.range_check_19.mix_into(channel);
-        self.range_check9_9.mix_into(channel);
-        self.range_check7_2_5.mix_into(channel);
-        self.range_check4_3.mix_into(channel);
+        self.range_checks.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -99,11 +93,7 @@ impl CairoClaim {
             self.builtins.log_sizes(),
             self.memory_address_to_id.log_sizes(),
             self.memory_id_to_value.log_sizes(),
-            self.range_check_11.log_sizes(),
-            self.range_check_19.log_sizes(),
-            self.range_check9_9.log_sizes(),
-            self.range_check7_2_5.log_sizes(),
-            self.range_check4_3.log_sizes(),
+            self.range_checks.log_sizes(),
         ];
 
         let mut log_sizes = TreeVec::concat_cols(log_sizes_list.into_iter());
@@ -173,11 +163,7 @@ pub struct CairoClaimGenerator {
     builtins: BuiltinsClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
-    range_check_11_trace_generator: range_check_11::ClaimGenerator,
-    range_check_19_trace_generator: range_check_19::ClaimGenerator,
-    range_check_9_9_trace_generator: range_check_9_9::ClaimGenerator,
-    range_check_7_2_5_trace_generator: range_check_7_2_5::ClaimGenerator,
-    range_check_4_3_trace_generator: range_check_4_3::ClaimGenerator,
+    range_checks_trace_generator: RangeChecksClaimGenerator,
     // ...
 }
 impl CairoClaimGenerator {
@@ -192,11 +178,7 @@ impl CairoClaimGenerator {
             memory_address_to_id::ClaimGenerator::new(&input.memory);
         let memory_id_to_value_trace_generator =
             memory_id_to_big::ClaimGenerator::new(&input.memory);
-        let range_check_11_trace_generator = range_check_11::ClaimGenerator::new();
-        let range_check_19_trace_generator = range_check_19::ClaimGenerator::new();
-        let range_check_9_9_trace_generator = range_check_9_9::ClaimGenerator::new();
-        let range_check_7_2_5_trace_generator = range_check_7_2_5::ClaimGenerator::new();
-        let range_check_4_3_trace_generator = range_check_4_3::ClaimGenerator::new();
+        let range_checks_trace_generator = RangeChecksClaimGenerator::new();
 
         // Yield public memory.
         for addr in input
@@ -233,11 +215,7 @@ impl CairoClaimGenerator {
             builtins,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
-            range_check_11_trace_generator,
-            range_check_19_trace_generator,
-            range_check_9_9_trace_generator,
-            range_check_7_2_5_trace_generator,
-            range_check_4_3_trace_generator,
+            range_checks_trace_generator,
         }
     }
 
@@ -253,9 +231,9 @@ impl CairoClaimGenerator {
             tree_builder,
             &self.memory_address_to_id_trace_generator,
             &self.memory_id_to_value_trace_generator,
-            &self.range_check_11_trace_generator,
-            &self.range_check_19_trace_generator,
-            &self.range_check_9_9_trace_generator,
+            &self.range_checks_trace_generator.rc_11_trace_generator,
+            &self.range_checks_trace_generator.rc_19_trace_generator,
+            &self.range_checks_trace_generator.rc_9_9_trace_generator,
             &self.verify_instruction_trace_generator,
         );
         span.exit();
@@ -265,8 +243,8 @@ impl CairoClaimGenerator {
                 tree_builder,
                 &self.memory_address_to_id_trace_generator,
                 &self.memory_id_to_value_trace_generator,
-                &self.range_check_4_3_trace_generator,
-                &self.range_check_7_2_5_trace_generator,
+                &self.range_checks_trace_generator.rc_4_3_trace_generator,
+                &self.range_checks_trace_generator.rc_7_2_5_trace_generator,
             );
         let (builtins_claim, builtins_interaction_gen) = self.builtins.write_trace(
             tree_builder,
@@ -276,24 +254,13 @@ impl CairoClaimGenerator {
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator
             .write_trace(tree_builder);
-        let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) = self
-            .memory_id_to_value_trace_generator
-            .write_trace(tree_builder, &self.range_check_9_9_trace_generator);
-        let (range_check_11_claim, range_check_11_interaction_gen) = self
-            .range_check_11_trace_generator
-            .write_trace(tree_builder);
-        let (range_check_19_claim, range_check_19_interaction_gen) = self
-            .range_check_19_trace_generator
-            .write_trace(tree_builder);
-        let (range_check9_9_claim, range_check_9_9_interaction_gen) = self
-            .range_check_9_9_trace_generator
-            .write_trace(tree_builder);
-        let (range_check_7_2_5_claim, range_check_7_2_5_interaction_gen) = self
-            .range_check_7_2_5_trace_generator
-            .write_trace(tree_builder);
-        let (range_check_4_3_claim, range_check_4_3_interaction_gen) = self
-            .range_check_4_3_trace_generator
-            .write_trace(tree_builder);
+        let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
+            self.memory_id_to_value_trace_generator.write_trace(
+                tree_builder,
+                &self.range_checks_trace_generator.rc_9_9_trace_generator,
+            );
+        let (range_checks_claim, range_checks_interaction_gen) =
+            self.range_checks_trace_generator.write_trace(tree_builder);
         span.exit();
         (
             CairoClaim {
@@ -303,11 +270,7 @@ impl CairoClaimGenerator {
                 builtins: builtins_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
-                range_check_11: range_check_11_claim,
-                range_check_19: range_check_19_claim,
-                range_check9_9: range_check9_9_claim,
-                range_check7_2_5: range_check_7_2_5_claim,
-                range_check4_3: range_check_4_3_claim,
+                range_checks: range_checks_claim,
             },
             CairoInteractionClaimGenerator {
                 opcodes_interaction_gen,
@@ -315,11 +278,7 @@ impl CairoClaimGenerator {
                 builtins_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
-                range_check_11_interaction_gen,
-                range_check_19_interaction_gen,
-                range_check_9_9_interaction_gen,
-                range_check_7_2_5_interaction_gen,
-                range_check_4_3_interaction_gen,
+                range_checks_interaction_gen,
             },
         )
     }
@@ -331,11 +290,7 @@ pub struct CairoInteractionClaimGenerator {
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
-    range_check_11_interaction_gen: range_check_11::InteractionClaimGenerator,
-    range_check_19_interaction_gen: range_check_19::InteractionClaimGenerator,
-    range_check_9_9_interaction_gen: range_check_9_9::InteractionClaimGenerator,
-    range_check_7_2_5_interaction_gen: range_check_7_2_5::InteractionClaimGenerator,
-    range_check_4_3_interaction_gen: range_check_4_3::InteractionClaimGenerator,
+    range_checks_interaction_gen: RangeChecksInteractionClaimGenerator,
     // ...
 }
 impl CairoInteractionClaimGenerator {
@@ -356,8 +311,8 @@ impl CairoInteractionClaimGenerator {
                 tree_builder,
                 &interaction_elements.memory_address_to_id,
                 &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_check_4_3,
-                &interaction_elements.range_check_7_2_5,
+                &interaction_elements.range_checks.rc_4_3,
+                &interaction_elements.range_checks.rc_7_2_5,
                 &interaction_elements.verify_instruction,
             );
         let builtins_interaction_claims = self
@@ -371,24 +326,12 @@ impl CairoInteractionClaimGenerator {
             .write_interaction_trace(
                 tree_builder,
                 &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_check_9_9,
+                &interaction_elements.range_checks.rc_9_9,
             );
 
-        let range_check_11_interaction_claim = self
-            .range_check_11_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.range_check_11);
-        let range_check_19_interaction_claim = self
-            .range_check_19_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.range_check_19);
-        let range_check9_9_interaction_claim = self
-            .range_check_9_9_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.range_check_9_9);
-        let range_check_7_2_5_interaction_claim = self
-            .range_check_7_2_5_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.range_check_7_2_5);
-        let range_check_4_3_interaction_claim = self
-            .range_check_4_3_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.range_check_4_3);
+        let range_checks_interaction_claim = self
+            .range_checks_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.range_checks);
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,
@@ -396,11 +339,7 @@ impl CairoInteractionClaimGenerator {
             builtins: builtins_interaction_claims,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
-            range_check_11: range_check_11_interaction_claim,
-            range_check_19: range_check_19_interaction_claim,
-            range_check_9_9: range_check9_9_interaction_claim,
-            range_check_7_2_5: range_check_7_2_5_interaction_claim,
-            range_check_4_3: range_check_4_3_interaction_claim,
+            range_checks: range_checks_interaction_claim,
         }
     }
 }
@@ -410,12 +349,7 @@ pub struct CairoInteractionElements {
     pub verify_instruction: relations::VerifyInstruction,
     pub memory_address_to_id: relations::MemoryAddressToId,
     pub memory_id_to_value: relations::MemoryIdToBig,
-    pub range_check_11: relations::RangeCheck_11,
-    pub range_check_19: relations::RangeCheck_19,
-    pub range_check_9_9: relations::RangeCheck_9_9,
-    pub range_check_7_2_5: relations::RangeCheck_7_2_5,
-    pub range_check_4_3: relations::RangeCheck_4_3,
-    // ...
+    pub range_checks: RangeChecksInteractionElements,
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
@@ -424,11 +358,7 @@ impl CairoInteractionElements {
             verify_instruction: relations::VerifyInstruction::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
-            range_check_11: relations::RangeCheck_11::draw(channel),
-            range_check_19: relations::RangeCheck_19::draw(channel),
-            range_check_9_9: relations::RangeCheck_9_9::draw(channel),
-            range_check_7_2_5: relations::RangeCheck_7_2_5::draw(channel),
-            range_check_4_3: relations::RangeCheck_4_3::draw(channel),
+            range_checks: RangeChecksInteractionElements::draw(channel),
         }
     }
 }
@@ -440,11 +370,7 @@ pub struct CairoInteractionClaim {
     pub builtins: BuiltinsInteractionClaim,
     pub memory_address_to_id: memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: memory_id_to_big::InteractionClaim,
-    pub range_check_11: range_check_11::InteractionClaim,
-    pub range_check_19: range_check_19::InteractionClaim,
-    pub range_check_9_9: range_check_9_9::InteractionClaim,
-    pub range_check_7_2_5: range_check_7_2_5::InteractionClaim,
-    pub range_check_4_3: range_check_4_3::InteractionClaim,
+    pub range_checks: RangeChecksInteractionClaim,
 }
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -453,11 +379,7 @@ impl CairoInteractionClaim {
         self.builtins.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
-        self.range_check_11.mix_into(channel);
-        self.range_check_19.mix_into(channel);
-        self.range_check_9_9.mix_into(channel);
-        self.range_check_7_2_5.mix_into(channel);
-        self.range_check_4_3.mix_into(channel);
+        self.range_checks.mix_into(channel);
     }
 }
 
@@ -477,11 +399,7 @@ pub fn lookup_sum(
     sum += interaction_claim.memory_address_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
     sum += interaction_claim.memory_id_to_value.small_claimed_sum;
-    sum += interaction_claim.range_check_11.claimed_sum;
-    sum += interaction_claim.range_check_19.claimed_sum;
-    sum += interaction_claim.range_check_9_9.claimed_sum;
-    sum += interaction_claim.range_check_7_2_5.claimed_sum;
-    sum += interaction_claim.range_check_4_3.claimed_sum;
+    sum += interaction_claim.range_checks.sum();
     sum
 }
 
@@ -494,11 +412,7 @@ pub struct CairoComponents {
         memory_id_to_big::BigComponent,
         memory_id_to_big::SmallComponent,
     ),
-    range_check_11: range_check_11::Component,
-    range_check_19: range_check_19::Component,
-    range_check9_9: range_check_9_9::Component,
-    range_check7_2_5: range_check_7_2_5::Component,
-    range_check4_3: range_check_4_3::Component,
+    range_checks: RangeChecksComponents,
     // ...
 }
 impl CairoComponents {
@@ -529,8 +443,11 @@ impl CairoComponents {
                     .clone(),
                 verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
                 memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                range_check_4_3_lookup_elements: interaction_elements.range_check_4_3.clone(),
-                range_check_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
+                range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
+                range_check_7_2_5_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_7_2_5
+                    .clone(),
             },
             (interaction_claim.verify_instruction.claimed_sum, None),
         );
@@ -556,7 +473,7 @@ impl CairoComponents {
             memory_id_to_big::BigEval::new(
                 cairo_claim.memory_id_to_value.clone(),
                 interaction_elements.memory_id_to_value.clone(),
-                interaction_elements.range_check_9_9.clone(),
+                interaction_elements.range_checks.rc_9_9.clone(),
             ),
             (
                 interaction_claim.memory_id_to_value.clone().big_claimed_sum,
@@ -568,7 +485,7 @@ impl CairoComponents {
             memory_id_to_big::SmallEval::new(
                 cairo_claim.memory_id_to_value.clone(),
                 interaction_elements.memory_id_to_value.clone(),
-                interaction_elements.range_check_9_9.clone(),
+                interaction_elements.range_checks.rc_9_9.clone(),
             ),
             (
                 interaction_claim
@@ -578,30 +495,10 @@ impl CairoComponents {
                 None,
             ),
         );
-        let range_check_11_component = range_check_11::Component::new(
+        let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
-            range_check_11::Eval::new(interaction_elements.range_check_11.clone()),
-            (interaction_claim.range_check_11.claimed_sum, None),
-        );
-        let range_check_19_component = range_check_19::Component::new(
-            tree_span_provider,
-            range_check_19::Eval::new(interaction_elements.range_check_19.clone()),
-            (interaction_claim.range_check_19.claimed_sum, None),
-        );
-        let range_check9_9_component = range_check_9_9::Component::new(
-            tree_span_provider,
-            range_check_9_9::Eval::new(interaction_elements.range_check_9_9.clone()),
-            (interaction_claim.range_check_9_9.claimed_sum, None),
-        );
-        let range_check_7_2_5_component = range_check_7_2_5::Component::new(
-            tree_span_provider,
-            range_check_7_2_5::Eval::new(interaction_elements.range_check_7_2_5.clone()),
-            (interaction_claim.range_check_7_2_5.claimed_sum, None),
-        );
-        let range_check_4_3_component = range_check_4_3::Component::new(
-            tree_span_provider,
-            range_check_4_3::Eval::new(interaction_elements.range_check_4_3.clone()),
-            (interaction_claim.range_check_4_3.claimed_sum, None),
+            &interaction_elements.range_checks,
+            &interaction_claim.range_checks,
         );
         Self {
             opcodes: opcode_components,
@@ -612,11 +509,7 @@ impl CairoComponents {
                 memory_id_to_value_component,
                 small_memory_id_to_value_component,
             ),
-            range_check_11: range_check_11_component,
-            range_check_19: range_check_19_component,
-            range_check9_9: range_check9_9_component,
-            range_check7_2_5: range_check_7_2_5_component,
-            range_check4_3: range_check_4_3_component,
+            range_checks: range_checks_component,
         }
     }
 
@@ -629,12 +522,8 @@ impl CairoComponents {
                 &self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.0 as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,
-                &self.range_check_11 as &dyn ComponentProver<SimdBackend>,
-                &self.range_check_19 as &dyn ComponentProver<SimdBackend>,
-                &self.range_check9_9 as &dyn ComponentProver<SimdBackend>,
-                &self.range_check7_2_5 as &dyn ComponentProver<SimdBackend>,
-                &self.range_check4_3 as &dyn ComponentProver<SimdBackend>,
-            ]
+            ],
+            self.range_checks.provers()
         )
         .collect()
     }
@@ -672,31 +561,7 @@ impl std::fmt::Display for CairoComponents {
             "SmallMemoryIdToValue: {}",
             indented_component_display(&self.memory_id_to_value.1)
         )?;
-        writeln!(
-            f,
-            "RangeCheck19: {}",
-            indented_component_display(&self.range_check_11)
-        )?;
-        writeln!(
-            f,
-            "RangeCheck19: {}",
-            indented_component_display(&self.range_check_19)
-        )?;
-        writeln!(
-            f,
-            "RangeCheck9_9: {}",
-            indented_component_display(&self.range_check9_9)
-        )?;
-        writeln!(
-            f,
-            "RangeCheck7_2_5: {}",
-            indented_component_display(&self.range_check7_2_5)
-        )?;
-        writeln!(
-            f,
-            "RangeCheck4_3: {}",
-            indented_component_display(&self.range_check4_3)
-        )?;
+        writeln!(f, "RangeChecks: {}", self.range_checks)?;
         Ok(())
     }
 }
