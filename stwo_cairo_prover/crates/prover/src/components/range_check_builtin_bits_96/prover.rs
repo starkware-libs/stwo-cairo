@@ -106,7 +106,7 @@ fn write_trace_simd(
             LookupData::uninitialized(log_n_packed_rows),
         )
     };
-
+    println!("shahar");
     let M31_0 = PackedM31::broadcast(M31::from(0));
 
     trace
