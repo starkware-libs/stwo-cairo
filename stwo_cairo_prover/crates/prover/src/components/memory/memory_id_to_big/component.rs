@@ -7,11 +7,14 @@ use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
 };
 use stwo_prover::core::channel::Channel;
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::relation;
 
+use crate::cairo_air::preprocessed::Seq;
+use crate::input::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use crate::relations;
 
 // TODO(AlonH): Make memory size configurable.
@@ -19,12 +22,10 @@ pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
 pub const N_M31_IN_SMALL_FELT252: usize = 8; // 72 bits.
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
-pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = BIG_N_ID_AND_VALUE_COLUMNS;
-pub const BIG_N_COLUMNS: usize = BIG_N_ID_AND_VALUE_COLUMNS + N_MULTIPLICITY_COLUMNS;
-pub const BIG_N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
-pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = SMALL_N_ID_AND_VALUE_COLUMNS;
-pub const SMALL_N_COLUMNS: usize = SMALL_N_ID_AND_VALUE_COLUMNS + N_MULTIPLICITY_COLUMNS;
-pub const SMALL_N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_SMALL_FELT252;
+pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252;
+pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
+pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_SMALL_FELT252;
+pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
 pub type BigComponent = FrameworkComponent<BigEval>;
 pub type SmallComponent = FrameworkComponent<SmallEval>;
@@ -68,12 +69,12 @@ impl FrameworkEval for BigEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let id_and_value: [E::F; MEMORY_ID_SIZE + N_M31_IN_FELT252] =
-            std::array::from_fn(|_| eval.next_trace_mask());
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        let value: [E::F; N_M31_IN_FELT252] = std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
 
         // Range check limbs.
-        for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
+        for (l, r) in value.iter().tuples() {
             eval.add_to_relation(RelationEntry::new(
                 &self.range9_9_lookup_elements,
                 E::EF::one(),
@@ -82,10 +83,11 @@ impl FrameworkEval for BigEval {
         }
 
         // Yield the value.
+        let id = seq + E::F::from(M31::from(LARGE_MEMORY_VALUE_ID_BASE));
         eval.add_to_relation(RelationEntry::new(
             &self.lookup_elements,
             E::EF::from(-multiplicity),
-            &id_and_value,
+            &chain!([id], value).collect_vec(),
         ));
 
         eval.finalize_logup_in_pairs();
@@ -124,12 +126,12 @@ impl FrameworkEval for SmallEval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let id_and_value: [E::F; SMALL_N_ID_AND_VALUE_COLUMNS] =
-            std::array::from_fn(|_| eval.next_trace_mask());
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        let value: [E::F; N_M31_IN_SMALL_FELT252] = std::array::from_fn(|_| eval.next_trace_mask());
         let multiplicity = eval.next_trace_mask();
 
         // Range check limbs.
-        for (l, r) in id_and_value[MEMORY_ID_SIZE..].iter().tuples() {
+        for (l, r) in value.iter().tuples() {
             eval.add_to_relation(RelationEntry::new(
                 &self.range_check_9_9_relation,
                 E::EF::one(),
@@ -138,10 +140,11 @@ impl FrameworkEval for SmallEval {
         }
 
         // Yield the value.
+        let id = seq;
         eval.add_to_relation(RelationEntry::new(
             &self.lookup_elements,
             E::EF::from(-multiplicity),
-            &id_and_value,
+            &chain!([id], value).collect_vec(),
         ));
 
         eval.finalize_logup();
@@ -156,7 +159,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let preprocessed_log_sizes = vec![self.big_log_size, self.small_log_size];
+        let preprocessed_log_sizes = vec![];
         let trace_log_sizes = chain!(
             vec![self.big_log_size; BIG_N_COLUMNS],
             vec![self.small_log_size; SMALL_N_COLUMNS]

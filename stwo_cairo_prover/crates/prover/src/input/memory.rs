@@ -211,14 +211,14 @@ impl DerefMut for MemoryBuilder {
     }
 }
 
-pub const LARGE_MEMORY_VALUE_ID_TAG: u32 = 0x4000_0000;
+pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x4000_0000;
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct EncodedMemoryValueId(pub u32);
 impl EncodedMemoryValueId {
     pub fn encode(value: MemoryValueId) -> EncodedMemoryValueId {
         match value {
             MemoryValueId::Small(id) => EncodedMemoryValueId(id),
-            MemoryValueId::F252(id) => EncodedMemoryValueId(id | LARGE_MEMORY_VALUE_ID_TAG),
+            MemoryValueId::F252(id) => EncodedMemoryValueId(id | LARGE_MEMORY_VALUE_ID_BASE),
         }
     }
     pub fn decode(&self) -> MemoryValueId {
