@@ -1196,8 +1196,8 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
                     &interaction_elements.opcodes,
-                    &interaction_elements.range_check_19,
-                    &interaction_elements.range_check_9_9,
+                    &interaction_elements.range_checks.rc_19,
+                    &interaction_elements.range_checks.rc_9_9,
                     &interaction_elements.verify_instruction,
                 )
             })
@@ -1315,7 +1315,7 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
                     &interaction_elements.opcodes,
-                    &interaction_elements.range_check_19,
+                    &interaction_elements.range_checks.rc_19,
                     &interaction_elements.verify_instruction,
                 )
             })
@@ -1329,7 +1329,7 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
                     &interaction_elements.opcodes,
-                    &interaction_elements.range_check_19,
+                    &interaction_elements.range_checks.rc_19,
                     &interaction_elements.verify_instruction,
                 )
             })
@@ -1733,9 +1733,13 @@ impl OpcodeComponents {
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        range_check_19_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19
+                            .clone(),
                         range_check_9_9_lookup_elements: interaction_elements
-                            .range_check_9_9
+                            .range_checks
+                            .rc_9_9
                             .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
@@ -1953,7 +1957,10 @@ impl OpcodeComponents {
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        range_check_19_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19
+                            .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
@@ -1978,7 +1985,10 @@ impl OpcodeComponents {
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_19_lookup_elements: interaction_elements.range_check_19.clone(),
+                        range_check_19_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19
+                            .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
