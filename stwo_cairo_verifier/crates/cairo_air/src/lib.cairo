@@ -8,9 +8,6 @@ use components::genericopcode::{
 use components::id_to_f252::{
     ClaimImpl as IdToF252ClaimImpl, InteractionClaimImpl as IdToF252InteractionClaimImpl,
 };
-use components::jump_t_t_f_opcode::{
-    ClaimImpl as JumpFTClaimImpl, InteractionClaimImpl as JumpFTInteractionClaimImpl,
-};
 use components::range_check::{
     ClaimImpl as RangeCheckClaimImpl, InteractionClaimImpl as RangeCheckInteractionClaimImpl,
 };
@@ -274,7 +271,7 @@ pub struct OpcodeInteractionClaim {
     jump_f_f_f: Array::<PlaceHolder>,
     jump_f_f_t: Array::<PlaceHolder>,
     jump_t_f_f: Array::<PlaceHolder>,
-    jump_t_t_f: Array::<components::jump_t_t_f_opcode::InteractionClaim>,
+    jump_t_t_f: Array::<PlaceHolder>,
     mul_f_f: Array::<PlaceHolder>,
     mul_f_t: Array::<PlaceHolder>,
     ret: Array::<components::ret_opcode::InteractionClaim>,
@@ -287,10 +284,6 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             interaction_claim.mix_into(ref channel);
         };
 
-        for interaction_claim in self.jump_t_t_f.span() {
-            interaction_claim.mix_into(ref channel);
-        };
-
         for interaction_claim in self.ret.span() {
             interaction_claim.mix_into(ref channel);
         };
@@ -300,13 +293,6 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
         let mut sum = QM31Zero::zero();
 
         for interaction_claim in self.generic.span() {
-            sum += match interaction_claim.claimed_sum {
-                Option::Some((claimed_sum, _)) => *claimed_sum,
-                Option::None => *interaction_claim.total_sum,
-            };
-        };
-
-        for interaction_claim in self.jump_t_t_f.span() {
             sum += match interaction_claim.claimed_sum {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
@@ -399,7 +385,7 @@ pub struct OpcodeClaim {
     pub jump_f_f_f: Array::<PlaceHolder>,
     pub jump_f_f_t: Array::<PlaceHolder>,
     pub jump_t_f_f: Array::<PlaceHolder>,
-    pub jump_t_t_f: Array::<components::jump_t_t_f_opcode::Claim>,
+    pub jump_t_t_f: Array::<PlaceHolder>,
     pub mul_f_f: Array::<PlaceHolder>,
     pub mul_f_t: Array::<PlaceHolder>,
     pub ret: Array::<components::ret_opcode::Claim>,
@@ -410,10 +396,6 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
     fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
         for generic_opcode_claim in self.generic.span() {
             generic_opcode_claim.mix_into(ref channel);
-        };
-
-        for jump_t_t_f_opcode_claim in self.jump_t_t_f.span() {
-            jump_t_t_f_opcode_claim.mix_into(ref channel);
         };
 
         for ret_opcode_claim in self.ret.span() {
@@ -430,10 +412,6 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
         for generic_opcode_claim in self.generic.span() {
             log_sizes.append(generic_opcode_claim.log_sizes());
-        };
-
-        for jump_t_t_f_opcode_claim in self.jump_t_t_f.span() {
-            log_sizes.append(jump_t_t_f_opcode_claim.log_sizes());
         };
 
         utils::tree_array_concat_cols(log_sizes)
@@ -801,7 +779,6 @@ fn preprocessed_trace_mask_points(
 pub struct OpcodeComponents {
     generic: Array<components::genericopcode::Component>,
     ret: Array<components::ret_opcode::Component>,
-    jump_t_t_f: Array<components::jump_t_t_f_opcode::Component>,
 }
 
 #[generate_trait]
@@ -837,18 +814,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         //     opcodes_lookup_elements: interaction_elements.opcodes.clone(),
         // };
 
-        let jump_t_t_f_opcode_component = components::jump_t_t_f_opcode::Component {
-            claim: *claim.jump_t_t_f[0],
-            interaction_claim: *interaction_claim.jump_t_t_f[0],
-            memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
-            memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-            opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-        };
-
-        OpcodeComponents {
-            generic: array![], ret: array![], jump_t_t_f: array![jump_t_t_f_opcode_component],
-        }
+        OpcodeComponents { generic: array![], ret: array![] }
     }
 
     fn mask_points(
@@ -869,16 +835,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
 
         for component in self.ret.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        };
-
-        for component in self.jump_t_t_f.span() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -925,18 +881,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
 
         for component in self.ret.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        };
-
-        for component in self.jump_t_t_f.span() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
