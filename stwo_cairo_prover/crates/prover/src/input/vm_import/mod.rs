@@ -24,10 +24,34 @@ use crate::input::memory::MemoryBuilder;
 pub enum VmImportError {
     #[error("IO error: {0}")]
     Io(#[from] IoErrorWithPath),
+    #[cfg(not(feature = "std"))]
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
+    #[cfg(feature = "std")]
+    #[error("JSON error: {0}")]
+    Json(#[from] sonic_rs::Error),
     #[error("No memory segments")]
     NoMemorySegments,
+}
+
+fn deserialize_inputs<'a>(
+    public_input_string: &'a str,
+    private_input_string: &'a str,
+) -> Result<(PublicInput<'a>, PrivateInput), VmImportError> {
+    #[cfg(feature = "std")]
+    {
+        Ok((
+            sonic_rs::from_str(public_input_string)?,
+            sonic_rs::from_str(private_input_string)?,
+        ))
+    }
+    #[cfg(not(feature = "std"))]
+    {
+        Ok((
+            serde_json::from_str(public_input_string)?,
+            serde_json::from_str(private_input_string)?,
+        ))
+    }
 }
 
 // TODO(Ohad): remove dev_mode after adding the rest of the instructions.
@@ -38,10 +62,13 @@ pub fn adapt_vm_output(
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
-    let public_input_string = read_to_string(public_input_json)?;
-    let public_input: PublicInput<'_> = serde_json::from_str(&public_input_string)?;
 
-    let private_input: PrivateInput = serde_json::from_reader(&open_file(private_input_json)?)?;
+    let (public_input_string, private_input_string) = (
+        read_to_string(public_input_json)?,
+        read_to_string(private_input_json)?,
+    );
+    let (public_input, private_input) =
+        deserialize_inputs(&public_input_string, &private_input_string)?;
 
     let end_addr = public_input
         .memory_segments
