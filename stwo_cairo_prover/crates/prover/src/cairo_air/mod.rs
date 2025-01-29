@@ -3,6 +3,7 @@ pub mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
 pub mod preprocessed;
+pub mod range_checks_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use debug_tools::track_cairo_relations;
