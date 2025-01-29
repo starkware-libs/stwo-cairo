@@ -24,8 +24,12 @@ use crate::input::memory::MemoryBuilder;
 pub enum VmImportError {
     #[error("IO error: {0}")]
     Io(#[from] IoErrorWithPath),
+    #[cfg(not(feature = "std"))]
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
+    #[cfg(feature = "std")]
+    #[error("JSON error: {0}")]
+    Json(#[from] sonic_rs::Error),
     #[error("No memory segments")]
     NoMemorySegments,
 }
@@ -39,9 +43,23 @@ pub fn adapt_vm_output(
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
     let public_input_string = read_to_string(public_input_json)?;
-    let public_input: PublicInput<'_> = serde_json::from_str(&public_input_string)?;
 
-    let private_input: PrivateInput = serde_json::from_reader(&open_file(private_input_json)?)?;
+    let (public_input, private_input): (PublicInput<'_>, PrivateInput) = {
+        #[cfg(feature = "std")]
+        {
+            (
+                sonic_rs::from_str(&public_input_string)?,
+                sonic_rs::from_str(&read_to_string(private_input_json)?)?,
+            )
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            (
+                serde_json::from_str(&public_input_string)?,
+                serde_json::from_reader(&open_file(private_input_json)?)?,
+            )
+        }
+    };
 
     let end_addr = public_input
         .memory_segments
