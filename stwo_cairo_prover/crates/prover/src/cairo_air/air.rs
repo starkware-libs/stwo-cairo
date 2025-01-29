@@ -361,10 +361,14 @@ pub struct CairoInteractionElements {
     pub memory_address_to_id: relations::MemoryAddressToId,
     pub memory_id_to_value: relations::MemoryIdToBig,
     pub range_check_11: relations::RangeCheck_11,
+    pub range_check_12: relations::RangeCheck_12,
+    pub range_check_18: relations::RangeCheck_18,
     pub range_check_19: relations::RangeCheck_19,
+    pub range_check_3_6: relations::RangeCheck_3_6,
+    pub range_check_4_3: relations::RangeCheck_4_3,
     pub range_check_9_9: relations::RangeCheck_9_9,
     pub range_check_7_2_5: relations::RangeCheck_7_2_5,
-    pub range_check_4_3: relations::RangeCheck_4_3,
+    pub range_check_3_6_6_3: relations::RangeCheck_3_6_6_3,
     // ...
 }
 impl CairoInteractionElements {
@@ -375,10 +379,14 @@ impl CairoInteractionElements {
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
             range_check_11: relations::RangeCheck_11::draw(channel),
+            range_check_12: relations::RangeCheck_12::draw(channel),
+            range_check_18: relations::RangeCheck_18::draw(channel),
             range_check_19: relations::RangeCheck_19::draw(channel),
+            range_check_3_6: relations::RangeCheck_3_6::draw(channel),
+            range_check_4_3: relations::RangeCheck_4_3::draw(channel),
             range_check_9_9: relations::RangeCheck_9_9::draw(channel),
             range_check_7_2_5: relations::RangeCheck_7_2_5::draw(channel),
-            range_check_4_3: relations::RangeCheck_4_3::draw(channel),
+            range_check_3_6_6_3: relations::RangeCheck_3_6_6_3::draw(channel),
         }
     }
 }
