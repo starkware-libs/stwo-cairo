@@ -5,7 +5,8 @@ use clap::Parser;
 use stwo_cairo_prover::adapter::plain::adapt_finished_runner;
 use stwo_cairo_prover::adapter::vm_import::VmImportError;
 use stwo_cairo_prover::cairo_air::{
-    prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
+    default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError,
+    ConfigBuilder, ProverParameters,
 };
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
@@ -75,13 +76,15 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         cairo_input.state_transitions.casm_states_by_opcode
     );
 
+    let ProverParameters { pcs_config } = default_prod_prover_parameters();
+
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config)?;
+    let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config, pcs_config)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof)?;
+        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
         log::info!("Proof verified successfully");
     }
 

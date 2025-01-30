@@ -13,8 +13,8 @@ std = ["dep:sonic-rs"]
 nightly = []
 
 [dependencies]
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
+stwo-air-utils-derive.workspace = true
+stwo-air-utils.workspace = true
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
 cairo-vm.workspace = true
