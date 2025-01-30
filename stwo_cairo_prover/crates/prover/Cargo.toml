@@ -30,6 +30,7 @@ stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+num_enum = "0.7.3"
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true

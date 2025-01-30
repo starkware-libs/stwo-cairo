@@ -1,4 +1,13 @@
+use num_enum::TryFromPrimitive;
 use stwo_prover::core::fields::m31::M31;
+
+#[derive(Clone, Debug, PartialEq, TryFromPrimitive)]
+#[repr(u64)]
+pub enum OpcodeExtension {
+    Stone = 0,
+    Blake = 1,
+    BlakeFinalize = 2,
+}
 
 #[derive(Clone, Debug)]
 pub struct Instruction {
@@ -20,9 +29,10 @@ pub struct Instruction {
     pub opcode_call: bool,
     pub opcode_ret: bool,
     pub opcode_assert_eq: bool,
+    pub opcode_extension: OpcodeExtension,
 }
 impl Instruction {
-    pub fn decode(mut encoded_instr: u64) -> Instruction {
+    pub fn decode(mut encoded_instr: u128) -> Instruction {
         let mut next_offset = || {
             let offset = (encoded_instr & 0xffff) as u16;
             encoded_instr >>= 16;
@@ -57,6 +67,8 @@ impl Instruction {
             opcode_call: next_bit(),
             opcode_ret: next_bit(),
             opcode_assert_eq: next_bit(),
+            opcode_extension: OpcodeExtension::try_from(encoded_instr as u64)
+                .expect("Invalid opcode extension"),
         }
     }
 }
@@ -70,7 +82,7 @@ impl Instruction {
 /// # Returns
 ///
 /// The Deconstructed instruction in the form of (offsets, flags): ([M31;3], [M31;15]).
-pub fn deconstruct_instruction(mut encoded_instr: u64) -> ([M31; 3], [M31; 15]) {
+pub fn deconstruct_instruction(mut encoded_instr: u128) -> ([M31; 3], [M31; 15], M31) {
     let mut next_offset = || {
         let offset = (encoded_instr & 0xffff) as u16;
         encoded_instr >>= 16;
@@ -85,7 +97,9 @@ pub fn deconstruct_instruction(mut encoded_instr: u64) -> ([M31; 3], [M31; 15]) 
     };
     let flags = std::array::from_fn(|_| M31(next_bit() as u32));
 
-    (offsets, flags)
+    let opcode_extension = M31(encoded_instr as u32);
+
+    (offsets, flags, opcode_extension)
 }
 
 #[cfg(test)]
@@ -93,16 +107,17 @@ mod tests {
     use stwo_prover::core::fields::m31::M31;
 
     use crate::input::decode::deconstruct_instruction;
-
     #[test]
     fn test_deconstruct_instruction() {
-        let encoded_instr = 0b0010101010101010000000000000000100000000000000110000000000000111;
+        let encoded_instr = 0b10010101010101010000000000000000100000000000000110000000000000111;
+        let expected_opcode_extension = M31(2);
         let expected_flags = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0].map(M31);
         let expected_offsets = [7, 3, 1].map(M31);
 
-        let (offsets, flags) = deconstruct_instruction(encoded_instr);
+        let (offsets, flags, opcode_extension) = deconstruct_instruction(encoded_instr);
 
         assert_eq!(offsets, expected_offsets);
         assert_eq!(flags, expected_flags);
+        assert_eq!(opcode_extension, expected_opcode_extension);
     }
 }
