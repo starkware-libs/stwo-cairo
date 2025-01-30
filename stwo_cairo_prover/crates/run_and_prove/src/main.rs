@@ -76,7 +76,10 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         cairo_input.state_transitions.casm_states_by_opcode
     );
 
-    let ProverParameters { channel_hash: _, pcs_config } = default_prod_prover_parameters();
+    let ProverParameters {
+        channel_hash: _,
+        pcs_config,
+    } = default_prod_prover_parameters();
 
     // TODO(Ohad): Propagate hash from CLI args.
     let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config, pcs_config)?;

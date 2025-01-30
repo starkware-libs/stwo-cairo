@@ -10,6 +10,8 @@ dependencies = [
  "log",
  "serde",
  "serde_json",
+ "starknet-ff",
+ "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
