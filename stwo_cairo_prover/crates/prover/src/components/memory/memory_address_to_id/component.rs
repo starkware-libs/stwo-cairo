@@ -15,19 +15,20 @@ use crate::relations;
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
 /// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
 ///
-/// 1. The ID and Multiplicity vectors are split to 'N_SPLIT_CHUNKS' chunks of size
-///    `ids.len()`/`N_SPLIT_CHUNKS`.
+/// 1. The ID and Multiplicity vectors are split to 'MEMORY_ADDRESS_TO_ID_SPLIT' chunks of size
+///    `ids.len()`/`MEMORY_ADDRESS_TO_ID_SPLIT`.
 /// 2. The chunks are padded with 0s to the next power of 2.
 ///
 /// #  Example
-/// ID = [id0..id10], N_SPLIT_CHUNKS = 4:
+/// ID = [id0..id10], MEMORY_ADDRESS_TO_ID_SPLIT = 4:
 /// ID0 = [id0, id1, id2, 0]
 /// ID1 = [id3, id4, id5, 0]
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
-pub(super) const N_SPLIT_CHUNKS: usize = 8;
+pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
 pub(super) const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
-pub(super) const N_TRACE_COLUMNS: usize = N_SPLIT_CHUNKS * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+pub(super) const N_TRACE_COLUMNS: usize =
+    MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
 pub type Component = FrameworkComponent<Eval>;
 
@@ -63,7 +64,7 @@ impl FrameworkEval for Eval {
         // Addresses are offseted by 1, as 0 address is reserved.
         let seq_plus_one =
             eval.get_preprocessed_column(Seq::new(self.log_size()).id()) + E::F::from(M31(1));
-        for i in 0..N_SPLIT_CHUNKS {
+        for i in 0..MEMORY_ADDRESS_TO_ID_SPLIT {
             let id = eval.next_trace_mask();
             let multiplicity = eval.next_trace_mask();
             let address =
@@ -89,7 +90,7 @@ impl Claim {
         let preprocessed_log_sizes = vec![self.log_size];
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes =
-            vec![self.log_size; SECURE_EXTENSION_DEGREE * N_SPLIT_CHUNKS.div_ceil(2)];
+            vec![self.log_size; SECURE_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2)];
         TreeVec::new(vec![
             preprocessed_log_sizes,
             trace_log_sizes,
