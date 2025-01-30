@@ -112,7 +112,7 @@ fn write_trace_simd(
         .enumerate()
         .zip(lookup_data.par_iter_mut())
         .for_each(|((row_index, row), lookup_data)| {
-            let seq = PreProcessedColumn::Seq(Seq::new(log_size)).packed_at(row_index);
+            let seq = Seq::new(log_size).packed_at(row_index);
 
             // Read Positive Num Bits 128.
 
