@@ -341,8 +341,6 @@ impl InteractionClaimGenerator {
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
 
-        InteractionClaim {
-            logup_sums: (claimed_sum, None),
-        }
+        InteractionClaim { claimed_sum }
     }
 }

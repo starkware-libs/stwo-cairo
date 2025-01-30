@@ -144,8 +144,7 @@ impl PublicData {
             &self.initial_state.values(),
         ));
 
-        let mut inverted_values = vec![QM31::zero(); values_to_inverse.len()];
-        QM31::batch_inverse(&values_to_inverse, &mut inverted_values);
+        let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
     }
 }
@@ -450,7 +449,7 @@ impl CairoComponents {
                     .rc_7_2_5
                     .clone(),
             },
-            (interaction_claim.verify_instruction.claimed_sum, None),
+            interaction_claim.verify_instruction.claimed_sum,
         );
         let builtin_components = BuiltinComponents::new(
             tree_span_provider,
@@ -464,10 +463,7 @@ impl CairoComponents {
                 cairo_claim.memory_address_to_id.clone(),
                 interaction_elements.memory_address_to_id.clone(),
             ),
-            (
-                interaction_claim.memory_address_to_id.clone().claimed_sum,
-                None,
-            ),
+            interaction_claim.memory_address_to_id.clone().claimed_sum,
         );
         let memory_id_to_value_component = memory_id_to_big::BigComponent::new(
             tree_span_provider,
@@ -476,10 +472,7 @@ impl CairoComponents {
                 interaction_elements.memory_id_to_value.clone(),
                 interaction_elements.range_checks.rc_9_9.clone(),
             ),
-            (
-                interaction_claim.memory_id_to_value.clone().big_claimed_sum,
-                None,
-            ),
+            interaction_claim.memory_id_to_value.clone().big_claimed_sum,
         );
         let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
             tree_span_provider,
@@ -488,13 +481,10 @@ impl CairoComponents {
                 interaction_elements.memory_id_to_value.clone(),
                 interaction_elements.range_checks.rc_9_9.clone(),
             ),
-            (
-                interaction_claim
-                    .memory_id_to_value
-                    .clone()
-                    .small_claimed_sum,
-                None,
-            ),
+            interaction_claim
+                .memory_id_to_value
+                .clone()
+                .small_claimed_sum,
         );
         let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
