@@ -25,7 +25,8 @@ use crate::relations;
 /// ID1 = [id3, id4, id5, 0]
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
-pub(super) const N_SPLIT_CHUNKS: usize = 8;
+pub const LOG_ADDRESS_TO_ID_N_SPLIT_CHUNKS: u32 = 3;
+pub(super) const N_SPLIT_CHUNKS: usize = 1 << LOG_ADDRESS_TO_ID_N_SPLIT_CHUNKS;
 pub(super) const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub(super) const N_TRACE_COLUMNS: usize = N_SPLIT_CHUNKS * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 

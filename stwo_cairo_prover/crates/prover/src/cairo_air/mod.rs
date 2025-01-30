@@ -21,6 +21,8 @@ use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
 use thiserror::Error;
 use tracing::{span, Level};
 
+use crate::components::memory::LOG_MEMORY_ADDRESS_BOUND;
+use crate::components::memory_address_to_id::component::LOG_ADDRESS_TO_ID_N_SPLIT_CHUNKS;
 use crate::input::ProverInput;
 
 // TODO(Ohad): decide dynamically.
@@ -126,8 +128,15 @@ pub fn verify_cairo<MC: MerkleChannel>(
         stark_proof,
     }: CairoProof<MC::H>,
 ) -> Result<(), CairoVerificationError> {
-    // Verify.
-    // TODO(Ohad): Propogate config from CLI args.
+    // Auxiliary verifications.
+    // Assert that ADDR->ID component does not overflow.
+    assert!(
+        claim.memory_address_to_id.log_size
+            <= LOG_MEMORY_ADDRESS_BOUND - LOG_ADDRESS_TO_ID_N_SPLIT_CHUNKS
+    );
+
+    // Setup STARK protocol.
+    // TODO(Ohad): Propagate config from CLI args.
     let config = PcsConfig {
         pow_bits: 0,
         fri_config: FriConfig {
@@ -147,6 +156,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
     claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
     let interaction_elements = CairoInteractionElements::draw(channel);
+
+    // Verify lookup argument.
     if lookup_sum(&claim, &interaction_elements, &interaction_claim) != SecureField::zero() {
         return Err(CairoVerificationError::InvalidLogupSum);
     }
@@ -157,6 +168,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
     let components = component_generator.components();
 
+    // Verify stark.
     verify(
         &components,
         channel,
