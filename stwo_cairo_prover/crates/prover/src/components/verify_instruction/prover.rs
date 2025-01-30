@@ -48,13 +48,13 @@ const N_TRACE_COLUMNS: usize = 28 + N_MULTIPLICITY_COLUMNS;
 #[derive(Default)]
 pub struct ClaimGenerator {
     /// pc -> encoded instruction.
-    instructions: HashMap<M31, u64>,
+    instructions: HashMap<M31, u128>,
 
     /// pc -> multiplicity.
     multiplicities: HashMap<M31, AtomicU32>,
 }
 impl ClaimGenerator {
-    pub fn new(instructions: HashMap<M31, u64>) -> Self {
+    pub fn new(instructions: HashMap<M31, u128>) -> Self {
         let keys = instructions.keys().copied();
         let mut multiplicities = HashMap::with_capacity(keys.len());
         multiplicities.extend(keys.zip(std::iter::repeat_with(|| AtomicU32::new(0))));
@@ -76,11 +76,12 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        // TODO: use opcode_extension as it is used in stwo-air-cairo.
         let (mut inputs, mut mults) = self
             .multiplicities
             .into_iter()
             .map(|(pc, multiplicity)| {
-                let (offsets, flags) =
+                let (offsets, flags, _opcode_extension) =
                     deconstruct_instruction(*self.instructions.get(&pc).unwrap());
                 let multiplicity = M31(multiplicity.into_inner());
                 ((pc, offsets, flags), multiplicity)
