@@ -5,7 +5,7 @@ use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_prover::core::fields::m31::M31;
 
-use super::decode::Instruction;
+use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
@@ -49,6 +49,7 @@ pub struct CasmStatesByOpcode {
     pub mul_opcode: Vec<CasmState>,
     pub mul_opcode_imm: Vec<CasmState>,
     pub ret_opcode: Vec<CasmState>,
+    pub blake2s_opcode: Vec<CasmState>,
 }
 
 impl CasmStatesByOpcode {
@@ -114,6 +115,7 @@ impl CasmStatesByOpcode {
             ("mul_opcode".to_string(), self.mul_opcode.len()),
             ("mul_opcode_imm".to_string(), self.mul_opcode_imm.len()),
             ("ret_opcode".to_string(), self.ret_opcode.len()),
+            ("blake2s_opcode".to_string(), self.blake2s_opcode.len()),
         ]
     }
 }
@@ -160,7 +162,7 @@ impl StateTransitions {
     pub fn from_iter(
         iter: impl Iterator<Item = TraceEntry>,
         memory: &mut MemoryBuilder,
-    ) -> (Self, HashMap<M31, u64>) {
+    ) -> (Self, HashMap<M31, u128>) {
         let mut res = Self::default();
         let mut instruction_by_pc = HashMap::new();
         let mut iter = iter.peekable();
@@ -187,7 +189,7 @@ impl StateTransitions {
         &mut self,
         memory: &mut MemoryBuilder,
         state: CasmState,
-        instruction_by_pc: &mut HashMap<M31, u64>,
+        instruction_by_pc: &mut HashMap<M31, u128>,
     ) {
         let CasmState { ap, fp, pc } = state;
         let encoded_instruction = memory.get_inst(pc.0);
@@ -215,6 +217,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: true,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => self.casm_states_by_opcode.ret_opcode.push(state),
 
             // add ap.
@@ -237,6 +240,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if op_1_imm {
                     // ap += Imm.
@@ -274,6 +278,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if op_1_imm {
                     // jump rel imm.
@@ -334,6 +339,7 @@ impl StateTransitions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if pc_update_jump_rel {
                     // call rel imm.
@@ -378,6 +384,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
@@ -423,6 +430,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if op_1_imm {
                     // [ap/fp + offset0] = imm.
@@ -466,6 +474,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 let (op0_addr, op_1_addr) = (
                     if op0_base_fp { fp } else { ap },
@@ -522,6 +531,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 let (dst_addr, op0_addr, op_1_addr) = (
                     if dst_base_fp { fp } else { ap },
@@ -558,8 +568,40 @@ impl StateTransitions {
                 }
             }
 
+            // Blake.
+            Instruction {
+                offset0: _,
+                offset1: _,
+                offset2: _,
+                dst_base_fp: _,
+                op0_base_fp: _,
+                op_1_imm: false,
+                op_1_base_fp,
+                op_1_base_ap,
+                res_add: false,
+                res_mul: false,
+                pc_update_jump: false,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: _,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Blake | OpcodeExtension::BlakeFinalize,
+            } => {
+                assert!(
+                    op_1_base_fp ^ op_1_base_ap,
+                    "Blake opcode requires exactly one of op_1_base_fp and op_1_base_ap to be true"
+                );
+                self.casm_states_by_opcode.blake2s_opcode.push(state);
+            }
+
             // generic opcode.
             _ => {
+                if !matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
+                    panic!("`generic_opcode` component supports `Stone` opcodes only.");
+                }
                 self.casm_states_by_opcode.generic_opcode.push(state);
             }
         }
@@ -598,8 +640,10 @@ mod mappings_tests {
     use cairo_lang_casm::casm;
 
     use super::*;
+    use crate::input::decode::{Instruction, OpcodeExtension};
     use crate::input::memory::*;
     use crate::input::plain::input_from_plain_casm;
+    use crate::input::vm_import::TraceEntry;
 
     #[test]
     fn test_jmp_rel() {
@@ -933,5 +977,29 @@ mod mappings_tests {
         let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.assert_eq_opcode_double_deref.len(), 1);
+    }
+
+    #[test]
+    fn test_blake_finalize() {
+        let encoded_blake_finalize_inst =
+            0b10000000000001011011111111111110101111111111111000111111111111011;
+        let x = u128_to_4_limbs(encoded_blake_finalize_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let instruction = Instruction::decode(memory_builder.get_inst(1));
+        let trace_entry = TraceEntry {
+            ap: 1,
+            fp: 1,
+            pc: 1,
+        };
+        let (state_transitions, _) =
+            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
+
+        matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
+        assert_eq!(
+            state_transitions.casm_states_by_opcode.blake2s_opcode.len(),
+            1
+        );
     }
 }
