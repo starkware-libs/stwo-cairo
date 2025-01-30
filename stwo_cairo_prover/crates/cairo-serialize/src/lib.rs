@@ -4,7 +4,7 @@ pub use stwo_cairo_serialize_derive::CairoSerialize;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fri::{FriLayerProof, FriProof};
-use stwo_prover::core::pcs::CommitmentSchemeProof;
+use stwo_prover::core::pcs::{CommitmentSchemeProof, PcsConfig};
 use stwo_prover::core::poly::line::LinePoly;
 use stwo_prover::core::prover::StarkProof;
 use stwo_prover::core::vcs::ops::MerkleHasher;
@@ -116,6 +116,7 @@ where
             queried_values,
             proof_of_work,
             fri_proof,
+            config,
         } = self;
         commitments.serialize(output);
         sampled_values.serialize(output);
@@ -123,6 +124,7 @@ where
         queried_values.serialize(output);
         output.push((*proof_of_work).into());
         fri_proof.serialize(output);
+        config.serialize(output);
     }
 }
 
@@ -181,5 +183,14 @@ impl<T0: CairoSerialize, T1: CairoSerialize, T2: CairoSerialize> CairoSerialize 
         v0.serialize(output);
         v1.serialize(output);
         v2.serialize(output);
+    }
+}
+
+impl CairoSerialize for PcsConfig {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        output.push((self.pow_bits).into());
+        output.push((self.fri_config.log_blowup_factor).into());
+        output.push((self.fri_config.log_last_layer_degree_bound).into());
+        output.push((self.fri_config.n_queries).into());
     }
 }
