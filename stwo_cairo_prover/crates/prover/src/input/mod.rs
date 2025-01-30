@@ -20,7 +20,7 @@ pub const N_REGISTERS: usize = 3;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
-    pub instruction_by_pc: HashMap<M31, u64>,
+    pub instruction_by_pc: HashMap<M31, u128>,
     pub memory: Memory,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
