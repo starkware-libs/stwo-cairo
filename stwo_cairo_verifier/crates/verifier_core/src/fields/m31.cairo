@@ -13,6 +13,12 @@ pub struct M31 {
     pub inner: M31InnerT,
 }
 
+impl M31IntoU32 of Into<M31, u32> {
+    fn into(self: M31) -> u32 {
+        upcast(self.inner)
+    }
+}
+
 pub impl M31InvertibleImpl of Invertible<M31> {
     fn inverse(self: M31) -> M31 {
         assert!(self.is_non_zero());

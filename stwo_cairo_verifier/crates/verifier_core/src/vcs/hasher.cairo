@@ -1,4 +1,5 @@
 use core::array::ArrayTrait;
+use core::blake::blake2s_compress;
 use core::hash::HashStateTrait;
 use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
 use crate::BaseField;
@@ -95,6 +96,75 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         }
 
         poseidon_hash_span(hash_array.span())
+    }
+}
+
+
+fn concat_blakes(l: Box<[u32; 8]>, r: Box<[u32; 8]>) -> Box<[u32; 16]> {
+    let [l0, l1, l2, l3, l4, l5, l6, l7] = l.unbox();
+    let [r0, r1, r2, r3, r4, r5, r6, r7] = r.unbox();
+    BoxTrait::new([l0, l1, l2, l3, l4, l5, l6, l7, r0, r1, r2, r3, r4, r5, r6, r7])
+}
+
+
+pub impl Blake2sMerkleHasher of MerkleHasher {
+    type Hash = Box<[u32; 8]>;
+
+    fn hash_node(
+        children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
+    ) -> Self::Hash {
+        let mut state = BoxTrait::new([0_u32; 8]);
+        let byte_count = 0;
+
+        if let Option::Some((x, y)) = children_hashes {
+            state = blake2s_compress(state, byte_count, concat_blakes(x, y));
+            // Most often a node has no column values.
+            if column_values.len() == 0 {
+                return state;
+            }
+        } else {
+            // Most often a single QM31 column commitment due to FRI.
+            // TODO(andrew): Implement non-mixed degree merkle for FRI decommitments.
+            if let Option::Some(values) = column_values.try_into() {
+                let [v0, v1, v2, v3]: [BaseField; 4] = (*values).unbox();
+                let msg: Box::<[u32; 16]> = BoxTrait::new(
+                    [
+                        v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0,
+                    ],
+                );
+                return blake2s_compress(state, byte_count, msg);
+            }
+        }
+
+        // functionality here to do all packing and hashing in a single pass.
+        while let Option::Some(values) = column_values.multi_pop_front::<16>() {
+            let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
+                .unbox();
+            let msg: Box<[u32; 16]> = BoxTrait::new(
+                [
+                    v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(),
+                    v7.into(), v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(),
+                    v14.into(), v15.into(),
+                ],
+            );
+            state = blake2s_compress(state, byte_count, msg);
+        };
+
+        if !column_values.is_empty() {
+            let mut arr: Array<u32> = array![];
+            for value in column_values {
+                arr.append((*value).into());
+            };
+
+            for _ in arr.len()..16 {
+                arr.append(0);
+            };
+
+            state = blake2s_compress(state, byte_count, *arr.span().try_into().unwrap());
+        }
+
+        state
     }
 }
 
