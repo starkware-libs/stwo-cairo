@@ -10,6 +10,7 @@ use stwo_cairo_prover::cairo_air::{
 };
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
+use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use thiserror::Error;
