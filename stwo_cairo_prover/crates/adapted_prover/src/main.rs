@@ -19,6 +19,16 @@ use tracing::{span, Level};
 ///     cargo run -r --bin adapted_stwo -- --pub_json absolute/path/to/pub.json
 ///     --priv_json absolute/path/to/priv.json --proof_path path/to/proof
 ///     ```
+///
+/// For optimal performance compile with:
+///     ```
+///   RUSTFLAGS="-C target-cpu=native -C opt-level=3"
+///     ```
+///
+/// Standard library features is off by default, to enable it, further improving performance, use:
+///     ```
+///     --features=std
+///     ```
 #[derive(Parser, Debug)]
 struct Args {
     #[structopt(long = "pub_json")]
