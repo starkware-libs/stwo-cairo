@@ -115,7 +115,7 @@ fn write_trace_simd(
     let M31_32769 = PackedM31::broadcast(M31::from(32769));
     let M31_511 = PackedM31::broadcast(M31::from(511));
     let M31_512 = PackedM31::broadcast(M31::from(512));
-    let padding = Enabler::new(n_rows);
+    let padding_col = Enabler::new(n_rows);
 
     trace
         .par_iter_mut()
@@ -239,7 +239,7 @@ fn write_trace_simd(
                             - ((M31_134217728) * (mid_limbs_set_col5)))),
                     input_fp_col2,
                 ];
-                *row[9] = padding.packed_at(row_index);
+                *row[9] = padding_col.packed_at(row_index);
 
                 // Add sub-components inputs.
                 verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
@@ -277,7 +277,7 @@ impl InteractionClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
-        let padding = Enabler::new(self.n_rows);
+        let padding_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         // Sum logup terms in pairs.
@@ -303,7 +303,11 @@ impl InteractionClaimGenerator {
         {
             let denom0: PackedQM31 = memory_id_to_big.combine(values0);
             let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(i, denom0 * padding.packed_at(i) + denom1, denom0 * denom1);
+            col_gen.write_frac(
+                i,
+                denom0 * padding_col.packed_at(i) + denom1,
+                denom0 * denom1,
+            );
         }
         col_gen.finalize_col();
 
@@ -311,7 +315,7 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         for (i, values) in self.lookup_data.opcodes_1.iter().enumerate() {
             let denom = opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one() * padding.packed_at(i), denom);
+            col_gen.write_frac(i, -PackedQM31::one() * padding_col.packed_at(i), denom);
         }
         col_gen.finalize_col();
 
