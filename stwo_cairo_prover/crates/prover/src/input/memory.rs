@@ -54,13 +54,14 @@ impl Default for MemoryConfig {
 pub struct Memory {
     pub config: MemoryConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
-    pub inst_cache: HashMap<u32, u64>,
+    pub inst_cache: HashMap<u32, u128>,
     pub f252_values: Vec<[u32; 8]>,
     pub small_values: Vec<u128>,
 }
 impl Memory {
     pub fn get(&self, addr: u32) -> MemoryValue {
         match self.address_to_id[addr as usize].decode() {
+            //
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
         }
@@ -70,7 +71,7 @@ impl Memory {
         self.address_to_id[addr as usize].0
     }
 
-    pub fn get_inst(&self, addr: u32) -> Option<u64> {
+    pub fn get_inst(&self, addr: u32) -> Option<u128> {
         self.inst_cache.get(&addr).copied()
     }
 
@@ -133,12 +134,12 @@ impl MemoryBuilder {
         builder
     }
 
-    pub fn get_inst(&mut self, addr: u32) -> u64 {
+    pub fn get_inst(&mut self, addr: u32) -> u128 {
         let mut inst_cache = std::mem::take(&mut self.inst_cache);
         let res = *inst_cache.entry(addr).or_insert_with(|| {
             let value = self.memory.get(addr).as_u256();
             assert_eq!(value[2..8], [0; 6]);
-            value[0] as u64 | ((value[1] as u64) << 32)
+            value[0] as u128 | ((value[1] as u128) << 32) | ((value[2] as u128) << 64)
         });
         self.inst_cache = inst_cache;
         res
