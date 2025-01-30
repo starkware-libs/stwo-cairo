@@ -5,7 +5,7 @@ use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
 use stwo_prover::core::fields::m31::M31;
 
-use super::decode::Instruction;
+use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::TraceEntry;
 
@@ -49,6 +49,7 @@ pub struct CasmStatesByOpcode {
     pub mul_opcode: Vec<CasmState>,
     pub mul_opcode_imm: Vec<CasmState>,
     pub ret_opcode: Vec<CasmState>,
+    pub blake2s_opcode: Vec<CasmState>,
 }
 
 impl CasmStatesByOpcode {
@@ -96,6 +97,7 @@ impl CasmStatesByOpcode {
             ("mul_opcode", self.mul_opcode.len()),
             ("mul_opcode_imm", self.mul_opcode_imm.len()),
             ("ret_opcode", self.ret_opcode.len()),
+            ("blake2s_opcode", self.blake2s_opcode.len()),
         ]
     }
 }
@@ -143,7 +145,7 @@ impl StateTransitions {
         iter: impl Iterator<Item = TraceEntry>,
         memory: &mut MemoryBuilder,
         dev_mode: bool,
-    ) -> (Self, HashMap<M31, u64>) {
+    ) -> (Self, HashMap<M31, u128>) {
         let mut res = Self::default();
         let mut instruction_by_pc = HashMap::new();
         let mut iter = iter.peekable();
@@ -172,7 +174,7 @@ impl StateTransitions {
         memory: &mut MemoryBuilder,
         state: CasmState,
         dev_mode: bool,
-        instruction_by_pc: &mut HashMap<M31, u64>,
+        instruction_by_pc: &mut HashMap<M31, u128>,
     ) {
         let CasmState { ap, fp, pc } = state;
         let encoded_instruction = memory.get_inst(pc.0);
@@ -200,6 +202,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: true,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => self.casm_states_by_opcode.ret_opcode.push(state),
 
             // add ap.
@@ -222,6 +225,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if op_1_imm {
                     // ap += Imm.
@@ -259,6 +263,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if op_1_imm {
                     // jump rel imm.
@@ -319,6 +324,7 @@ impl StateTransitions {
                 opcode_call: true,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if pc_update_jump_rel {
                     // call rel imm.
@@ -363,6 +369,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
@@ -408,6 +415,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 if op_1_imm {
                     // [ap/fp + offset0] = imm.
@@ -451,6 +459,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 let (op0_addr, op_1_addr) = (
                     if op0_base_fp { fp } else { ap },
@@ -511,6 +520,7 @@ impl StateTransitions {
                 opcode_call: false,
                 opcode_ret: false,
                 opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::Stone,
             } => {
                 let (dst_addr, op0_addr, op_1_addr) = (
                     if dst_base_fp { fp } else { ap },
@@ -547,8 +557,39 @@ impl StateTransitions {
                 }
             }
 
+            // blake2s.
+            Instruction {
+                offset0: _,
+                offset1: _,
+                offset2: _,
+                dst_base_fp: _,
+                op0_base_fp: _,
+                op_1_imm: false,
+                op_1_base_fp,
+                op_1_base_ap,
+                res_add: false,
+                res_mul: false,
+                pc_update_jump: false,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: _,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Blake | OpcodeExtension::BlakeFinalize,
+            } => {
+                assert!(op_1_base_fp ^ op_1_base_ap);
+                self.casm_states_by_opcode.blake2s_opcode.push(state);
+            }
+
             // generic opcode.
             _ => {
+                assert_eq!(
+                    instruction.opcode_extension,
+                    OpcodeExtension::Stone,
+                    "Generic opcode component can prove only Stone opcodes"
+                );
                 self.casm_states_by_opcode.generic_opcode.push(state);
             }
         }
