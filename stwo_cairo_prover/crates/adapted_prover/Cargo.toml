@@ -16,3 +16,5 @@ stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 serde.workspace = true
+stwo-cairo-serialize.workspace = true
+starknet-ff.workspace = true

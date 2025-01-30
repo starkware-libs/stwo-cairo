@@ -7,6 +7,7 @@ use stwo_prover::core::fri::{FriConfig, FriLayerProof, FriProof};
 use stwo_prover::core::pcs::{CommitmentSchemeProof, PcsConfig};
 use stwo_prover::core::poly::line::LinePoly;
 use stwo_prover::core::prover::StarkProof;
+use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::prover::MerkleDecommitment;
 
@@ -207,5 +208,14 @@ impl<T0: CairoSerialize, T1: CairoSerialize, T2: CairoSerialize> CairoSerialize 
         v0.serialize(output);
         v1.serialize(output);
         v2.serialize(output);
+    }
+}
+
+impl CairoSerialize for Blake2sHash {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        // Serialize as u256 { lo: u128, hi: u128 }
+        // TODO: is this a desired Cairo type for hash digest?
+        output.push(FieldElement::from_byte_slice_be(&self.0[16..]).unwrap());
+        output.push(FieldElement::from_byte_slice_be(&self.0[..16]).unwrap());
     }
 }
