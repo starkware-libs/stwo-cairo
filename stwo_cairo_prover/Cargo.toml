@@ -39,6 +39,8 @@ stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad", features = [
     "parallel",
 ], default-features = false }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
 thiserror = { version = "2.0.10", default-features = false }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
