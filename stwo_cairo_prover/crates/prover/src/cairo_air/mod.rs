@@ -9,12 +9,12 @@ use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElem
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
+use serde::{Deserialize, Serialize};
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fri::FriConfig;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
@@ -34,29 +34,23 @@ pub fn prove_cairo<MC: MerkleChannel>(
         track_relations,
         display_components,
     }: ProverConfig,
+    pcs_config: PcsConfig,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
-    // TODO(Ohad): Propogate config from CLI args.
-    let config = PcsConfig {
-        pow_bits: 0,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 2,
-            log_blowup_factor: 1,
-            n_queries: 15,
-        },
-    };
+
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
+        CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
             .circle_domain()
             .half_coset,
     );
 
     // Setup protocol.
     let channel = &mut MC::C::default();
-    let mut commitment_scheme = CommitmentSchemeProver::<SimdBackend, MC>::new(config, &twiddles);
+    let mut commitment_scheme =
+        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
@@ -123,6 +117,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         interaction_claim,
         stark_proof,
     }: CairoProof<MC::H>,
+    pcs_config: PcsConfig,
 ) -> Result<(), CairoVerificationError> {
     // Auxiliary verifications.
     // Assert that ADDRESS->ID component does not overflow.
@@ -131,18 +126,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
             <= (1 << LOG_MEMORY_ADDRESS_BOUND)
     );
 
-    // Setup STARK protocol.
-    // TODO(Ohad): Propagate config from CLI args.
-    let config = PcsConfig {
-        pow_bits: 0,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 2,
-            log_blowup_factor: 1,
-            n_queries: 15,
-        },
-    };
     let channel = &mut MC::C::default();
-    let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(config);
+    let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
     let log_sizes = claim.log_sizes();
 
@@ -215,6 +200,14 @@ impl ConfigBuilder {
     }
 }
 
+/// Concrete parameters of the proving system.
+/// Used both for producing and verifying proofs.
+#[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct ProverParameters {
+    /// Parameters of the commitment scheme.
+    pub pcs_config: PcsConfig,
+}
+
 #[derive(Error, Debug)]
 pub enum CairoVerificationError {
     #[error("Invalid logup sum")]
@@ -226,6 +219,7 @@ pub enum CairoVerificationError {
 #[cfg(test)]
 pub mod tests {
     use cairo_lang_casm::casm;
+    use stwo_prover::core::pcs::PcsConfig;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::ProverConfig;
@@ -267,8 +261,10 @@ pub mod tests {
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(test_input(), test_cfg()).unwrap();
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        let cairo_proof =
+            prove_cairo::<Blake2sMerkleChannel>(test_input(), test_cfg(), PcsConfig::default())
+                .unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
     }
 
     #[cfg(feature = "slow-tests")]
@@ -285,21 +281,29 @@ pub mod tests {
 
         #[test]
         fn generate_and_serialise_proof() {
-            let cairo_proof =
-                prove_cairo::<Poseidon252MerkleChannel>(test_input(), test_cfg()).unwrap();
+            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
+                test_input(),
+                test_cfg(),
+                PcsConfig::default(),
+            )
+            .unwrap();
             let mut output = Vec::new();
             CairoSerialize::serialize(&cairo_proof, &mut output);
             let proof_str = output.iter().map(|v| v.to_string()).join(",");
             let mut file = std::fs::File::create("proof.cairo").unwrap();
             file.write_all(proof_str.as_bytes()).unwrap();
-            verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
+            verify_cairo::<Poseidon252MerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
         }
 
         #[test]
         fn test_full_cairo_air() {
-            let cairo_proof =
-                prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), test_cfg()).unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                small_cairo_input(),
+                test_cfg(),
+                PcsConfig::default(),
+            )
+            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
         }
     }
 }

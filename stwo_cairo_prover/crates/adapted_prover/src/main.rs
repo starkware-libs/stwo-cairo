@@ -3,11 +3,13 @@ use std::process::ExitCode;
 
 use clap::Parser;
 use stwo_cairo_prover::cairo_air::{
-    prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
+    prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder, ProverParameters,
 };
 use stwo_cairo_prover::input::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::input::ProverInput;
 use stwo_cairo_utils::binary_utils::run_binary;
+use stwo_prover::core::fri::FriConfig;
+use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use thiserror::Error;
@@ -29,12 +31,32 @@ use tracing::{span, Level};
 ///     ```
 ///     --features=std
 ///     ```
+///
+/// Default parameters are chosen to ensure 96 bits of security.
+/// Use the `--params_json` flag to specify path to the parameters file.
+/// The expected JSON format is:
+///
+///     ```json
+///     {
+///         "pcs_config": {
+///             "pow_bits": 26,
+///             "fri_config": {
+///                 "log_last_layer_degree_bound": 0,
+///                 "log_blowup_factor": 1,
+///                 "n_queries": 70
+///             }
+///         }
+///     }
+///     ```
 #[derive(Parser, Debug)]
 struct Args {
     #[structopt(long = "pub_json")]
     pub_json: PathBuf,
     #[structopt(long = "priv_json")]
     priv_json: PathBuf,
+    /// The path to the JSON file containing the prover parameters (optional).
+    #[structopt(long = "params_json")]
+    params_json: Option<PathBuf>,
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
@@ -83,15 +105,37 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         vm_output.state_transitions.casm_states_by_opcode
     );
 
+    let ProverParameters { pcs_config } = match args.params_json {
+        Some(path) => serde_json::from_str(&std::fs::read_to_string(path)?)?,
+        None => default_parameters(),
+    };
+
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config)?;
+    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof)?;
+        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
         log::info!("Proof verified successfully");
     }
 
     Ok(())
+}
+
+/// The default prover parameters (96 bits of security).
+pub fn default_parameters() -> ProverParameters {
+    ProverParameters {
+        pcs_config: PcsConfig {
+            // Stay within 500ms on M3
+            pow_bits: 26,
+            fri_config: FriConfig {
+                // Does not improve proof size much.
+                log_last_layer_degree_bound: 0,
+                // Blowup factor > 1 significantly degrades proving speed.
+                log_blowup_factor: 1,
+                n_queries: 70,
+            },
+        },
+    }
 }
