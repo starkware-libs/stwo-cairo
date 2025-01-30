@@ -9,6 +9,7 @@ use stwo_cairo_prover::input::plain::adapt_finished_runner;
 use stwo_cairo_prover::input::vm_import::VmImportError;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
+use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use thiserror::Error;
@@ -76,12 +77,13 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     );
 
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config)?;
+    let proof =
+        prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config, PcsConfig::default())?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof)?;
+        verify_cairo::<Blake2sMerkleChannel>(proof, PcsConfig::default())?;
         log::info!("Proof verified successfully");
     }
 

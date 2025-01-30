@@ -639,37 +639,43 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 mod mappings_tests {
 
     use cairo_lang_casm::casm;
-    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::*;
-    use crate::cairo_air::tests::{test_cfg, test_input};
-    use crate::cairo_air::{prove_cairo, verify_cairo};
     use crate::input::decode::{Instruction, OpcodeExtension};
     use crate::input::memory::*;
     use crate::input::plain::input_from_plain_casm;
 
-    #[test]
     #[cfg(feature = "slow-tests")]
-    fn test_prove_verify_all_opcode_components() {
-        let input = test_input("test_prove_verify_all_components");
-        for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
-            // TODO(Stav): Remove when `Blake` opcode is in the VM.
-            if opcode == "blake2s_opcode" {
-                continue;
-            }
+    mod slow_tests {
+        use stwo_prover::core::pcs::PcsConfig;
+        use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-            assert!(
-                n_instances > 0,
-                "{} isn't used in E2E full-Cairo opcode test",
-                opcode
-            );
+        use crate::cairo_air::tests::{test_cfg, test_input};
+        use crate::cairo_air::{prove_cairo, verify_cairo};
+
+        #[test]
+        fn test_prove_verify_all_opcode_components() {
+            let input = test_input("test_prove_verify_all_components");
+            for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
+                // TODO(Stav): Remove when `Blake` opcode is in the VM.
+                if opcode == "blake2s_opcode" {
+                    continue;
+                }
+
+                assert!(
+                    n_instances > 0,
+                    "{} isn't used in E2E full-Cairo opcode test",
+                    opcode
+                );
+            }
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                test_input("test_prove_verify_all_components"),
+                test_cfg(),
+                PcsConfig::default(),
+            )
+            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
         }
-        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-            test_input("test_prove_verify_all_components"),
-            test_cfg(),
-        )
-        .unwrap();
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 
     #[test]
