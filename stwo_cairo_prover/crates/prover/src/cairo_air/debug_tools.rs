@@ -14,6 +14,9 @@ use stwo_prover::core::pcs::CommitmentSchemeProver;
 use stwo_prover::core::poly::circle::CanonicCoset;
 
 use super::air::CairoClaim;
+use crate::components::range_check_vector::{
+    range_check_12, range_check_18, range_check_3_6, range_check_3_6_6_3,
+};
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
@@ -552,10 +555,50 @@ where
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
+            range_check_12::Eval {
+                lookup_elements: relations::RangeCheck_12::dummy(),
+            },
+            1 << 12,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_18::Eval {
+                lookup_elements: relations::RangeCheck_18::dummy(),
+            },
+            1 << 18,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
             range_check_19::Eval {
                 lookup_elements: relations::RangeCheck_19::dummy(),
             },
             1 << 19,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_3_6::Eval {
+                lookup_elements: relations::RangeCheck_3_6::dummy(),
+            },
+            1 << 9,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_4_3::Eval {
+                lookup_elements: relations::RangeCheck_4_3::dummy(),
+            },
+            1 << 7,
         )
         .entries(trace),
     );
@@ -582,10 +625,10 @@ where
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
-            range_check_4_3::Eval {
-                lookup_elements: relations::RangeCheck_4_3::dummy(),
+            range_check_3_6_6_3::Eval {
+                lookup_elements: relations::RangeCheck_3_6_6_3::dummy(),
             },
-            1 << 7,
+            1 << 14,
         )
         .entries(trace),
     );
