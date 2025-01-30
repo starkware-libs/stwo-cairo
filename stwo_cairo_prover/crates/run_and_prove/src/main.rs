@@ -10,7 +10,6 @@ use stwo_cairo_prover::cairo_air::{
 };
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
-use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use thiserror::Error;
@@ -77,7 +76,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         cairo_input.state_transitions.casm_states_by_opcode
     );
 
-    let ProverParameters { pcs_config } = default_prod_prover_parameters();
+    let ProverParameters { channel_hash: _, pcs_config } = default_prod_prover_parameters();
 
     // TODO(Ohad): Propagate hash from CLI args.
     let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config, pcs_config)?;
