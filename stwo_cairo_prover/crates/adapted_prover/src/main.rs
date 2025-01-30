@@ -5,7 +5,8 @@ use clap::Parser;
 use stwo_cairo_prover::adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::adapter::ProverInput;
 use stwo_cairo_prover::cairo_air::{
-    prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
+    default_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
+    ProverParameters,
 };
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_prover::core::prover::ProvingError;
@@ -35,6 +36,22 @@ struct Args {
     pub_json: PathBuf,
     #[structopt(long = "priv_json")]
     priv_json: PathBuf,
+    /// The path to the JSON file containing the prover parameters (optional).
+    /// The expected file format is:
+    ///     {
+    ///         "pcs_config": {
+    ///             "pow_bits": 26,
+    ///             "fri_config": {
+    ///                 "log_last_layer_degree_bound": 0,
+    ///                 "log_blowup_factor": 1,
+    ///                 "n_queries": 70
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// Default parameters are chosen to ensure 96 bits of security.
+    #[structopt(long = "params_json")]
+    params_json: Option<PathBuf>,
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
@@ -83,13 +100,18 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         vm_output.state_transitions.casm_states_by_opcode
     );
 
+    let ProverParameters { pcs_config } = match args.params_json {
+        Some(path) => serde_json::from_str(&std::fs::read_to_string(path)?)?,
+        None => default_prover_parameters(),
+    };
+
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config)?;
+    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof)?;
+        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
         log::info!("Proof verified successfully");
     }
 
