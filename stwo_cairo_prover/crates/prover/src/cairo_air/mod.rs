@@ -205,14 +205,29 @@ impl ConfigBuilder {
 /// Used both for producing and verifying proofs.
 #[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct ProverParameters {
-    // TODO(m-kus): add channel hash type here
+    /// Hash function used to draw elements from the prover-verifier channel.
+    pub channel_hash: ChannelHash,
     /// Parameters of the commitment scheme.
     pub pcs_config: PcsConfig,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ChannelHash {
+    Blake2s,
+    Poseidon252,
+}
+
+impl Default for ChannelHash {
+    fn default() -> Self {
+        Self::Blake2s
+    }
 }
 
 /// The default prover parameters for prod use (96 bits of security).
 pub fn default_prover_parameters() -> ProverParameters {
     ProverParameters {
+        channel_hash: ChannelHash::Blake2s,
         pcs_config: PcsConfig {
             // Stay within 500ms on M3
             pow_bits: 26,
