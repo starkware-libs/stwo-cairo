@@ -3,6 +3,9 @@ name = "adapted_stwo"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+std = ["stwo_cairo_prover/std"]
+
 [dependencies]
 clap.workspace = true
 log.workspace = true
