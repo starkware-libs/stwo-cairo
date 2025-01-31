@@ -52,50 +52,68 @@ pub struct CasmStatesByOpcode {
 }
 
 impl CasmStatesByOpcode {
-    pub fn counts(&self) -> Vec<(&str, usize)> {
+    pub fn counts(&self) -> Vec<(String, usize)> {
         vec![
-            ("generic_opcode", self.generic_opcode.len()),
-            ("add_ap_opcode", self.add_ap_opcode.len()),
-            ("add_ap_opcode_imm", self.add_ap_opcode_imm.len()),
+            ("generic_opcode".to_string(), self.generic_opcode.len()),
+            ("add_ap_opcode".to_string(), self.add_ap_opcode.len()),
             (
-                "add_ap_opcode_op_1_base_fp",
+                "add_ap_opcode_imm".to_string(),
+                self.add_ap_opcode_imm.len(),
+            ),
+            (
+                "add_ap_opcode_op_1_base_fp".to_string(),
                 self.add_ap_opcode_op_1_base_fp.len(),
             ),
-            ("add_opcode_small_imm", self.add_opcode_small_imm.len()),
-            ("add_opcode", self.add_opcode.len()),
-            ("add_opcode_small", self.add_opcode_small.len()),
-            ("add_opcode_imm", self.add_opcode_imm.len()),
-            ("assert_eq_opcode", self.assert_eq_opcode.len()),
             (
-                "assert_eq_opcode_double_deref",
+                "add_opcode_small_imm".to_string(),
+                self.add_opcode_small_imm.len(),
+            ),
+            ("add_opcode".to_string(), self.add_opcode.len()),
+            ("add_opcode_small".to_string(), self.add_opcode_small.len()),
+            ("add_opcode_imm".to_string(), self.add_opcode_imm.len()),
+            ("assert_eq_opcode".to_string(), self.assert_eq_opcode.len()),
+            (
+                "assert_eq_opcode_double_deref".to_string(),
                 self.assert_eq_opcode_double_deref.len(),
             ),
-            ("assert_eq_opcode_imm", self.assert_eq_opcode_imm.len()),
-            ("call_opcode", self.call_opcode.len()),
-            ("call_opcode_rel", self.call_opcode_rel.len()),
             (
-                "call_opcode_op_1_base_fp",
+                "assert_eq_opcode_imm".to_string(),
+                self.assert_eq_opcode_imm.len(),
+            ),
+            ("call_opcode".to_string(), self.call_opcode.len()),
+            ("call_opcode_rel".to_string(), self.call_opcode_rel.len()),
+            (
+                "call_opcode_op_1_base_fp".to_string(),
                 self.call_opcode_op_1_base_fp.len(),
             ),
             (
-                "jnz_opcode_taken_dst_base_fp",
+                "jnz_opcode_taken_dst_base_fp".to_string(),
                 self.jnz_opcode_taken_dst_base_fp.len(),
             ),
-            ("jnz_opcode", self.jnz_opcode.len()),
-            ("jnz_opcode_taken", self.jnz_opcode_taken.len()),
-            ("jnz_opcode_dst_base_fp", self.jnz_opcode_dst_base_fp.len()),
-            ("jump_opcode_rel_imm", self.jump_opcode_rel_imm.len()),
-            ("jump_opcode_rel", self.jump_opcode_rel.len()),
+            ("jnz_opcode".to_string(), self.jnz_opcode.len()),
+            ("jnz_opcode_taken".to_string(), self.jnz_opcode_taken.len()),
             (
-                "jump_opcode_double_deref",
+                "jnz_opcode_dst_base_fp".to_string(),
+                self.jnz_opcode_dst_base_fp.len(),
+            ),
+            (
+                "jump_opcode_rel_imm".to_string(),
+                self.jump_opcode_rel_imm.len(),
+            ),
+            ("jump_opcode_rel".to_string(), self.jump_opcode_rel.len()),
+            (
+                "jump_opcode_double_deref".to_string(),
                 self.jump_opcode_double_deref.len(),
             ),
-            ("jump_opcode", self.jump_opcode.len()),
-            ("mul_opcode_small_imm", self.mul_opcode_small_imm.len()),
-            ("mul_opcode_small", self.mul_opcode_small.len()),
-            ("mul_opcode", self.mul_opcode.len()),
-            ("mul_opcode_imm", self.mul_opcode_imm.len()),
-            ("ret_opcode", self.ret_opcode.len()),
+            ("jump_opcode".to_string(), self.jump_opcode.len()),
+            (
+                "mul_opcode_small_imm".to_string(),
+                self.mul_opcode_small_imm.len(),
+            ),
+            ("mul_opcode_small".to_string(), self.mul_opcode_small.len()),
+            ("mul_opcode".to_string(), self.mul_opcode.len()),
+            ("mul_opcode_imm".to_string(), self.mul_opcode_imm.len()),
+            ("ret_opcode".to_string(), self.ret_opcode.len()),
         ]
     }
 }
