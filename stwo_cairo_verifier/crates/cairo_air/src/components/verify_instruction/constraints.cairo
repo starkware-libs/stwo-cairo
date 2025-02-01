@@ -1,12 +1,12 @@
 use stwo_constraint_framework::{
     PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
 };
-use stwo_verifier_core::{ColumnSpan, ColumnArray};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_verifier_core::fields::m31::{m31, M31};
+use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
+use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
 pub fn mask_points(

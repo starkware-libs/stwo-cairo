@@ -27,8 +27,8 @@ pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = self.log_size();
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(11, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 4, log_size)
+        let trace_log_sizes = ArrayImpl::new_repeated(129, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 19, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
@@ -57,6 +57,7 @@ pub struct Component {
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
     pub opcodes_lookup_elements: crate::OpcodeElements,
+    pub range_check_19_lookup_elements: crate::RangeCheck19BitElements,
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
 }
 
@@ -175,6 +176,14 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
         let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
 
+        let RangeCheck_19_z = *self.range_check_19_lookup_elements.z;
+        let mut range_check_19_alpha_powers = self
+            .range_check_19_lookup_elements
+            .alpha_powers
+            .span();
+        let RangeCheck_19_alpha0 = *range_check_19_alpha_powers.pop_front().unwrap();
+        let RangeCheck_19_alpha1 = *range_check_19_alpha_powers.pop_front().unwrap();
+
         let Opcodes_z = *self.opcodes_lookup_elements.z;
         let mut opcodes_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
         let Opcodes_alpha0 = *opcodes_alpha_powers.pop_front().unwrap();
@@ -192,8 +201,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha4,
             VerifyInstruction_alpha5,
             VerifyInstruction_alpha7,
-            VerifyInstruction_alpha11,
-            VerifyInstruction_alpha17,
+            VerifyInstruction_alpha8,
+            VerifyInstruction_alpha10,
+            VerifyInstruction_alpha15,
+            VerifyInstruction_alpha18,
             MemoryAddressToId_z,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,
@@ -202,6 +213,33 @@ pub impl ComponentImpl of CairoComponent<Component> {
             MemoryIdToBig_alpha1,
             MemoryIdToBig_alpha2,
             MemoryIdToBig_alpha3,
+            MemoryIdToBig_alpha4,
+            MemoryIdToBig_alpha5,
+            MemoryIdToBig_alpha6,
+            MemoryIdToBig_alpha7,
+            MemoryIdToBig_alpha8,
+            MemoryIdToBig_alpha9,
+            MemoryIdToBig_alpha10,
+            MemoryIdToBig_alpha11,
+            MemoryIdToBig_alpha12,
+            MemoryIdToBig_alpha13,
+            MemoryIdToBig_alpha14,
+            MemoryIdToBig_alpha15,
+            MemoryIdToBig_alpha16,
+            MemoryIdToBig_alpha17,
+            MemoryIdToBig_alpha18,
+            MemoryIdToBig_alpha19,
+            MemoryIdToBig_alpha20,
+            MemoryIdToBig_alpha21,
+            MemoryIdToBig_alpha22,
+            MemoryIdToBig_alpha23,
+            MemoryIdToBig_alpha24,
+            MemoryIdToBig_alpha25,
+            MemoryIdToBig_alpha26,
+            MemoryIdToBig_alpha27,
+            MemoryIdToBig_alpha28,
+            RangeCheck_19_z,
+            RangeCheck_19_alpha0,
             Opcodes_z,
             Opcodes_alpha0,
             Opcodes_alpha1,

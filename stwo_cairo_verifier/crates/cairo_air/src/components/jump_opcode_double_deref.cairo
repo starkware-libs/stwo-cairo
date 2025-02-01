@@ -27,7 +27,7 @@ pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = self.log_size();
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(11, log_size).span();
+        let trace_log_sizes = ArrayImpl::new_repeated(16, log_size).span();
         let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 4, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
@@ -191,9 +191,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha3,
             VerifyInstruction_alpha4,
             VerifyInstruction_alpha5,
-            VerifyInstruction_alpha7,
             VerifyInstruction_alpha11,
-            VerifyInstruction_alpha17,
+            VerifyInstruction_alpha15,
             MemoryAddressToId_z,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,

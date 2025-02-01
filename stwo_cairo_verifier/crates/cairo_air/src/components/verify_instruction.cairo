@@ -1,5 +1,7 @@
+use crate::components::CairoComponent;
+use crate::utils::U32Impl;
 use stwo_constraint_framework::{
-    PreprocessedColumnSet, PreprocessedColumn, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -7,10 +9,8 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::components::CairoComponent;
-use crate::utils::U32Impl;
-use super::super::utils::UsizeExTrait;
 use super::super::Invertible;
+use super::super::utils::UsizeExTrait;
 
 mod constraints;
 
