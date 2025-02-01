@@ -264,7 +264,7 @@ pub struct OpcodeInteractionClaim {
     call_f_f: Array::<PlaceHolder>,
     call_f_t: Array::<PlaceHolder>,
     call_t_f: Array::<PlaceHolder>,
-    generic: Array::<components::generic_opcode::InteractionClaim>,
+    generic: Array::<PlaceHolder>,
     jnz_f_f: Array::<PlaceHolder>,
     jnz_f_t: Array::<PlaceHolder>,
     jnz_t_f: Array::<PlaceHolder>,
@@ -281,10 +281,6 @@ pub struct OpcodeInteractionClaim {
 #[generate_trait]
 impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     fn mix_into(self: @OpcodeInteractionClaim, ref channel: Channel) {
-        for interaction_claim in self.generic.span() {
-            interaction_claim.mix_into(ref channel);
-        };
-
         for interaction_claim in self.ret.span() {
             interaction_claim.mix_into(ref channel);
         };
@@ -292,10 +288,6 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
 
     fn sum(self: @OpcodeInteractionClaim) -> QM31 {
         let mut sum = QM31Zero::zero();
-
-        for interaction_claim in self.generic.span() {
-            sum += *interaction_claim.claimed_sum;
-        };
 
         for interaction_claim in self.ret.span() {
             sum += *interaction_claim.claimed_sum;
@@ -372,7 +364,7 @@ pub struct OpcodeClaim {
     pub call_f_f: Array::<PlaceHolder>,
     pub call_f_t: Array::<PlaceHolder>,
     pub call_t_f: Array::<PlaceHolder>,
-    pub generic: Array::<components::generic_opcode::Claim>,
+    pub generic: Array::<PlaceHolder>,
     pub jnz_f_f: Array::<PlaceHolder>,
     pub jnz_f_t: Array::<PlaceHolder>,
     pub jnz_t_f: Array::<PlaceHolder>,
@@ -389,10 +381,6 @@ pub struct OpcodeClaim {
 #[generate_trait]
 impl OpcodeClaimImpl of OpcodeClaimTrait {
     fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
-        for generic_opcode_claim in self.generic.span() {
-            generic_opcode_claim.mix_into(ref channel);
-        };
-
         for ret_opcode_claim in self.ret.span() {
             ret_opcode_claim.mix_into(ref channel);
         };
@@ -403,10 +391,6 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
         for ret_opcode_claim in self.ret.span() {
             log_sizes.append(ret_opcode_claim.log_sizes());
-        };
-
-        for generic_opcode_claim in self.generic.span() {
-            log_sizes.append(generic_opcode_claim.log_sizes());
         };
 
         utils::tree_array_concat_cols(log_sizes)
@@ -772,7 +756,7 @@ fn preprocessed_trace_mask_points(
 
 #[derive(Drop)]
 pub struct OpcodeComponents {
-    generic: Array<components::generic_opcode::Component>,
+    generic: Array<PlaceHolder>,
     ret: Array<components::ret_opcode::Component>,
 }
 
@@ -819,16 +803,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        for component in self.generic.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        };
-
         for component in self.ret.span() {
             component
                 .mask_points(
@@ -842,10 +816,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 
     fn max_constraint_log_degree_bound(self: @OpcodeComponents) -> u32 {
         let mut max_degree = 0;
-
-        for component in self.generic.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        };
 
         for component in self.ret.span() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
@@ -863,18 +833,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        for component in self.generic.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        };
-
         for component in self.ret.span() {
             component
                 .evaluate_constraints_at_point(
