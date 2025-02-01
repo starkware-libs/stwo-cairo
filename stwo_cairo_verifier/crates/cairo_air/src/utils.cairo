@@ -5,7 +5,7 @@ use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::utils::pow2;
-use super::components::id_to_f252;
+use super::components::memory_id_to_big;
 
 
 #[generate_trait]
@@ -77,9 +77,9 @@ pub fn tree_array_concat_cols(tree_array: Array<TreeArray<Span<u32>>>) -> TreeAr
 }
 
 /// Splits a 252 bit dense representation into felts, each with `N_BITS_PER_FELT` bits.
-pub fn split_f252(x: [u32; 8]) -> [M31; id_to_f252::N_M31_IN_FELT252] {
-    let mask = pow2(id_to_f252::N_BITS_PER_FELT) - 1;
-    let segments: [u32; id_to_f252::N_M31_IN_FELT252] = split(x, mask);
+pub fn split_f252(x: [u32; 8]) -> [M31; memory_id_to_big::N_M31_IN_FELT252] {
+    let mask = pow2(memory_id_to_big::N_BITS_PER_FELT) - 1;
+    let segments: [u32; memory_id_to_big::N_M31_IN_FELT252] = split(x, mask);
     let mut m31_segments = array![];
 
     for segment in segments.span() {
@@ -112,10 +112,10 @@ fn split<
     let mut word = *word_iter.next().unwrap_or(@0);
 
     for _ in 0..M {
-        if n_bits_in_word > id_to_f252::N_BITS_PER_FELT {
+        if n_bits_in_word > memory_id_to_big::N_BITS_PER_FELT {
             res.append(word & mask);
-            word /= pow2(id_to_f252::N_BITS_PER_FELT);
-            n_bits_in_word -= id_to_f252::N_BITS_PER_FELT;
+            word /= pow2(memory_id_to_big::N_BITS_PER_FELT);
+            n_bits_in_word -= memory_id_to_big::N_BITS_PER_FELT;
             continue;
         };
 
@@ -124,14 +124,14 @@ fn split<
         word = *word_iter.next().unwrap_or(@0);
 
         // If we need more bits to fill, take from next word.
-        if n_bits_in_word < id_to_f252::N_BITS_PER_FELT {
+        if n_bits_in_word < memory_id_to_big::N_BITS_PER_FELT {
             segment = segment | ((WrappingMul::wrapping_mul(word, pow2(n_bits_in_word))) & mask);
-            word /= pow2(id_to_f252::N_BITS_PER_FELT - n_bits_in_word);
+            word /= pow2(memory_id_to_big::N_BITS_PER_FELT - n_bits_in_word);
         }
 
         res.append(segment);
 
-        n_bits_in_word += 32 - id_to_f252::N_BITS_PER_FELT;
+        n_bits_in_word += 32 - memory_id_to_big::N_BITS_PER_FELT;
     };
 
     (*SpanTryIntoFixedArray::try_into(res.span()).unwrap()).unbox()

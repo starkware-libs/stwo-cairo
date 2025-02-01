@@ -1,14 +1,15 @@
 use components::CairoComponent;
-use components::addr_to_id::{
+use components::memory_address_to_id::{
     ClaimImpl as AddrToIdClaimImpl, InteractionClaimImpl as AddrToIdInteractionClaimImpl,
 };
-use components::genericopcode::{
-    ClaimImpl as GenericOpcodeClaimImpl, InteractionClaimImpl as GenericOpcodeInteractionClaimImpl,
+use components::generic_opcode::{
+    ClaimImpl as Generic_OpcodeClaimImpl,
+    InteractionClaimImpl as Generic_OpcodeInteractionClaimImpl,
 };
-use components::id_to_f252::{
+use components::memory_id_to_big::{
     ClaimImpl as IdToF252ClaimImpl, InteractionClaimImpl as IdToF252InteractionClaimImpl,
 };
-use components::range_check::{
+use components::range_check_vector::{
     ClaimImpl as RangeCheckClaimImpl, InteractionClaimImpl as RangeCheckInteractionClaimImpl,
 };
 use components::ret_opcode::{
@@ -141,7 +142,7 @@ pub fn lookup_sum(
     sum += *interaction_claim.range_check_9_9.claimed_sum;
     sum += *interaction_claim.range_check_7_2_5.claimed_sum;
     sum += *interaction_claim.range_check_4_3.claimed_sum;
-    sum += *interaction_claim.memory_addr_to_id.claimed_sum;
+    sum += *interaction_claim.memory_address_to_id.claimed_sum;
     sum += *interaction_claim.memory_id_to_value.big_claimed_sum;
     sum += *interaction_claim.memory_id_to_value.small_claimed_sum;
 
@@ -152,7 +153,7 @@ pub fn lookup_sum(
 struct CairoInteractionElements {
     pub opcodes: OpcodeElements,
     pub verify_instruction: VerifyInstructionElements,
-    pub memory_addr_to_id: MemoryAddressToIdElements,
+    pub memory_address_to_id: MemoryAddressToIdElements,
     pub memory_id_to_value: MemoryIdToBigElements,
     pub range_check_19: RangeCheck19BitElements,
     pub range_check_9_9: RangeCheck9Bit9BitElements,
@@ -166,7 +167,7 @@ impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
         CairoInteractionElements {
             opcodes: LookupElementsImpl::draw(ref channel),
             verify_instruction: LookupElementsImpl::draw(ref channel),
-            memory_addr_to_id: LookupElementsImpl::draw(ref channel),
+            memory_address_to_id: LookupElementsImpl::draw(ref channel),
             memory_id_to_value: LookupElementsImpl::draw(ref channel),
             range_check_19: LookupElementsImpl::draw(ref channel),
             range_check_9_9: LookupElementsImpl::draw(ref channel),
@@ -180,13 +181,13 @@ impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
-    pub memory_addr_to_id: components::addr_to_id::Claim,
-    pub memory_id_to_value: components::id_to_f252::Claim,
+    pub memory_address_to_id: components::memory_address_to_id::Claim,
+    pub memory_id_to_value: components::memory_id_to_big::Claim,
     pub verify_instruction: components::verify_instruction::Claim,
-    pub range_check_19: components::range_check::Claim,
-    pub range_check_9_9: components::range_check::Claim,
-    pub range_check_7_2_5: components::range_check::Claim,
-    pub range_check_4_3: components::range_check::Claim,
+    pub range_check_19: components::range_check_vector::Claim,
+    pub range_check_9_9: components::range_check_vector::Claim,
+    pub range_check_7_2_5: components::range_check_vector::Claim,
+    pub range_check_4_3: components::range_check_vector::Claim,
 }
 
 #[generate_trait]
@@ -196,7 +197,7 @@ impl CairoClaimImpl of CairoClaimTrait {
             array![
                 self.opcodes.log_sizes(),
                 self.verify_instruction.log_sizes(),
-                self.memory_addr_to_id.log_sizes(),
+                self.memory_address_to_id.log_sizes(),
                 self.memory_id_to_value.log_sizes(),
                 self.range_check_19.log_sizes(),
                 self.range_check_9_9.log_sizes(),
@@ -222,7 +223,7 @@ impl CairoClaimImpl of CairoClaimTrait {
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
         self.opcodes.mix_into(ref channel);
-        self.memory_addr_to_id.mix_into(ref channel);
+        self.memory_address_to_id.mix_into(ref channel);
         self.memory_id_to_value.mix_into(ref channel);
     }
 }
@@ -231,19 +232,19 @@ impl CairoClaimImpl of CairoClaimTrait {
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: components::verify_instruction::InteractionClaim,
-    pub memory_addr_to_id: components::addr_to_id::InteractionClaim,
-    pub memory_id_to_value: components::id_to_f252::InteractionClaim,
-    pub range_check_19: components::range_check::InteractionClaim,
-    pub range_check_9_9: components::range_check::InteractionClaim,
-    pub range_check_7_2_5: components::range_check::InteractionClaim,
-    pub range_check_4_3: components::range_check::InteractionClaim,
+    pub memory_address_to_id: components::memory_address_to_id::InteractionClaim,
+    pub memory_id_to_value: components::memory_id_to_big::InteractionClaim,
+    pub range_check_19: components::range_check_vector::InteractionClaim,
+    pub range_check_9_9: components::range_check_vector::InteractionClaim,
+    pub range_check_7_2_5: components::range_check_vector::InteractionClaim,
+    pub range_check_4_3: components::range_check_vector::InteractionClaim,
 }
 
 #[generate_trait]
 impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
     fn mix_into(self: @CairoInteractionClaim, ref channel: Channel) {
         self.opcodes.mix_into(ref channel);
-        self.memory_addr_to_id.mix_into(ref channel);
+        self.memory_address_to_id.mix_into(ref channel);
         self.memory_id_to_value.mix_into(ref channel);
     }
 }
@@ -263,7 +264,7 @@ pub struct OpcodeInteractionClaim {
     call_f_f: Array::<PlaceHolder>,
     call_f_t: Array::<PlaceHolder>,
     call_t_f: Array::<PlaceHolder>,
-    generic: Array::<components::genericopcode::InteractionClaim>,
+    generic: Array::<components::generic_opcode::InteractionClaim>,
     jnz_f_f: Array::<PlaceHolder>,
     jnz_f_t: Array::<PlaceHolder>,
     jnz_t_f: Array::<PlaceHolder>,
@@ -293,17 +294,11 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
         let mut sum = QM31Zero::zero();
 
         for interaction_claim in self.generic.span() {
-            sum += match interaction_claim.claimed_sum {
-                Option::Some((claimed_sum, _)) => *claimed_sum,
-                Option::None => *interaction_claim.total_sum,
-            };
+            sum += *interaction_claim.claimed_sum;
         };
 
         for interaction_claim in self.ret.span() {
-            sum += match interaction_claim.claimed_sum {
-                Option::Some((claimed_sum, _)) => *claimed_sum,
-                Option::None => *interaction_claim.total_sum,
-            };
+            sum += *interaction_claim.claimed_sum;
         };
 
         sum
@@ -329,7 +324,7 @@ impl PublicDataImpl of PublicDataTrait {
             let addr_m31 = addr.try_into().unwrap();
             let id_m31 = id.try_into().unwrap();
             let addr_to_id = lookup_elements
-                .memory_addr_to_id
+                .memory_address_to_id
                 .combine([addr_m31, id_m31])
                 .inverse();
 
@@ -377,7 +372,7 @@ pub struct OpcodeClaim {
     pub call_f_f: Array::<PlaceHolder>,
     pub call_f_t: Array::<PlaceHolder>,
     pub call_t_f: Array::<PlaceHolder>,
-    pub generic: Array::<components::genericopcode::Claim>,
+    pub generic: Array::<components::generic_opcode::Claim>,
     pub jnz_f_f: Array::<PlaceHolder>,
     pub jnz_f_t: Array::<PlaceHolder>,
     pub jnz_t_f: Array::<PlaceHolder>,
@@ -428,14 +423,14 @@ pub enum CairoVerificationError {
 pub struct CairoAir {
     opcodes: OpcodeComponents,
     verify_instruction: components::verify_instruction::Component,
-    memory_addr_to_id: components::addr_to_id::Component,
+    memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
-        components::id_to_f252::BigComponent, components::id_to_f252::SmallComponent,
+        components::memory_id_to_big::BigComponent, components::memory_id_to_big::SmallComponent,
     ),
-    range_check_19: components::range_check::Rc19BitComponent,
-    range_check_9_9: components::range_check::Rc9Bit9BitComponent,
-    range_check_7_2_5: components::range_check::Rc7Bit2Bit5BitComponent,
-    range_check_4_3: components::range_check::Rc4Bit3BitComponent,
+    range_check_19: components::range_check_vector::Rc19BitComponent,
+    range_check_9_9: components::range_check_vector::Rc9Bit9BitComponent,
+    range_check_7_2_5: components::range_check_vector::Rc7Bit2Bit5BitComponent,
+    range_check_4_3: components::range_check_vector::Rc4Bit3BitComponent,
     // ...
     preprocessed_columns: Array<PreprocessedColumn>,
 }
@@ -462,49 +457,49 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         let verifyinstruction_component = components::verify_instruction::Component {
             claim: *cairo_claim.verify_instruction,
             interaction_claim: *interaction_claim.verify_instruction,
-            memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+            memoryaddresstoid_lookup_elements: interaction_elements.memory_address_to_id.clone(),
             memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
             rangecheck_4_3_lookup_elements: interaction_elements.range_check_4_3.clone(),
             range_check_7_2_5_lookup_elements: interaction_elements.range_check_7_2_5.clone(),
             verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
         };
 
-        let memory_addr_to_id_component = components::addr_to_id::Component {
-            claim: *cairo_claim.memory_addr_to_id,
-            interaction_claim: *interaction_claim.memory_addr_to_id,
-            lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+        let memory_address_to_id_component = components::memory_address_to_id::Component {
+            claim: *cairo_claim.memory_address_to_id,
+            interaction_claim: *interaction_claim.memory_address_to_id,
+            lookup_elements: interaction_elements.memory_address_to_id.clone(),
         };
 
-        let memory_id_to_value_component = components::id_to_f252::BigComponent {
+        let memory_id_to_value_component = components::memory_id_to_big::BigComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.big_log_size,
             interaction_claim: *interaction_claim.memory_id_to_value,
             lookup_elements: interaction_elements.memory_id_to_value.clone(),
             range_9_9_lookup_elements: interaction_elements.range_check_9_9.clone(),
         };
 
-        let small_memory_id_to_value_component = components::id_to_f252::SmallComponent {
+        let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
             interaction_claim: *interaction_claim.memory_id_to_value,
             lookup_elements: interaction_elements.memory_id_to_value.clone(),
             range_9_9_lookup_elements: interaction_elements.range_check_9_9.clone(),
         };
 
-        let range_check_19_component = components::range_check::Rc19BitComponent {
+        let range_check_19_component = components::range_check_vector::Rc19BitComponent {
             lookup_elements: interaction_elements.range_check_19.clone(),
             interaction_claim: interaction_claim.range_check_19.clone(),
         };
 
-        let range_check_9_9_component = components::range_check::Rc9Bit9BitComponent {
+        let range_check_9_9_component = components::range_check_vector::Rc9Bit9BitComponent {
             lookup_elements: interaction_elements.range_check_9_9.clone(),
             interaction_claim: interaction_claim.range_check_9_9.clone(),
         };
 
-        let range_check_7_2_5_component = components::range_check::Rc7Bit2Bit5BitComponent {
+        let range_check_7_2_5_component = components::range_check_vector::Rc7Bit2Bit5BitComponent {
             lookup_elements: interaction_elements.range_check_7_2_5.clone(),
             interaction_claim: interaction_claim.range_check_7_2_5.clone(),
         };
 
-        let range_check_4_3_component = components::range_check::Rc4Bit3BitComponent {
+        let range_check_4_3_component = components::range_check_vector::Rc4Bit3BitComponent {
             lookup_elements: interaction_elements.range_check_4_3.clone(),
             interaction_claim: interaction_claim.range_check_4_3.clone(),
         };
@@ -512,7 +507,7 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         CairoAir {
             opcodes: opcode_components,
             verify_instruction: verifyinstruction_component,
-            memory_addr_to_id: memory_addr_to_id_component,
+            memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_component, small_memory_id_to_value_component),
             range_check_19: range_check_19_component,
             range_check_9_9: range_check_9_9_component,
@@ -556,7 +551,7 @@ impl CairoAirImpl of Air<CairoAir> {
             );
 
         self
-            .memory_addr_to_id
+            .memory_address_to_id
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -657,7 +652,7 @@ impl CairoAirImpl of Air<CairoAir> {
             );
 
         self
-            .memory_addr_to_id
+            .memory_address_to_id
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -760,7 +755,7 @@ fn preprocessed_trace_mask_points(
 
 #[derive(Drop)]
 pub struct OpcodeComponents {
-    generic: Array<components::genericopcode::Component>,
+    generic: Array<components::generic_opcode::Component>,
     ret: Array<components::ret_opcode::Component>,
 }
 
@@ -778,10 +773,10 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         assert!(interaction_claim.generic.len() == 0);
         assert!(interaction_claim.jump_t_t_f.len() == 1);
         assert!(interaction_claim.ret.len() == 0);
-        // let generic_opcode_component = components::genericopcode::Component {
+        // let generic_opcode_component = components::generic_opcode::Component {
         //     claim: *claim.generic[0],
         //     interaction_claim: *interaction_claim.generic[0],
-        //     memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+        //     memoryaddresstoid_lookup_elements: interaction_elements.memory_address_to_id.clone(),
         //     memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
         //     verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
         //     opcodes_lookup_elements: interaction_elements.opcodes.clone(),
@@ -791,7 +786,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         // let ret_opcode_component = components::ret_opcode::Component {
         //     claim: *claim.ret[0],
         //     interaction_claim: *interaction_claim.ret[0],
-        //     memoryaddresstoid_lookup_elements: interaction_elements.memory_addr_to_id.clone(),
+        //     memoryaddresstoid_lookup_elements: interaction_elements.memory_address_to_id.clone(),
         //     memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
         //     verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
         //     opcodes_lookup_elements: interaction_elements.opcodes.clone(),

@@ -99,10 +99,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             MemoryAddressToId_alpha0: addr_to_id_alpha_0,
             MemoryAddressToId_alpha1: addr_to_id_alpha_1,
             MemoryAddressToId_z: addr_to_id_z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(log_size)),
             preprocessed_seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size)),
-            total_sum: *self.interaction_claim.claimed_sum,
+            claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(log_size);
