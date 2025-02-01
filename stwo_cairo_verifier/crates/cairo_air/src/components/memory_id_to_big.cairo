@@ -112,7 +112,12 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
     ) {
         let trace_gen = CanonicCosetImpl::new(*self.log_n_rows).coset.step_size;
         constraints_big::mask_points(
-            ref trace_mask_points, ref interaction_trace_mask_points, point, trace_gen,
+            ref preprocessed_column_set,
+            ref trace_mask_points,
+            ref interaction_trace_mask_points,
+            point,
+            trace_gen,
+            *self.log_n_rows,
         );
     }
 
@@ -198,9 +203,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
             RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(*self.log_n_rows)),
-            total_sum: *self.interaction_claim.big_claimed_sum,
+            claimed_sum: *self.interaction_claim.big_claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
@@ -288,9 +291,7 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
             RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(*self.log_n_rows)),
-            total_sum: *self.interaction_claim.small_claimed_sum,
+            claimed_sum: *self.interaction_claim.small_claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);

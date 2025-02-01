@@ -1,7 +1,7 @@
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use stwo_constraint_framework::{
-    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -9,7 +9,7 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use super::id_to_f252::N_MULTIPLICITY_COLUMNS;
+use super::memory_id_to_big::N_MULTIPLICITY_COLUMNS;
 use super::super::Invertible;
 
 mod rc_19_constraints;
@@ -110,9 +110,7 @@ pub impl Rc19BitComponentImpl of CairoComponent<Rc19BitComponent> {
         let params = rc_19_constraints::ConstraintParams {
             RangeCheck_19_alpha0: range_check_19_alpha_0,
             RangeCheck_19_z: *self.lookup_elements.z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(rc_19_log_size())),
-            total_sum: *self.interaction_claim.claimed_sum,
+            claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(rc_19_log_size());
@@ -177,9 +175,7 @@ pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
             RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.lookup_elements.z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(rc_9_9_log_size())),
-            total_sum: *self.interaction_claim.claimed_sum,
+            claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(rc_9_9_log_size());
@@ -244,9 +240,7 @@ pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
             RangeCheck_4_3_alpha0: range_check_4_3_alpha_0,
             RangeCheck_4_3_alpha1: range_check_4_3_alpha_1,
             RangeCheck_4_3_z: *self.lookup_elements.z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(rc_4_3_log_size())),
-            total_sum: *self.interaction_claim.claimed_sum,
+            claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(rc_4_3_log_size());
@@ -312,9 +306,7 @@ pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> 
             RangeCheck_7_2_5_alpha1: range_check_7_2_5_alpha_1,
             RangeCheck_7_2_5_alpha2: range_check_7_2_5_alpha_2,
             RangeCheck_7_2_5_z: *self.lookup_elements.z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(rc_7_2_5_log_size())),
-            total_sum: *self.interaction_claim.claimed_sum,
+            claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(rc_7_2_5_log_size());

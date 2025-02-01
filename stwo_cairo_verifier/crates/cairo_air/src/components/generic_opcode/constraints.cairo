@@ -15,13 +15,9 @@ pub fn mask_points(
     ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
     point: CirclePoint<QM31>,
     trace_gen: CirclePointIndex,
-    claimed_sum_offset: usize,
     log_size: u32,
 ) {
-    preprocessed_column_set.insert(PreprocessedColumn::IsFirst(log_size));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-    let point_offset_claimed_sum = point
-        .add_circle_point_m31(trace_gen.mul(claimed_sum_offset).to_point());
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
@@ -251,6 +247,7 @@ pub fn mask_points(
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
+    trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
@@ -379,14 +376,10 @@ pub fn mask_points(
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
-    interaction_trace_mask_points
-        .append(array![point_offset_neg_1, point, point_offset_claimed_sum]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
 }
 
 #[derive(Drop)]
@@ -454,8 +447,6 @@ pub struct ConstraintParams {
     pub VerifyInstruction_alpha9: QM31,
     pub VerifyInstruction_z: QM31,
     pub claimed_sum: QM31,
-    pub preprocessed_is_first: QM31,
-    pub total_sum: QM31,
 }
 
 pub fn evaluate_constraints_at_point(
