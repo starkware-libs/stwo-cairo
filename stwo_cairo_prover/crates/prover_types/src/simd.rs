@@ -1,16 +1,17 @@
 use std::mem::transmute;
-use std::ops::{Add, BitAnd, BitOr, BitXor, Mul, Rem, Shl, Shr, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Shl, Shr, Sub};
 use std::simd::cmp::SimdPartialEq;
 use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
 
 use bytemuck::Zeroable;
+use itertools::Itertools;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
-use crate::cpu::{CasmState, Felt252};
+use crate::cpu::{BigUInt, CasmState, Felt252};
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -447,6 +448,100 @@ impl DivExtend for PackedM31 {
 }
 
 #[derive(Copy, Clone, Debug)]
+pub struct PackedBigUInt<const B: usize, const L: usize, const F: usize> {
+    value: [BigUInt<B, L, F>; N_LANES],
+}
+impl<const B: usize, const L: usize, const F: usize> PackedBigUInt<B, L, F> {
+    pub fn to_array(&self) -> [BigUInt<B, L, F>; N_LANES] {
+        self.value
+    }
+
+    pub fn broadcast(value: BigUInt<B, L, F>) -> Self {
+        Self {
+            value: [value; N_LANES],
+        }
+    }
+
+    // TODO(Gali): Change to an efficient implementation.
+    pub fn from_packedfelt252_array(felts: Vec<PackedFelt252>) -> Self {
+        let result: [BigUInt<B, L, F>; N_LANES] = std::array::from_fn(|i| {
+            BigUInt::<B, L, F>::from_felt252_array(
+                felts.iter().map(|felt| felt.to_array()[i]).collect_vec(),
+            )
+        });
+        Self { value: result }
+    }
+
+    pub fn from_packedbiguint<const OB: usize, const OL: usize, const OF: usize>(
+        other: PackedBigUInt<OB, OL, OF>,
+    ) -> Self {
+        let result: [BigUInt<B, L, F>; N_LANES] =
+            std::array::from_fn(|i| BigUInt::<B, L, F>::from_biguint(other.value[i]));
+        Self { value: result }
+    }
+
+    pub fn widening_mul<const DB: usize, const DL: usize, const DF: usize>(
+        self,
+        rhs: PackedBigUInt<B, L, F>,
+    ) -> PackedBigUInt<DB, DL, DF> {
+        let result = std::array::from_fn(|i| self.value[i].widening_mul(rhs.value[i]));
+        PackedBigUInt::<DB, DL, DF> { value: result }
+    }
+
+    pub fn get_m31(&self, index: usize) -> PackedM31 {
+        PackedM31::from_array(std::array::from_fn(|i| self.value[i].get_m31(index)))
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Add for PackedBigUInt<B, L, F> {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i] + rhs[i]);
+        Self { value: result }
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Sub for PackedBigUInt<B, L, F> {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i] - rhs[i]);
+        Self { value: result }
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Mul for PackedBigUInt<B, L, F> {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i] * rhs[i]);
+        Self { value: result }
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Div for PackedBigUInt<B, L, F> {
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i].div(rhs[i]));
+        Self { value: result }
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> EqExtend for PackedBigUInt<B, L, F> {
+    fn eq(&self, other: Self) -> PackedBool {
+        let lhs = self.value;
+        let rhs = other.value;
+        PackedBool {
+            value: Simd::from_array(std::array::from_fn(|i| lhs[i].eq(&rhs[i]) as i32)),
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
 pub struct PackedCasmState {
     pub pc: PackedM31,
     pub ap: PackedM31,
@@ -551,5 +646,91 @@ mod tests {
         assert_eq!(add.to_array(), expected_add);
         assert_eq!(sub.to_array(), expected_sub);
         assert_eq!(mul.to_array(), expected_mul);
+    }
+
+    #[test]
+    fn test_packed_big_uint_from_packed_felt252_array() {
+        let mut rng = SmallRng::seed_from_u64(0u64);
+        let felts: Vec<Felt252> = (0..4).map(|_| rand_f252(&mut rng)).collect();
+        let big_uint = BigUInt::<384, 6, 32>::from_felt252_array(felts.clone());
+
+        let packed_felts: Vec<PackedFelt252> = felts
+            .into_iter()
+            .map(|felt| PackedFelt252::from_array(&[felt; N_LANES]))
+            .collect_vec();
+        let packed_big_uint = PackedBigUInt::<384, 6, 32>::from_packedfelt252_array(packed_felts);
+
+        for i in 0..32 {
+            assert_eq!(packed_big_uint.to_array(), [big_uint; N_LANES], "i = {}", i);
+        }
+    }
+
+    #[test]
+    fn test_packed_big_uint_from_packed_big_uint() {
+        let big_uint = BigUInt::<384, 6, 32>::from_felt252(Felt252::from_limbs(&[
+            M31::from_u32_unchecked(32425),
+            M31::from_u32_unchecked(1429),
+            M31::from_u32_unchecked(243987),
+            M31::from_u32_unchecked(63),
+            M31::from_u32_unchecked(94753),
+        ]));
+        let expected_packed_big_uint = PackedBigUInt::<384, 6, 32>::broadcast(big_uint);
+
+        let packed_big_uint =
+            PackedBigUInt::<384, 6, 32>::from_packedbiguint(
+                PackedBigUInt::<768, 12, 64>::from_packedbiguint(expected_packed_big_uint),
+            );
+        let packed_big_uint_2 =
+            PackedBigUInt::<384, 6, 32>::from_packedbiguint(
+                PackedBigUInt::<768, 12, 64>::broadcast(BigUInt::<768, 12, 64>::from_biguint(
+                    big_uint,
+                )),
+            );
+
+        assert_eq!(
+            packed_big_uint.to_array(),
+            expected_packed_big_uint.to_array()
+        );
+        assert_eq!(
+            packed_big_uint_2.to_array(),
+            expected_packed_big_uint.to_array()
+        );
+    }
+
+    #[test]
+    fn test_packed_big_uint_widening_mul() {
+        let big_uint = BigUInt::<384, 6, 32>::from_felt252(Felt252::from_limbs(&[
+            M31::from_u32_unchecked(32425),
+            M31::from_u32_unchecked(1429),
+            M31::from_u32_unchecked(243987),
+            M31::from_u32_unchecked(63),
+            M31::from_u32_unchecked(94753),
+        ]));
+        let packed_big_uint = PackedBigUInt::<384, 6, 32>::broadcast(big_uint);
+
+        let result = packed_big_uint.widening_mul::<768, 12, 64>(packed_big_uint);
+        let expected_result = [big_uint.widening_mul::<768, 12, 64>(big_uint); N_LANES];
+
+        assert_eq!(result.to_array(), expected_result);
+    }
+
+    #[test]
+    fn test_packed_big_uint_get_m31() {
+        let big_uint = BigUInt::<384, 6, 32>::from_felt252(Felt252::from_limbs(&[
+            M31::from_u32_unchecked(32425),
+            M31::from_u32_unchecked(1429),
+            M31::from_u32_unchecked(243987),
+            M31::from_u32_unchecked(63),
+            M31::from_u32_unchecked(94753),
+        ]));
+        let packed_big_uint = PackedBigUInt::<384, 6, 32>::broadcast(big_uint);
+        for i in 0..32 {
+            assert_eq!(
+                packed_big_uint.get_m31(i).to_array(),
+                [big_uint.get_m31(i); N_LANES],
+                "i = {}",
+                i
+            );
+        }
     }
 }
