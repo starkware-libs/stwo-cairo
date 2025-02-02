@@ -14,18 +14,22 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
 use crate::components::{
-    memory_address_to_id, memory_id_to_big, range_check_6, range_check_builtin_bits_128,
-    range_check_builtin_bits_96,
+    add_mod_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
+    range_check_builtin_bits_128, range_check_builtin_bits_96,
 };
 use crate::input::builtin_segments::BuiltinSegments;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
+    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            add_mod_builtin.mix_into(channel);
+        }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             range_check_128_builtin.mix_into(channel);
         }
@@ -36,6 +40,9 @@ impl BuiltinsClaim {
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
+            self.add_mod_builtin
+                .map(|add_mod_builtin| add_mod_builtin.log_sizes())
+                .into_iter(),
             self.range_check_128_builtin
                 .map(|range_check_128_builtin| range_check_128_builtin.log_sizes())
                 .into_iter(),
@@ -47,11 +54,30 @@ impl BuiltinsClaim {
 }
 
 pub struct BuiltinsClaimGenerator {
+    add_mod_builtin_trace_generator: Option<add_mod_builtin::ClaimGenerator>,
     range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
     range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
 }
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
+        let add_mod_builtin_trace_generator = builtin_segments.add_mod.map(|add_mod| {
+            let add_mod_builtin_cells_per_instance =
+                BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::add_mod);
+            let add_mod_builtin_segment_length = add_mod.stop_ptr - add_mod.begin_addr;
+            assert!(
+                (add_mod_builtin_segment_length % add_mod_builtin_cells_per_instance) == 0,
+                "add_mod segment length is not a multiple of add_mod_builtin_cells_per_instance"
+            );
+            assert!(
+                (add_mod_builtin_segment_length / add_mod_builtin_cells_per_instance)
+                    .is_power_of_two(),
+                "add_mod instances number is not a power of two"
+            );
+            add_mod_builtin::ClaimGenerator::new(
+                (add_mod_builtin_segment_length / add_mod_builtin_cells_per_instance).ilog2(),
+                add_mod.begin_addr as u32,
+            )
+        });
         let range_check_128_builtin_trace_generator =
             builtin_segments
                 .range_check_bits_128
@@ -98,6 +124,7 @@ impl BuiltinsClaimGenerator {
                 });
 
         Self {
+            add_mod_builtin_trace_generator,
             range_check_128_builtin_trace_generator,
             range_check_96_builtin_trace_generator,
         }
@@ -113,6 +140,17 @@ impl BuiltinsClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) =
+            if let Some(add_mod_builtin_trace_generator) = self.add_mod_builtin_trace_generator {
+                let (claim, interaction_gen) = add_mod_builtin_trace_generator.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                );
+                (Some(claim), Some(interaction_gen))
+            } else {
+                (None, None)
+            };
         let (range_check_128_builtin_claim, range_check_128_builtin_interaction_gen) =
             if let Some(range_check_128_builtin_trace_generator) =
                 self.range_check_128_builtin_trace_generator
@@ -142,10 +180,12 @@ impl BuiltinsClaimGenerator {
             };
         (
             BuiltinsClaim {
+                add_mod_builtin: add_mod_builtin_claim,
                 range_check_128_builtin: range_check_128_builtin_claim,
                 range_check_96_builtin: range_check_96_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
+                add_mod_builtin_interaction_gen,
                 range_check_128_builtin_interaction_gen,
                 range_check_96_builtin_interaction_gen,
             },
@@ -155,11 +195,15 @@ impl BuiltinsClaimGenerator {
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsInteractionClaim {
+    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
 }
 impl BuiltinsInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            add_mod_builtin.mix_into(channel);
+        }
         if let Some(range_check_128_builtin) = self.range_check_128_builtin {
             range_check_128_builtin.mix_into(channel)
         }
@@ -170,6 +214,9 @@ impl BuiltinsInteractionClaim {
 
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            sum += add_mod_builtin.claimed_sum;
+        }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             sum += range_check_128_builtin.claimed_sum;
         }
@@ -181,6 +228,7 @@ impl BuiltinsInteractionClaim {
 }
 
 pub struct BuiltinsInteractionClaimGenerator {
+    add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
     range_check_128_builtin_interaction_gen:
         Option<range_check_builtin_bits_128::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
@@ -195,6 +243,15 @@ impl BuiltinsInteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        let add_mod_builtin_interaction_claim =
+            self.add_mod_builtin_interaction_gen
+                .map(|add_mod_builtin_interaction_gen| {
+                    add_mod_builtin_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.memory_address_to_id,
+                        &interaction_elements.memory_id_to_value,
+                    )
+                });
         let range_check_128_builtin_interaction_claim = self
             .range_check_128_builtin_interaction_gen
             .map(|range_check_128_builtin_interaction_gen| {
@@ -215,6 +272,7 @@ impl BuiltinsInteractionClaimGenerator {
                 )
             });
         BuiltinsInteractionClaim {
+            add_mod_builtin: add_mod_builtin_interaction_claim,
             range_check_128_builtin: range_check_128_builtin_interaction_claim,
             range_check_96_builtin: range_check_96_builtin_interaction_claim,
         }
@@ -222,6 +280,7 @@ impl BuiltinsInteractionClaimGenerator {
 }
 
 pub struct BuiltinComponents {
+    add_mod_builtin: Option<add_mod_builtin::Component>,
     range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
     range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
 }
@@ -232,6 +291,21 @@ impl BuiltinComponents {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &BuiltinsInteractionClaim,
     ) -> Self {
+        let add_mod_builtin_component = claim.add_mod_builtin.map(|add_mod_builtin| {
+            add_mod_builtin::Component::new(
+                tree_span_provider,
+                add_mod_builtin::Eval {
+                    claim: add_mod_builtin,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                },
+                interaction_claim.add_mod_builtin.unwrap().claimed_sum,
+            )
+        });
         let range_check_128_builtin_component =
             claim
                 .range_check_128_builtin
@@ -277,6 +351,7 @@ impl BuiltinComponents {
                 )
             });
         Self {
+            add_mod_builtin: add_mod_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
         }
@@ -284,6 +359,9 @@ impl BuiltinComponents {
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
         let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            vec.push(add_mod_builtin as &dyn ComponentProver<SimdBackend>);
+        }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             vec.push(range_check_128_builtin as &dyn ComponentProver<SimdBackend>);
         }
@@ -296,6 +374,13 @@ impl BuiltinComponents {
 
 impl std::fmt::Display for BuiltinComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            writeln!(
+                f,
+                "AddModBuiltin: {}",
+                indented_component_display(add_mod_builtin)
+            )?;
+        }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             writeln!(
                 f,
