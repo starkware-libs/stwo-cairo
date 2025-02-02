@@ -9,6 +9,7 @@ dependencies = [
  "clap",
  "log",
  "serde_json",
+ "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_prover",
  "stwo_cairo_utils",

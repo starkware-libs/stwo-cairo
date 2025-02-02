@@ -1,4 +1,3 @@
-use crate::components::CairoComponent;
 use stwo_constraint_framework::{
     PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
@@ -8,8 +7,9 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use super::super::Invertible;
+use crate::components::CairoComponent;
 use super::super::utils::UsizeImpl;
+use super::super::Invertible;
 
 mod constraints_big;
 mod constraints_small;
@@ -54,22 +54,22 @@ pub impl ClaimImpl of ClaimTrait {
 
         for _ in 0..BIG_N_COLUMNS {
             trace_log_sizes.append(big_log_size);
-        };
+        }
 
         for _ in 0..SMALL_N_COLUMNS {
             trace_log_sizes.append(small_log_size);
-        };
+        }
 
         let mut interaction_log_sizes = array![];
 
         // A lookup for every pair of limbs, and a yield of the value.
         for _ in 0..(QM31_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))) {
             interaction_log_sizes.append(big_log_size);
-        };
+        }
 
         for _ in 0..(QM31_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)) {
             interaction_log_sizes.append(small_log_size);
-        };
+        }
 
         array![preprocessed_log_sizes, trace_log_sizes.span(), interaction_log_sizes.span()]
     }
