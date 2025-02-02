@@ -19,13 +19,13 @@ use crate::components::range_check_vector::{
     range_check_3_6_6_3, range_check_4_3, range_check_6, range_check_7_2_5, range_check_9_9,
 };
 use crate::components::{
-    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
-    add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, bitwise_builtin, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel,
-    generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken,
-    jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
-    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
-    mul_opcode_small, mul_opcode_small_imm, range_check_builtin_bits_128,
+    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_mod_builtin, add_opcode,
+    add_opcode_imm, add_opcode_small, add_opcode_small_imm, assert_eq_opcode,
+    assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, call_opcode,
+    call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp,
+    jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref,
+    jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode,
+    mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm, range_check_builtin_bits_128,
     range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
@@ -507,6 +507,21 @@ where
         )
         .entries(trace),
     );
+
+    if let Some(add_mod_builtin) = claim.builtins.add_mod_builtin {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                add_mod_builtin::Eval {
+                    claim: add_mod_builtin,
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                },
+                1 << add_mod_builtin.log_size,
+            )
+            .entries(trace),
+        );
+    }
 
     if let Some(range_check_128_builtin) = claim.builtins.range_check_128_builtin {
         entries.extend(

@@ -14,19 +14,23 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
 use crate::components::{
-    bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
+    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
 use crate::input::builtin_segments::BuiltinSegments;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
+    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            add_mod_builtin.mix_into(channel);
+        }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             bitwise_builtin.mix_into(channel);
         }
@@ -40,6 +44,9 @@ impl BuiltinsClaim {
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         TreeVec::concat_cols(chain!(
+            self.add_mod_builtin
+                .map(|add_mod_builtin| add_mod_builtin.log_sizes())
+                .into_iter(),
             self.bitwise_builtin
                 .map(|bitwise_builtin| bitwise_builtin.log_sizes())
                 .into_iter(),
@@ -54,12 +61,31 @@ impl BuiltinsClaim {
 }
 
 pub struct BuiltinsClaimGenerator {
+    add_mod_builtin_trace_generator: Option<add_mod_builtin::ClaimGenerator>,
     bitwise_builtin_trace_generator: Option<bitwise_builtin::ClaimGenerator>,
     range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
     range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
 }
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
+        let add_mod_builtin_trace_generator = builtin_segments.add_mod.map(|add_mod| {
+            let add_mod_builtin_cells_per_instance =
+                BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::add_mod);
+            let add_mod_builtin_segment_length = add_mod.stop_ptr - add_mod.begin_addr;
+            assert!(
+                (add_mod_builtin_segment_length % add_mod_builtin_cells_per_instance) == 0,
+                "add_mod segment length is not a multiple of add_mod_builtin_cells_per_instance"
+            );
+            assert!(
+                (add_mod_builtin_segment_length / add_mod_builtin_cells_per_instance)
+                    .is_power_of_two(),
+                "add_mod instances number is not a power of two"
+            );
+            add_mod_builtin::ClaimGenerator::new(
+                (add_mod_builtin_segment_length / add_mod_builtin_cells_per_instance).ilog2(),
+                add_mod.begin_addr as u32,
+            )
+        });
         let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|bitwise| {
             let bitwise_builtin_cells_per_instance =
                 BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::bitwise);
@@ -124,6 +150,7 @@ impl BuiltinsClaimGenerator {
                 });
 
         Self {
+            add_mod_builtin_trace_generator,
             bitwise_builtin_trace_generator,
             range_check_96_builtin_trace_generator,
             range_check_128_builtin_trace_generator,
@@ -141,6 +168,16 @@ impl BuiltinsClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
+            .add_mod_builtin_trace_generator
+            .map(|add_mod_builtin_trace_generator| {
+                add_mod_builtin_trace_generator.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                )
+            })
+            .unzip();
         let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) = self
             .bitwise_builtin_trace_generator
             .map(|bitwise_builtin_trace_generator| {
@@ -176,11 +213,13 @@ impl BuiltinsClaimGenerator {
 
         (
             BuiltinsClaim {
+                add_mod_builtin: add_mod_builtin_claim,
                 bitwise_builtin: bitwise_builtin_claim,
                 range_check_96_builtin: range_check_96_builtin_claim,
                 range_check_128_builtin: range_check_128_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
+                add_mod_builtin_interaction_gen,
                 bitwise_builtin_interaction_gen,
                 range_check_96_builtin_interaction_gen,
                 range_check_128_builtin_interaction_gen,
@@ -191,12 +230,16 @@ impl BuiltinsClaimGenerator {
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsInteractionClaim {
+    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
 }
 impl BuiltinsInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            add_mod_builtin.mix_into(channel);
+        }
         if let Some(bitwise_builtin) = self.bitwise_builtin {
             bitwise_builtin.mix_into(channel)
         }
@@ -210,6 +253,9 @@ impl BuiltinsInteractionClaim {
 
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            sum += add_mod_builtin.claimed_sum;
+        }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             sum += bitwise_builtin.claimed_sum;
         }
@@ -224,6 +270,7 @@ impl BuiltinsInteractionClaim {
 }
 
 pub struct BuiltinsInteractionClaimGenerator {
+    add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
     bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
         Option<range_check_builtin_bits_96::InteractionClaimGenerator>,
@@ -239,6 +286,15 @@ impl BuiltinsInteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        let add_mod_builtin_interaction_claim =
+            self.add_mod_builtin_interaction_gen
+                .map(|add_mod_builtin_interaction_gen| {
+                    add_mod_builtin_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.memory_address_to_id,
+                        &interaction_elements.memory_id_to_value,
+                    )
+                });
         let bitwise_builtin_interaction_claim =
             self.bitwise_builtin_interaction_gen
                 .map(|bitwise_builtin_interaction_gen| {
@@ -270,6 +326,7 @@ impl BuiltinsInteractionClaimGenerator {
             });
 
         BuiltinsInteractionClaim {
+            add_mod_builtin: add_mod_builtin_interaction_claim,
             bitwise_builtin: bitwise_builtin_interaction_claim,
             range_check_96_builtin: range_check_96_builtin_interaction_claim,
             range_check_128_builtin: range_check_128_builtin_interaction_claim,
@@ -278,6 +335,7 @@ impl BuiltinsInteractionClaimGenerator {
 }
 
 pub struct BuiltinComponents {
+    add_mod_builtin: Option<add_mod_builtin::Component>,
     bitwise_builtin: Option<bitwise_builtin::Component>,
     range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
     range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
@@ -289,6 +347,21 @@ impl BuiltinComponents {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &BuiltinsInteractionClaim,
     ) -> Self {
+        let add_mod_builtin_component = claim.add_mod_builtin.map(|add_mod_builtin| {
+            add_mod_builtin::Component::new(
+                tree_span_provider,
+                add_mod_builtin::Eval {
+                    claim: add_mod_builtin,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                },
+                interaction_claim.add_mod_builtin.unwrap().claimed_sum,
+            )
+        });
         let bitwise_builtin_component = claim.bitwise_builtin.map(|bitwise_builtin| {
             bitwise_builtin::Component::new(
                 tree_span_provider,
@@ -352,6 +425,7 @@ impl BuiltinComponents {
                     )
                 });
         Self {
+            add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -360,6 +434,9 @@ impl BuiltinComponents {
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
         let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            vec.push(add_mod_builtin as &dyn ComponentProver<SimdBackend>);
+        }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             vec.push(bitwise_builtin as &dyn ComponentProver<SimdBackend>);
         }
@@ -375,6 +452,13 @@ impl BuiltinComponents {
 
 impl std::fmt::Display for BuiltinComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(add_mod_builtin) = &self.add_mod_builtin {
+            writeln!(
+                f,
+                "AddModBuiltin: {}",
+                indented_component_display(add_mod_builtin)
+            )?;
+        }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             writeln!(
                 f,
