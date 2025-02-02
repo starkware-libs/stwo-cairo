@@ -28,14 +28,14 @@ pub const FOLD_STEP: u32 = 1;
 /// Equals `2^FOLD_STEP`.
 pub const FOLD_FACTOR: usize = 2;
 
-#[derive(Clone, Copy, Drop, Debug)]
+#[derive(Drop)]
 pub struct FriConfig {
     pub log_blowup_factor: u32,
     pub log_last_layer_degree_bound: u32,
     pub n_queries: usize,
 }
 
-#[derive(Drop, Debug)]
+#[derive(Drop)]
 pub struct FriVerifier {
     config: FriConfig,
     first_layer: FriFirstLayerVerifier,
@@ -315,7 +315,7 @@ pub struct FriProof {
     pub last_layer_poly: LinePoly,
 }
 
-#[derive(Drop, Debug)]
+#[derive(Drop)]
 struct FriFirstLayerVerifier {
     /// The list of degree bounds of all circle polynomials commited in the first layer.
     column_log_bounds: Span<u32>,
