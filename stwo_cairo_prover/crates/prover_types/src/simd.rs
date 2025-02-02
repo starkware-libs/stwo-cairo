@@ -5,12 +5,13 @@ use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
 
 use bytemuck::Zeroable;
+use num_traits::Zero;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
-use crate::cpu::{CasmState, Felt252};
+use crate::cpu::{BigUInt, CasmState, Felt252};
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -443,6 +444,92 @@ pub trait DivExtend {
 impl DivExtend for PackedM31 {
     fn div(&self, rhs: Self) -> Self {
         *self * rhs.inverse()
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PackedBigUInt<const B: usize, const L: usize, const F: usize> {
+    value: [PackedM31; F],
+}
+impl<const B: usize, const L: usize, const F: usize> Default for PackedBigUInt<B, L, F> {
+    fn default() -> Self {
+        Self {
+            value: [PackedM31::zero(); F],
+        }
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> PackedBigUInt<B, L, F> {
+    pub fn from_values(values: [PackedM31; F]) -> Self {
+        Self { value: values }
+    }
+
+    pub fn from_array(arr: [BigUInt<B, L, F>; N_LANES]) -> Self {
+        let values = arr.map(|big_uint| std::array::from_fn(|i| big_uint.get_m31(i)));
+        Self::from_values(<_ as Pack>::pack(values))
+    }
+
+    pub fn broadcast(value: BigUInt<B, L, F>) -> Self {
+        Self::from_array([value; N_LANES])
+    }
+    pub fn from_packedfelt252_array(felts: Vec<PackedFelt252>) -> Self {
+        assert!(felts.len() <= N_LANES, "Too many PackedFelt252 values");
+        let mut values = [PackedM31::zero(); F];
+        for i in 0..F {
+            values[i] = felts[i].get_m31(0);
+        }
+        Self::from_values(values)
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Add for PackedBigUInt<B, L, F> {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i] + rhs[i]);
+        Self::from_values(result)
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Sub for PackedBigUInt<B, L, F> {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i] - rhs[i]);
+        Self::from_values(result)
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> Mul for PackedBigUInt<B, L, F> {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i] * rhs[i]);
+        Self::from_values(result)
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> DivExtend for PackedBigUInt<B, L, F> {
+    fn div(&self, rhs: Self) -> Self {
+        let lhs = self.value;
+        let rhs = rhs.value;
+        let result = std::array::from_fn(|i| lhs[i].div(rhs[i]));
+        Self::from_values(result)
+    }
+}
+impl<const B: usize, const L: usize, const F: usize> EqExtend for PackedBigUInt<B, L, F> {
+    fn eq(&self, other: Self) -> PackedBool {
+        let lhs = self.value;
+        let rhs = other.value;
+        let result: [PackedBool; F] = std::array::from_fn(|i| lhs[i].eq(rhs[i]));
+        PackedBool {
+            // TODO(Gali): Is this correct?
+            value: result
+                .iter()
+                .map(|b| b.value)
+                .fold(Simd::splat(0), |acc, x| acc | x),
+        }
     }
 }
 
