@@ -29,10 +29,10 @@ After executing a Cairo program one should be in the possession of four files:
 * trace.bin
 * memory.bin
 
-With the paths to the trace and memory files appearing in `air_private_inputs`. After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a Stwo proof:
+With the *absolute* paths to the trace and memory files appearing in `air_private_inputs`. After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a Stwo proof (run the command below from the `stwo_cairo_prover` folder):
 
 ```
-./target/release/adapted_stwo \
+cargo run --bin adapted_stwo --release \
 --pub_json <path_to_air_public_input> \
 --priv_json <path_to_air_private_input> \
 --proof_path <path for proof output>
@@ -98,15 +98,15 @@ scarb execute -p test_execute --print-program-output --arguments 5
 
 Where `test_execute` is the name of the package with the executable target (as defined in our Scarb.toml manifest)
 
-The above command runs our executable function within the `test-execute` package and prints the program's output segment, which contains a success bit followed by the Cairo Serde of main’s output or the panic reason in case of a panic.
+The above command runs our executable function within the `test-execute` package and prints the program's output segment, which contains a success bit (0 for success) followed by the Cairo Serde of main’s output or the panic reason in case of a panic.
 
 ## Execution targets
 
-The `--target` flag allows specifying either a `standalone` target or `bootloader` target. Standalone means that the program will be executed as-is, and intended to be proven directly with Stwo. When we run with the bootloader target, the program’s execution is expected to be wrapped by the bootloader’s execution, which itself will be proven via Stwo.
+The `--target` flag allows specifying either a `standalone` target or `bootloader` target. Standalone means that the program will be executed as-is, and intended to be proven directly with Stwo. When we run with the bootloader target, the program’s execution is expected to be wrapped by the [bootloader’s](https://github.com/Moonsong-Labs/cairo-bootloader?tab=readme-ov-file#cairo-bootloader) execution, which itself will be proven via Stwo.
 
 When executing with `--target standalone` (the default if not specified) we get the four files which consist as the input for the `adapted_stwo` binary (`air_private_input.json`, `air_public_input.json`, `trace.bin`, `memory.bin`), while when executing with `--target bootloader`, the output is given in the CairoPie format (Position Indenpendent Execution).
 
-In the meantime, `stwo-cairo` does not contain an API for executing the bootloader with the user's program as input, hence the only way to get a proof for a bootloader target is to take the generated CairoPie and send it to a third party like SHARP or [Atlantic](https://docs.herodotus.cloud/atlantic/introduction).
+In the meantime, `stwo-cairo` does not contain an API for executing the bootloader with the user's program as input, hence the only way to get a proof for a bootloader target is to take the generated CairoPie and send it to a third party like [Atlantic](https://docs.herodotus.cloud/atlantic/introduction).
 
 ## Input format
 
@@ -122,23 +122,23 @@ The expected input with `--arguments` is a comma-separated list of integers. Thi
 
 See the [documentation](https://docs.starknet.io/architecture-and-concepts/smart-contracts/serialization-of-cairo-types/) for more information about Cairo’s Serde.
 
-Note that when using `--arguments-file`, the expected input is an array of felts represented as hex string. For example, `1,2,3` in the above table becomes `[0x1, 0x2, 0x3]`.
+Note that when using `--arguments-file`, the expected input is an array of felts represented as hex string. For example, `1,2,3` in the above table becomes `["0x1", "0x2", "0x3"]`.
 
 ## Output format
 
-For standalone targets, the supported output is trace files (`air_public_input.json` & `air_private_input.json`)
+For standalone targets, the output is trace files (`air_public_input.json`, `air_private_input.json`, `memory_bin`, and `trace.bin`)
 
-For bootloader targets, the supported output is a Cairo pie
+For bootloader targets, the output is a CairoPie
 
 ## Limitations
 
 ### Gas
 
-Executables must be compiled with the `enable-gas = false` config in the manifest file. Gas tracking introduces a computation overhead and makes less sense outside the context of Starnet smart contracts.
+Executables must be compiled with the `enable-gas = false` config in the manifest file. Gas tracking introduces a computation overhead and makes less sense outside the context of Starknet smart contracts.
 
 ### Syscalls
 
-Syscalls are not supported in an executable target. Using syscalls, directly or via corelib functions that uses syscall (such as sha256, keccak, secp256k/r1 operations) will cause compilation to fail.
+Syscalls are not supported in an executable target. Using syscalls, directly or via corelib functions that use syscalls (such as sha256, keccak, secp256k/r1 operations) will fail the compilation.
 
 ### Padding overhead
 
