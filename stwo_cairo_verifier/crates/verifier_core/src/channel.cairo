@@ -89,7 +89,7 @@ pub impl ChannelImpl of ChannelTrait {
                     res.append(pack4(cur, (*y).to_array()));
                 },
             };
-        };
+        }
 
         self.digest = poseidon_hash_span(res.span());
 
@@ -119,7 +119,7 @@ pub impl ChannelImpl of ChannelTrait {
             }
             res.append(QM31Trait::from_array([r4, r5, r6, r7]));
             n_felts -= 2;
-        };
+        }
         res
     }
 
@@ -133,7 +133,7 @@ pub impl ChannelImpl of ChannelTrait {
             let (q, r) = DivRem::div_rem(cur, 256);
             bytes.append(r.try_into().unwrap());
             cur = q;
-        };
+        }
         bytes
     }
 
@@ -149,7 +149,7 @@ fn gen_bit_mask(n_bits: u32) -> u128 {
     let mut mask = 1;
     for _ in 0..n_bits {
         mask = mask.wrapping_mul(2);
-    };
+    }
     mask = mask.wrapping_sub(1);
     mask
 }
@@ -235,7 +235,7 @@ mod tests {
 
         for _ in 0_usize..10 {
             channel.draw_felt();
-        };
+        }
 
         let prev_digest = channel.digest;
         channel.mix_digest(0);

@@ -6,6 +6,7 @@ edition = "2023_10"
 [lib]
 
 [cairo]
+inlining-strategy = "avoid"
 
 [tool.fmt]
 sort-module-level-items = true

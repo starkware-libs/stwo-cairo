@@ -7,9 +7,11 @@ use stwo_cairo_prover::cairo_air::{
 };
 use stwo_cairo_prover::input::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_prover::input::ProverInput;
+use stwo_cairo_serialize::CairoSerialize;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -38,6 +40,9 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
+    // TODO: Remove. Just adding for this example PR.
+    #[structopt(long = "cairo_proof_path")]
+    cairo_proof_path: PathBuf,
     #[structopt(long = "track_relations")]
     track_relations: bool,
     #[structopt(long = "display_components")]
@@ -84,12 +89,21 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     );
 
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config)?;
+    let proof = prove_cairo::<Poseidon252MerkleChannel>(vm_output, prover_config)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
+    let mut serialized_cairo_proof = Vec::new();
+    CairoSerialize::serialize(&proof, &mut serialized_cairo_proof);
+    let serialized_cairo_proof = serialized_cairo_proof
+        .into_iter()
+        .map(|v| v.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
+    std::fs::write(args.cairo_proof_path, serialized_cairo_proof)?;
+
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof)?;
+        verify_cairo::<Poseidon252MerkleChannel>(proof)?;
         log::info!("Proof verified successfully");
     }
 

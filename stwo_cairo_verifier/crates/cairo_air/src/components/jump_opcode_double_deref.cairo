@@ -1,5 +1,3 @@
-use crate::components::CairoComponent;
-use crate::utils::U32Impl;
 use stwo_constraint_framework::{
     PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
@@ -10,6 +8,8 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::components::CairoComponent;
+use crate::utils::U32Impl;
 
 mod constraints;
 
@@ -21,7 +21,7 @@ pub struct Claim {
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_size(self: @Claim) -> u32 {
-        (*self.n_rows).next_power_of_two().ilog2()
+        core::cmp::max((*self.n_rows).next_power_of_two().ilog2(), 4)
     }
 
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
