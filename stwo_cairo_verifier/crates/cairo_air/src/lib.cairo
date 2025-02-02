@@ -105,7 +105,7 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
         .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
 
     let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
-    if let Result::Err(err) = verify(cairo_air, ref channel, stark_proof, ref commitment_scheme) {
+    if let Result::Err(err) = verify(cairo_air, ref channel, stark_proof, commitment_scheme) {
         return Result::Err(CairoVerificationError::Stark(err));
     }
 

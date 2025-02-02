@@ -69,7 +69,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     }
 
     fn verify_values(
-        self: @CommitmentSchemeVerifier,
+        self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
         proof: CommitmentSchemeProof,
         ref channel: Channel,
@@ -97,7 +97,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         let random_coeff = channel.draw_felt();
         let column_log_sizes = self.column_log_sizes();
-        let fri_config = *self.config.fri_config;
+        let fri_config = self.config.fri_config;
         let log_blowup_factor = fri_config.log_blowup_factor;
         let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor).span();
 
@@ -111,7 +111,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Verify proof of work.
         channel.mix_nonce(proof_of_work_nonce);
 
-        if !channel.check_proof_of_work(*self.config.pow_bits) {
+        if !channel.check_proof_of_work(self.config.pow_bits) {
             return Result::Err(VerificationError::ProofOfWork);
         }
 
