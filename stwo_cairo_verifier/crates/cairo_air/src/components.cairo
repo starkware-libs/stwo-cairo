@@ -54,8 +54,8 @@ pub trait CairoComponent<T> {
         self: @T,
         ref sum: QM31,
         ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Array<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Array<QM31>>,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     );

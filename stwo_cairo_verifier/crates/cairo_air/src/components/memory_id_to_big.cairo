@@ -24,11 +24,11 @@ pub const N_M31_IN_SMALL_FELT252: usize = 8; // 72 bits.
 
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 
-pub const BIG_N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
-
 pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = BIG_N_ID_AND_VALUE_COLUMNS;
 
 pub const BIG_N_COLUMNS: usize = BIG_N_ID_AND_VALUE_COLUMNS + N_MULTIPLICITY_COLUMNS;
+
+pub const BIG_N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
 
 pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = SMALL_N_ID_AND_VALUE_COLUMNS;
 
@@ -129,8 +129,8 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
         self: @BigComponent,
         ref sum: QM31,
         ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Array<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Array<QM31>>,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
@@ -170,6 +170,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
         let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
 
         let params = constraints_big::ConstraintParams {
+            log_size: *self.log_n_rows,
             MemoryIdToBig_alpha0: id_to_value_alpha_0,
             MemoryIdToBig_alpha1: id_to_value_alpha_1,
             MemoryIdToBig_alpha10: id_to_value_alpha_10,
@@ -257,8 +258,8 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
         self: @SmallComponent,
         ref sum: QM31,
         ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Array<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Array<QM31>>,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
@@ -278,6 +279,7 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
         let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
 
         let params = constraints_small::ConstraintParams {
+            log_size: *self.log_n_rows,
             MemoryIdToBig_alpha0: id_to_value_alpha_0,
             MemoryIdToBig_alpha1: id_to_value_alpha_1,
             MemoryIdToBig_alpha2: id_to_value_alpha_2,

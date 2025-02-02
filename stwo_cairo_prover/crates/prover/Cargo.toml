@@ -9,8 +9,8 @@ std = ["dep:sonic-rs"]
 
 [dependencies]
 air_structs_derive = { path = "../air_structs_derive" }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "438c107" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "438c107" }
+stwo-air-utils-derive = { path = "/Users/andrewmilson/projects/playground/stwo-debug/crates/air_utils_derive" }
+stwo-air-utils = { path = "/Users/andrewmilson/projects/playground/stwo-debug/crates/air_utils" }
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
 cairo-vm.workspace = true

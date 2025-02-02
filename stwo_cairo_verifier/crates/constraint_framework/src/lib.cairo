@@ -1,5 +1,6 @@
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
+use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
@@ -85,19 +86,23 @@ pub struct PreprocessedMaskValues {
 #[generate_trait]
 pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
     fn new(
-        mut preprocessed_mask_values: Span<Array<QM31>>,
+        mut preprocessed_mask_values: ColumnSpan<Span<QM31>>,
         preprocessed_columns: Span<PreprocessedColumn>,
     ) -> PreprocessedMaskValues {
         let mut values: Felt252Dict<Nullable<QM31>> = Default::default();
 
         for preprocessed_column in preprocessed_columns {
-            let mut column_mask_values = preprocessed_mask_values.pop_front().unwrap().span();
+            let mut column_mask_values = *preprocessed_mask_values.pop_front().unwrap();
+
             if let Option::Some(mask_value) = column_mask_values.pop_front() {
                 values
                     .insert(
                         PreprocessedColumnKey::encode(preprocessed_column),
                         NullableTrait::new(*mask_value),
                     );
+
+                // Preprocessed columns should have at most one mask items.
+                assert!(column_mask_values.is_empty());
             }
         }
 

@@ -7,13 +7,28 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::utils::{U32Impl, UsizeExTrait};
 use crate::components::CairoComponent;
-use crate::utils::U32Impl;
 use super::super::Invertible;
 
 mod constraints;
 
-pub const N_ADDR_TO_ID_COLUMNS: usize = 16;
+/// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
+/// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
+///
+/// 1. The ID and Multiplicity vectors are split to 'N_SPLIT_CHUNKS' chunks of size
+///    `ids.len()`/`N_SPLIT_CHUNKS`.
+/// 2. The chunks are padded with 0s to the next power of 2.
+///
+/// #  Example
+/// ID = [id0..id10], N_SPLIT_CHUNKS = 4:
+/// ID0 = [id0, id1, id2, 0]
+/// ID1 = [id3, id4, id5, 0]
+/// ID2 = [id6, id7, id8, 0]
+/// ID3 = [id9, id10, 0, 0]
+pub const N_SPLIT_CHUNKS: usize = 8;
+pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
+pub const N_TRACE_COLUMNS: usize = N_SPLIT_CHUNKS * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -25,8 +40,10 @@ pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(N_ADDR_TO_ID_COLUMNS, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 4, log_size)
+        let trace_log_sizes = ArrayImpl::new_repeated(N_TRACE_COLUMNS, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(
+            QM31_EXTENSION_DEGREE * N_SPLIT_CHUNKS.div_ceil(2), log_size,
+        )
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
@@ -83,8 +100,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
         self: @Component,
         ref sum: QM31,
         ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Array<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Array<QM31>>,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
@@ -96,6 +113,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let log_size = *self.claim.log_size;
 
         let params = constraints::ConstraintParams {
+            log_size,
             MemoryAddressToId_alpha0: addr_to_id_alpha_0,
             MemoryAddressToId_alpha1: addr_to_id_alpha_1,
             MemoryAddressToId_z: addr_to_id_z,

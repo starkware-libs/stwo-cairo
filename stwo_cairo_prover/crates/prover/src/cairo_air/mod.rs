@@ -9,10 +9,11 @@ use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElem
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::preprocessed_trace_columns;
+use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fri::FriConfig;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, CommitmentSchemeVerifier, PcsConfig};
@@ -217,10 +218,18 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Read;
+
     use cairo_lang_casm::casm;
+    use stwo_cairo_serialize::CairoSerialize;
+    use stwo_prover::core::fields::m31::M31;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+    use stwo_prover::core::vcs::poseidon252_merkle::{
+        Poseidon252MerkleChannel, Poseidon252MerkleHasher,
+    };
 
     use super::ProverConfig;
+    use crate::cairo_air::air::CairoProof;
     use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
     use crate::input::plain::input_from_plain_casm;
 
@@ -261,6 +270,30 @@ mod tests {
     fn test_basic_cairo_air() {
         let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(test_input(), test_cfg()).unwrap();
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+    }
+
+    #[test]
+    fn test_from_proof_json() {
+        let mut file = std::fs::File::open("/Users/andrewmilson/projects/playground/stwo-cairo-preprocessed/stwo_cairo_prover/small_proof.json").unwrap();
+        let mut proof_json = String::new();
+        file.read_to_string(&mut proof_json).unwrap();
+        let cairo_proof: CairoProof<Poseidon252MerkleHasher> =
+            serde_json::from_str(&proof_json).unwrap();
+        let mut out_felt = Vec::new();
+        CairoSerialize::serialize(&cairo_proof.stark_proof.0.commitments.0, &mut out_felt);
+        for v in &cairo_proof.stark_proof.0.commitments.0 {
+            println!("v: {}", v);
+        }
+        verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
+    }
+
+    #[test]
+    fn test_inv_val() {
+        let v = M31::from(1 << 16);
+        let v_inv = v.inverse();
+        println!("v: {}", v);
+        println!("v_inv: {}", v_inv);
+        println!("v * v_inv: {}", v * v_inv);
     }
 
     #[cfg(feature = "slow-tests")]
