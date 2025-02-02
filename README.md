@@ -13,6 +13,7 @@ Prove Cairo programs with the new [Stwo prover](https://github.com/starkware-lib
     * [Gas](#gas)
     * [Syscalls](#syscalls)
     * [Padding Overhead](#padding-overhead)
+* [Proving from Scarb](#proving-from-scarb)
 
 ## Disclaimer
 
@@ -21,7 +22,7 @@ Prove Cairo programs with the new [Stwo prover](https://github.com/starkware-lib
 🚧 The Stwo prover and its Cairo adaptation are still being built, therefore API breaking changes might happen
 often, so use it at your own risk. 🚧
 
-## Using Stwo to Prove Cairo Programs
+# Using Stwo to Prove Cairo Programs
 
 After executing a Cairo program one should be in the possession of four files:
 * air_public_inputs.json
@@ -142,5 +143,20 @@ Syscalls are not supported in an executable target. Using syscalls, directly or 
 
 ### Padding overhead
 
-At the time of writing, the execution (\# of steps and \# of builtin application per builtin) with a `standalone` target is still padded to powers of 2, w.r.t to the ratios in the [all_cairo](https://github.com/lambdaclass/cairo-vm/blob/15bf79470cdd8eff29f41fc0a87143dce5499c7e/vm/src/types/instance_definitions/builtins_instance_def.rs#L157) layout. This will be removed in the future as Stwo does not rely on padding. Bootloader target executions are not padded.
+At the time of writing, the execution (\# of steps and \# of builtin application per builtin) with a `standalone` target is still padded to powers of 2, w.r.t to the ratios in the [all_cairo](https://github.com/lambdaclass/cairo-vm/blob/15bf79470cdd8eff29f41fc0a87143dce5499c7e/vm/src/types/instance_definitions/builtins_instance_def.rs#L157) layout. This will be removed in the future as Stwo does not rely on padding. `bootloader` target executions are not padded.
 
+# Proving from Scarb
+
+`stwo-cairo` is integrated in Scarb from v2.10.0 onwards, which means that instead of building and running stwo-cairo on your own, you can use the `scarb prove` command (note that stwo is continuously improving, for the most up-to-date version use stwo-cairo [directly](#using-stwo-to-prove-cairo-programs)).
+
+After running `scarb execute`, a new folder is created under `./target/execute/<package_name>` path. These folders will be called `execution1`, `execution2`, ... and so on (run `scarb clean` to clear you execution history). Rather then specifying the paths to the trace files, you can use the execution id (the index of the relevant execution) to specify what exactly you want to prove. That is, after executing, you can run:
+
+```
+scarb prove --execution_id 1
+```
+
+and a proof for the trace files inside the `execution1` folder will be generated, and a `proof.json` file will be placed inside `execution1/proof`. To verify the proof, you can run:
+
+```
+scarb verify <path_to_proof_json>
+```
