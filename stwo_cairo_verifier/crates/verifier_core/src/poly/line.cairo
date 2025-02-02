@@ -39,7 +39,7 @@ pub impl LinePolyImpl of LinePolyTrait {
             doublings.append(x);
             let x_square = x * x;
             x = x_square + x_square - m31(1);
-        };
+        }
 
         fold(self.coeffs, @doublings, 0, 0, self.coeffs.len())
     }
@@ -66,7 +66,7 @@ pub fn repeat_value(values: Span<QM31>, duplicity: usize) -> Array<QM31> {
         for _ in 0..duplicity {
             res.append(*v)
         };
-    };
+    }
     res
 }
 
@@ -104,7 +104,7 @@ fn line_fft(
     while domain.log_size() != n_skipped_layers {
         domains.append(domain);
         domain = domain.double();
-    };
+    }
     let mut domains = domains.span();
 
     while let Option::Some(domain) = domains.pop_back() {
@@ -125,11 +125,11 @@ fn line_fft(
                 let (v0, v1) = butterfly(v0, v1, *twiddle);
                 next_values.append(v0);
                 next_r_values.append(v1);
-            };
+            }
             next_values.append_span(next_r_values.span());
-        };
+        }
         values = next_values;
-    };
+    }
 
     values
 }
@@ -144,7 +144,7 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     let mut res = array![];
     while let Option::Some(v) = iter.next() {
         res.append(v);
-    };
+    }
     res
 }
 

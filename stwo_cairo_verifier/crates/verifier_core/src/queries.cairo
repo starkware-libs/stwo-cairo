@@ -33,11 +33,11 @@ pub impl QueriesImpl of QueriesImplTrait {
                     break;
                 }
                 i += 4;
-            };
+            }
             if finished {
                 break;
             }
-        };
+        }
 
         Queries { positions: unsorted_positions.sort_ascending().dedup().span(), log_domain_size }
     }
@@ -73,7 +73,7 @@ pub fn get_folded_query_positions(mut query_positions: Span<usize>, n_folds: u32
             folded_positions.append(folded_position);
             prev_folded_position = folded_position;
         }
-    };
+    }
 
     folded_positions.span()
 }
