@@ -61,6 +61,7 @@ fn deserialize_inputs<'a>(
 pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
+    proof_mode: bool,
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
@@ -102,6 +103,7 @@ pub fn adapt_vm_output(
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
         &public_input.memory_segments,
+        proof_mode,
         dev_mode,
     )
 }
@@ -115,21 +117,24 @@ pub fn adapt_to_stwo_input(
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    proof_mode: bool,
     dev_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let (state_transitions, instruction_by_pc) =
         StateTransitions::from_iter(trace_iter, &mut memory, dev_mode);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::pedersen);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::ecdsa);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::keccak);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::bitwise);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::ec_op);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::poseidon);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check96);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::add_mod);
-    builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::mul_mod);
+    if proof_mode {
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::pedersen);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::ecdsa);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::keccak);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::bitwise);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::ec_op);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::poseidon);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::range_check96);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::add_mod);
+        builtins_segments.fill_builtin_segment(&mut memory, BuiltinName::mul_mod);
+    }
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
@@ -207,6 +212,7 @@ pub mod tests {
         adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
+            true,
             false,
         )
         .expect(
@@ -221,6 +227,7 @@ pub mod tests {
         adapt_vm_output(
             d.join("pub.json").as_path(),
             d.join("priv.json").as_path(),
+            true,
             false,
         )
         .expect(

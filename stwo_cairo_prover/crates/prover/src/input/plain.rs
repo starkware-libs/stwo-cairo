@@ -30,7 +30,7 @@ pub fn input_from_plain_casm(
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    adapt_finished_runner(runner, dev_mode)
+    adapt_finished_runner(runner, true, dev_mode)
 }
 
 // NOTE: the proof will include `step_limit -1` steps.
@@ -48,7 +48,7 @@ pub fn input_from_plain_casm_with_step_limit(
         .expect("Run failed");
     runner.relocate(true).unwrap();
 
-    adapt_finished_runner(runner, true)
+    adapt_finished_runner(runner, true, true)
 }
 
 fn program_from_casm(
@@ -83,7 +83,7 @@ fn program_from_casm(
 /// component only.
 /// # Panics
 /// - if the memory or the trace are not relocated.
-pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput {
+pub fn adapt_finished_runner(runner: CairoRunner, proof_mode: bool, dev_mode: bool) -> ProverInput {
     let _span = tracing::info_span!("adapt_finished_runner").entered();
     let memory_iter = runner
         .relocated_memory
@@ -119,6 +119,7 @@ pub fn adapt_finished_runner(runner: CairoRunner, dev_mode: bool) -> ProverInput
         MemoryBuilder::from_iter(MemoryConfig::default(), memory_iter),
         public_memory_addresses,
         memory_segments,
+        proof_mode,
         dev_mode,
     )
     .unwrap()

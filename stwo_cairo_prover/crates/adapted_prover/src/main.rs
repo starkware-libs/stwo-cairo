@@ -71,8 +71,12 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    let vm_output: ProverInput =
-        adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path(), true)?;
+    let vm_output: ProverInput = adapt_vm_output(
+        args.pub_json.as_path(),
+        args.priv_json.as_path(),
+        true,
+        true,
+    )?;
     let prover_config = ConfigBuilder::default()
         .track_relations(args.track_relations)
         .display_components(args.display_components)
