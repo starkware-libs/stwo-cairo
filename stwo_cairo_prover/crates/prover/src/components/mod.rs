@@ -1,6 +1,7 @@
 pub mod add_ap_opcode;
 pub mod add_ap_opcode_imm;
 pub mod add_ap_opcode_op_1_base_fp;
+pub mod add_mod_builtin;
 pub mod add_opcode;
 pub mod add_opcode_imm;
 pub mod add_opcode_small;
