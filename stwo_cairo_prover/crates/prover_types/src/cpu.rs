@@ -667,7 +667,12 @@ impl<const B: usize, const L: usize, const F: usize> ProverType for BigUInt<B, L
     }
     fn r#type() -> String {
         match L {
-            6 | 12 => format!("BigUInt<{}, {}>", 64 * L, L),
+            6 | 12 => format!(
+                "BigUInt<{}, {}, {}>",
+                64 * L,
+                L,
+                (64 * L) / BIGUINT_BITS_PER_WORD
+            ),
             _ => panic!("Unsupported BigUInt size"),
         }
     }
