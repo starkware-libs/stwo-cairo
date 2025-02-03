@@ -196,7 +196,6 @@ impl StateTransitions {
         let encoded_instruction = memory.get_inst(pc.0);
         instruction_by_pc.entry(pc).or_insert(encoded_instruction);
         let instruction = Instruction::decode(encoded_instruction);
-
         match instruction {
             // ret.
             Instruction {
@@ -600,15 +599,60 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 }
 
 /// Tests instructions mapping.
-/// Every opcode is tested except:
-/// - `jmp rel [ap/fp + offset]`
-/// - `jmp abs [[ap/fp + offset1] + offset2]`
-// TODO(Stav): Find a way to check those without the casm macro.
 #[cfg(test)]
 mod mappings_tests {
     use cairo_lang_casm::casm;
 
+    use super::*;
+    use crate::input::memory::*;
     use crate::input::plain::input_from_plain_casm;
+
+    #[test]
+    fn test_jmp_rel() {
+        let encoded_instr = 0b000000100001011100000000000000001111111111111110111111111111111;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let trace_entry = TraceEntry {
+            ap: 1,
+            fp: 1,
+            pc: 1,
+        };
+        let (state_transitions, _) =
+            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder, false);
+        assert_eq!(
+            state_transitions
+                .casm_states_by_opcode
+                .jump_opcode_rel
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_jmp_abs_double_deref() {
+        let encoded_instr = 0b000000010000001000000000000000100000000000000000111111111111111;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let trace_entry = TraceEntry {
+            ap: 1,
+            fp: 1,
+            pc: 1,
+        };
+        let (state_transitions, _) =
+            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder, false);
+        println!("{}", state_transitions.casm_states_by_opcode);
+        assert_eq!(
+            state_transitions
+                .casm_states_by_opcode
+                .jump_opcode_double_deref
+                .len(),
+            1
+        );
+    }
 
     // TODO(Ohad): un-ignore when the opcode is in.
     #[ignore]
@@ -630,7 +674,7 @@ mod mappings_tests {
     }
 
     #[test]
-    fn test_jmp_rel() {
+    fn test_jmp_rel_imm() {
         let instructions = casm! {
             jmp rel 2;
             [ap] = [ap-1] + 3, ap++;
