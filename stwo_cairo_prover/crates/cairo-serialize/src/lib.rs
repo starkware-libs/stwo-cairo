@@ -3,8 +3,8 @@ use starknet_ff::FieldElement;
 pub use stwo_cairo_serialize_derive::CairoSerialize;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fri::{FriLayerProof, FriProof};
-use stwo_prover::core::pcs::CommitmentSchemeProof;
+use stwo_prover::core::fri::{FriConfig, FriLayerProof, FriProof};
+use stwo_prover::core::pcs::{CommitmentSchemeProof, PcsConfig};
 use stwo_prover::core::poly::line::LinePoly;
 use stwo_prover::core::prover::StarkProof;
 use stwo_prover::core::vcs::ops::MerkleHasher;
@@ -104,12 +104,37 @@ impl CairoSerialize for FieldElement {
     }
 }
 
+impl CairoSerialize for FriConfig {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        let Self {
+            log_blowup_factor,
+            log_last_layer_degree_bound,
+            n_queries,
+        } = self;
+        log_blowup_factor.serialize(output);
+        log_last_layer_degree_bound.serialize(output);
+        n_queries.serialize(output);
+    }
+}
+
+impl CairoSerialize for PcsConfig {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        let Self {
+            pow_bits,
+            fri_config,
+        } = self;
+        pow_bits.serialize(output);
+        fri_config.serialize(output);
+    }
+}
+
 impl<H: MerkleHasher> CairoSerialize for CommitmentSchemeProof<H>
 where
     H::Hash: CairoSerialize,
 {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
         let Self {
+            config,
             commitments,
             sampled_values,
             decommitments,
@@ -117,6 +142,7 @@ where
             proof_of_work,
             fri_proof,
         } = self;
+        config.serialize(output);
         commitments.serialize(output);
         sampled_values.serialize(output);
         decommitments.serialize(output);
