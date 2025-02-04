@@ -607,6 +607,16 @@ where
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
+            range_check_6::Eval {
+                lookup_elements: relations::RangeCheck_6::dummy(),
+            },
+            1 << 6,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
             range_check_11::Eval {
                 lookup_elements: relations::RangeCheck_11::dummy(),
             },
@@ -691,16 +701,6 @@ where
                 lookup_elements: relations::RangeCheck_3_6_6_3::dummy(),
             },
             1 << 14,
-        )
-        .entries(trace),
-    );
-    entries.extend(
-        RelationTrackerComponent::new(
-            tree_span_provider,
-            range_check_6::Eval {
-                lookup_elements: relations::RangeCheck_6::dummy(),
-            },
-            1 << 6,
         )
         .entries(trace),
     );
