@@ -15,15 +15,17 @@ trait Cube {
 }
 
 impl Cube for FieldElement {
+    /// This method returns the cube of the FieldElement, as if it represents an element directly
+    /// rather than in Montgomery form. While normal cubing of an element x = a * R (representing a
+    /// in Montgomenry form) results in a**3 * R, this function instead returns x**3 = a**3 * R**3.
     fn cube(self: FieldElement) -> FieldElement {
         self * self * self * FELT252_MONT_CUBE_FACTOR
     }
 }
 
 pub fn cube252(x: Felt252Packed27) -> Felt252Packed27 {
-    let x: FieldElement = Felt252::from(x).into();
-    let x = x.cube();
-    Felt252::from(x).into()
+    let x: FieldElement = x.into();
+    x.cube().into()
 }
 
 const POSEIDON_ROUND_KEYS: [[[u64; 4]; 3]; 35] = [
@@ -711,11 +713,11 @@ const POSEIDON_ROUND_KEYS: [[[u64; 4]; 3]; 35] = [
 ];
 
 pub fn round_keys_field_elements(round: M31) -> [FieldElement; 3] {
-    POSEIDON_ROUND_KEYS[round.0 as usize].map(|k| FieldElement::from_mont(k))
+    POSEIDON_ROUND_KEYS[round.0 as usize].map(|data| FieldElement::from_mont(data))
 }
 
 pub fn poseidon_round_keys(round: M31) -> [Felt252Packed27; 3] {
-    POSEIDON_ROUND_KEYS[round.0 as usize].map(|k| Felt252Packed27 { limbs: k })
+    POSEIDON_ROUND_KEYS[round.0 as usize].map(|limbs| Felt252Packed27 { limbs })
 }
 
 pub fn poseidon_full_round_chain(
@@ -723,9 +725,11 @@ pub fn poseidon_full_round_chain(
     round: M31,
     state: [Felt252Packed27; 3],
 ) -> (M31, M31, [Felt252Packed27; 3]) {
-    let [x, y, z] = state.map(|x| FieldElement::from(Felt252::from(x)).cube());
+    let [x, y, z] = state.map(|x| FieldElement::from(x).cube());
     let keys = round_keys_field_elements(round);
 
+    // An implementation of the MDS [[3, 1, 1], [1, -1, 1], [1, 1, -2]] using only
+    // 7 field adds/subs (plus 3 more additions for the round keys) and no muls.
     let y1_zm1 = y - z;
     let x1_ym1_z1 = x - y1_zm1;
     let x1_y1_zm1 = x + y1_zm1;
@@ -735,8 +739,7 @@ pub fn poseidon_full_round_chain(
     let new_x = x2_y2 + x1_ym1_z1 + keys[0];
     let new_y = x1_ym1_z1 + keys[1];
     let new_z = x1_y1_zm1 - z + keys[2];
-
-    let state = [new_x, new_y, new_z].map(|x| Felt252Packed27::from(Felt252::from(x)));
+    let state = [new_x, new_y, new_z].map(Felt252Packed27::from);
 
     (chain, round + M31::from_u32_unchecked(1), state)
 }
@@ -747,6 +750,9 @@ pub fn poseidon_partial_round_field_elements(
 ) -> [FieldElement; 4] {
     let z23 = z2.cube();
 
+    // An implementation of the linear combination
+    //   z3 = 8*z03 + 4*z1 + 6*z13 + 2*z2 - 2*z23 + 2*half_key
+    // using only 9 field adds/subs, and no muls.
     let z03_z13 = z03 + z13;
     let z03_z13_z1 = z03_z13 + z1;
     let longsum = z03_z13_z1 + z2 - z23 + half_key;
@@ -761,12 +767,12 @@ pub fn poseidon_3_partial_rounds_chain(
     round: M31,
     state: [Felt252Packed27; 4],
 ) -> (M31, M31, [Felt252Packed27; 4]) {
-    let mut state = state.map(|x| FieldElement::from(Felt252::from(x)));
+    let mut state = state.map(FieldElement::from);
     let keys = round_keys_field_elements(round);
     for half_key in keys {
         state = poseidon_partial_round_field_elements(state, half_key)
     }
-    let state = state.map(|x| Felt252Packed27::from(Felt252::from(x)));
+    let state = state.map(Felt252Packed27::from);
 
     (chain, round + M31::from_u32_unchecked(1), state)
 }
