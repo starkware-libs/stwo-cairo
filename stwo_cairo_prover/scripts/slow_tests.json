@@ -10,5 +10,11 @@
         "pub.json",
         "priv.json",
         "trace"
+    ],
+    "test_prove_verify_all_components": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace"
     ]
 }

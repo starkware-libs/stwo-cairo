@@ -228,7 +228,7 @@ pub enum CairoVerificationError {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use cairo_lang_casm::casm;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
@@ -260,7 +260,7 @@ mod tests {
         input_from_plain_casm(instructions)
     }
 
-    fn test_cfg() -> ProverConfig {
+    pub fn test_cfg() -> ProverConfig {
         ProverConfig {
             // TODO(Gali): Set track relations to true after implementing get_preprocessed_column in
             // relation_tracker in stwo.
