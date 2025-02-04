@@ -1,4 +1,4 @@
-use prover_types::cpu::{Felt252, Felt252Packed27, M31};
+use prover_types::cpu::{Felt252Packed27, M31};
 use starknet_ff::FieldElement;
 
 use super::const_columns::round_keys;
@@ -12,7 +12,7 @@ pub fn round_keys_field_elements(round: M31) -> [FieldElement; 3] {
 pub struct PoseidonRoundKeys {}
 impl PoseidonRoundKeys {
     pub fn deduce_output(round: M31) -> [Felt252Packed27; 3] {
-        round_keys(round)
+        round_keys(round.0 as usize)
     }
 }
 
@@ -108,10 +108,7 @@ impl Poseidon3PartialRoundsChain {
 
 #[cfg(test)]
 mod tests {
-    use std::array::from_fn;
-
     use num_traits::Zero;
-    use stwo_prover::core::backend::simd::m31::N_LANES;
 
     use super::*;
 
