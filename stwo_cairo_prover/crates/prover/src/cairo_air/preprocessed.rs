@@ -19,6 +19,9 @@ use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
 
+pub const SEQ_COLUMN_PREFIX: &str = "seq";
+pub const BITWISE_XOR_TABLE_PREFIX: &str = "bitwise_xor";
+
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
     fn id(&self) -> PreProcessedColumnId;
