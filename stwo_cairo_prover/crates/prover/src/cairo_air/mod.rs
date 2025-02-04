@@ -264,7 +264,7 @@ mod tests {
         ProverConfig {
             // TODO(Gali): Set track relations to true after implementing get_preprocessed_column in
             // relation_tracker in stwo.
-            track_relations: false,
+            track_relations: true,
             display_components: true,
         }
     }

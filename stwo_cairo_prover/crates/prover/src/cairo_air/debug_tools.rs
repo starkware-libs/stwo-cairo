@@ -14,6 +14,7 @@ use stwo_prover::core::pcs::CommitmentSchemeProver;
 use stwo_prover::core::poly::circle::CanonicCoset;
 
 use super::air::CairoClaim;
+use super::preprocessed::preprocessed_trace_columns;
 use crate::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_6,
     range_check_3_6_6_3, range_check_4_3, range_check_6, range_check_7_2_5, range_check_9_9,
@@ -49,7 +50,12 @@ where
     let evals = &evals.as_ref();
     let trace = &evals.into();
 
-    let tree_span_provider = &mut TraceLocationAllocator::default();
+    let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
+        &preprocessed_trace_columns()
+            .iter()
+            .map(|c| c.id())
+            .collect_vec(),
+    );
     let mut entries = vec![];
 
     // TODO(Ohad): reduce boilerplate.
@@ -64,7 +70,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -80,7 +86,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -96,7 +102,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -112,7 +118,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -128,7 +134,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -144,7 +150,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -160,7 +166,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -176,7 +182,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -191,7 +197,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -207,7 +213,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         )
@@ -223,7 +229,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -239,7 +245,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -255,7 +261,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -273,7 +279,7 @@ where
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                     range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -289,7 +295,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -305,7 +311,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -321,7 +327,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -337,7 +343,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -353,7 +359,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -369,7 +375,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -385,7 +391,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -401,7 +407,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -418,7 +424,7 @@ where
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -435,7 +441,7 @@ where
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -452,7 +458,7 @@ where
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -469,7 +475,7 @@ where
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -485,7 +491,7 @@ where
                     opcodes_lookup_elements: relations::Opcodes::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                claim.n_rows,
+                std::cmp::max(claim.n_rows.next_power_of_two(),16),
             )
             .entries(trace),
         );
@@ -555,17 +561,6 @@ where
         );
     }
 
-    entries.extend(
-        RelationTrackerComponent::new(
-            tree_span_provider,
-            verify_bitwise_xor_9::Eval {
-                claim: claim.verify_bitwise_xor_9,
-                verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
-            },
-            1 << crate::components::verify_bitwise_xor_9::component::LOG_SIZE,
-        )
-        .entries(trace),
-    );
     // Memory.
     entries.extend(
         RelationTrackerComponent::new(
@@ -701,6 +696,18 @@ where
                 lookup_elements: relations::RangeCheck_3_6_6_3::dummy(),
             },
             1 << 14,
+        )
+        .entries(trace),
+    );
+
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            verify_bitwise_xor_9::Eval {
+                claim: claim.verify_bitwise_xor_9,
+                verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
+            },
+            1 << crate::components::verify_bitwise_xor_9::component::LOG_SIZE,
         )
         .entries(trace),
     );
