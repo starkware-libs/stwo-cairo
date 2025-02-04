@@ -107,6 +107,24 @@ impl Not for Bool {
     }
 }
 
+impl BitAnd for Bool {
+    type Output = Bool;
+    fn bitand(self, other: Self) -> Self::Output {
+        Bool {
+            value: self.value & other.value,
+        }
+    }
+}
+
+impl BitOr for Bool {
+    type Output = Bool;
+    fn bitor(self, other: Self) -> Self::Output {
+        Bool {
+            value: self.value | other.value,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
 pub struct UInt16 {
     pub value: u16,
