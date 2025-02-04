@@ -587,7 +587,7 @@ pub const FELT252WIDTH27_BITS_PER_WORD: usize = 27;
 
 pub const P_PACKED27_FELTS: [u32; FELT252WIDTH27_N_WORDS] = [1, 0, 0, 0, 0, 0, 0, 136, 0, 256];
 /// A version of Felt252 whose values are packed into 27-bit limbs instead of 9-bit.
-/// The only supported operations are conversions to and from Felt252.
+/// The only supported operations are conversions to and from Felt252 and FieldElement.
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
 pub struct Felt252Width27 {
     pub limbs: [u64; 4],
