@@ -617,7 +617,7 @@ mod mappings_tests {
             pc: 1,
         };
         let (state_transitions, _) =
-            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder, false);
+            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
         assert_eq!(
             state_transitions
                 .casm_states_by_opcode
@@ -643,7 +643,7 @@ mod mappings_tests {
             pc: 1,
         };
         let (state_transitions, _) =
-            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder, false);
+            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
         assert_eq!(
             state_transitions
                 .casm_states_by_opcode
