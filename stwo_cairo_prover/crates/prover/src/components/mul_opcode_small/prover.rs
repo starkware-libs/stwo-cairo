@@ -31,7 +31,7 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim};
-use crate::components::utils::pack_values;
+use crate::components::utils::{pack_values, Enabler};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, range_check_11, verify_instruction,
 };
@@ -39,7 +39,7 @@ use crate::relations;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
-const N_TRACE_COLUMNS: usize = 36;
+const N_TRACE_COLUMNS: usize = 37;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -64,14 +64,9 @@ impl ClaimGenerator {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
-        let need_padding = n_rows != size;
-
-        if need_padding {
-            self.inputs.resize(size, *self.inputs.first().unwrap());
-            bit_reverse_coset_to_circle_domain_order(&mut self.inputs);
-        }
-
+        self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
+
         let (trace, lookup_data) = write_trace_simd(
             n_rows,
             packed_inputs,
@@ -132,6 +127,7 @@ fn write_trace_simd(
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
+    let padding_col = Enabler::new(n_rows);
 
     trace
         .par_iter_mut()
@@ -508,27 +504,19 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col10)),
                     input_fp_col2,
                 ];
+                *row[36] = padding_col.packed_at(row_index);
 
                 // Add sub-components inputs.
-                #[allow(clippy::needless_range_loop)]
-                for i in 0..N_LANES {
-                    if bit_reverse_index(
-                        coset_index_to_circle_domain_index(row_index * N_LANES + i, log_size),
-                        log_size,
-                    ) < n_rows
-                    {
-                        verify_instruction_state.add_input(&verify_instruction_inputs_0[i]);
-                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_0[i]);
-                        memory_id_to_big_state.add_input(&memory_id_to_big_inputs_0[i]);
-                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_1[i]);
-                        memory_id_to_big_state.add_input(&memory_id_to_big_inputs_1[i]);
-                        memory_address_to_id_state.add_input(&memory_address_to_id_inputs_2[i]);
-                        memory_id_to_big_state.add_input(&memory_id_to_big_inputs_2[i]);
-                        range_check_11_state.add_input(&range_check_11_inputs_0[i]);
-                        range_check_11_state.add_input(&range_check_11_inputs_1[i]);
-                        range_check_11_state.add_input(&range_check_11_inputs_2[i]);
-                    }
-                }
+                verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_0);
+                memory_id_to_big_state.add_inputs(&memory_id_to_big_inputs_0);
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_1);
+                memory_id_to_big_state.add_inputs(&memory_id_to_big_inputs_1);
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_2);
+                memory_id_to_big_state.add_inputs(&memory_id_to_big_inputs_2);
+                range_check_11_state.add_inputs(&range_check_11_inputs_0);
+                range_check_11_state.add_inputs(&range_check_11_inputs_1);
+                range_check_11_state.add_inputs(&range_check_11_inputs_2);
             },
         );
 
@@ -569,6 +557,7 @@ impl InteractionClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
+        let padding_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         // Sum logup terms in pairs.
@@ -643,7 +632,11 @@ impl InteractionClaimGenerator {
         {
             let denom0: PackedQM31 = opcodes.combine(values0);
             let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(i, denom1 - denom0, denom0 * denom1);
+            col_gen.write_frac(
+                i,
+                (denom1 - denom0) * padding_col.packed_at(i),
+                denom0 * denom1,
+            );
         }
         col_gen.finalize_col();
 
