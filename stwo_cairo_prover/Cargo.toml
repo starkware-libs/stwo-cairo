@@ -36,7 +36,7 @@ serde_json = "1.0.1"
 stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "438c107", features = [
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad", features = [
     "parallel",
 ], default-features = false }
 thiserror = { version = "2.0.10", default-features = false }
