@@ -648,6 +648,21 @@ impl From<Felt252Packed27> for Felt252 {
     }
 }
 
+// Convert between Felt252Packed27 and FieldElement for performing field operations.
+// See the documentation of the conversions between Felt252<>FieldElement for more details.
+impl From<Felt252Packed27> for FieldElement {
+    fn from(n: Felt252Packed27) -> FieldElement {
+        FieldElement::from_mont(n.limbs) + FieldElement::ZERO
+    }
+}
+impl From<FieldElement> for Felt252Packed27 {
+    fn from(n: FieldElement) -> Felt252Packed27 {
+        Felt252Packed27 {
+            limbs: n.into_mont(),
+        }
+    }
+}
+
 impl ProverType for Felt252Packed27 {
     fn calc(&self) -> String {
         format!(
