@@ -15,7 +15,7 @@ use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
-use super::component::{Claim, InteractionClaim, N_SPLIT_CHUNKS};
+use super::component::{Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT};
 use crate::cairo_air::preprocessed::Seq;
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
@@ -121,7 +121,7 @@ impl ClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let size = std::cmp::max(
-            (self.address_to_raw_id.len() / N_SPLIT_CHUNKS).next_power_of_two(),
+            (self.address_to_raw_id.len() / MEMORY_ADDRESS_TO_ID_SPLIT).next_power_of_two(),
             N_LANES,
         );
         let n_packed_rows = size.div_ceil(N_LANES);
@@ -146,9 +146,9 @@ impl ClaimGenerator {
         }
 
         // Lookup data.
-        let ids: [_; N_SPLIT_CHUNKS] =
+        let ids: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
             std::array::from_fn(|i| trace[i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
-        let multiplicities: [_; N_SPLIT_CHUNKS] =
+        let multiplicities: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
             std::array::from_fn(|i| trace[1 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
 
         // Commit on trace.
@@ -173,8 +173,8 @@ impl ClaimGenerator {
 }
 
 pub struct InteractionClaimGenerator {
-    pub ids: [Vec<PackedM31>; N_SPLIT_CHUNKS],
-    pub multiplicities: [Vec<PackedM31>; N_SPLIT_CHUNKS],
+    pub ids: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
+    pub multiplicities: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
 }
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace<MC: MerkleChannel>(
