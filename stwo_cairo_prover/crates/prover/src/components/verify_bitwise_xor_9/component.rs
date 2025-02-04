@@ -66,15 +66,9 @@ impl FrameworkEval for Eval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let xor_a = eval.get_preprocessed_column(
-            PreProcessedColumn::BitwiseXor(BitwiseXor::new(N_BITS, 0)).id(),
-        );
-        let xor_b = eval.get_preprocessed_column(
-            PreProcessedColumn::BitwiseXor(BitwiseXor::new(N_BITS, 1)).id(),
-        );
-        let xor_c = eval.get_preprocessed_column(
-            PreProcessedColumn::BitwiseXor(BitwiseXor::new(N_BITS, 2)).id(),
-        );
+        let xor_a = eval.get_preprocessed_column(BitwiseXor::new(N_BITS, 0).id());
+        let xor_b = eval.get_preprocessed_column(BitwiseXor::new(N_BITS, 1).id());
+        let xor_c = eval.get_preprocessed_column(BitwiseXor::new(N_BITS, 2).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(

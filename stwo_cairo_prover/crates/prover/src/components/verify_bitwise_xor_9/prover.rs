@@ -33,7 +33,7 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim, LOG_SIZE, N_BITS};
-use crate::cairo_air::preprocessed::{BitwiseXor, PreProcessedColumn};
+use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::utils::{pack_values, AtomicMultiplicityColumn};
 use crate::relations;
 
