@@ -11,8 +11,12 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
+use super::poseidon::consts::{PoseidonRoundKeysColumn, PoseidonRoundNumber};
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
+
+pub const SEQ_COLUMN_PREFIX: &str = "seq";
+pub const BITWISE_XOR_TABLE_PREFIX: &str = "bitwise_xor";
 
 const N_PREPROCESSED_COLUMN_SIZES: usize = (LOG_MAX_ROWS - LOG_N_LANES) as usize + 1;
 
@@ -21,6 +25,10 @@ const SEQ_LOG_SIZES: [u32; N_PREPROCESSED_COLUMN_SIZES] = preprocessed_log_sizes
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
+
+pub fn table_id_to_col_id(table_id: &str, col_index: usize) -> String {
+    format!("{}_{}", table_id, col_index)
+}
 
 /// [LOG_MAX_ROWS, LOG_MAX_ROWS - 1, ..., LOG_N_LANES]
 const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
@@ -37,12 +45,16 @@ const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
 pub enum PreProcessedColumn {
     Seq(Seq),
     BitwiseXor(BitwiseXor),
+    PoseidonRoundKeys(PoseidonRoundKeysColumn),
+    PoseidonRoundNumber(PoseidonRoundNumber),
 }
 impl PreProcessedColumn {
     pub fn log_size(&self) -> u32 {
         match self {
             PreProcessedColumn::Seq(column) => column.log_size,
             PreProcessedColumn::BitwiseXor(column) => column.log_size(),
+            PreProcessedColumn::PoseidonRoundKeys(column) => column.log_size(),
+            PreProcessedColumn::PoseidonRoundNumber(column) => column.log_size(),
         }
     }
 
@@ -50,6 +62,8 @@ impl PreProcessedColumn {
         match self {
             PreProcessedColumn::Seq(column) => column.id(),
             PreProcessedColumn::BitwiseXor(column) => column.id(),
+            PreProcessedColumn::PoseidonRoundKeys(column) => column.id(),
+            PreProcessedColumn::PoseidonRoundNumber(column) => column.id(),
         }
     }
 
@@ -57,6 +71,8 @@ impl PreProcessedColumn {
         match self {
             PreProcessedColumn::Seq(column) => column.gen_column_simd(),
             PreProcessedColumn::BitwiseXor(column) => column.gen_column_simd(),
+            PreProcessedColumn::PoseidonRoundKeys(column) => column.gen_column_simd(),
+            PreProcessedColumn::PoseidonRoundNumber(column) => column.gen_column_simd(),
         }
     }
 }
@@ -96,7 +112,7 @@ impl Seq {
 
     pub fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("seq_{}", self.log_size).to_string(),
+            id: format!("{}_{}", SEQ_COLUMN_PREFIX, self.log_size),
         }
     }
 }
@@ -120,7 +136,10 @@ impl BitwiseXor {
 
     pub fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
+            id: table_id_to_col_id(
+                &format!("{}_{}", BITWISE_XOR_TABLE_PREFIX, self.n_bits),
+                self.col_index,
+            ),
         }
     }
 
