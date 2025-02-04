@@ -1,6 +1,6 @@
 use std::simd::{u32x16, Simd};
 
-use itertools::{chain, Itertools};
+use itertools::Itertools;
 use prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -14,62 +14,63 @@ use stwo_prover::core::poly::BitReversedOrder;
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
-const N_PREPROCESSED_COLUMN_SIZES: usize = (LOG_MAX_ROWS - LOG_N_LANES) as usize + 1;
-
-// List of sizes to initialize the preprocessed trace with for `PreprocessedColumn::Seq`.
-const SEQ_LOG_SIZES: [u32; N_PREPROCESSED_COLUMN_SIZES] = preprocessed_log_sizes();
-
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
 
-/// [LOG_MAX_ROWS, LOG_MAX_ROWS - 1, ..., LOG_N_LANES]
-const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
-    let mut arr = [0; N_PREPROCESSED_COLUMN_SIZES];
-    let mut i = 0;
-    while i < N_PREPROCESSED_COLUMN_SIZES {
-        arr[i] = LOG_MAX_ROWS - i as u32;
-        i += 1;
-    }
-    arr
+pub trait PreProcessedColumn {
+    fn log_size(&self) -> u32;
+    fn id(&self) -> PreProcessedColumnId;
+    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>;
 }
 
-// TODO(Gali): Convert to dyn trait.
-pub enum PreProcessedColumn {
-    Seq(Seq),
-    BitwiseXor(BitwiseXor),
+pub struct PreProcessedTrace {
+    seq_columns: Vec<Seq>,
+    bitwise_xor_columns: Vec<BitwiseXor>,
 }
-impl PreProcessedColumn {
-    pub fn log_size(&self) -> u32 {
-        match self {
-            PreProcessedColumn::Seq(column) => column.log_size,
-            PreProcessedColumn::BitwiseXor(column) => column.log_size(),
+impl PreProcessedTrace {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        let seq_columns = (LOG_N_LANES..=LOG_MAX_ROWS).map(Seq::new).collect_vec();
+        let bitwise_xor_columns = (0..3)
+            .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
+            .collect_vec();
+        Self {
+            seq_columns,
+            bitwise_xor_columns,
         }
     }
 
-    pub fn id(&self) -> PreProcessedColumnId {
-        match self {
-            PreProcessedColumn::Seq(column) => column.id(),
-            PreProcessedColumn::BitwiseXor(column) => column.id(),
-        }
+    fn columns(&self) -> Vec<&dyn PreProcessedColumn> {
+        let mut columns: Vec<&dyn PreProcessedColumn> = vec![];
+        columns.extend(
+            self.seq_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
+        columns.extend(
+            self.bitwise_xor_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
+
+        // Sort columns by descending log size.
+        columns
+            .into_iter()
+            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+            .collect_vec()
     }
 
-    pub fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
-        match self {
-            PreProcessedColumn::Seq(column) => column.gen_column_simd(),
-            PreProcessedColumn::BitwiseXor(column) => column.gen_column_simd(),
-        }
+    pub fn log_sizes(&self) -> Vec<u32> {
+        self.columns().iter().map(|c| c.log_size()).collect()
     }
-}
 
-/// Returns column info for the preprocessed trace.
-pub fn preprocessed_trace_columns() -> Vec<PreProcessedColumn> {
-    let seq_columns = SEQ_LOG_SIZES.map(|log_size| PreProcessedColumn::Seq(Seq::new(log_size)));
-    let bitwise_xor_columns = (0..3).map(move |col_index| {
-        PreProcessedColumn::BitwiseXor(BitwiseXor::new(XOR_N_BITS, col_index))
-    });
-    chain![seq_columns, bitwise_xor_columns]
-        .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
-        .collect_vec()
+    pub fn gen_trace(&self) -> Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>> {
+        self.columns().iter().map(|c| c.gen_column_simd()).collect()
+    }
+
+    pub fn ids(&self) -> Vec<PreProcessedColumnId> {
+        self.columns().iter().map(|c| c.id()).collect()
+    }
 }
 
 /// A column with the numbers [0..(2^log_size)-1].
@@ -86,15 +87,18 @@ impl Seq {
         PackedM31::broadcast(M31::from(vec_row * N_LANES))
             + unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) }
     }
-
-    pub fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+}
+impl PreProcessedColumn for Seq {
+    fn log_size(&self) -> u32 {
+        self.log_size
+    }
+    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         let col = Col::<SimdBackend, BaseField>::from_iter(
             (0..(1 << self.log_size)).map(BaseField::from),
         );
         CircleEvaluation::new(CanonicCoset::new(self.log_size).circle_domain(), col)
     }
-
-    pub fn id(&self) -> PreProcessedColumnId {
+    fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
             id: format!("seq_{}", self.log_size).to_string(),
         }
@@ -118,16 +122,6 @@ impl BitwiseXor {
         Self { n_bits, col_index }
     }
 
-    pub fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
-        }
-    }
-
-    pub const fn log_size(&self) -> u32 {
-        2 * self.n_bits
-    }
-
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
         let lhs = || -> u32x16 {
             (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32)) >> self.n_bits
@@ -144,8 +138,13 @@ impl BitwiseXor {
         };
         unsafe { PackedM31::from_simd_unchecked(simd) }
     }
+}
+impl PreProcessedColumn for BitwiseXor {
+    fn log_size(&self) -> u32 {
+        2 * self.n_bits
+    }
 
-    pub fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
             BaseColumn::from_simd(
@@ -154,6 +153,12 @@ impl BitwiseXor {
                     .collect(),
             ),
         )
+    }
+
+    fn id(&self) -> PreProcessedColumnId {
+        PreProcessedColumnId {
+            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
+        }
     }
 }
 
@@ -165,7 +170,9 @@ mod tests {
 
     #[test]
     fn test_columns_are_in_decending_order() {
-        let columns = preprocessed_trace_columns();
+        let preprocessed_trace = PreProcessedTrace::new();
+
+        let columns = preprocessed_trace.columns();
 
         assert!(columns
             .windows(2)
