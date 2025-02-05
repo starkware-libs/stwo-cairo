@@ -11,7 +11,6 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
-use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
@@ -29,8 +28,8 @@ pub struct PreProcessedTrace {
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let seq_columns = (LOG_N_LANES..=LOG_MAX_ROWS).map(Seq::new).collect_vec();
+    pub fn new(log_max_rows: u32) -> Self {
+        let seq_columns = (LOG_N_LANES..=log_max_rows).map(Seq::new).collect_vec();
         let bitwise_xor_columns = (0..3)
             .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
             .collect_vec();
@@ -166,11 +165,12 @@ impl PreProcessedColumn for BitwiseXor {
 mod tests {
     use super::*;
     const LOG_SIZE: u32 = 8;
+    const LOG_MAX_ROWS: u32 = 22;
     use stwo_prover::core::backend::Column;
 
     #[test]
     fn test_columns_are_in_decending_order() {
-        let preprocessed_trace = PreProcessedTrace::new();
+        let preprocessed_trace = PreProcessedTrace::new(LOG_MAX_ROWS);
 
         let columns = preprocessed_trace.columns();
 

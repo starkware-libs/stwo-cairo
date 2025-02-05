@@ -71,3 +71,13 @@ impl ExecutionResources {
         }
     }
 }
+
+impl ProverInput {
+    pub fn log_max_rows(&self) -> u32 {
+        self.state_transitions
+            .casm_states_by_opcode
+            .total_count()
+            .next_power_of_two()
+            .ilog2()
+    }
+}

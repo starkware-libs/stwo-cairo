@@ -25,9 +25,6 @@ use crate::components::memory::LOG_MEMORY_ADDRESS_BOUND;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::input::ProverInput;
 
-// TODO(Ohad): decide dynamically.
-const LOG_MAX_ROWS: u32 = 22;
-
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     ProverConfig {
@@ -48,8 +45,10 @@ where
             n_queries: 15,
         },
     };
+
+    let log_max_rows = input.log_max_rows();
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(LOG_MAX_ROWS + config.fri_config.log_blowup_factor + 2)
+        CanonicCoset::new(log_max_rows + config.fri_config.log_blowup_factor + 2)
             .circle_domain()
             .half_coset,
     );
@@ -60,7 +59,7 @@ where
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(PreProcessedTrace::new().gen_trace());
+    tree_builder.extend_evals(PreProcessedTrace::new(log_max_rows).gen_trace());
     tree_builder.commit(channel);
 
     // Run Cairo.
