@@ -1,6 +1,7 @@
 use std::simd::{u32x16, Simd};
 
 use itertools::Itertools;
+use prover_types::cpu::FELT252PACKED27_N_WORDS;
 use prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -11,6 +12,8 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
+use super::poseidon::const_columns::PoseidonRoundKeysColumn;
+use super::preprocessed_utils::table_id_to_col_id;
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
@@ -26,6 +29,7 @@ pub trait PreProcessedColumn {
 pub struct PreProcessedTrace {
     seq_columns: Vec<Seq>,
     bitwise_xor_columns: Vec<BitwiseXor>,
+    poseidon_round_keys_columns: Vec<PoseidonRoundKeysColumn>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
@@ -34,9 +38,14 @@ impl PreProcessedTrace {
         let bitwise_xor_columns = (0..3)
             .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
             .collect_vec();
+        let poseidon_round_keys_columns = (0..FELT252PACKED27_N_WORDS * 3)
+            .map(PoseidonRoundKeysColumn::new)
+            .collect_vec();
+
         Self {
             seq_columns,
             bitwise_xor_columns,
+            poseidon_round_keys_columns,
         }
     }
 
@@ -49,6 +58,11 @@ impl PreProcessedTrace {
         );
         columns.extend(
             self.bitwise_xor_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
+        columns.extend(
+            self.poseidon_round_keys_columns
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
@@ -157,7 +171,7 @@ impl PreProcessedColumn for BitwiseXor {
 
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
+            id: table_id_to_col_id(&format!("bitwise_xor_{}", self.n_bits), self.col_index),
         }
     }
 }
