@@ -25,7 +25,7 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
-use super::preprocessed::preprocessed_trace_columns;
+use super::preprocessed::PreProcessedTrace;
 use super::range_checks_air::{
     RangeChecksClaim, RangeChecksClaimGenerator, RangeChecksComponents,
     RangeChecksInteractionClaim, RangeChecksInteractionClaimGenerator,
@@ -100,10 +100,9 @@ impl CairoClaim {
         ];
 
         let mut log_sizes = TreeVec::concat_cols(log_sizes_list.into_iter());
-        log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_columns()
-            .iter()
-            .map(|column| column.log_size())
-            .collect();
+
+        // Add preprocessed trace log sizes.
+        log_sizes[PREPROCESSED_TRACE_IDX] = PreProcessedTrace::new().log_sizes();
         log_sizes
     }
 }
@@ -445,10 +444,7 @@ impl CairoComponents {
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &preprocessed_trace_columns()
-                .iter()
-                .map(|column| column.id())
-                .collect_vec(),
+            &PreProcessedTrace::new().ids(),
         );
 
         let opcode_components = OpcodeComponents::new(

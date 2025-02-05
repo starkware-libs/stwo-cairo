@@ -86,8 +86,7 @@ impl FrameworkEval for Eval {
         let M31_3 = E::F::from(M31::from(3));
         let M31_4 = E::F::from(M31::from(4));
         let M31_5 = E::F::from(M31::from(5));
-        let seq =
-            eval.get_preprocessed_column(PreProcessedColumn::Seq(Seq::new(self.log_size())).id());
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let op0_id_col0 = eval.next_trace_mask();
         let op0_limb_0_col1 = eval.next_trace_mask();
         let op0_limb_1_col2 = eval.next_trace_mask();

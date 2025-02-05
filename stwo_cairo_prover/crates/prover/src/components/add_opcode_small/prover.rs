@@ -31,7 +31,6 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::preprocessed::PreProcessedColumn;
 use crate::components::utils::{pack_values, Enabler};
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::relations;

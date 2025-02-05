@@ -8,7 +8,7 @@ pub mod range_checks_air;
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
-use preprocessed::preprocessed_trace_columns;
+use preprocessed::PreProcessedTrace;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -60,11 +60,7 @@ where
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(
-        preprocessed_trace_columns()
-            .iter()
-            .map(|column| column.gen_column_simd()),
-    );
+    tree_builder.extend_evals(PreProcessedTrace::new().gen_trace());
     tree_builder.commit(channel);
 
     // Run Cairo.

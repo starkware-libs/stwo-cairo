@@ -81,8 +81,7 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
-        let seq =
-            eval.get_preprocessed_column(PreProcessedColumn::Seq(Seq::new(self.log_size())).id());
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let value_id_col0 = eval.next_trace_mask();
         let value_limb_0_col1 = eval.next_trace_mask();
         let value_limb_1_col2 = eval.next_trace_mask();

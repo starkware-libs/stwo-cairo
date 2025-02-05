@@ -14,7 +14,6 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::cairo_air::preprocessed::PreProcessedColumn;
 use crate::relations;
 
 pub struct Eval {
