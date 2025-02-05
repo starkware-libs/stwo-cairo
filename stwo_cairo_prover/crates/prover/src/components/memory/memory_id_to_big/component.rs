@@ -13,7 +13,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::relation;
 
-use crate::cairo_air::preprocessed::Seq;
+use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
 use crate::input::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use crate::relations;
 
