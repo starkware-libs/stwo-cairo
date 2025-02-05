@@ -100,6 +100,9 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     // RangeCheck_4_3.
     let range_check_4_3_col_0 = RangeCheck::new([4, 3], 0);
     let range_check_4_3_col_1 = RangeCheck::new([4, 3], 1);
+    // RangeCheck_4_4.
+    let range_check_4_4_col_0 = RangeCheck::new([4, 4], 0);
+    let range_check_4_4_col_1 = RangeCheck::new([4, 4], 1);
     // RangeCheck_9_9.
     let range_check_9_9_col_0 = RangeCheck::new([9, 9], 0);
     let range_check_9_9_col_1 = RangeCheck::new([9, 9], 1);
@@ -112,6 +115,17 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     let range_check_3_6_6_3_col_1 = RangeCheck::new([3, 6, 6, 3], 1);
     let range_check_3_6_6_3_col_2 = RangeCheck::new([3, 6, 6, 3], 2);
     let range_check_3_6_6_3_col_3 = RangeCheck::new([3, 6, 6, 3], 3);
+    // RangeCheck_4_4_4_4.
+    let range_check_4_4_4_4_col_0 = RangeCheck::new([4, 4, 4, 4], 0);
+    let range_check_4_4_4_4_col_1 = RangeCheck::new([4, 4, 4, 4], 1);
+    let range_check_4_4_4_4_col_2 = RangeCheck::new([4, 4, 4, 4], 2);
+    let range_check_4_4_4_4_col_3 = RangeCheck::new([4, 4, 4, 4], 3);
+    // RangeCheck_3_3_3_3_3.
+    let range_check_3_3_3_3_3_col_0 = RangeCheck::new([3, 3, 3, 3, 3], 0);
+    let range_check_3_3_3_3_3_col_1 = RangeCheck::new([3, 3, 3, 3, 3], 1);
+    let range_check_3_3_3_3_3_col_2 = RangeCheck::new([3, 3, 3, 3, 3], 2);
+    let range_check_3_3_3_3_3_col_3 = RangeCheck::new([3, 3, 3, 3, 3], 3);
+    let range_check_3_3_3_3_3_col_4 = RangeCheck::new([3, 3, 3, 3, 3], 4);
 
     vec![
         Box::new(range_check_6),
@@ -123,6 +137,8 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
         Box::new(range_check_3_6_col_1),
         Box::new(range_check_4_3_col_0),
         Box::new(range_check_4_3_col_1),
+        Box::new(range_check_4_4_col_0),
+        Box::new(range_check_4_4_col_1),
         Box::new(range_check_9_9_col_0),
         Box::new(range_check_9_9_col_1),
         Box::new(range_check_7_2_5_col_0),
@@ -132,6 +148,15 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
         Box::new(range_check_3_6_6_3_col_1),
         Box::new(range_check_3_6_6_3_col_2),
         Box::new(range_check_3_6_6_3_col_3),
+        Box::new(range_check_4_4_4_4_col_0),
+        Box::new(range_check_4_4_4_4_col_1),
+        Box::new(range_check_4_4_4_4_col_2),
+        Box::new(range_check_4_4_4_4_col_3),
+        Box::new(range_check_3_3_3_3_3_col_0),
+        Box::new(range_check_3_3_3_3_3_col_1),
+        Box::new(range_check_3_3_3_3_3_col_2),
+        Box::new(range_check_3_3_3_3_3_col_3),
+        Box::new(range_check_3_3_3_3_3_col_4),
     ]
 }
 
@@ -395,7 +420,7 @@ mod tests {
     fn test_preprocessed_root_regression() {
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("1b15a11b1a7cbb7a2120361f80ae300bce567c28498f1cfe28accbaade41a16e")
+            hex::decode("f2229dd77bf47d102cd6163b5ff88481cbb86b04d4a75dd63ed9dd4f67ab1839")
                 .expect("Invalid hex string"),
         );
 
