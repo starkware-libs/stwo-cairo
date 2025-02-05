@@ -229,12 +229,26 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 pub mod tests {
+    use std::path::PathBuf;
+
     use cairo_lang_casm::casm;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::ProverConfig;
     use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
     use crate::input::plain::input_from_plain_casm;
+    use crate::input::vm_import::adapt_vm_output;
+
+    pub fn create_prover_input_from_file(test_name: &str) -> ProverInput {
+        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.push("test_data/");
+        d.push(test_name);
+
+        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+            "
+            Failed to read test files. Checkout input/README.md.",
+        )
+    }
 
     fn test_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -285,7 +299,6 @@ pub mod tests {
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
         use super::*;
-        use crate::input::vm_import::tests::small_cairo_input;
 
         #[test]
         fn generate_and_serialise_proof() {
@@ -301,8 +314,11 @@ pub mod tests {
 
         #[test]
         fn test_full_cairo_air() {
-            let cairo_proof =
-                prove_cairo::<Blake2sMerkleChannel>(small_cairo_input(), test_cfg()).unwrap();
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                create_prover_input_from_file("test_read_from_small_files"),
+                test_cfg(),
+            )
+            .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
     }
