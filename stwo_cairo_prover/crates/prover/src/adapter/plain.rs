@@ -6,7 +6,7 @@ use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
 use super::memory::{MemoryBuilder, MemoryConfig};
-use super::vm_import::{adapt_to_stwo_input, MemoryEntry};
+use super::vm_import::{adapt_to_stwo_input, MemoryEntry, VmImportError};
 use super::ProverInput;
 
 /// Translates a plain casm into a ProverInput by running the program and extracting the memory and
@@ -26,7 +26,7 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    adapt_finished_runner(runner)
+    adapt_finished_runner(runner).expect("Failed to adapt finished runner")
 }
 
 // NOTE: the proof will include `step_limit -1` steps.
@@ -44,7 +44,7 @@ pub fn input_from_plain_casm_with_step_limit(
         .expect("Run failed");
     runner.relocate(true).unwrap();
 
-    adapt_finished_runner(runner)
+    adapt_finished_runner(runner).expect("Failed to adapt finished runner")
 }
 
 fn program_from_casm(
@@ -71,14 +71,11 @@ fn program_from_casm(
     (program, program_len)
 }
 
-// TODO(yuval): consider returning a result instead of panicking.
 /// Translates a CairoRunner that finished its run into a ProverInput by extracting the relevant
 /// input to the adapter.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
-/// # Panics
-/// - if the memory or the trace are not relocated.
-pub fn adapt_finished_runner(runner: CairoRunner) -> ProverInput {
+pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImportError> {
     let _span = tracing::info_span!("adapt_finished_runner").entered();
     let memory_iter = runner
         .relocated_memory
@@ -91,13 +88,11 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> ProverInput {
             })
         });
 
-    let public_input = runner
-        .get_air_public_input()
-        .expect("Unable to get public input from the runner");
+    let public_input = runner.get_air_public_input()?;
 
     let trace_iter = match runner.relocated_trace {
         Some(ref trace) => trace.iter().map(|t| t.clone().into()),
-        None => panic!("Trace is not relocated"),
+        None => return Err(VmImportError::TraceNotRelocated),
     };
 
     let memory_segments = &public_input.memory_segments;
@@ -115,5 +110,4 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> ProverInput {
         public_memory_addresses,
         memory_segments,
     )
-    .unwrap()
 }
