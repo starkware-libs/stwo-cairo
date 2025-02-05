@@ -190,142 +190,115 @@ impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
 }
 
 #[cfg(test)]
-pub mod tests {
-    use std::path::PathBuf;
+#[cfg(feature = "slow-tests")]
+pub mod slow_tests {
+    use crate::cairo_air::tests::test_input;
 
-    use super::*;
+    #[test]
+    fn test_read_from_large_files() {
+        let input = test_input("test_read_from_large_files");
 
-    pub fn large_cairo_input() -> ProverInput {
-        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/test_read_from_large_files");
+        // Test opcode components.
+        let components = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(components.generic_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode_imm.len(), 36895);
+        assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 33);
+        assert_eq!(components.add_opcode_small_imm.len(), 84732);
+        assert_eq!(components.add_opcode.len(), 189425);
+        assert_eq!(components.add_opcode_small.len(), 36623);
+        assert_eq!(components.add_opcode_imm.len(), 22089);
+        assert_eq!(components.assert_eq_opcode.len(), 233432);
+        assert_eq!(components.assert_eq_opcode_double_deref.len(), 811061);
+        assert_eq!(components.assert_eq_opcode_imm.len(), 43184);
+        assert_eq!(components.call_opcode.len(), 0);
+        assert_eq!(components.call_opcode_rel.len(), 49439);
+        assert_eq!(components.call_opcode_op_1_base_fp.len(), 33);
+        assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 11235);
+        assert_eq!(components.jnz_opcode.len(), 27032);
+        assert_eq!(components.jnz_opcode_taken.len(), 51060);
+        assert_eq!(components.jnz_opcode_dst_base_fp.len(), 5100);
+        assert_eq!(components.jump_opcode_rel_imm.len(), 31873865);
+        assert_eq!(components.jump_opcode_rel.len(), 500);
+        assert_eq!(components.jump_opcode_double_deref.len(), 32);
+        assert_eq!(components.jump_opcode.len(), 0);
+        assert_eq!(components.mul_opcode_small_imm.len(), 7234);
+        assert_eq!(components.mul_opcode_small.len(), 7203);
+        assert_eq!(components.mul_opcode.len(), 3943);
+        assert_eq!(components.mul_opcode_imm.len(), 10809);
+        assert_eq!(components.ret_opcode.len(), 49472);
 
-        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
-            "
-            Failed to read test files. Checkout input/README.md.",
-        )
+        // Test builtins.
+        let builtins_segments = input.builtins_segments;
+        assert_eq!(builtins_segments.add_mod, None);
+        assert_eq!(builtins_segments.bitwise, None);
+        assert_eq!(builtins_segments.ec_op, Some((16428600, 16428824).into()));
+        assert_eq!(builtins_segments.ecdsa, None);
+        assert_eq!(builtins_segments.keccak, None);
+        assert_eq!(builtins_segments.mul_mod, None);
+        assert_eq!(builtins_segments.pedersen, Some((1322552, 1347128).into()));
+        assert_eq!(
+            builtins_segments.poseidon,
+            Some((16920120, 17706552).into())
+        );
+        assert_eq!(builtins_segments.range_check_bits_96, None);
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((1715768, 1781304).into())
+        );
     }
 
-    pub fn small_cairo_input() -> ProverInput {
-        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/test_read_from_small_files");
-        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
-            "
-            Failed to read test files. Checkout input/README.md.",
-        )
-    }
+    #[test]
+    fn test_read_from_small_files() {
+        let input = test_input("test_read_from_small_files");
 
-    #[cfg(test)]
-    #[cfg(feature = "slow-tests")]
-    pub mod slow_tests {
+        // Test opcode components.
+        let components = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(components.generic_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode.len(), 0);
+        assert_eq!(components.add_ap_opcode_imm.len(), 2);
+        assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 1);
+        assert_eq!(components.add_opcode_small_imm.len(), 500);
+        assert_eq!(components.add_opcode.len(), 0);
+        assert_eq!(components.add_opcode_small.len(), 0);
+        assert_eq!(components.add_opcode_imm.len(), 450);
+        assert_eq!(components.assert_eq_opcode.len(), 55);
+        assert_eq!(components.assert_eq_opcode_double_deref.len(), 2100);
+        assert_eq!(components.assert_eq_opcode_imm.len(), 1952);
+        assert_eq!(components.call_opcode.len(), 0);
+        assert_eq!(components.call_opcode_rel.len(), 462);
+        assert_eq!(components.call_opcode_op_1_base_fp.len(), 0);
+        assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 450);
+        assert_eq!(components.jnz_opcode.len(), 0);
+        assert_eq!(components.jnz_opcode_taken.len(), 0);
+        assert_eq!(components.jnz_opcode_dst_base_fp.len(), 11);
+        assert_eq!(components.jump_opcode_rel_imm.len(), 124626);
+        assert_eq!(components.jump_opcode_rel.len(), 0);
+        assert_eq!(components.jump_opcode_double_deref.len(), 0);
+        assert_eq!(components.jump_opcode.len(), 0);
+        assert_eq!(components.mul_opcode_small_imm.len(), 0);
+        assert_eq!(components.mul_opcode_small.len(), 0);
+        assert_eq!(components.mul_opcode.len(), 0);
+        assert_eq!(components.mul_opcode_imm.len(), 0);
+        assert_eq!(components.ret_opcode.len(), 462);
 
-        use super::*;
-
-        #[test]
-        fn test_read_from_large_files() {
-            let input = large_cairo_input();
-
-            // Test opcode components.
-            let components = input.state_transitions.casm_states_by_opcode;
-            assert_eq!(components.generic_opcode.len(), 0);
-            assert_eq!(components.add_ap_opcode.len(), 0);
-            assert_eq!(components.add_ap_opcode_imm.len(), 36895);
-            assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 33);
-            assert_eq!(components.add_opcode_small_imm.len(), 84732);
-            assert_eq!(components.add_opcode.len(), 189425);
-            assert_eq!(components.add_opcode_small.len(), 36623);
-            assert_eq!(components.add_opcode_imm.len(), 22089);
-            assert_eq!(components.assert_eq_opcode.len(), 233432);
-            assert_eq!(components.assert_eq_opcode_double_deref.len(), 811061);
-            assert_eq!(components.assert_eq_opcode_imm.len(), 43184);
-            assert_eq!(components.call_opcode.len(), 0);
-            assert_eq!(components.call_opcode_rel.len(), 49439);
-            assert_eq!(components.call_opcode_op_1_base_fp.len(), 33);
-            assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 11235);
-            assert_eq!(components.jnz_opcode.len(), 27032);
-            assert_eq!(components.jnz_opcode_taken.len(), 51060);
-            assert_eq!(components.jnz_opcode_dst_base_fp.len(), 5100);
-            assert_eq!(components.jump_opcode_rel_imm.len(), 31873865);
-            assert_eq!(components.jump_opcode_rel.len(), 500);
-            assert_eq!(components.jump_opcode_double_deref.len(), 32);
-            assert_eq!(components.jump_opcode.len(), 0);
-            assert_eq!(components.mul_opcode_small_imm.len(), 7234);
-            assert_eq!(components.mul_opcode_small.len(), 7203);
-            assert_eq!(components.mul_opcode.len(), 3943);
-            assert_eq!(components.mul_opcode_imm.len(), 10809);
-            assert_eq!(components.ret_opcode.len(), 49472);
-
-            // Test builtins.
-            let builtins_segments = input.builtins_segments;
-            assert_eq!(builtins_segments.add_mod, None);
-            assert_eq!(builtins_segments.bitwise, None);
-            assert_eq!(builtins_segments.ec_op, Some((16428600, 16428824).into()));
-            assert_eq!(builtins_segments.ecdsa, None);
-            assert_eq!(builtins_segments.keccak, None);
-            assert_eq!(builtins_segments.mul_mod, None);
-            assert_eq!(builtins_segments.pedersen, Some((1322552, 1347128).into()));
-            assert_eq!(
-                builtins_segments.poseidon,
-                Some((16920120, 17706552).into())
-            );
-            assert_eq!(builtins_segments.range_check_bits_96, None);
-            assert_eq!(
-                builtins_segments.range_check_bits_128,
-                Some((1715768, 1781304).into())
-            );
-        }
-
-        #[test]
-        fn test_read_from_small_files() {
-            let input = small_cairo_input();
-
-            // Test opcode components.
-            let components = input.state_transitions.casm_states_by_opcode;
-            assert_eq!(components.generic_opcode.len(), 0);
-            assert_eq!(components.add_ap_opcode.len(), 0);
-            assert_eq!(components.add_ap_opcode_imm.len(), 2);
-            assert_eq!(components.add_ap_opcode_op_1_base_fp.len(), 1);
-            assert_eq!(components.add_opcode_small_imm.len(), 500);
-            assert_eq!(components.add_opcode.len(), 0);
-            assert_eq!(components.add_opcode_small.len(), 0);
-            assert_eq!(components.add_opcode_imm.len(), 450);
-            assert_eq!(components.assert_eq_opcode.len(), 55);
-            assert_eq!(components.assert_eq_opcode_double_deref.len(), 2100);
-            assert_eq!(components.assert_eq_opcode_imm.len(), 1952);
-            assert_eq!(components.call_opcode.len(), 0);
-            assert_eq!(components.call_opcode_rel.len(), 462);
-            assert_eq!(components.call_opcode_op_1_base_fp.len(), 0);
-            assert_eq!(components.jnz_opcode_taken_dst_base_fp.len(), 450);
-            assert_eq!(components.jnz_opcode.len(), 0);
-            assert_eq!(components.jnz_opcode_taken.len(), 0);
-            assert_eq!(components.jnz_opcode_dst_base_fp.len(), 11);
-            assert_eq!(components.jump_opcode_rel_imm.len(), 124626);
-            assert_eq!(components.jump_opcode_rel.len(), 0);
-            assert_eq!(components.jump_opcode_double_deref.len(), 0);
-            assert_eq!(components.jump_opcode.len(), 0);
-            assert_eq!(components.mul_opcode_small_imm.len(), 0);
-            assert_eq!(components.mul_opcode_small.len(), 0);
-            assert_eq!(components.mul_opcode.len(), 0);
-            assert_eq!(components.mul_opcode_imm.len(), 0);
-            assert_eq!(components.ret_opcode.len(), 462);
-
-            // Test builtins.
-            let builtins_segments = input.builtins_segments;
-            assert_eq!(builtins_segments.add_mod, None);
-            assert_eq!(builtins_segments.bitwise, Some((22512, 22832).into()));
-            assert_eq!(builtins_segments.ec_op, Some((63472, 63920).into()));
-            assert_eq!(builtins_segments.ecdsa, Some((22384, 22512).into()));
-            assert_eq!(builtins_segments.keccak, Some((64368, 65392).into()));
-            assert_eq!(builtins_segments.mul_mod, None);
-            assert_eq!(builtins_segments.pedersen, Some((4464, 4656).into()));
-            assert_eq!(builtins_segments.poseidon, Some((65392, 65776).into()));
-            assert_eq!(
-                builtins_segments.range_check_bits_96,
-                Some((68464, 68528).into())
-            );
-            assert_eq!(
-                builtins_segments.range_check_bits_128,
-                Some((6000, 6064).into())
-            );
-        }
+        // Test builtins.
+        let builtins_segments = input.builtins_segments;
+        assert_eq!(builtins_segments.add_mod, None);
+        assert_eq!(builtins_segments.bitwise, Some((22512, 22832).into()));
+        assert_eq!(builtins_segments.ec_op, Some((63472, 63920).into()));
+        assert_eq!(builtins_segments.ecdsa, Some((22384, 22512).into()));
+        assert_eq!(builtins_segments.keccak, Some((64368, 65392).into()));
+        assert_eq!(builtins_segments.mul_mod, None);
+        assert_eq!(builtins_segments.pedersen, Some((4464, 4656).into()));
+        assert_eq!(builtins_segments.poseidon, Some((65392, 65776).into()));
+        assert_eq!(
+            builtins_segments.range_check_bits_96,
+            Some((68464, 68528).into())
+        );
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((6000, 6064).into())
+        );
     }
 }
