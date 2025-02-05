@@ -11,6 +11,7 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
+use super::poseidon::consts::PoseidonRoundNumber;
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
@@ -37,12 +38,14 @@ const fn preprocessed_log_sizes() -> [u32; N_PREPROCESSED_COLUMN_SIZES] {
 pub enum PreProcessedColumn {
     Seq(Seq),
     BitwiseXor(BitwiseXor),
+    PoseidonRoundNumber(PoseidonRoundNumber),
 }
 impl PreProcessedColumn {
     pub fn log_size(&self) -> u32 {
         match self {
             PreProcessedColumn::Seq(column) => column.log_size,
             PreProcessedColumn::BitwiseXor(column) => column.log_size(),
+            PreProcessedColumn::PoseidonRoundNumber(column) => column.log_size(),
         }
     }
 
@@ -50,6 +53,7 @@ impl PreProcessedColumn {
         match self {
             PreProcessedColumn::Seq(column) => column.id(),
             PreProcessedColumn::BitwiseXor(column) => column.id(),
+            PreProcessedColumn::PoseidonRoundNumber(column) => column.id(),
         }
     }
 
@@ -57,6 +61,7 @@ impl PreProcessedColumn {
         match self {
             PreProcessedColumn::Seq(column) => column.gen_column_simd(),
             PreProcessedColumn::BitwiseXor(column) => column.gen_column_simd(),
+            PreProcessedColumn::PoseidonRoundNumber(column) => column.gen_column_simd(),
         }
     }
 }
