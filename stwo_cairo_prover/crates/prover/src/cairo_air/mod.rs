@@ -11,13 +11,13 @@ pub(crate) mod relations;
 
 pub use air::CairoProof;
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
-use debug_tools::track_cairo_relations;
+// use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
-use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
+// use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
@@ -36,7 +36,7 @@ const LOG_MAX_ROWS: u32 = 22;
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     ProverConfig {
-        track_relations,
+        track_relations: _,
         display_components,
     }: ProverConfig,
     pcs_config: PcsConfig,
@@ -71,14 +71,14 @@ where
     claim.mix_into(channel);
     tree_builder.commit(channel);
 
-    if track_relations {
-        let relation_summary = RelationSummary::summarize_relations(&track_cairo_relations(
-            &commitment_scheme,
-            &claim,
-        ))
-        .cleaned();
-        println!("Relations summary: {:?}", relation_summary);
-    }
+    // if track_relations {
+    //     let relation_summary = RelationSummary::summarize_relations(&track_cairo_relations(
+    //         &commitment_scheme,
+    //         &claim,
+    //     ))
+    //     .cleaned();
+    //     println!("Relations summary: {:?}", relation_summary);
+    // }
 
     // Draw interaction elements.
     let interaction_elements = CairoInteractionElements::draw(channel);
