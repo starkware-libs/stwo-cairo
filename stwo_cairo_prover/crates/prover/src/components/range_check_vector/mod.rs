@@ -73,9 +73,12 @@ generate_range_check_code!([18]);
 generate_range_check_code!([19]);
 generate_range_check_code!([3, 6]);
 generate_range_check_code!([4, 3]);
+generate_range_check_code!([4, 4]);
 generate_range_check_code!([9, 9]);
 generate_range_check_code!([7, 2, 5]);
 generate_range_check_code!([3, 6, 6, 3]);
+generate_range_check_code!([4, 4, 4, 4]);
+generate_range_check_code!([3, 3, 3, 3, 3]);
 
 #[cfg(test)]
 mod tests {
