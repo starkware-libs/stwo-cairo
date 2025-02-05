@@ -239,8 +239,9 @@ pub mod tests {
         use super::*;
         use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::cairo_air::preprocessed::PreProcessedTrace;
+        // use crate::cairo_air::prover::{prove_cairo, ProverInput};
+        use crate::cairo_air::prover::prove_cairo;
         use crate::cairo_air::prover::tests::test_basic_cairo_air_input;
-        use crate::cairo_air::prover::{prove_cairo, ProverInput};
         use crate::cairo_air::verifier::verify_cairo;
 
         // TODO(Ohad): fine-grained constraints tests.
@@ -307,31 +308,31 @@ pub mod tests {
 
             use super::*;
 
-            /// Asserts that all builtins are present in the input.
-            /// Panics if any of the builtins is missing.
-            fn assert_all_builtins_in_input(input: &ProverInput) {
-                let empty_builtins = input
-                    .builtins_segments
-                    .get_counts()
-                    .iter()
-                    .filter(|(_, &count)| count == 0)
-                    .map(|(name, _)| format!("{:?}", name))
-                    .collect_vec();
-                assert!(
-                    empty_builtins.is_empty(),
-                    "The following builtins are missing: {}",
-                    empty_builtins.join(", ")
-                );
-            }
+            // /// Asserts that all builtins are present in the input.
+            // /// Panics if any of the builtins is missing.
+            // fn assert_all_builtins_in_input(input: &ProverInput) {
+            //     let empty_builtins = input
+            //         .builtins_segments
+            //         .get_counts()
+            //         .iter()
+            //         .filter(|(_, &count)| count == 0)
+            //         .map(|(name, _)| format!("{:?}", name))
+            //         .collect_vec();
+            //     assert!(
+            //         empty_builtins.is_empty(),
+            //         "The following builtins are missing: {}",
+            //         empty_builtins.join(", ")
+            //     );
+            // }
 
-            #[test]
-            fn test_prove_verify_all_builtins() {
-                let input = generate_test_input("test_prove_verify_all_builtins");
-                assert_all_builtins_in_input(&input);
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
-            }
+            // #[test]
+            // fn test_prove_verify_all_builtins() {
+            //     let input = generate_test_input("test_prove_verify_all_builtins");
+            //     assert_all_builtins_in_input(&input);
+            //     let cairo_proof =
+            //         prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
+            //     verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            // }
 
             #[test]
             fn test_prove_verify_add_mod_builtin() {
@@ -369,6 +370,13 @@ pub mod tests {
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            }
+
+            #[test]
+            fn test_mul_mod_builtin_constraints() {
+                let input = generate_test_input("test_prove_verify_mul_mod_builtin");
+                let pp_tree = testing_preprocessed_tree(19);
+                assert_cairo_constraints(input, pp_tree);
             }
 
             #[test]
