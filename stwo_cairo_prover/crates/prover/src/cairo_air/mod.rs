@@ -2,6 +2,7 @@ pub mod air;
 pub mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
+pub mod poseidon;
 pub mod preprocessed;
 pub mod range_checks_air;
 

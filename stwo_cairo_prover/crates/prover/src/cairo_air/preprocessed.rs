@@ -1,6 +1,8 @@
+use std::rc::Rc;
 use std::simd::{u32x16, Simd};
 
 use itertools::Itertools;
+use prover_types::cpu::FELT252PACKED27_N_WORDS;
 use prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -11,11 +13,16 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
+use super::poseidon::const_columns::{PoseidonRoundKeysColumn, PoseidonRoundKeysPackedM31};
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
+
+pub fn table_id_to_col_id(table_id: &str, col_index: usize) -> String {
+    format!("{}_{}", table_id, col_index)
+}
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
@@ -26,6 +33,7 @@ pub trait PreProcessedColumn {
 pub struct PreProcessedTrace {
     seq_columns: Vec<Seq>,
     bitwise_xor_columns: Vec<BitwiseXor>,
+    poseidon_round_keys_columns: Vec<PoseidonRoundKeysColumn>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
@@ -34,9 +42,15 @@ impl PreProcessedTrace {
         let bitwise_xor_columns = (0..3)
             .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
             .collect_vec();
+        let poseidon_round_keys = Rc::new(PoseidonRoundKeysPackedM31::new());
+        let poseidon_round_keys_columns = (0..FELT252PACKED27_N_WORDS * 3)
+            .map(|index| PoseidonRoundKeysColumn::new(poseidon_round_keys.clone(), index))
+            .collect_vec();
+
         Self {
             seq_columns,
             bitwise_xor_columns,
+            poseidon_round_keys_columns,
         }
     }
 
@@ -49,6 +63,11 @@ impl PreProcessedTrace {
         );
         columns.extend(
             self.bitwise_xor_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
+        columns.extend(
+            self.poseidon_round_keys_columns
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
