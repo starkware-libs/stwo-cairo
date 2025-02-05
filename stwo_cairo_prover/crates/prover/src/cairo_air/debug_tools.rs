@@ -15,8 +15,9 @@ use stwo_prover::core::poly::circle::CanonicCoset;
 
 use super::air::CairoClaim;
 use crate::components::range_check_vector::{
-    range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_6,
-    range_check_3_6_6_3, range_check_4_3, range_check_6, range_check_7_2_5, range_check_9_9,
+    range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
+    range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
+    range_check_6, range_check_7_2_5, range_check_9_9,
 };
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
@@ -676,6 +677,16 @@ where
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
+            range_check_4_4::Eval {
+                lookup_elements: relations::RangeCheck_4_4::dummy(),
+            },
+            1 << 8,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
             range_check_9_9::Eval {
                 lookup_elements: relations::RangeCheck_9_9::dummy(),
             },
@@ -699,7 +710,27 @@ where
             range_check_3_6_6_3::Eval {
                 lookup_elements: relations::RangeCheck_3_6_6_3::dummy(),
             },
-            1 << 14,
+            1 << 18,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_4_4_4_4::Eval {
+                lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
+            },
+            1 << 16,
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_3_3_3_3_3::Eval {
+                lookup_elements: relations::RangeCheck_3_3_3_3_3::dummy(),
+            },
+            1 << 15,
         )
         .entries(trace),
     );
