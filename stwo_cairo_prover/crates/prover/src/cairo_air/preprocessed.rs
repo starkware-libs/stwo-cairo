@@ -1,6 +1,7 @@
 use std::simd::{u32x16, Simd};
 
 use itertools::Itertools;
+use prover_types::cpu::FELT252PACKED27_N_WORDS;
 use prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -11,6 +12,7 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
+use super::poseidon::const_columns::PoseidonRoundKeysColumn;
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::{
     generate_partitioned_enumeration, partition_into_bit_segments, SIMD_ENUMERATION_0,
@@ -29,6 +31,7 @@ pub struct PreProcessedTrace {
     seq_columns: Vec<Seq>,
     bitwise_xor_columns: Vec<BitwiseXor>,
     range_check_columns: Vec<Box<dyn PreProcessedColumn>>,
+    poseidon_round_keys_columns: Vec<PoseidonRoundKeysColumn>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
@@ -38,11 +41,15 @@ impl PreProcessedTrace {
             .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
             .collect_vec();
         let range_check_columns = gen_range_check_columns();
+        let poseidon_round_keys_columns = (0..FELT252PACKED27_N_WORDS * 3)
+            .map(PoseidonRoundKeysColumn::new)
+            .collect_vec();
 
         Self {
             seq_columns,
             bitwise_xor_columns,
             range_check_columns,
+            poseidon_round_keys_columns,
         }
     }
 
@@ -59,6 +66,11 @@ impl PreProcessedTrace {
                 .map(|c| c as &dyn PreProcessedColumn),
         );
         columns.extend(self.range_check_columns.iter().map(|c| c.as_ref()));
+        columns.extend(
+            self.poseidon_round_keys_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
 
         // Sort columns by descending log size.
         columns
