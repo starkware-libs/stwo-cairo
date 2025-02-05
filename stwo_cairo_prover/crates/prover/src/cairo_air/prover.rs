@@ -378,9 +378,8 @@ pub mod tests {
                     empty_builtins.join(", ")
                 );
             }
-
             #[test]
-            fn test_prove_verify_all_builtins() {
+            fn test_all_builtins_constraints() {
                 let input = generate_test_input("test_prove_verify_all_builtins");
                 assert_all_builtins_in_input(&input);
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
@@ -454,6 +453,12 @@ pub mod tests {
                     preprocessed_trace,
                 )
                 .unwrap();
+            }
+
+            #[test]
+            fn test_mul_mod_builtin_constraints() {
+                let input = generate_test_input("test_prove_verify_mul_mod_builtin");
+                assert_cairo_constraints(input, PreProcessedTrace::canonical());
             }
 
             #[test]
