@@ -1,6 +1,7 @@
 use std::simd::{u32x16, Simd};
 
 use itertools::Itertools;
+use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS as POSEIDON_N_WORDS;
 use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -14,6 +15,7 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation, PolyOps};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
+use super::poseidon::const_columns::PoseidonRoundKeys;
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::{
     generate_partitioned_enumeration, partition_into_bit_segments, SIMD_ENUMERATION_0,
@@ -32,6 +34,7 @@ pub struct PreProcessedTrace {
     seq_columns: Vec<Seq>,
     bitwise_xor_columns: Vec<BitwiseXor>,
     range_check_columns: Vec<Box<dyn PreProcessedColumn>>,
+    poseidon_round_keys_columns: Vec<PoseidonRoundKeys>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
@@ -41,11 +44,15 @@ impl PreProcessedTrace {
             .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
             .collect_vec();
         let range_check_columns = gen_range_check_columns();
+        let poseidon_round_keys_columns = (0..POSEIDON_N_WORDS)
+            .map(PoseidonRoundKeys::new)
+            .collect_vec();
 
         Self {
             seq_columns,
             bitwise_xor_columns,
             range_check_columns,
+            poseidon_round_keys_columns,
         }
     }
 
@@ -62,6 +69,11 @@ impl PreProcessedTrace {
                 .map(|c| c as &dyn PreProcessedColumn),
         );
         columns.extend(self.range_check_columns.iter().map(|c| c.as_ref()));
+        columns.extend(
+            self.poseidon_round_keys_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
 
         // Sort columns by descending log size.
         columns
@@ -395,7 +407,7 @@ mod tests {
     fn test_preprocessed_root_regression() {
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("1b15a11b1a7cbb7a2120361f80ae300bce567c28498f1cfe28accbaade41a16e")
+            hex::decode("ddae88e00176e780775822663b952aec5ff31bc431551c4d5f444f7bb1319ee4")
                 .expect("Invalid hex string"),
         );
 
