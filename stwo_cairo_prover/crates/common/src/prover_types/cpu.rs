@@ -486,9 +486,9 @@ impl Felt252 {
 
 // Convert between Felt252 and FieldElement for performing field operations.
 // Note that FieldElements are in Montgomery form, and for efficiency and simplicity, we skip the
-// conversion in both direction. We thus have to compensate with extra factors when performing
+// conversion in both directions. We thus have to compensate with extra factors when performing
 // multiplication and division. We also ensure the FieldElement is reduced modulo P, by adding zero
-// on initial conversion. This results in subtracting P once if needed, which suffices as as the
+// to the initial conversion. This results in subtracting P once if needed, which suffices as the
 // limbs of a Felt252 are smaller than 2**252 < 2*P.
 impl From<Felt252> for FieldElement {
     fn from(n: Felt252) -> FieldElement {
