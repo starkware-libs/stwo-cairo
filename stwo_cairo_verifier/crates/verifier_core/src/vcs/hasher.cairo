@@ -77,7 +77,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             word = word * M31_IN_HASH_SHIFT + v6.inner.into();
             word = word * M31_IN_HASH_SHIFT + v7.inner.into();
             hash_array.append(word);
-        };
+        }
 
         if !column_values.is_empty() {
             let mut word = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
@@ -89,7 +89,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
                     .inner
                     .into();
                 word = word * M31_IN_HASH_SHIFT + v;
-            };
+            }
 
             hash_array.append(word);
         }
@@ -100,7 +100,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
 
 #[cfg(test)]
 mod tests {
-    use crate::fields::m31::{m31};
+    use crate::fields::m31::m31;
     use super::PoseidonMerkleHasher;
 
     #[test]

@@ -1,17 +1,12 @@
-use core::array::ArrayTrait;
-use core::array::SpanTrait;
-use core::array::ToSpanTrait;
+use core::array::{ArrayTrait, SpanTrait, ToSpanTrait};
 use core::cmp::min;
-use core::dict::Felt252Dict;
-use core::dict::Felt252DictEntryTrait;
-use core::dict::Felt252DictTrait;
+use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
-use crate::BaseField;
-use crate::utils::SpanExTrait;
-use crate::utils::{ArrayExTrait, DictTrait};
+use crate::utils::{ArrayExTrait, DictTrait, SpanExTrait};
 use crate::vcs::hasher::MerkleHasher;
+use crate::BaseField;
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
@@ -224,7 +219,7 @@ impl MerkleVerifierImpl<
             value.append(col_index);
             res_dict = res_dict_entry.finalize(NullableTrait::new(value));
             col_index += 1;
-        };
+        }
 
         res_dict
     }

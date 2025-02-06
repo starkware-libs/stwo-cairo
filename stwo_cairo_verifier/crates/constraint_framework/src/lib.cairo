@@ -28,7 +28,7 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
         for _ in 1..N {
             acc *= alpha;
             alpha_powers.append(acc);
-        };
+        }
 
         LookupElements { z, alpha, alpha_powers }
     }
@@ -43,7 +43,7 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
         while let (Option::Some(alpha), Option::Some(value)) =
             (alpha_powers.pop_front(), values_span.pop_front()) {
             sum += (*alpha).mul_m31(*value);
-        };
+        }
 
         sum
     }
@@ -99,7 +99,7 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
                         NullableTrait::new(*mask_value),
                     );
             }
-        };
+        }
 
         assert!(preprocessed_mask_values.is_empty());
 
