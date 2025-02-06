@@ -2,19 +2,18 @@ use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::CheckedSub;
+use crate::ColumnArray;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
 use crate::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
-use crate::poly::line::{LineDomain, LineDomainImpl};
-use crate::poly::line::{LineEvaluationImpl, LinePoly, LinePolyImpl};
-use crate::poly::utils::{ibutterfly};
+use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
+use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::{ColumnArray};
 
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
@@ -67,7 +66,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             let commitment_domain = CanonicCosetImpl::new(commitment_domain_log_size)
                 .circle_domain();
             column_commitment_domains.append(commitment_domain);
-        };
+        }
 
         let first_layer = FriFirstLayerVerifier {
             column_log_bounds,
@@ -150,12 +149,14 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn decommit_on_queries(
         self: FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
     ) -> Result<(), FriVerificationError> {
-        let (inner_layer_queries, first_layer_folded_evals) = decommit_first_layer(
+        let first_layer_sparse_evals = decommit_first_layer(
             @self, queries, first_layer_query_evals,
         )?;
 
+        let inner_layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
+
         let (last_layer_queries, last_layer_query_evals) = decommit_inner_layers(
-            @self, inner_layer_queries, first_layer_folded_evals,
+            @self, inner_layer_queries, first_layer_sparse_evals,
         )?;
 
         decommit_last_layer(self, last_layer_queries, last_layer_query_evals)
@@ -172,7 +173,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         for column_commitment_domain in self.first_layer.column_commitment_domains {
             column_log_sizes.append(column_commitment_domain.log_size());
-        };
+        }
 
         let unique_column_log_sizes = column_log_sizes.dedup().span();
 
@@ -192,24 +193,25 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 /// verifying the remaining layers.
 fn decommit_first_layer(
     verifier: @FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
-) -> Result<(Queries, ColumnArray<Span<QM31>>), FriVerificationError> {
-    verifier.first_layer.verify_and_fold(queries, first_layer_query_evals)
+) -> Result<ColumnArray<SparseEvaluation>, FriVerificationError> {
+    verifier.first_layer.verify(queries, first_layer_query_evals)
 }
 
 /// Verifies all inner layer decommitments.
 ///
 /// Returns the queries and query evaluations needed for verifying the last FRI layer.
 fn decommit_inner_layers(
-    verifier: @FriVerifier, queries: Queries, mut first_layer_folded_evals: ColumnArray<Span<QM31>>,
+    verifier: @FriVerifier,
+    queries: Queries,
+    mut first_layer_sparse_evals: ColumnArray<SparseEvaluation>,
 ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
-    let first_layer_fold_alpha = *verifier.first_layer.folding_alpha;
-    let first_layer_fold_alpha_pow_fold_factor = first_layer_fold_alpha * first_layer_fold_alpha;
-
     let mut inner_layers = verifier.inner_layers.span();
     let mut layer_queries = queries;
     let mut layer_query_evals = ArrayImpl::new_repeated(layer_queries.len(), QM31Zero::zero());
-    let mut first_layer_folded_evals = first_layer_folded_evals.span();
+    let mut first_layer_sparse_evals = first_layer_sparse_evals.span();
     let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
+    let mut first_layer_column_domains = *verifier.first_layer.column_commitment_domains;
+    let mut prev_fold_alpha = *verifier.first_layer.folding_alpha;
 
     loop {
         let layer = match inner_layers.pop_front() {
@@ -222,22 +224,21 @@ fn decommit_inner_layers(
         // Check for evals committed in the first layer that need to be folded into this layer.
         while let Option::Some(_) = first_layer_column_bounds
             .next_if_eq(@circle_poly_degree_bound) {
-            let mut folded_column_evals = *first_layer_folded_evals.pop_front().unwrap();
+            let column_domain = *first_layer_column_domains.pop_front().unwrap();
+            let first_layer_sparse_eval = first_layer_sparse_evals.pop_front().unwrap();
+            let mut folded_column_evals = first_layer_sparse_eval
+                .fold_circle(prev_fold_alpha, column_domain);
             let mut updated_layer_query_evals = array![];
+            let prev_fold_alpha_pow_fold_factor = prev_fold_alpha * prev_fold_alpha;
 
             while let (Option::Some(curr_layer_eval), Option::Some(folded_column_eval)) =
                 (layer_query_evals.pop_front(), folded_column_evals.pop_front()) {
-                // TODO(andrew): As Ilya pointed out using the first layer's folding
-                // alpha here might not be sound. Investigate.
                 updated_layer_query_evals
-                    .append(
-                        curr_layer_eval * first_layer_fold_alpha_pow_fold_factor
-                            + *folded_column_eval,
-                    );
-            };
+                    .append(curr_layer_eval * prev_fold_alpha_pow_fold_factor + folded_column_eval);
+            }
 
             layer_query_evals = updated_layer_query_evals;
-        };
+        }
 
         match layer.verify_and_fold(layer_queries, layer_query_evals.span()) {
             Result::Ok((
@@ -245,6 +246,7 @@ fn decommit_inner_layers(
             )) => {
                 layer_queries = next_layer_queries;
                 layer_query_evals = next_layer_query_evals;
+                prev_fold_alpha = *layer.folding_alpha;
             },
             Result::Err(error) => { break Result::Err(error); },
         };
@@ -252,7 +254,8 @@ fn decommit_inner_layers(
 
     // Check all values have been consumed.
     assert!(first_layer_column_bounds.is_empty());
-    assert!(first_layer_folded_evals.is_empty());
+    assert!(first_layer_column_domains.is_empty());
+    assert!(first_layer_sparse_evals.is_empty());
 
     Result::Ok((layer_queries, layer_query_evals))
 }
@@ -302,7 +305,7 @@ fn get_query_positions_by_log_size(
 
         query_positions_by_log_size
             .insert((*column_log_size).into(), NullableTrait::new(queries.positions));
-    };
+    }
 
     query_positions_by_log_size
 }
@@ -327,7 +330,8 @@ struct FriFirstLayerVerifier {
 
 #[generate_trait]
 impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
-    /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
+    /// Verifies the first layer's merkle decommitment, and returns the evaluations needed for
+    /// folding the columns to their corresponding layer.
     ///
     /// # Errors
     ///
@@ -340,11 +344,11 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     /// Panics if:
     /// * The queries are sampled on the wrong domain.
     /// * There are an invalid number of provided column evals.
-    fn verify_and_fold(
+    fn verify(
         self: @FriFirstLayerVerifier,
         queries: Queries,
         mut query_evals_by_column: ColumnArray<Span<QM31>>,
-    ) -> Result<(Queries, ColumnArray<Span<QM31>>), FriVerificationError> {
+    ) -> Result<ColumnArray<SparseEvaluation>, FriVerificationError> {
         // Columns are provided in descending order by size.
         let max_column_log_size = (*self.column_commitment_domains).first().unwrap().log_size();
         assert!(queries.log_domain_size == max_column_log_size);
@@ -355,7 +359,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let mut decommitment_positions_by_log_size: Felt252Dict = Default::default();
         // For decommitment, each QM31 col must be split into its constituent M31 coordinate cols.
         let mut decommitment_coordinate_column_log_sizes = array![];
-        let mut folded_evals_by_column = array![];
+        let mut sparse_evals_by_column = array![];
         let mut decommitmented_values = array![];
 
         loop {
@@ -400,15 +404,14 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                     decommitmented_values.append(v2);
                     decommitmented_values.append(v3);
                 };
-            };
+            }
 
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
 
-            let folded_evals = sparse_evaluation.fold_circle(*self.folding_alpha, *column_domain);
-            folded_evals_by_column.append(folded_evals.span());
+            sparse_evals_by_column.append(sparse_evaluation);
         }?;
 
         // Check all proof evals have been consumed.
@@ -430,9 +433,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             return Result::Err(FriVerificationError::FirstLayerCommitmentInvalid);
         }
 
-        let folded_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
-
-        Result::Ok((folded_queries, folded_evals_by_column))
+        Result::Ok(sparse_evals_by_column)
     }
 }
 
@@ -480,7 +481,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
                 decommitmented_values.append(v2);
                 decommitmented_values.append(v3);
             };
-        };
+        }
 
         let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
@@ -615,24 +616,24 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     /// Folds evaluations of a degree `d` univariate polynomial into evaluations of a degree `d/2`
     /// univariate polynomial.
     fn fold_line(
-        self: SparseEvaluation, fold_alpha: QM31, source_domain: LineDomain,
+        self: @SparseEvaluation, fold_alpha: QM31, source_domain: LineDomain,
     ) -> Array<QM31> {
         let mut domain_initials = array![];
 
-        for subset_domain_initial_index in self.subset_domain_initial_indexes {
+        for subset_domain_initial_index in *self.subset_domain_initial_indexes {
             domain_initials.append(source_domain.at(*subset_domain_initial_index));
-        };
+        }
 
         let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
         let mut res = array![];
 
-        for subset_eval in self.subset_evals {
+        for subset_eval in self.subset_evals.span() {
             let x_inv = domain_initials_inv.pop_front().unwrap();
             let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
             let [f_at_x, f_at_neg_x] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
             res.append(f0 + fold_alpha * f1);
-        };
+        }
 
         res
     }
@@ -640,18 +641,18 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
     /// degree `d/2` univariate polynomial.
     fn fold_circle(
-        self: SparseEvaluation, fold_alpha: QM31, source_domain: CircleDomain,
+        self: @SparseEvaluation, fold_alpha: QM31, source_domain: CircleDomain,
     ) -> Array<QM31> {
         let mut domain_initial_ys = array![];
 
-        for subset_domain_initial_index in self.subset_domain_initial_indexes {
+        for subset_domain_initial_index in *self.subset_domain_initial_indexes {
             domain_initial_ys.append(source_domain.at(*subset_domain_initial_index).y);
-        };
+        }
 
         let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
         let mut res = array![];
 
-        for subset_eval in self.subset_evals {
+        for subset_eval in self.subset_evals.span() {
             let y_inv = domain_initial_ys_inv.pop_front().unwrap();
             let values: Box<[QM31; CIRCLE_TO_LINE_FOLD_FACTOR]> = *subset_eval
                 .span()
@@ -660,7 +661,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
             let [f_at_p, f_at_neg_p] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, y_inv);
             res.append(f0 + fold_alpha * f1);
-        };
+        }
 
         res
     }
