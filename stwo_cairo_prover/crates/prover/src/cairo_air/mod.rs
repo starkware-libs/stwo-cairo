@@ -329,5 +329,28 @@ pub mod tests {
             .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
+
+        #[test]
+        fn test_prove_verify_all_opcode_components() {
+            let input = test_input("test_prove_verify_all_components");
+            for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
+                // TODO(Stav): Remove when `Blake` opcode is in the VM.
+                if opcode == "blake2s_opcode" {
+                    continue;
+                }
+
+                assert!(
+                    n_instances > 0,
+                    "{} isn't used in E2E full-Cairo opcode test",
+                    opcode
+                );
+            }
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                test_input("test_prove_verify_all_components"),
+                test_cfg(),
+            )
+            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
     }
 }
