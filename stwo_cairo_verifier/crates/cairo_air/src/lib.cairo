@@ -33,7 +33,7 @@ use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 pub mod components;
 pub mod utils;
@@ -621,17 +621,25 @@ impl CairoAirImpl of Air<CairoAir> {
     fn eval_composition_polynomial_at_point(
         self: @CairoAir,
         point: CirclePoint<QM31>,
-        mask_values: @TreeArray<ColumnArray<Array<QM31>>>,
+        mask_values: TreeSpan<ColumnSpan<Span<QM31>>>,
         random_coeff: QM31,
     ) -> QM31 {
         let mut sum = QM31Zero::zero();
 
-        let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
-            mask_values[0].span(), self.preprocessed_columns.span(),
-        );
+        let [
+            preprocessed_mask_values,
+            mut trace_mask_values,
+            mut interaction_trace_mask_values,
+            _composition_trace_mask_values,
+        ]: [ColumnSpan<Span<QM31>>; 4] =
+            (*mask_values
+            .try_into()
+            .unwrap())
+            .unbox();
 
-        let mut trace_mask_values = mask_values[1].span();
-        let mut interaction_trace_mask_values = mask_values[2].span();
+        let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
+            preprocessed_mask_values, self.preprocessed_columns.span(),
+        );
 
         self
             .opcodes
@@ -862,8 +870,8 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         self: @OpcodeComponents,
         ref sum: QM31,
         ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Array<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Array<QM31>>,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
