@@ -111,16 +111,11 @@ impl BuiltinSegments {
                 let segment = self.get_segment(builtin_name).as_ref()?;
                 Some((
                     builtin_name,
-                    Self::get_memory_segment_size(segment)
+                    get_memory_segment_size(segment)
                         / Self::builtin_memory_cells_per_instance(builtin_name),
                 ))
             })
             .collect()
-    }
-
-    /// Return the size of a memory segment.
-    fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
-        segment.stop_ptr - segment.begin_addr
     }
 
     /// Pads a builtin segment with copies of its last instance if that segment isn't None, in
@@ -192,6 +187,11 @@ impl BuiltinSegments {
         }
         res
     }
+}
+
+/// Return the size of a memory segment.
+fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
+    segment.stop_ptr - segment.begin_addr
 }
 
 // TODO(Stav): move read json to a test function.
