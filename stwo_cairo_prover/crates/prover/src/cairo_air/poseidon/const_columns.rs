@@ -39,7 +39,7 @@ impl PoseidonRoundKeysColumn {
 
 impl PreProcessedColumn for PoseidonRoundKeysColumn {
     fn log_size(&self) -> u32 {
-        4
+        6
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
