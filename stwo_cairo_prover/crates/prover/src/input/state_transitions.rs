@@ -637,13 +637,50 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 /// Tests instructions mapping.
 #[cfg(test)]
 mod mappings_tests {
+    use std::path::PathBuf;
+
     use cairo_lang_casm::casm;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::*;
+    use crate::cairo_air::tests::test_cfg;
+    use crate::cairo_air::{prove_cairo, verify_cairo};
     use crate::input::decode::{Instruction, OpcodeExtension};
     use crate::input::memory::*;
     use crate::input::plain::input_from_plain_casm;
-    use crate::input::vm_import::TraceEntry;
+    use crate::input::vm_import::adapt_vm_output;
+    use crate::input::ProverInput;
+
+    pub fn all_opcode_coponents_program() -> ProverInput {
+        let mut d: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.push("test_data/test_prove_verify_all_components");
+        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+            "
+            Failed to read test files. Checkout input/README.md.",
+        )
+    }
+
+    #[test]
+    #[cfg(feature = "slow-tests")]
+    fn test_prove_verify_all_components() {
+        let input = all_opcode_coponents_program();
+        for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
+            // TODO(Stav): Remove when `Blake` opcode is in the VM.
+            if opcode == "blake2s_opcode" {
+                continue;
+            }
+
+            assert!(
+                n_instances > 0,
+                "{} isn't used in E2E full-Cairo opcode test",
+                opcode
+            );
+        }
+        let cairo_proof =
+            prove_cairo::<Blake2sMerkleChannel>(all_opcode_coponents_program(), test_cfg())
+                .unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+    }
 
     #[test]
     fn test_jmp_rel() {
