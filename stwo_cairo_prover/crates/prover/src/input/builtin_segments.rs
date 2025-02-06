@@ -188,11 +188,66 @@ impl BuiltinSegments {
             }),
         );
     }
+
+    /// Fills memory cells in builtin segments with the appropriate values according to the builtin.
+    ///
+    /// The memory provided by the runner only contains values that were accessed during program
+    /// execution. However, the builtin AIR applies constraints on it's entire range, including
+    /// addresses that were not accessed.
+    pub fn fill_memory_holes(&self, memory: &mut MemoryBuilder) {
+        // bitwise.
+        if let Some(segment) = &self.bitwise {
+            builtin_padding::bitwise(segment, memory)
+        };
+        // TODO(ohad): fill other builtins.
+    }
 }
 
 /// Return the size of a memory segment.
 fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
     segment.stop_ptr - segment.begin_addr
+}
+
+// TODO(Ohad): padding holes should be handled by a proof-mode runner.
+mod builtin_padding {
+    use cairo_vm::air_public_input::MemorySegmentAddresses;
+    use itertools::Itertools;
+
+    use crate::input::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::input::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
+
+    pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
+        let range = segment.begin_addr..segment.stop_ptr;
+        assert!(range.len() % BITWISE_MEMORY_CELLS == 0);
+        for (op0_addr, op1_addr, and_addr, xor_addr, or_addr) in range.tuples() {
+            let op0 = memory.get(op0_addr as u32).as_u256();
+            let op1 = memory.get(op1_addr as u32).as_u256();
+
+            match memory.address_to_id[and_addr].decode() {
+                MemoryValueId::Empty => {
+                    let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
+                    memory.set(and_addr as u64, and_res);
+                }
+                _ => continue,
+            }
+
+            match memory.address_to_id[xor_addr].decode() {
+                MemoryValueId::Empty => {
+                    let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
+                    memory.set(xor_addr as u64, xor_res);
+                }
+                _ => continue,
+            }
+
+            match memory.address_to_id[or_addr].decode() {
+                MemoryValueId::Empty => {
+                    let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
+                    memory.set(or_addr as u64, or_res);
+                }
+                _ => continue,
+            }
+        }
+    }
 }
 
 // TODO(Stav): move read json to a test function.
@@ -202,8 +257,11 @@ mod test_builtin_segments {
 
     use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
     use cairo_vm::types::builtin_name::BuiltinName;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
 
     use crate::input::memory::{u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue};
+    use crate::input::vm_import::MemoryEntry;
     use crate::input::BuiltinSegments;
 
     /// Asserts that the values at addresses start_addr1 to start_addr1 + segment_length - 1
@@ -262,7 +320,7 @@ mod test_builtin_segments {
     }
 
     #[test]
-    fn test_fill_builtin_segment() {
+    fn test_pad_builtin_segments() {
         let builtin_name = BuiltinName::bitwise;
         let instance_example = [
             123456789,
@@ -313,5 +371,44 @@ mod test_builtin_segments {
             );
             instance_to_verify_start += cells_per_instance as u32;
         }
+    }
+
+    #[test]
+    fn test_bitwise_hole_filling() {
+        let mut small_rng = SmallRng::seed_from_u64(0);
+        let op0 = small_rng.gen::<[u32; 8]>();
+        let op1 = small_rng.gen::<[u32; 8]>();
+        let entries = [
+            MemoryEntry {
+                address: 0,
+                value: op1,
+            },
+            MemoryEntry {
+                address: 1,
+                value: op0,
+            },
+        ];
+        let mut memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries);
+        let builtin_segments = BuiltinSegments {
+            bitwise: Some(MemorySegmentAddresses {
+                begin_addr: 0,
+                stop_ptr: 5,
+            }),
+            ..Default::default()
+        };
+        let expected_and = std::array::from_fn(|i| op0[i] & op1[i]);
+        let expected_xor = std::array::from_fn(|i| op0[i] ^ op1[i]);
+        let expected_or = std::array::from_fn(|i| op0[i] | op1[i]);
+        memory.set(5, MemoryValue::Small(0));
+        builtin_segments.fill_memory_holes(&mut memory);
+        let memory = memory.build();
+
+        let and_res = memory.get(2).as_u256();
+        let xor_res = memory.get(3).as_u256();
+        let or_res = memory.get(4).as_u256();
+
+        assert_eq!(and_res, expected_and);
+        assert_eq!(xor_res, expected_xor);
+        assert_eq!(or_res, expected_or);
     }
 }
