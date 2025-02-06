@@ -478,6 +478,18 @@ impl<const B: usize, const L: usize, const F: usize> PackedBigUInt<B, L, F> {
             std::array::from_fn(|i| BigUInt::<B, L, F>::from_biguint(other.value[i]));
         Self { value: result }
     }
+
+    pub fn widening_mul<const DB: usize, const DL: usize, const DF: usize>(
+        self,
+        rhs: PackedBigUInt<B, L, F>,
+    ) -> PackedBigUInt<DB, DL, DF> {
+        let result = std::array::from_fn(|i| self.value[i].widening_mul(rhs.value[i]));
+        PackedBigUInt::<DB, DL, DF> { value: result }
+    }
+
+    pub fn get_m31(&self, index: usize) -> PackedM31 {
+        PackedM31::from_array(std::array::from_fn(|i| self.value[i].get_m31(index)))
+    }
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -634,5 +646,42 @@ mod tests {
             packed_big_uint_2.to_array(),
             expected_packed_big_uint.to_array()
         );
+    }
+
+    #[test]
+    fn test_packed_biguint_widening_mul() {
+        let big_uint = BigUInt384::from_felt252(Felt252::from_limbs(&[
+            M31::from_u32_unchecked(32425),
+            M31::from_u32_unchecked(1429),
+            M31::from_u32_unchecked(243987),
+            M31::from_u32_unchecked(63),
+            M31::from_u32_unchecked(94753),
+        ]));
+        let packed_big_uint = PackedBigUInt384::broadcast(big_uint);
+
+        let result = packed_big_uint.widening_mul::<768, 12, 64>(packed_big_uint);
+        let expected_result = [big_uint.widening_mul::<768, 12, 64>(big_uint); N_LANES];
+
+        assert_eq!(result.to_array(), expected_result);
+    }
+
+    #[test]
+    fn test_packed_biguint_get_m31() {
+        let big_uint = BigUInt384::from_felt252(Felt252::from_limbs(&[
+            M31::from_u32_unchecked(32425),
+            M31::from_u32_unchecked(1429),
+            M31::from_u32_unchecked(243987),
+            M31::from_u32_unchecked(63),
+            M31::from_u32_unchecked(94753),
+        ]));
+        let packed_big_uint = PackedBigUInt384::broadcast(big_uint);
+        for i in 0..32 {
+            assert_eq!(
+                packed_big_uint.get_m31(i).to_array(),
+                [big_uint.get_m31(i); N_LANES],
+                "i = {}",
+                i
+            );
+        }
     }
 }
