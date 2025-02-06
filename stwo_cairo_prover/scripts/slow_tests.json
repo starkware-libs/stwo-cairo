@@ -11,10 +11,11 @@
         "priv.json",
         "trace"
     ],
-    "test_prove_verify_all_components": [
+    "test_prove_verify_all_opcode_components": [
         "mem",
         "pub.json",
         "priv.json",
-        "trace"
+        "trace",
+        "all_opcode_components.cairo"
     ]
 }

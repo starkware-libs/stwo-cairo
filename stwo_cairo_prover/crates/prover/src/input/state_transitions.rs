@@ -651,7 +651,7 @@ mod mappings_tests {
     #[test]
     #[cfg(feature = "slow-tests")]
     fn test_prove_verify_all_opcode_components() {
-        let input = test_input("test_prove_verify_all_components");
+        let input = test_input("test_prove_verify_all_opcode_components");
         for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
             // TODO(Stav): Remove when `Blake` opcode is in the VM.
             if opcode == "blake2s_opcode" {
@@ -665,7 +665,7 @@ mod mappings_tests {
             );
         }
         let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-            test_input("test_prove_verify_all_components"),
+            test_input("test_prove_verify_all_opcode_components"),
             test_cfg(),
         )
         .unwrap();
