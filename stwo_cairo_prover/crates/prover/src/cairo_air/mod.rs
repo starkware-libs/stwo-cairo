@@ -289,6 +289,61 @@ pub mod tests {
         }
     }
 
+    /// Asserts that all builtins are present in the input.
+    /// Panics if any of the builtins is missing.
+    pub fn assert_all_builtins_in_input(input: &ProverInput) {
+        input
+            .builtins_segments
+            .add_mod
+            .as_ref()
+            .expect("Add mod builtin is missing");
+        input
+            .builtins_segments
+            .bitwise
+            .as_ref()
+            .expect("Bitwise builtin is missing");
+        input
+            .builtins_segments
+            .ec_op
+            .as_ref()
+            .expect("EC op builtin is missing");
+        input
+            .builtins_segments
+            .ecdsa
+            .as_ref()
+            .expect("ECDSA builtin is missing");
+        input
+            .builtins_segments
+            .keccak
+            .as_ref()
+            .expect("KECCAK builtin is missing");
+        input
+            .builtins_segments
+            .mul_mod
+            .as_ref()
+            .expect("Mul mod builtin is missing");
+        input
+            .builtins_segments
+            .pedersen
+            .as_ref()
+            .expect("Pedersen builtin is missing");
+        input
+            .builtins_segments
+            .poseidon
+            .as_ref()
+            .expect("Poseidon builtin is missing");
+        input
+            .builtins_segments
+            .range_check_bits_96
+            .as_ref()
+            .expect("Range check bits 96 builtin is missing");
+        input
+            .builtins_segments
+            .range_check_bits_128
+            .as_ref()
+            .expect("Range check bits 128 builtin is missing");
+    }
+
     #[test]
     fn test_basic_cairo_air() {
         let cairo_proof =
@@ -350,6 +405,14 @@ pub mod tests {
                 test_cfg(),
             )
             .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
+        fn test_prove_verify_all_builtins() {
+            // This test's input was generated using 'stwo_cairo_input.py' in Starkware repo with 50
+            // instances of each builtin.
+            let input = test_input("test_prove_verify_all_builtins");
+            assert_all_builtins_in_input(&input);
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
     }
