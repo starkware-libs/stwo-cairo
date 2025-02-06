@@ -329,5 +329,15 @@ pub mod tests {
             .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
+
+        #[test]
+        fn test_builtins_cairo_air() {
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                test_input("test_prove_verify_all_builtins"),
+                test_cfg(),
+            )
+            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
     }
 }

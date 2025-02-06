@@ -16,5 +16,11 @@
         "pub.json",
         "priv.json",
         "trace"
+    ],
+    "test_prove_verify_all_builtins": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace"
     ]
 }
