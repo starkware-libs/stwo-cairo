@@ -32,6 +32,29 @@ pub struct BuiltinSegments {
 }
 
 impl BuiltinSegments {
+    /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
+    pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
+        let mut res = BuiltinSegments::default();
+        for (name, value) in memory_segments.iter() {
+            if let Some(builtin_name) = BuiltinName::from_str(name) {
+                // Filter empty segments.
+                let segment = if value.begin_addr == value.stop_ptr {
+                    None
+                } else {
+                    assert!(
+                        value.begin_addr < value.stop_ptr,
+                        "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
+                        value.begin_addr,
+                        value.stop_ptr,
+                    );
+                    Some((value.begin_addr, value.stop_ptr).into())
+                };
+                res.set_segment(builtin_name, segment);
+            };
+        }
+        res
+    }
+
     /// Sets a segment in the builtin segments.
     /// If a segment already exists for the given builtin name, it will be overwritten.
     fn set_segment(&mut self, builtin_name: BuiltinName, segment: Option<MemorySegmentAddresses>) {
@@ -163,29 +186,6 @@ impl BuiltinSegments {
                 stop_ptr: begin_addr + cells_per_instance * next_power_of_two,
             }),
         );
-    }
-
-    /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
-    pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
-        let mut res = BuiltinSegments::default();
-        for (name, value) in memory_segments.iter() {
-            if let Some(builtin_name) = BuiltinName::from_str(name) {
-                // Filter empty segments.
-                let segment = if value.begin_addr == value.stop_ptr {
-                    None
-                } else {
-                    assert!(
-                        value.begin_addr < value.stop_ptr,
-                        "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
-                        value.begin_addr,
-                        value.stop_ptr,
-                    );
-                    Some((value.begin_addr, value.stop_ptr).into())
-                };
-                res.set_segment(builtin_name, segment);
-            };
-        }
-        res
     }
 }
 
