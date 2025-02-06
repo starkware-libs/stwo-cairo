@@ -405,7 +405,7 @@ mod tests {
     use crate::components::memory::memory_address_to_id;
     use crate::components::memory::memory_id_to_big::component::N_M31_IN_FELT252;
     use crate::felt::split_f252;
-    use crate::input::memory::{MemoryBuilder, MemoryConfig};
+    use crate::input::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
 
     #[test]
     fn test_deduce_output_simd() {
@@ -432,7 +432,7 @@ mod tests {
         // Create memory.
         let mut mem = MemoryBuilder::new(MemoryConfig::default());
         for (j, a) in memory_addresses.iter().enumerate() {
-            mem.set(*a as u64, mem.value_from_felt252(expected[j]));
+            mem.set(*a as u64, value_from_felt252(expected[j]));
         }
         let mem = mem.build();
         let memory_address_to_id = memory_address_to_id::ClaimGenerator::new(&mem);
