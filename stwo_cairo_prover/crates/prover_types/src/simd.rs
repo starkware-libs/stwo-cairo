@@ -10,7 +10,7 @@ use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
-use crate::cpu::{CasmState, Felt252};
+use crate::cpu::{BigUInt, CasmState, Felt252};
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -443,6 +443,23 @@ pub trait DivExtend {
 impl DivExtend for PackedM31 {
     fn div(&self, rhs: Self) -> Self {
         *self * rhs.inverse()
+    }
+}
+
+// TODO(Gali): Change to an efficient implementation.
+#[derive(Copy, Clone, Debug)]
+pub struct PackedBigUInt<const B: usize, const L: usize, const F: usize> {
+    value: [BigUInt<B, L, F>; N_LANES],
+}
+impl<const B: usize, const L: usize, const F: usize> PackedBigUInt<B, L, F> {
+    pub fn to_array(&self) -> [BigUInt<B, L, F>; N_LANES] {
+        self.value
+    }
+
+    pub fn broadcast(value: BigUInt<B, L, F>) -> Self {
+        Self {
+            value: [value; N_LANES],
+        }
     }
 }
 
