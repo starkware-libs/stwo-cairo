@@ -188,11 +188,50 @@ impl BuiltinSegments {
             }),
         );
     }
+
+    /// Fills memory cells in builtin segments with the appropriate values according to the builtin.
+    ///
+    /// The memory provided by the runner only contains values that were accessed during program
+    /// execution. However, the builtin AIR applies constraints on it's entire range, including
+    /// addresses that were not accessed.
+    pub fn fill_memory_holes(&self, memory: &mut MemoryBuilder) {
+        // bitwise.
+        if let Some(segment) = &self.bitwise {
+            builtin_padding::bitwise(segment, memory)
+        };
+        // TODO(ohad): fill other builtins.
+    }
 }
 
 /// Return the size of a memory segment.
 fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
     segment.stop_ptr - segment.begin_addr
+}
+
+// TODO(Ohad): padding holes should be handled by a proof-mode runner.
+mod builtin_padding {
+    use cairo_vm::air_public_input::MemorySegmentAddresses;
+    use itertools::Itertools;
+
+    use crate::input::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::input::memory::{value_from_felt252, MemoryBuilder};
+
+    pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
+        let range = segment.begin_addr as u32..segment.stop_ptr as u32;
+        assert!(range.len() % BITWISE_MEMORY_CELLS == 0);
+        for (op0_addr, op1_addr, and_addr, xor_addr, or_addr) in range.tuples() {
+            let op0 = memory.get(op0_addr).as_u256();
+            let op1 = memory.get(op1_addr).as_u256();
+
+            let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
+            let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
+            let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
+
+            memory.set(and_addr as u64, and_res);
+            memory.set(xor_addr as u64, xor_res);
+            memory.set(or_addr as u64, or_res);
+        }
+    }
 }
 
 // TODO(Stav): move read json to a test function.

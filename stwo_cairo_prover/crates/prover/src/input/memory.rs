@@ -74,20 +74,6 @@ impl Memory {
         self.inst_cache.get(&addr).copied()
     }
 
-    // TODO(spapini): Optimize. This should be SIMD.
-    pub fn value_from_felt252(&self, value: [u32; 8]) -> MemoryValue {
-        if value[3..8] == [0; 5] && value[2] < (1 << 8) {
-            MemoryValue::Small(
-                value[0] as u128
-                    + ((value[1] as u128) << 32)
-                    + ((value[2] as u128) << 64)
-                    + ((value[3] as u128) << 96),
-            )
-        } else {
-            MemoryValue::F252(value)
-        }
-    }
-
     pub fn iter_values(&self) -> impl Iterator<Item = MemoryValue> + '_ {
         let mut values = (0..self.address_to_id.len())
             .map(|addr| self.get(addr as u32))
@@ -96,6 +82,20 @@ impl Memory {
         let size = values.len().next_power_of_two();
         values.resize(size, MemoryValue::F252([0; 8]));
         values.into_iter()
+    }
+}
+
+// TODO(spapini): Optimize. This should be SIMD.
+pub fn value_from_felt252(value: [u32; 8]) -> MemoryValue {
+    if value[3..8] == [0; 5] && value[2] < (1 << 8) {
+        MemoryValue::Small(
+            value[0] as u128
+                + ((value[1] as u128) << 32)
+                + ((value[2] as u128) << 64)
+                + ((value[3] as u128) << 96),
+        )
+    } else {
+        MemoryValue::F252(value)
     }
 }
 
@@ -126,7 +126,7 @@ impl MemoryBuilder {
         let memory_entries = iter.into_iter();
         let mut builder = Self::new(config);
         for entry in memory_entries {
-            let value = builder.value_from_felt252(entry.value);
+            let value = value_from_felt252(entry.value);
             builder.set(entry.address, value);
         }
 
@@ -145,6 +145,7 @@ impl MemoryBuilder {
     }
 
     // TODO(ohadn): settle on an address integer type, and use it consistently.
+    // TODO(Ohad): add debug sanity checks.
     pub fn set(&mut self, addr: u64, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
