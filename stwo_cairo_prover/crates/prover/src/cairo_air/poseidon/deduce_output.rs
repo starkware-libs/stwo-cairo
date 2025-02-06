@@ -1,15 +1,9 @@
-use prover_types::cpu::{Felt252Packed27, M31};
 use starknet_ff::FieldElement;
+use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, POSEIDON_ROUND_KEYS};
+use stwo_cairo_common::prover_types::cpu::{Felt252Packed27, M31};
 
-use super::const_columns::round_keys;
-use super::consts::POSEIDON_ROUND_KEYS;
-
-pub fn round_keys_field_elements(round: M31) -> [FieldElement; 3] {
-    POSEIDON_ROUND_KEYS[round.0 as usize].map(FieldElement::from_mont)
-}
-
-pub fn round_keys_field_elements(round: M31) -> [FieldElement; 3] {
-    POSEIDON_ROUND_KEYS[round.0 as usize].map(FieldElement::from_mont)
+pub fn round_keys_field_elements(round: usize) -> [FieldElement; 3] {
+    POSEIDON_ROUND_KEYS[round].map(FieldElement::from_mont)
 }
 
 #[derive(Debug)]
@@ -23,7 +17,7 @@ impl PoseidonRoundKeys {
 #[derive(Debug)]
 pub struct Cube252 {}
 impl Cube252 {
-    // This value is equal to 2**786 % PRIME, which compensates for the three Montgomery divisions
+    // This value is equal to 2**768 % PRIME, which compensates for the three Montgomery divisions
     // by 2**256 performed in the three multiplications of a cubing.
     const FELT252_MONT_CUBE_FACTOR: FieldElement = FieldElement::from_mont([
         14731687596718420366,
@@ -54,7 +48,7 @@ impl PoseidonFullRoundChain {
         state: [Felt252Packed27; 3],
     ) -> (M31, M31, [Felt252Packed27; 3]) {
         let [x, y, z] = state.map(|x| Cube252::cube(x.into()));
-        let keys = round_keys_field_elements(round);
+        let keys = round_keys_field_elements(round.0 as usize);
 
         // An implementation of the MDS [[3, 1, 1], [1, -1, 1], [1, 1, -2]] using only
         // 7 field adds/subs (plus 3 more additions for the round keys) and no muls.
@@ -100,7 +94,7 @@ impl Poseidon3PartialRoundsChain {
         state: [Felt252Packed27; 4],
     ) -> (M31, M31, [Felt252Packed27; 4]) {
         let mut state = state.map(FieldElement::from);
-        let keys = round_keys_field_elements(round);
+        let keys = round_keys_field_elements(round.0 as usize);
         for half_key in keys {
             state = Self::partial_round_field_elements(state, half_key);
         }
