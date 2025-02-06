@@ -32,10 +32,7 @@ pub fn mask_points(
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
+    trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
@@ -67,12 +64,13 @@ pub struct ConstraintParams {
     pub VerifyInstruction_alpha0: QM31,
     pub VerifyInstruction_alpha1: QM31,
     pub VerifyInstruction_alpha11: QM31,
-    pub VerifyInstruction_alpha17: QM31,
+    pub VerifyInstruction_alpha15: QM31,
     pub VerifyInstruction_alpha2: QM31,
     pub VerifyInstruction_alpha3: QM31,
     pub VerifyInstruction_alpha4: QM31,
     pub VerifyInstruction_alpha5: QM31,
     pub VerifyInstruction_alpha7: QM31,
+    pub VerifyInstruction_alpha8: QM31,
     pub VerifyInstruction_z: QM31,
     pub claimed_sum: QM31,
     pub log_size: u32,
@@ -102,12 +100,13 @@ pub fn evaluate_constraints_at_point(
         VerifyInstruction_alpha0,
         VerifyInstruction_alpha1,
         VerifyInstruction_alpha11,
-        VerifyInstruction_alpha17,
+        VerifyInstruction_alpha15,
         VerifyInstruction_alpha2,
         VerifyInstruction_alpha3,
         VerifyInstruction_alpha4,
         VerifyInstruction_alpha5,
         VerifyInstruction_alpha7,
+        VerifyInstruction_alpha8,
         VerifyInstruction_z,
         claimed_sum,
         log_size,
@@ -125,7 +124,8 @@ pub fn evaluate_constraints_at_point(
         trace_1_column_9,
         trace_1_column_10,
         trace_1_column_11,
-    ]: [Span<QM31>; 12] =
+        trace_1_column_12,
+    ]: [Span<QM31>; 13] =
         (*trace_mask_values
         .multi_pop_front()
         .unwrap())
@@ -155,8 +155,9 @@ pub fn evaluate_constraints_at_point(
 
     let [trace_1_column_11_offset_0]: [QM31; 1] = (*trace_1_column_11.try_into().unwrap()).unbox();
 
+    let [trace_1_column_12_offset_0]: [QM31; 1] = (*trace_1_column_12.try_into().unwrap()).unbox();
+
     let [
-        trace_2_column_12,
         trace_2_column_13,
         trace_2_column_14,
         trace_2_column_15,
@@ -169,16 +170,11 @@ pub fn evaluate_constraints_at_point(
         trace_2_column_22,
         trace_2_column_23,
         trace_2_column_24,
-        trace_2_column_25,
-        trace_2_column_26,
-        trace_2_column_27,
-    ]: [Span<QM31>; 16] =
+    ]: [Span<QM31>; 12] =
         (*interaction_mask_values
         .multi_pop_front()
         .unwrap())
         .unbox();
-
-    let [trace_2_column_12_offset_0]: [QM31; 1] = (*trace_2_column_12.try_into().unwrap()).unbox();
 
     let [trace_2_column_13_offset_0]: [QM31; 1] = (*trace_2_column_13.try_into().unwrap()).unbox();
 
@@ -196,32 +192,26 @@ pub fn evaluate_constraints_at_point(
 
     let [trace_2_column_20_offset_0]: [QM31; 1] = (*trace_2_column_20.try_into().unwrap()).unbox();
 
-    let [trace_2_column_21_offset_0]: [QM31; 1] = (*trace_2_column_21.try_into().unwrap()).unbox();
+    let [trace_2_column_21_offset_neg_1, trace_2_column_21_offset_0]: [QM31; 2] =
+        (*trace_2_column_21
+        .try_into()
+        .unwrap())
+        .unbox();
 
-    let [trace_2_column_22_offset_0]: [QM31; 1] = (*trace_2_column_22.try_into().unwrap()).unbox();
+    let [trace_2_column_22_offset_neg_1, trace_2_column_22_offset_0]: [QM31; 2] =
+        (*trace_2_column_22
+        .try_into()
+        .unwrap())
+        .unbox();
 
-    let [trace_2_column_23_offset_0]: [QM31; 1] = (*trace_2_column_23.try_into().unwrap()).unbox();
+    let [trace_2_column_23_offset_neg_1, trace_2_column_23_offset_0]: [QM31; 2] =
+        (*trace_2_column_23
+        .try_into()
+        .unwrap())
+        .unbox();
 
     let [trace_2_column_24_offset_neg_1, trace_2_column_24_offset_0]: [QM31; 2] =
         (*trace_2_column_24
-        .try_into()
-        .unwrap())
-        .unbox();
-
-    let [trace_2_column_25_offset_neg_1, trace_2_column_25_offset_0]: [QM31; 2] =
-        (*trace_2_column_25
-        .try_into()
-        .unwrap())
-        .unbox();
-
-    let [trace_2_column_26_offset_neg_1, trace_2_column_26_offset_0]: [QM31; 2] =
-        (*trace_2_column_26
-        .try_into()
-        .unwrap())
-        .unbox();
-
-    let [trace_2_column_27_offset_neg_1, trace_2_column_27_offset_0]: [QM31; 2] =
-        (*trace_2_column_27
         .try_into()
         .unwrap())
         .unbox();
@@ -244,15 +234,17 @@ pub fn evaluate_constraints_at_point(
         VerifyInstruction_alpha0,
         VerifyInstruction_alpha1,
         VerifyInstruction_alpha11,
-        VerifyInstruction_alpha17,
+        VerifyInstruction_alpha15,
         VerifyInstruction_alpha2,
         VerifyInstruction_alpha3,
         VerifyInstruction_alpha4,
         VerifyInstruction_alpha5,
         VerifyInstruction_alpha7,
+        VerifyInstruction_alpha8,
         VerifyInstruction_z,
         trace_1_column_0_offset_0,
         trace_1_column_10_offset_0,
+        trace_1_column_11_offset_0,
         trace_1_column_1_offset_0,
         trace_1_column_2_offset_0,
         trace_1_column_3_offset_0,
@@ -269,20 +261,32 @@ pub fn evaluate_constraints_at_point(
     let intermediate2 = *intermediates.pop_front().unwrap();
     let intermediate3 = *intermediates.pop_front().unwrap();
     let intermediate4 = *intermediates.pop_front().unwrap();
-    let intermediate5 = *intermediates.pop_front().unwrap();
-    let intermediate6 = *intermediates.pop_front().unwrap();
 
     // Constrait 0
-    let constraint_quotient = ((trace_1_column_11_offset_0) * (trace_1_column_11_offset_0)
-        - (trace_1_column_11_offset_0))
+    let constraint_quotient = ((trace_1_column_12_offset_0) * (trace_1_column_12_offset_0)
+        - (trace_1_column_12_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
     // Constrait 1
+    let constraint_quotient = (trace_1_column_4_offset_0
+        + trace_1_column_5_offset_0
+        - (m31(1).into()))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constrait 2
+    let constraint_quotient = (trace_1_column_7_offset_0
+        - ((trace_1_column_4_offset_0) * (trace_1_column_2_offset_0)
+            + (trace_1_column_5_offset_0) * (trace_1_column_1_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constrait 3
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
-            trace_2_column_12_offset_0, trace_2_column_13_offset_0, trace_2_column_14_offset_0,
-            trace_2_column_15_offset_0,
+            trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
+            trace_2_column_16_offset_0,
         ],
     ))
         * ((intermediate0) * (intermediate1))
@@ -290,64 +294,46 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 2
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
-        [
-            trace_2_column_16_offset_0, trace_2_column_17_offset_0, trace_2_column_18_offset_0,
-            trace_2_column_19_offset_0,
-        ],
-    )
-        - (QM31Impl::from_partial_evals(
-            [
-                trace_2_column_12_offset_0, trace_2_column_13_offset_0, trace_2_column_14_offset_0,
-                trace_2_column_15_offset_0,
-            ],
-        )))
-        * ((intermediate2) * (intermediate3))
-        - (intermediate3 + intermediate2))
-        * domain_vanish_at_point_inv;
-    sum = sum * random_coeff + constraint_quotient;
-
-    // Constrait 3
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
-        [
-            trace_2_column_20_offset_0, trace_2_column_21_offset_0, trace_2_column_22_offset_0,
-            trace_2_column_23_offset_0,
-        ],
-    )
-        - (QM31Impl::from_partial_evals(
-            [
-                trace_2_column_16_offset_0, trace_2_column_17_offset_0, trace_2_column_18_offset_0,
-                trace_2_column_19_offset_0,
-            ],
-        )))
-        * ((intermediate4) * (intermediate5))
-        - (intermediate5 + (intermediate4) * (trace_1_column_11_offset_0)))
-        * domain_vanish_at_point_inv;
-    sum = sum * random_coeff + constraint_quotient;
-
     // Constrait 4
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
-            trace_2_column_24_offset_0, trace_2_column_25_offset_0, trace_2_column_26_offset_0,
-            trace_2_column_27_offset_0,
+            trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
+            trace_2_column_20_offset_0,
         ],
     )
         - (QM31Impl::from_partial_evals(
             [
-                trace_2_column_24_offset_neg_1, trace_2_column_25_offset_neg_1,
-                trace_2_column_26_offset_neg_1, trace_2_column_27_offset_neg_1,
+                trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
+                trace_2_column_16_offset_0,
+            ],
+        )))
+        * ((intermediate2) * (intermediate3))
+        - (intermediate3 + (intermediate2) * (trace_1_column_12_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constrait 5
+    let constraint_quotient = ((QM31Impl::from_partial_evals(
+        [
+            trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
+            trace_2_column_24_offset_0,
+        ],
+    )
+        - (QM31Impl::from_partial_evals(
+            [
+                trace_2_column_21_offset_neg_1, trace_2_column_22_offset_neg_1,
+                trace_2_column_23_offset_neg_1, trace_2_column_24_offset_neg_1,
             ],
         ))
         - (QM31Impl::from_partial_evals(
             [
-                trace_2_column_20_offset_0, trace_2_column_21_offset_0, trace_2_column_22_offset_0,
-                trace_2_column_23_offset_0,
+                trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
+                trace_2_column_20_offset_0,
             ],
         ))
         + (claimed_sum) * (m31(pow2(log_size)).inverse().into()))
-        * (intermediate6)
-        + trace_1_column_11_offset_0)
+        * (intermediate4)
+        + trace_1_column_12_offset_0)
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
@@ -369,15 +355,17 @@ fn intermediates(
     VerifyInstruction_alpha0: QM31,
     VerifyInstruction_alpha1: QM31,
     VerifyInstruction_alpha11: QM31,
-    VerifyInstruction_alpha17: QM31,
+    VerifyInstruction_alpha15: QM31,
     VerifyInstruction_alpha2: QM31,
     VerifyInstruction_alpha3: QM31,
     VerifyInstruction_alpha4: QM31,
     VerifyInstruction_alpha5: QM31,
     VerifyInstruction_alpha7: QM31,
+    VerifyInstruction_alpha8: QM31,
     VerifyInstruction_z: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_10_offset_0: QM31,
+    trace_1_column_11_offset_0: QM31,
     trace_1_column_1_offset_0: QM31,
     trace_1_column_2_offset_0: QM31,
     trace_1_column_3_offset_0: QM31,
@@ -392,22 +380,28 @@ fn intermediates(
         VerifyInstruction_alpha0,
         VerifyInstruction_alpha1,
         VerifyInstruction_alpha11,
-        VerifyInstruction_alpha17,
+        VerifyInstruction_alpha15,
         VerifyInstruction_alpha2,
         VerifyInstruction_alpha3,
         VerifyInstruction_alpha4,
         VerifyInstruction_alpha5,
         VerifyInstruction_alpha7,
+        VerifyInstruction_alpha8,
         VerifyInstruction_z,
         trace_1_column_0_offset_0,
+        trace_1_column_3_offset_0,
+        trace_1_column_4_offset_0,
+        trace_1_column_5_offset_0,
+        trace_1_column_6_offset_0,
     );
 
     let intermediate1 = intermediate1(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        trace_1_column_2_offset_0,
         trace_1_column_3_offset_0,
+        trace_1_column_7_offset_0,
+        trace_1_column_8_offset_0,
     );
 
     let intermediate2 = intermediate2(
@@ -416,33 +410,13 @@ fn intermediates(
         MemoryIdToBig_alpha2,
         MemoryIdToBig_alpha3,
         MemoryIdToBig_z,
-        trace_1_column_3_offset_0,
-        trace_1_column_4_offset_0,
-        trace_1_column_5_offset_0,
-        trace_1_column_6_offset_0,
-    );
-
-    let intermediate3 = intermediate3(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        trace_1_column_2_offset_0,
-        trace_1_column_7_offset_0,
-    );
-
-    let intermediate4 = intermediate4(
-        MemoryIdToBig_alpha0,
-        MemoryIdToBig_alpha1,
-        MemoryIdToBig_alpha2,
-        MemoryIdToBig_alpha3,
-        MemoryIdToBig_z,
         trace_1_column_10_offset_0,
-        trace_1_column_7_offset_0,
+        trace_1_column_11_offset_0,
         trace_1_column_8_offset_0,
         trace_1_column_9_offset_0,
     );
 
-    let intermediate5 = intermediate5(
+    let intermediate3 = intermediate3(
         Opcodes_alpha0,
         Opcodes_alpha1,
         Opcodes_alpha2,
@@ -452,28 +426,19 @@ fn intermediates(
         trace_1_column_2_offset_0,
     );
 
-    let intermediate6 = intermediate6(
+    let intermediate4 = intermediate4(
         Opcodes_alpha0,
         Opcodes_alpha1,
         Opcodes_alpha2,
         Opcodes_z,
         trace_1_column_10_offset_0,
+        trace_1_column_11_offset_0,
         trace_1_column_1_offset_0,
-        trace_1_column_4_offset_0,
-        trace_1_column_5_offset_0,
+        trace_1_column_2_offset_0,
         trace_1_column_6_offset_0,
-        trace_1_column_8_offset_0,
         trace_1_column_9_offset_0,
     );
-    array![
-        intermediate0,
-        intermediate1,
-        intermediate2,
-        intermediate3,
-        intermediate4,
-        intermediate5,
-        intermediate6,
-    ]
+    array![intermediate0, intermediate1, intermediate2, intermediate3, intermediate4]
 }
 
 
@@ -481,24 +446,30 @@ pub fn intermediate0(
     VerifyInstruction_alpha0: QM31,
     VerifyInstruction_alpha1: QM31,
     VerifyInstruction_alpha11: QM31,
-    VerifyInstruction_alpha17: QM31,
+    VerifyInstruction_alpha15: QM31,
     VerifyInstruction_alpha2: QM31,
     VerifyInstruction_alpha3: QM31,
     VerifyInstruction_alpha4: QM31,
     VerifyInstruction_alpha5: QM31,
     VerifyInstruction_alpha7: QM31,
+    VerifyInstruction_alpha8: QM31,
     VerifyInstruction_z: QM31,
     trace_1_column_0_offset_0: QM31,
+    trace_1_column_3_offset_0: QM31,
+    trace_1_column_4_offset_0: QM31,
+    trace_1_column_5_offset_0: QM31,
+    trace_1_column_6_offset_0: QM31,
 ) -> QM31 {
     (VerifyInstruction_alpha0) * (trace_1_column_0_offset_0)
-        + (VerifyInstruction_alpha1) * (qm31(32766, 0, 0, 0))
+        + (VerifyInstruction_alpha1) * (qm31(32767, 0, 0, 0))
         + (VerifyInstruction_alpha2) * (qm31(32767, 0, 0, 0))
-        + (VerifyInstruction_alpha3) * (qm31(32767, 0, 0, 0))
+        + (VerifyInstruction_alpha3) * (trace_1_column_3_offset_0)
         + VerifyInstruction_alpha4
         + VerifyInstruction_alpha5
-        + VerifyInstruction_alpha7
+        + (VerifyInstruction_alpha7) * (trace_1_column_4_offset_0)
+        + (VerifyInstruction_alpha8) * (trace_1_column_5_offset_0)
         + VerifyInstruction_alpha11
-        + VerifyInstruction_alpha17
+        + (VerifyInstruction_alpha15) * (trace_1_column_6_offset_0)
         - (VerifyInstruction_z)
 }
 
@@ -506,11 +477,13 @@ pub fn intermediate1(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    trace_1_column_2_offset_0: QM31,
     trace_1_column_3_offset_0: QM31,
+    trace_1_column_7_offset_0: QM31,
+    trace_1_column_8_offset_0: QM31,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (trace_1_column_2_offset_0 - (m31(1).into()))
-        + (MemoryAddressToId_alpha1) * (trace_1_column_3_offset_0)
+    (MemoryAddressToId_alpha0)
+        * (trace_1_column_7_offset_0 + trace_1_column_3_offset_0 - (m31(32768).into()))
+        + (MemoryAddressToId_alpha1) * (trace_1_column_8_offset_0)
         - (MemoryAddressToId_z)
 }
 
@@ -520,49 +493,19 @@ pub fn intermediate2(
     MemoryIdToBig_alpha2: QM31,
     MemoryIdToBig_alpha3: QM31,
     MemoryIdToBig_z: QM31,
-    trace_1_column_3_offset_0: QM31,
-    trace_1_column_4_offset_0: QM31,
-    trace_1_column_5_offset_0: QM31,
-    trace_1_column_6_offset_0: QM31,
+    trace_1_column_10_offset_0: QM31,
+    trace_1_column_11_offset_0: QM31,
+    trace_1_column_8_offset_0: QM31,
+    trace_1_column_9_offset_0: QM31,
 ) -> QM31 {
-    (MemoryIdToBig_alpha0) * (trace_1_column_3_offset_0)
-        + (MemoryIdToBig_alpha1) * (trace_1_column_4_offset_0)
-        + (MemoryIdToBig_alpha2) * (trace_1_column_5_offset_0)
-        + (MemoryIdToBig_alpha3) * (trace_1_column_6_offset_0)
+    (MemoryIdToBig_alpha0) * (trace_1_column_8_offset_0)
+        + (MemoryIdToBig_alpha1) * (trace_1_column_9_offset_0)
+        + (MemoryIdToBig_alpha2) * (trace_1_column_10_offset_0)
+        + (MemoryIdToBig_alpha3) * (trace_1_column_11_offset_0)
         - (MemoryIdToBig_z)
 }
 
 pub fn intermediate3(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    trace_1_column_2_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-) -> QM31 {
-    (MemoryAddressToId_alpha0) * (trace_1_column_2_offset_0 - (m31(2).into()))
-        + (MemoryAddressToId_alpha1) * (trace_1_column_7_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate4(
-    MemoryIdToBig_alpha0: QM31,
-    MemoryIdToBig_alpha1: QM31,
-    MemoryIdToBig_alpha2: QM31,
-    MemoryIdToBig_alpha3: QM31,
-    MemoryIdToBig_z: QM31,
-    trace_1_column_10_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-    trace_1_column_8_offset_0: QM31,
-    trace_1_column_9_offset_0: QM31,
-) -> QM31 {
-    (MemoryIdToBig_alpha0) * (trace_1_column_7_offset_0)
-        + (MemoryIdToBig_alpha1) * (trace_1_column_8_offset_0)
-        + (MemoryIdToBig_alpha2) * (trace_1_column_9_offset_0)
-        + (MemoryIdToBig_alpha3) * (trace_1_column_10_offset_0)
-        - (MemoryIdToBig_z)
-}
-
-pub fn intermediate5(
     Opcodes_alpha0: QM31,
     Opcodes_alpha1: QM31,
     Opcodes_alpha2: QM31,
@@ -577,28 +520,24 @@ pub fn intermediate5(
         - (Opcodes_z)
 }
 
-pub fn intermediate6(
+pub fn intermediate4(
     Opcodes_alpha0: QM31,
     Opcodes_alpha1: QM31,
     Opcodes_alpha2: QM31,
     Opcodes_z: QM31,
     trace_1_column_10_offset_0: QM31,
+    trace_1_column_11_offset_0: QM31,
     trace_1_column_1_offset_0: QM31,
-    trace_1_column_4_offset_0: QM31,
-    trace_1_column_5_offset_0: QM31,
+    trace_1_column_2_offset_0: QM31,
     trace_1_column_6_offset_0: QM31,
-    trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
 ) -> QM31 {
     (Opcodes_alpha0)
-        * (trace_1_column_4_offset_0
-            + (trace_1_column_5_offset_0) * (m31(512).into())
-            + (trace_1_column_6_offset_0) * (m31(262144).into()))
-        + (Opcodes_alpha1) * (trace_1_column_1_offset_0)
-        + (Opcodes_alpha2)
-            * (trace_1_column_8_offset_0
-                + (trace_1_column_9_offset_0) * (m31(512).into())
-                + (trace_1_column_10_offset_0) * (m31(262144).into()))
+        * (trace_1_column_9_offset_0
+            + (trace_1_column_10_offset_0) * (m31(512).into())
+            + (trace_1_column_11_offset_0) * (m31(262144).into()))
+        + (Opcodes_alpha1) * (trace_1_column_1_offset_0 + trace_1_column_6_offset_0)
+        + (Opcodes_alpha2) * (trace_1_column_2_offset_0)
         - (Opcodes_z)
 }
 
