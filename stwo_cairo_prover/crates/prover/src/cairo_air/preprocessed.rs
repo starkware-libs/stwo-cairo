@@ -231,7 +231,10 @@ impl PreProcessedColumn for BitwiseXor {
 
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
+            id: format!(
+                "{}_{}_{}",
+                BITWISE_XOR_TABLE_PREFIX, self.n_bits, self.col_index
+            ),
         }
     }
 }
