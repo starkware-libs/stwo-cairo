@@ -6,10 +6,13 @@ use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnI
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::Col;
+use stwo_prover::core::backend::{BackendForChannel, Col};
+use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::{BaseField, M31};
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
+use stwo_prover::core::pcs::CommitmentTreeProver;
+use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation, PolyOps};
 use stwo_prover::core::poly::BitReversedOrder;
+use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::LOG_MAX_ROWS;
 use crate::components::range_check_vector::{
@@ -265,11 +268,42 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
     }
 }
 
+/// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
+pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
+    log_blowup_factor: u32,
+) -> <<MC as MerkleChannel>::H as MerkleHasher>::Hash
+where
+    SimdBackend: BackendForChannel<MC>,
+{
+    let preprocessed_trace = PreProcessedTrace::new();
+
+    // Precompute twiddles for the commitment scheme.
+    let max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
+    let twiddles = SimdBackend::precompute_twiddles(
+        CanonicCoset::new(max_log_size + log_blowup_factor)
+            .circle_domain()
+            .half_coset,
+    );
+
+    // Generate the commitment tree.
+    let polys = SimdBackend::interpolate_columns(preprocessed_trace.gen_trace(), &twiddles);
+    let commitment_scheme = CommitmentTreeProver::<SimdBackend, MC>::new(
+        polys,
+        log_blowup_factor,
+        &mut MC::C::default(),
+        &twiddles,
+    );
+
+    commitment_scheme.commitment.root()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     const LOG_SIZE: u32 = 8;
     use stwo_prover::core::backend::Column;
+    use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     #[test]
     fn test_columns_are_in_decending_order() {
@@ -355,5 +389,18 @@ mod tests {
         let id = range_check.id();
 
         assert_eq!(id.id, "range_check_1_2_3_4_column_2");
+    }
+
+    #[test]
+    fn test_preprocessed_root_regression() {
+        let log_blowup_factor = 1;
+        let expected = Blake2sHash::from(
+            hex::decode("1b15a11b1a7cbb7a2120361f80ae300bce567c28498f1cfe28accbaade41a16e")
+                .expect("Invalid hex string"),
+        );
+
+        let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(log_blowup_factor);
+
+        assert_eq!(root, expected);
     }
 }
