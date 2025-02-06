@@ -5,6 +5,7 @@ use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
 
 use bytemuck::Zeroable;
+use itertools::Itertools;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
@@ -461,6 +462,23 @@ impl<const B: usize, const L: usize, const F: usize> PackedBigUInt<B, L, F> {
             value: [value; N_LANES],
         }
     }
+
+    pub fn from_packedfelt252_array(felts: Vec<PackedFelt252>) -> Self {
+        let result: [BigUInt<B, L, F>; N_LANES] = std::array::from_fn(|i| {
+            BigUInt::<B, L, F>::from_felt252_array(
+                felts.iter().map(|felt| felt.to_array()[i]).collect_vec(),
+            )
+        });
+        Self { value: result }
+    }
+
+    pub fn from_packedbiguint<const OB: usize, const OL: usize, const OF: usize>(
+        other: PackedBigUInt<OB, OL, OF>,
+    ) -> Self {
+        let result: [BigUInt<B, L, F>; N_LANES] =
+            std::array::from_fn(|i| BigUInt::<B, L, F>::from_biguint(other.value[i]));
+        Self { value: result }
+    }
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -568,5 +586,54 @@ mod tests {
         assert_eq!(add.to_array(), expected_add);
         assert_eq!(sub.to_array(), expected_sub);
         assert_eq!(mul.to_array(), expected_mul);
+    }
+
+    #[test]
+    fn test_packed_big_uint_from_packed_felt252_array() {
+        let mut rng = SmallRng::seed_from_u64(0u64);
+        let felts: Vec<Felt252> = (0..4).map(|_| rand_f252(&mut rng)).collect();
+        let big_uint = BigUInt::<384, 6, 32>::from_felt252_array(felts.clone());
+
+        let packed_felts: Vec<PackedFelt252> = felts
+            .into_iter()
+            .map(|felt| PackedFelt252::from_array(&[felt; N_LANES]))
+            .collect_vec();
+        let packed_big_uint = PackedBigUInt::<384, 6, 32>::from_packedfelt252_array(packed_felts);
+
+        for i in 0..32 {
+            assert_eq!(packed_big_uint.to_array(), [big_uint; N_LANES], "i = {}", i);
+        }
+    }
+
+    #[test]
+    fn test_packed_big_uint_from_packed_big_uint() {
+        let big_uint = BigUInt::<384, 6, 32>::from_felt252(Felt252::from_limbs(&[
+            M31::from_u32_unchecked(32425),
+            M31::from_u32_unchecked(1429),
+            M31::from_u32_unchecked(243987),
+            M31::from_u32_unchecked(63),
+            M31::from_u32_unchecked(94753),
+        ]));
+        let expected_packed_big_uint = PackedBigUInt::<384, 6, 32>::broadcast(big_uint);
+
+        let packed_big_uint =
+            PackedBigUInt::<384, 6, 32>::from_packedbiguint(
+                PackedBigUInt::<768, 12, 64>::from_packedbiguint(expected_packed_big_uint),
+            );
+        let packed_big_uint_2 =
+            PackedBigUInt::<384, 6, 32>::from_packedbiguint(
+                PackedBigUInt::<768, 12, 64>::broadcast(BigUInt::<768, 12, 64>::from_biguint(
+                    big_uint,
+                )),
+            );
+
+        assert_eq!(
+            packed_big_uint.to_array(),
+            expected_packed_big_uint.to_array()
+        );
+        assert_eq!(
+            packed_big_uint_2.to_array(),
+            expected_packed_big_uint.to_array()
+        );
     }
 }
