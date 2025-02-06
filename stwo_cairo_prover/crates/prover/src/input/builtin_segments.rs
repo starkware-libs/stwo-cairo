@@ -5,15 +5,15 @@ use serde::{Deserialize, Serialize};
 
 use super::memory::MemoryBuilder;
 
-const RANGE_CHECK_MEMORY_CELLS: usize = 1;
-const PEDERSEN_MEMORY_CELLS: usize = 3;
-const ECDSA_MEMORY_CELLS: usize = 2;
-const KECCAK_MEMORY_CELLS: usize = 16;
+const ADD_MOD_MEMORY_CELLS: usize = 7;
 const BITWISE_MEMORY_CELLS: usize = 5;
 const EC_OP_MEMORY_CELLS: usize = 7;
-const POSEIDON_MEMORY_CELLS: usize = 6;
-const ADD_MOD_MEMORY_CELLS: usize = 7;
+const ECDSA_MEMORY_CELLS: usize = 2;
+const KECCAK_MEMORY_CELLS: usize = 16;
 const MUL_MOD_MEMORY_CELLS: usize = 7;
+const PEDERSEN_MEMORY_CELLS: usize = 3;
+const POSEIDON_MEMORY_CELLS: usize = 6;
+const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
 // TODO(ohadn): change field types in MemorySegmentAddresses to match address type.
 /// This struct holds the builtins used in a Cairo program.
@@ -115,30 +115,34 @@ impl BuiltinSegments {
 
     /// Returns the number of instances for each builtin.
     pub fn get_counts(&self) -> HashMap<BuiltinName, usize> {
-        let builtin_names = &[
-            BuiltinName::range_check,
-            BuiltinName::pedersen,
-            BuiltinName::ecdsa,
-            BuiltinName::keccak,
-            BuiltinName::bitwise,
-            BuiltinName::ec_op,
-            BuiltinName::poseidon,
-            BuiltinName::range_check96,
-            BuiltinName::add_mod,
-            BuiltinName::mul_mod,
-        ];
+        let mut counts = HashMap::new();
+        let mut insert_builtin = |builtin_name, segment: &Option<_>, n_cells_per_instance| {
+            counts.insert(
+                builtin_name,
+                segment.as_ref().map(get_memory_segment_size).unwrap_or(0) / n_cells_per_instance,
+            );
+        };
 
-        builtin_names
-            .iter()
-            .filter_map(|&builtin_name| {
-                let segment = self.get_segment(builtin_name).as_ref()?;
-                Some((
-                    builtin_name,
-                    get_memory_segment_size(segment)
-                        / Self::builtin_memory_cells_per_instance(builtin_name),
-                ))
-            })
-            .collect()
+        insert_builtin(BuiltinName::add_mod, &self.add_mod, ADD_MOD_MEMORY_CELLS);
+        insert_builtin(BuiltinName::bitwise, &self.bitwise, BITWISE_MEMORY_CELLS);
+        insert_builtin(BuiltinName::ec_op, &self.ec_op, EC_OP_MEMORY_CELLS);
+        insert_builtin(BuiltinName::ecdsa, &self.ecdsa, ECDSA_MEMORY_CELLS);
+        insert_builtin(BuiltinName::keccak, &self.keccak, KECCAK_MEMORY_CELLS);
+        insert_builtin(BuiltinName::mul_mod, &self.mul_mod, MUL_MOD_MEMORY_CELLS);
+        insert_builtin(BuiltinName::pedersen, &self.pedersen, PEDERSEN_MEMORY_CELLS);
+        insert_builtin(BuiltinName::poseidon, &self.poseidon, POSEIDON_MEMORY_CELLS);
+        insert_builtin(
+            BuiltinName::range_check,
+            &self.range_check_bits_128,
+            RANGE_CHECK_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::range_check96,
+            &self.range_check_bits_96,
+            RANGE_CHECK_MEMORY_CELLS,
+        );
+
+        counts
     }
 
     /// Pads a builtin segment to the next power of 2, using copies of its last instance.
