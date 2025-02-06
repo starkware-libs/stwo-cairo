@@ -93,8 +93,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
         self: @Component,
         ref sum: QM31,
         ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Array<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Array<QM31>>,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
@@ -164,10 +164,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let log_size = self.claim.log_size();
 
-        let _preprocessed_is_first = preprocessed_mask_values
-            .get(PreprocessedColumn::IsFirst(log_size));
-
         let params = constraints::ConstraintParams {
+            log_size,
             MemoryAddressToId_alpha0: addr_to_id_alpha_0,
             MemoryAddressToId_alpha1: addr_to_id_alpha_1,
             MemoryAddressToId_z: addr_to_id_z,
@@ -207,9 +205,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha8: verify_instruction_alpha_8,
             VerifyInstruction_alpha9: verify_instruction_alpha_9,
             VerifyInstruction_z: verify_instruction_z,
-            preprocessed_is_first: preprocessed_mask_values
-                .get(PreprocessedColumn::IsFirst(log_size)),
-            total_sum: *self.interaction_claim.claimed_sum,
+            claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
         let trace_domain = CanonicCosetImpl::new(log_size);

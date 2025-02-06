@@ -27,8 +27,8 @@ pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = self.log_size();
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(12, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 4, log_size)
+        let trace_log_sizes = ArrayImpl::new_repeated(9, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 3, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
@@ -55,7 +55,6 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
     pub opcodes_lookup_elements: crate::OpcodeElements,
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
 }
@@ -140,41 +139,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let MemoryAddressToId_alpha0 = *memory_address_to_id_alpha_powers.pop_front().unwrap();
         let MemoryAddressToId_alpha1 = *memory_address_to_id_alpha_powers.pop_front().unwrap();
 
-        let MemoryIdToBig_z = *self.memory_id_to_big_lookup_elements.z;
-        let mut memory_id_to_big_alpha_powers = self
-            .memory_id_to_big_lookup_elements
-            .alpha_powers
-            .span();
-        let MemoryIdToBig_alpha0 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha1 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha2 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha3 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha4 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha5 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha6 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha7 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha8 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha9 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha10 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha11 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha12 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha13 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha14 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha15 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha16 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha17 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha18 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha19 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha20 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha21 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha22 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha23 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha24 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha25 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha26 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-
         let Opcodes_z = *self.opcodes_lookup_elements.z;
         let mut opcodes_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
         let Opcodes_alpha0 = *opcodes_alpha_powers.pop_front().unwrap();
@@ -192,17 +156,12 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha3,
             VerifyInstruction_alpha4,
             VerifyInstruction_alpha5,
-            VerifyInstruction_alpha7,
-            VerifyInstruction_alpha11,
-            VerifyInstruction_alpha17,
+            VerifyInstruction_alpha6,
+            VerifyInstruction_alpha15,
+            VerifyInstruction_alpha18,
             MemoryAddressToId_z,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,
-            MemoryIdToBig_z,
-            MemoryIdToBig_alpha0,
-            MemoryIdToBig_alpha1,
-            MemoryIdToBig_alpha2,
-            MemoryIdToBig_alpha3,
             Opcodes_z,
             Opcodes_alpha0,
             Opcodes_alpha1,
