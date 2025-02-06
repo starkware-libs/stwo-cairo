@@ -228,6 +228,7 @@ pub mod tests {
     use std::path::PathBuf;
 
     use cairo_lang_casm::casm;
+    use itertools::Itertools;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::ProverConfig;
@@ -307,6 +308,23 @@ pub mod tests {
 
         use super::*;
 
+        /// Asserts that all builtins are present in the input.
+        /// Panics if any of the builtins is missing.
+        fn assert_all_builtins_in_input(input: &ProverInput) {
+            let empty_builtins = input
+                .builtins_segments
+                .get_counts()
+                .iter()
+                .filter(|(_, &count)| count == 0)
+                .map(|(name, _)| format!("{:?}", name))
+                .collect_vec();
+            assert!(
+                empty_builtins.is_empty(),
+                "The following builtins are missing: {}",
+                empty_builtins.join(", ")
+            );
+        }
+
         #[test]
         fn generate_and_serialise_proof() {
             let cairo_proof =
@@ -350,6 +368,16 @@ pub mod tests {
                 test_cfg(),
             )
             .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
+
+        #[test]
+        fn test_prove_verify_all_builtins() {
+            // This test's input was generated using 'stwo_cairo_input.py' in Starkware repo with 50
+            // instances of each builtin.
+            let input = test_input("test_prove_verify_all_builtins");
+            assert_all_builtins_in_input(&input);
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
     }
