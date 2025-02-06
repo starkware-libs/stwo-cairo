@@ -75,7 +75,7 @@ impl Memory {
     }
 
     // TODO(spapini): Optimize. This should be SIMD.
-    pub fn value_from_felt252(&self, value: [u32; 8]) -> MemoryValue {
+    pub fn value_from_felt252(value: [u32; 8]) -> MemoryValue {
         if value[3..8] == [0; 5] && value[2] < (1 << 8) {
             MemoryValue::Small(
                 value[0] as u128
@@ -126,7 +126,7 @@ impl MemoryBuilder {
         let memory_entries = iter.into_iter();
         let mut builder = Self::new(config);
         for entry in memory_entries {
-            let value = builder.value_from_felt252(entry.value);
+            let value = Memory::value_from_felt252(entry.value);
             builder.set(entry.address, value);
         }
 
