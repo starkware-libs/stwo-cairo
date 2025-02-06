@@ -141,14 +141,15 @@ impl BuiltinSegments {
             .collect()
     }
 
-    /// Pads a builtin segment with copies of its last instance if that segment isn't None, in
-    /// which case at least one instance is guaranteed to exist.
-    /// The segment is padded to the next power of 2 number of instances.
-    /// Note: the last instance was already verified as valid by the VM and in the case of add_mod
-    /// and mul_mod, security checks have verified that instance has n=1. Thus the padded segment
-    /// satisfies all the AIR constraints.
+    /// Pads a builtin segment to the next power of 2, using copies of its last instance.
+    ///
+    /// # Panics
+    /// - if the remainder for the next power of 2 is not empty.
+    // Note: the last instance was already verified as valid by the VM and in the case of add_mod
+    // and mul_mod, security checks have verified that instance has n=1. Thus the padded segment
+    // satisfies all the AIR constraints.
     // TODO (ohadn): relocate this function if a more appropriate place is found.
-    pub fn fill_builtin_segment(&mut self, memory: &mut MemoryBuilder, builtin_name: BuiltinName) {
+    pub fn pad_builtin_segment(&mut self, memory: &mut MemoryBuilder, builtin_name: BuiltinName) {
         let &Some(MemorySegmentAddresses {
             begin_addr,
             stop_ptr,
@@ -286,7 +287,7 @@ mod test_builtin_segments {
         let memory_write_start = (stop_ptr - cells_per_instance) as u64;
         let mut memory_builder = initialize_memory(memory_write_start, &instance_example);
 
-        builtin_segments.fill_builtin_segment(&mut memory_builder, builtin_name);
+        builtin_segments.pad_builtin_segment(&mut memory_builder, builtin_name);
 
         let &MemorySegmentAddresses {
             begin_addr: new_begin_addr,
