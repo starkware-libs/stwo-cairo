@@ -4,17 +4,16 @@ use core::iter::{IntoIterator, Iterator};
 use core::num::traits::CheckedSub;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
-use crate::fields::BatchInvertible;
 use crate::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
+use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
-use crate::poly::line::{LineDomain, LineDomainImpl};
-use crate::poly::line::{LineEvaluationImpl, LinePoly, LinePolyImpl};
-use crate::poly::utils::{ibutterfly};
+use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
+use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::{ColumnArray};
+use crate::ColumnArray;
 
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
@@ -67,7 +66,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             let commitment_domain = CanonicCosetImpl::new(commitment_domain_log_size)
                 .circle_domain();
             column_commitment_domains.append(commitment_domain);
-        };
+        }
 
         let first_layer = FriFirstLayerVerifier {
             column_log_bounds,
@@ -172,7 +171,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         for column_commitment_domain in self.first_layer.column_commitment_domains {
             column_log_sizes.append(column_commitment_domain.log_size());
-        };
+        }
 
         let unique_column_log_sizes = column_log_sizes.dedup().span();
 
@@ -234,10 +233,10 @@ fn decommit_inner_layers(
                         curr_layer_eval * first_layer_fold_alpha_pow_fold_factor
                             + *folded_column_eval,
                     );
-            };
+            }
 
             layer_query_evals = updated_layer_query_evals;
-        };
+        }
 
         match layer.verify_and_fold(layer_queries, layer_query_evals.span()) {
             Result::Ok((
@@ -302,7 +301,7 @@ fn get_query_positions_by_log_size(
 
         query_positions_by_log_size
             .insert((*column_log_size).into(), NullableTrait::new(queries.positions));
-    };
+    }
 
     query_positions_by_log_size
 }
@@ -400,7 +399,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                     decommitmented_values.append(v2);
                     decommitmented_values.append(v3);
                 };
-            };
+            }
 
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
@@ -480,7 +479,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
                 decommitmented_values.append(v2);
                 decommitmented_values.append(v3);
             };
-        };
+        }
 
         let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
@@ -621,7 +620,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
 
         for subset_domain_initial_index in self.subset_domain_initial_indexes {
             domain_initials.append(source_domain.at(*subset_domain_initial_index));
-        };
+        }
 
         let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
         let mut res = array![];
@@ -632,7 +631,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
             let [f_at_x, f_at_neg_x] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
             res.append(f0 + fold_alpha * f1);
-        };
+        }
 
         res
     }
@@ -646,7 +645,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
 
         for subset_domain_initial_index in self.subset_domain_initial_indexes {
             domain_initial_ys.append(source_domain.at(*subset_domain_initial_index).y);
-        };
+        }
 
         let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
         let mut res = array![];
@@ -660,7 +659,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
             let [f_at_p, f_at_neg_p] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, y_inv);
             res.append(f0 + fold_alpha * f1);
-        };
+        }
 
         res
     }

@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: software-mansion/setup-scarb@v1
         with:
-          scarb-version: "nightly-2024-12-14"
+          scarb-version: "nightly-2025-02-04"
       - run: scarb fmt --check
       - run: scarb test
 

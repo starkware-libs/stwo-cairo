@@ -1,9 +1,9 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::Invertible;
 use super::cm31::{CM31, cm31};
 use super::m31::{M31, M31Impl, UnreducedM31};
+use super::Invertible;
 
 /// Equals `(2^31 - 1)^4`.
 pub const P4: u128 = 21267647892944572736998860269687930881;
@@ -432,8 +432,8 @@ impl DisplayQM31 of core::fmt::Display<QM31> {
 
 #[cfg(test)]
 mod tests {
-    use super::super::Invertible;
     use super::super::m31::{P_U32 as P, m31};
+    use super::super::Invertible;
     use super::{
         PackedUnreducedQM31Impl, QM31, QM31Impl, QM31IntoPackedUnreducedQM31, QM31Trait, qm31,
     };

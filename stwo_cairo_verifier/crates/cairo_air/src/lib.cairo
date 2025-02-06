@@ -35,8 +35,7 @@ use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::ArrayImpl;
-use stwo_verifier_core::verifier::Air;
-use stwo_verifier_core::verifier::{StarkProof, VerificationError, verify};
+use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 
 pub mod components;
@@ -208,7 +207,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         for log_size in PREPROCESSED_COLUMNS_LOG_SIZES.span() {
             preprocessed_trace_log_sizes.append(*log_size);
             preprocessed_trace_log_sizes.append(*log_size);
-        };
+        }
 
         let trace_log_sizes = aggregated_log_sizes.pop_front().unwrap();
         let interaction_log_sizes = aggregated_log_sizes.pop_front().unwrap();
@@ -246,31 +245,31 @@ impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
 
 #[derive(Drop, Serde)]
 pub struct OpcodeInteractionClaim {
-    add_f_f: Array::<PlaceHolder>,
-    add_f_t: Array::<PlaceHolder>,
-    add_t_f: Array::<PlaceHolder>,
-    add_t_t: Array::<PlaceHolder>,
-    add_ap_f_f: Array::<PlaceHolder>,
-    add_ap_f_t: Array::<PlaceHolder>,
-    add_ap_t_f: Array::<PlaceHolder>,
-    assert_eq_f_f: Array::<PlaceHolder>,
-    assert_eq_f_t: Array::<PlaceHolder>,
-    assert_eq_t_f: Array::<PlaceHolder>,
-    call_f_f: Array::<PlaceHolder>,
-    call_f_t: Array::<PlaceHolder>,
-    call_t_f: Array::<PlaceHolder>,
-    generic: Array::<components::genericopcode::InteractionClaim>,
-    jnz_f_f: Array::<PlaceHolder>,
-    jnz_f_t: Array::<PlaceHolder>,
-    jnz_t_f: Array::<PlaceHolder>,
-    jnz_t_t: Array::<PlaceHolder>,
-    jump_f_f_f: Array::<PlaceHolder>,
-    jump_f_f_t: Array::<PlaceHolder>,
-    jump_t_f_f: Array::<PlaceHolder>,
-    jump_t_t_f: Array::<components::jump_t_t_f_opcode::InteractionClaim>,
-    mul_f_f: Array::<PlaceHolder>,
-    mul_f_t: Array::<PlaceHolder>,
-    ret: Array::<components::ret_opcode::InteractionClaim>,
+    add_f_f: Array<PlaceHolder>,
+    add_f_t: Array<PlaceHolder>,
+    add_t_f: Array<PlaceHolder>,
+    add_t_t: Array<PlaceHolder>,
+    add_ap_f_f: Array<PlaceHolder>,
+    add_ap_f_t: Array<PlaceHolder>,
+    add_ap_t_f: Array<PlaceHolder>,
+    assert_eq_f_f: Array<PlaceHolder>,
+    assert_eq_f_t: Array<PlaceHolder>,
+    assert_eq_t_f: Array<PlaceHolder>,
+    call_f_f: Array<PlaceHolder>,
+    call_f_t: Array<PlaceHolder>,
+    call_t_f: Array<PlaceHolder>,
+    generic: Array<components::genericopcode::InteractionClaim>,
+    jnz_f_f: Array<PlaceHolder>,
+    jnz_f_t: Array<PlaceHolder>,
+    jnz_t_f: Array<PlaceHolder>,
+    jnz_t_t: Array<PlaceHolder>,
+    jump_f_f_f: Array<PlaceHolder>,
+    jump_f_f_t: Array<PlaceHolder>,
+    jump_t_f_f: Array<PlaceHolder>,
+    jump_t_t_f: Array<components::jump_t_t_f_opcode::InteractionClaim>,
+    mul_f_f: Array<PlaceHolder>,
+    mul_f_t: Array<PlaceHolder>,
+    ret: Array<components::ret_opcode::InteractionClaim>,
 }
 
 #[generate_trait]
@@ -278,11 +277,11 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     fn mix_into(self: @OpcodeInteractionClaim, ref channel: Channel) {
         for interaction_claim in self.generic.span() {
             interaction_claim.mix_into(ref channel);
-        };
+        }
 
         for interaction_claim in self.jump_t_t_f.span() {
             interaction_claim.mix_into(ref channel);
-        };
+        }
 
         for interaction_claim in self.ret.span() {
             interaction_claim.mix_into(ref channel);
@@ -297,21 +296,21 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
             };
-        };
+        }
 
         for interaction_claim in self.jump_t_t_f.span() {
             sum += match interaction_claim.claimed_sum {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
             };
-        };
+        }
 
         for interaction_claim in self.ret.span() {
             sum += match interaction_claim.claimed_sum {
                 Option::Some((claimed_sum, _)) => *claimed_sum,
                 Option::None => *interaction_claim.total_sum,
             };
-        };
+        }
 
         sum
     }
@@ -348,7 +347,7 @@ impl PublicDataImpl of PublicDataTrait {
                 .inverse();
 
             sum += addr_to_id + id_to_value;
-        };
+        }
 
         // Yield initial state and use the final.
         let CasmState { pc, ap, fp } = *self.final_state;
@@ -371,31 +370,31 @@ type PlaceHolder = u32;
 
 #[derive(Drop, Serde)]
 pub struct OpcodeClaim {
-    pub add_f_f: Array::<PlaceHolder>,
-    pub add_f_t: Array::<PlaceHolder>,
-    pub add_t_f: Array::<PlaceHolder>,
-    pub add_t_t: Array::<PlaceHolder>,
-    pub add_ap_f_f: Array::<PlaceHolder>,
-    pub add_ap_f_t: Array::<PlaceHolder>,
-    pub add_ap_t_f: Array::<PlaceHolder>,
-    pub assert_eq_f_f: Array::<PlaceHolder>,
-    pub assert_eq_f_t: Array::<PlaceHolder>,
-    pub assert_eq_t_f: Array::<PlaceHolder>,
-    pub call_f_f: Array::<PlaceHolder>,
-    pub call_f_t: Array::<PlaceHolder>,
-    pub call_t_f: Array::<PlaceHolder>,
-    pub generic: Array::<components::genericopcode::Claim>,
-    pub jnz_f_f: Array::<PlaceHolder>,
-    pub jnz_f_t: Array::<PlaceHolder>,
-    pub jnz_t_f: Array::<PlaceHolder>,
-    pub jnz_t_t: Array::<PlaceHolder>,
-    pub jump_f_f_f: Array::<PlaceHolder>,
-    pub jump_f_f_t: Array::<PlaceHolder>,
-    pub jump_t_f_f: Array::<PlaceHolder>,
-    pub jump_t_t_f: Array::<components::jump_t_t_f_opcode::Claim>,
-    pub mul_f_f: Array::<PlaceHolder>,
-    pub mul_f_t: Array::<PlaceHolder>,
-    pub ret: Array::<components::ret_opcode::Claim>,
+    pub add_f_f: Array<PlaceHolder>,
+    pub add_f_t: Array<PlaceHolder>,
+    pub add_t_f: Array<PlaceHolder>,
+    pub add_t_t: Array<PlaceHolder>,
+    pub add_ap_f_f: Array<PlaceHolder>,
+    pub add_ap_f_t: Array<PlaceHolder>,
+    pub add_ap_t_f: Array<PlaceHolder>,
+    pub assert_eq_f_f: Array<PlaceHolder>,
+    pub assert_eq_f_t: Array<PlaceHolder>,
+    pub assert_eq_t_f: Array<PlaceHolder>,
+    pub call_f_f: Array<PlaceHolder>,
+    pub call_f_t: Array<PlaceHolder>,
+    pub call_t_f: Array<PlaceHolder>,
+    pub generic: Array<components::genericopcode::Claim>,
+    pub jnz_f_f: Array<PlaceHolder>,
+    pub jnz_f_t: Array<PlaceHolder>,
+    pub jnz_t_f: Array<PlaceHolder>,
+    pub jnz_t_t: Array<PlaceHolder>,
+    pub jump_f_f_f: Array<PlaceHolder>,
+    pub jump_f_f_t: Array<PlaceHolder>,
+    pub jump_t_f_f: Array<PlaceHolder>,
+    pub jump_t_t_f: Array<components::jump_t_t_f_opcode::Claim>,
+    pub mul_f_f: Array<PlaceHolder>,
+    pub mul_f_t: Array<PlaceHolder>,
+    pub ret: Array<components::ret_opcode::Claim>,
 }
 
 #[generate_trait]
@@ -403,11 +402,11 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
     fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
         for generic_opcode_claim in self.generic.span() {
             generic_opcode_claim.mix_into(ref channel);
-        };
+        }
 
         for jump_t_t_f_opcode_claim in self.jump_t_t_f.span() {
             jump_t_t_f_opcode_claim.mix_into(ref channel);
-        };
+        }
 
         for ret_opcode_claim in self.ret.span() {
             ret_opcode_claim.mix_into(ref channel);
@@ -419,15 +418,15 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
         for ret_opcode_claim in self.ret.span() {
             log_sizes.append(ret_opcode_claim.log_sizes());
-        };
+        }
 
         for generic_opcode_claim in self.generic.span() {
             log_sizes.append(generic_opcode_claim.log_sizes());
-        };
+        }
 
         for jump_t_t_f_opcode_claim in self.jump_t_t_f.span() {
             log_sizes.append(jump_t_t_f_opcode_claim.log_sizes());
-        };
+        }
 
         utils::tree_array_concat_cols(log_sizes)
     }
@@ -468,7 +467,7 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         for is_first_log_size in PREPROCESSED_COLUMNS_LOG_SIZES.span() {
             preprocessed_columns.append(PreprocessedColumn::IsFirst(*is_first_log_size));
             preprocessed_columns.append(PreprocessedColumn::Seq(*is_first_log_size));
-        };
+        }
 
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
@@ -800,11 +799,11 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     ) {
         for component in self.generic.span() {
             component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
-        };
+        }
 
         for component in self.ret.span() {
             component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
-        };
+        }
 
         for component in self.jump_t_t_f.span() {
             component.mask_points(ref trace_mask_points, ref interaction_trace_mask_points, point);
@@ -816,11 +815,11 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 
         for component in self.generic.span() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        };
+        }
 
         for component in self.ret.span() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        };
+        }
 
         max_degree
     }
@@ -844,7 +843,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     random_coeff,
                     point,
                 );
-        };
+        }
 
         for component in self.ret.span() {
             component
@@ -856,7 +855,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     random_coeff,
                     point,
                 );
-        };
+        }
 
         for component in self.jump_t_t_f.span() {
             component

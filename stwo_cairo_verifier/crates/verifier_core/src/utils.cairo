@@ -1,12 +1,9 @@
 use core::array::SpanTrait;
 use core::box::BoxTrait;
-use core::dict::Felt252Dict;
-use core::dict::Felt252DictEntryTrait;
-use core::dict::Felt252DictTrait;
+use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::BitSize;
-use core::traits::DivRem;
-use core::traits::PanicDestruct;
+use core::traits::{DivRem, PanicDestruct};
 use crate::BaseField;
 
 /// Look up table where index `i` stores value `2^i`.
@@ -67,7 +64,7 @@ pub impl DictImpl<T, +Felt252DictValue<T>> of DictTrait<T> {
         for key in subset_keys {
             let key = (*key).into();
             res.insert(key, self.get(key));
-        };
+        }
         res
     }
 }
@@ -116,14 +113,14 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
             } else {
                 lhs.append(v);
             }
-        };
+        }
 
         let mut res = lhs.sort_ascending();
         res.append(pivot);
 
         for v in rhs.sort_ascending() {
             res.append(v);
-        };
+        }
 
         res
     }
@@ -144,7 +141,7 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
                 last_value = @value;
                 res.append(value);
             }
-        };
+        }
 
         res
     }
@@ -153,7 +150,7 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
         let mut res = array![];
         for _ in 0..n {
             res.append(v.clone());
-        };
+        }
         res
     }
 }
@@ -197,7 +194,7 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
             } else {
                 break;
             }
-        };
+        }
         Option::Some(max)
     }
 }
@@ -222,7 +219,7 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
         result = (result * 2) | bit;
         index = next_index;
         bits -= 1;
-    };
+    }
     result
 }
 
