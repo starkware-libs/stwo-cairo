@@ -228,6 +228,7 @@ pub mod tests {
     use std::path::PathBuf;
 
     use cairo_lang_casm::casm;
+    use itertools::Itertools;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::ProverConfig;
@@ -322,9 +323,45 @@ pub mod tests {
 
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
+        use cairo_vm::air_public_input::MemorySegmentAddresses;
+        use stwo_cairo_utils::file_utils::open_file;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
+        use crate::input::vm_import::MemoryEntryIter;
+
+        /// Asserts that all builtins are present in the input.
+        /// Panics if any of the builtins is missing.
+        fn assert_all_builtins_in_input(input: &ProverInput) {
+            let empty_builtins = input
+                .builtins_segments
+                .get_counts()
+                .iter()
+                .filter(|(_, &count)| count == 0)
+                .map(|(name, _)| format!("{:?}", name))
+                .collect_vec();
+            assert!(
+                empty_builtins.is_empty(),
+                "The following builtins are missing: {}",
+                empty_builtins.join(", ")
+            );
+        }
+
+        fn assert_bitwise_builtin_has_holes(
+            test_name: &str,
+            bitwise_segment: &Option<MemorySegmentAddresses>,
+        ) {
+            let bitwise_segment = bitwise_segment.as_ref().unwrap();
+            let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            d.push("test_data/");
+            d.push(test_name);
+            let mut memory_file =
+                std::io::BufReader::new(open_file(d.join("mem").as_path()).unwrap());
+            let memory_entries = MemoryEntryIter(&mut memory_file).collect_vec();
+            assert!(memory_entries
+                .iter()
+                .all(|entry| entry.address != (bitwise_segment.begin_addr + 2) as u64));
+        }
 
         #[test]
         fn test_full_cairo_air() {
@@ -356,6 +393,20 @@ pub mod tests {
                 test_cfg(),
             )
             .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
+
+        #[test]
+        fn test_prove_verify_all_builtins() {
+            // This test's input was generated using 'stwo_cairo_input.py' in Starkware repo with 50
+            // instances of each builtin.
+            let input = test_input("test_prove_verify_all_builtins");
+            assert_all_builtins_in_input(&input);
+            assert_bitwise_builtin_has_holes(
+                "test_prove_verify_all_builtins",
+                &input.builtins_segments.bitwise,
+            );
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
     }
