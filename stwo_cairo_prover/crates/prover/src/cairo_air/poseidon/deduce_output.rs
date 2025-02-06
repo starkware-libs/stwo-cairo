@@ -8,6 +8,10 @@ pub fn round_keys_field_elements(round: M31) -> [FieldElement; 3] {
     POSEIDON_ROUND_KEYS[round.0 as usize].map(FieldElement::from_mont)
 }
 
+pub fn round_keys_field_elements(round: M31) -> [FieldElement; 3] {
+    POSEIDON_ROUND_KEYS[round.0 as usize].map(FieldElement::from_mont)
+}
+
 #[derive(Debug)]
 pub struct PoseidonRoundKeys {}
 impl PoseidonRoundKeys {
