@@ -289,6 +289,51 @@ pub mod tests {
         }
     }
 
+    /// Asserts that all builtins are present in the input.
+    /// Panics if any of the builtins is missing.
+    pub fn assert_all_builtins_in_input(input: &ProverInput) {
+        assert_ne!(
+            input.builtins_segments.add_mod, None,
+            "Add mod builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.bitwise, None,
+            "Bitwise builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.ec_op, None,
+            "EC op builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.ecdsa, None,
+            "ECDSA builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.keccak, None,
+            "KECCAK builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.mul_mod, None,
+            "Mul mod builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.pedersen, None,
+            "Pedersen builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.poseidon, None,
+            "Poseidon builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.range_check_bits_96, None,
+            "Range check bits 96 builtin is missing"
+        );
+        assert_ne!(
+            input.builtins_segments.range_check_bits_128, None,
+            "Range check bits 128 builtin is missing"
+        );
+    }
+
     #[test]
     fn test_basic_cairo_air() {
         let cairo_proof =
@@ -327,6 +372,14 @@ pub mod tests {
                 test_cfg(),
             )
             .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
+
+        #[test]
+        fn test_builtins_cairo_air() {
+            let input = test_input("test_prove_verify_all_builtins");
+            assert_all_builtins_in_input(&input);
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
     }
