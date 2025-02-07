@@ -5,6 +5,7 @@ pub enum OpcodeExtension {
     Stone,
     Blake,
     BlakeFinalize,
+    QM31Operations,
 }
 impl OpcodeExtension {
     /// Converts the trailing bits (encoded_instr after shifting right by 63) of an instruction to
@@ -16,6 +17,7 @@ impl OpcodeExtension {
             0 => OpcodeExtension::Stone,
             1 => OpcodeExtension::Blake,
             2 => OpcodeExtension::BlakeFinalize,
+            3 => OpcodeExtension::QM31Operations,
             _ => panic!("Invalid opcode extension number: {}", value),
         }
     }

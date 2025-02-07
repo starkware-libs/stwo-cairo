@@ -50,6 +50,7 @@ pub struct CasmStatesByOpcode {
     pub mul_opcode_imm: Vec<CasmState>,
     pub ret_opcode: Vec<CasmState>,
     pub blake2s_opcode: Vec<CasmState>,
+    pub qm31_add_mul_opcode: Vec<CasmState>,
 }
 
 impl CasmStatesByOpcode {
@@ -116,6 +117,10 @@ impl CasmStatesByOpcode {
             ("mul_opcode_imm".to_string(), self.mul_opcode_imm.len()),
             ("ret_opcode".to_string(), self.ret_opcode.len()),
             ("blake2s_opcode".to_string(), self.blake2s_opcode.len()),
+            (
+                "qm31_add_mul_opcode".to_string(),
+                self.qm31_add_mul_opcode.len(),
+            ),
         ]
     }
 }
@@ -597,6 +602,33 @@ impl StateTransitions {
                 self.casm_states_by_opcode.blake2s_opcode.push(state);
             }
 
+            // QM31 add mul.
+            Instruction {
+                offset0: _,
+                offset1: _,
+                offset2: _,
+                dst_base_fp: _,
+                op0_base_fp: _,
+                op_1_imm: false,
+                op_1_base_fp,
+                op_1_base_ap,
+                res_add: false,
+                res_mul: _,
+                pc_update_jump: false,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: _,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::QM31Operations,
+            } => {
+                // [ap/fp + offset0] = [ap/fp + offset1] +/* [ap/fp + offset2].
+                assert!((op_1_base_fp || op_1_base_ap));
+                self.casm_states_by_opcode.qm31_add_mul_opcode.push(state);
+            }
+
             // generic opcode.
             _ => {
                 if !matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
@@ -1000,6 +1032,36 @@ mod mappings_tests {
         matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
         assert_eq!(
             state_transitions.casm_states_by_opcode.blake2s_opcode.len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_qm31_add_mul_opcode() {
+        let encoded_qm31_add_mul_inst =
+            0b11100000000001010011111111111110101111111111111001000000000000000;
+        let x = u128_to_4_limbs(encoded_qm31_add_mul_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let instruction = Instruction::decode(memory_builder.get_inst(1));
+        let trace_entry = TraceEntry {
+            ap: 1,
+            fp: 1,
+            pc: 1,
+        };
+        let (state_transitions, _) =
+            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
+
+        matches!(
+            instruction.opcode_extension,
+            OpcodeExtension::QM31Operations
+        );
+        assert_eq!(
+            state_transitions
+                .casm_states_by_opcode
+                .qm31_add_mul_opcode
+                .len(),
             1
         );
     }
