@@ -50,6 +50,7 @@ pub struct CasmStatesByOpcode {
     pub mul_opcode_imm: Vec<CasmState>,
     pub ret_opcode: Vec<CasmState>,
     pub blake2s_opcode: Vec<CasmState>,
+    pub qm31_add_mul_opcode: Vec<CasmState>,
 }
 
 impl CasmStatesByOpcode {
@@ -116,6 +117,10 @@ impl CasmStatesByOpcode {
             ("mul_opcode_imm".to_string(), self.mul_opcode_imm.len()),
             ("ret_opcode".to_string(), self.ret_opcode.len()),
             ("blake2s_opcode".to_string(), self.blake2s_opcode.len()),
+            (
+                "qm31_add_mul_opcode".to_string(),
+                self.qm31_add_mul_opcode.len(),
+            ),
         ]
     }
 }
@@ -595,6 +600,33 @@ impl StateTransitions {
                     "Blake opcode requires exactly one of op_1_base_fp and op_1_base_ap to be true"
                 );
                 self.casm_states_by_opcode.blake2s_opcode.push(state);
+            }
+
+            // QM31 add mul.
+            Instruction {
+                offset0: _,
+                offset1: _,
+                offset2: _,
+                dst_base_fp: _,
+                op0_base_fp: _,
+                op_1_imm: false,
+                op_1_base_fp,
+                op_1_base_ap,
+                res_add: false,
+                res_mul: _,
+                pc_update_jump: false,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: _,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::QM31Operations,
+            } => {
+                // [ap/fp + offset0] = [ap/fp + offset1] +/* [ap/fp + offset2].
+                assert!((op_1_base_fp || op_1_base_ap));
+                self.casm_states_by_opcode.qm31_add_mul_opcode.push(state);
             }
 
             // generic opcode.
