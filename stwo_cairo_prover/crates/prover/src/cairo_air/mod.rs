@@ -347,6 +347,11 @@ pub mod tests {
                     continue;
                 }
 
+                // TODO(Ohadn): Remove when `qm31_add_mul_opcode` opcode is in the VM.
+                if opcode == "qm31_add_mul_opcode" {
+                    continue;
+                }
+
                 assert!(
                     n_instances > 0,
                     "{} isn't used in E2E full-Cairo opcode test",
