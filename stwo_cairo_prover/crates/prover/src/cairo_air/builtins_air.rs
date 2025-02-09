@@ -2,7 +2,8 @@ use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::builtins::{
-    BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+    BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, POSEIDON_MEMORY_CELLS,
+    RANGE_CHECK_MEMORY_CELLS,
 };
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
@@ -15,15 +16,27 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
+use crate::components::range_check_vector::{
+    range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
+};
 use crate::components::{
-    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
+    add_mod_builtin, bitwise_builtin, cube_252, memory_address_to_id, memory_id_to_big,
+    poseidon_3_partial_rounds_chain, poseidon_builtin, poseidon_full_round_chain,
+    poseidon_round_keys, range_check_18, range_check_19, range_check_6, range_check_9_9,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, range_check_felt_252_width_27,
+    verify_bitwise_xor_9,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
+    pub poseidon_builtin: Option<poseidon_builtin::Claim>,
+    pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::Claim>,
+    pub poseidon_full_round_chain: Option<poseidon_full_round_chain::Claim>,
+    pub cube_252: Option<cube_252::Claim>,
+    pub poseidon_round_keys: Option<poseidon_round_keys::Claim>,
+    pub range_check_felt_252_width_27: Option<range_check_felt_252_width_27::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
 }
@@ -34,6 +47,24 @@ impl BuiltinsClaim {
         }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             bitwise_builtin.mix_into(channel);
+        }
+        if let Some(poseidon_builtin) = &self.poseidon_builtin {
+            poseidon_builtin.mix_into(channel);
+        }
+        if let Some(poseidon_3_partial_rounds_chain) = &self.poseidon_3_partial_rounds_chain {
+            poseidon_3_partial_rounds_chain.mix_into(channel);
+        }
+        if let Some(poseidon_full_round_chain) = &self.poseidon_full_round_chain {
+            poseidon_full_round_chain.mix_into(channel);
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            cube_252.mix_into(channel);
+        }
+        if let Some(poseidon_round_keys) = &self.poseidon_round_keys {
+            poseidon_round_keys.mix_into(channel);
+        }
+        if let Some(range_check_felt_252_width_27) = &self.range_check_felt_252_width_27 {
+            range_check_felt_252_width_27.mix_into(channel);
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             range_check_96_builtin.mix_into(channel);
@@ -51,6 +82,24 @@ impl BuiltinsClaim {
             self.bitwise_builtin
                 .map(|bitwise_builtin| bitwise_builtin.log_sizes())
                 .into_iter(),
+            self.poseidon_builtin
+                .map(|poseidon_builtin| poseidon_builtin.log_sizes())
+                .into_iter(),
+            self.poseidon_3_partial_rounds_chain
+                .map(|poseidon_3_partial_rounds_chain| poseidon_3_partial_rounds_chain.log_sizes())
+                .into_iter(),
+            self.poseidon_full_round_chain
+                .map(|poseidon_full_round_chain| poseidon_full_round_chain.log_sizes())
+                .into_iter(),
+            self.cube_252
+                .map(|cube_252| cube_252.log_sizes())
+                .into_iter(),
+            self.poseidon_round_keys
+                .map(|poseidon_round_keys| poseidon_round_keys.log_sizes())
+                .into_iter(),
+            self.range_check_felt_252_width_27
+                .map(|range_check_felt_252_width_27| range_check_felt_252_width_27.log_sizes())
+                .into_iter(),
             self.range_check_96_builtin
                 .map(|range_check_96_builtin| range_check_96_builtin.log_sizes())
                 .into_iter(),
@@ -64,6 +113,14 @@ impl BuiltinsClaim {
 pub struct BuiltinsClaimGenerator {
     add_mod_builtin_trace_generator: Option<add_mod_builtin::ClaimGenerator>,
     bitwise_builtin_trace_generator: Option<bitwise_builtin::ClaimGenerator>,
+    poseidon_builtin_trace_generator: Option<poseidon_builtin::ClaimGenerator>,
+    poseidon_3_partial_rounds_chain_trace_generator:
+        Option<poseidon_3_partial_rounds_chain::ClaimGenerator>,
+    poseidon_full_round_chain_trace_generator: Option<poseidon_full_round_chain::ClaimGenerator>,
+    cube_252_trace_generator: Option<cube_252::ClaimGenerator>,
+    poseidon_round_keys_trace_generator: Option<poseidon_round_keys::ClaimGenerator>,
+    range_check_felt_252_width_27_trace_generator:
+        Option<range_check_felt_252_width_27::ClaimGenerator>,
     range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
     range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
 }
@@ -95,6 +152,40 @@ impl BuiltinsClaimGenerator {
             );
             bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
+        let (
+            poseidon_builtin_trace_generator,
+            poseidon_3_partial_rounds_chain_trace_generator,
+            poseidon_full_round_chain_trace_generator,
+            cube_252_trace_generator,
+            poseidon_round_keys_trace_generator,
+            range_check_felt_252_width_27_trace_generator,
+        ) = builtin_segments
+            .poseidon
+            .map(|segment| {
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                assert!(
+                    (segment_length % POSEIDON_MEMORY_CELLS) == 0,
+                    "poseidon segment length is not a multiple of it's cells_per_instance"
+                );
+                let n_instances = segment_length / POSEIDON_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "poseidon instances number is not a power of two"
+                );
+                (
+                    Some(poseidon_builtin::ClaimGenerator::new(
+                        n_instances.ilog2(),
+                        segment.begin_addr as u32,
+                    )),
+                    Some(poseidon_3_partial_rounds_chain::ClaimGenerator::new()),
+                    Some(poseidon_full_round_chain::ClaimGenerator::new()),
+                    Some(cube_252::ClaimGenerator::new()),
+                    Some(poseidon_round_keys::ClaimGenerator::new()),
+                    Some(range_check_felt_252_width_27::ClaimGenerator::new()),
+                )
+            })
+            .unwrap_or((None, None, None, None, None, None));
+
         let range_check_96_builtin_trace_generator =
             builtin_segments.range_check_bits_96.map(|segment| {
                 let segment_length = segment.stop_ptr - segment.begin_addr;
@@ -124,17 +215,29 @@ impl BuiltinsClaimGenerator {
         Self {
             add_mod_builtin_trace_generator,
             bitwise_builtin_trace_generator,
+            poseidon_builtin_trace_generator,
+            poseidon_3_partial_rounds_chain_trace_generator,
+            poseidon_full_round_chain_trace_generator,
+            cube_252_trace_generator,
+            poseidon_round_keys_trace_generator,
+            range_check_felt_252_width_27_trace_generator,
             range_check_96_builtin_trace_generator,
             range_check_128_builtin_trace_generator,
         }
     }
 
     pub fn write_trace<MC: MerkleChannel>(
-        self,
+        mut self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
+        range_check_18_trace_generator: &range_check_18::ClaimGenerator,
+        range_check_19_trace_generator: &range_check_19::ClaimGenerator,
+        range_check_4_4_trace_generator: &range_check_4_4::ClaimGenerator,
+        range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
+        range_check_4_4_4_4_trace_generator: &range_check_4_4_4_4::ClaimGenerator,
+        range_check_3_3_3_3_3_trace_generator: &range_check_3_3_3_3_3::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator)
     where
@@ -161,6 +264,91 @@ impl BuiltinsClaimGenerator {
                 )
             })
             .unzip();
+        let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
+            .poseidon_builtin_trace_generator
+            .map(|poseidon_builtin_trace_generator| {
+                poseidon_builtin_trace_generator.write_trace(
+                    tree_builder,
+                    self.cube_252_trace_generator.as_mut().unwrap(),
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    self.poseidon_3_partial_rounds_chain_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                    self.poseidon_full_round_chain_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                    range_check_3_3_3_3_3_trace_generator,
+                    range_check_4_4_trace_generator,
+                    range_check_4_4_4_4_trace_generator,
+                    self.range_check_felt_252_width_27_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                )
+            })
+            .unzip();
+        let (
+            poseidon_3_partial_rounds_chain_claim,
+            poseidon_3_partial_rounds_chain_interaction_gen,
+        ) = (if let Some(poseidon_3_partial_rounds_chain_trace_generator) =
+            self.poseidon_3_partial_rounds_chain_trace_generator
+        {
+            Some(
+                poseidon_3_partial_rounds_chain_trace_generator.write_trace(
+                    tree_builder,
+                    self.cube_252_trace_generator.as_mut().unwrap(),
+                    self.poseidon_round_keys_trace_generator.as_ref().unwrap(),
+                    range_check_4_4_trace_generator,
+                    range_check_4_4_4_4_trace_generator,
+                    self.range_check_felt_252_width_27_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                ),
+            )
+        } else {
+            None
+        })
+        .unzip();
+        let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) =
+            (if let Some(poseidon_full_round_chain_trace_generator) =
+                self.poseidon_full_round_chain_trace_generator
+            {
+                Some(poseidon_full_round_chain_trace_generator.write_trace(
+                    tree_builder,
+                    self.cube_252_trace_generator.as_mut().unwrap(),
+                    self.poseidon_round_keys_trace_generator.as_ref().unwrap(),
+                    range_check_3_3_3_3_3_trace_generator,
+                ))
+            } else {
+                None
+            })
+            .unzip();
+        let (cube_252_claim, cube_252_interaction_gen) = self
+            .cube_252_trace_generator
+            .map(|cube_252_trace_generator| {
+                cube_252_trace_generator.write_trace(
+                    tree_builder,
+                    range_check_19_trace_generator,
+                    range_check_9_9_trace_generator,
+                )
+            })
+            .unzip();
+        let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
+            .poseidon_round_keys_trace_generator
+            .map(|poseidon_round_keys_trace_generator| {
+                poseidon_round_keys_trace_generator.write_trace(tree_builder)
+            })
+            .unzip();
+        let (range_check_felt_252_width_27_claim, range_check_felt_252_width_27_interaction_gen) =
+            self.range_check_felt_252_width_27_trace_generator
+                .map(|range_check_felt_252_width_27_trace_generator| {
+                    range_check_felt_252_width_27_trace_generator.write_trace(
+                        tree_builder,
+                        range_check_18_trace_generator,
+                        range_check_9_9_trace_generator,
+                    )
+                })
+                .unzip();
         let (range_check_96_builtin_claim, range_check_96_builtin_interaction_gen) = self
             .range_check_96_builtin_trace_generator
             .map(|range_check_96_builtin_trace_generator| {
@@ -187,12 +375,24 @@ impl BuiltinsClaimGenerator {
             BuiltinsClaim {
                 add_mod_builtin: add_mod_builtin_claim,
                 bitwise_builtin: bitwise_builtin_claim,
+                poseidon_builtin: poseidon_builtin_claim,
+                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
+                poseidon_full_round_chain: poseidon_full_round_chain_claim,
+                cube_252: cube_252_claim,
+                poseidon_round_keys: poseidon_round_keys_claim,
+                range_check_felt_252_width_27: range_check_felt_252_width_27_claim,
                 range_check_96_builtin: range_check_96_builtin_claim,
                 range_check_128_builtin: range_check_128_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
                 add_mod_builtin_interaction_gen,
                 bitwise_builtin_interaction_gen,
+                poseidon_builtin_interaction_gen,
+                poseidon_3_partial_rounds_chain_interaction_gen,
+                poseidon_full_round_chain_interaction_gen,
+                cube_252_interaction_gen,
+                poseidon_round_keys_interaction_gen,
+                range_check_felt_252_width_27_interaction_gen,
                 range_check_96_builtin_interaction_gen,
                 range_check_128_builtin_interaction_gen,
             },
@@ -204,6 +404,12 @@ impl BuiltinsClaimGenerator {
 pub struct BuiltinsInteractionClaim {
     pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
+    pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
+    pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::InteractionClaim>,
+    pub poseidon_full_round_chain: Option<poseidon_full_round_chain::InteractionClaim>,
+    pub cube_252: Option<cube_252::InteractionClaim>,
+    pub poseidon_round_keys: Option<poseidon_round_keys::InteractionClaim>,
+    pub range_check_felt_252_width_27: Option<range_check_felt_252_width_27::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
 }
@@ -214,6 +420,24 @@ impl BuiltinsInteractionClaim {
         }
         if let Some(bitwise_builtin) = self.bitwise_builtin {
             bitwise_builtin.mix_into(channel)
+        }
+        if let Some(poseidon_builtin) = self.poseidon_builtin {
+            poseidon_builtin.mix_into(channel)
+        }
+        if let Some(poseidon_3_partial_rounds_chain) = self.poseidon_3_partial_rounds_chain {
+            poseidon_3_partial_rounds_chain.mix_into(channel)
+        }
+        if let Some(poseidon_full_round_chain) = self.poseidon_full_round_chain {
+            poseidon_full_round_chain.mix_into(channel)
+        }
+        if let Some(cube_252) = self.cube_252 {
+            cube_252.mix_into(channel)
+        }
+        if let Some(poseidon_round_keys) = self.poseidon_round_keys {
+            poseidon_round_keys.mix_into(channel)
+        }
+        if let Some(range_check_felt_252_width_27) = self.range_check_felt_252_width_27 {
+            range_check_felt_252_width_27.mix_into(channel)
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             range_check_96_builtin.mix_into(channel);
@@ -231,6 +455,24 @@ impl BuiltinsInteractionClaim {
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             sum += bitwise_builtin.claimed_sum;
         }
+        if let Some(poseidon_builtin) = &self.poseidon_builtin {
+            sum += poseidon_builtin.claimed_sum;
+        }
+        if let Some(poseidon_3_partial_rounds_chain) = &self.poseidon_3_partial_rounds_chain {
+            sum += poseidon_3_partial_rounds_chain.claimed_sum;
+        }
+        if let Some(poseidon_full_round_chain) = &self.poseidon_full_round_chain {
+            sum += poseidon_full_round_chain.claimed_sum;
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            sum += cube_252.claimed_sum;
+        }
+        if let Some(poseidon_round_keys) = &self.poseidon_round_keys {
+            sum += poseidon_round_keys.claimed_sum;
+        }
+        if let Some(range_check_felt_252_width_27) = &self.range_check_felt_252_width_27 {
+            sum += range_check_felt_252_width_27.claimed_sum;
+        }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             sum += range_check_96_builtin.claimed_sum;
         }
@@ -244,6 +486,15 @@ impl BuiltinsInteractionClaim {
 pub struct BuiltinsInteractionClaimGenerator {
     add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
     bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
+    poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
+    poseidon_3_partial_rounds_chain_interaction_gen:
+        Option<poseidon_3_partial_rounds_chain::InteractionClaimGenerator>,
+    poseidon_full_round_chain_interaction_gen:
+        Option<poseidon_full_round_chain::InteractionClaimGenerator>,
+    cube_252_interaction_gen: Option<cube_252::InteractionClaimGenerator>,
+    poseidon_round_keys_interaction_gen: Option<poseidon_round_keys::InteractionClaimGenerator>,
+    range_check_felt_252_width_27_interaction_gen:
+        Option<range_check_felt_252_width_27::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
         Option<range_check_builtin_bits_96::InteractionClaimGenerator>,
     range_check_128_builtin_interaction_gen:
@@ -277,6 +528,74 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.verify_bitwise_xor_9,
                     )
                 });
+        let poseidon_builtin_interaction_claim =
+            self.poseidon_builtin_interaction_gen
+                .map(|poseidon_builtin_interaction_gen| {
+                    poseidon_builtin_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.cube_252,
+                        &interaction_elements.memory_address_to_id,
+                        &interaction_elements.memory_id_to_value,
+                        &interaction_elements.poseidon_3_partial_rounds_chain,
+                        &interaction_elements.poseidon_full_round_chain,
+                        &interaction_elements.range_check_felt_252_width_27,
+                        &interaction_elements.range_checks.rc_3_3_3_3_3,
+                        &interaction_elements.range_checks.rc_4_4,
+                        &interaction_elements.range_checks.rc_4_4_4_4,
+                    )
+                });
+        let poseidon_3_partial_rounds_chain_interaction_claim = self
+            .poseidon_3_partial_rounds_chain_interaction_gen
+            .map(|poseidon_3_partial_rounds_chain_interaction_gen| {
+                poseidon_3_partial_rounds_chain_interaction_gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.cube_252,
+                    &interaction_elements.poseidon_3_partial_rounds_chain,
+                    &interaction_elements.poseidon_round_keys,
+                    &interaction_elements.range_check_felt_252_width_27,
+                    &interaction_elements.range_checks.rc_4_4,
+                    &interaction_elements.range_checks.rc_4_4_4_4,
+                )
+            });
+        let poseidon_full_round_chain_interaction_claim = self
+            .poseidon_full_round_chain_interaction_gen
+            .map(|poseidon_full_round_chain_interaction_gen| {
+                poseidon_full_round_chain_interaction_gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.cube_252,
+                    &interaction_elements.poseidon_full_round_chain,
+                    &interaction_elements.poseidon_round_keys,
+                    &interaction_elements.range_checks.rc_3_3_3_3_3,
+                )
+            });
+        let cube_252_interaction_claim =
+            self.cube_252_interaction_gen
+                .map(|cube_252_interaction_gen| {
+                    cube_252_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.cube_252,
+                        &interaction_elements.range_checks.rc_19,
+                        &interaction_elements.range_checks.rc_9_9,
+                    )
+                });
+        let poseidon_round_keys_interaction_claim =
+            self.poseidon_round_keys_interaction_gen
+                .map(|poseidon_round_keys_interaction_gen| {
+                    poseidon_round_keys_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.poseidon_round_keys,
+                    )
+                });
+        let range_check_felt_252_width_27_interaction_claim = self
+            .range_check_felt_252_width_27_interaction_gen
+            .map(|range_check_felt_252_width_27_interaction_gen| {
+                range_check_felt_252_width_27_interaction_gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.range_check_felt_252_width_27,
+                    &interaction_elements.range_checks.rc_18,
+                    &interaction_elements.range_checks.rc_9_9,
+                )
+            });
         let range_check_96_builtin_interaction_claim = self
             .range_check_96_builtin_interaction_gen
             .map(|range_check_96_builtin_interaction_gen| {
@@ -300,6 +619,12 @@ impl BuiltinsInteractionClaimGenerator {
         BuiltinsInteractionClaim {
             add_mod_builtin: add_mod_builtin_interaction_claim,
             bitwise_builtin: bitwise_builtin_interaction_claim,
+            poseidon_builtin: poseidon_builtin_interaction_claim,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
+            poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
+            cube_252: cube_252_interaction_claim,
+            poseidon_round_keys: poseidon_round_keys_interaction_claim,
+            range_check_felt_252_width_27: range_check_felt_252_width_27_interaction_claim,
             range_check_96_builtin: range_check_96_builtin_interaction_claim,
             range_check_128_builtin: range_check_128_builtin_interaction_claim,
         }
@@ -309,6 +634,12 @@ impl BuiltinsInteractionClaimGenerator {
 pub struct BuiltinComponents {
     add_mod_builtin: Option<add_mod_builtin::Component>,
     bitwise_builtin: Option<bitwise_builtin::Component>,
+    poseidon_builtin: Option<poseidon_builtin::Component>,
+    poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::Component>,
+    poseidon_full_round_chain: Option<poseidon_full_round_chain::Component>,
+    cube_252: Option<cube_252::Component>,
+    poseidon_round_keys: Option<poseidon_round_keys::Component>,
+    range_check_felt_252_width_27: Option<range_check_felt_252_width_27::Component>,
     range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
     range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
 }
@@ -352,6 +683,155 @@ impl BuiltinComponents {
                 interaction_claim.bitwise_builtin.unwrap().claimed_sum,
             )
         });
+        let poseidon_builtin_component = claim.poseidon_builtin.map(|poseidon_builtin| {
+            poseidon_builtin::Component::new(
+                tree_span_provider,
+                poseidon_builtin::Eval {
+                    claim: poseidon_builtin,
+                    cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                        .poseidon_3_partial_rounds_chain
+                        .clone(),
+                    poseidon_full_round_chain_lookup_elements: interaction_elements
+                        .poseidon_full_round_chain
+                        .clone(),
+                    range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_3_3_3_3_3
+                        .clone(),
+                    range_check_4_4_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_4_4
+                        .clone(),
+                    range_check_4_4_4_4_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_4_4_4_4
+                        .clone(),
+                    range_check_felt_252_width_27_lookup_elements: interaction_elements
+                        .range_check_felt_252_width_27
+                        .clone(),
+                },
+                interaction_claim.poseidon_builtin.unwrap().claimed_sum,
+            )
+        });
+        let poseidon_3_partial_rounds_chain_component =
+            claim
+                .poseidon_3_partial_rounds_chain
+                .map(|poseidon_3_partial_rounds_chain| {
+                    poseidon_3_partial_rounds_chain::Component::new(
+                        tree_span_provider,
+                        poseidon_3_partial_rounds_chain::Eval {
+                            claim: poseidon_3_partial_rounds_chain,
+                            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+                            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                                .poseidon_3_partial_rounds_chain
+                                .clone(),
+                            poseidon_round_keys_lookup_elements: interaction_elements
+                                .poseidon_round_keys
+                                .clone(),
+                            range_check_4_4_lookup_elements: interaction_elements
+                                .range_checks
+                                .rc_4_4
+                                .clone(),
+                            range_check_4_4_4_4_lookup_elements: interaction_elements
+                                .range_checks
+                                .rc_4_4_4_4
+                                .clone(),
+                            range_check_felt_252_width_27_lookup_elements: interaction_elements
+                                .range_check_felt_252_width_27
+                                .clone(),
+                        },
+                        interaction_claim
+                            .poseidon_3_partial_rounds_chain
+                            .unwrap()
+                            .claimed_sum,
+                    )
+                });
+        let poseidon_full_round_chain_component =
+            claim
+                .poseidon_full_round_chain
+                .map(|poseidon_full_round_chain| {
+                    poseidon_full_round_chain::Component::new(
+                        tree_span_provider,
+                        poseidon_full_round_chain::Eval {
+                            claim: poseidon_full_round_chain,
+                            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+                            poseidon_full_round_chain_lookup_elements: interaction_elements
+                                .poseidon_full_round_chain
+                                .clone(),
+                            poseidon_round_keys_lookup_elements: interaction_elements
+                                .poseidon_round_keys
+                                .clone(),
+                            range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                                .range_checks
+                                .rc_3_3_3_3_3
+                                .clone(),
+                        },
+                        interaction_claim
+                            .poseidon_full_round_chain
+                            .unwrap()
+                            .claimed_sum,
+                    )
+                });
+        let cube_252_component = claim.cube_252.map(|cube_252| {
+            cube_252::Component::new(
+                tree_span_provider,
+                cube_252::Eval {
+                    claim: cube_252,
+                    cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+                    range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+                    range_check_9_9_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_9_9
+                        .clone(),
+                },
+                interaction_claim.cube_252.unwrap().claimed_sum,
+            )
+        });
+        let poseidon_round_keys_component = claim.poseidon_round_keys.map(|poseidon_round_keys| {
+            poseidon_round_keys::Component::new(
+                tree_span_provider,
+                poseidon_round_keys::Eval {
+                    claim: poseidon_round_keys,
+                    poseidon_round_keys_lookup_elements: interaction_elements
+                        .poseidon_round_keys
+                        .clone(),
+                },
+                interaction_claim.poseidon_round_keys.unwrap().claimed_sum,
+            )
+        });
+        let range_check_felt_252_width_27_component =
+            claim
+                .range_check_felt_252_width_27
+                .map(|range_check_felt_252_width_27| {
+                    range_check_felt_252_width_27::Component::new(
+                        tree_span_provider,
+                        range_check_felt_252_width_27::Eval {
+                            claim: (range_check_felt_252_width_27),
+                            range_check_felt_252_width_27_lookup_elements: (interaction_elements
+                                .range_check_felt_252_width_27
+                                .clone()),
+                            range_check_18_lookup_elements: (interaction_elements
+                                .range_checks
+                                .rc_18
+                                .clone()),
+                            range_check_9_9_lookup_elements: (interaction_elements
+                                .range_checks
+                                .rc_9_9
+                                .clone()),
+                        },
+                        interaction_claim
+                            .range_check_felt_252_width_27
+                            .unwrap()
+                            .claimed_sum,
+                    )
+                });
         let range_check_96_builtin_component =
             claim.range_check_96_builtin.map(|range_check_96_builtin| {
                 range_check_builtin_bits_96::Component::new(
@@ -399,6 +879,12 @@ impl BuiltinComponents {
         Self {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
+            poseidon_builtin: poseidon_builtin_component,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
+            poseidon_full_round_chain: poseidon_full_round_chain_component,
+            cube_252: cube_252_component,
+            poseidon_round_keys: poseidon_round_keys_component,
+            range_check_felt_252_width_27: range_check_felt_252_width_27_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
         }
@@ -411,6 +897,24 @@ impl BuiltinComponents {
         }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             vec.push(bitwise_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(poseidon_builtin) = &self.poseidon_builtin {
+            vec.push(poseidon_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(poseidon_3_partial_rounds_chain) = &self.poseidon_3_partial_rounds_chain {
+            vec.push(poseidon_3_partial_rounds_chain as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(poseidon_full_round_chain) = &self.poseidon_full_round_chain {
+            vec.push(poseidon_full_round_chain as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            vec.push(cube_252 as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(poseidon_round_keys) = &self.poseidon_round_keys {
+            vec.push(poseidon_round_keys as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(range_check_felt_252_width_27) = &self.range_check_felt_252_width_27 {
+            vec.push(range_check_felt_252_width_27 as &dyn ComponentProver<SimdBackend>);
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             vec.push(range_check_96_builtin as &dyn ComponentProver<SimdBackend>);
@@ -436,6 +940,44 @@ impl std::fmt::Display for BuiltinComponents {
                 f,
                 "BitwiseBuiltin: {}",
                 indented_component_display(bitwise_builtin)
+            )?;
+        }
+        if let Some(poseidon_builtin) = &self.poseidon_builtin {
+            writeln!(
+                f,
+                "PoseidonBuiltin: {}",
+                indented_component_display(poseidon_builtin)
+            )?;
+        }
+        if let Some(poseidon_3_partial_rounds_chain) = &self.poseidon_3_partial_rounds_chain {
+            writeln!(
+                f,
+                "Poseidon3PartialRoundsChain: {}",
+                indented_component_display(poseidon_3_partial_rounds_chain)
+            )?;
+        }
+        if let Some(poseidon_full_round_chain) = &self.poseidon_full_round_chain {
+            writeln!(
+                f,
+                "PoseidonFullRoundChain: {}",
+                indented_component_display(poseidon_full_round_chain)
+            )?;
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            writeln!(f, "Cube252: {}", indented_component_display(cube_252))?;
+        }
+        if let Some(poseidon_round_keys) = &self.poseidon_round_keys {
+            writeln!(
+                f,
+                "PoseidonRoundKeys: {}",
+                indented_component_display(poseidon_round_keys)
+            )?;
+        }
+        if let Some(range_check_felt_252_width_27) = &self.range_check_felt_252_width_27 {
+            writeln!(
+                f,
+                "RangeCheckFelt252Width27: {}",
+                indented_component_display(range_check_felt_252_width_27)
             )?;
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
