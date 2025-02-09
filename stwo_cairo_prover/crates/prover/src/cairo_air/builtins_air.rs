@@ -63,18 +63,18 @@ impl BuiltinsClaimGenerator {
         let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|bitwise| {
             let bitwise_builtin_cells_per_instance =
                 BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::bitwise);
+            let bitwise_builtin_segment_length = bitwise.stop_ptr - bitwise.begin_addr;
             assert!(
-                ((bitwise.stop_ptr - bitwise.begin_addr) % bitwise_builtin_cells_per_instance) == 0,
+                (bitwise_builtin_segment_length % bitwise_builtin_cells_per_instance) == 0,
                 "bitwise segment length is not a multiple of bitwise_builtin_cells_per_instance"
             );
             assert!(
-                ((bitwise.stop_ptr - bitwise.begin_addr) / bitwise_builtin_cells_per_instance)
+                (bitwise_builtin_segment_length / bitwise_builtin_cells_per_instance)
                     .is_power_of_two(),
                 "bitwise instances number is not a power of two"
             );
             bitwise_builtin::ClaimGenerator::new(
-                ((bitwise.stop_ptr - bitwise.begin_addr) / bitwise_builtin_cells_per_instance)
-                    .ilog2(),
+                (bitwise_builtin_segment_length / bitwise_builtin_cells_per_instance).ilog2(),
                 bitwise.begin_addr as u32,
             )
         });
