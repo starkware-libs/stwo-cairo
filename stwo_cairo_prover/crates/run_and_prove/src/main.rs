@@ -5,8 +5,8 @@ use clap::Parser;
 use stwo_cairo_prover::cairo_air::{
     prove_cairo, verify_cairo, CairoVerificationError, ConfigBuilder,
 };
-use stwo_cairo_prover::input::plain::adapt_finished_runner;
-use stwo_cairo_prover::input::vm_import::VmImportError;
+use stwo_cairo_prover::adapter::plain::adapt_finished_runner;
+use stwo_cairo_prover::adapter::vm_import::VmImportError;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
 use stwo_prover::core::prover::ProvingError;

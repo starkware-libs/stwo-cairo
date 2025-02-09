@@ -25,7 +25,7 @@ use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
 use crate::components::utils::AtomicMultiplicityColumn;
 use crate::felt::split_f252_simd;
-use crate::input::memory::{
+use crate::adapter::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
 };
 use crate::relations;
@@ -401,7 +401,7 @@ mod tests {
     use crate::components::memory::memory_address_to_id;
     use crate::components::memory::memory_id_to_big::component::N_M31_IN_FELT252;
     use crate::felt::split_f252;
-    use crate::input::memory::{Memory, MemoryBuilder, MemoryConfig};
+    use crate::adapter::memory::{Memory, MemoryBuilder, MemoryConfig};
 
     #[test]
     fn test_deduce_output_simd() {

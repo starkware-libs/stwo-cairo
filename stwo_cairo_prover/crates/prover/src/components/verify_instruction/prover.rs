@@ -37,7 +37,7 @@ use crate::components::utils::pack_values;
 use crate::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,
 };
-use crate::input::decode::{deconstruct_instruction, Instruction};
+use crate::adapter::decode::{deconstruct_instruction, Instruction};
 use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);

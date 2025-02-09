@@ -21,7 +21,7 @@ use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
 use crate::components::utils::AtomicMultiplicityColumn;
-use crate::input::memory::Memory;
+use crate::adapter::memory::Memory;
 use crate::relations;
 
 pub type PackedInputType = PackedM31;
@@ -220,8 +220,8 @@ mod tests {
     use stwo_prover::core::fields::m31::{BaseField, M31};
 
     use crate::components::memory::memory_address_to_id;
-    use crate::input::memory::{MemoryBuilder, MemoryConfig};
-    use crate::input::vm_import::MemoryEntry;
+    use crate::adapter::memory::{MemoryBuilder, MemoryConfig};
+    use crate::adapter::vm_import::MemoryEntry;
 
     #[test]
     fn test_memory_multiplicities() {

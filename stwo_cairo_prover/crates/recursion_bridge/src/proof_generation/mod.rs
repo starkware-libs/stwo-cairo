@@ -4,7 +4,7 @@ mod tests {
 
     use cairo_lang_casm::casm;
     use stwo_cairo_prover::cairo_air::{prove_cairo, verify_cairo, ProverConfig};
-    use stwo_cairo_prover::input::plain::input_from_plain_casm_with_step_limit;
+    use stwo_cairo_prover::adapter::plain::input_from_plain_casm_with_step_limit;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     pub fn project_root() -> PathBuf {

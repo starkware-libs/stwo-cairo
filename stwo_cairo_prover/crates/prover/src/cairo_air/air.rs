@@ -34,7 +34,7 @@ use super::range_checks_air::{
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::{verify_bitwise_xor_9, verify_instruction};
 use crate::felt::split_f252;
-use crate::input::ProverInput;
+use crate::adapter::ProverInput;
 use crate::relations;
 
 #[derive(Serialize, Deserialize)]

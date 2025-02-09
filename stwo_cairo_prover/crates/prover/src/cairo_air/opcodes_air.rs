@@ -22,7 +22,7 @@ use crate::components::{
     mul_opcode_small_imm, range_check_11, range_check_19, range_check_9_9, ret_opcode,
     verify_instruction,
 };
-use crate::input::state_transitions::StateTransitions;
+use crate::adapter::state_transitions::StateTransitions;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {

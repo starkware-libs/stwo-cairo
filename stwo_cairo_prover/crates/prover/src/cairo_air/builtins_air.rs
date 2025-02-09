@@ -16,7 +16,7 @@ use crate::components::{
     bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
-use crate::input::builtin_segments::{
+use crate::adapter::builtin_segments::{
     BuiltinSegments, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 
