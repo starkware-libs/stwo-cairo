@@ -30,6 +30,7 @@ pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
+pub mod range_check_felt_252_packed_27;
 pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod utils;
