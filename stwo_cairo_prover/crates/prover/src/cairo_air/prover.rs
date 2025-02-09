@@ -83,6 +83,10 @@ where
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
         SecureField::zero()
     );
+    println!(
+        "Lookup Sum is: {}",
+        lookup_sum(&claim, &interaction_elements, &interaction_claim)
+    );
 
     interaction_claim.mix_into(channel);
     tree_builder.commit(channel);
@@ -390,6 +394,22 @@ pub mod tests {
             #[test]
             fn test_prove_verify_mul_mod_builtin() {
                 let input = generate_test_input("test_prove_verify_mul_mod_builtin");
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
+                        .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            }
+
+            #[test]
+            fn test_poseidon_builtin_constraints() {
+                let input = generate_test_input("test_prove_verify_poseidon_builtin");
+                let pp_tree = PreProcessedTrace::canonical();
+                assert_cairo_constraints(input, pp_tree);
+            }
+
+            #[test]
+            fn test_prove_verify_poseidon_builtin() {
+                let input = generate_test_input("test_prove_verify_poseidon_builtin");
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
                         .unwrap();
