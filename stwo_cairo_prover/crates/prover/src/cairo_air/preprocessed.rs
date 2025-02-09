@@ -292,6 +292,39 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
         }
     }
 }
+#[derive(Debug)]
+pub struct PoseidonRoundKeys {
+    log_size: u32,
+    col_index: usize,
+}
+impl PoseidonRoundKeys {
+    pub const fn new(log_size: u32, col_index: usize) -> Self {
+        assert!(col_index < 30, "col_index must be in range 0..=29");
+        Self {
+            log_size,
+            col_index,
+        }
+    }
+
+    pub fn packed_at(&self, _vec_row: usize) -> PackedM31 {
+        todo!()
+    }
+}
+impl PreProcessedColumn for PoseidonRoundKeys {
+    fn log_size(&self) -> u32 {
+        self.log_size
+    }
+
+    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+        todo!()
+    }
+
+    fn id(&self) -> PreProcessedColumnId {
+        PreProcessedColumnId {
+            id: format!("poseidon_round_keys_{}_{}", self.log_size, self.col_index),
+        }
+    }
+}
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
 // TODO(Shahars): remove allow.
