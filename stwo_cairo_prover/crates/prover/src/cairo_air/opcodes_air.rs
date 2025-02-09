@@ -12,6 +12,7 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::display_components;
+use crate::adapter::state_transitions::StateTransitions;
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
@@ -22,7 +23,6 @@ use crate::components::{
     mul_opcode_small_imm, range_check_11, range_check_19, range_check_9_9, ret_opcode,
     verify_instruction,
 };
-use crate::input::state_transitions::StateTransitions;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {
