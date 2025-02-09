@@ -13,3 +13,5 @@ pub mod components;
 pub mod felt;
 pub mod input;
 pub mod relations;
+
+pub use stwo_prover;
