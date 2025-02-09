@@ -2,8 +2,8 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Parser;
-use stwo_cairo_prover::input::plain::adapt_finished_runner;
-use stwo_cairo_prover::input::{ExecutionResources, ProverInput};
+use stwo_cairo_prover::adapter::plain::adapt_finished_runner;
+use stwo_cairo_prover::adapter::{ExecutionResources, ProverInput};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
 use thiserror::Error;
