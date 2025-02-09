@@ -49,29 +49,23 @@ impl BuiltinSegments {
                     );
                     Some((value.begin_addr, value.stop_ptr).into())
                 };
-                res.set_segment(builtin_name, segment);
+                match builtin_name {
+                    BuiltinName::range_check => res.range_check_bits_128 = segment,
+                    BuiltinName::pedersen => res.pedersen = segment,
+                    BuiltinName::ecdsa => res.ecdsa = segment,
+                    BuiltinName::keccak => res.keccak = segment,
+                    BuiltinName::bitwise => res.bitwise = segment,
+                    BuiltinName::ec_op => res.ec_op = segment,
+                    BuiltinName::poseidon => res.poseidon = segment,
+                    BuiltinName::range_check96 => res.range_check_bits_96 = segment,
+                    BuiltinName::add_mod => res.add_mod = segment,
+                    BuiltinName::mul_mod => res.mul_mod = segment,
+                    // Not builtins.
+                    BuiltinName::output | BuiltinName::segment_arena => {}
+                }
             };
         }
         res
-    }
-
-    /// Sets a segment in the builtin segments.
-    /// If a segment already exists for the given builtin name, it will be overwritten.
-    fn set_segment(&mut self, builtin_name: BuiltinName, segment: Option<MemorySegmentAddresses>) {
-        match builtin_name {
-            BuiltinName::range_check => self.range_check_bits_128 = segment,
-            BuiltinName::pedersen => self.pedersen = segment,
-            BuiltinName::ecdsa => self.ecdsa = segment,
-            BuiltinName::keccak => self.keccak = segment,
-            BuiltinName::bitwise => self.bitwise = segment,
-            BuiltinName::ec_op => self.ec_op = segment,
-            BuiltinName::poseidon => self.poseidon = segment,
-            BuiltinName::range_check96 => self.range_check_bits_96 = segment,
-            BuiltinName::add_mod => self.add_mod = segment,
-            BuiltinName::mul_mod => self.mul_mod = segment,
-            // Not builtins.
-            BuiltinName::output | BuiltinName::segment_arena => {}
-        }
     }
 
     // TODO(ohadn): change return type to non reference once MemorySegmentAddresses implements
@@ -184,13 +178,25 @@ impl BuiltinSegments {
             );
             instance_to_fill_start += cells_per_instance as u32;
         }
-        self.set_segment(
-            builtin_name,
-            Some(MemorySegmentAddresses {
-                begin_addr,
-                stop_ptr: begin_addr + cells_per_instance * next_power_of_two,
-            }),
-        );
+        let stop_ptr = begin_addr + cells_per_instance * next_power_of_two;
+        let segment = Some(MemorySegmentAddresses {
+            begin_addr,
+            stop_ptr,
+        });
+        match builtin_name {
+            BuiltinName::range_check => self.range_check_bits_128 = segment,
+            BuiltinName::pedersen => self.pedersen = segment,
+            BuiltinName::ecdsa => self.ecdsa = segment,
+            BuiltinName::keccak => self.keccak = segment,
+            BuiltinName::bitwise => self.bitwise = segment,
+            BuiltinName::ec_op => self.ec_op = segment,
+            BuiltinName::poseidon => self.poseidon = segment,
+            BuiltinName::range_check96 => self.range_check_bits_96 = segment,
+            BuiltinName::add_mod => self.add_mod = segment,
+            BuiltinName::mul_mod => self.mul_mod = segment,
+            // Not builtins.
+            BuiltinName::output | BuiltinName::segment_arena => {}
+        }
     }
 
     /// Fills memory cells in builtin segments with the appropriate values according to the builtin.
@@ -320,13 +326,10 @@ mod test_builtin_segments {
         let num_instances = 71;
         let begin_addr = 23581;
         let stop_ptr = begin_addr + cells_per_instance * num_instances;
-        builtin_segments.set_segment(
-            builtin_name,
-            Some(MemorySegmentAddresses {
-                begin_addr,
-                stop_ptr,
-            }),
-        );
+        builtin_segments.bitwise = Some(MemorySegmentAddresses {
+            begin_addr,
+            stop_ptr,
+        });
         let memory_write_start = (stop_ptr - cells_per_instance) as u64;
         let mut memory_builder = initialize_memory(memory_write_start, &instance_example);
 
