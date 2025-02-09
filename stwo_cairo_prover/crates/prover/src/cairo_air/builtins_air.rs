@@ -1,4 +1,3 @@
-use cairo_vm::types::builtin_name::BuiltinName;
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -17,7 +16,9 @@ use crate::components::{
     bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
-use crate::input::builtin_segments::BuiltinSegments;
+use crate::input::builtin_segments::{
+    BuiltinSegments, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
@@ -61,8 +62,7 @@ pub struct BuiltinsClaimGenerator {
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
         let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|bitwise| {
-            let bitwise_builtin_cells_per_instance =
-                BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::bitwise);
+            let bitwise_builtin_cells_per_instance = BITWISE_MEMORY_CELLS;
             assert!(
                 ((bitwise.stop_ptr - bitwise.begin_addr) % bitwise_builtin_cells_per_instance) == 0,
                 "bitwise segment length is not a multiple of bitwise_builtin_cells_per_instance"
@@ -83,7 +83,7 @@ impl BuiltinsClaimGenerator {
                 .range_check_bits_96
                 .map(|range_check_bits_96| {
                     let rc96_builtin_cells_per_instance =
-                    BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::range_check96);
+                    RANGE_CHECK_MEMORY_CELLS;
                     let rc96_builtin_segment_length = range_check_bits_96.stop_ptr - range_check_bits_96.begin_addr;
                     assert!(
                         (rc96_builtin_segment_length % rc96_builtin_cells_per_instance) == 0,
@@ -104,8 +104,7 @@ impl BuiltinsClaimGenerator {
             builtin_segments
                 .range_check_bits_128
                 .map(|range_check_bits_128| {
-                    let rc128_builtin_cells_per_instance =
-                    BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::range_check);
+                    let rc128_builtin_cells_per_instance = RANGE_CHECK_MEMORY_CELLS;
                     let rc128_builtin_segment_length = range_check_bits_128.stop_ptr - range_check_bits_128.begin_addr;
                     assert!(
                         (rc128_builtin_segment_length % rc128_builtin_cells_per_instance) == 0,
