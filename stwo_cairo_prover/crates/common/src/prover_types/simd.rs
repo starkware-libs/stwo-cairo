@@ -10,7 +10,7 @@ use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
-use super::cpu::{BigUInt, CasmState, Felt252, UInt16, UInt32, UInt64, PRIME};
+use super::cpu::{BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, PRIME};
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -372,6 +372,10 @@ impl PackedFelt252 {
         let limbs = arr.map(|felt| std::array::from_fn(|i| felt.get_m31(i)));
         Self::from_limbs(<_ as Pack>::pack(limbs))
     }
+
+    pub fn from_packed_felt252width27(packed27: PackedFelt252Width27) -> Self {
+        Self::from_array(&std::array::from_fn(|i| Felt252::from(packed27.value[i])))
+    }
 }
 
 // TODO(Ohad): These are very slow, optimize.
@@ -443,6 +447,26 @@ pub trait DivExtend {
 impl DivExtend for PackedM31 {
     fn div(&self, rhs: Self) -> Self {
         *self * rhs.inverse()
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct PackedFelt252Width27 {
+    value: [Felt252Width27; N_LANES],
+}
+impl PackedFelt252Width27 {
+    pub fn from_packed_felt252width27(other: PackedFelt252Width27) -> Self {
+        Self { value: other.value }
+    }
+    pub fn get_m31(&self, index: usize) -> PackedM31 {
+        PackedM31::from_array(std::array::from_fn(|i| self.value[i].get_m31(index)))
+    }
+}
+impl Pack for Felt252Width27 {
+    type SimdType = PackedFelt252Width27;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedFelt252Width27 { value: inputs }
     }
 }
 
