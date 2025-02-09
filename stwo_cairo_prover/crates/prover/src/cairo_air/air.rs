@@ -305,6 +305,14 @@ impl CairoClaimGenerator {
             &self.memory_address_to_id_trace_generator,
             &self.memory_id_to_value_trace_generator,
             &self.range_checks_trace_generator.rc_6_trace_generator,
+            &self.range_checks_trace_generator.rc_18_trace_generator,
+            &self.range_checks_trace_generator.rc_19_trace_generator,
+            &self.range_checks_trace_generator.rc_4_4_trace_generator,
+            &self.range_checks_trace_generator.rc_9_9_trace_generator,
+            &self.range_checks_trace_generator.rc_4_4_4_4_trace_generator,
+            &self
+                .range_checks_trace_generator
+                .rc_3_3_3_3_3_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
@@ -464,6 +472,11 @@ pub struct CairoInteractionElements {
     pub blake_sigma: relations::BlakeRoundSigma,
     pub triple_xor_32: relations::TripleXor32,
     pub verify_instruction: relations::VerifyInstruction,
+    pub poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain,
+    pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
+    pub cube_252: relations::Cube252,
+    pub poseidon_round_keys: relations::PoseidonRoundKeys,
+    pub range_check_felt_252_width_27: relations::RangeCheckFelt252Width27,
     pub memory_address_to_id: relations::MemoryAddressToId,
     pub memory_id_to_value: relations::MemoryIdToBig,
     pub range_checks: RangeChecksInteractionElements,
@@ -482,6 +495,11 @@ impl CairoInteractionElements {
             blake_g: relations::BlakeG::draw(channel),
             blake_sigma: relations::BlakeRoundSigma::draw(channel),
             triple_xor_32: relations::TripleXor32::draw(channel),
+            poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain::draw(channel),
+            poseidon_full_round_chain: relations::PoseidonFullRoundChain::draw(channel),
+            cube_252: relations::Cube252::draw(channel),
+            poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
+            range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
             range_checks: RangeChecksInteractionElements::draw(channel),
