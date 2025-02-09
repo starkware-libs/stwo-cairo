@@ -6,7 +6,6 @@ use std::path::Path;
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
-use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use stwo_cairo_utils::file_utils::{open_file, read_to_string, IoErrorWithPath};
@@ -116,16 +115,8 @@ pub fn adapt_to_stwo_input(
         StateTransitions::from_iter(trace_iter, &mut memory);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::range_check);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::pedersen);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::ecdsa);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::keccak);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::bitwise);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::ec_op);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::poseidon);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::range_check96);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::add_mod);
-    builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::mul_mod);
+    builtins_segments.pad_builtin_segments(&mut memory);
+
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
