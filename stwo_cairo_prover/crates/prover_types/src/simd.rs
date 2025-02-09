@@ -10,7 +10,7 @@ use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{UInt16, UInt32, UInt64, PRIME};
-use crate::cpu::{BigUInt, CasmState, Felt252};
+use crate::cpu::{BigUInt, CasmState, Felt252, Felt252Packed27};
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -443,6 +443,18 @@ pub trait DivExtend {
 impl DivExtend for PackedM31 {
     fn div(&self, rhs: Self) -> Self {
         *self * rhs.inverse()
+    }
+}
+
+pub struct PackedFelt252Packed27 {
+    value: [Felt252Packed27; N_LANES],
+}
+impl PackedFelt252Packed27 {
+    pub fn from_packed_felt252packed27(other: PackedFelt252Packed27) -> Self {
+        Self { value: other.value }
+    }
+    pub fn get_m31(&self, index: usize) -> PackedM31 {
+        PackedM31::from_array(std::array::from_fn(|i| self.value[i].get_m31(index)))
     }
 }
 
