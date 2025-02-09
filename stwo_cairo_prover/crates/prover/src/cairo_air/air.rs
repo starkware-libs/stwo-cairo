@@ -102,7 +102,8 @@ impl CairoClaim {
         let mut log_sizes = TreeVec::concat_cols(log_sizes_list.into_iter());
 
         // Add preprocessed trace log sizes.
-        log_sizes[PREPROCESSED_TRACE_IDX] = PreProcessedTrace::new().log_sizes();
+        log_sizes[PREPROCESSED_TRACE_IDX] =
+            PreProcessedTrace::new(self.public_data.log_max_rows).log_sizes();
         log_sizes
     }
 }
@@ -112,6 +113,7 @@ pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+    pub log_max_rows: u32,
 }
 impl PublicData {
     /// Sums the logup of the public data.
@@ -170,6 +172,7 @@ pub struct CairoClaimGenerator {
 }
 impl CairoClaimGenerator {
     pub fn new(input: ProverInput) -> Self {
+        let log_max_rows = input.log_max_rows();
         let initial_state = input.state_transitions.initial_state;
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
@@ -209,6 +212,7 @@ impl CairoClaimGenerator {
             public_memory,
             initial_state,
             final_state,
+            log_max_rows,
         };
 
         Self {
@@ -444,7 +448,7 @@ impl CairoComponents {
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &PreProcessedTrace::new().ids(),
+            &PreProcessedTrace::new(cairo_claim.public_data.log_max_rows).ids(),
         );
 
         let opcode_components = OpcodeComponents::new(

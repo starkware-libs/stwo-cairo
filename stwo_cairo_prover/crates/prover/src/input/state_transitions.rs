@@ -118,12 +118,16 @@ impl CasmStatesByOpcode {
             ("blake2s_opcode".to_string(), self.blake2s_opcode.len()),
         ]
     }
+
+    pub fn total_count(&self) -> usize {
+        self.counts().iter().map(|(_, count)| count).sum::<usize>()
+    }
 }
 
 impl Display for CasmStatesByOpcode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let counts = self.counts();
-        let total_steps = counts.iter().map(|(_, count)| count).sum::<usize>();
+        let total_steps = self.total_count();
         writeln!(f, "Total steps: {total_steps}")?;
         for (name, count) in &counts {
             writeln!(f, "{name}: {count}")?;
