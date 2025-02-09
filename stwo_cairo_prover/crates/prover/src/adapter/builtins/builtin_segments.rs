@@ -3,7 +3,7 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use serde::{Deserialize, Serialize};
 
-use super::memory::MemoryBuilder;
+use crate::adapter::memory::MemoryBuilder;
 
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 pub const PEDERSEN_MEMORY_CELLS: usize = 3;
@@ -239,7 +239,7 @@ mod test_builtin_segments {
 
     use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 
-    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::builtins::builtin_segments::BITWISE_MEMORY_CELLS;
     use crate::adapter::memory::{
         u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue,
     };
@@ -261,7 +261,7 @@ mod test_builtin_segments {
     #[test]
     fn test_builtin_segments() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("src/input/test_builtins_segments/test_public_input.json");
+            .join("src/adapter/builtins/test_builtins_segments/test_public_input.json");
         let pub_data_string = std::fs::read_to_string(&path)
             .unwrap_or_else(|_| panic!("Unable to read file: {}", path.display()));
         let pub_data: PublicInput<'_> =

@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
-use builtin_segments::BuiltinSegments;
+use builtins::builtin_segments::BuiltinSegments;
 use cairo_vm::types::builtin_name::BuiltinName;
 use memory::Memory;
 use prover_types::cpu::M31;
 use serde::{Deserialize, Serialize};
 use state_transitions::StateTransitions;
 
-pub mod builtin_segments;
+pub mod builtins;
 pub mod decode;
 pub mod memory;
 pub mod plain;
