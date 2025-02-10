@@ -7,6 +7,11 @@ edition = "2021"
 slow-tests = []
 std = ["dep:sonic-rs"]
 
+# Define Nightly features in order to allow selective tests
+# Use the following #[cfg(feature = "nightly")]
+# to enable nightly features on specific tests.
+nightly = []
+
 [dependencies]
 air_structs_derive = { path = "../air_structs_derive" }
 stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
