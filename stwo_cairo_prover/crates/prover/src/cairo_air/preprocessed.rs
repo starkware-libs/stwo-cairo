@@ -28,6 +28,7 @@ pub trait PreProcessedColumn {
 pub struct PreProcessedTrace {
     seq_columns: Vec<Seq>,
     bitwise_xor_columns: Vec<BitwiseXor>,
+    range_check_columns: Vec<Box<dyn PreProcessedColumn>>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
@@ -36,9 +37,12 @@ impl PreProcessedTrace {
         let bitwise_xor_columns = (0..3)
             .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
             .collect_vec();
+        let range_check_columns = gen_range_check_columns();
+
         Self {
             seq_columns,
             bitwise_xor_columns,
+            range_check_columns,
         }
     }
 
@@ -54,6 +58,7 @@ impl PreProcessedTrace {
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
+        columns.extend(self.range_check_columns.iter().map(|c| c.as_ref()));
 
         // Sort columns by descending log size.
         columns
@@ -73,6 +78,58 @@ impl PreProcessedTrace {
     pub fn ids(&self) -> Vec<PreProcessedColumnId> {
         self.columns().iter().map(|c| c.id()).collect()
     }
+}
+
+fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
+    // RangeCheck_6.
+    let range_check_6 = RangeCheck::new([6], 0);
+    // RangeCheck_11.
+    let range_check_11 = RangeCheck::new([11], 0);
+    // RangeCheck_12.
+    let range_check_12 = RangeCheck::new([12], 0);
+    // RangeCheck_18.
+    let range_check_18 = RangeCheck::new([18], 0);
+    // RangeCheck_19.
+    let range_check_19 = RangeCheck::new([19], 0);
+    // RangeCheck_3_6.
+    let range_check_3_6_col_0 = RangeCheck::new([3, 6], 0);
+    let range_check_3_6_col_1 = RangeCheck::new([3, 6], 1);
+    // RangeCheck_4_3.
+    let range_check_4_3_col_0 = RangeCheck::new([4, 3], 0);
+    let range_check_4_3_col_1 = RangeCheck::new([4, 3], 1);
+    // RangeCheck_9_9.
+    let range_check_9_9_col_0 = RangeCheck::new([9, 9], 0);
+    let range_check_9_9_col_1 = RangeCheck::new([9, 9], 1);
+    // RangeCheck_7_2_5.
+    let range_check_7_2_5_col_0 = RangeCheck::new([7, 2, 5], 0);
+    let range_check_7_2_5_col_1 = RangeCheck::new([7, 2, 5], 1);
+    let range_check_7_2_5_col_2 = RangeCheck::new([7, 2, 5], 2);
+    // RangeCheck_3_6_6_3.
+    let range_check_3_6_6_3_col_0 = RangeCheck::new([3, 6, 6, 3], 0);
+    let range_check_3_6_6_3_col_1 = RangeCheck::new([3, 6, 6, 3], 1);
+    let range_check_3_6_6_3_col_2 = RangeCheck::new([3, 6, 6, 3], 2);
+    let range_check_3_6_6_3_col_3 = RangeCheck::new([3, 6, 6, 3], 3);
+
+    vec![
+        Box::new(range_check_6),
+        Box::new(range_check_11),
+        Box::new(range_check_12),
+        Box::new(range_check_18),
+        Box::new(range_check_19),
+        Box::new(range_check_3_6_col_0),
+        Box::new(range_check_3_6_col_1),
+        Box::new(range_check_4_3_col_0),
+        Box::new(range_check_4_3_col_1),
+        Box::new(range_check_9_9_col_0),
+        Box::new(range_check_9_9_col_1),
+        Box::new(range_check_7_2_5_col_0),
+        Box::new(range_check_7_2_5_col_1),
+        Box::new(range_check_7_2_5_col_2),
+        Box::new(range_check_3_6_6_3_col_0),
+        Box::new(range_check_3_6_6_3_col_1),
+        Box::new(range_check_3_6_6_3_col_2),
+        Box::new(range_check_3_6_6_3_col_3),
+    ]
 }
 
 /// A column with the numbers [0..(2^log_size)-1].
