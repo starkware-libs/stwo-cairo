@@ -44,7 +44,9 @@ jobs:
           profile: minimal
           toolchain: nightly-2025-01-02
       - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2025-01-02 test --release --features slow-tests
+      - run: cargo +nightly-2025-01-02 test --release --features slow-tests,std
+        env:
+          RUSTFLAGS: -C target-cpu=native -C opt-level=3
 
   format:
     runs-on: ubuntu-latest
