@@ -296,13 +296,12 @@ pub mod tests {
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 
-    #[cfg(feature = "slow-tests")]
-    pub mod slow_tests {
+    #[cfg(feature = "nightly")]
+    mod nightly_tests {
         use std::io::Write;
 
         use itertools::Itertools;
         use stwo_cairo_serialize::CairoSerialize;
-        use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
         use super::*;
@@ -319,6 +318,13 @@ pub mod tests {
             file.write_all(proof_str.as_bytes()).unwrap();
             verify_cairo::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
         }
+    }
+
+    #[cfg(feature = "slow-tests")]
+    pub mod slow_tests {
+        use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+
+        use super::*;
 
         #[test]
         fn test_full_cairo_air() {
