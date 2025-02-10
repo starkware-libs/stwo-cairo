@@ -12,7 +12,9 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::LOG_MAX_ROWS;
-use crate::components::range_check_vector::{partition_into_bit_segments, SIMD_ENUMERATION_0};
+use crate::components::range_check_vector::{
+    generate_partitioned_enumeration, partition_into_bit_segments, SIMD_ENUMERATION_0,
+};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
@@ -184,6 +186,27 @@ impl<const N: usize> RangeCheck<N> {
         }
     }
 }
+impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
+    fn log_size(&self) -> u32 {
+        self.ranges.iter().sum()
+    }
+
+    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+        let partitions = generate_partitioned_enumeration(self.ranges);
+        let column = partitions.into_iter().nth(self.column_idx).unwrap();
+        CircleEvaluation::new(
+            CanonicCoset::new(self.log_size()).circle_domain(),
+            BaseColumn::from_simd(column),
+        )
+    }
+
+    fn id(&self) -> PreProcessedColumnId {
+        let ranges = self.ranges.iter().join("_");
+        PreProcessedColumnId {
+            id: format!("range_check_{}_column_{}", ranges, self.column_idx).to_string(),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -250,5 +273,30 @@ mod tests {
         let actual = range_check.packed_at(index / N_LANES).to_array()[index % N_LANES].0;
 
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_range_check_gen_column_simd() {
+        let ranges = [3, 1];
+        let expected_0 = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7].map(M31);
+        let expected_1 = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1].map(M31);
+
+        let col_0 = RangeCheck::new(ranges, 0);
+        let col_1 = RangeCheck::new(ranges, 1);
+        let col_0_simd = col_0.gen_column_simd().to_cpu().to_vec();
+        let col_1_simd = col_1.gen_column_simd().to_cpu().to_vec();
+
+        assert_eq!(col_0_simd, expected_0);
+        assert_eq!(col_1_simd, expected_1);
+    }
+
+    #[test]
+    fn test_range_check_id() {
+        let ranges = [1, 2, 3, 4];
+        let range_check = RangeCheck::new(ranges, 2);
+
+        let id = range_check.id();
+
+        assert_eq!(id.id, "range_check_1_2_3_4_column_2");
     }
 }
