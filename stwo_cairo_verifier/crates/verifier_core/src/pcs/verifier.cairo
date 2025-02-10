@@ -16,6 +16,7 @@ use super::PcsConfig;
 // TODO(andrew): Change all `Array` types to `Span`.
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
+    pub config: PcsConfig,
     pub commitments: TreeArray<felt252>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
@@ -75,6 +76,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
         let CommitmentSchemeProof {
+            config: _,
             commitments: _,
             sampled_values,
             decommitments,
