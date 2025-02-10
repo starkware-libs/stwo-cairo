@@ -63,6 +63,7 @@ impl Memory {
         match self.address_to_id[addr as usize].decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
+            MemoryValueId::Empty => panic!("Accessing empty memory cell"),
         }
     }
 
@@ -212,6 +213,7 @@ impl DerefMut for MemoryBuilder {
 }
 
 pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x4000_0000;
+pub const DEFAULT_ID: u32 = LARGE_MEMORY_VALUE_ID_BASE - 1;
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct EncodedMemoryValueId(pub u32);
 impl EncodedMemoryValueId {
@@ -219,9 +221,13 @@ impl EncodedMemoryValueId {
         match value {
             MemoryValueId::Small(id) => EncodedMemoryValueId(id),
             MemoryValueId::F252(id) => EncodedMemoryValueId(id | LARGE_MEMORY_VALUE_ID_BASE),
+            MemoryValueId::Empty => EncodedMemoryValueId(DEFAULT_ID),
         }
     }
     pub fn decode(&self) -> MemoryValueId {
+        if self.0 == DEFAULT_ID {
+            return MemoryValueId::Empty;
+        }
         let tag = self.0 >> 30;
         let val = self.0 & 0x3FFF_FFFF;
         match tag {
@@ -234,13 +240,14 @@ impl EncodedMemoryValueId {
 
 impl Default for EncodedMemoryValueId {
     fn default() -> Self {
-        EncodedMemoryValueId::encode(MemoryValueId::Small(0))
+        Self(DEFAULT_ID)
     }
 }
 
 pub enum MemoryValueId {
     Small(u32),
     F252(u32),
+    Empty,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
@@ -353,5 +360,49 @@ mod tests {
 
         let f252 = MemoryValue::F252([1; 8]);
         assert_eq!(f252.as_u256(), [1; 8]);
+    }
+
+    #[test]
+    fn test_memory_holes_have_default_id() {
+        let entries = [
+            MemoryEntry {
+                address: 0,
+                value: [1; 8],
+            },
+            MemoryEntry {
+                address: 2,
+                value: [1, 2, 0, 0, 0, 0, 0, 0],
+            },
+        ];
+        let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
+        let expxcted_id_addr_0 = EncodedMemoryValueId::encode(MemoryValueId::F252(0));
+        let expxcted_id_addr_1 = EncodedMemoryValueId::default();
+        let expxcted_id_addr_2 = EncodedMemoryValueId::encode(MemoryValueId::Small(0));
+
+        let addr_0_id = memory.address_to_id[0];
+        let addr_1_id = memory.address_to_id[1];
+        let addr_2_id = memory.address_to_id[2];
+
+        assert_eq!(addr_0_id, expxcted_id_addr_0);
+        assert_eq!(addr_1_id, expxcted_id_addr_1);
+        assert_eq!(addr_2_id, expxcted_id_addr_2);
+    }
+
+    #[should_panic = "Accessing empty memory cell"]
+    #[test]
+    fn test_access_invalid_address() {
+        let entries = [
+            MemoryEntry {
+                address: 0,
+                value: [1; 8],
+            },
+            MemoryEntry {
+                address: 2,
+                value: [1, 2, 0, 0, 0, 0, 0, 0],
+            },
+        ];
+        let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
+
+        memory.get(1);
     }
 }
