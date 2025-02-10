@@ -13,6 +13,7 @@ pub mod add_opcode_small_imm;
 pub mod assert_eq_opcode;
 pub mod assert_eq_opcode_double_deref;
 pub mod assert_eq_opcode_imm;
+pub mod bitwise_builtin;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
@@ -29,10 +30,13 @@ pub mod memory_address_to_id;
 pub mod memory_id_to_big;
 pub mod mul_opcode;
 pub mod mul_opcode_imm;
+pub mod mul_opcode_small;
+pub mod mul_opcode_small_imm;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
 pub mod range_check_vector;
 pub mod ret_opcode;
+pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
 /// A component is a set of trace columns of the same sizes along with a set of constraints on them.

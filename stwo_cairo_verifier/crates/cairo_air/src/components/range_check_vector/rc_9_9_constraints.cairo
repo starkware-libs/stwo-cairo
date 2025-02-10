@@ -7,7 +7,6 @@ use stwo_verifier_core::circle::{
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
-use stwo_verifier_core::utils::pow2;
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -35,7 +34,7 @@ pub struct ConstraintParams {
     pub RangeCheck_9_9_alpha1: QM31,
     pub RangeCheck_9_9_z: QM31,
     pub claimed_sum: QM31,
-    pub log_size: u32,
+    pub column_size: M31,
 }
 
 pub fn evaluate_constraints_at_point(
@@ -47,7 +46,7 @@ pub fn evaluate_constraints_at_point(
     domain_vanish_at_point_inv: QM31,
 ) {
     let ConstraintParams {
-        RangeCheck_9_9_alpha0, RangeCheck_9_9_alpha1, RangeCheck_9_9_z, claimed_sum, log_size,
+        RangeCheck_9_9_alpha0, RangeCheck_9_9_alpha1, RangeCheck_9_9_z, claimed_sum, column_size,
     } = params;
     let [trace_1_column_0, trace_1_column_1, trace_1_column_2]: [Span<QM31>; 3] =
         (*trace_mask_values
@@ -112,7 +111,7 @@ pub fn evaluate_constraints_at_point(
                 trace_2_column_5_offset_neg_1, trace_2_column_6_offset_neg_1,
             ],
         ))
-        + (claimed_sum) * (m31(pow2(log_size)).inverse().into()))
+        + (claimed_sum) * (column_size.inverse().into()))
         * (intermediate0)
         - (-(trace_1_column_2_offset_0)))
         * domain_vanish_at_point_inv;
