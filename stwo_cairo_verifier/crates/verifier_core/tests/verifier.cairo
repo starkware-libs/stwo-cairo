@@ -9,7 +9,7 @@ use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::verifier::{Air, verify};
-use stwo_verifier_core::{ColumnArray, TreeArray};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 mod fib_128_column_with_blowup_16_proof;
 mod fib_128_column_with_blowup_2_proof;
@@ -99,16 +99,16 @@ impl FibAirImpl<const N_COLUMNS: usize> of Air<FibAir<N_COLUMNS>> {
     fn eval_composition_polynomial_at_point(
         self: @FibAir<N_COLUMNS>,
         point: CirclePoint<QM31>,
-        mask_values: @TreeArray<ColumnArray<Array<QM31>>>,
+        mask_values: TreeSpan<ColumnSpan<Span<QM31>>>,
         random_coeff: QM31,
     ) -> QM31 {
-        let base_trace_tree = mask_values[1].span();
+        let base_trace_tree = *mask_values[1];
         let mut constraint_acc = QM31Zero::zero();
 
         for i in 2..N_COLUMNS {
-            let a_col = base_trace_tree[i - 2];
-            let b_col = base_trace_tree[i - 1];
-            let c_col = base_trace_tree[i];
+            let a_col = *base_trace_tree[i - 2];
+            let b_col = *base_trace_tree[i - 1];
+            let c_col = *base_trace_tree[i];
             let a = *a_col[0];
             let b = *b_col[0];
             let c = *c_col[0];
