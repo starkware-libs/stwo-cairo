@@ -2351,211 +2351,211 @@ pub fn evaluate_constraints_at_point(
     let intermediate182 = *intermediates.pop_front().unwrap();
     let intermediate183 = *intermediates.pop_front().unwrap();
 
-    // Constrait 0
+    // Constraint 0
     let constraint_quotient = ((trace_1_column_229_offset_0) * (trace_1_column_229_offset_0)
         - (trace_1_column_229_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 1
+    // Constraint 1
     let constraint_quotient = ((intermediate1) * (m31(1).into() - (intermediate1)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 2
+    // Constraint 2
     let constraint_quotient = ((intermediate2) * (m31(1).into() - (intermediate2)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 3
+    // Constraint 3
     let constraint_quotient = ((intermediate3) * (m31(1).into() - (intermediate3)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 4
+    // Constraint 4
     let constraint_quotient = ((intermediate4) * (m31(1).into() - (intermediate4)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 5
+    // Constraint 5
     let constraint_quotient = ((intermediate5) * (m31(1).into() - (intermediate5)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 6
+    // Constraint 6
     let constraint_quotient = ((intermediate1) * (trace_1_column_54_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 7
+    // Constraint 7
     let constraint_quotient = ((intermediate1) * (trace_1_column_55_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 8
+    // Constraint 8
     let constraint_quotient = ((intermediate1) * (trace_1_column_56_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 9
+    // Constraint 9
     let constraint_quotient = ((intermediate1) * (trace_1_column_57_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 10
+    // Constraint 10
     let constraint_quotient = ((intermediate1) * (trace_1_column_58_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 11
+    // Constraint 11
     let constraint_quotient = ((intermediate1) * (trace_1_column_59_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 12
+    // Constraint 12
     let constraint_quotient = ((intermediate1) * (trace_1_column_60_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 13
+    // Constraint 13
     let constraint_quotient = ((intermediate1) * (trace_1_column_61_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 14
+    // Constraint 14
     let constraint_quotient = ((intermediate1) * (trace_1_column_62_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 15
+    // Constraint 15
     let constraint_quotient = ((intermediate1) * (trace_1_column_63_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 16
+    // Constraint 16
     let constraint_quotient = ((intermediate1) * (trace_1_column_64_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 17
+    // Constraint 17
     let constraint_quotient = ((intermediate1) * (trace_1_column_65_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 18
+    // Constraint 18
     let constraint_quotient = ((intermediate1) * (trace_1_column_66_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 19
+    // Constraint 19
     let constraint_quotient = ((intermediate1) * (trace_1_column_67_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 20
+    // Constraint 20
     let constraint_quotient = ((intermediate1) * (trace_1_column_68_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 21
+    // Constraint 21
     let constraint_quotient = ((intermediate1) * (trace_1_column_69_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 22
+    // Constraint 22
     let constraint_quotient = ((intermediate1) * (trace_1_column_70_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 23
+    // Constraint 23
     let constraint_quotient = ((intermediate1) * (trace_1_column_71_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 24
+    // Constraint 24
     let constraint_quotient = ((intermediate1) * (trace_1_column_72_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 25
+    // Constraint 25
     let constraint_quotient = ((intermediate1) * (trace_1_column_73_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 26
+    // Constraint 26
     let constraint_quotient = ((intermediate1) * (trace_1_column_74_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 27
+    // Constraint 27
     let constraint_quotient = ((intermediate1) * (trace_1_column_75_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 28
+    // Constraint 28
     let constraint_quotient = ((intermediate1) * (trace_1_column_76_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 29
+    // Constraint 29
     let constraint_quotient = ((intermediate1) * (trace_1_column_77_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 30
+    // Constraint 30
     let constraint_quotient = ((intermediate1) * (trace_1_column_78_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 31
+    // Constraint 31
     let constraint_quotient = ((trace_1_column_136_offset_0)
         * (trace_1_column_136_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 32
+    // Constraint 32
     let constraint_quotient = ((intermediate26)
         * ((intermediate26) * (intermediate26) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 33
+    // Constraint 33
     let constraint_quotient = ((intermediate27)
         * ((intermediate27) * (intermediate27) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 34
+    // Constraint 34
     let constraint_quotient = ((intermediate28)
         * ((intermediate28) * (intermediate28) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 35
+    // Constraint 35
     let constraint_quotient = ((intermediate29)
         * ((intermediate29) * (intermediate29) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 36
+    // Constraint 36
     let constraint_quotient = ((intermediate30)
         * ((intermediate30) * (intermediate30) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 37
+    // Constraint 37
     let constraint_quotient = ((intermediate31)
         * ((intermediate31) * (intermediate31) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 38
+    // Constraint 38
     let constraint_quotient = ((intermediate32)
         * ((intermediate32) * (intermediate32) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 39
+    // Constraint 39
     let constraint_quotient = ((intermediate33)
         * ((intermediate33) * (intermediate33) - (m31(1).into())))
         * domain_vanish_at_point_inv;
@@ -2563,121 +2563,121 @@ pub fn evaluate_constraints_at_point(
 
     core::internal::revoke_ap_tracking();
 
-    // Constrait 40
+    // Constraint 40
     let constraint_quotient = ((intermediate34)
         * ((intermediate34) * (intermediate34) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 41
+    // Constraint 41
     let constraint_quotient = ((intermediate35)
         * ((intermediate35) * (intermediate35) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 42
+    // Constraint 42
     let constraint_quotient = ((intermediate36)
         * ((intermediate36) * (intermediate36) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 43
+    // Constraint 43
     let constraint_quotient = ((intermediate37)
         * ((intermediate37) * (intermediate37) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 44
+    // Constraint 44
     let constraint_quotient = ((intermediate38)
         * ((intermediate38) * (intermediate38) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 45
+    // Constraint 45
     let constraint_quotient = ((intermediate39)
         * ((intermediate39) * (intermediate39) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 46
+    // Constraint 46
     let constraint_quotient = ((intermediate40)
         * ((intermediate40) * (intermediate40) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 47
+    // Constraint 47
     let constraint_quotient = ((intermediate41)
         * ((intermediate41) * (intermediate41) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 48
+    // Constraint 48
     let constraint_quotient = ((intermediate42)
         * ((intermediate42) * (intermediate42) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 49
+    // Constraint 49
     let constraint_quotient = ((intermediate43)
         * ((intermediate43) * (intermediate43) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 50
+    // Constraint 50
     let constraint_quotient = ((intermediate44)
         * ((intermediate44) * (intermediate44) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 51
+    // Constraint 51
     let constraint_quotient = ((intermediate45)
         * ((intermediate45) * (intermediate45) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 52
+    // Constraint 52
     let constraint_quotient = ((intermediate46)
         * ((intermediate46) * (intermediate46) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 53
+    // Constraint 53
     let constraint_quotient = ((intermediate47)
         * ((intermediate47) * (intermediate47) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 54
+    // Constraint 54
     let constraint_quotient = ((intermediate48)
         * ((intermediate48) * (intermediate48) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 55
+    // Constraint 55
     let constraint_quotient = ((intermediate49)
         * ((intermediate49) * (intermediate49) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 56
+    // Constraint 56
     let constraint_quotient = ((intermediate50)
         * ((intermediate50) * (intermediate50) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 57
+    // Constraint 57
     let constraint_quotient = ((intermediate51)
         * ((intermediate51) * (intermediate51) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 58
+    // Constraint 58
     let constraint_quotient = ((intermediate52)
         * ((intermediate52) * (intermediate52) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 59
+    // Constraint 59
     let constraint_quotient = (trace_1_column_78_offset_0
         + trace_1_column_107_offset_0
         + intermediate52
@@ -2686,133 +2686,133 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 60
+    // Constraint 60
     let constraint_quotient = ((trace_1_column_166_offset_0) * (m31(512).into())
         - (intermediate122 - (trace_1_column_165_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 61
+    // Constraint 61
     let constraint_quotient = ((trace_1_column_167_offset_0) * (m31(512).into())
         - (intermediate123 + trace_1_column_166_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 62
+    // Constraint 62
     let constraint_quotient = ((trace_1_column_168_offset_0) * (m31(512).into())
         - (intermediate124 + trace_1_column_167_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 63
+    // Constraint 63
     let constraint_quotient = ((trace_1_column_169_offset_0) * (m31(512).into())
         - (intermediate125 + trace_1_column_168_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 64
+    // Constraint 64
     let constraint_quotient = ((trace_1_column_170_offset_0) * (m31(512).into())
         - (intermediate126 + trace_1_column_169_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 65
+    // Constraint 65
     let constraint_quotient = ((trace_1_column_171_offset_0) * (m31(512).into())
         - (intermediate127 + trace_1_column_170_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 66
+    // Constraint 66
     let constraint_quotient = ((trace_1_column_172_offset_0) * (m31(512).into())
         - (intermediate128 + trace_1_column_171_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 67
+    // Constraint 67
     let constraint_quotient = ((trace_1_column_173_offset_0) * (m31(512).into())
         - (intermediate129 + trace_1_column_172_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 68
+    // Constraint 68
     let constraint_quotient = ((trace_1_column_174_offset_0) * (m31(512).into())
         - (intermediate130 + trace_1_column_173_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 69
+    // Constraint 69
     let constraint_quotient = ((trace_1_column_175_offset_0) * (m31(512).into())
         - (intermediate131 + trace_1_column_174_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 70
+    // Constraint 70
     let constraint_quotient = ((trace_1_column_176_offset_0) * (m31(512).into())
         - (intermediate132 + trace_1_column_175_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 71
+    // Constraint 71
     let constraint_quotient = ((trace_1_column_177_offset_0) * (m31(512).into())
         - (intermediate133 + trace_1_column_176_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 72
+    // Constraint 72
     let constraint_quotient = ((trace_1_column_178_offset_0) * (m31(512).into())
         - (intermediate134 + trace_1_column_177_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 73
+    // Constraint 73
     let constraint_quotient = ((trace_1_column_179_offset_0) * (m31(512).into())
         - (intermediate135 + trace_1_column_178_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 74
+    // Constraint 74
     let constraint_quotient = ((trace_1_column_180_offset_0) * (m31(512).into())
         - (intermediate136 + trace_1_column_179_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 75
+    // Constraint 75
     let constraint_quotient = ((trace_1_column_181_offset_0) * (m31(512).into())
         - (intermediate137 + trace_1_column_180_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 76
+    // Constraint 76
     let constraint_quotient = ((trace_1_column_182_offset_0) * (m31(512).into())
         - (intermediate138 + trace_1_column_181_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 77
+    // Constraint 77
     let constraint_quotient = ((trace_1_column_183_offset_0) * (m31(512).into())
         - (intermediate139 + trace_1_column_182_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 78
+    // Constraint 78
     let constraint_quotient = ((trace_1_column_184_offset_0) * (m31(512).into())
         - (intermediate140 + trace_1_column_183_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 79
+    // Constraint 79
     let constraint_quotient = ((trace_1_column_185_offset_0) * (m31(512).into())
         - (intermediate141 + trace_1_column_184_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 80
+    // Constraint 80
     let constraint_quotient = ((trace_1_column_186_offset_0) * (m31(512).into())
         - (intermediate142 + trace_1_column_185_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 81
+    // Constraint 81
     let constraint_quotient = ((trace_1_column_187_offset_0) * (m31(512).into())
         - (intermediate143
             - ((m31(136).into()) * (trace_1_column_165_offset_0))
@@ -2820,44 +2820,44 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 82
+    // Constraint 82
     let constraint_quotient = ((trace_1_column_188_offset_0) * (m31(512).into())
         - (intermediate144 + trace_1_column_187_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 83
+    // Constraint 83
     let constraint_quotient = ((trace_1_column_189_offset_0) * (m31(512).into())
         - (intermediate145 + trace_1_column_188_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 84
+    // Constraint 84
     let constraint_quotient = ((trace_1_column_190_offset_0) * (m31(512).into())
         - (intermediate146 + trace_1_column_189_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 85
+    // Constraint 85
     let constraint_quotient = ((trace_1_column_191_offset_0) * (m31(512).into())
         - (intermediate147 + trace_1_column_190_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 86
+    // Constraint 86
     let constraint_quotient = ((trace_1_column_192_offset_0) * (m31(512).into())
         - (intermediate148 + trace_1_column_191_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 87
+    // Constraint 87
     let constraint_quotient = (intermediate149
         - ((m31(256).into()) * (trace_1_column_165_offset_0))
         + trace_1_column_192_offset_0)
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 88
+    // Constraint 88
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_193_offset_0 - (trace_1_column_80_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2867,7 +2867,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 89
+    // Constraint 89
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_194_offset_0 - (trace_1_column_81_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2877,7 +2877,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 90
+    // Constraint 90
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_195_offset_0 - (trace_1_column_82_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2887,7 +2887,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 91
+    // Constraint 91
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_196_offset_0 - (trace_1_column_83_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2897,7 +2897,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 92
+    // Constraint 92
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_197_offset_0 - (trace_1_column_84_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2907,7 +2907,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 93
+    // Constraint 93
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_198_offset_0 - (trace_1_column_85_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2917,7 +2917,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 94
+    // Constraint 94
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_199_offset_0 - (trace_1_column_86_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2927,7 +2927,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 95
+    // Constraint 95
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_200_offset_0 - (trace_1_column_87_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2937,7 +2937,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 96
+    // Constraint 96
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_201_offset_0 - (trace_1_column_88_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2947,7 +2947,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 97
+    // Constraint 97
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_202_offset_0 - (trace_1_column_89_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2957,7 +2957,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 98
+    // Constraint 98
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_203_offset_0 - (trace_1_column_90_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2967,7 +2967,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 99
+    // Constraint 99
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_204_offset_0 - (trace_1_column_91_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2977,7 +2977,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 100
+    // Constraint 100
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_205_offset_0 - (trace_1_column_92_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2987,7 +2987,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 101
+    // Constraint 101
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_206_offset_0 - (trace_1_column_93_offset_0))
             + (trace_1_column_11_offset_0)
@@ -2997,7 +2997,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 102
+    // Constraint 102
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_207_offset_0 - (trace_1_column_94_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3007,7 +3007,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 103
+    // Constraint 103
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_208_offset_0 - (trace_1_column_95_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3017,7 +3017,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 104
+    // Constraint 104
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_209_offset_0 - (trace_1_column_96_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3027,7 +3027,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 105
+    // Constraint 105
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_210_offset_0 - (trace_1_column_97_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3037,7 +3037,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 106
+    // Constraint 106
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_211_offset_0 - (trace_1_column_98_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3047,7 +3047,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 107
+    // Constraint 107
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_212_offset_0 - (trace_1_column_99_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3057,7 +3057,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 108
+    // Constraint 108
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_213_offset_0 - (trace_1_column_100_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3067,7 +3067,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 109
+    // Constraint 109
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_214_offset_0 - (trace_1_column_101_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3077,7 +3077,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 110
+    // Constraint 110
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_215_offset_0 - (trace_1_column_102_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3087,7 +3087,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 111
+    // Constraint 111
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_216_offset_0 - (trace_1_column_103_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3097,7 +3097,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 112
+    // Constraint 112
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_217_offset_0 - (trace_1_column_104_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3107,7 +3107,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 113
+    // Constraint 113
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_218_offset_0 - (trace_1_column_105_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3117,7 +3117,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 114
+    // Constraint 114
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_219_offset_0 - (trace_1_column_106_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3127,7 +3127,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 115
+    // Constraint 115
     let constraint_quotient = ((intermediate178)
         * ((intermediate2) * (trace_1_column_220_offset_0 - (trace_1_column_107_offset_0))
             + (trace_1_column_11_offset_0)
@@ -3137,187 +3137,187 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 116
+    // Constraint 116
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_193_offset_0 - (trace_1_column_22_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 117
+    // Constraint 117
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_194_offset_0 - (trace_1_column_23_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 118
+    // Constraint 118
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_195_offset_0 - (trace_1_column_24_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 119
+    // Constraint 119
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_196_offset_0 - (trace_1_column_25_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 120
+    // Constraint 120
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_197_offset_0 - (trace_1_column_26_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 121
+    // Constraint 121
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_198_offset_0 - (trace_1_column_27_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 122
+    // Constraint 122
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_199_offset_0 - (trace_1_column_28_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 123
+    // Constraint 123
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_200_offset_0 - (trace_1_column_29_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 124
+    // Constraint 124
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_201_offset_0 - (trace_1_column_30_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 125
+    // Constraint 125
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_202_offset_0 - (trace_1_column_31_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 126
+    // Constraint 126
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_203_offset_0 - (trace_1_column_32_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 127
+    // Constraint 127
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_204_offset_0 - (trace_1_column_33_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 128
+    // Constraint 128
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_205_offset_0 - (trace_1_column_34_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 129
+    // Constraint 129
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_206_offset_0 - (trace_1_column_35_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 130
+    // Constraint 130
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_207_offset_0 - (trace_1_column_36_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 131
+    // Constraint 131
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_208_offset_0 - (trace_1_column_37_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 132
+    // Constraint 132
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_209_offset_0 - (trace_1_column_38_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 133
+    // Constraint 133
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_210_offset_0 - (trace_1_column_39_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 134
+    // Constraint 134
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_211_offset_0 - (trace_1_column_40_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 135
+    // Constraint 135
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_212_offset_0 - (trace_1_column_41_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 136
+    // Constraint 136
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_213_offset_0 - (trace_1_column_42_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 137
+    // Constraint 137
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_214_offset_0 - (trace_1_column_43_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 138
+    // Constraint 138
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_215_offset_0 - (trace_1_column_44_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 139
+    // Constraint 139
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_216_offset_0 - (trace_1_column_45_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 140
+    // Constraint 140
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_217_offset_0 - (trace_1_column_46_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 141
+    // Constraint 141
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_218_offset_0 - (trace_1_column_47_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 142
+    // Constraint 142
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_219_offset_0 - (trace_1_column_48_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 143
+    // Constraint 143
     let constraint_quotient = ((trace_1_column_20_offset_0)
         * (trace_1_column_220_offset_0 - (trace_1_column_49_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 144
+    // Constraint 144
     let constraint_quotient = ((trace_1_column_19_offset_0)
         * (trace_1_column_3_offset_0 - (m31(32768).into()) + m31(2).into()))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 145
+    // Constraint 145
     let constraint_quotient = ((trace_1_column_19_offset_0)
         * (trace_1_column_5_offset_0 - (m31(32768).into()) + m31(1).into()))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 146
+    // Constraint 146
     let constraint_quotient = ((trace_1_column_19_offset_0)
         * (m31(4).into()
             - (trace_1_column_13_offset_0)
@@ -3327,150 +3327,150 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 147
+    // Constraint 147
     let constraint_quotient = ((trace_1_column_18_offset_0)
         * (trace_1_column_3_offset_0 - (m31(32768).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 148
+    // Constraint 148
     let constraint_quotient = ((trace_1_column_18_offset_0)
         * (m31(1).into() - (trace_1_column_4_offset_0 - (m31(32768).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 149
+    // Constraint 149
     let constraint_quotient = ((trace_1_column_18_offset_0)
         * (trace_1_column_7_offset_0 + trace_1_column_6_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 150
+    // Constraint 150
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_25_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 151
+    // Constraint 151
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_26_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 152
+    // Constraint 152
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_27_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 153
+    // Constraint 153
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_28_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 154
+    // Constraint 154
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_29_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 155
+    // Constraint 155
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_30_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 156
+    // Constraint 156
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_31_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 157
+    // Constraint 157
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_32_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 158
+    // Constraint 158
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_33_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 159
+    // Constraint 159
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_34_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 160
+    // Constraint 160
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_35_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 161
+    // Constraint 161
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_36_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 162
+    // Constraint 162
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_37_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 163
+    // Constraint 163
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_38_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 164
+    // Constraint 164
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_39_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 165
+    // Constraint 165
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_40_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 166
+    // Constraint 166
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_41_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 167
+    // Constraint 167
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_42_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 168
+    // Constraint 168
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_43_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 169
+    // Constraint 169
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_44_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 170
+    // Constraint 170
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_45_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 171
+    // Constraint 171
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_46_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 172
+    // Constraint 172
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_47_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 173
+    // Constraint 173
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_48_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 174
+    // Constraint 174
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_49_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 175
+    // Constraint 175
     let constraint_quotient = ((trace_1_column_18_offset_0)
         * (trace_1_column_22_offset_0
             + (trace_1_column_23_offset_0) * (m31(512).into())
@@ -3479,132 +3479,132 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 176
+    // Constraint 176
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_54_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 177
+    // Constraint 177
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_55_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 178
+    // Constraint 178
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_56_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 179
+    // Constraint 179
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_57_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 180
+    // Constraint 180
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_58_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 181
+    // Constraint 181
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_59_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 182
+    // Constraint 182
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_60_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 183
+    // Constraint 183
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_61_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 184
+    // Constraint 184
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_62_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 185
+    // Constraint 185
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_63_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 186
+    // Constraint 186
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_64_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 187
+    // Constraint 187
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_65_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 188
+    // Constraint 188
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_66_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 189
+    // Constraint 189
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_67_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 190
+    // Constraint 190
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_68_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 191
+    // Constraint 191
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_69_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 192
+    // Constraint 192
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_70_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 193
+    // Constraint 193
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_71_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 194
+    // Constraint 194
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_72_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 195
+    // Constraint 195
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_73_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 196
+    // Constraint 196
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_74_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 197
+    // Constraint 197
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_75_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 198
+    // Constraint 198
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_76_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 199
+    // Constraint 199
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_77_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 200
+    // Constraint 200
     let constraint_quotient = ((trace_1_column_18_offset_0) * (trace_1_column_78_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 201
+    // Constraint 201
     let constraint_quotient = ((trace_1_column_18_offset_0)
         * (trace_1_column_51_offset_0
             + (trace_1_column_52_offset_0) * (m31(512).into())
@@ -3613,427 +3613,427 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 202
+    // Constraint 202
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_196_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 203
+    // Constraint 203
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_197_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 204
+    // Constraint 204
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_198_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 205
+    // Constraint 205
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_199_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 206
+    // Constraint 206
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_200_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 207
+    // Constraint 207
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_201_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 208
+    // Constraint 208
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_202_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 209
+    // Constraint 209
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_203_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 210
+    // Constraint 210
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_204_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 211
+    // Constraint 211
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_205_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 212
+    // Constraint 212
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_206_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 213
+    // Constraint 213
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_207_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 214
+    // Constraint 214
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_208_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 215
+    // Constraint 215
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_209_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 216
+    // Constraint 216
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_210_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 217
+    // Constraint 217
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_211_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 218
+    // Constraint 218
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_212_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 219
+    // Constraint 219
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_213_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 220
+    // Constraint 220
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_214_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 221
+    // Constraint 221
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_215_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 222
+    // Constraint 222
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_216_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 223
+    // Constraint 223
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_217_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 224
+    // Constraint 224
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_218_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 225
+    // Constraint 225
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_219_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 226
+    // Constraint 226
     let constraint_quotient = ((trace_1_column_13_offset_0) * (trace_1_column_220_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 227
+    // Constraint 227
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_25_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 228
+    // Constraint 228
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_26_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 229
+    // Constraint 229
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_27_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 230
+    // Constraint 230
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_28_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 231
+    // Constraint 231
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_29_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 232
+    // Constraint 232
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_30_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 233
+    // Constraint 233
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_31_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 234
+    // Constraint 234
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_32_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 235
+    // Constraint 235
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_33_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 236
+    // Constraint 236
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_34_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 237
+    // Constraint 237
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_35_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 238
+    // Constraint 238
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_36_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 239
+    // Constraint 239
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_37_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 240
+    // Constraint 240
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_38_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 241
+    // Constraint 241
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_39_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 242
+    // Constraint 242
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_40_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 243
+    // Constraint 243
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_41_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 244
+    // Constraint 244
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_42_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 245
+    // Constraint 245
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_43_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 246
+    // Constraint 246
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_44_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 247
+    // Constraint 247
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_45_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 248
+    // Constraint 248
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_46_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 249
+    // Constraint 249
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_47_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 250
+    // Constraint 250
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_48_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 251
+    // Constraint 251
     let constraint_quotient = ((trace_1_column_19_offset_0) * (trace_1_column_49_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 252
+    // Constraint 252
     let constraint_quotient = ((trace_1_column_221_offset_0)
         * (trace_1_column_221_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 253
+    // Constraint 253
     let constraint_quotient = ((trace_1_column_222_offset_0)
         * (trace_1_column_222_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 254
+    // Constraint 254
     let constraint_quotient = (((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_222_offset_0))
         * (trace_1_column_221_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 255
+    // Constraint 255
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_196_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 256
+    // Constraint 256
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_197_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 257
+    // Constraint 257
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_198_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 258
+    // Constraint 258
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_199_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 259
+    // Constraint 259
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_200_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 260
+    // Constraint 260
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_201_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 261
+    // Constraint 261
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_202_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 262
+    // Constraint 262
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_203_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 263
+    // Constraint 263
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_204_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 264
+    // Constraint 264
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_205_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 265
+    // Constraint 265
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_206_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 266
+    // Constraint 266
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_207_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 267
+    // Constraint 267
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_208_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 268
+    // Constraint 268
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_209_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 269
+    // Constraint 269
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_210_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 270
+    // Constraint 270
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_211_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 271
+    // Constraint 271
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_212_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 272
+    // Constraint 272
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_213_offset_0 - ((trace_1_column_222_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 273
+    // Constraint 273
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_214_offset_0
             - ((m31(136).into()) * (trace_1_column_221_offset_0) - (trace_1_column_222_offset_0))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 274
+    // Constraint 274
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_215_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 275
+    // Constraint 275
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_216_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 276
+    // Constraint 276
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_217_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 277
+    // Constraint 277
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_218_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 278
+    // Constraint 278
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_219_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 279
+    // Constraint 279
     let constraint_quotient = ((trace_1_column_14_offset_0 + trace_1_column_16_offset_0)
         * (trace_1_column_220_offset_0 - ((trace_1_column_221_offset_0) * (m31(256).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 280
+    // Constraint 280
     let constraint_quotient = (((intermediate179) * (intermediate179)
         + trace_1_column_23_offset_0
         + trace_1_column_24_offset_0
@@ -4067,7 +4067,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 281
+    // Constraint 281
     let constraint_quotient = (trace_1_column_225_offset_0
         - ((trace_1_column_15_offset_0)
             * (trace_1_column_22_offset_0
@@ -4101,171 +4101,171 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 282
+    // Constraint 282
     let constraint_quotient = ((trace_1_column_226_offset_0)
         * (trace_1_column_226_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 283
+    // Constraint 283
     let constraint_quotient = ((trace_1_column_227_offset_0)
         * (trace_1_column_227_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 284
+    // Constraint 284
     let constraint_quotient = (((trace_1_column_225_offset_0) * (trace_1_column_227_offset_0))
         * (trace_1_column_226_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 285
+    // Constraint 285
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_83_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 286
+    // Constraint 286
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_84_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 287
+    // Constraint 287
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_85_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 288
+    // Constraint 288
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_86_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 289
+    // Constraint 289
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_87_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 290
+    // Constraint 290
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_88_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 291
+    // Constraint 291
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_89_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 292
+    // Constraint 292
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_90_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 293
+    // Constraint 293
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_91_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 294
+    // Constraint 294
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_92_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 295
+    // Constraint 295
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_93_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 296
+    // Constraint 296
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_94_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 297
+    // Constraint 297
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_95_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 298
+    // Constraint 298
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_96_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 299
+    // Constraint 299
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_97_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 300
+    // Constraint 300
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_98_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 301
+    // Constraint 301
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_99_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 302
+    // Constraint 302
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_100_offset_0 - ((trace_1_column_227_offset_0) * (m31(511).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 303
+    // Constraint 303
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_101_offset_0
             - ((m31(136).into()) * (trace_1_column_226_offset_0) - (trace_1_column_227_offset_0))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 304
+    // Constraint 304
     let constraint_quotient = ((trace_1_column_225_offset_0) * (trace_1_column_102_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 305
+    // Constraint 305
     let constraint_quotient = ((trace_1_column_225_offset_0) * (trace_1_column_103_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 306
+    // Constraint 306
     let constraint_quotient = ((trace_1_column_225_offset_0) * (trace_1_column_104_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 307
+    // Constraint 307
     let constraint_quotient = ((trace_1_column_225_offset_0) * (trace_1_column_105_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 308
+    // Constraint 308
     let constraint_quotient = ((trace_1_column_225_offset_0) * (trace_1_column_106_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 309
+    // Constraint 309
     let constraint_quotient = ((trace_1_column_225_offset_0)
         * (trace_1_column_107_offset_0 - ((trace_1_column_226_offset_0) * (m31(256).into()))))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 310
+    // Constraint 310
     let constraint_quotient = ((trace_1_column_228_offset_0
         - (trace_1_column_0_offset_0
             + trace_1_column_80_offset_0
@@ -4304,7 +4304,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 311
+    // Constraint 311
     let constraint_quotient = ((trace_1_column_228_offset_0
         - (trace_1_column_0_offset_0 + m31(1).into() + trace_1_column_8_offset_0))
         * ((trace_1_column_22_offset_0
@@ -4340,7 +4340,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 312
+    // Constraint 312
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_230_offset_0, trace_2_column_231_offset_0, trace_2_column_232_offset_0,
@@ -4352,7 +4352,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 313
+    // Constraint 313
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_234_offset_0, trace_2_column_235_offset_0, trace_2_column_236_offset_0,
@@ -4370,7 +4370,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 314
+    // Constraint 314
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_238_offset_0, trace_2_column_239_offset_0, trace_2_column_240_offset_0,
@@ -4388,7 +4388,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 315
+    // Constraint 315
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_242_offset_0, trace_2_column_243_offset_0, trace_2_column_244_offset_0,
@@ -4406,7 +4406,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 316
+    // Constraint 316
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_246_offset_0, trace_2_column_247_offset_0, trace_2_column_248_offset_0,
@@ -4424,7 +4424,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 317
+    // Constraint 317
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_250_offset_0, trace_2_column_251_offset_0, trace_2_column_252_offset_0,
@@ -4442,7 +4442,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 318
+    // Constraint 318
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_254_offset_0, trace_2_column_255_offset_0, trace_2_column_256_offset_0,
@@ -4460,7 +4460,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 319
+    // Constraint 319
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_258_offset_0, trace_2_column_259_offset_0, trace_2_column_260_offset_0,
@@ -4478,7 +4478,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 320
+    // Constraint 320
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_262_offset_0, trace_2_column_263_offset_0, trace_2_column_264_offset_0,
@@ -4496,7 +4496,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 321
+    // Constraint 321
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_266_offset_0, trace_2_column_267_offset_0, trace_2_column_268_offset_0,
@@ -4514,7 +4514,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 322
+    // Constraint 322
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_270_offset_0, trace_2_column_271_offset_0, trace_2_column_272_offset_0,
@@ -4532,7 +4532,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 323
+    // Constraint 323
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_274_offset_0, trace_2_column_275_offset_0, trace_2_column_276_offset_0,
@@ -4550,7 +4550,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 324
+    // Constraint 324
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_278_offset_0, trace_2_column_279_offset_0, trace_2_column_280_offset_0,
@@ -4568,7 +4568,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 325
+    // Constraint 325
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_282_offset_0, trace_2_column_283_offset_0, trace_2_column_284_offset_0,
@@ -4586,7 +4586,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 326
+    // Constraint 326
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_286_offset_0, trace_2_column_287_offset_0, trace_2_column_288_offset_0,
@@ -4604,7 +4604,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 327
+    // Constraint 327
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_290_offset_0, trace_2_column_291_offset_0, trace_2_column_292_offset_0,
@@ -4622,7 +4622,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 328
+    // Constraint 328
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_294_offset_0, trace_2_column_295_offset_0, trace_2_column_296_offset_0,
@@ -4640,7 +4640,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 329
+    // Constraint 329
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_298_offset_0, trace_2_column_299_offset_0, trace_2_column_300_offset_0,
@@ -4658,7 +4658,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 330
+    // Constraint 330
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_302_offset_0, trace_2_column_303_offset_0, trace_2_column_304_offset_0,
@@ -4676,7 +4676,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 331
+    // Constraint 331
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_306_offset_0, trace_2_column_307_offset_0, trace_2_column_308_offset_0,
@@ -4694,7 +4694,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 332
+    // Constraint 332
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_310_offset_0, trace_2_column_311_offset_0, trace_2_column_312_offset_0,
@@ -4712,7 +4712,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 333
+    // Constraint 333
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_314_offset_0, trace_2_column_315_offset_0, trace_2_column_316_offset_0,
@@ -4730,7 +4730,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 334
+    // Constraint 334
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_318_offset_0, trace_2_column_319_offset_0, trace_2_column_320_offset_0,
@@ -4748,7 +4748,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 335
+    // Constraint 335
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_322_offset_0, trace_2_column_323_offset_0, trace_2_column_324_offset_0,
@@ -4766,7 +4766,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 336
+    // Constraint 336
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_326_offset_0, trace_2_column_327_offset_0, trace_2_column_328_offset_0,
@@ -4784,7 +4784,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 337
+    // Constraint 337
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_330_offset_0, trace_2_column_331_offset_0, trace_2_column_332_offset_0,
@@ -4802,7 +4802,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 338
+    // Constraint 338
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_334_offset_0, trace_2_column_335_offset_0, trace_2_column_336_offset_0,
@@ -4820,7 +4820,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 339
+    // Constraint 339
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_338_offset_0, trace_2_column_339_offset_0, trace_2_column_340_offset_0,
@@ -4838,7 +4838,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 340
+    // Constraint 340
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_342_offset_0, trace_2_column_343_offset_0, trace_2_column_344_offset_0,
@@ -4856,7 +4856,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 341
+    // Constraint 341
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_346_offset_0, trace_2_column_347_offset_0, trace_2_column_348_offset_0,
@@ -4874,7 +4874,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 342
+    // Constraint 342
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_350_offset_0, trace_2_column_351_offset_0, trace_2_column_352_offset_0,
@@ -4892,7 +4892,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 343
+    // Constraint 343
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_354_offset_0, trace_2_column_355_offset_0, trace_2_column_356_offset_0,
@@ -4910,7 +4910,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 344
+    // Constraint 344
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_358_offset_0, trace_2_column_359_offset_0, trace_2_column_360_offset_0,

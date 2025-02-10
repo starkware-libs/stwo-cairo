@@ -3,9 +3,10 @@ use stwo_constraint_framework::{
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
+use stwo_verifier_core::fields::m31::m31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::ArrayImpl;
+use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
@@ -114,7 +115,7 @@ pub impl Rc6BitComponentImpl of CairoComponent<Rc6BitComponent> {
             RangeCheck_6_alpha0: range_check_6_alpha_0,
             RangeCheck_6_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -175,7 +176,7 @@ pub impl Rc11BitComponentImpl of CairoComponent<Rc11BitComponent> {
             RangeCheck_11_alpha0: range_check_11_alpha_0,
             RangeCheck_11_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -236,7 +237,7 @@ pub impl Rc12ComponentImpl of CairoComponent<Rc12BitComponent> {
             RangeCheck_12_alpha0: range_check_12_alpha_0,
             RangeCheck_12_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -297,7 +298,7 @@ pub impl Rc18BitComponentImpl of CairoComponent<Rc18BitComponent> {
             RangeCheck_18_alpha0: range_check_18_alpha_0,
             RangeCheck_18_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -422,7 +423,7 @@ pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
             RangeCheck_9_9_alpha1: range_check_9_9_alpha1,
             RangeCheck_9_9_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -485,7 +486,7 @@ pub impl Rc3Bit6BitComponentImpl of CairoComponent<Rc3Bit6BitComponent> {
             RangeCheck_3_6_alpha1: range_check_3_6_alpha1,
             RangeCheck_3_6_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -548,7 +549,7 @@ pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
             RangeCheck_4_3_alpha1: range_check_4_3_alpha_1,
             RangeCheck_4_3_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -613,7 +614,7 @@ pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> 
             RangeCheck_7_2_5_alpha2: range_check_7_2_5_alpha2,
             RangeCheck_7_2_5_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
@@ -680,7 +681,7 @@ pub impl Rc3Bit6Bit6Bit3BitComponentImpl of CairoComponent<Rc3Bit6Bit6Bit3BitCom
             RangeCheck_3_6_6_3_alpha3: range_check_3_6_6_3_alpha3,
             RangeCheck_3_6_6_3_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
-            log_size,
+            column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);
