@@ -12,7 +12,7 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::LOG_MAX_ROWS;
-use crate::components::range_check_vector::SIMD_ENUMERATION_0;
+use crate::components::range_check_vector::{partition_into_bit_segments, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
@@ -162,6 +162,29 @@ impl PreProcessedColumn for BitwiseXor {
     }
 }
 
+pub struct RangeCheck<const N: usize> {
+    ranges: [u32; N],
+    column_idx: usize,
+}
+impl<const N: usize> RangeCheck<N> {
+    pub fn new(ranges: [u32; N], column_idx: usize) -> Self {
+        // TODO(Ohad): consider asserting height is lower than some bound.
+        assert!(ranges.iter().all(|&r| r > 0));
+        assert!(column_idx < N);
+        Self { ranges, column_idx }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        let n = SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32);
+
+        unsafe {
+            PackedM31::from_simd_unchecked(
+                partition_into_bit_segments(n, self.ranges)[self.column_idx],
+            )
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -215,5 +238,17 @@ mod tests {
         assert_eq!(res_a.0, a as u32);
         assert_eq!(res_b.0, b as u32);
         assert_eq!(res_xor.0, expected_xor as u32);
+    }
+
+    #[test]
+    fn test_range_check_packed_at() {
+        let ranges = [3, 6, 6, 3];
+        let range_check = RangeCheck::new(ranges, 2);
+        let index: usize = 1000;
+        let expected = ((index & ((1 << (3 + 6)) - 1)) >> 3) as u32;
+
+        let actual = range_check.packed_at(index / N_LANES).to_array()[index % N_LANES].0;
+
+        assert_eq!(actual, expected);
     }
 }
