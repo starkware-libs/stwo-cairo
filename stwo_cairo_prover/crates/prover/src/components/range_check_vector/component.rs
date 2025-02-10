@@ -14,6 +14,8 @@ macro_rules! range_check_eval{
 
                 use $crate::relations;
                 use $crate::components::memory::memory_id_to_big::component::N_MULTIPLICITY_COLUMNS;
+                use $crate::cairo_air::preprocessed::RangeCheck;
+                use $crate::cairo_air::preprocessed::PreProcessedColumn;
 
                 const N_RANGES:usize = $crate::count_elements!($($log_range),*);
                 const RANGES : [u32; N_RANGES] = [$($log_range),+];
@@ -30,8 +32,8 @@ macro_rules! range_check_eval{
 
                     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
                         TreeVec::new(vec![
-                            vec![self.log_size(); 1],
-                            vec![self.log_size(); self.log_ranges.len() + N_MULTIPLICITY_COLUMNS],
+                            vec![],
+                            vec![self.log_size(); N_MULTIPLICITY_COLUMNS],
                             vec![self.log_size(); SECURE_EXTENSION_DEGREE],
                         ])
                     }
@@ -72,9 +74,9 @@ macro_rules! range_check_eval{
                         self.log_size() + 1
                     }
                     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-                        let rc_values: [E::F; N_RANGES] = std::array::from_fn(|_|
-                             eval.next_trace_mask()
-                            );
+                        let rc_values = (0..N_RANGES)
+                            .map(|i| eval.get_preprocessed_column(RangeCheck::new(RANGES, i).id()))
+                            .collect::<Vec<_>>();
                         let multiplicity = eval.next_trace_mask();
                         eval.add_to_relation(RelationEntry::new(
                             &self.lookup_elements, E::EF::from(-multiplicity), &rc_values

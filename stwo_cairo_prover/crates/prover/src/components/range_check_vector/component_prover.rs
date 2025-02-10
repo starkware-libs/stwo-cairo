@@ -5,7 +5,6 @@ macro_rules! range_check_prover {
             use std::iter::zip;
             use std::simd::Simd;
 
-            use itertools::chain;
             use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
             use stwo_prover::constraint_framework::Relation;
             use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -20,9 +19,8 @@ macro_rules! range_check_prover {
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
             use $crate::components::utils::AtomicMultiplicityColumn;
-            use $crate::components::range_check_vector::{generate_partitioned_enumeration,
-                                            partition_into_bit_segments, SIMD_ENUMERATION_0};
-
+            use $crate::components::range_check_vector::{partition_into_bit_segments,
+                                                    SIMD_ENUMERATION_0};
             pub type PackedInputType = [PackedM31; N_RANGES];
             pub type InputType = [M31; N_RANGES];
 
@@ -68,11 +66,6 @@ macro_rules! range_check_prover {
                     }
                 }
 
-                fn write_fixed_columns(&self) -> [BaseColumn; N_RANGES] {
-                    let mut fixed_columns = generate_partitioned_enumeration(RANGES).into_iter();
-                    std::array::from_fn(|_| BaseColumn::from_simd(fixed_columns.next().unwrap()))
-                }
-
                 pub fn write_trace<MC: MerkleChannel>(
                     self,
                     tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
@@ -81,12 +74,11 @@ macro_rules! range_check_prover {
                 SimdBackend: BackendForChannel<MC>, {
                     let log_size = self.log_size();
 
-                    let fixed_columns = self.write_fixed_columns();
                     let multiplicity_data = self.multiplicities.into_simd_vec();
                     let multiplicity_column = BaseColumn::from_simd(multiplicity_data.clone());
 
                     let domain = CanonicCoset::new(log_size).circle_domain();
-                    let trace = chain!(fixed_columns, [multiplicity_column])
+                    let trace = [multiplicity_column]
                         .map(|col|
                             CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(domain, col)
                         );
@@ -167,6 +159,7 @@ mod tests {
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
+    use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
     use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
     use crate::relations;
     #[test]
@@ -191,8 +184,15 @@ mod tests {
             );
 
         // Preprocessed trace.
+        let preproceseed_column_0 = RangeCheck::new(log_ranges, 0).gen_column_simd();
+        let preproceseed_column_1 = RangeCheck::new(log_ranges, 1).gen_column_simd();
+        let preproceseed_column_2 = RangeCheck::new(log_ranges, 2).gen_column_simd();
         let mut tree_builder = commitment_scheme.tree_builder();
-        tree_builder.extend_evals(vec![]);
+        tree_builder.extend_evals(vec![
+            preproceseed_column_0,
+            preproceseed_column_1,
+            preproceseed_column_2,
+        ]);
         tree_builder.commit(channel);
 
         let inputs: [[PackedM31; 3]; 30] = std::array::from_fn(|_| {
