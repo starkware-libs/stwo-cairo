@@ -127,7 +127,7 @@ Note that when using `--arguments-file`, the expected input is an array of felts
 
 ## Output format
 
-For standalone targets, the output is trace files (`air_public_input.json`, `air_private_input.json`, `memory_bin`, and `trace.bin`)
+For standalone targets, the output is trace files (`air_public_input.json`, `air_private_input.json`, `memory.bin`, and `trace.bin`)
 
 For bootloader targets, the output is a CairoPie
 
@@ -149,7 +149,7 @@ At the time of writing, the execution (\# of steps and \# of builtin application
 
 `stwo-cairo` is integrated in Scarb from v2.10.0 onwards, which means that instead of building and running stwo-cairo on your own, you can use the `scarb prove` command (note that stwo is continuously improving, for the most up-to-date version use stwo-cairo [directly](#using-stwo-to-prove-cairo-programs)).
 
-After running `scarb execute`, a new folder is created under `./target/execute/<package_name>` path. These folders will be called `execution1`, `execution2`, ... and so on (run `scarb clean` to clear you execution history). Rather then specifying the paths to the trace files, you can use the execution id (the index of the relevant execution) to specify what exactly you want to prove. That is, after executing, you can run:
+After running `scarb execute`, a new folder is created under `./target/execute/<package_name>` path. These folders will be called `execution1`, `execution2`, ... and so on (run `scarb clean` to clear your execution history). Rather than specifying the paths to the trace files, you can use the execution id (the index of the relevant execution) to specify what exactly you want to prove. That is, after executing, you can run:
 
 ```
 scarb prove --execution_id 1
