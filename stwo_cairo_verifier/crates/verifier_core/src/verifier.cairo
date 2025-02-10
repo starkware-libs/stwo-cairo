@@ -29,7 +29,7 @@ pub trait Air<T> {
 pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A,
     ref channel: Channel,
-    proof: StarkProof,
+    proof: StarkProof<felt252>,
     mut commitment_scheme: CommitmentSchemeVerifier,
 ) -> Result<(), VerificationError> {
     let random_coeff = channel.draw_felt();
@@ -109,9 +109,27 @@ pub struct InvalidOodsSampleStructure {}
 
 // TODO(andrew): Consider removing this type and Serde.
 // Instead just read from a proof buffer like the STARK verifier on Ethereum.
-#[derive(Drop, Serde)]
-pub struct StarkProof {
-    pub commitment_scheme_proof: CommitmentSchemeProof,
+#[derive(Drop)]
+pub struct StarkProof<HashT> {
+    pub commitment_scheme_proof: CommitmentSchemeProof<HashT>,
+}
+
+impl StarkProofSerde<
+    HashT, +Drop<HashT>, +core::serde::Serde<HashT>,
+> of core::serde::Serde<StarkProof<HashT>> {
+    fn serialize(self: @StarkProof<HashT>, ref output: Array<felt252>) {
+        self.commitment_scheme_proof.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<StarkProof<HashT>> {
+        Option::Some(
+            StarkProof {
+                commitment_scheme_proof: Serde::<
+                    CommitmentSchemeProof<HashT>,
+                >::deserialize(ref serialized)?,
+            },
+        )
+    }
 }
 
 #[derive(Drop, Debug)]

@@ -69,7 +69,7 @@ type RangeCheck4Bit3BitElements = LookupElements<2>;
 pub struct CairoProof {
     pub claim: CairoClaim,
     pub interaction_claim: CairoInteractionClaim,
-    pub stark_proof: StarkProof,
+    pub stark_proof: StarkProof<felt252>,
 }
 
 /// The output of a verification.
