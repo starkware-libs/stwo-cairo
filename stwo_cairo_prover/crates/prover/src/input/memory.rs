@@ -63,6 +63,7 @@ impl Memory {
         match self.address_to_id[addr as usize].decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
+            MemoryValueId::Empty => panic!(),
         }
     }
 
@@ -212,6 +213,7 @@ impl DerefMut for MemoryBuilder {
 }
 
 pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x4000_0000;
+pub const DEFAULT_ID: u32 = LARGE_MEMORY_VALUE_ID_BASE - 1;
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct EncodedMemoryValueId(pub u32);
 impl EncodedMemoryValueId {
@@ -219,6 +221,7 @@ impl EncodedMemoryValueId {
         match value {
             MemoryValueId::Small(id) => EncodedMemoryValueId(id),
             MemoryValueId::F252(id) => EncodedMemoryValueId(id | LARGE_MEMORY_VALUE_ID_BASE),
+            MemoryValueId::Empty => EncodedMemoryValueId(DEFAULT_ID),
         }
     }
     pub fn decode(&self) -> MemoryValueId {
@@ -234,13 +237,14 @@ impl EncodedMemoryValueId {
 
 impl Default for EncodedMemoryValueId {
     fn default() -> Self {
-        EncodedMemoryValueId::encode(MemoryValueId::Small(0))
+        Self(DEFAULT_ID)
     }
 }
 
 pub enum MemoryValueId {
     Small(u32),
     F252(u32),
+    Empty,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]

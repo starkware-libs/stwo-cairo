@@ -83,6 +83,7 @@ impl ClaimGenerator {
                                 u128_to_4_limbs(small)[j]
                             }
                         }
+                        MemoryValueId::Empty => panic!(),
                     }),
             )
         });
@@ -113,6 +114,7 @@ impl ClaimGenerator {
             MemoryValueId::Small(id) => {
                 self.small_mults.increase_at(id);
             }
+            MemoryValueId::Empty => panic!(),
         }
     }
 
