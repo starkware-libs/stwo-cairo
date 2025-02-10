@@ -80,6 +80,7 @@ impl ClaimGenerator {
         let (mut inputs, mut mults) = self
             .multiplicities
             .into_iter()
+            .sorted_by_key(|(pc, _)| *pc)
             .map(|(pc, multiplicity)| {
                 let (offsets, flags, _opcode_extension) =
                     deconstruct_instruction(*self.instructions.get(&pc).unwrap());
