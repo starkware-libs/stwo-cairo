@@ -223,28 +223,19 @@ mod builtin_padding {
             let op0 = memory.get(op0_addr as u32).as_u256();
             let op1 = memory.get(op1_addr as u32).as_u256();
 
-            match memory.address_to_id[and_addr].decode() {
-                MemoryValueId::Empty => {
-                    let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
-                    memory.set(and_addr as u64, and_res);
-                }
-                _ => continue,
+            if let MemoryValueId::Empty = memory.address_to_id[and_addr].decode() {
+                let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
+                memory.set(and_addr as u64, and_res);
             }
 
-            match memory.address_to_id[xor_addr].decode() {
-                MemoryValueId::Empty => {
-                    let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
-                    memory.set(xor_addr as u64, xor_res);
-                }
-                _ => continue,
+            if let MemoryValueId::Empty = memory.address_to_id[xor_addr].decode() {
+                let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
+                memory.set(xor_addr as u64, xor_res);
             }
 
-            match memory.address_to_id[or_addr].decode() {
-                MemoryValueId::Empty => {
-                    let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
-                    memory.set(or_addr as u64, or_res);
-                }
-                _ => continue,
+            if let MemoryValueId::Empty = memory.address_to_id[or_addr].decode() {
+                let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
+                memory.set(or_addr as u64, or_res);
             }
         }
     }
