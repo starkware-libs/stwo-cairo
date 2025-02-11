@@ -18,7 +18,7 @@ use crate::fields::{BaseField, SecureField};
 ///
 /// # Panics
 ///
-/// Panics if the number of values is not a power of two or if an incorrect number of of folding
+/// Panics if the number of values is not a power of two or if an incorrect number of folding
 /// factors is provided.
 pub fn fold(
     values: @Array<SecureField>,

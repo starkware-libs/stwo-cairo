@@ -326,7 +326,7 @@ struct FriFirstLayerVerifier {
 
 #[generate_trait]
 impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
-    /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
+    /// Verifies the layer's merkle decommitment and returns the folded queries and query evals.
     ///
     /// # Errors
     ///
@@ -446,7 +446,7 @@ struct FriInnerLayerVerifier {
 
 #[generate_trait]
 impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
-    /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
+    /// Verifies the layer's merkle decommitment and returns the folded queries and query evals.
     fn verify_and_fold(
         self: @FriInnerLayerVerifier, queries: Queries, evals_at_queries: Span<QM31>,
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
