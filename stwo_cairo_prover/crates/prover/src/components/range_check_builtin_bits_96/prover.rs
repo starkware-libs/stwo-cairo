@@ -13,10 +13,9 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new(log_size: u32, range_check96_builtin_segment_start: u32) -> Self {
-        assert_ne!(log_size, 0);
+        assert!(log_size >= LOG_N_LANES);
         Self {
-            // TODO(Gali): Remove once air-infra pads to LOG_N_LANES.
-            log_size: std::cmp::max(log_size, LOG_N_LANES),
+            log_size,
             range_check96_builtin_segment_start,
         }
     }
@@ -35,10 +34,10 @@ impl ClaimGenerator {
 
         let (trace, lookup_data) = write_trace_simd(
             log_size,
+            self.range_check96_builtin_segment_start,
             memory_address_to_id_state,
             memory_id_to_big_state,
             range_check_6_state,
-            self.range_check96_builtin_segment_start,
         );
 
         tree_builder.extend_evals(trace.to_evals());
@@ -56,17 +55,16 @@ impl ClaimGenerator {
     }
 }
 
-#[allow(clippy::clone_on_copy)]
 #[allow(clippy::useless_conversion)]
 #[allow(unused_variables)]
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
 fn write_trace_simd(
     log_size: u32,
+    range_check96_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_6_state: &range_check_6::ClaimGenerator,
-    range_check96_builtin_segment_start: u32,
 ) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = log_size - LOG_N_LANES;
     let (mut trace, mut lookup_data) = unsafe {
@@ -88,20 +86,17 @@ fn write_trace_simd(
             // Read Positive Num Bits 96.
 
             let memory_address_to_id_value_tmp_fd7ee_0 = memory_address_to_id_state.deduce_output(
-                ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
-                    + (seq.clone())),
+                ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start))) + (seq)),
             );
             let memory_id_to_big_value_tmp_fd7ee_1 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_fd7ee_0);
             let value_id_col0 = memory_address_to_id_value_tmp_fd7ee_0;
             *row[0] = value_id_col0;
             let memory_address_to_id_inputs_0 =
-                ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
-                    + (seq.clone()))
-                .unpack();
+                ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start))) + (seq))
+                    .unpack();
             *lookup_data.memory_address_to_id_0 = [
-                ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
-                    + (seq.clone())),
+                ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start))) + (seq)),
                 value_id_col0,
             ];
             let value_limb_0_col1 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(0);
@@ -199,8 +194,7 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let log_size = self.log_size;
-        let mut logup_gen = LogupTraceGenerator::new(log_size);
+        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();

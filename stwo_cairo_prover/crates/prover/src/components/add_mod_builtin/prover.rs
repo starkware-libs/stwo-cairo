@@ -53,7 +53,6 @@ impl ClaimGenerator {
     }
 }
 
-#[allow(clippy::clone_on_copy)]
 #[allow(clippy::useless_conversion)]
 #[allow(unused_variables)]
 #[allow(clippy::double_parens)]
@@ -102,7 +101,7 @@ fn write_trace_simd(
 
             // Mod Utils.
 
-            let is_instance_0_tmp_c1b19_0 = seq.clone().eq(M31_0);
+            let is_instance_0_tmp_c1b19_0 = seq.eq(M31_0);
             let is_instance_0_col0 = is_instance_0_tmp_c1b19_0.as_m31();
             *row[0] = is_instance_0_col0;
 
@@ -110,7 +109,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_1 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_0)),
             );
             let memory_id_to_big_value_tmp_c1b19_2 =
@@ -119,12 +118,12 @@ fn write_trace_simd(
             *row[1] = p0_id_col1;
             let memory_address_to_id_inputs_0 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_0))
                     .unpack();
             *lookup_data.memory_address_to_id_0 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_0)),
                 p0_id_col1,
             ];
@@ -187,7 +186,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_3 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_1)),
             );
             let memory_id_to_big_value_tmp_c1b19_4 =
@@ -196,12 +195,12 @@ fn write_trace_simd(
             *row[13] = p1_id_col13;
             let memory_address_to_id_inputs_1 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_1))
                     .unpack();
             *lookup_data.memory_address_to_id_1 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_1)),
                 p1_id_col13,
             ];
@@ -264,7 +263,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_5 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_2)),
             );
             let memory_id_to_big_value_tmp_c1b19_6 =
@@ -273,12 +272,12 @@ fn write_trace_simd(
             *row[25] = p2_id_col25;
             let memory_address_to_id_inputs_2 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_2))
                     .unpack();
             *lookup_data.memory_address_to_id_2 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_2)),
                 p2_id_col25,
             ];
@@ -341,7 +340,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_7 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_3)),
             );
             let memory_id_to_big_value_tmp_c1b19_8 =
@@ -350,12 +349,12 @@ fn write_trace_simd(
             *row[37] = p3_id_col37;
             let memory_address_to_id_inputs_3 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_3))
                     .unpack();
             *lookup_data.memory_address_to_id_3 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_3)),
                 p3_id_col37,
             ];
@@ -418,7 +417,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_9 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_4)),
             );
             let memory_id_to_big_value_tmp_c1b19_10 =
@@ -427,12 +426,12 @@ fn write_trace_simd(
             *row[49] = values_ptr_id_col49;
             let memory_address_to_id_inputs_4 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_4))
                     .unpack();
             *lookup_data.memory_address_to_id_4 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_4)),
                 values_ptr_id_col49,
             ];
@@ -479,7 +478,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_11 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_5)),
             );
             let memory_id_to_big_value_tmp_c1b19_12 =
@@ -488,12 +487,12 @@ fn write_trace_simd(
             *row[53] = offsets_ptr_id_col53;
             let memory_address_to_id_inputs_5 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_5))
                     .unpack();
             *lookup_data.memory_address_to_id_5 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_5)),
                 offsets_ptr_id_col53,
             ];
@@ -540,7 +539,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_13 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_5)),
             );
             let memory_id_to_big_value_tmp_c1b19_14 =
@@ -549,12 +548,12 @@ fn write_trace_simd(
             *row[57] = offsets_ptr_prev_id_col57;
             let memory_address_to_id_inputs_6 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_5))
                     .unpack();
             *lookup_data.memory_address_to_id_6 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_5)),
                 offsets_ptr_prev_id_col57,
             ];
@@ -601,7 +600,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_15 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_6)),
             );
             let memory_id_to_big_value_tmp_c1b19_16 =
@@ -610,12 +609,12 @@ fn write_trace_simd(
             *row[61] = n_id_col61;
             let memory_address_to_id_inputs_7 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_6))
                     .unpack();
             *lookup_data.memory_address_to_id_7 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (seq.clone())))
+                    + ((M31_7) * (seq)))
                     + (M31_6)),
                 n_id_col61,
             ];
@@ -662,7 +661,7 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_17 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_6)),
             );
             let memory_id_to_big_value_tmp_c1b19_18 =
@@ -671,12 +670,12 @@ fn write_trace_simd(
             *row[65] = n_prev_id_col65;
             let memory_address_to_id_inputs_8 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_6))
                     .unpack();
             *lookup_data.memory_address_to_id_8 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_6)),
                 n_prev_id_col65,
             ];
@@ -723,19 +722,19 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_20 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_4)),
             );
             let values_ptr_prev_id_col69 = memory_address_to_id_value_tmp_c1b19_20;
             *row[69] = values_ptr_prev_id_col69;
             let memory_address_to_id_inputs_9 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_4))
                     .unpack();
             *lookup_data.memory_address_to_id_9 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_4)),
                 values_ptr_prev_id_col69,
             ];
@@ -744,19 +743,19 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_21 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_0)),
             );
             let p_prev0_id_col70 = memory_address_to_id_value_tmp_c1b19_21;
             *row[70] = p_prev0_id_col70;
             let memory_address_to_id_inputs_10 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_0))
                     .unpack();
             *lookup_data.memory_address_to_id_10 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_0)),
                 p_prev0_id_col70,
             ];
@@ -765,19 +764,19 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_22 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_1)),
             );
             let p_prev1_id_col71 = memory_address_to_id_value_tmp_c1b19_22;
             *row[71] = p_prev1_id_col71;
             let memory_address_to_id_inputs_11 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_1))
                     .unpack();
             *lookup_data.memory_address_to_id_11 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_1)),
                 p_prev1_id_col71,
             ];
@@ -786,19 +785,19 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_23 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_2)),
             );
             let p_prev2_id_col72 = memory_address_to_id_value_tmp_c1b19_23;
             *row[72] = p_prev2_id_col72;
             let memory_address_to_id_inputs_12 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_2))
                     .unpack();
             *lookup_data.memory_address_to_id_12 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_2)),
                 p_prev2_id_col72,
             ];
@@ -807,19 +806,19 @@ fn write_trace_simd(
 
             let memory_address_to_id_value_tmp_c1b19_24 = memory_address_to_id_state.deduce_output(
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_3)),
             );
             let p_prev3_id_col73 = memory_address_to_id_value_tmp_c1b19_24;
             *row[73] = p_prev3_id_col73;
             let memory_address_to_id_inputs_13 =
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_3))
                     .unpack();
             *lookup_data.memory_address_to_id_13 = [
                 (((PackedM31::broadcast(M31::from(add_mod_builtin_segment_start)))
-                    + ((M31_7) * (((seq.clone()) - (M31_1)) + (is_instance_0_col0))))
+                    + ((M31_7) * (((seq) - (M31_1)) + (is_instance_0_col0))))
                     + (M31_3)),
                 p_prev3_id_col73,
             ];
