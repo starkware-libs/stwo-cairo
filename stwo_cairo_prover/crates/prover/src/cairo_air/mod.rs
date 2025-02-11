@@ -41,7 +41,8 @@ where
     let _span = span!(Level::INFO, "prove_cairo").entered();
     // TODO(Ohad): Propogate config from CLI args.
     let config = PcsConfig {
-        pow_bits: 0,
+        // NOTE: low pow_bits might yield non-deterministic POWs.
+        pow_bits: 20,
         fri_config: FriConfig {
             log_last_layer_degree_bound: 2,
             log_blowup_factor: 1,
@@ -322,6 +323,7 @@ pub mod tests {
 
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
+        use itertools::Itertools;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
@@ -357,6 +359,26 @@ pub mod tests {
             )
             .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+        }
+
+        #[test]
+        fn test_proof_stability() {
+            let n_proofs_to_compare = 10;
+
+            let proofs = (0..n_proofs_to_compare)
+                .map(|_| {
+                    serde_json::to_string(
+                        &prove_cairo::<Blake2sMerkleChannel>(
+                            test_basic_cairo_air_input(),
+                            test_cfg(),
+                        )
+                        .unwrap(),
+                    )
+                    .unwrap()
+                })
+                .collect_vec();
+
+            assert!(proofs.iter().all_equal());
         }
     }
 }
