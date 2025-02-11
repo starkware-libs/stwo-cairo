@@ -5,15 +5,15 @@ use serde::{Deserialize, Serialize};
 
 use super::memory::MemoryBuilder;
 
-const ADD_MOD_MEMORY_CELLS: usize = 7;
-const BITWISE_MEMORY_CELLS: usize = 5;
-const EC_OP_MEMORY_CELLS: usize = 7;
-const ECDSA_MEMORY_CELLS: usize = 2;
-const KECCAK_MEMORY_CELLS: usize = 16;
-const MUL_MOD_MEMORY_CELLS: usize = 7;
-const PEDERSEN_MEMORY_CELLS: usize = 3;
-const POSEIDON_MEMORY_CELLS: usize = 6;
-const RANGE_CHECK_MEMORY_CELLS: usize = 1;
+pub const ADD_MOD_MEMORY_CELLS: usize = 7;
+pub const BITWISE_MEMORY_CELLS: usize = 5;
+pub const EC_OP_MEMORY_CELLS: usize = 7;
+pub const ECDSA_MEMORY_CELLS: usize = 2;
+pub const KECCAK_MEMORY_CELLS: usize = 16;
+pub const MUL_MOD_MEMORY_CELLS: usize = 7;
+pub const PEDERSEN_MEMORY_CELLS: usize = 3;
+pub const POSEIDON_MEMORY_CELLS: usize = 6;
+pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
 // TODO(ohadn): change field types in MemorySegmentAddresses to match address type.
 /// This struct holds the builtins used in a Cairo program.
@@ -66,24 +66,6 @@ impl BuiltinSegments {
             };
         }
         res
-    }
-
-    /// Returns the number of memory cells per instance for a given builtin name.
-    pub fn builtin_memory_cells_per_instance(builtin_name: BuiltinName) -> usize {
-        match builtin_name {
-            BuiltinName::range_check => RANGE_CHECK_MEMORY_CELLS,
-            BuiltinName::pedersen => PEDERSEN_MEMORY_CELLS,
-            BuiltinName::ecdsa => ECDSA_MEMORY_CELLS,
-            BuiltinName::keccak => KECCAK_MEMORY_CELLS,
-            BuiltinName::bitwise => BITWISE_MEMORY_CELLS,
-            BuiltinName::ec_op => EC_OP_MEMORY_CELLS,
-            BuiltinName::poseidon => POSEIDON_MEMORY_CELLS,
-            BuiltinName::range_check96 => RANGE_CHECK_MEMORY_CELLS,
-            BuiltinName::add_mod => ADD_MOD_MEMORY_CELLS,
-            BuiltinName::mul_mod => MUL_MOD_MEMORY_CELLS,
-            // Not builtins.
-            BuiltinName::output | BuiltinName::segment_arena => 0,
-        }
     }
 
     /// Returns the number of instances for each builtin.
