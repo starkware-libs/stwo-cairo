@@ -121,7 +121,7 @@ pub fn deconstruct_instruction(mut encoded_instr: u128) -> ([M31; 3], [M31; 15],
 mod tests {
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::input::decode::deconstruct_instruction;
+    use crate::adapter::decode::deconstruct_instruction;
 
     #[test]
     fn test_deconstruct_instruction() {
