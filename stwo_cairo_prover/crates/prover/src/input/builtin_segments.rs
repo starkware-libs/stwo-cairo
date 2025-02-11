@@ -272,10 +272,10 @@ mod test_builtin_segments {
     use std::path::PathBuf;
 
     use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
-    use cairo_vm::types::builtin_name::BuiltinName;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
 
+    use crate::input::builtin_segments::BITWISE_MEMORY_CELLS;
     use crate::input::memory::{u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue};
     use crate::input::vm_import::MemoryEntry;
     use crate::input::BuiltinSegments;
@@ -337,7 +337,6 @@ mod test_builtin_segments {
 
     #[test]
     fn test_pad_builtin_segments() {
-        let builtin_name = BuiltinName::bitwise;
         let instance_example = [
             123456789,
             4385067362534966725237889432551,
@@ -346,7 +345,7 @@ mod test_builtin_segments {
             4385067362534966725237962440695,
         ];
         let mut builtin_segments = BuiltinSegments::default();
-        let cells_per_instance = BuiltinSegments::builtin_memory_cells_per_instance(builtin_name);
+        let cells_per_instance = BITWISE_MEMORY_CELLS;
         assert_eq!(cells_per_instance, instance_example.len());
         let num_instances = 71;
         let begin_addr = 23581;
