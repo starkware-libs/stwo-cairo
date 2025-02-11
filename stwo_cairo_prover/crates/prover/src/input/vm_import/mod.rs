@@ -115,7 +115,6 @@ pub fn adapt_to_stwo_input(
     let (state_transitions, instruction_by_pc) =
         StateTransitions::from_iter(trace_iter, &mut memory);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
-    builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::range_check);
     builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::pedersen);
     builtins_segments.pad_builtin_segment(&mut memory, BuiltinName::ecdsa);
