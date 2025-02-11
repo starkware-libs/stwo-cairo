@@ -16,8 +16,8 @@ use super::builtin_segments::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::ProverInput;
+use crate::adapter::memory::MemoryBuilder;
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
-use crate::input::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {

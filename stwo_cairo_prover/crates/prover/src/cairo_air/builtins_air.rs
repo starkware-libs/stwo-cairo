@@ -12,12 +12,12 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
+use crate::adapter::builtin_segments::{
+    BuiltinSegments, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 use crate::components::{
     bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
-};
-use crate::input::builtin_segments::{
-    BuiltinSegments, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
