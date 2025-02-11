@@ -63,9 +63,7 @@ impl PreProcessedColumn for PoseidonRoundKeysColumn {
     }
 
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("{}_{}", POSEIDON_ROUND_KEYS_TABLE, self.col),
-        }
+        format!("{}_{}", POSEIDON_ROUND_KEYS_TABLE, self.col)
     }
 }
 

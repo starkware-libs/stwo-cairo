@@ -173,9 +173,7 @@ impl PreProcessedColumn for Seq {
         CircleEvaluation::new(CanonicCoset::new(self.log_size).circle_domain(), col)
     }
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("{}_{}", SEQ_COLUMN_PREFIX, self.log_size),
-        }
+        format!("{}_{}", SEQ_COLUMN_PREFIX, self.log_size)
     }
 }
 
@@ -230,12 +228,10 @@ impl PreProcessedColumn for BitwiseXor {
     }
 
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!(
-                "{}_{}_{}",
-                BITWISE_XOR_TABLE_PREFIX, self.n_bits, self.col_index
-            ),
-        }
+        format!(
+            "{}_{}_{}",
+            BITWISE_XOR_TABLE_PREFIX, self.n_bits, self.col_index
+        )
     }
 }
 
@@ -277,9 +273,7 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
 
     fn id(&self) -> PreProcessedColumnId {
         let ranges = self.ranges.iter().join("_");
-        PreProcessedColumnId {
-            id: format!("range_check_{}_column_{}", ranges, self.column_idx).to_string(),
-        }
+        format!("range_check_{}_column_{}", ranges, self.column_idx).to_string()
     }
 }
 
@@ -372,6 +366,6 @@ mod tests {
 
         let id = range_check.id();
 
-        assert_eq!(id.id, "range_check_1_2_3_4_column_2");
+        assert_eq!(id, "range_check_1_2_3_4_column_2");
     }
 }
