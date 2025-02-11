@@ -30,17 +30,10 @@ pub struct Claim {
     pub bitwise_builtin_segment_start: u32,
 }
 impl Claim {
-    pub fn new(log_size: u32, bitwise_builtin_segment_start: u32) -> Self {
-        Self {
-            log_size,
-            bitwise_builtin_segment_start,
-        }
-    }
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_size = self.log_size;
-        let trace_log_sizes = vec![log_size; 89];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 19];
-        let preprocessed_log_sizes = vec![log_size];
+        let trace_log_sizes = vec![self.log_size; 89];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 19];
+        let preprocessed_log_sizes = vec![self.log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
             trace_log_sizes,
@@ -856,7 +849,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq * M31_5.clone()))
+                    + (seq.clone() * M31_5.clone()))
                     + M31_4.clone()),
                 or_id_col88.clone(),
             ],

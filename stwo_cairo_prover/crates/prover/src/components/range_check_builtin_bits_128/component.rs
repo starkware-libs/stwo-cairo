@@ -29,18 +29,10 @@ pub struct Claim {
     pub range_check_builtin_segment_start: u32,
 }
 impl Claim {
-    pub fn new(log_size: u32, range_check_builtin_segment_start: u32) -> Self {
-        Self {
-            log_size,
-            range_check_builtin_segment_start,
-        }
-    }
-
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_size = self.log_size;
-        let trace_log_sizes = vec![log_size; 17];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE];
-        let preprocessed_log_sizes = vec![log_size];
+        let trace_log_sizes = vec![self.log_size; 17];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE];
+        let preprocessed_log_sizes = vec![self.log_size];
         TreeVec::new(vec![
             preprocessed_log_sizes,
             trace_log_sizes,
