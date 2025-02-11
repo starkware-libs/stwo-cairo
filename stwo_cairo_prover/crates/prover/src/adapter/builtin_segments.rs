@@ -211,8 +211,8 @@ mod builtin_padding {
     use cairo_vm::air_public_input::MemorySegmentAddresses;
     use itertools::Itertools;
 
-    use crate::input::builtin_segments::BITWISE_MEMORY_CELLS;
-    use crate::input::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
+    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
 
     pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
         let range = segment.begin_addr..segment.stop_ptr;
@@ -248,10 +248,12 @@ mod test_builtin_segments {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
 
-    use crate::input::builtin_segments::BITWISE_MEMORY_CELLS;
-    use crate::input::memory::{u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue};
-    use crate::input::vm_import::MemoryEntry;
-    use crate::input::BuiltinSegments;
+    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::memory::{
+        u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue,
+    };
+    use crate::adapter::vm_import::MemoryEntry;
+    use crate::adapter::BuiltinSegments;
 
     /// Asserts that the values at addresses start_addr1 to start_addr1 + segment_length - 1
     /// are equal to values at the addresses start_addr2 to start_addr2 + segment_length - 1.

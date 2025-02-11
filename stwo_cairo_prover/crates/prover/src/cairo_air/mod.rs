@@ -21,9 +21,9 @@ use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
 use thiserror::Error;
 use tracing::{span, Level};
 
+use crate::adapter::ProverInput;
 use crate::components::memory::LOG_MEMORY_ADDRESS_BOUND;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
-use crate::input::ProverInput;
 
 // TODO(Ohad): decide dynamically.
 const LOG_MAX_ROWS: u32 = 22;
@@ -232,9 +232,9 @@ pub mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::ProverConfig;
+    use crate::adapter::plain::input_from_plain_casm;
+    use crate::adapter::vm_import::adapt_vm_output;
     use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
-    use crate::input::plain::input_from_plain_casm;
-    use crate::input::vm_import::adapt_vm_output;
 
     /// Creates a prover input from `pub.json`, `priv.json`, `mem`, and `trace` files.
     ///

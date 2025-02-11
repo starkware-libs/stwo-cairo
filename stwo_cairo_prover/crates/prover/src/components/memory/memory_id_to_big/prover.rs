@@ -21,13 +21,13 @@ use stwo_prover::core::poly::BitReversedOrder;
 use super::component::{
     Claim, InteractionClaim, MEMORY_ID_SIZE, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252,
 };
+use crate::adapter::memory::{
+    u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
+};
 use crate::components::memory::MEMORY_ADDRESS_BOUND;
 use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
 use crate::components::utils::AtomicMultiplicityColumn;
 use crate::felt::split_f252_simd;
-use crate::input::memory::{
-    u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
-};
 use crate::relations;
 
 pub type PackedInputType = PackedBaseField;
@@ -402,10 +402,10 @@ mod tests {
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
+    use crate::adapter::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
     use crate::components::memory::memory_address_to_id;
     use crate::components::memory::memory_id_to_big::component::N_M31_IN_FELT252;
     use crate::felt::split_f252;
-    use crate::input::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
 
     #[test]
     fn test_deduce_output_simd() {
