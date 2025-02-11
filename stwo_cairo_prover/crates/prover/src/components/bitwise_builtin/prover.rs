@@ -31,7 +31,8 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::preprocessed::Seq;
+use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
+use crate::components::utils::AtomicMultiplicityColumn;
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_bitwise_xor_9};
 use crate::relations;
 
@@ -987,8 +988,7 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let log_size = self.log_size;
-        let mut logup_gen = LogupTraceGenerator::new(log_size);
+        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
