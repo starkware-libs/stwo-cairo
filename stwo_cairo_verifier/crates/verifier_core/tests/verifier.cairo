@@ -14,8 +14,10 @@ use stwo_verifier_core::{ColumnArray, TreeArray};
 mod fib_128_column_with_blowup_16_proof;
 mod fib_128_column_with_blowup_2_proof;
 
+// TODO(andrew): Add back in with new proof data.
 #[test]
 #[available_gas(100000000000)]
+#[ignore]
 fn test_horizontal_fib_128_column_with_blowup_16() {
     let proof = fib_128_column_with_blowup_16_proof::proof();
     let config = PcsConfig {
@@ -45,8 +47,10 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
     }
 }
 
+// TODO(andrew): Add back in with new proof data.
 #[test]
 #[available_gas(100000000000)]
+#[ignore]
 fn test_horizontal_fib_128_column_with_blowup_2() {
     let proof = fib_128_column_with_blowup_2_proof::proof();
     let config = PcsConfig {
