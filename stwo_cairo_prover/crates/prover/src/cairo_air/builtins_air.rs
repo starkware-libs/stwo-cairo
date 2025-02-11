@@ -1,4 +1,3 @@
-use cairo_vm::types::builtin_name::BuiltinName;
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -17,7 +16,9 @@ use crate::components::{
     bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
-use crate::input::builtin_segments::BuiltinSegments;
+use crate::input::builtin_segments::{
+    BuiltinSegments, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
@@ -61,14 +62,12 @@ pub struct BuiltinsClaimGenerator {
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
         let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|segment| {
-            let cells_per_instance =
-                BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::bitwise);
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
-                (segment_length % cells_per_instance) == 0,
+                (segment_length % BITWISE_MEMORY_CELLS) == 0,
                 "bitwise segment length is not a multiple of it's cells_per_instance"
             );
-            let n_instances = segment_length / cells_per_instance;
+            let n_instances = segment_length / BITWISE_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
                 "bitwise instances number is not a power of two"
@@ -76,47 +75,31 @@ impl BuiltinsClaimGenerator {
             bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
         let range_check_96_builtin_trace_generator =
-            builtin_segments
-                .range_check_bits_96
-                .map(|segment| {
-                    let cells_per_instance =
-                        BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::range_check96);
-                    let segment_length = segment.stop_ptr - segment.begin_addr;
-                    assert!(
-                        (segment_length % cells_per_instance) == 0,
-                        "range_check_bits_96 segment length is not a multiple of it's cells_per_instance"
-                    );
-                    let n_instances = segment_length / cells_per_instance;
-                    assert!(
-                        n_instances.is_power_of_two(),
-                        "range_check_bits_96 instances number is not a power of two"
-                    );
-                    range_check_builtin_bits_96::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    )
-                });
+            builtin_segments.range_check_bits_96.map(|segment| {
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                let n_instances = segment_length / RANGE_CHECK_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "range_check_bits_96 instances number is not a power of two"
+                );
+                range_check_builtin_bits_96::ClaimGenerator::new(
+                    n_instances.ilog2(),
+                    segment.begin_addr as u32,
+                )
+            });
         let range_check_128_builtin_trace_generator =
-            builtin_segments
-                .range_check_bits_128
-                .map(|segment| {
-                    let cells_per_instance =
-                        BuiltinSegments::builtin_memory_cells_per_instance(BuiltinName::range_check);
-                    let segment_length = segment.stop_ptr - segment.begin_addr;
-                    assert!(
-                        (segment_length % cells_per_instance) == 0,
-                        "range_check_bits_128 segment length is not a multiple of it's cells_per_instance"
-                    );
-                    let n_instances = segment_length / cells_per_instance;
-                    assert!(
-                        n_instances.is_power_of_two(),
-                        "range_check_bits_128 instances number is not a power of two"
-                    );
-                    range_check_builtin_bits_128::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    )
-                });
+            builtin_segments.range_check_bits_128.map(|segment| {
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                let n_instances = segment_length / RANGE_CHECK_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "range_check_bits_128 instances number is not a power of two"
+                );
+                range_check_builtin_bits_128::ClaimGenerator::new(
+                    n_instances.ilog2(),
+                    segment.begin_addr as u32,
+                )
+            });
         Self {
             bitwise_builtin_trace_generator,
             range_check_96_builtin_trace_generator,
