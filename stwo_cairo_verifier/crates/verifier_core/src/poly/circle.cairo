@@ -105,7 +105,7 @@ pub impl CanonicCosetImpl of CanonicCosetTrait {
         // The formula for the x coordinate of the double of a point.
         for _ in 1..*self.coset.log_size {
             x = CirclePointTrait::double_x(x);
-        };
+        }
 
         x
     }

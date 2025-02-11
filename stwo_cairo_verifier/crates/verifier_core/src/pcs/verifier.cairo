@@ -45,7 +45,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let mut res = array![];
         for tree in self.trees.span() {
             res.append(tree.column_log_sizes);
-        };
+        }
         res
     }
 
@@ -62,7 +62,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let mut extended_log_sizes = array![];
         for log_size in log_sizes {
             extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
-        };
+        }
         self
             .trees
             .append(MerkleVerifier { root: commitment, column_log_sizes: extended_log_sizes });
@@ -91,7 +91,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
                     flattened_sampled_values.append(*sampled_value);
                 };
             };
-        };
+        }
 
         channel.mix_felts(flattened_sampled_values.span());
 
@@ -185,7 +185,7 @@ fn get_column_log_bounds(
             assert!(column_log_bound <= MAX_LOG_BOUND);
             bounds_set.insert(column_log_bound.into(), true);
         };
-    };
+    }
 
     let mut bounds = array![];
 
@@ -195,7 +195,7 @@ fn get_column_log_bounds(
             bounds.append(i);
         }
         i -= 1;
-    };
+    }
 
     bounds
 }
@@ -231,13 +231,13 @@ fn get_flattened_samples(
                 let value = *column_values[sample_i];
                 column_samples.append(PointSample { point, value });
                 sample_i += 1;
-            };
+            }
 
             res.append(column_samples);
             column_i += 1;
-        };
+        }
 
         tree_i += 1;
-    };
+    }
     res
 }

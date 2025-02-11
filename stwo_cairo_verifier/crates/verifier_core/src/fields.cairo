@@ -29,7 +29,7 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
         while let Option::Some(value) = values_span.pop_back() {
             prefix_product_rev.append(cumulative_product);
             cumulative_product = cumulative_product * *value;
-        };
+        }
 
         // Compute `1/zy..a`.
         let mut cumulative_product_inv = cumulative_product.inverse();
@@ -43,7 +43,7 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
             (prefix_product_rev_span.pop_back(), values.pop_front()) {
             inverses.append(cumulative_product_inv * *prefix_product);
             cumulative_product_inv = cumulative_product_inv * value;
-        };
+        }
 
         // Append final `1/z`.
         inverses.append(cumulative_product_inv);
@@ -63,7 +63,7 @@ mod tests {
         let mut arr_inv = array![];
         for v in arr.span() {
             arr_inv.append((*v).inverse());
-        };
+        }
 
         let res = BatchInvertible::batch_inverse(arr);
 

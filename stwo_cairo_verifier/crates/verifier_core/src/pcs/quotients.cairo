@@ -4,10 +4,10 @@ use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
-use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Impl};
 use crate::fields::m31::{M31, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl};
+use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::verifier::VerificationError;
@@ -128,15 +128,15 @@ pub fn fri_answers(
 
         if loop_res.is_err() {
             break loop_res;
-        };
+        }
 
-        let mut n_columns_per_log_size: Array::<usize> = array![];
+        let mut n_columns_per_log_size: Array<usize> = array![];
         for log_size in (0..31_u32) {
             n_columns_per_log_size
                 .append(res_dict.get(30_felt252 - log_size.into()).deref_or(0))
                 .try_into()
                 .unwrap();
-        };
+        }
         n_columns_per_tree.append(n_columns_per_log_size.span());
     }?;
 
@@ -180,7 +180,7 @@ pub fn fri_answers(
     let mut one_per_tree = array![];
     for _ in 0..n_columns_per_tree.len() {
         one_per_tree.append(1);
-    };
+    }
     loop {
         let columns = match columns_per_log_size_rev.next() {
             Option::Some(columns) => columns,
@@ -199,7 +199,7 @@ pub fn fri_answers(
 
         for column in columns {
             samples.append(samples_per_column[column]);
-        };
+        }
 
         let answer = fri_answers_for_log_size(
             log_size,
@@ -223,12 +223,12 @@ pub fn fri_answers(
 fn tree_take_n<T, +Clone<T>, +Drop<T>>(
     ref tree: TreeArray<Span<T>>, mut n: TreeSpan<usize>,
 ) -> Array<T> {
-    let mut res: Array::<T> = array![];
+    let mut res: Array<T> = array![];
     let mut new_tree = array![];
     for mut values in tree {
         res.append_span(values.pop_front_n(*n.pop_front().unwrap()));
         new_tree.append(values);
-    };
+    }
 
     tree = new_tree;
     res
@@ -258,7 +258,7 @@ fn fri_answers_for_log_size(
                     commitment_domain.at(bit_reverse_index(*query_position, log_size)),
                 ),
             );
-    };
+    }
 
     Result::Ok(quotient_evals_at_queries.span())
 }
@@ -312,13 +312,13 @@ fn accumulate_row_quotients(
             // TODO(andrew): The whole `linear_term` can be moved out of the loop.
             let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
             numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
-        };
+        }
 
         let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
         let denom_inv = *denominator_inverses[batch_i];
         let quotient = numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator = QM31Impl::fma(quotient_accumulator, batch_coeff, quotient);
-    };
+    }
 
     quotient_accumulator
 }
@@ -335,7 +335,7 @@ fn quotient_denominator_inverses(
         let pix = *sample_batch.point.x.b;
         let piy = *sample_batch.point.y.b;
         denominators.append(prx.sub_m31(domain_point.x) * piy - pry.sub_m31(domain_point.y) * pix);
-    };
+    }
 
     BatchInvertible::batch_inverse(denominators)
 }
@@ -378,11 +378,11 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                             sample_batch.point, **column_value, alpha,
                         ),
                     );
-            };
+            }
 
             batch_random_coeffs.append(alpha);
             line_coeffs.append(batch_line_coeffs);
-        };
+        }
 
         QuotientConstants { line_coeffs, batch_random_coeffs }
     }
@@ -419,15 +419,15 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
                 // Check if we've seen the point before.
                 if point_samples.is_null() {
                     point_set.append(*sample.point);
-                };
+                }
 
                 let mut point_samples = point_samples.deref_or(array![]);
                 point_samples.append((column, sample.value));
                 grouped_samples = entry.finalize(NullableTrait::new(point_samples));
-            };
+            }
 
             column += 1;
-        };
+        }
 
         // TODO(andrew): Remove. Only sorting since rust verifier sorts groups by point.
         let sorted_points = point_set.sort_ascending();
@@ -440,7 +440,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
 
             grouped_samples = entry.finalize(null());
             groups.append(ColumnSampleBatch { point, columns_and_values });
-        };
+        }
 
         groups
     }
@@ -678,7 +678,7 @@ mod tests {
         let mut query_positions = array![];
         for query_position in 0..n_queries {
             query_positions.append(query_position);
-        };
+        }
         let p0 = QM31_CIRCLE_GEN;
         let p1 = p0 + QM31_CIRCLE_GEN;
         let p2 = p1 + QM31_CIRCLE_GEN;
@@ -695,10 +695,10 @@ mod tests {
             for _ in 0..n_columns {
                 query_values.append(m31(i));
             }
-        };
+        }
         for _ in samples_per_column.len()..n_columns {
             samples_per_column.append(@col1_samples);
-        };
+        }
 
         let n_columns = array![0, n_columns, 0];
         let mut query_evals = array![array![].span(), query_values.span(), array![].span()];

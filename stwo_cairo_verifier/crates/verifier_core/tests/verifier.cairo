@@ -110,7 +110,7 @@ impl FibAirImpl<const N_COLUMNS: usize> of Air<FibAir<N_COLUMNS>> {
             let c = *c_col[0];
             let constraint = c - b * b - a * a;
             constraint_acc = constraint_acc * random_coeff + constraint;
-        };
+        }
 
         let trace_domain = CanonicCosetImpl::new(*self.log_size);
         let vanish_eval = trace_domain.eval_vanishing(point);

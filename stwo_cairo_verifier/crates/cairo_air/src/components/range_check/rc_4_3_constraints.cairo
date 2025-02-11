@@ -3,7 +3,6 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
-
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 

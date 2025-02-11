@@ -17,7 +17,7 @@ pub impl U32Impl of U32ExTrait {
         let mut next_power_of_two = 1;
         while next_power_of_two < self {
             next_power_of_two *= 2;
-        };
+        }
         next_power_of_two
     }
 
@@ -29,7 +29,7 @@ pub impl U32Impl of U32ExTrait {
         while next_power_of_two < self {
             next_power_of_two *= 2;
             res += 1;
-        };
+        }
         res
     }
 }
@@ -71,7 +71,7 @@ pub fn tree_array_concat_cols(tree_array: Array<TreeArray<Span<u32>>>) -> TreeAr
         if curr_tree.len() > 2 {
             tree2.append_span(*curr_tree[2]);
         }
-    };
+    }
 
     array![tree0.span(), tree1.span(), tree2.span()]
 }
@@ -84,7 +84,7 @@ pub fn split_f252(x: [u32; 8]) -> [M31; id_to_f252::N_M31_IN_FELT252] {
 
     for segment in segments.span() {
         m31_segments.append((*segment).try_into().unwrap());
-    };
+    }
 
     (*m31_segments.span().try_into().unwrap()).unbox()
 }
@@ -117,7 +117,7 @@ fn split<
             word /= pow2(id_to_f252::N_BITS_PER_FELT);
             n_bits_in_word -= id_to_f252::N_BITS_PER_FELT;
             continue;
-        };
+        }
 
         let mut segment = word;
         // Fetch next word.
@@ -132,7 +132,7 @@ fn split<
         res.append(segment);
 
         n_bits_in_word += 32 - id_to_f252::N_BITS_PER_FELT;
-    };
+    }
 
     (*SpanTryIntoFixedArray::try_into(res.span()).unwrap()).unbox()
 }

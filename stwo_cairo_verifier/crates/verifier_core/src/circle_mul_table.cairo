@@ -357,28 +357,28 @@ mod tests {
         for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5.span() {
             assert_eq!(*p, acc);
             acc = acc + step_1;
-        };
+        }
 
         let step_2_pow_6 = acc;
         let mut acc = CirclePointM31Impl::zero();
         for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11.span() {
             assert_eq!(*p, acc);
             acc = acc + step_2_pow_6;
-        };
+        }
 
         let step_2_pow_12 = acc;
         let mut acc = CirclePointM31Impl::zero();
         for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17.span() {
             assert_eq!(*p, acc);
             acc = acc + step_2_pow_12;
-        };
+        }
 
         let step_2_pow_18 = acc;
         let mut acc = CirclePointM31Impl::zero();
         for p in M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23.span() {
             assert_eq!(*p, acc);
             acc = acc + step_2_pow_18;
-        };
+        }
 
         let step_2_pow_24 = acc;
         let mut acc = CirclePointM31Impl::zero();
