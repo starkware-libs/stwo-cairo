@@ -25,7 +25,6 @@ use crate::adapter::ProverInput;
 use crate::components::memory::LOG_MEMORY_ADDRESS_BOUND;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 
-// TODO(Ohad): decide dynamically.
 const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
