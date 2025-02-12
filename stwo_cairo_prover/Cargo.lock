@@ -35,16 +35,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "air_structs_derive"
-version = "0.1.0"
-dependencies = [
- "itertools 0.13.0",
- "proc-macro2",
- "quote",
- "syn 2.0.96",
-]
-
-[[package]]
 name = "allocator-api2"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1840,7 +1830,6 @@ dependencies = [
 name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
- "air_structs_derive",
  "bytemuck",
  "cairo-lang-casm",
  "cairo-vm",
