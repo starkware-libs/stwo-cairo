@@ -1,5 +1,3 @@
-use std::mem::transmute;
-use std::simd::Simd;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use num_traits::{One, Zero};
@@ -19,34 +17,6 @@ pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
         .array_chunks::<N_LANES>()
         .map(|c| T::pack(*c))
         .collect()
-}
-
-// TODO(Gali): Move to stwo-air-utils.
-/// A column of multiplicities for lookup arguments. Allows increasing the multiplicity at a given
-/// index.
-pub struct MultiplicityColumn {
-    data: Vec<Simd<u32, N_LANES>>,
-}
-impl MultiplicityColumn {
-    /// Creates a new `MultiplicityColumn` with the given size. The elements are initialized to 0.
-    pub fn new(size: usize) -> Self {
-        let vec_size = size.div_ceil(N_LANES);
-        Self {
-            data: vec![unsafe { std::mem::zeroed() }; vec_size],
-        }
-    }
-
-    pub fn increase_at(&mut self, address: u32) {
-        self.data[address as usize / N_LANES][address as usize % N_LANES] += 1;
-    }
-
-    /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with
-    /// zeros if needed.
-    pub fn into_simd_vec(self) -> Vec<PackedM31> {
-        // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
-        // multiple of N_LANES.
-        unsafe { transmute(self.data) }
-    }
 }
 
 /// A column of multiplicities for lookup arguments. Allows increasing the multiplicity at a given
@@ -114,31 +84,48 @@ impl Enabler {
 
 #[cfg(test)]
 mod tests {
-    use num_traits::{One, Zero};
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use rayon::iter::{IntoParallelIterator, ParallelIterator};
     use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::fields::m31::M31;
 
     use super::Enabler;
 
     #[test]
-    fn test_multiplicities_column() {
-        let mut rng = SmallRng::seed_from_u64(0u64);
-        let mut multiplicity_column = super::MultiplicityColumn::new(6 * N_LANES - 2);
-        let mut expected = vec![M31::zero(); 6 * N_LANES];
+    fn test_atomic_multiplicities_column() {
+        let size = N_LANES;
+        let n_loops = 10;
+        let col = super::AtomicMultiplicityColumn::new(size);
+        let n_threads = 32;
 
-        (0..10 * N_LANES).for_each(|_| {
-            let addr = rng.gen_range(0..N_LANES * 6);
-            multiplicity_column.increase_at(addr as u32);
-            expected[addr] += M31::one();
+        (0..n_threads).into_par_iter().for_each(|i| {
+            (0..size * n_loops).for_each(|i| col.increase_at((i % size) as u32));
         });
-        let res = multiplicity_column.into_simd_vec();
+        let result = col
+            .into_simd_vec()
+            .into_iter()
+            .flat_map(|p| p.to_array().map(|v| v.0));
 
-        assert!(res.len() == 6);
-        for (res_chunk, expected_chunk) in res.iter().zip(expected.chunks(N_LANES)) {
-            assert!(res_chunk.to_array() == expected_chunk);
+        for value in result {
+            assert_eq!(value, n_threads * n_loops as u32);
         }
+    }
+
+    #[test]
+    fn test_multiplicities_column_into_simd() {
+        let mut rng = SmallRng::seed_from_u64(0u64);
+        let expected_length = 6;
+        let cpu_length = expected_length * N_LANES - 2;
+
+        let multiplicity_column = super::AtomicMultiplicityColumn::new(cpu_length);
+        (0..10 * N_LANES).for_each(|_| {
+            let addr = rng.gen_range(0..cpu_length as u32);
+            multiplicity_column.increase_at(addr);
+        });
+        let actual_length = multiplicity_column.into_simd_vec().len();
+
+        assert_eq!(actual_length, expected_length);
     }
 
     #[test]
