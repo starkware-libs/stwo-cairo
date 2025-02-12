@@ -1,8 +1,8 @@
-pub mod air;
-pub mod builtins_air;
+mod air;
+mod builtins_air;
 mod debug_tools;
-pub mod opcodes_air;
-pub mod range_checks_air;
+mod opcodes_air;
+mod range_checks_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use debug_tools::track_cairo_relations;
