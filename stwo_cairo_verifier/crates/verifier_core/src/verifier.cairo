@@ -5,7 +5,7 @@ use crate::fri::FriVerificationError;
 use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
-use crate::utils::ArrayImpl;
+use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
@@ -38,69 +38,49 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            *commitment_scheme_proof.commitments[commitment_scheme_proof.commitments.len() - 1],
-            ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, air.composition_log_degree_bound())
+            *commitment_scheme_proof.commitments.last().unwrap(),
+            ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: air.composition_log_degree_bound())
                 .span(),
             ref channel,
         );
 
-    // Draw OODS point.
-    let oods_point = channel.get_random_point();
+    // Draw OOD point.
+    let ood_point = channel.get_random_point();
 
-    // Get mask sample points relative to oods point.
-    let mut sample_points = air.mask_points(oods_point);
+    // Get mask sample points relative to OOD point.
+    let mut sample_points = air.mask_points(ood_point);
     // Add the composition polynomial mask points.
-    sample_points.append(ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, array![oods_point]));
+    sample_points.append(ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: array![ood_point]));
 
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
-        Result::Ok(composition_oods_eval) => composition_oods_eval,
-        Result::Err(_) => {
-            return Result::Err(VerificationError::InvalidStructure('Invalid sampled_values'));
-        },
+        Ok(composition_oods_eval) => composition_oods_eval,
+        Err(_) => { return Err(VerificationError::InvalidStructure('Invalid sampled_values')); },
     };
 
-    // Evaluate composition polynomial at OODS point and check that it matches the trace OODS
-    // values. This is a sanity check.
+    // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
     if composition_oods_eval != air
-        .eval_composition_polynomial_at_point(oods_point, sampled_oods_values, random_coeff) {
-        return Result::Err(VerificationError::OodsNotMatching);
+        .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff) {
+        return Err(VerificationError::OodsNotMatching);
     }
 
     commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)?;
 
-    Result::Ok(())
+    Ok(())
 }
 
 /// Extracts the composition trace evaluation from the mask.
 fn extract_composition_eval(
     mask: TreeSpan<ColumnSpan<Span<QM31>>>,
 ) -> Result<QM31, InvalidOodsSampleStructure> {
-    let composition_cols = *mask[mask.len() - 1];
-
-    if composition_cols.len() != 4 {
-        return Result::Err(InvalidOodsSampleStructure {});
-    }
-
-    let coordinate_evals = [
-        extract_composition_coordinate_eval(*composition_cols[0])?,
-        extract_composition_coordinate_eval(*composition_cols[1])?,
-        extract_composition_coordinate_eval(*composition_cols[2])?,
-        extract_composition_coordinate_eval(*composition_cols[3])?,
-    ];
-
-    Result::Ok(QM31Impl::from_partial_evals(coordinate_evals))
-}
-
-fn extract_composition_coordinate_eval(
-    composition_coordinate_col: Span<QM31>,
-) -> Result<QM31, InvalidOodsSampleStructure> {
-    if composition_coordinate_col.len() != 1 {
-        return Result::Err(InvalidOodsSampleStructure {});
-    }
-
-    Result::Ok(*composition_coordinate_col[0])
+    let cols = *mask.last().ok_or(InvalidOodsSampleStructure {})?;
+    let [c0, c1, c2, c3] = (*cols.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
+    let [v0] = (*c0.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
+    let [v1] = (*c1.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
+    let [v2] = (*c2.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
+    let [v3] = (*c3.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
+    Ok(QM31Impl::from_partial_evals([v0, v1, v2, v3]))
 }
 
 /// Error when the sampled values have an invalid structure.
@@ -115,7 +95,7 @@ pub struct StarkProof<HashT> {
 }
 
 impl StarkProofSerde<
-    HashT, +Drop<HashT>, +core::serde::Serde<HashT>,
+    HashT, +Serde<CommitmentSchemeProof<HashT>>,
 > of core::serde::Serde<StarkProof<HashT>> {
     fn serialize(self: @StarkProof<HashT>, ref output: Array<felt252>) {
         self.commitment_scheme_proof.serialize(ref output);
