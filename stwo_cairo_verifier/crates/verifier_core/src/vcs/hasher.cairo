@@ -37,7 +37,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
         let mut hash_array: Array<felt252> = Default::default();
-        if let Option::Some((x, y)) = children_hashes {
+        if let Some((x, y)) = children_hashes {
             // Most often a node has no column values.
             if column_values.len() == 0 {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
@@ -51,7 +51,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         } else {
             // Most often a single QM31 column commitment due to FRI.
             // TODO(andrew): Implement non-mixed degree merkle for FRI decommitments.
-            if let Option::Some(values) = column_values.try_into() {
+            if let Some(values) = column_values.try_into() {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
                 let [v0, v1, v2, v3]: [BaseField; 4] = (*values).unbox();
                 let mut word = v0.inner.into();
@@ -66,7 +66,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
 
         // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
         // functionality here to do all packing and hashing in a single pass.
-        while let Option::Some(values) = column_values.multi_pop_front::<8>() {
+        while let Some(values) = column_values.multi_pop_front::<8>() {
             let [v0, v1, v2, v3, v4, v5, v6, v7] = (*values).unbox();
             let mut word = v0.inner.into();
             word = word * M31_IN_HASH_SHIFT + v1.inner.into();
@@ -106,12 +106,12 @@ mod tests {
     #[test]
     fn test_m31() {
         assert_eq!(
-            PoseidonMerkleHasher::hash_node(Option::None, array![m31(0), m31(1)].span()),
+            PoseidonMerkleHasher::hash_node(None, array![m31(0), m31(1)].span()),
             2552053700073128806553921687214114320458351061521275103654266875084493044716,
         );
 
         assert_eq!(
-            PoseidonMerkleHasher::hash_node(Option::Some((1, 2)), array![m31(3)].span()),
+            PoseidonMerkleHasher::hash_node(Some((1, 2)), array![m31(3)].span()),
             159358216886023795422515519110998391754567506678525778721401012606792642769,
         );
     }

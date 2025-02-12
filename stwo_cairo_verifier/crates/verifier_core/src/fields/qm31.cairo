@@ -6,7 +6,7 @@ use super::m31::{M31, M31Impl, UnreducedM31};
 use super::Invertible;
 
 /// Equals `(2^31 - 1)^4`.
-pub const P4: u128 = 21267647892944572736998860269687930881;
+pub const P4: u128 = 0xFFFFFFF800000017FFFFFFE00000001;
 
 pub const QM31_EXTENSION_DEGREE: usize = 4;
 

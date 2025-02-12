@@ -2760,7 +2760,8 @@ pub fn intermediate2(
     trace_1_column_29_offset_0: QM31,
     bitwise_builtin_segment_start: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(1).into())
+    (MemoryAddressToId_alpha0)
+        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(1).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_29_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -3286,7 +3287,8 @@ pub fn intermediate60(
     trace_1_column_86_offset_0: QM31,
     bitwise_builtin_segment_start: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(2).into())
+    (MemoryAddressToId_alpha0)
+        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(2).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_86_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -3392,7 +3394,8 @@ pub fn intermediate62(
     trace_1_column_87_offset_0: QM31,
     bitwise_builtin_segment_start: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(3).into())
+    (MemoryAddressToId_alpha0)
+        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(3).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_87_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -3496,9 +3499,10 @@ pub fn intermediate64(
     MemoryAddressToId_z: QM31,
     seq: QM31,
     trace_1_column_88_offset_0: QM31,
-    bitwise_builtin_segment_start: u32, 
+    bitwise_builtin_segment_start: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(4).into())
+    (MemoryAddressToId_alpha0)
+        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(4).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_88_offset_0)
         - (MemoryAddressToId_z)
 }

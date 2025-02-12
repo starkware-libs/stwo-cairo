@@ -88,8 +88,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         loop {
             let proof = match inner_layer_proofs.pop_front() {
-                Option::Some(proof) => proof,
-                Option::None => { break Result::Ok(()); },
+                Some(proof) => proof,
+                None => { break Ok(()); },
             };
 
             channel.mix_digest(*proof.commitment);
@@ -106,8 +106,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                 );
 
             layer_log_bound = match layer_log_bound.checked_sub(FOLD_STEP) {
-                Option::Some(layer_log_bound) => layer_log_bound,
-                Option::None => { break Result::Err(FriVerificationError::InvalidNumFriLayers); },
+                Some(layer_log_bound) => layer_log_bound,
+                None => { break Err(FriVerificationError::InvalidNumFriLayers); },
             };
 
             layer_index += 1;
@@ -115,23 +115,23 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         }?;
 
         if layer_log_bound != config.log_last_layer_degree_bound {
-            return Result::Err(FriVerificationError::InvalidNumFriLayers);
+            return Err(FriVerificationError::InvalidNumFriLayers);
         }
 
         if last_layer_poly.len() != pow2(config.log_last_layer_degree_bound) {
-            return Result::Err(FriVerificationError::LastLayerDegreeInvalid);
+            return Err(FriVerificationError::LastLayerDegreeInvalid);
         }
 
         channel.mix_felts(last_layer_poly.coeffs.span());
 
-        Result::Ok(
+        Ok(
             FriVerifier {
                 config,
                 first_layer,
                 inner_layers,
                 last_layer_domain: layer_domain,
                 last_layer_poly,
-                queries: Option::None,
+                queries: None,
             },
         )
     }
@@ -181,7 +181,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         let max_column_log_size = *unique_column_log_sizes.first().unwrap();
         let n_queries = self.config.n_queries;
         let queries = QueriesImpl::generate(ref channel, max_column_log_size, n_queries);
-        self.queries = Option::Some(queries);
+        self.queries = Some(queries);
 
         (unique_column_log_sizes, get_query_positions_by_log_size(queries, unique_column_log_sizes))
     }
@@ -207,7 +207,9 @@ fn decommit_inner_layers(
 ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
     let mut inner_layers = verifier.inner_layers.span();
     let mut layer_queries = queries;
-    let mut layer_query_evals = ArrayImpl::new_repeated(layer_queries.len(), QM31Zero::zero());
+    let mut layer_query_evals = ArrayImpl::new_repeated(
+        n: layer_queries.len(), v: QM31Zero::zero(),
+    );
     let mut first_layer_sparse_evals = first_layer_sparse_evals.span();
     let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
     let mut first_layer_column_domains = *verifier.first_layer.column_commitment_domains;
@@ -215,15 +217,14 @@ fn decommit_inner_layers(
 
     loop {
         let layer = match inner_layers.pop_front() {
-            Option::Some(layer) => layer,
-            Option::None => { break Result::Ok(()); },
+            Some(layer) => layer,
+            None => { break Ok(()); },
         };
 
         let circle_poly_degree_bound = *layer.log_degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
 
         // Check for evals committed in the first layer that need to be folded into this layer.
-        while let Option::Some(_) = first_layer_column_bounds
-            .next_if_eq(@circle_poly_degree_bound) {
+        while let Some(_) = first_layer_column_bounds.next_if_eq(@circle_poly_degree_bound) {
             let column_domain = *first_layer_column_domains.pop_front().unwrap();
             let first_layer_sparse_eval = first_layer_sparse_evals.pop_front().unwrap();
             let mut folded_column_evals = first_layer_sparse_eval
@@ -231,7 +232,7 @@ fn decommit_inner_layers(
             let mut updated_layer_query_evals = array![];
             let prev_fold_alpha_pow_fold_factor = prev_fold_alpha * prev_fold_alpha;
 
-            while let (Option::Some(curr_layer_eval), Option::Some(folded_column_eval)) =
+            while let (Some(curr_layer_eval), Some(folded_column_eval)) =
                 (layer_query_evals.pop_front(), folded_column_evals.pop_front()) {
                 updated_layer_query_evals
                     .append(curr_layer_eval * prev_fold_alpha_pow_fold_factor + folded_column_eval);
@@ -241,14 +242,14 @@ fn decommit_inner_layers(
         }
 
         match layer.verify_and_fold(layer_queries, layer_query_evals.span()) {
-            Result::Ok((
+            Ok((
                 next_layer_queries, next_layer_query_evals,
             )) => {
                 layer_queries = next_layer_queries;
                 layer_query_evals = next_layer_query_evals;
                 prev_fold_alpha = *layer.folding_alpha;
             },
-            Result::Err(error) => { break Result::Err(error); },
+            Err(error) => { break Err(error); },
         };
     }?;
 
@@ -257,7 +258,7 @@ fn decommit_inner_layers(
     assert!(first_layer_column_domains.is_empty());
     assert!(first_layer_sparse_evals.is_empty());
 
-    Result::Ok((layer_queries, layer_query_evals))
+    Ok((layer_queries, layer_query_evals))
 }
 
 /// Verifies the last layer.
@@ -273,8 +274,8 @@ fn decommit_last_layer(
 
     loop {
         let (query, query_eval) = match (queries.positions.pop_front(), query_evals.pop_front()) {
-            (Option::Some(query), Option::Some(query_eval)) => (query, query_eval),
-            _ => { break Result::Ok(()); },
+            (Some(query), Some(query_eval)) => (query, query_eval),
+            _ => { break Ok(()); },
         };
 
         // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
@@ -282,7 +283,7 @@ fn decommit_last_layer(
         let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
 
         if query_eval != *last_layer_evals[last_layer_eval_i] {
-            break Result::Err(FriVerificationError::LastLayerEvaluationsInvalid);
+            break Err(FriVerificationError::LastLayerEvaluationsInvalid);
         }
     }
 }
@@ -365,8 +366,8 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         loop {
             let (column_domain, column_query_evals) =
                 match (column_commitment_domains.pop_front(), query_evals_by_column.pop_front()) {
-                (Option::Some(domain), Option::Some(evals)) => (domain, evals),
-                (Option::None, Option::None) => { break Result::Ok(()); },
+                (Some(domain), Some(evals)) => (domain, evals),
+                (None, None) => { break Ok(()); },
                 _ => { panic!() },
             };
 
@@ -381,10 +382,8 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                 match compute_decommitment_positions_and_rebuild_evals(
                     column_queries, column_query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
                 ) {
-                Result::Ok(res) => res,
-                Result::Err(_) => {
-                    break Result::Err(FriVerificationError::FirstLayerEvaluationsInvalid);
-                },
+                Ok(res) => res,
+                Err(_) => { break Err(FriVerificationError::FirstLayerEvaluationsInvalid); },
             };
 
             // Columns of the same size have the same decommitment positions.
@@ -416,7 +415,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
 
         // Check all proof evals have been consumed.
         if fri_witness.next().is_some() {
-            return Result::Err(FriVerificationError::FirstLayerEvaluationsInvalid);
+            return Err(FriVerificationError::FirstLayerEvaluationsInvalid);
         }
 
         let merkle_verifier = MerkleVerifier {
@@ -424,16 +423,16 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             column_log_sizes: decommitment_coordinate_column_log_sizes,
         };
 
-        if let Result::Err(_) = merkle_verifier
+        if let Err(_) = merkle_verifier
             .verify(
                 decommitment_positions_by_log_size,
                 decommitmented_values.span(),
                 self.proof.decommitment.clone(),
             ) {
-            return Result::Err(FriVerificationError::FirstLayerCommitmentInvalid);
+            return Err(FriVerificationError::FirstLayerCommitmentInvalid);
         }
 
-        Result::Ok(sparse_evals_by_column)
+        Ok(sparse_evals_by_column)
     }
 }
 
@@ -460,15 +459,13 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             match compute_decommitment_positions_and_rebuild_evals(
                 queries, evals_at_queries, ref fri_witness, FOLD_STEP,
             ) {
-            Result::Ok(res) => res,
-            Result::Err(_) => {
-                return Result::Err(FriVerificationError::InnerLayerEvaluationsInvalid);
-            },
+            Ok(res) => res,
+            Err(_) => { return Err(FriVerificationError::InnerLayerEvaluationsInvalid); },
         };
 
         // Check all proof evals have been consumed.
         if fri_witness.next().is_some() {
-            return Result::Err(FriVerificationError::InnerLayerEvaluationsInvalid);
+            return Err(FriVerificationError::InnerLayerEvaluationsInvalid);
         }
 
         let mut decommitmented_values = array![];
@@ -486,7 +483,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
             root: **self.proof.commitment,
-            column_log_sizes: ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, column_log_size),
+            column_log_sizes: ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: column_log_size),
         };
 
         let mut decommitment_positions_dict: Felt252Dict<Nullable<Span<usize>>> =
@@ -494,19 +491,19 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         decommitment_positions_dict
             .insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions));
 
-        if let Result::Err(_) = merkle_verifier
+        if let Err(_) = merkle_verifier
             .verify(
                 decommitment_positions_dict,
                 decommitmented_values.span(),
                 (*self.proof.decommitment).clone(),
             ) {
-            return Result::Err(FriVerificationError::InnerLayerCommitmentInvalid);
+            return Err(FriVerificationError::InnerLayerCommitmentInvalid);
         }
 
         let folded_queries = queries.fold(FOLD_STEP);
         let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
 
-        Result::Ok((folded_queries, folded_evals))
+        Ok((folded_queries, folded_evals))
     }
 }
 
@@ -534,8 +531,8 @@ fn compute_decommitment_positions_and_rebuild_evals(
 
     loop {
         let folded_query_position = match folded_query_positions.pop_front() {
-            Option::Some(position) => *position,
-            Option::None => { break Result::Ok(()); },
+            Some(position) => *position,
+            None => { break Ok(()); },
         };
 
         let subset_start = folded_query_position * fold_factor;
@@ -547,8 +544,8 @@ fn compute_decommitment_positions_and_rebuild_evals(
         // TODO(andrew): Handle the error.
         let loop_res = loop {
             let decommitment_position = match subset_decommitment_positions.next() {
-                Option::Some(position) => position,
-                Option::None => { break Result::Ok(()); },
+                Some(position) => position,
+                None => { break Ok(()); },
             };
 
             decommitment_positions.append(decommitment_position);
@@ -558,13 +555,13 @@ fn compute_decommitment_positions_and_rebuild_evals(
             subset_eval
                 .append(
                     *match query_positions.next_if_eq(@decommitment_position) {
-                        Option::Some(_) => {
+                        Some(_) => {
                             let res = query_evals_iter.next().unwrap();
                             res
                         },
-                        Option::None => match witness_evals_iter.next() {
-                            Option::Some(witness_eval) => { witness_eval },
-                            Option::None => { break Result::Err(InsufficientWitnessError {}); },
+                        None => match witness_evals_iter.next() {
+                            Some(witness_eval) => { witness_eval },
+                            None => { break Err(InsufficientWitnessError {}); },
                         },
                     },
                 );
@@ -572,8 +569,8 @@ fn compute_decommitment_positions_and_rebuild_evals(
 
         // TODO(andrew): Is there an easier way to break if an inner loop returns an error i.e. like
         // `loop { .. }?;` but for breaking a loop?.
-        if let Result::Err(error) = loop_res {
-            break Result::Err(error);
+        if let Err(error) = loop_res {
+            break Err(error);
         }
 
         subset_evals.append(subset_eval);
@@ -590,7 +587,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
         subset_evals, subset_domain_index_initials.span(),
     );
 
-    Result::Ok((decommitment_positions.span(), sparse_evaluation))
+    Ok((decommitment_positions.span(), sparse_evaluation))
 }
 
 #[derive(Drop)]
@@ -1251,7 +1248,7 @@ mod test {
 
         // TODO(andrew): Something like Rust's `assert_matches!()` would be nice.
         match verification_result {
-            Result::Err(error) => match error {
+            Err(error) => match error {
                 FriVerificationError::InnerLayerEvaluationsInvalid => {},
                 _ => panic!("wrong error"),
             },
@@ -1350,7 +1347,7 @@ mod test {
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
         match verifier {
-            Result::Err(error) => match error {
+            Err(error) => match error {
                 FriVerificationError::InvalidNumFriLayers => {},
                 _ => panic!("wrong error"),
             },
@@ -1449,7 +1446,7 @@ mod test {
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
         match verifier {
-            Result::Err(error) => match error {
+            Err(error) => match error {
                 FriVerificationError::InvalidNumFriLayers => {},
                 _ => panic!("wrong error"),
             },
@@ -1551,9 +1548,9 @@ mod test {
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
         match verifier {
-            // TODO(andrew): Support `Result::Err(FriVerificationError::LastLayerDegreeInvalid)`
+            // TODO(andrew): Support `Err(FriVerificationError::LastLayerDegreeInvalid)`
             // to be consistent with Rust.
-            Result::Err(err) => match err {
+            Err(err) => match err {
                 FriVerificationError::LastLayerDegreeInvalid => {},
                 _ => panic!("wrong error"),
             },
@@ -1649,7 +1646,7 @@ mod test {
         let verification_result = verifier.decommit_on_queries(queries, query_evals);
 
         match verification_result {
-            Result::Err(err) => match err {
+            Err(err) => match err {
                 FriVerificationError::LastLayerEvaluationsInvalid => {},
                 _ => panic!("wrong error"),
             },
