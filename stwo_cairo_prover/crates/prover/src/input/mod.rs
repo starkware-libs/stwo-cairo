@@ -11,7 +11,6 @@ pub mod builtin_segments;
 pub mod decode;
 pub mod memory;
 pub mod plain;
-pub mod range_check_unit;
 pub mod state_transitions;
 pub mod vm_import;
 
