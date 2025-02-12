@@ -8,7 +8,6 @@ members = [
     "crates/run_and_prove",
     "crates/vm_runner",
     "crates/common",
-    "crates/air_structs_derive",
     "crates/recursion_bridge",
 ]
 resolver = "2"
