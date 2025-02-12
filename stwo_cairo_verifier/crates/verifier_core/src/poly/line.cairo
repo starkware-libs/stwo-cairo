@@ -107,7 +107,7 @@ fn line_fft(
     }
     let mut domains = domains.span();
 
-    while let Option::Some(domain) = domains.pop_back() {
+    while let Some(domain) = domains.pop_back() {
         let chunk_size = domain.size();
         let twiddles = gen_twiddles(domain).span();
         let n_chunks = n / chunk_size;
@@ -142,7 +142,7 @@ fn gen_twiddles(self: @LineDomain) -> Array<M31> {
         remaining: self.size() / 2,
     };
     let mut res = array![];
-    while let Option::Some(v) = iter.next() {
+    while let Some(v) = iter.next() {
         res.append(v);
     }
     res
@@ -162,10 +162,10 @@ pub impl LinePolySerde of Serde<LinePoly> {
 
         // Check the sizes match.
         if res.coeffs.len() != pow2(res.log_size) {
-            return Option::None;
+            return None;
         }
 
-        Option::Some(res)
+        Some(res)
     }
 }
 
@@ -256,12 +256,12 @@ impl LineDomainIteratorImpl of Iterator<LineDomainIterator> {
 
     fn next(ref self: LineDomainIterator) -> Option<M31> {
         if self.remaining == 0 {
-            return Option::None;
+            return None;
         }
         self.remaining -= 1;
         let res = self.cur.x;
         self.cur = self.cur + self.step;
-        Option::Some(res)
+        Some(res)
     }
 }
 

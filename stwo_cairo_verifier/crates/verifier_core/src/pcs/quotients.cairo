@@ -68,21 +68,21 @@ pub fn fri_answers(
     let mut n_columns_per_tree = array![];
     let mut column = 0;
     loop {
-        let mut interaction_column_sizes = if let Option::Some(interaction_column_sizes) =
+        let mut interaction_column_sizes = if let Some(interaction_column_sizes) =
             log_size_per_column
             .pop_front() {
             (*interaction_column_sizes).span()
         } else {
-            break Result::Ok(());
+            break Ok(());
         };
 
         let mut res_dict = Default::default();
         let loop_res = loop {
-            let column_log_size = if let Option::Some(column_log_size) = interaction_column_sizes
+            let column_log_size = if let Some(column_log_size) = interaction_column_sizes
                 .pop_front() {
                 column_log_size
             } else {
-                break Result::Ok(());
+                break Ok(());
             };
 
             let (res_dict_entry, value) = res_dict.entry((*column_log_size).into());
@@ -121,7 +121,7 @@ pub fn fri_answers(
                 28 => log_size_28_columns.append(column),
                 29 => log_size_29_columns.append(column),
                 30 => log_size_30_columns.append(column),
-                _ => { break Result::Err(VerificationError::InvalidStructure('invalid size')); },
+                _ => { break Err(VerificationError::InvalidStructure('invalid size')); },
             }
             column += 1;
         };
@@ -183,8 +183,8 @@ pub fn fri_answers(
     }
     loop {
         let columns = match columns_per_log_size_rev.next() {
-            Option::Some(columns) => columns,
-            Option::None => { break Result::Ok(()); },
+            Some(columns) => columns,
+            None => { break Ok(()); },
         };
         log_size -= 1;
 
@@ -211,12 +211,12 @@ pub fn fri_answers(
         );
 
         match answer {
-            Result::Ok(answer) => answers.append(answer),
-            Result::Err(err) => { break Result::Err(err); },
+            Ok(answer) => answers.append(answer),
+            Err(err) => { break Err(err); },
         };
     }?;
 
-    Result::Ok(answers)
+    Ok(answers)
 }
 
 /// Takes `n[i]` elements from the i'th `tree` and returns them as a single array.
@@ -260,7 +260,7 @@ fn fri_answers_for_log_size(
             );
     }
 
-    Result::Ok(quotient_evals_at_queries.span())
+    Ok(quotient_evals_at_queries.span())
 }
 
 /// Computes the OOD quotients for a single query and single column size.
