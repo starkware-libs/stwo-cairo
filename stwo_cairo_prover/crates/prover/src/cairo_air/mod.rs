@@ -1,5 +1,5 @@
-pub mod air;
-pub mod builtins_air;
+mod air;
+mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
 pub mod poseidon;
