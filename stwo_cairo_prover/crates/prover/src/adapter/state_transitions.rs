@@ -498,7 +498,6 @@ impl StateTransitions {
                 if op_1_imm {
                     // [ap/fp + offset0] = [ap/fp + offset1] * Imm.
                     assert!(!op_1_base_fp && !op_1_base_ap && offset2 == 1);
-                    // TODO(Ohad): remove when mul small is implemented.
                     if is_small_mul(op0, op_1) {
                         self.casm_states_by_opcode.mul_opcode_small_imm.push(state);
                     } else {
@@ -507,7 +506,6 @@ impl StateTransitions {
                 } else {
                     // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                     assert!((op_1_base_fp || op_1_base_ap));
-                    // TODO(Ohad): remove when mul small is implemented.
                     if is_small_mul(op0, op_1) {
                         self.casm_states_by_opcode.mul_opcode_small.push(state);
                     } else {

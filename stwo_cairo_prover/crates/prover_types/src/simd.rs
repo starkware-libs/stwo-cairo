@@ -547,7 +547,6 @@ pub struct PackedCasmState {
     pub fp: PackedM31,
 }
 
-// TODO(Ohad): When there are more structs, write a proc-macro in stwo.
 impl Pack for CasmState {
     type SimdType = PackedCasmState;
 
