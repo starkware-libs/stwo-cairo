@@ -324,7 +324,6 @@ impl OpcodesClaimGenerator {
             ));
         }
         // Handle small mul in big mul component. Temporary until airs are written with Rc_3_6_6.
-        // TODO(Ohad): mul small.
         if !input.casm_states_by_opcode.mul_opcode.is_empty() {
             mul.push(mul_opcode::ClaimGenerator::new(
                 input.casm_states_by_opcode.mul_opcode,
