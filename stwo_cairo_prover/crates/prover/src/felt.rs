@@ -5,7 +5,7 @@ use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::fields::m31::M31;
 
 use crate::components::memory::memory_id_to_big::component::N_M31_IN_FELT252;
-use crate::components::memory::memory_id_to_big::{N_BITS_PER_FELT, N_LIMBS_IN_128_BIT_FELT};
+use crate::components::memory::memory_id_to_big::N_BITS_PER_FELT;
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
@@ -51,12 +51,6 @@ where
         n_bits_in_word += 32 - N_BITS_PER_FELT;
     }
     res
-}
-
-/// Splits a 128 bit dense representation into felts, each with N_BITS_PER_FELT bits.
-pub fn split_u128_simd(x: [u32x16; 4]) -> [PackedM31; N_LIMBS_IN_128_BIT_FELT] {
-    split(x, u32x16::from_array([(1 << N_BITS_PER_FELT) - 1; N_LANES]))
-        .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
 }
 
 /// Splits a 252 bit dense representation into felts, each with N_BITS_PER_FELT bits.
