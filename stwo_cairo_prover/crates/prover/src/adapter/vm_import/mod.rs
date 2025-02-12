@@ -12,7 +12,7 @@ use stwo_cairo_utils::file_utils::{open_file, read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
 
-use super::builtin_segments::BuiltinSegments;
+use super::builtins::builtin_segments::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::state_transitions::StateTransitions;
 use super::ProverInput;

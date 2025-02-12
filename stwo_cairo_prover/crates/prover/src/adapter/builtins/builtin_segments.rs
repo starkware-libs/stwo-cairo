@@ -3,7 +3,7 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use serde::{Deserialize, Serialize};
 
-use super::memory::MemoryBuilder;
+use super::super::memory::MemoryBuilder;
 
 pub const ADD_MOD_MEMORY_CELLS: usize = 7;
 pub const BITWISE_MEMORY_CELLS: usize = 5;
@@ -211,7 +211,7 @@ mod builtin_padding {
     use cairo_vm::air_public_input::MemorySegmentAddresses;
     use itertools::Itertools;
 
-    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::builtins::builtin_segments::BITWISE_MEMORY_CELLS;
     use crate::adapter::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
 
     pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
@@ -248,7 +248,7 @@ mod test_builtin_segments {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
 
-    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::builtins::builtin_segments::BITWISE_MEMORY_CELLS;
     use crate::adapter::memory::{
         u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue,
     };
@@ -271,7 +271,7 @@ mod test_builtin_segments {
     #[test]
     fn test_builtin_segments() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("src/adapter/test_builtins_segments/test_public_input.json");
+            .join("src/adapter/builtins/builtins_segments/test_artifacts/test_public_input.json");
         let pub_data_string = std::fs::read_to_string(&path)
             .unwrap_or_else(|_| panic!("Unable to read file: {}", path.display()));
         let pub_data: PublicInput<'_> =

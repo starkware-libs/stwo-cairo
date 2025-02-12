@@ -12,7 +12,7 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
-use crate::adapter::builtin_segments::{
+use crate::adapter::builtins::builtin_segments::{
     BuiltinSegments, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 use crate::components::{
