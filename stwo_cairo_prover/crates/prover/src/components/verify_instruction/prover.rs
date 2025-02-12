@@ -5,7 +5,6 @@ use std::iter::zip;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::vec;
 
-use air_structs_derive::SubComponentInputs;
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
 use prover_types::cpu::*;

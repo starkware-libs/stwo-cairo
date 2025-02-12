@@ -13,7 +13,6 @@ std = ["dep:sonic-rs"]
 nightly = []
 
 [dependencies]
-air_structs_derive = { path = "../air_structs_derive" }
 stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
 stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
 bytemuck.workspace = true
