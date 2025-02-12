@@ -1,3 +1,4 @@
+use core::num::traits::Zero;
 use crate::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl, CirclePointTrait,
     Coset, CosetImpl,
@@ -74,7 +75,7 @@ pub struct CanonicCoset {
 #[generate_trait]
 pub impl CanonicCosetImpl of CanonicCosetTrait {
     fn new(log_size: u32) -> CanonicCoset {
-        assert!(log_size > 0);
+        assert!(log_size.is_non_zero());
         CanonicCoset { coset: CosetImpl::odds(log_size) }
     }
 
@@ -85,7 +86,7 @@ pub impl CanonicCosetImpl of CanonicCosetTrait {
 
     /// Gets half of the coset (its conjugate complements to the whole coset), `G_{2n} + <G_{n/2}>`.
     fn half_coset(self: @CanonicCoset) -> Coset {
-        assert!(*self.coset.log_size > 0);
+        assert!(self.coset.log_size.is_non_zero());
         Coset {
             initial_index: *self.coset.initial_index,
             step_size: *self.coset.step_size + *self.coset.step_size,
