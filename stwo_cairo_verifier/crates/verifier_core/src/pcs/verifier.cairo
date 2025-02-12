@@ -14,9 +14,9 @@ use crate::{ColumnArray, TreeArray};
 use super::PcsConfig;
 
 // TODO(andrew): Change all `Array` types to `Span`.
-#[derive(Drop, Serde)]
-pub struct CommitmentSchemeProof {
-    pub commitments: TreeArray<felt252>,
+#[derive(Drop)]
+pub struct CommitmentSchemeProof<HashT> {
+    pub commitments: TreeArray<HashT>,
     /// Sampled mask values.
     pub sampled_values: TreeArray<ColumnArray<Array<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
@@ -25,6 +25,38 @@ pub struct CommitmentSchemeProof {
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
 }
+
+
+impl CommitmentSchemeProofSerde<
+    HashT, +Drop<HashT>, +core::serde::Serde<HashT>, +core::traits::Destruct<HashT>,
+> of core::serde::Serde<CommitmentSchemeProof<HashT>> {
+    fn serialize(self: @CommitmentSchemeProof<HashT>, ref output: Array<felt252>) {
+        self.commitments.serialize(ref output);
+        self.sampled_values.serialize(ref output);
+        self.decommitments.serialize(ref output);
+        self.queried_values.serialize(ref output);
+        self.proof_of_work_nonce.serialize(ref output);
+        self.fri_proof.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<CommitmentSchemeProof<HashT>> {
+        Option::Some(
+            CommitmentSchemeProof {
+                commitments: Serde::<TreeArray<HashT>>::deserialize(ref serialized)?,
+                sampled_values: Serde::<
+                    TreeArray<ColumnArray<Array<QM31>>>,
+                >::deserialize(ref serialized)?,
+                decommitments: Serde::<
+                    TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
+                >::deserialize(ref serialized)?,
+                queried_values: Serde::<TreeArray<Span<M31>>>::deserialize(ref serialized)?,
+                proof_of_work_nonce: Serde::<u64>::deserialize(ref serialized)?,
+                fri_proof: Serde::<FriProof>::deserialize(ref serialized)?,
+            },
+        )
+    }
+}
+
 
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
 // TODO(andrew): Make generic on MerkleChannel.
@@ -71,7 +103,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn verify_values(
         self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
-        proof: CommitmentSchemeProof,
+        proof: CommitmentSchemeProof<felt252>,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
         let CommitmentSchemeProof {
