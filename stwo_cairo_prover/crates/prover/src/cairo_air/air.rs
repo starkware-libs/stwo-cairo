@@ -513,7 +513,6 @@ impl CairoComponents {
         let verify_bitwise_xor_9_component = verify_bitwise_xor_9::Component::new(
             tree_span_provider,
             verify_bitwise_xor_9::Eval {
-                claim: cairo_claim.verify_bitwise_xor_9,
                 verify_bitwise_xor_9_lookup_elements: interaction_elements
                     .verify_bitwise_xor_9
                     .clone(),

@@ -21,7 +21,6 @@ pub const N_BITS: u32 = 9;
 pub const LOG_SIZE: u32 = N_BITS * 2;
 
 pub struct Eval {
-    pub claim: Claim,
     pub verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9,
 }
 
