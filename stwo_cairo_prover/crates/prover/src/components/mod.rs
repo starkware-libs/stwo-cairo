@@ -23,6 +23,8 @@ pub mod jump_opcode_double_deref;
 pub mod jump_opcode_rel;
 pub mod jump_opcode_rel_imm;
 pub mod memory;
+pub mod mul_opcode;
+pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
 pub mod range_check_builtin_bits_128;
@@ -32,10 +34,6 @@ pub mod ret_opcode;
 pub mod utils;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
-
-// TODO(Ohad): mul small.
-pub mod mul_opcode;
-pub mod mul_opcode_imm;
 
 mod prelude;
 
