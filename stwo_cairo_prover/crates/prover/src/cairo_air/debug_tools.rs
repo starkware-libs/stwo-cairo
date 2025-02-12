@@ -559,7 +559,6 @@ where
         RelationTrackerComponent::new(
             tree_span_provider,
             verify_bitwise_xor_9::Eval {
-                claim: claim.verify_bitwise_xor_9,
                 verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
             },
             1 << crate::components::verify_bitwise_xor_9::component::LOG_SIZE,
