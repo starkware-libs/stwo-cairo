@@ -39,10 +39,6 @@ pub struct Eval {
     pub lookup_elements: relations::MemoryAddressToId,
 }
 impl Eval {
-    pub const fn n_columns(&self) -> usize {
-        N_TRACE_COLUMNS
-    }
-
     pub fn new(claim: Claim, lookup_elements: relations::MemoryAddressToId) -> Self {
         Self {
             log_size: claim.log_size,

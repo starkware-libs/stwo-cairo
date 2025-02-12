@@ -22,9 +22,7 @@ pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_M31_IN_FELT252: usize = 28;
 pub const N_M31_IN_SMALL_FELT252: usize = 8; // 72 bits.
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
-pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252;
 pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
-pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_SMALL_FELT252;
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
 pub type BigComponent = FrameworkComponent<BigEval>;
@@ -43,9 +41,6 @@ pub struct BigEval {
     pub range9_9_lookup_elements: relations::RangeCheck_9_9,
 }
 impl BigEval {
-    pub const fn n_columns(&self) -> usize {
-        BIG_N_COLUMNS
-    }
     pub fn new(
         claim: Claim,
         lookup_elements: relations::MemoryIdToBig,
@@ -101,9 +96,6 @@ pub struct SmallEval {
     pub range_check_9_9_relation: relations::RangeCheck_9_9,
 }
 impl SmallEval {
-    pub const fn n_columns(&self) -> usize {
-        SMALL_N_COLUMNS
-    }
     pub fn new(
         claim: Claim,
         lookup_elements: relations::MemoryIdToBig,

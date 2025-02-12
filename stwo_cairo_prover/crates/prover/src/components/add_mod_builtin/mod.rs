@@ -1,3 +1,5 @@
+// TODO(Gali): remove unused.
+#![allow(unused)]
 pub mod component;
 pub mod prover;
 
