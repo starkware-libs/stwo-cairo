@@ -10,7 +10,7 @@
 
 pub mod adapter;
 pub mod cairo_air;
-pub mod components;
+mod components;
 mod felt;
 pub mod relations;
 
