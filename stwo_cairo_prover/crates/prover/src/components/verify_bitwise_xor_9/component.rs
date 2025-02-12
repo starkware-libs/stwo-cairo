@@ -14,7 +14,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::cairo_air::preprocessed::{BitwiseXor, PreProcessedColumn};
+use crate::preprocessed::{BitwiseXor, PreProcessedColumn};
 use crate::relations;
 
 pub const N_BITS: u32 = 9;

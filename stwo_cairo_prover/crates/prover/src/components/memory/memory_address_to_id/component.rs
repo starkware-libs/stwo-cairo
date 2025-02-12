@@ -9,7 +9,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
+use crate::preprocessed::{PreProcessedColumn, Seq};
 use crate::relations;
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
