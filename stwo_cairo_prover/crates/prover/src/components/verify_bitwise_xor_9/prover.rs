@@ -33,8 +33,8 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim, LOG_SIZE, N_BITS};
-use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::utils::{pack_values, AtomicMultiplicityColumn};
+use crate::preprocessed::BitwiseXor;
 use crate::relations;
 
 pub type InputType = [M31; 3];

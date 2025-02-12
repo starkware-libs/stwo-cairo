@@ -14,8 +14,8 @@ macro_rules! range_check_eval{
 
                 use $crate::relations;
                 use $crate::components::memory::memory_id_to_big::component::N_MULTIPLICITY_COLUMNS;
-                use $crate::cairo_air::preprocessed::RangeCheck;
-                use $crate::cairo_air::preprocessed::PreProcessedColumn;
+                use $crate::preprocessed::RangeCheck;
+                use $crate::preprocessed::PreProcessedColumn;
 
                 const N_RANGES:usize = $crate::count_elements!($($log_range),*);
                 const RANGES : [u32; N_RANGES] = [$($log_range),+];

@@ -159,8 +159,8 @@ mod tests {
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-    use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
     use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
+    use crate::preprocessed::{PreProcessedColumn, RangeCheck};
     use crate::relations;
     #[test]
     fn test_prove() {

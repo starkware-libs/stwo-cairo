@@ -25,7 +25,6 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
-use super::preprocessed::PreProcessedTrace;
 use super::range_checks_air::{
     RangeChecksClaim, RangeChecksClaimGenerator, RangeChecksComponents,
     RangeChecksInteractionClaim, RangeChecksInteractionClaimGenerator,
@@ -35,6 +34,7 @@ use crate::adapter::ProverInput;
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::{verify_bitwise_xor_9, verify_instruction};
 use crate::felt::split_f252;
+use crate::preprocessed::PreProcessedTrace;
 use crate::relations;
 
 #[derive(Serialize, Deserialize)]

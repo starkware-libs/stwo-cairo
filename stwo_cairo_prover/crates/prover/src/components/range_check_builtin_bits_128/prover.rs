@@ -31,8 +31,8 @@ use stwo_prover::core::utils::{
 };
 
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::preprocessed::Seq;
 use crate::components::{memory_address_to_id, memory_id_to_big};
+use crate::preprocessed::Seq;
 use crate::relations;
 
 const N_TRACE_COLUMNS: usize = 17;

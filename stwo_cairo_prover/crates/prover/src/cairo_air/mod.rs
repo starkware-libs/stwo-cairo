@@ -2,13 +2,11 @@ pub mod air;
 pub mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
-pub mod preprocessed;
 pub mod range_checks_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
-use preprocessed::PreProcessedTrace;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -24,9 +22,10 @@ use tracing::{span, Level};
 use crate::adapter::ProverInput;
 use crate::components::memory::LOG_MEMORY_ADDRESS_BOUND;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::preprocessed::PreProcessedTrace;
 
 // TODO(Ohad): decide dynamically.
-const LOG_MAX_ROWS: u32 = 22;
+pub(crate) const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
