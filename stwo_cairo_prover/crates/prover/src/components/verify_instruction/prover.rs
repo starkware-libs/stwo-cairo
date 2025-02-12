@@ -101,33 +101,14 @@ impl ClaimGenerator {
 
         let packed_inputs = pack_values(&inputs);
         let packed_mults = pack_values(&mults);
-        let (trace, sub_components_inputs, lookup_data) =
-            write_trace_simd(packed_inputs, packed_mults, memory_address_to_id_state);
-
-        sub_components_inputs
-            .range_check_4_3_inputs
-            .iter()
-            .for_each(|inputs| {
-                range_check_4_3_state.add_inputs(&inputs[..]);
-            });
-        sub_components_inputs
-            .range_check_7_2_5_inputs
-            .iter()
-            .for_each(|inputs| {
-                range_check_7_2_5_state.add_inputs(&inputs[..]);
-            });
-        sub_components_inputs
-            .memory_address_to_id_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_inputs(&inputs[..]);
-            });
-        sub_components_inputs
-            .memory_id_to_big_inputs
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_inputs(&inputs[..]);
-            });
+        let (trace, lookup_data) = write_trace_simd(
+            packed_inputs,
+            packed_mults,
+            memory_address_to_id_state,
+            memory_id_to_big_state,
+            range_check_4_3_state,
+            range_check_7_2_5_state,
+        );
 
         tree_builder.extend_evals(trace.to_evals());
 
@@ -155,14 +136,6 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(SubComponentInputs, ParIterMut, IterMut, Uninitialized)]
-pub struct SubComponentInputs {
-    pub range_check_4_3_inputs: [Vec<range_check_4_3::InputType>; 1],
-    pub range_check_7_2_5_inputs: [Vec<range_check_7_2_5::InputType>; 1],
-    pub memory_address_to_id_inputs: [Vec<memory_address_to_id::InputType>; 1],
-    pub memory_id_to_big_inputs: [Vec<memory_id_to_big::InputType>; 1],
-}
-
 #[derive(ParIterMut, IterMut, Uninitialized)]
 struct LookupData {
     pub memory_address_to_id: [Vec<[PackedM31; 2]>; 1],
@@ -181,18 +154,16 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    SubComponentInputs,
-    LookupData,
-) {
+    memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+    range_check_4_3_state: &range_check_4_3::ClaimGenerator,
+    range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
-    let (mut trace, mut lookup_data, mut sub_components_inputs) = unsafe {
+    let (mut trace, mut lookup_data) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_size),
         )
     };
 
@@ -219,13 +190,9 @@ fn write_trace_simd(
         .par_iter_mut()
         .zip(inputs.par_iter())
         .zip(lookup_data.par_iter_mut())
-        .zip(sub_components_inputs.par_iter_mut().chunks(N_LANES))
         .zip(mults.into_par_iter())
         .for_each(
-            |(
-                (((row, verify_instruction_input), lookup_data), mut sub_components_inputs),
-                multiplicity,
-            )| {
+            |(((row, verify_instruction_input), lookup_data), multiplicity)| {
                 let input_tmp_16a4f_0 = (
                     verify_instruction_input.0,
                     [
@@ -321,23 +288,12 @@ fn write_trace_simd(
                 let offset2_high_col26 = offset2_high_tmp_16a4f_8.as_m31();
                 *row[26] = offset2_high_col26;
 
-                for (i, &input) in [offset0_mid_col20, offset1_low_col21, offset1_high_col23]
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].range_check_7_2_5_inputs[0] = input;
-                }
+                let range_check_7_2_5_input_0 =
+                    [offset0_mid_col20, offset1_low_col21, offset1_high_col23].unpack();
                 *lookup_data.range_check_7_2_5[0] =
                     [offset0_mid_col20, offset1_low_col21, offset1_high_col23];
 
-                for (i, &input) in [offset2_low_col24, offset2_high_col26]
-                    .unpack()
-                    .iter()
-                    .enumerate()
-                {
-                    *sub_components_inputs[i].range_check_4_3_inputs[0] = input;
-                }
+                let range_check_4_3_input_0 = [offset2_low_col24, offset2_high_col26].unpack();
                 *lookup_data.range_check_4_3[0] = [offset2_low_col24, offset2_high_col26];
 
                 // Mem Verify.
@@ -346,13 +302,9 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(input_col0);
                 let instruction_id_col27 = memory_address_to_id_value_tmp_16a4f_9;
                 *row[27] = instruction_id_col27;
-                for (i, &input) in input_col0.unpack().iter().enumerate() {
-                    *sub_components_inputs[i].memory_address_to_id_inputs[0] = input;
-                }
+                let memory_address_to_id_input_0 = input_col0.unpack();
                 *lookup_data.memory_address_to_id[0] = [input_col0, instruction_id_col27];
-                for (i, &input) in instruction_id_col27.unpack().iter().enumerate() {
-                    *sub_components_inputs[i].memory_id_to_big_inputs[0] = input;
-                }
+                let memory_id_to_big_input_0 = instruction_id_col27.unpack();
                 *lookup_data.memory_id_to_big[0] = [
                     instruction_id_col27,
                     offset0_low_col19,
@@ -422,10 +374,15 @@ fn write_trace_simd(
                 ];
                 *row[28] = multiplicity;
                 *lookup_data.mults = multiplicity;
+
+                memory_address_to_id_state.add_inputs(&memory_address_to_id_input_0);
+                memory_id_to_big_state.add_inputs(&memory_id_to_big_input_0);
+                range_check_4_3_state.add_inputs(&range_check_4_3_input_0);
+                range_check_7_2_5_state.add_inputs(&range_check_7_2_5_input_0);
             },
         );
 
-    (trace, sub_components_inputs, lookup_data)
+    (trace, lookup_data)
 }
 
 pub struct InteractionClaimGenerator {
