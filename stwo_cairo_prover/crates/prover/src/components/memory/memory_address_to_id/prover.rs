@@ -24,7 +24,6 @@ use crate::components::memory_address_to_id::component::{
 use crate::components::utils::AtomicMultiplicityColumn;
 use crate::relations;
 
-pub type PackedInputType = PackedM31;
 pub type InputType = M31;
 
 /// A struct that represents a mapping from Address to ID. Zero address is not allowed.
@@ -40,10 +39,6 @@ impl AddressToId {
 
     pub fn len(&self) -> usize {
         self.data.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.data.is_empty()
     }
 
     pub fn resize(&mut self, new_len: usize, value: u32) {

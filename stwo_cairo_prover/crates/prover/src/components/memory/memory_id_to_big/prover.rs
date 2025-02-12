@@ -7,7 +7,7 @@ use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIter
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Column};
@@ -30,7 +30,6 @@ use crate::components::utils::AtomicMultiplicityColumn;
 use crate::felt::split_f252_simd;
 use crate::relations;
 
-pub type PackedInputType = PackedBaseField;
 pub type InputType = BaseField;
 
 /// Generates the trace and the claim for the id -> f252 memory table.
