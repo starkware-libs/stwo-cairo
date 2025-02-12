@@ -36,6 +36,8 @@ impl ClaimGenerator {
         self.mults.increase_at((input[0].0 << N_BITS) + input[1].0);
     }
 
+    // TODO(Gali): remove.
+    #[allow(dead_code)]
     pub fn add_inputs(&mut self, inputs: &[InputType]) {
         for input in inputs {
             self.add_input(input);
