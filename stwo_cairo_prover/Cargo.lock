@@ -1216,22 +1216,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "prover_types"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "itertools 0.12.1",
- "num-traits",
- "rand",
- "ruint",
- "serde",
- "starknet-ff",
- "stwo-cairo-serialize",
- "stwo-prover",
- "stwo_cairo_utils",
-]
-
-[[package]]
 name = "ptr_meta"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1797,6 +1781,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo-cairo-common"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "itertools 0.12.1",
+ "num-traits",
+ "rand",
+ "ruint",
+ "serde",
+ "starknet-ff",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+ "stwo_cairo_utils",
+]
+
+[[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
 dependencies = [
@@ -1848,7 +1848,6 @@ dependencies = [
  "itertools 0.12.1",
  "num-traits",
  "paste",
- "prover_types",
  "rand",
  "rayon",
  "serde",
@@ -1857,6 +1856,7 @@ dependencies = [
  "starknet-ff",
  "stwo-air-utils",
  "stwo-air-utils-derive",
+ "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_utils",

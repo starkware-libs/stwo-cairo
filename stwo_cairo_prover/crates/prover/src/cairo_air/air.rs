@@ -1,7 +1,7 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
-use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};

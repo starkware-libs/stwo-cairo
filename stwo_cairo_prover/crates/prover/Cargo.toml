@@ -24,7 +24,7 @@ itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
-prover_types = { path = "../prover_types" }
+stwo-cairo-common = { path = "../common" }
 rayon = { version = "1.10.0" }
 serde.workspace = true
 serde_json.workspace = true

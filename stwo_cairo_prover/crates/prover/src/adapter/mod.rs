@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use builtin_segments::BuiltinSegments;
 use cairo_vm::types::builtin_name::BuiltinName;
 use memory::Memory;
-use prover_types::cpu::M31;
 use serde::{Deserialize, Serialize};
 use state_transitions::StateTransitions;
+use stwo_cairo_common::prover_types::cpu::M31;
 
 pub mod builtin_segments;
 pub mod decode;

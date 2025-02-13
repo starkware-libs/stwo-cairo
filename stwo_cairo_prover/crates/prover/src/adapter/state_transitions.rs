@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::fmt::Display;
 
-use prover_types::cpu::CasmState;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
 
 use super::decode::{Instruction, OpcodeExtension};
