@@ -4,8 +4,8 @@ use std::iter::zip;
 
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
-use prover_types::cpu::*;
-use prover_types::simd::*;
+use stwo_cairo_common::prover_types::cpu::*;
+use stwo_cairo_common::prover_types::simd::*;
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };

@@ -10,8 +10,7 @@ use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
-use super::cpu::{UInt16, UInt32, UInt64, PRIME};
-use crate::cpu::{BigUInt, CasmState, Felt252};
+use super::cpu::{BigUInt, CasmState, Felt252, UInt16, UInt32, UInt64, PRIME};
 
 pub const LOG_N_LANES: u32 = 4;
 

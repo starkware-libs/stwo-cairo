@@ -1,7 +1,7 @@
 use std::simd::{u32x16, Simd};
 
 use itertools::Itertools;
-use prover_types::simd::LOG_N_LANES;
+use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};

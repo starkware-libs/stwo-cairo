@@ -48,7 +48,7 @@ pub struct VmArgs {
         long = "run_from_cairo_pie",
         // We need to add these air_private_input & air_public_input or else
         // passing run_from_cairo_pie + either of these without proof_mode will not fail
-        conflicts_with_all = ["proof_mode", "air_private_input", "air_public_input"]
+        conflicts_with_all = ["air_private_input", "air_public_input"]
     )]
     pub run_from_cairo_pie: bool,
 }

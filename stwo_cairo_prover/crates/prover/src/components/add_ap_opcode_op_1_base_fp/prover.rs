@@ -4,13 +4,13 @@ use std::iter::zip;
 
 use itertools::{chain, zip_eq, Itertools};
 use num_traits::{One, Zero};
-use prover_types::cpu::*;
-use prover_types::simd::*;
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
 use stwo_air_utils::trace::component_trace::ComponentTrace;
 use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
+use stwo_cairo_common::prover_types::cpu::*;
+use stwo_cairo_common::prover_types::simd::*;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::air::Component;

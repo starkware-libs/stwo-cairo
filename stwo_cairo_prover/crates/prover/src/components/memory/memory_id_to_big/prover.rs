@@ -2,8 +2,8 @@ use std::iter::zip;
 use std::simd::Simd;
 
 use itertools::{chain, izip, Itertools};
-use prover_types::simd::PackedFelt252;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
+use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::column::BaseColumn;
