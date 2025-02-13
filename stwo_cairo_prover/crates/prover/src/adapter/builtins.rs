@@ -211,7 +211,7 @@ mod builtin_padding {
     use cairo_vm::air_public_input::MemorySegmentAddresses;
     use itertools::Itertools;
 
-    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::builtins::BITWISE_MEMORY_CELLS;
     use crate::adapter::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
 
     pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
@@ -248,7 +248,7 @@ mod test_builtin_segments {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
 
-    use crate::adapter::builtin_segments::BITWISE_MEMORY_CELLS;
+    use crate::adapter::builtins::BITWISE_MEMORY_CELLS;
     use crate::adapter::memory::{
         u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue,
     };
