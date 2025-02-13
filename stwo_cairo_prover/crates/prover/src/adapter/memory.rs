@@ -188,15 +188,20 @@ impl MemoryBuilder {
         }
     }
 
-    /// Verify that a segment of memory cells of length segment_length starting at address
-    /// start_addr is empty. This means each address in the segment is either beyond
-    /// address_to_id.len() or holds the value EncodedMemoryValueId::default().
-    // TODO(ohadn): make sure only empty cells can have value EncodedMemoryValueId::default().
-    pub fn verify_empty_segment(&self, start_addr: u32, segment_length: u32) {
+    pub fn assert_segment_is_empty(&self, start_addr: u32, segment_length: u32) {
         let len = self.address_to_id.len();
-        let cell_tests_stop = std::cmp::min(len, (start_addr + segment_length) as usize);
-        for i in start_addr as usize..cell_tests_stop {
-            assert_eq!(self.address_to_id[i], EncodedMemoryValueId::default());
+        let start = start_addr as usize;
+        let end = std::cmp::min(len, (start_addr + segment_length) as usize);
+
+        if let Some(non_empty) = self.address_to_id[start..end]
+            .iter()
+            .position(|&id| id != EncodedMemoryValueId::default())
+        {
+            panic!(
+                "Memory expected empty at addresses {}, found ID: {:?}",
+                start + non_empty,
+                self.address_to_id[start + non_empty]
+            );
         }
     }
 
@@ -398,7 +403,7 @@ mod tests {
     }
 
     // TODO(Ohad): unignore.
-    #[ignore = "bitwise has holes"]
+    #[ignore = "poseidon has holes"]
     #[should_panic = "Accessing empty memory cell"]
     #[test]
     fn test_access_invalid_address() {
@@ -415,5 +420,16 @@ mod tests {
         let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
 
         memory.get(1);
+    }
+
+    #[should_panic = "Memory expected empty at addresses 2, found ID: EncodedMemoryValueId(0)"]
+    #[test]
+    fn test_assert_segment_is_empty() {
+        let memory_config = MemoryConfig::default();
+        let mut memory_builder = MemoryBuilder::new(memory_config);
+
+        memory_builder.set(2, MemoryValue::Small(123));
+
+        memory_builder.assert_segment_is_empty(0, 4);
     }
 }
