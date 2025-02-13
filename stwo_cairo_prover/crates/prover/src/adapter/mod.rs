@@ -3,15 +3,15 @@ use std::collections::HashMap;
 use builtins::BuiltinSegments;
 use cairo_vm::types::builtin_name::BuiltinName;
 use memory::Memory;
+use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
-use state_transitions::StateTransitions;
 use stwo_cairo_common::prover_types::cpu::M31;
 
 pub mod builtins;
 pub mod decode;
 pub mod memory;
+pub mod opcodes;
 pub mod plain;
-pub mod state_transitions;
 pub mod vm_import;
 
 pub const N_REGISTERS: usize = 3;
