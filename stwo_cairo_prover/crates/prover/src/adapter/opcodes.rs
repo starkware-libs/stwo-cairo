@@ -684,8 +684,8 @@ mod mappings_tests {
 
     use crate::adapter::decode::{Instruction, OpcodeExtension};
     use crate::adapter::memory::*;
+    use crate::adapter::opcodes::StateTransitions;
     use crate::adapter::plain::input_from_plain_casm;
-    use crate::adapter::state_transitions::StateTransitions;
     use crate::adapter::vm_import::TraceEntry;
 
     #[test]
