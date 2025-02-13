@@ -1,37 +1,8 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]#![allow(unused_parens)]
 #![allow(unused_imports)]
-use std::iter::zip;
-
-use itertools::{chain, zip_eq, Itertools};
-use num_traits::{One, Zero};
-use stwo_cairo_common::prover_types::cpu::*;
-use stwo_cairo_common::prover_types::simd::*;
-use rayon::iter::{
-    IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
-};
-use stwo_air_utils::trace::component_trace::ComponentTrace;
-use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
-use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
-use stwo_prover::constraint_framework::Relation;
-use stwo_prover::core::air::Component;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::conversion::Unpack;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-use stwo_prover::core::backend::simd::qm31::PackedQM31;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{BackendForChannel, Col, Column};
-use stwo_prover::core::channel::{Channel, MerkleChannel};
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::FieldExpOps;
-use stwo_prover::core::pcs::TreeBuilder;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::bit_reverse_index;
-use stwo_prover::core::utils::coset_index_to_circle_domain_index;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
+use crate::components::prelude::proving::*;
 use super::component::{Claim, InteractionClaim};
-use crate::components::utils::{pack_values, Enabler};
-use crate::relations;
+
 use crate::components::memory_address_to_id;use crate::components::memory_id_to_big;use crate::components::verify_instruction;use crate::components::range_check_9_9;use crate::components::range_check_19;
 
 pub type InputType = CasmState;
