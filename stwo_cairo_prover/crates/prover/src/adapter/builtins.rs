@@ -179,7 +179,7 @@ fn pad_segment(
     let next_power_of_two = num_instances.next_power_of_two();
 
     // Verify that the segment we intend to pad is empty.
-    mem.verify_empty_segment(
+    mem.assert_segment_is_empty(
         stop_ptr,
         (next_power_of_two - num_instances) * n_cells_per_instance,
     );
