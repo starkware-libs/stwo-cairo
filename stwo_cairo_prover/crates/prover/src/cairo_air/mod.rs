@@ -3,7 +3,7 @@ pub mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
 pub mod poseidon;
-pub mod preprocessed;
+pub(crate) mod preprocessed;
 pub mod preprocessed_utils;
 pub mod range_checks_air;
 

@@ -17,9 +17,7 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::poseidon::const_columns::PoseidonRoundKeys;
 use super::LOG_MAX_ROWS;
-use crate::components::range_check_vector::{
-    generate_partitioned_enumeration, partition_into_bit_segments, SIMD_ENUMERATION_0,
-};
+use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: u32 = 9;
@@ -247,16 +245,6 @@ impl<const N: usize> RangeCheck<N> {
         assert!(column_idx < N);
         Self { ranges, column_idx }
     }
-
-    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        let n = SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32);
-
-        unsafe {
-            PackedM31::from_simd_unchecked(
-                partition_into_bit_segments(n, self.ranges)[self.column_idx],
-            )
-        }
-    }
 }
 impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
     fn log_size(&self) -> u32 {
@@ -281,6 +269,8 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
 }
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
+// TODO(Shahars): remove allow.
+#[allow(unused)]
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
 ) -> <<MC as MerkleChannel>::H as MerkleHasher>::Hash
@@ -364,18 +354,6 @@ mod tests {
         assert_eq!(res_a.0, a as u32);
         assert_eq!(res_b.0, b as u32);
         assert_eq!(res_xor.0, expected_xor as u32);
-    }
-
-    #[test]
-    fn test_range_check_packed_at() {
-        let ranges = [1, 2, 3, 4];
-        let range_check = RangeCheck::new(ranges, 2);
-        let index: usize = 500;
-        let expected = ((index & ((1 << (3 + 4)) - 1)) >> 4) as u32;
-
-        let actual = range_check.packed_at(index / N_LANES).to_array()[index % N_LANES].0;
-
-        assert_eq!(actual, expected);
     }
 
     #[test]
