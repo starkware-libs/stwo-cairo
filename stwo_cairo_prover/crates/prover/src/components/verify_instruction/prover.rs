@@ -1,44 +1,15 @@
 #![allow(unused_parens)]
-#![allow(unused_imports)]
-use std::collections::{BTreeMap, BTreeSet, HashMap};
-use std::iter::zip;
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
-use std::vec;
 
-use air_structs_derive::SubComponentInputs;
-use itertools::{chain, zip_eq, Itertools};
-use num_traits::{One, Zero};
-use rayon::iter::{
-    IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
-};
-use stwo_air_utils::trace::component_trace::ComponentTrace;
-use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
-use stwo_cairo_common::prover_types::cpu::*;
-use stwo_cairo_common::prover_types::simd::*;
-use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
-use stwo_prover::constraint_framework::Relation;
-use stwo_prover::core::air::Component;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::conversion::Unpack;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-use stwo_prover::core::backend::simd::qm31::PackedQM31;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{BackendForChannel, Col, Column};
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::pcs::TreeBuilder;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
-use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
+use itertools::Itertools;
 
 use super::component::{Claim, InteractionClaim};
-use crate::adapter::decode::{deconstruct_instruction, Instruction};
-use crate::components::utils::pack_values;
+use crate::adapter::decode::deconstruct_instruction;
+use crate::components::prelude::proving::*;
 use crate::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,
 };
-use crate::relations;
 
 pub type InputType = (M31, [M31; 3], [M31; 15]);
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 15]);
