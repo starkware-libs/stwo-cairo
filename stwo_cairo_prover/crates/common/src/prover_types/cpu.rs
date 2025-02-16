@@ -582,25 +582,25 @@ impl ProverType for Felt252 {
     }
 }
 
-pub const FELT252PACKED27_N_WORDS: usize = 10;
-pub const FELT252PACKED27_BITS_PER_WORD: usize = 27;
+pub const FELT252WIDTH27_N_WORDS: usize = 10;
+pub const FELT252WIDTH27_BITS_PER_WORD: usize = 27;
 
-pub const P_PACKED27_FELTS: [u32; FELT252PACKED27_N_WORDS] = [1, 0, 0, 0, 0, 0, 0, 136, 0, 256];
+pub const P_PACKED27_FELTS: [u32; FELT252WIDTH27_N_WORDS] = [1, 0, 0, 0, 0, 0, 0, 136, 0, 256];
 /// A version of Felt252 whose values are packed into 27-bit limbs instead of 9-bit.
 /// The only supported operations are conversions to and from Felt252.
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
-pub struct Felt252Packed27 {
+pub struct Felt252Width27 {
     pub limbs: [u64; 4],
 }
 
-impl Felt252Packed27 {
+impl Felt252Width27 {
     pub fn get_m31(&self, index: usize) -> M31 {
-        let mask = (1u64 << FELT252PACKED27_BITS_PER_WORD) - 1;
-        let shift = FELT252PACKED27_BITS_PER_WORD * index;
+        let mask = (1u64 << FELT252WIDTH27_BITS_PER_WORD) - 1;
+        let shift = FELT252WIDTH27_BITS_PER_WORD * index;
         let low_limb = shift / 64;
         let shift_low = shift & 0x3F;
-        let high_limb = (shift + FELT252PACKED27_BITS_PER_WORD - 1) / 64;
-        let value = if low_limb == high_limb || index == (FELT252PACKED27_N_WORDS - 1) {
+        let high_limb = (shift + FELT252WIDTH27_BITS_PER_WORD - 1) / 64;
+        let value = if low_limb == high_limb || index == (FELT252WIDTH27_N_WORDS - 1) {
             ((self.limbs[low_limb] >> (shift_low)) & mask) as u32
         } else {
             (((self.limbs[low_limb] >> (shift_low)) | (self.limbs[high_limb] << (64 - shift_low)))
@@ -611,17 +611,17 @@ impl Felt252Packed27 {
 
     pub fn from_limbs(felts: &[M31]) -> Self {
         assert!(
-            felts.len() <= FELT252PACKED27_N_WORDS,
+            felts.len() <= FELT252WIDTH27_N_WORDS,
             "Invalid number of felts"
         );
         let mut limbs = [0u64; 4];
         for (index, felt) in felts.iter().enumerate() {
-            let shift = FELT252PACKED27_BITS_PER_WORD * index;
+            let shift = FELT252WIDTH27_BITS_PER_WORD * index;
             let shift_low = shift & 0x3F;
             let low_limb = shift / 64;
-            let high_limb = (shift + FELT252PACKED27_BITS_PER_WORD - 1) / 64;
+            let high_limb = (shift + FELT252WIDTH27_BITS_PER_WORD - 1) / 64;
             limbs[low_limb] |= (felt.0 as u64) << shift_low;
-            if high_limb != low_limb && index < (FELT252PACKED27_N_WORDS - 1) {
+            if high_limb != low_limb && index < (FELT252WIDTH27_N_WORDS - 1) {
                 limbs[high_limb] |= (felt.0 as u64) >> (64 - shift_low);
             }
         }
@@ -636,19 +636,19 @@ impl Felt252Packed27 {
     }
 }
 
-impl From<Felt252> for Felt252Packed27 {
-    fn from(n: Felt252) -> Felt252Packed27 {
-        Felt252Packed27 { limbs: n.limbs }
+impl From<Felt252> for Felt252Width27 {
+    fn from(n: Felt252) -> Felt252Width27 {
+        Felt252Width27 { limbs: n.limbs }
     }
 }
 
-impl From<Felt252Packed27> for Felt252 {
-    fn from(n: Felt252Packed27) -> Felt252 {
+impl From<Felt252Width27> for Felt252 {
+    fn from(n: Felt252Width27) -> Felt252 {
         Felt252 { limbs: n.limbs }
     }
 }
 
-impl ProverType for Felt252Packed27 {
+impl ProverType for Felt252Width27 {
     fn calc(&self) -> String {
         format!(
             "[{}, {}, {}, {}]",
@@ -656,7 +656,7 @@ impl ProverType for Felt252Packed27 {
         )
     }
     fn r#type() -> String {
-        "Felt252Packed27".to_string()
+        "Felt252Width27".to_string()
     }
 }
 
