@@ -9,8 +9,8 @@ use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
-use super::super::Invertible;
 use super::super::utils::UsizeExTrait;
+use super::super::Invertible;
 
 mod constraints;
 
