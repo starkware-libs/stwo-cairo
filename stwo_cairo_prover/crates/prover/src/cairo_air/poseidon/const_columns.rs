@@ -39,6 +39,8 @@ impl PoseidonRoundKeys {
         }
     }
 
+    // TODO(Gali): remove unused
+    #[allow(unused)]
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
         self.packed_keys[vec_row]
     }
