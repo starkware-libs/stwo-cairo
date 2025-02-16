@@ -1,14 +1,14 @@
-use crate::prover_types::cpu::{Felt252Packed27, FELT252PACKED27_N_WORDS};
+use crate::prover_types::cpu::{Felt252Width27, FELT252WIDTH27_N_WORDS};
 
 pub const N_ROUNDS: usize = 35;
-pub const N_FELT252PACKED27: usize = 3;
-pub const N_WORDS: usize = FELT252PACKED27_N_WORDS * N_FELT252PACKED27;
+pub const N_FELT252WIDTH27: usize = 3;
+pub const N_WORDS: usize = FELT252WIDTH27_N_WORDS * N_FELT252WIDTH27;
 
-pub fn round_keys(round: usize) -> [Felt252Packed27; N_FELT252PACKED27] {
-    POSEIDON_ROUND_KEYS[round].map(|k| Felt252Packed27 { limbs: k })
+pub fn round_keys(round: usize) -> [Felt252Width27; N_FELT252WIDTH27] {
+    POSEIDON_ROUND_KEYS[round].map(|k| Felt252Width27 { limbs: k })
 }
 
-pub const POSEIDON_ROUND_KEYS: [[[u64; 4]; N_FELT252PACKED27]; N_ROUNDS] = [
+pub const POSEIDON_ROUND_KEYS: [[[u64; 4]; N_FELT252WIDTH27]; N_ROUNDS] = [
     [
         [
             9808894619969057997,
