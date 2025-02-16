@@ -8,7 +8,7 @@ use crate::pcs::verifier::{
 use crate::utils::ArrayImpl;
 use crate::vcs::hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
-use crate::{ColumnArray, TreeArray};
+use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 pub trait Air<T> {
     fn composition_log_degree_bound(self: @T) -> u32;
@@ -20,7 +20,7 @@ pub trait Air<T> {
     fn eval_composition_polynomial_at_point(
         self: @T,
         point: CirclePoint<QM31>,
-        mask_values: @TreeArray<ColumnArray<Array<QM31>>>,
+        mask_values: TreeSpan<ColumnSpan<Span<QM31>>>,
         random_coeff: QM31,
     ) -> QM31;
 }
@@ -52,7 +52,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Add the composition polynomial mask points.
     sample_points.append(ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, array![oods_point]));
 
-    let sampled_oods_values = @commitment_scheme_proof.sampled_values;
+    let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
         Result::Ok(composition_oods_eval) => composition_oods_eval,
@@ -75,26 +75,26 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
 /// Extracts the composition trace evaluation from the mask.
 fn extract_composition_eval(
-    mask: @TreeArray<ColumnArray<Array<QM31>>>,
+    mask: TreeSpan<ColumnSpan<Span<QM31>>>,
 ) -> Result<QM31, InvalidOodsSampleStructure> {
-    let composition_cols = mask[mask.len() - 1];
+    let composition_cols = *mask[mask.len() - 1];
 
     if composition_cols.len() != 4 {
         return Result::Err(InvalidOodsSampleStructure {});
     }
 
     let coordinate_evals = [
-        extract_composition_coordinate_eval(composition_cols[0])?,
-        extract_composition_coordinate_eval(composition_cols[1])?,
-        extract_composition_coordinate_eval(composition_cols[2])?,
-        extract_composition_coordinate_eval(composition_cols[3])?,
+        extract_composition_coordinate_eval(*composition_cols[0])?,
+        extract_composition_coordinate_eval(*composition_cols[1])?,
+        extract_composition_coordinate_eval(*composition_cols[2])?,
+        extract_composition_coordinate_eval(*composition_cols[3])?,
     ];
 
     Result::Ok(QM31Impl::from_partial_evals(coordinate_evals))
 }
 
 fn extract_composition_coordinate_eval(
-    composition_coordinate_col: @Array<QM31>,
+    composition_coordinate_col: Span<QM31>,
 ) -> Result<QM31, InvalidOodsSampleStructure> {
     if composition_coordinate_col.len() != 1 {
         return Result::Err(InvalidOodsSampleStructure {});
