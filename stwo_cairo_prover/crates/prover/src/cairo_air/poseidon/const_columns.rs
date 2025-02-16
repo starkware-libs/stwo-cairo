@@ -1,5 +1,5 @@
 use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, N_ROUNDS, N_WORDS};
-use stwo_cairo_common::prover_types::cpu::{FELT252PACKED27_N_WORDS, M31};
+use stwo_cairo_common::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -19,8 +19,8 @@ pub fn round_keys_m31(round: usize, col: usize) -> M31 {
     assert!(col < N_WORDS);
     assert!(round < N_ROUNDS);
 
-    let felt252_index = col / FELT252PACKED27_N_WORDS;
-    let m31_index = col % FELT252PACKED27_N_WORDS;
+    let felt252_index = col / FELT252WIDTH27_N_WORDS;
+    let m31_index = col % FELT252WIDTH27_N_WORDS;
     round_keys(round)[felt252_index].get_m31(m31_index)
 }
 
@@ -67,8 +67,8 @@ impl PreProcessedColumn for PoseidonRoundKeys {
 mod tests {
     use std::array::from_fn;
 
-    use stwo_cairo_common::preprocessed_consts::poseidon::N_FELT252PACKED27;
-    use stwo_cairo_common::prover_types::cpu::Felt252Packed27;
+    use stwo_cairo_common::preprocessed_consts::poseidon::N_FELT252WIDTH27;
+    use stwo_cairo_common::prover_types::cpu::Felt252Width27;
     use stwo_prover::core::backend::simd::m31::N_LANES;
 
     use super::*;
@@ -76,14 +76,14 @@ mod tests {
     #[test]
     fn test_packed_at_round_keys() {
         for vec_row in 0..N_PACKED_ROWS {
-            for i in 0..N_FELT252PACKED27 {
-                let packed: [[M31; N_LANES]; FELT252PACKED27_N_WORDS] = from_fn(|c| {
-                    PoseidonRoundKeys::new((i * FELT252PACKED27_N_WORDS) + c)
+            for i in 0..N_FELT252WIDTH27 {
+                let packed: [[M31; N_LANES]; FELT252WIDTH27_N_WORDS] = from_fn(|c| {
+                    PoseidonRoundKeys::new((i * FELT252WIDTH27_N_WORDS) + c)
                         .packed_at(vec_row)
                         .to_array()
                 });
                 for row_in_packed in 0..N_LANES {
-                    let felt_limbs: [M31; FELT252PACKED27_N_WORDS] = packed
+                    let felt_limbs: [M31; FELT252WIDTH27_N_WORDS] = packed
                         .iter()
                         .map(|arr| arr[row_in_packed])
                         .collect::<Vec<_>>()
@@ -91,9 +91,9 @@ mod tests {
                         .unwrap();
                     let row = (vec_row * N_LANES) + row_in_packed;
                     if row < N_ROUNDS {
-                        assert_eq!(Felt252Packed27::from_limbs(&felt_limbs), round_keys(row)[i]);
+                        assert_eq!(Felt252Width27::from_limbs(&felt_limbs), round_keys(row)[i]);
                     } else {
-                        assert_eq!(Felt252Packed27::from_limbs(&felt_limbs), round_keys(0)[i]);
+                        assert_eq!(Felt252Width27::from_limbs(&felt_limbs), round_keys(0)[i]);
                     }
                 }
             }
