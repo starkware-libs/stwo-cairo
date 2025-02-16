@@ -155,11 +155,37 @@ impl BuiltinSegments {
     /// execution. However, the builtin AIR applies constraints on it's entire range, including
     /// addresses that were not accessed.
     pub fn fill_memory_holes(&self, memory: &mut MemoryBuilder) {
+        self.resize_memory_to_include_holes(memory);
         // bitwise.
         if let Some(segment) = &self.bitwise {
             builtin_padding::bitwise(segment, memory)
         };
         // TODO(ohad): fill other builtins.
+    }
+
+    // If the final segment in a builtin segment, and the final entry has a hole, the memory must be
+    // resized to include the hole.
+    fn resize_memory_to_include_holes(&self, memory: &mut MemoryBuilder) {
+        let max_stop_ptr = [
+            self.add_mod.as_ref(),
+            self.bitwise.as_ref(),
+            self.ec_op.as_ref(),
+            self.ecdsa.as_ref(),
+            self.keccak.as_ref(),
+            self.mul_mod.as_ref(),
+            self.pedersen.as_ref(),
+            self.poseidon.as_ref(),
+            self.range_check_bits_96.as_ref(),
+            self.range_check_bits_128.as_ref(),
+        ]
+        .iter()
+        .filter_map(|segment| segment.map(|s| s.stop_ptr))
+        .max()
+        .unwrap_or(0);
+        let len = memory.address_to_id.len();
+        memory
+            .address_to_id
+            .resize(std::cmp::max(len, max_stop_ptr), Default::default());
     }
 }
 
@@ -368,11 +394,11 @@ mod test_builtin_segments {
         let entries = [
             MemoryEntry {
                 address: 0,
-                value: op1,
+                value: op0,
             },
             MemoryEntry {
                 address: 1,
-                value: op0,
+                value: op1,
             },
         ];
         let mut memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries);
@@ -386,7 +412,6 @@ mod test_builtin_segments {
         let expected_and = std::array::from_fn(|i| op0[i] & op1[i]);
         let expected_xor = std::array::from_fn(|i| op0[i] ^ op1[i]);
         let expected_or = std::array::from_fn(|i| op0[i] | op1[i]);
-        memory.set(5, MemoryValue::Small(0));
         builtin_segments.fill_memory_holes(&mut memory);
         let memory = memory.build();
 
@@ -397,5 +422,30 @@ mod test_builtin_segments {
         assert_eq!(and_res, expected_and);
         assert_eq!(xor_res, expected_xor);
         assert_eq!(or_res, expected_or);
+    }
+
+    #[test]
+    fn test_resize_memory_to_include_holes() {
+        let entries = [
+            MemoryEntry {
+                address: 0,
+                value: [0; 8],
+            },
+            MemoryEntry {
+                address: 1,
+                value: [1; 8],
+            },
+        ];
+        let mut memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries);
+        let builtin_segments = BuiltinSegments {
+            bitwise: Some(MemorySegmentAddresses {
+                begin_addr: 0,
+                stop_ptr: 5,
+            }),
+            ..Default::default()
+        };
+        assert!(memory.address_to_id.len() == 2);
+        builtin_segments.resize_memory_to_include_holes(&mut memory);
+        assert!(memory.address_to_id.len() == 5);
     }
 }
