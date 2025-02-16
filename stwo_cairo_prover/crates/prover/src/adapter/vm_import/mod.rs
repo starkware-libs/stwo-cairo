@@ -33,6 +33,12 @@ pub enum VmImportError {
     Json(#[from] sonic_rs::Error),
     #[error("No memory segments")]
     NoMemorySegments,
+
+    #[error("Trace not relocated")]
+    TraceNotRelocated,
+
+    #[error("Cannot get public input from runner: {0}")]
+    PublicInput(#[from] cairo_vm::air_public_input::PublicInputError),
 }
 
 fn deserialize_inputs<'a>(

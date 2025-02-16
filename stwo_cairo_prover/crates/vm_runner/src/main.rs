@@ -3,6 +3,7 @@ use std::process::ExitCode;
 
 use clap::Parser;
 use stwo_cairo_prover::adapter::plain::adapt_finished_runner;
+use stwo_cairo_prover::adapter::vm_import::VmImportError;
 use stwo_cairo_prover::adapter::{ExecutionResources, ProverInput};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
@@ -34,7 +35,9 @@ enum Error {
     #[error("VM run failed: {0}")]
     Vm(#[from] VmError),
     #[error("Serialization failed: {0}")]
-    Serde(#[from] serde_json::error::Error),
+    Serde(#[from] serde_json::Error),
+    #[error("VM import failed: {0}")]
+    VmImport(#[from] VmImportError),
 }
 
 fn main() -> ExitCode {
@@ -45,7 +48,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<ProverInput, Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
     let cairo_runner = run_vm(&args.vm_args)?;
-    let cairo_input = adapt_finished_runner(cairo_runner);
+    let cairo_input = adapt_finished_runner(cairo_runner)?;
 
     let execution_resources = ExecutionResources::from_prover_input(&cairo_input);
     log::info!("Execution resources: {:#?}", execution_resources);
