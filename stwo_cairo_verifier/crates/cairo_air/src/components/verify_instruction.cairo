@@ -1,6 +1,5 @@
 use stwo_constraint_framework::{
-    ClaimedPrefixSum, PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues,
-    PreprocessedMaskValuesImpl,
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -11,6 +10,7 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 use super::super::Invertible;
+use super::super::utils::UsizeExTrait;
 
 mod constraints;
 
@@ -26,10 +26,13 @@ pub impl ClaimImpl of ClaimTrait {
     }
 
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
+        const N_LOOKUPS: usize = 5;
         let log_size = self.log_size();
         let preprocesed_trace_log_sizes = array![log_size].span();
         let trace_log_sizes = ArrayImpl::new_repeated(29, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 3, log_size)
+        let interaction_log_sizes = ArrayImpl::new_repeated(
+            QM31_EXTENSION_DEGREE * N_LOOKUPS.div_ceil(2), log_size,
+        )
             .span();
         array![preprocesed_trace_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
@@ -55,8 +58,8 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memoryaddresstoid_lookup_elements: super::super::AddrToIdElements,
-    pub memoryidtobig_lookup_elements: super::super::IdToValueElements,
+    pub memoryaddresstoid_lookup_elements: super::super::MemoryAddressToIdElements,
+    pub memoryidtobig_lookup_elements: super::super::MemoryIdToBigElements,
     pub rangecheck_4_3_lookup_elements: super::super::RangeCheck4Bit3BitElements,
     pub range_check_7_2_5_lookup_elements: super::super::RangeCheck7Bit2Bit5BitElements,
     pub verifyinstruction_lookup_elements: super::super::VerifyInstructionElements,

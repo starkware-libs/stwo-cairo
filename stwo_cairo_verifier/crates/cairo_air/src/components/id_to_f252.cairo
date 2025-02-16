@@ -98,7 +98,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct BigComponent {
     pub log_n_rows: u32,
     pub interaction_claim: InteractionClaim,
-    pub lookup_elements: super::super::IdToValueElements,
+    pub lookup_elements: super::super::MemoryIdToBigElements,
     pub range_9_9_lookup_elements: super::super::RangeCheck9Bit9BitElements,
 }
 
@@ -222,7 +222,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
 pub struct SmallComponent {
     pub log_n_rows: u32,
     pub interaction_claim: InteractionClaim,
-    pub lookup_elements: super::super::IdToValueElements,
+    pub lookup_elements: super::super::MemoryIdToBigElements,
     pub range_9_9_lookup_elements: super::super::RangeCheck9Bit9BitElements,
 }
 

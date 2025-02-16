@@ -61,10 +61,10 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memoryaddresstoid_lookup_elements: super::super::AddrToIdElements,
-    pub memoryidtobig_lookup_elements: super::super::IdToValueElements,
+    pub memoryaddresstoid_lookup_elements: super::super::MemoryAddressToIdElements,
+    pub memoryidtobig_lookup_elements: super::super::MemoryIdToBigElements,
     pub verifyinstruction_lookup_elements: super::super::VerifyInstructionElements,
-    pub opcodes_lookup_elements: super::super::VmElements,
+    pub opcodes_lookup_elements: super::super::OpcodeElements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
