@@ -4,7 +4,6 @@ use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::prelude::proving::*;
 
 pub type InputType = [M31; 3];
-pub type PackedInputType = [PackedM31; 3];
 const N_TRACE_COLUMNS: usize = 1;
 const PACKED_LOG_SIZE: u32 = LOG_SIZE - LOG_N_LANES;
 
