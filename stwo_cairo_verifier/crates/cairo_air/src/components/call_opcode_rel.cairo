@@ -4,9 +4,10 @@ use stwo_constraint_framework::{
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
+use stwo_verifier_core::fields::m31::m31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::ArrayImpl;
+use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::utils::U32Impl;
@@ -184,7 +185,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
         let params = constraints::ConstraintParams {
-            log_size,
+            column_size: m31(pow2(log_size)),
             VerifyInstruction_z,
             VerifyInstruction_alpha0,
             VerifyInstruction_alpha1,

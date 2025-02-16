@@ -3,54 +3,35 @@ use stwo_constraint_framework::{
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
+use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::m31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::utils::{U32Impl, UsizeExTrait};
 use crate::components::CairoComponent;
-use super::super::Invertible;
+use crate::utils::U32Impl;
 
 mod constraints;
 
-/// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
-/// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
-///
-/// 1. The ID and Multiplicity vectors are split to 'MEMORY_ADDRESS_TO_ID_SPLIT' chunks of size
-///    `ids.len()`/`MEMORY_ADDRESS_TO_ID_SPLIT`.
-/// 2. The chunks are padded with 0s to the next power of 2.
-///
-/// #  Example
-/// ID = [id0..id10], MEMORY_ADDRESS_TO_ID_SPLIT = 4:
-/// ID0 = [id0, id1, id2, 0]
-/// ID1 = [id3, id4, id5, 0]
-/// ID2 = [id6, id7, id8, 0]
-/// ID3 = [id9, id10, 0, 0]
-pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
-pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
-pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+pub const N_BITS: u32 = 9;
+
+pub const LOG_SIZE: u32 = N_BITS * 2;
 
 #[derive(Drop, Serde, Copy)]
-pub struct Claim {
-    pub log_size: u32,
-}
+pub struct Claim {}
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = *self.log_size;
-        let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(N_TRACE_COLUMNS, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(
-            QM31_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2), log_size,
-        )
-            .span();
+        let preprocessed_log_sizes = array![LOG_SIZE].span();
+        let trace_log_sizes = array![LOG_SIZE].span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, LOG_SIZE).span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_nonce((*self.log_size).into());
+        channel.mix_nonce(LOG_SIZE.into());
     }
 }
 
@@ -66,14 +47,15 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
     }
 }
 
+
 #[derive(Drop)]
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub lookup_elements: super::super::MemoryAddressToIdElements,
+    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor9BitElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -81,20 +63,19 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = *self.claim.log_size;
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step_size;
         constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
             ref interaction_trace_mask_points,
             point,
             trace_gen,
-            log_size,
+            LOG_SIZE,
         );
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        *self.claim.log_size + 1
+        LOG_SIZE + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -106,23 +87,30 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let mut addr_to_id_alpha_powers = self.lookup_elements.alpha_powers.span();
-        let addr_to_id_alpha_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_alpha_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_z = *self.lookup_elements.z;
+        let VerifyBitwiseXor_9_z = *self.verify_bitwise_xor_9_lookup_elements.z;
+        let mut verify_bitwise_xor_9_alpha_powers = self
+            .verify_bitwise_xor_9_lookup_elements
+            .alpha_powers
+            .span();
+        let VerifyBitwiseXor_9_alpha0 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_9_alpha1 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_9_alpha2 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
 
-        let log_size = *self.claim.log_size;
+        let claimed_sum = *self.interaction_claim.claimed_sum;
 
         let params = constraints::ConstraintParams {
-            log_size,
-            MemoryAddressToId_alpha0: addr_to_id_alpha_0,
-            MemoryAddressToId_alpha1: addr_to_id_alpha_1,
-            MemoryAddressToId_z: addr_to_id_z,
-            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size)),
-            claimed_sum: *self.interaction_claim.claimed_sum,
+            VerifyBitwiseXor_9_alpha0,
+            VerifyBitwiseXor_9_alpha1,
+            VerifyBitwiseXor_9_alpha2,
+            VerifyBitwiseXor_9_z,
+            claimed_sum,
+            bitwise_xor_9_0: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 0))),
+            bitwise_xor_9_1: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 1))),
+            bitwise_xor_9_2: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 2))),
+            column_size: m31(pow2(LOG_SIZE)),
         };
 
-        let trace_domain = CanonicCosetImpl::new(log_size);
+        let trace_domain = CanonicCosetImpl::new(LOG_SIZE);
         let vanish_eval = trace_domain.eval_vanishing(point);
 
         constraints::evaluate_constraints_at_point(
@@ -135,3 +123,4 @@ pub impl ComponentImpl of CairoComponent<Component> {
         );
     }
 }
+

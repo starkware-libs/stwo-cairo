@@ -7,7 +7,6 @@ use stwo_verifier_core::circle::{
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
-use stwo_verifier_core::utils::pow2;
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -103,7 +102,7 @@ pub struct ConstraintParams {
     pub VerifyInstruction_alpha6: QM31,
     pub VerifyInstruction_z: QM31,
     pub claimed_sum: QM31,
-    pub log_size: u32,
+    pub column_size: M31,
 }
 
 pub fn evaluate_constraints_at_point(
@@ -156,7 +155,7 @@ pub fn evaluate_constraints_at_point(
         VerifyInstruction_alpha6,
         VerifyInstruction_z,
         claimed_sum,
-        log_size,
+        column_size,
     } = params;
     let [
         trace_1_column_0,
@@ -374,13 +373,13 @@ pub fn evaluate_constraints_at_point(
     let intermediate7 = *intermediates.pop_front().unwrap();
     let intermediate8 = *intermediates.pop_front().unwrap();
 
-    // Constrait 0
+    // Constraint 0
     let constraint_quotient = ((trace_1_column_17_offset_0) * (trace_1_column_17_offset_0)
         - (trace_1_column_17_offset_0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 1
+    // Constraint 1
     let constraint_quotient = (trace_1_column_4_offset_0
         + (trace_1_column_5_offset_0) * (m31(512).into())
         + (trace_1_column_6_offset_0) * (m31(262144).into())
@@ -388,7 +387,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 2
+    // Constraint 2
     let constraint_quotient = (trace_1_column_8_offset_0
         + (trace_1_column_9_offset_0) * (m31(512).into())
         + (trace_1_column_10_offset_0) * (m31(262144).into())
@@ -396,25 +395,25 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 3
+    // Constraint 3
     let constraint_quotient = ((trace_1_column_12_offset_0)
         * (trace_1_column_12_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 4
+    // Constraint 4
     let constraint_quotient = ((trace_1_column_13_offset_0)
         * (trace_1_column_13_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 5
+    // Constraint 5
     let constraint_quotient = ((trace_1_column_13_offset_0)
         * (trace_1_column_12_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 6
+    // Constraint 6
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_18_offset_0, trace_2_column_19_offset_0, trace_2_column_20_offset_0,
@@ -426,7 +425,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 7
+    // Constraint 7
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_22_offset_0, trace_2_column_23_offset_0, trace_2_column_24_offset_0,
@@ -444,7 +443,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 8
+    // Constraint 8
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_26_offset_0, trace_2_column_27_offset_0, trace_2_column_28_offset_0,
@@ -462,7 +461,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 9
+    // Constraint 9
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_30_offset_0, trace_2_column_31_offset_0, trace_2_column_32_offset_0,
@@ -480,7 +479,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 10
+    // Constraint 10
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_34_offset_0, trace_2_column_35_offset_0, trace_2_column_36_offset_0,
@@ -499,7 +498,7 @@ pub fn evaluate_constraints_at_point(
                 trace_2_column_33_offset_0,
             ],
         ))
-        + (claimed_sum) * (m31(pow2(log_size)).inverse().into()))
+        + (claimed_sum) * (column_size.inverse().into()))
         * (intermediate8)
         + trace_1_column_17_offset_0)
         * domain_vanish_at_point_inv;

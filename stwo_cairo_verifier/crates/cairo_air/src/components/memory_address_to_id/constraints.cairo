@@ -61,7 +61,7 @@ pub struct ConstraintParams {
     pub MemoryAddressToId_alpha1: QM31,
     pub MemoryAddressToId_z: QM31,
     pub claimed_sum: QM31,
-    pub preprocessed_seq: QM31,
+    pub seq: QM31,
     pub log_size: u32,
 }
 
@@ -78,7 +78,7 @@ pub fn evaluate_constraints_at_point(
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
         claimed_sum,
-        preprocessed_seq,
+        seq,
         log_size,
     } = params;
     let [
@@ -213,7 +213,7 @@ pub fn evaluate_constraints_at_point(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_0_offset_0,
         trace_1_column_10_offset_0,
         trace_1_column_12_offset_0,
@@ -234,7 +234,7 @@ pub fn evaluate_constraints_at_point(
     let intermediate6 = *intermediates.pop_front().unwrap();
     let intermediate7 = *intermediates.pop_front().unwrap();
 
-    // Constrait 0
+    // Constraint 0
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_16_offset_0, trace_2_column_17_offset_0, trace_2_column_18_offset_0,
@@ -247,7 +247,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 1
+    // Constraint 1
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_20_offset_0, trace_2_column_21_offset_0, trace_2_column_22_offset_0,
@@ -266,7 +266,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 2
+    // Constraint 2
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_24_offset_0, trace_2_column_25_offset_0, trace_2_column_26_offset_0,
@@ -285,7 +285,7 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constrait 3
+    // Constraint 3
     let constraint_quotient = ((QM31Impl::from_partial_evals(
         [
             trace_2_column_28_offset_0, trace_2_column_29_offset_0, trace_2_column_30_offset_0,
@@ -317,7 +317,7 @@ fn intermediates(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_10_offset_0: QM31,
     trace_1_column_12_offset_0: QM31,
@@ -332,7 +332,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_0_offset_0,
     );
 
@@ -340,7 +340,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_2_offset_0,
         log_size,
     );
@@ -349,7 +349,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_4_offset_0,
         log_size,
     );
@@ -358,7 +358,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_6_offset_0,
         log_size,
     );
@@ -367,7 +367,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_8_offset_0,
         log_size,
     );
@@ -376,7 +376,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_10_offset_0,
         log_size,
     );
@@ -385,7 +385,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_12_offset_0,
         log_size,
     );
@@ -394,7 +394,7 @@ fn intermediates(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
-        preprocessed_seq,
+        seq,
         trace_1_column_14_offset_0,
         log_size,
     );
@@ -415,10 +415,10 @@ pub fn intermediate0(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_0_offset_0: QM31,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq)
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_0_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -427,11 +427,11 @@ pub fn intermediate1(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_2_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size)).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_2_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -440,11 +440,11 @@ pub fn intermediate2(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_4_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(2 * pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 2).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_4_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -453,11 +453,11 @@ pub fn intermediate3(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_6_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(3 * pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 3).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_6_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -466,11 +466,11 @@ pub fn intermediate4(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_8_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(4 * pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 4).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_8_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -479,11 +479,11 @@ pub fn intermediate5(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_10_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(5 * pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 5).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_10_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -492,11 +492,11 @@ pub fn intermediate6(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_12_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(6 * pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 6).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_12_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -505,11 +505,11 @@ pub fn intermediate7(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
-    preprocessed_seq: QM31,
+    seq: QM31,
     trace_1_column_14_offset_0: QM31,
     log_size: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (preprocessed_seq + m31(7 * pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 7).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_14_offset_0)
         - (MemoryAddressToId_z)
 }
