@@ -1,8 +1,10 @@
 pub mod air;
+pub mod blake;
 pub mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
 pub mod preprocessed;
+pub mod preprocessed_utils;
 pub mod range_checks_air;
 
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
