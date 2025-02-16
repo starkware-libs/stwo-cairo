@@ -1,4 +1,5 @@
 mod air;
+pub(super) mod blake;
 mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
