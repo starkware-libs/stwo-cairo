@@ -7,7 +7,8 @@ pub(crate) mod preprocessed;
 pub mod preprocessed_utils;
 pub mod range_checks_air;
 
-use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements, CairoProof};
+pub use air::CairoProof;
+use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
