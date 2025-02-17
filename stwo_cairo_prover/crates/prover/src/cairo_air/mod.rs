@@ -390,5 +390,35 @@ pub mod tests {
 
             assert!(proofs.iter().all_equal());
         }
+
+        /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
+        pub mod builtin_tests {
+            use super::*;
+
+            /// Asserts that all builtins are present in the input.
+            /// Panics if any of the builtins is missing.
+            fn assert_all_builtins_in_input(input: &ProverInput) {
+                let empty_builtins = input
+                    .builtins_segments
+                    .get_counts()
+                    .iter()
+                    .filter(|(_, &count)| count == 0)
+                    .map(|(name, _)| format!("{:?}", name))
+                    .collect_vec();
+                assert!(
+                    empty_builtins.is_empty(),
+                    "The following builtins are missing: {}",
+                    empty_builtins.join(", ")
+                );
+            }
+
+            #[test]
+            fn test_prove_verify_all_builtins() {
+                let input = test_input("test_prove_verify_all_builtins");
+                assert_all_builtins_in_input(&input);
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            }
+        }
     }
 }
