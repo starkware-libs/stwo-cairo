@@ -249,12 +249,17 @@ pub mod tests {
     ///
     /// # Panics
     /// - If it fails to convert the files into a prover input.
-    pub fn test_input(test_name: &str) -> ProverInput {
+    pub fn test_input(test_name: &str, proof_mode: bool) -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         d.push("test_data/");
         d.push(test_name);
 
-        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+        adapt_vm_output(
+            d.join("pub.json").as_path(),
+            d.join("priv.json").as_path(),
+            proof_mode,
+        )
+        .expect(
             "
             Failed to read test files. Checkout input/README.md.",
         )
@@ -334,7 +339,7 @@ pub mod tests {
         #[test]
         fn test_full_cairo_air() {
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                test_input("test_read_from_small_files"),
+                test_input("test_read_from_small_files", true),
                 test_cfg(),
             )
             .unwrap();
@@ -343,7 +348,7 @@ pub mod tests {
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
-            let input = test_input("test_prove_verify_all_opcode_components");
+            let input = test_input("test_prove_verify_all_opcode_components", true);
             for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
                 // TODO(Stav): Remove when `Blake` opcode is in the VM.
                 if opcode == "blake2s_opcode" {
@@ -362,7 +367,7 @@ pub mod tests {
                 );
             }
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                test_input("test_prove_verify_all_opcode_components"),
+                test_input("test_prove_verify_all_opcode_components", true),
                 test_cfg(),
             )
             .unwrap();
@@ -418,7 +423,7 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_all_builtins() {
-                let input = test_input("test_prove_verify_all_builtins");
+                let input = test_input("test_prove_verify_all_builtins", true);
                 assert_all_builtins_in_input(&input);
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
@@ -426,7 +431,7 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_add_mod_builtin() {
-                let input = test_input("test_prove_verify_add_mod_builtin");
+                let input = test_input("test_prove_verify_add_mod_builtin", true);
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
@@ -451,7 +456,7 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_bitwise_builtin() {
-                let input = test_input("test_prove_verify_bitwise_builtin");
+                let input = test_input("test_prove_verify_bitwise_builtin", true);
                 assert_bitwise_builtin_has_holes(
                     "test_prove_verify_bitwise_builtin",
                     &input.builtins_segments.bitwise,
@@ -462,21 +467,21 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_mul_mod_builtin() {
-                let input = test_input("test_prove_verify_mul_mod_builtin");
+                let input = test_input("test_prove_verify_mul_mod_builtin", true);
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_96_builtin() {
-                let input = test_input("test_prove_verify_range_check_bits_96_builtin");
+                let input = test_input("test_prove_verify_range_check_bits_96_builtin", true);
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_128_builtin() {
-                let input = test_input("test_prove_verify_range_check_bits_128_builtin");
+                let input = test_input("test_prove_verify_range_check_bits_128_builtin", true);
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }

@@ -26,7 +26,7 @@ pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instructio
         )
         .expect("Run failed");
     runner.relocate(true).unwrap();
-    adapt_finished_runner(runner).expect("Failed to adapt finished runner")
+    adapt_finished_runner(runner, true).expect("Failed to adapt finished runner")
 }
 
 // NOTE: the proof will include `step_limit -1` steps.
@@ -44,7 +44,7 @@ pub fn input_from_plain_casm_with_step_limit(
         .expect("Run failed");
     runner.relocate(true).unwrap();
 
-    adapt_finished_runner(runner).expect("Failed to adapt finished runner")
+    adapt_finished_runner(runner, true).expect("Failed to adapt finished runner")
 }
 
 fn program_from_casm(
@@ -75,7 +75,10 @@ fn program_from_casm(
 /// input to the adapter.
 /// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
 /// component only.
-pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImportError> {
+pub fn adapt_finished_runner(
+    runner: CairoRunner,
+    proof_mode: bool,
+) -> Result<ProverInput, VmImportError> {
     let _span = tracing::info_span!("adapt_finished_runner").entered();
     let memory_iter = runner
         .relocated_memory
@@ -109,5 +112,6 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         MemoryBuilder::from_iter(MemoryConfig::default(), memory_iter),
         public_memory_addresses,
         memory_segments,
+        proof_mode,
     )
 }

@@ -65,6 +65,7 @@ fn deserialize_inputs<'a>(
 pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
+    proof_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
 
@@ -105,23 +106,32 @@ pub fn adapt_vm_output(
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
         &public_input.memory_segments,
+        proof_mode,
     )
 }
 
 /// Creates Cairo input for Stwo, utilized by:
 /// - `adapt_vm_output` in the prover.
 /// - `adapt_finished_runner` in the validator.
+///
+/// if proof_mode=false this function will skip the padding of the builtins segments.
+/// # ⚠️ WARNING:
+/// try to avoid using proof_mode=false as that option is a temporary solution and proof_mode will
+/// be removed in the near future and the function will behave as in the case proof_mode=true.
 pub fn adapt_to_stwo_input(
     trace_iter: impl Iterator<Item = TraceEntry>,
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    proof_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let (state_transitions, instruction_by_pc) =
         StateTransitions::from_iter(trace_iter, &mut memory);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
-    builtins_segments.pad_builtin_segments(&mut memory);
+    if proof_mode {
+        builtins_segments.pad_builtin_segments(&mut memory);
+    }
 
     Ok(ProverInput {
         state_transitions,
@@ -194,7 +204,7 @@ pub mod slow_tests {
 
     #[test]
     fn test_read_from_large_files() {
-        let input = test_input("test_read_from_large_files");
+        let input = test_input("test_read_from_large_files", true);
 
         // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
@@ -248,7 +258,7 @@ pub mod slow_tests {
 
     #[test]
     fn test_read_from_small_files() {
-        let input = test_input("test_read_from_small_files");
+        let input = test_input("test_read_from_small_files", true);
 
         // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
