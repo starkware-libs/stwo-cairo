@@ -25,5 +25,45 @@
         "trace",
         "compiled.json",
         "builtin_usage_flexible_cairo.cairo"
+    ],
+    "test_prove_verify_add_mod_builtin": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace",
+        "compiled.json",
+        "builtin_usage_flexible_cairo.cairo"
+    ],
+    "test_prove_verify_bitwise_builtin": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace",
+        "compiled.json",
+        "builtin_usage_flexible_cairo.cairo"
+    ],
+    "test_prove_verify_range_check_bits_96_builtin": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace",
+        "compiled.json",
+        "builtin_usage_flexible_cairo.cairo"
+    ],
+    "test_prove_verify_range_check_bits_128_builtin": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace",
+        "compiled.json",
+        "builtin_usage_flexible_cairo.cairo"
+    ],
+    "test_prove_verify_mul_mod_builtin": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace",
+        "compiled.json",
+        "builtin_usage_flexible_cairo.cairo"
     ]
 }
