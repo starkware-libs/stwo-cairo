@@ -393,7 +393,11 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
+            use cairo_vm::air_public_input::MemorySegmentAddresses;
+            use stwo_cairo_utils::file_utils::open_file;
+
             use super::*;
+            use crate::adapter::vm_import::MemoryEntryIter;
 
             /// Asserts that all builtins are present in the input.
             /// Panics if any of the builtins is missing.
@@ -416,6 +420,63 @@ pub mod tests {
             fn test_prove_verify_all_builtins() {
                 let input = test_input("test_prove_verify_all_builtins");
                 assert_all_builtins_in_input(&input);
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            }
+
+            #[test]
+            fn test_prove_verify_add_mod_builtin() {
+                let input = test_input("test_prove_verify_add_mod_builtin");
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            }
+
+            /// Asserts that there is an unused `add` value in the first instance in bitwise
+            /// builtin segment, inducing a "hole".
+            fn assert_bitwise_builtin_has_holes(
+                test_name: &str,
+                bitwise_segment: &Option<MemorySegmentAddresses>,
+            ) {
+                let bitwise_segment = bitwise_segment.as_ref().unwrap();
+                let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+                d.push("test_data/");
+                d.push(test_name);
+                let mut memory_file =
+                    std::io::BufReader::new(open_file(d.join("mem").as_path()).unwrap());
+                let memory_entries = MemoryEntryIter(&mut memory_file).collect_vec();
+                assert!(memory_entries
+                    .iter()
+                    .all(|entry| entry.address != (bitwise_segment.begin_addr + 2) as u64));
+            }
+
+            #[test]
+            fn test_prove_verify_bitwise_builtin() {
+                let input = test_input("test_prove_verify_bitwise_builtin");
+                assert_bitwise_builtin_has_holes(
+                    "test_prove_verify_bitwise_builtin",
+                    &input.builtins_segments.bitwise,
+                );
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            }
+
+            #[test]
+            fn test_prove_verify_mul_mod_builtin() {
+                let input = test_input("test_prove_verify_mul_mod_builtin");
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            }
+
+            #[test]
+            fn test_prove_verify_range_check_bits_96_builtin() {
+                let input = test_input("test_prove_verify_range_check_bits_96_builtin");
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
+            }
+
+            #[test]
+            fn test_prove_verify_range_check_bits_128_builtin() {
+                let input = test_input("test_prove_verify_range_check_bits_128_builtin");
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
