@@ -18,7 +18,8 @@ Note: This is an external directory.
 ## Adding a New "Slow-Test"
 
 1. **Create a Directory**  
-   Create a new folder at the Cloud Storage URL above and upload the necessary files.
+   Create a new folder at the Cloud Storage URL above and upload the necessary files. 
+   Note: priv.json should have the relative path to the memory and trace files. Absolute paths won't work in the CI.
 
 2. **Update the Slow-Tests JSON**  
    Update ./scripts/slow_tests.json by specifying the directory name and the files saved there.
