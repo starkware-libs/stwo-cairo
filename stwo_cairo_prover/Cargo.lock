@@ -403,8 +403,8 @@ dependencies = [
 
 [[package]]
 name = "cairo-vm"
-version = "2.0.0-rc2"
-source = "git+https://github.com/lambdaclass/cairo-vm?rev=83bfdcf#83bfdcf1cc971e36f7d545c1fc48655df954ecdd"
+version = "2.0.0-rc4"
+source = "git+https://github.com/lambdaclass/cairo-vm?rev=153d3a88#153d3a88b579a85de42bc14b7f0d06e7e9597fd4"
 dependencies = [
  "anyhow",
  "bincode",
@@ -412,6 +412,7 @@ dependencies = [
  "generic-array",
  "hashbrown 0.15.2",
  "hex",
+ "indoc",
  "keccak",
  "lazy_static",
  "nom",
