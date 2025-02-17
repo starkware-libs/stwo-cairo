@@ -12,6 +12,5 @@ pub mod adapter;
 pub mod cairo_air;
 mod components;
 mod felt;
-pub mod relations;
 
 pub use stwo_prover;

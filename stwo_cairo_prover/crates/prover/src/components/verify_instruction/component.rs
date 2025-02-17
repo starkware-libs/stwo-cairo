@@ -15,7 +15,7 @@ use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::relations;
+use crate::cairo_air::relations;
 
 pub struct Eval {
     pub claim: Claim,

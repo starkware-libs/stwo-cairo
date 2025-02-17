@@ -14,6 +14,7 @@ use stwo_prover::core::pcs::CommitmentSchemeProver;
 use stwo_prover::core::poly::circle::CanonicCoset;
 
 use super::air::CairoClaim;
+use crate::cairo_air::relations;
 use crate::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_6,
     range_check_3_6_6_3, range_check_4_3, range_check_6, range_check_7_2_5, range_check_9_9,
@@ -29,7 +30,6 @@ use crate::components::{
     range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
-use crate::relations;
 
 pub fn track_cairo_relations<MC: MerkleChannel>(
     commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
