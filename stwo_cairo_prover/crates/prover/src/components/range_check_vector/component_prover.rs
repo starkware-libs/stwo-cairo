@@ -160,8 +160,8 @@ mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
+    use crate::cairo_air::relations;
     use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
-    use crate::relations;
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);

@@ -6,6 +6,7 @@ pub mod poseidon;
 pub(crate) mod preprocessed;
 pub mod preprocessed_utils;
 pub mod range_checks_air;
+pub(crate) mod relations;
 
 pub use air::CairoProof;
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
