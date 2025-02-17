@@ -8,6 +8,11 @@ use stwo_cairo_serialize::CairoSerialize;
 
 pub type M31 = stwo_prover::core::fields::m31::M31;
 
+#[cfg(test)]
+pub type CM31 = stwo_prover::core::fields::cm31::CM31;
+#[cfg(test)]
+pub type QM31 = stwo_prover::core::fields::qm31::QM31;
+
 pub const PRIME: u32 = 2_u32.pow(31) - 1;
 
 pub trait AlgebraicType: ProverType + Add + Sub + Mul + Div {}
