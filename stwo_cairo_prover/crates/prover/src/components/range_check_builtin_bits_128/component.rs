@@ -15,7 +15,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
-use crate::relations;
+use crate::cairo_air::relations;
 
 pub struct Eval {
     pub claim: Claim,

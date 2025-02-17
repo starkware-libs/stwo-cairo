@@ -15,7 +15,7 @@ use stwo_prover::relation;
 
 use crate::adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
-use crate::relations;
+use crate::cairo_air::relations;
 
 // TODO(AlonH): Make memory size configurable.
 pub const MEMORY_ID_SIZE: usize = 1;
