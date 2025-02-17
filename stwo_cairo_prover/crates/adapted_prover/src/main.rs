@@ -9,14 +9,16 @@ use stwo_cairo_prover::cairo_air::{
     default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError, ChannelHash,
     ConfigBuilder, ProverConfig, ProverParameters,
 };
+use stwo_cairo_serialize::CairoSerialize;
 use stwo_cairo_utils::binary_utils::run_binary;
-use stwo_cairo_utils::file_utils::{read_to_string, IoErrorWithPath};
+use stwo_cairo_utils::file_utils::{create_file, read_to_string, IoErrorWithPath};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -62,6 +64,11 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
+    /// The format of the proof output.
+    /// - json: Standard JSON format (default)
+    /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+    #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
+    proof_format: ProofFormat,
     #[structopt(long = "track_relations")]
     track_relations: bool,
     #[structopt(long = "display_components")]
@@ -69,6 +76,15 @@ struct Args {
     /// Verify the generated proof.
     #[structopt(long = "verify")]
     verify: bool,
+}
+
+#[derive(Debug, Clone, clap::ValueEnum)]
+enum ProofFormat {
+    /// Standard JSON format
+    Json,
+    /// Array of field elements serialized as hex strings
+    /// Compatible with `scarb execute`
+    CairoSerde,
 }
 
 #[derive(Debug, Error)]
@@ -128,6 +144,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         pcs_config,
         args.verify,
         args.proof_path,
+        args.proof_format,
     )?;
 
     Ok(())
@@ -142,13 +159,32 @@ fn run_inner<MC: MerkleChannel>(
     pcs_config: PcsConfig,
     verify: bool,
     proof_path: PathBuf,
+    proof_format: ProofFormat,
 ) -> Result<(), Error>
 where
     SimdBackend: BackendForChannel<MC>,
     MC::H: Serialize,
+    <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
     let proof = prove_cairo::<MC>(vm_output, prover_config, pcs_config)?;
-    std::fs::write(&proof_path, serde_json::to_string(&proof)?)?;
+    let proof_file = create_file(&proof_path)?;
+
+    match proof_format {
+        ProofFormat::Json => {
+            serde_json::to_writer_pretty(proof_file, &proof)?;
+        }
+        ProofFormat::CairoSerde => {
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&proof, &mut serialized);
+
+            let hex_strings: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{:x}", felt))
+                .collect();
+
+            serde_json::to_writer_pretty(proof_file, &hex_strings)?;
+        }
+    }
 
     if verify {
         verify_cairo::<MC>(proof, pcs_config)?;

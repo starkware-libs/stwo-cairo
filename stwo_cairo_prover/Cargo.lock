@@ -10,6 +10,8 @@ dependencies = [
  "log",
  "serde",
  "serde_json",
+ "starknet-ff",
+ "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
@@ -376,9 +378,9 @@ checksum = "f61dac84819c6588b558454b194026eb1f09c293b9036ae9b159e74e73ab6cf9"
 
 [[package]]
 name = "cairo-lang-casm"
-version = "2.9.3"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "445d607f43c161ae0a60f603924fbd1b6766e10a2f19b7c205b1fc3a1d274e93"
+checksum = "8ff11aec4eb39d670efa69d8a6bda5803661578e9dc1be54ea948fe82fb39995"
 dependencies = [
  "cairo-lang-utils",
  "indoc",
@@ -390,9 +392,9 @@ dependencies = [
 
 [[package]]
 name = "cairo-lang-utils"
-version = "2.9.3"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2584a7ce6ccb6ee465da709983f42162384df5b8c093fb4c2e935db749c61bd"
+checksum = "e6d000fa1b86f07587b9dcabdaed00878464944b96c8c1f3f5006e890a5a8870"
 dependencies = [
  "hashbrown 0.14.5",
  "indexmap",
