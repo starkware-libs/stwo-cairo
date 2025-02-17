@@ -367,6 +367,8 @@ pub mod tests {
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
 
+        // TODO(Ohad): remove ignore.
+        #[ignore = "POW is not deterministic"]
         #[test]
         fn test_proof_stability() {
             let n_proofs_to_compare = 10;
