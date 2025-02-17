@@ -5,8 +5,6 @@ members = [
     "crates/cairo-serialize",
     "crates/cairo-serialize-derive",
     "crates/utils",
-    "crates/run_and_prove",
-    "crates/vm_runner",
     "crates/common",
     "crates/recursion_bridge",
 ]
