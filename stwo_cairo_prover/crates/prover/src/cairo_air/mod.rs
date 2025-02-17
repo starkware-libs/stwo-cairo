@@ -1,4 +1,4 @@
-mod air;
+pub mod air;
 mod builtins_air;
 mod debug_tools;
 pub mod opcodes_air;
