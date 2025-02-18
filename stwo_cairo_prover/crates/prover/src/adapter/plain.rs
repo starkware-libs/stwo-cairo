@@ -16,7 +16,7 @@ use super::ProverInput;
 pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> ProverInput {
     let (program, program_len) = program_from_casm(casm);
 
-    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
+    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true, true)
         .expect("Runner creation failed");
     runner.initialize(true).expect("Initialization failed");
     runner
@@ -36,7 +36,7 @@ pub fn input_from_plain_casm_with_step_limit(
 ) -> ProverInput {
     let (program, _) = program_from_casm(casm);
 
-    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true)
+    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true, true)
         .expect("Runner creation failed");
     runner.initialize(true).expect("Initialization failed");
     runner
