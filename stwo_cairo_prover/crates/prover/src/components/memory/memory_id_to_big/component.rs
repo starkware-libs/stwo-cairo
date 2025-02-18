@@ -2,6 +2,7 @@ use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
+use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
@@ -19,8 +20,6 @@ use crate::cairo_air::relations;
 
 // TODO(AlonH): Make memory size configurable.
 pub const MEMORY_ID_SIZE: usize = 1;
-pub const N_M31_IN_FELT252: usize = 28;
-pub const N_M31_IN_SMALL_FELT252: usize = 8; // 72 bits.
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;

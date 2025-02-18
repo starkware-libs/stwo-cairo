@@ -3,10 +3,9 @@ use std::ops::{Deref, DerefMut};
 
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 
 use super::vm_import::MemoryEntry;
-use crate::components::memory::memory_id_to_big::component::N_M31_IN_SMALL_FELT252;
-use crate::components::memory::memory_id_to_big::N_BITS_PER_FELT;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [
