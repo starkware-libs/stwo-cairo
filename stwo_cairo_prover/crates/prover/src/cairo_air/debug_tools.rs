@@ -28,8 +28,8 @@ use crate::components::{
     jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode,
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
     memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, range_check_felt_252_width_27,
-    ret_opcode, verify_bitwise_xor_9, verify_instruction,
+    poseidon_round_keys, range_check_builtin_bits_128, range_check_builtin_bits_96,
+    range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
 
@@ -552,6 +552,20 @@ where
                     range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
                 },
                 1 << cube_252.log_size,
+            )
+            .entries(trace),
+        );
+    }
+
+    if let Some(poseidon_round_keys) = claim.builtins.poseidon_round_keys {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                poseidon_round_keys::Eval {
+                    claim: poseidon_round_keys,
+                    poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
+                },
+                1 << poseidon_round_keys.log_size,
             )
             .entries(trace),
         );

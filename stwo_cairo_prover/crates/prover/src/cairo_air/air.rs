@@ -366,6 +366,7 @@ impl CairoInteractionClaimGenerator {
 pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
     pub cube_252: relations::Cube252,
+    pub poseidon_round_keys: relations::PoseidonRoundKeys,
     pub range_check_felt_252_width_27: relations::RangeCheckFelt252Width27,
     pub verify_instruction: relations::VerifyInstruction,
     pub memory_address_to_id: relations::MemoryAddressToId,
@@ -378,6 +379,7 @@ impl CairoInteractionElements {
         CairoInteractionElements {
             opcodes: relations::Opcodes::draw(channel),
             cube_252: relations::Cube252::draw(channel),
+            poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
             range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
             verify_instruction: relations::VerifyInstruction::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
