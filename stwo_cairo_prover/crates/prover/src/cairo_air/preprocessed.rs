@@ -197,7 +197,7 @@ impl PreProcessedColumn for Seq {
     }
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("seq_{}", self.log_size).to_string(),
+            id: format!("seq_{}", self.log_size),
         }
     }
 }

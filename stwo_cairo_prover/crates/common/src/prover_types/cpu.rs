@@ -587,7 +587,7 @@ pub const FELT252WIDTH27_BITS_PER_WORD: usize = 27;
 
 pub const P_PACKED27_FELTS: [u32; FELT252WIDTH27_N_WORDS] = [1, 0, 0, 0, 0, 0, 0, 136, 0, 256];
 /// A version of Felt252 whose values are packed into 27-bit limbs instead of 9-bit.
-/// The only supported operations are conversions to and from Felt252.
+/// The only supported operations are conversions to and from Felt252 and FieldElement.
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
 pub struct Felt252Width27 {
     pub limbs: [u64; 4],
@@ -645,6 +645,21 @@ impl From<Felt252> for Felt252Width27 {
 impl From<Felt252Width27> for Felt252 {
     fn from(n: Felt252Width27) -> Felt252 {
         Felt252 { limbs: n.limbs }
+    }
+}
+
+// Convert between Felt252Width27 and FieldElement for performing field operations.
+// See the documentation of the conversions between Felt252<>FieldElement for more details.
+impl From<Felt252Width27> for FieldElement {
+    fn from(n: Felt252Width27) -> FieldElement {
+        FieldElement::from_mont(n.limbs) + FieldElement::ZERO
+    }
+}
+impl From<FieldElement> for Felt252Width27 {
+    fn from(n: FieldElement) -> Felt252Width27 {
+        Felt252Width27 {
+            limbs: n.into_mont(),
+        }
     }
 }
 
