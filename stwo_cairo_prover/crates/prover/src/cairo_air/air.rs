@@ -255,6 +255,7 @@ impl CairoClaimGenerator {
             &self.memory_address_to_id_trace_generator,
             &self.memory_id_to_value_trace_generator,
             &self.range_checks_trace_generator.rc_6_trace_generator,
+            &self.range_checks_trace_generator.rc_18_trace_generator,
             &self.range_checks_trace_generator.rc_19_trace_generator,
             &self.range_checks_trace_generator.rc_9_9_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
@@ -365,6 +366,7 @@ impl CairoInteractionClaimGenerator {
 pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
     pub cube_252: relations::Cube252,
+    pub range_check_felt_252_width_27: relations::RangeCheckFelt252Width27,
     pub verify_instruction: relations::VerifyInstruction,
     pub memory_address_to_id: relations::MemoryAddressToId,
     pub memory_id_to_value: relations::MemoryIdToBig,
@@ -376,6 +378,7 @@ impl CairoInteractionElements {
         CairoInteractionElements {
             opcodes: relations::Opcodes::draw(channel),
             cube_252: relations::Cube252::draw(channel),
+            range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
             verify_instruction: relations::VerifyInstruction::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
