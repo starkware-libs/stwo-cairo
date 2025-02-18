@@ -245,18 +245,18 @@ pub mod tests {
     /// - These files must be stored in the `test_data/test_name` directory and contain valid Cairo
     ///   program data.
     /// - They can be downloaded from Google Storage using `./scripts/download_test_data.sh`.   See
-    ///   `input/README.md` for details.
+    ///   `SLOW_TESTS_README.md` for details.
     ///
     /// # Panics
     /// - If it fails to convert the files into a prover input.
     pub fn test_input(test_name: &str) -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/");
+        d.push("../../test_data/");
         d.push(test_name);
 
         adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
             "
-            Failed to read test files. Checkout input/README.md.",
+            Failed to read test files. Checkout SLOW_TESTS_README.md.",
         )
     }
 
@@ -439,7 +439,7 @@ pub mod tests {
             ) {
                 let bitwise_segment = bitwise_segment.as_ref().unwrap();
                 let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-                d.push("test_data/");
+                d.push("../../test_data/");
                 d.push(test_name);
                 let mut memory_file =
                     std::io::BufReader::new(open_file(d.join("mem").as_path()).unwrap());

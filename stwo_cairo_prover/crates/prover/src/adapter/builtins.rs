@@ -297,7 +297,7 @@ mod test_builtin_segments {
     #[test]
     fn test_builtin_segments() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("test_data/test_builtins_segments/test_public_input.json");
+            .join("../../test_data/test_builtins_segments/test_public_input.json");
         let pub_data_string = std::fs::read_to_string(&path)
             .unwrap_or_else(|_| panic!("Unable to read file: {}", path.display()));
         let pub_data: PublicInput<'_> =
