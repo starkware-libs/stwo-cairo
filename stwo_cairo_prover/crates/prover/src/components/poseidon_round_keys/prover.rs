@@ -1,8 +1,10 @@
 #![allow(unused_parens)]
 use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
+use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim};
 use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
+use crate::cairo_air::poseidon::deduce_output::PoseidonRoundKeys as DeduceOutputPoseidonRoundKeys;
 use crate::cairo_air::preprocessed::Seq;
 use crate::components::prelude::proving::*;
 pub type InputType = [M31; 1];
@@ -40,6 +42,13 @@ impl ClaimGenerator {
                 lookup_data,
             },
         )
+    }
+
+    pub fn deduce_output(&self, input: PackedInputType) -> [PackedFelt252Width27; 3] {
+        let input = input[0].to_array();
+        let deduced_output: [[Felt252Width27; 3]; N_LANES] =
+            std::array::from_fn(|i| DeduceOutputPoseidonRoundKeys::deduce_output(input[i]));
+        <_ as Pack>::pack(deduced_output)
     }
 
     pub fn add_input(&self, input: &InputType) {

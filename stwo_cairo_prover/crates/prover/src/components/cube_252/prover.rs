@@ -5,6 +5,7 @@ use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
 
 use super::component::{Claim, InteractionClaim};
+use crate::cairo_air::poseidon::deduce_output::Cube252;
 use crate::components::prelude::proving::*;
 use crate::components::{range_check_19, range_check_9_9};
 
@@ -53,6 +54,11 @@ impl ClaimGenerator {
                 lookup_data,
             },
         )
+    }
+
+    pub fn deduce_output(&self, input: PackedInputType) -> PackedInputType {
+        let input = input.to_array();
+        PackedInputType::from_array(std::array::from_fn(|i| Cube252::deduce_output(input[i])))
     }
 
     pub fn add_input(&mut self, input: &InputType) {
