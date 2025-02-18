@@ -251,7 +251,7 @@ pub mod tests {
     /// - If it fails to convert the files into a prover input.
     pub fn test_input(test_name: &str) -> ProverInput {
         let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("test_data/");
+        d.push("../../test_data/");
         d.push(test_name);
 
         adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
@@ -439,7 +439,7 @@ pub mod tests {
             ) {
                 let bitwise_segment = bitwise_segment.as_ref().unwrap();
                 let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-                d.push("test_data/");
+                d.push("../../test_data/");
                 d.push(test_name);
                 let mut memory_file =
                     std::io::BufReader::new(open_file(d.join("mem").as_path()).unwrap());

@@ -17,7 +17,7 @@ fi
 
 INPUT_FILE="$1"
 BUCKET_URL="https://storage.googleapis.com/stwo-cairo-testing-artifacts"
-BASE_DEST_DIR="crates/prover/test_data"
+BASE_DEST_DIR="test_data"
 
 # Check if the input file exists
 if [[ ! -f "${INPUT_FILE}" ]]; then
