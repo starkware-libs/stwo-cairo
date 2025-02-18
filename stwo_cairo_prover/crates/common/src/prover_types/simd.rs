@@ -11,6 +11,7 @@ use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, PRIME};
+use crate::memory::N_M31_IN_FELT252;
 
 pub const LOG_N_LANES: u32 = 4;
 
@@ -340,8 +341,6 @@ impl BitXor for PackedUInt64 {
         }
     }
 }
-
-pub const N_M31_IN_FELT252: usize = 28;
 
 // TODO(Ohad): Change to non-redundant representation.
 #[derive(Copy, Clone, Debug)]

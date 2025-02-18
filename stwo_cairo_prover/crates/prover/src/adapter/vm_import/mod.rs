@@ -8,6 +8,7 @@ use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
+use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_utils::file_utils::{open_file, read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
@@ -17,7 +18,6 @@ use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
 use crate::adapter::memory::MemoryBuilder;
-use crate::components::memory::MEMORY_ADDRESS_BOUND;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {

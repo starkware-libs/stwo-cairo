@@ -13,6 +13,7 @@ use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElem
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
+use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -26,7 +27,6 @@ use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::adapter::ProverInput;
-use crate::components::memory::LOG_MEMORY_ADDRESS_BOUND;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 
 const LOG_MAX_ROWS: u32 = 22;
