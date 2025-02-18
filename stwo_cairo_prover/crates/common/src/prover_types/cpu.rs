@@ -7,6 +7,7 @@ use starknet_ff::FieldElement;
 use stwo_cairo_serialize::CairoSerialize;
 
 pub type M31 = stwo_prover::core::fields::m31::M31;
+pub type QM31 = stwo_prover::core::fields::qm31::QM31;
 
 pub const PRIME: u32 = 2_u32.pow(31) - 1;
 
