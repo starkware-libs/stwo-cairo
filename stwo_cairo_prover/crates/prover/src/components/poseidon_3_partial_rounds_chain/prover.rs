@@ -1,7 +1,9 @@
 #![allow(unused_parens)]
 use itertools::Itertools;
+use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim};
+use crate::cairo_air::poseidon::deduce_output::Poseidon3PartialRoundsChain;
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::{range_check_4_4, range_check_4_4_4_4};
 use crate::components::{cube_252, poseidon_round_keys, range_check_felt_252_width_27};
@@ -65,6 +67,13 @@ impl ClaimGenerator {
 
     pub fn add_inputs(&mut self, inputs: &[InputType]) {
         self.inputs.extend_from_slice(inputs);
+    }
+
+    pub fn deduce_output(&self, input: PackedInputType) -> PackedInputType {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(|(chain, round, state)| {
+            Poseidon3PartialRoundsChain::deduce_output(chain, round, state)
+        }))
     }
 }
 
