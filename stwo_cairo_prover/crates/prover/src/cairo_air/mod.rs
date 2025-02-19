@@ -9,13 +9,23 @@ pub mod preprocessed_utils;
 pub mod range_checks_air;
 pub(crate) mod relations;
 
+use std::collections::HashMap;
+
 pub use air::CairoProof;
-use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
+use air::{
+    lookup_sum, CairoClaim, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
+    PublicData,
+};
+use builtins_air::BuiltinsClaim;
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
+use stwo_cairo_adapter::builtins::{
+    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
+use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
@@ -121,6 +131,87 @@ where
         stark_proof: proof,
     })
 }
+pub fn verify_public_input(claim: &CairoClaim) {
+    let BuiltinsClaim {
+        range_check_128_builtin,
+        bitwise_builtin,
+        range_check_96_builtin,
+        add_mod_builtin,
+    } = claim.builtins;
+    let PublicData {
+        public_memory,
+        initial_state:
+            CasmState {
+                pc: initial_pc,
+                ap: initial_ap,
+                fp: _initial_fp,
+            },
+        final_state:
+            CasmState {
+                pc: _final_pc,
+                ap: final_ap,
+                fp: _final_fp,
+            },
+        has_output,
+    }: &PublicData = &claim.public_data;
+
+    let public_memory = public_memory
+        .iter()
+        .map(|(addr, _, val)| (*addr, *val))
+        .collect::<HashMap<_, _>>();
+
+    let n_public_segments = public_memory[&(initial_pc.0 + 1)][0];
+    let start_pointer_address = initial_ap.0;
+    let end_pointer_address = final_ap.0 - n_public_segments;
+
+    let segments = [
+        range_check_128_builtin.map(|claim| {
+            (
+                claim.range_check_builtin_segment_start,
+                claim.log_size,
+                RANGE_CHECK_MEMORY_CELLS,
+            )
+        }),
+        bitwise_builtin.map(|claim| {
+            (
+                claim.bitwise_builtin_segment_start,
+                claim.log_size,
+                BITWISE_MEMORY_CELLS,
+            )
+        }),
+        range_check_96_builtin.map(|claim| {
+            (
+                claim.range_check96_builtin_segment_start,
+                claim.log_size,
+                RANGE_CHECK_MEMORY_CELLS,
+            )
+        }),
+        add_mod_builtin.map(|claim| {
+            (
+                claim.add_mod_builtin_segment_start,
+                claim.log_size,
+                ADD_MOD_MEMORY_CELLS,
+            )
+        }),
+    ]
+    .into_iter()
+    .flatten()
+    .enumerate();
+
+    // The input to and the return values of the main function start addresses of the public
+    // segments. We assert, for each segment that is a builtin, that the range of addresses
+    // between start and end pointers, is contained in the range of addresses that the
+    // corresponding component checks to be valid.
+    for (i, (start, log_size, cells)) in segments {
+        let offset = i as u32 + if *has_output { 1 } else { 0 };
+
+        assert_eq!(public_memory[&(start_pointer_address + offset)][0], start);
+        assert!(
+            public_memory[&(end_pointer_address + offset)][0]
+                <= start + (1 << log_size) * cells as u32
+        )
+    }
+}
 
 pub fn verify_cairo<MC: MerkleChannel>(
     CairoProof {
@@ -135,6 +226,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
         (1 << claim.memory_address_to_id.log_size) * MEMORY_ADDRESS_TO_ID_SPLIT
             <= (1 << LOG_MEMORY_ADDRESS_BOUND)
     );
+
+    verify_public_input(&claim);
 
     // Setup STARK protocol.
     // TODO(Ohad): Propagate config from CLI args.
