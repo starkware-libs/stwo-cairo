@@ -8,7 +8,6 @@
 // TODO(Ohad): remove.
 #![allow(clippy::too_many_arguments)]
 
-pub mod adapter;
 pub mod cairo_air;
 mod components;
 mod felt;

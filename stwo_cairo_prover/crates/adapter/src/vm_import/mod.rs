@@ -17,7 +17,7 @@ use super::builtins::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
-use crate::adapter::memory::MemoryBuilder;
+use crate::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -187,14 +187,35 @@ impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
     }
 }
 
+/// Creates a prover input from `pub.json`, `priv.json`, `mem`, and `trace` files.
+///
+/// # Expects
+/// - These files must be stored in the `test_data/test_name` directory and contain valid Cairo
+///   program data.
+/// - They can be downloaded from Google Storage using `./scripts/download_test_data.sh`.   See
+///   `input/README.md` for details.
+///
+/// # Panics
+/// - If it fails to convert the files into a prover input.
+pub fn generate_test_input(test_name: &str) -> ProverInput {
+    let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    d.push("test_data/");
+    d.push(test_name);
+
+    adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
+        "
+        Failed to read test files. Checkout input/README.md.",
+    )
+}
+
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 pub mod slow_tests {
-    use crate::cairo_air::tests::test_input;
+    use super::generate_test_input;
 
     #[test]
     fn test_read_from_large_files() {
-        let input = test_input("test_read_from_large_files");
+        let input = generate_test_input("test_read_from_large_files");
 
         // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;
@@ -248,7 +269,7 @@ pub mod slow_tests {
 
     #[test]
     fn test_read_from_small_files() {
-        let input = test_input("test_read_from_small_files");
+        let input = generate_test_input("test_read_from_small_files");
 
         // Test opcode components.
         let components = input.state_transitions.casm_states_by_opcode;

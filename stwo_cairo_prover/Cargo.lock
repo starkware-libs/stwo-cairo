@@ -9,6 +9,7 @@ dependencies = [
  "clap",
  "log",
  "serde_json",
+ "stwo-cairo-adapter",
  "stwo-prover",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
@@ -1315,6 +1316,7 @@ version = "0.1.0"
 dependencies = [
  "cairo-lang-casm",
  "serde_json",
+ "stwo-cairo-adapter",
  "stwo-prover",
  "stwo_cairo_prover",
 ]
@@ -1439,6 +1441,7 @@ dependencies = [
  "clap",
  "log",
  "serde_json",
+ "stwo-cairo-adapter",
  "stwo-prover",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
@@ -1772,6 +1775,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo-cairo-adapter"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "cairo-lang-casm",
+ "cairo-vm",
+ "itertools 0.12.1",
+ "rand",
+ "serde",
+ "serde_json",
+ "sonic-rs",
+ "stwo-cairo-common",
+ "stwo-prover",
+ "stwo_cairo_utils",
+ "thiserror 2.0.11",
+ "tracing",
+]
+
+[[package]]
 name = "stwo-cairo-common"
 version = "0.1.0"
 dependencies = [
@@ -1842,10 +1864,10 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
- "sonic-rs",
  "starknet-ff",
  "stwo-air-utils",
  "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
  "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-prover",
@@ -1876,6 +1898,7 @@ dependencies = [
  "log",
  "num-traits",
  "serde_json",
+ "stwo-cairo-adapter",
  "stwo_cairo_prover",
  "stwo_cairo_utils",
  "thiserror 2.0.11",
