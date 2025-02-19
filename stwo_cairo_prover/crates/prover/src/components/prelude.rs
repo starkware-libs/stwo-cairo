@@ -22,3 +22,21 @@ pub mod proving {
     pub(crate) use crate::cairo_air::relations;
     pub use crate::components::utils::*;
 }
+
+pub mod constraint_eval {
+    pub use num_traits::One;
+    pub use serde::{Deserialize, Serialize};
+    pub use stwo_cairo_serialize::CairoSerialize;
+    pub use stwo_prover::constraint_framework::{
+        EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
+    };
+    pub use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
+    pub use stwo_prover::core::channel::Channel;
+    pub use stwo_prover::core::fields::m31::M31;
+    pub use stwo_prover::core::fields::qm31::SecureField;
+    pub use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+    pub use stwo_prover::core::pcs::TreeVec;
+
+    pub use crate::cairo_air::preprocessed::*;
+    pub(crate) use crate::cairo_air::relations;
+}
