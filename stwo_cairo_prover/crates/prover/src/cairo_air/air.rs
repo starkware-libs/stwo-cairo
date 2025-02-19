@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -31,6 +33,7 @@ use super::range_checks_air::{
     RangeChecksInteractionClaim, RangeChecksInteractionClaimGenerator,
     RangeChecksInteractionElements,
 };
+use crate::adapter::builtins::{BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS};
 use crate::adapter::ProverInput;
 use crate::cairo_air::relations;
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
@@ -77,6 +80,79 @@ pub struct CairoClaim {
 }
 
 impl CairoClaim {
+    pub fn verify_public_input(&self) {
+        let BuiltinsClaim {
+            bitwise_builtin,
+            range_check_128_builtin,
+            range_check_96_builtin,
+        } = self.builtins;
+        let PublicData {
+            public_memory,
+            initial_state:
+                CasmState {
+                    pc: initial_pc,
+                    ap: initial_ap,
+                    fp: _initial_fp,
+                },
+            final_state:
+                CasmState {
+                    pc: _final_pc,
+                    ap: final_ap,
+                    fp: _final_fp,
+                },
+            has_output,
+        } = &self.public_data;
+
+        let public_memory = public_memory
+            .iter()
+            .map(|(addr, _, val)| (*addr, *val))
+            .collect::<HashMap<_, _>>();
+
+        let n_public_segments = public_memory[&(initial_pc.0 + 1)][0];
+        let start_pointer_address = initial_ap.0;
+        let end_pointer_address = final_ap.0 - n_public_segments;
+
+        let segments = [
+            range_check_128_builtin.map(|claim| {
+                (
+                    claim.range_check_builtin_segment_start,
+                    claim.log_size,
+                    RANGE_CHECK_MEMORY_CELLS,
+                )
+            }),
+            bitwise_builtin.map(|claim| {
+                (
+                    claim.bitwise_builtin_segment_start,
+                    claim.log_size,
+                    BITWISE_MEMORY_CELLS,
+                )
+            }),
+            range_check_96_builtin.map(|claim| {
+                (
+                    claim.range_check96_builtin_segment_start,
+                    claim.log_size,
+                    RANGE_CHECK_MEMORY_CELLS,
+                )
+            }),
+        ]
+        .into_iter()
+        .flatten();
+
+        for (i, (start, log_size, cells)) in segments.enumerate() {
+            let offset = i as u32 + *has_output as u32;
+
+            // Assert that the segment start pointer given to main, equals the claimed segment start
+            // address.
+            assert_eq!(public_memory[&(start_pointer_address + offset)][0], start);
+
+            // Assert that the segment end pointer given to main, is leq the claimed segment end
+            // address.
+            assert!(
+                public_memory[&(end_pointer_address + offset)][0]
+                    <= start + (1 << log_size) * cells as u32
+            )
+        }
+    }
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
         self.opcodes.mix_into(channel);
@@ -112,6 +188,7 @@ pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+    pub has_output: bool,
 }
 impl PublicData {
     /// Sums the logup of the public data.
@@ -175,6 +252,7 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
+        let has_output = input.has_output;
         let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
@@ -209,6 +287,7 @@ impl CairoClaimGenerator {
             public_memory,
             initial_state,
             final_state,
+            has_output,
         };
 
         Self {

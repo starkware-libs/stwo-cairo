@@ -27,6 +27,11 @@ impl CairoSerialize for u64 {
     }
 }
 
+impl CairoSerialize for bool {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        output.push((*self as u32).into());
+    }
+}
 impl CairoSerialize for usize {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
         output.push((*self).into());
