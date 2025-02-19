@@ -28,9 +28,9 @@ use crate::components::{
     jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode,
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
     memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
-    poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, range_check_felt_252_width_27,
-    ret_opcode, verify_bitwise_xor_9, verify_instruction,
+    poseidon_3_partial_rounds_chain, poseidon_builtin, poseidon_full_round_chain,
+    poseidon_round_keys, range_check_builtin_bits_128, range_check_builtin_bits_96,
+    range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
 
@@ -537,6 +537,31 @@ where
                     verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
                 },
                 1 << bitwise_builtin.log_size,
+            )
+            .entries(trace),
+        );
+    }
+
+    if let Some(poseidon_builtin) = claim.builtins.poseidon_builtin {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                poseidon_builtin::Eval {
+                    claim: poseidon_builtin,
+                    cube_252_lookup_elements: relations::Cube252::dummy(),
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    poseidon_3_partial_rounds_chain_lookup_elements:
+                        relations::Poseidon3PartialRoundsChain::dummy(),
+                    poseidon_full_round_chain_lookup_elements:
+                        relations::PoseidonFullRoundChain::dummy(),
+                    range_check_felt_252_width_27_lookup_elements:
+                        relations::RangeCheckFelt252Width27::dummy(),
+                    range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3::dummy(),
+                    range_check_4_4_lookup_elements: relations::RangeCheck_4_4::dummy(),
+                    range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
+                },
+                1 << poseidon_builtin.log_size,
             )
             .entries(trace),
         );
