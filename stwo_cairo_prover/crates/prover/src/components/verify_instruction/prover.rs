@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use itertools::Itertools;
+use stwo_cairo_adapter::decode::deconstruct_instruction;
 
 use super::component::{Claim, InteractionClaim};
-use crate::adapter::decode::deconstruct_instruction;
 use crate::components::prelude::proving::*;
 use crate::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,

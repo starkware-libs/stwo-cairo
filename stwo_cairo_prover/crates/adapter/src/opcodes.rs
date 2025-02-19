@@ -682,11 +682,11 @@ mod mappings_tests {
 
     use cairo_lang_casm::casm;
 
-    use crate::adapter::decode::{Instruction, OpcodeExtension};
-    use crate::adapter::memory::*;
-    use crate::adapter::opcodes::StateTransitions;
-    use crate::adapter::plain::input_from_plain_casm;
-    use crate::adapter::vm_import::TraceEntry;
+    use crate::decode::{Instruction, OpcodeExtension};
+    use crate::memory::*;
+    use crate::opcodes::StateTransitions;
+    use crate::plain::input_from_plain_casm;
+    use crate::vm_import::TraceEntry;
 
     #[test]
     fn test_jmp_rel() {

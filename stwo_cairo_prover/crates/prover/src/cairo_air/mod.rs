@@ -14,6 +14,7 @@ use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElem
 use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
+use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -27,7 +28,6 @@ use stwo_prover::core::prover::{prove, verify, ProvingError, VerificationError};
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::adapter::ProverInput;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 
 const LOG_MAX_ROWS: u32 = 22;
@@ -230,36 +230,13 @@ pub enum CairoVerificationError {
 
 #[cfg(test)]
 pub mod tests {
-    use std::path::PathBuf;
 
     use cairo_lang_casm::casm;
+    use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::ProverConfig;
-    use crate::adapter::plain::input_from_plain_casm;
-    use crate::adapter::vm_import::adapt_vm_output;
     use crate::cairo_air::{prove_cairo, verify_cairo, ProverInput};
-
-    /// Creates a prover input from `pub.json`, `priv.json`, `mem`, and `trace` files.
-    ///
-    /// # Expects
-    /// - These files must be stored in the `test_data/test_name` directory and contain valid Cairo
-    ///   program data.
-    /// - They can be downloaded from Google Storage using `./scripts/download_test_data.sh`.   See
-    ///   `SLOW_TESTS_README.md` for details.
-    ///
-    /// # Panics
-    /// - If it fails to convert the files into a prover input.
-    pub fn test_input(test_name: &str) -> ProverInput {
-        let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("../../test_data/");
-        d.push(test_name);
-
-        adapt_vm_output(d.join("pub.json").as_path(), d.join("priv.json").as_path()).expect(
-            "
-            Failed to read test files. Checkout SLOW_TESTS_README.md.",
-        )
-    }
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -301,6 +278,7 @@ pub mod tests {
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
     }
 
+    #[cfg(test)]
     #[cfg(feature = "nightly")]
     mod nightly_tests {
         use std::io::Write;
@@ -325,9 +303,11 @@ pub mod tests {
         }
     }
 
+    #[cfg(test)]
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
         use itertools::Itertools;
+        use stwo_cairo_adapter::vm_import::generate_test_input;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
@@ -335,7 +315,7 @@ pub mod tests {
         #[test]
         fn test_full_cairo_air() {
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                test_input("test_read_from_small_files"),
+                generate_test_input("test_read_from_small_files"),
                 test_cfg(),
             )
             .unwrap();
@@ -344,7 +324,7 @@ pub mod tests {
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
-            let input = test_input("test_prove_verify_all_opcode_components");
+            let input = generate_test_input("test_prove_verify_all_opcode_components");
             for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
                 // TODO(Stav): Remove when `Blake` opcode is in the VM.
                 if opcode == "blake2s_opcode" {
@@ -363,7 +343,7 @@ pub mod tests {
                 );
             }
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                test_input("test_prove_verify_all_opcode_components"),
+                generate_test_input("test_prove_verify_all_opcode_components"),
                 test_cfg(),
             )
             .unwrap();
@@ -395,10 +375,10 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use cairo_vm::air_public_input::MemorySegmentAddresses;
+            use stwo_cairo_adapter::vm_import::{generate_test_input, MemoryEntryIter};
             use stwo_cairo_utils::file_utils::open_file;
 
             use super::*;
-            use crate::adapter::vm_import::MemoryEntryIter;
 
             /// Asserts that all builtins are present in the input.
             /// Panics if any of the builtins is missing.
@@ -419,7 +399,7 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_all_builtins() {
-                let input = test_input("test_prove_verify_all_builtins");
+                let input = generate_test_input("test_prove_verify_all_builtins");
                 assert_all_builtins_in_input(&input);
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
@@ -427,7 +407,7 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_add_mod_builtin() {
-                let input = test_input("test_prove_verify_add_mod_builtin");
+                let input = generate_test_input("test_prove_verify_add_mod_builtin");
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
@@ -439,7 +419,7 @@ pub mod tests {
                 bitwise_segment: &Option<MemorySegmentAddresses>,
             ) {
                 let bitwise_segment = bitwise_segment.as_ref().unwrap();
-                let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+                let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
                 d.push("../../test_data/");
                 d.push(test_name);
                 let mut memory_file =
@@ -452,7 +432,7 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_bitwise_builtin() {
-                let input = test_input("test_prove_verify_bitwise_builtin");
+                let input = generate_test_input("test_prove_verify_bitwise_builtin");
                 assert_bitwise_builtin_has_holes(
                     "test_prove_verify_bitwise_builtin",
                     &input.builtins_segments.bitwise,
@@ -463,21 +443,21 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_mul_mod_builtin() {
-                let input = test_input("test_prove_verify_mul_mod_builtin");
+                let input = generate_test_input("test_prove_verify_mul_mod_builtin");
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_96_builtin() {
-                let input = test_input("test_prove_verify_range_check_bits_96_builtin");
+                let input = generate_test_input("test_prove_verify_range_check_bits_96_builtin");
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_128_builtin() {
-                let input = test_input("test_prove_verify_range_check_bits_128_builtin");
+                let input = generate_test_input("test_prove_verify_range_check_bits_128_builtin");
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, test_cfg()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }

@@ -5,7 +5,6 @@ edition = "2021"
 
 [features]
 slow-tests = []
-std = ["dep:sonic-rs"]
 
 # Define Nightly features in order to allow selective tests
 # Use the following #[cfg(feature = "nightly")]
@@ -23,12 +22,12 @@ itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
-stwo-cairo-common = { path = "../common" }
+stwo-cairo-common.workspace = true
+stwo-cairo-adapter.workspace = true
 rayon = { version = "1.10.0" }
 serde.workspace = true
 serde_json.workspace = true
 starknet-ff.workspace = true
-sonic-rs = { version = "0.3.17", optional = true }
 stwo_cairo_utils = { path = "../utils" }
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
