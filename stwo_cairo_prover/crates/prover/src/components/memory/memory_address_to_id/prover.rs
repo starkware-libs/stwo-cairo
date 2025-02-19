@@ -3,6 +3,7 @@ use std::ops::Index;
 use std::simd::Simd;
 
 use itertools::{izip, Itertools};
+use stwo_cairo_adapter::memory::Memory;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
@@ -16,7 +17,6 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT};
-use crate::adapter::memory::Memory;
 use crate::cairo_air::preprocessed::Seq;
 use crate::cairo_air::relations;
 use crate::components::memory_address_to_id::component::{
@@ -212,10 +212,10 @@ impl InteractionClaimGenerator {
 #[cfg(test)]
 mod tests {
     use itertools::Itertools;
+    use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig};
+    use stwo_cairo_adapter::vm_import::MemoryEntry;
     use stwo_prover::core::fields::m31::{BaseField, M31};
 
-    use crate::adapter::memory::{MemoryBuilder, MemoryConfig};
-    use crate::adapter::vm_import::MemoryEntry;
     use crate::components::memory::memory_address_to_id;
 
     #[test]

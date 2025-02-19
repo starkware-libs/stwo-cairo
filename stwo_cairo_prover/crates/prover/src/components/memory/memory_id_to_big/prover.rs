@@ -3,6 +3,9 @@ use std::simd::Simd;
 
 use itertools::{chain, izip, Itertools};
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
+use stwo_cairo_adapter::memory::{
+    u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
+};
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
@@ -20,9 +23,6 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use crate::adapter::memory::{
-    u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
-};
 use crate::cairo_air::relations;
 use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
 use crate::components::utils::AtomicMultiplicityColumn;
@@ -396,11 +396,11 @@ impl InteractionClaimGenerator {
 #[cfg(test)]
 mod tests {
     use itertools::Itertools;
+    use stwo_cairo_adapter::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
     use stwo_cairo_common::memory::N_M31_IN_FELT252;
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::adapter::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
     use crate::components::memory::memory_address_to_id;
     use crate::felt::split_f252;
 

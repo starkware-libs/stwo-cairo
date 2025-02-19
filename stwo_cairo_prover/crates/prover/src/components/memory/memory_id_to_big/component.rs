@@ -2,6 +2,7 @@ use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
+use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::{
@@ -14,7 +15,6 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::relation;
 
-use crate::adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
 use crate::cairo_air::relations;
 
