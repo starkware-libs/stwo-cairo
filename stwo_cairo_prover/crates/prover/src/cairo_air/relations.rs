@@ -6,6 +6,7 @@ relation!(MemoryAddressToId, 2);
 relation!(MemoryIdToBig, 29);
 relation!(Opcodes, 3);
 relation!(PoseidonFullRoundChain, 32);
+relation!(Poseidon3PartialRoundsChain, 42);
 relation!(PoseidonRoundKeys, 31);
 relation!(RangeCheck_6, 1);
 relation!(RangeCheck_11, 1);
