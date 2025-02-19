@@ -8,9 +8,13 @@ use bytemuck::Zeroable;
 use itertools::Itertools;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::FieldExpOps;
 
-use super::cpu::{BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, PRIME};
+use super::cpu::{
+    BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
+    PRIME,
+};
 use crate::memory::N_M31_IN_FELT252;
 
 pub const LOG_N_LANES: u32 = 4;
@@ -464,6 +468,18 @@ impl PackedFelt252Width27 {
 
     pub fn from_array(arr: [Felt252Width27; N_LANES]) -> Self {
         Self { value: arr }
+    }
+
+    pub fn from_limbs(limbs: [PackedM31; FELT252WIDTH27_N_WORDS]) -> Self {
+        let limbs: [[M31; N_LANES]; FELT252WIDTH27_N_WORDS] =
+            std::array::from_fn(|i| limbs[i].to_array());
+        Self {
+            value: std::array::from_fn(|i| {
+                Felt252Width27::from_limbs(&std::array::from_fn::<_, FELT252WIDTH27_N_WORDS, _>(
+                    |j| limbs[j][i],
+                ))
+            }),
+        }
     }
 
     pub fn from_packed_felt252width27(other: PackedFelt252Width27) -> Self {
