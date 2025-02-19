@@ -258,6 +258,9 @@ impl CairoClaimGenerator {
             &self.range_checks_trace_generator.rc_18_trace_generator,
             &self.range_checks_trace_generator.rc_19_trace_generator,
             &self.range_checks_trace_generator.rc_9_9_trace_generator,
+            &self
+                .range_checks_trace_generator
+                .rc_3_3_3_3_3_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
@@ -367,6 +370,7 @@ pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
     pub cube_252: relations::Cube252,
     pub poseidon_round_keys: relations::PoseidonRoundKeys,
+    pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
     pub range_check_felt_252_width_27: relations::RangeCheckFelt252Width27,
     pub verify_instruction: relations::VerifyInstruction,
     pub memory_address_to_id: relations::MemoryAddressToId,
@@ -380,6 +384,7 @@ impl CairoInteractionElements {
             opcodes: relations::Opcodes::draw(channel),
             cube_252: relations::Cube252::draw(channel),
             poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
+            poseidon_full_round_chain: relations::PoseidonFullRoundChain::draw(channel),
             range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
             verify_instruction: relations::VerifyInstruction::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
