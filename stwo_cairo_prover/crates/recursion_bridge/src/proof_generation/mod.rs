@@ -3,7 +3,7 @@ mod tests {
     use std::path::PathBuf;
 
     use cairo_lang_casm::casm;
-    use stwo_cairo_prover::adapter::plain::input_from_plain_casm_with_step_limit;
+    use stwo_cairo_adapter::plain::input_from_plain_casm_with_step_limit;
     use stwo_cairo_prover::cairo_air::{prove_cairo, verify_cairo, ProverConfig};
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
