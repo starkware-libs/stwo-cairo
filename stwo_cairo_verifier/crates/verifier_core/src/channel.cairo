@@ -8,13 +8,9 @@ use crate::utils::pack4;
 use crate::{BaseField, SecureField};
 
 /// Equals `2^31`.
-const M31_SHIFT: felt252 = 0x80000000;
-
-/// Equals `2^31`.
 const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
 
-pub const EXTENSION_FELTS_PER_HASH: usize = 2;
-
+/// Number of `M31` per hash.
 pub const FELTS_PER_HASH: usize = 8;
 
 #[derive(Default, Drop)]
@@ -77,13 +73,13 @@ pub impl ChannelImpl of ChannelTrait {
         let mut res = array![self.digest];
         loop {
             match (felts.pop_front(), felts.pop_front()) {
-                (Option::None, _) => { break; },
-                (Option::Some(x), Option::None) => {
+                (None, _) => { break; },
+                (Some(x), None) => {
                     res.append(pack4(0, (*x).to_array()));
                     break;
                 },
                 (
-                    Option::Some(x), Option::Some(y),
+                    Some(x), Some(y),
                 ) => {
                     let cur = pack4(0, (*x).to_array());
                     res.append(pack4(cur, (*y).to_array()));

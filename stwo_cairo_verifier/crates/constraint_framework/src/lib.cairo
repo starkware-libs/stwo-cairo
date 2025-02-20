@@ -41,8 +41,7 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
         let mut values_span = IntoSpan::span(@values);
         let mut sum = -*self.z;
 
-        while let (Option::Some(alpha), Option::Some(value)) =
-            (alpha_powers.pop_front(), values_span.pop_front()) {
+        while let (Some(alpha), Some(value)) = (alpha_powers.pop_front(), values_span.pop_front()) {
             sum += (*alpha).mul_m31(*value);
         }
 
@@ -94,7 +93,7 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
         for preprocessed_column in preprocessed_columns {
             let mut column_mask_values = *preprocessed_mask_values.pop_front().unwrap();
 
-            if let Option::Some(mask_value) = column_mask_values.pop_front() {
+            if let Some(mask_value) = column_mask_values.pop_front() {
                 values
                     .insert(
                         PreprocessedColumnKey::encode(preprocessed_column),
