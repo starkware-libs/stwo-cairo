@@ -315,8 +315,8 @@ fn get_query_positions_by_log_size(
 /// A FRI proof.
 #[derive(Drop, Serde)]
 pub struct FriProof {
-    pub first_layer: FriLayerProof,
-    pub inner_layers: Span<FriLayerProof>,
+    pub first_layer: FriLayerProof<felt252>,
+    pub inner_layers: Span<FriLayerProof<felt252>>,
     pub last_layer_poly: LinePoly,
 }
 
@@ -327,7 +327,7 @@ struct FriFirstLayerVerifier {
     /// The commitment domain all the circle polynomials in the first layer.
     column_commitment_domains: Span<CircleDomain>,
     folding_alpha: QM31,
-    proof: FriLayerProof,
+    proof: FriLayerProof<felt252>,
 }
 
 #[generate_trait]
@@ -437,13 +437,13 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     }
 }
 
-#[derive(Drop, Debug)]
+#[derive(Drop)]
 struct FriInnerLayerVerifier {
     log_degree_bound: u32,
     domain: LineDomain,
     folding_alpha: QM31,
     layer_index: usize,
-    proof: @FriLayerProof,
+    proof: @FriLayerProof<felt252>,
 }
 
 #[generate_trait]
@@ -666,14 +666,37 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
 }
 
 /// Proof of an individual FRI layer.
-#[derive(Drop, Clone, Debug, Serde)]
-pub struct FriLayerProof {
+#[derive(Drop, Copy)]
+pub struct FriLayerProof<HashT> {
     /// Values that the verifier needs but cannot deduce from previous computations, in the
     /// order they are needed. This complements the values that were queried. These must be
     /// supplied directly to the verifier.
     pub fri_witness: Span<QM31>,
-    pub decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
-    pub commitment: felt252,
+    pub decommitment: MerkleDecommitment<HashT>,
+    pub commitment: HashT,
+}
+
+impl FriLayerProofSerde<
+    HashT,
+    +Drop<HashT>,
+    +Serde<HashT>,
+    impl MerkleDecommitmentSerde: Serde<MerkleDecommitment<HashT>>,
+> of Serde<FriLayerProof<HashT>> {
+    fn serialize(self: @FriLayerProof<HashT>, ref output: Array<felt252>) {
+        self.fri_witness.serialize(ref output);
+        MerkleDecommitmentSerde::serialize(self.decommitment, ref output);
+        self.commitment.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<FriLayerProof<HashT>> {
+        Some(
+            FriLayerProof {
+                fri_witness: Serde::deserialize(ref serialized)?,
+                decommitment: MerkleDecommitmentSerde::deserialize(ref serialized)?,
+                commitment: Serde::deserialize(ref serialized)?,
+            },
+        )
+    }
 }
 
 #[derive(Debug, Drop)]
