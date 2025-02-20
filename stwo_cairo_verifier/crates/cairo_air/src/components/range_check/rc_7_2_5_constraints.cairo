@@ -40,8 +40,8 @@ pub struct ConstraintParams {
 
 pub fn evaluate_constraints_at_point(
     ref sum: QM31,
-    ref trace_mask_values: ColumnSpan<Array<QM31>>,
-    ref interaction_mask_values: ColumnSpan<Array<QM31>>,
+    ref trace_mask_values: ColumnSpan<Span<QM31>>,
+    ref interaction_mask_values: ColumnSpan<Span<QM31>>,
     params: ConstraintParams,
     random_coeff: QM31,
     domain_vanish_at_point_inv: QM31,
@@ -55,24 +55,24 @@ pub fn evaluate_constraints_at_point(
         total_sum,
     } = params;
 
-    let mut trace_1_column_0 = trace_mask_values.pop_front().unwrap().span();
+    let mut trace_1_column_0 = *trace_mask_values.pop_front().unwrap();
     let trace_1_column_0_offset_0 = *trace_1_column_0.pop_front().unwrap();
-    let mut trace_1_column_1 = trace_mask_values.pop_front().unwrap().span();
+    let mut trace_1_column_1 = *trace_mask_values.pop_front().unwrap();
     let trace_1_column_1_offset_0 = *trace_1_column_1.pop_front().unwrap();
-    let mut trace_1_column_2 = trace_mask_values.pop_front().unwrap().span();
+    let mut trace_1_column_2 = *trace_mask_values.pop_front().unwrap();
     let trace_1_column_2_offset_0 = *trace_1_column_2.pop_front().unwrap();
-    let mut trace_1_column_3 = trace_mask_values.pop_front().unwrap().span();
+    let mut trace_1_column_3 = *trace_mask_values.pop_front().unwrap();
     let trace_1_column_3_offset_0 = *trace_1_column_3.pop_front().unwrap();
-    let mut trace_2_column_4 = interaction_mask_values.pop_front().unwrap().span();
+    let mut trace_2_column_4 = *interaction_mask_values.pop_front().unwrap();
     let trace_2_column_4_offset_neg_1 = *trace_2_column_4.pop_front().unwrap();
     let trace_2_column_4_offset_0 = *trace_2_column_4.pop_front().unwrap();
-    let mut trace_2_column_5 = interaction_mask_values.pop_front().unwrap().span();
+    let mut trace_2_column_5 = *interaction_mask_values.pop_front().unwrap();
     let trace_2_column_5_offset_neg_1 = *trace_2_column_5.pop_front().unwrap();
     let trace_2_column_5_offset_0 = *trace_2_column_5.pop_front().unwrap();
-    let mut trace_2_column_6 = interaction_mask_values.pop_front().unwrap().span();
+    let mut trace_2_column_6 = *interaction_mask_values.pop_front().unwrap();
     let trace_2_column_6_offset_neg_1 = *trace_2_column_6.pop_front().unwrap();
     let trace_2_column_6_offset_0 = *trace_2_column_6.pop_front().unwrap();
-    let mut trace_2_column_7 = interaction_mask_values.pop_front().unwrap().span();
+    let mut trace_2_column_7 = *interaction_mask_values.pop_front().unwrap();
     let trace_2_column_7_offset_neg_1 = *trace_2_column_7.pop_front().unwrap();
     let trace_2_column_7_offset_0 = *trace_2_column_7.pop_front().unwrap();
     let intermediate0 = (RangeCheck_7_2_5_alpha0) * (trace_1_column_0_offset_0)

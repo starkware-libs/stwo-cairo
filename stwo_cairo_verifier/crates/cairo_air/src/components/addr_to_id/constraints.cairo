@@ -66,8 +66,8 @@ pub struct ConstraintParams {
 
 pub fn evaluate_constraints_at_point(
     ref sum: QM31,
-    ref trace_mask_values: ColumnSpan<Array<QM31>>,
-    ref interaction_mask_values: ColumnSpan<Array<QM31>>,
+    ref trace_mask_values: ColumnSpan<Span<QM31>>,
+    ref interaction_mask_values: ColumnSpan<Span<QM31>>,
     params: ConstraintParams,
     random_coeff: QM31,
     domain_vanish_at_point_inv: QM31,
