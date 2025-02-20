@@ -28,9 +28,9 @@ use crate::components::{
     jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode,
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
     memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
-    poseidon_full_round_chain, poseidon_round_keys, range_check_builtin_bits_128,
-    range_check_builtin_bits_96, range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9,
-    verify_instruction,
+    poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, range_check_felt_252_width_27,
+    ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
 
@@ -537,6 +537,27 @@ where
                     verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
                 },
                 1 << bitwise_builtin.log_size,
+            )
+            .entries(trace),
+        );
+    }
+
+    if let Some(poseidon_3_partial_rounds_chain) = claim.builtins.poseidon_3_partial_rounds_chain {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                poseidon_3_partial_rounds_chain::Eval {
+                    claim: poseidon_3_partial_rounds_chain,
+                    cube_252_lookup_elements: relations::Cube252::dummy(),
+                    poseidon_3_partial_rounds_chain_lookup_elements:
+                        relations::Poseidon3PartialRoundsChain::dummy(),
+                    poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
+                    range_check_felt_252_width_27_lookup_elements:
+                        relations::RangeCheckFelt252Width27::dummy(),
+                    range_check_4_4_lookup_elements: relations::RangeCheck_4_4::dummy(),
+                    range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
+                },
+                1 << poseidon_3_partial_rounds_chain.log_size,
             )
             .entries(trace),
         );
