@@ -278,13 +278,16 @@ mod tests {
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
     use crate::fields::m31::m31;
+    use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
     use super::{MerkleDecommitment, MerkleVerifier, MerkleVerifierImpl};
 
     #[test]
     fn test_verifier() {
         let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
         let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
-        let decommitment = MerkleDecommitment {
+        let decommitment = MerkleDecommitment::<
+            PoseidonMerkleHasher,
+        > {
             hash_witness: array![
                 0x037056abc40b9e8c2a67826f54a8c379b0b3ef46629e6a19609e1144bf230f36,
                 0x068708ce1c3fc019a43494bd262e87fc70e5c1f68f42881f120fe90ea2bf2201,
