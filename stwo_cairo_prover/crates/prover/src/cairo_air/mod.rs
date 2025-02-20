@@ -136,6 +136,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
             <= (1 << LOG_MEMORY_ADDRESS_BOUND)
     );
 
+    claim.verify_public_input();
+
     // Setup STARK protocol.
     // TODO(Ohad): Propagate config from CLI args.
     let config = PcsConfig {
