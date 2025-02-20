@@ -1,0 +1,27 @@
+[package]
+name = "stwo-cairo-adapter"
+version = "0.1.0"
+edition = "2021"
+
+
+[features]
+slow-tests = []
+std = ["dep:sonic-rs"]
+
+[dependencies]
+cairo-vm.workspace = true
+stwo-prover.workspace = true
+cairo-lang-casm.workspace = true
+itertools.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+stwo-cairo-common.workspace = true
+stwo_cairo_utils.workspace = true
+bytemuck.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+sonic-rs = { version = "0.3.17", optional = true }
+
+[dev-dependencies]
+cairo-lang-casm.workspace = true
+rand.workspace = true

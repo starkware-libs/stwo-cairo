@@ -1,6 +1,9 @@
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_adapter::builtins::{
+    BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -12,9 +15,6 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
-use crate::adapter::builtins::{
-    BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
-};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
