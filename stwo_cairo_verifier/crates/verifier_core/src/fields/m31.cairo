@@ -147,6 +147,13 @@ pub impl M31Neg of Neg<M31> {
     }
 }
 
+impl M31IntoU32 of Into<M31, u32> {
+    #[inline]
+    fn into(self: M31) -> u32 {
+        upcast(self.inner)
+    }
+}
+
 impl M31IntoFelt252 of Into<M31, felt252> {
     #[inline]
     fn into(self: M31) -> felt252 {
@@ -266,6 +273,8 @@ pub impl M31SubConstrain0 of bounded_int::ConstrainHelper<BoundedInt<{ -(P - 1) 
     type LowT = BoundedInt<{ -(P - 1) }, { -1 }>;
     type HighT = M31InnerT;
 }
+
+// pub impl UpcastableM31U32 of Upcasta
 
 impl DisplayM31 of core::fmt::Display<M31> {
     fn fmt(self: @M31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
