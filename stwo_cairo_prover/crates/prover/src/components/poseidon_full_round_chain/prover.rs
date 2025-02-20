@@ -1,7 +1,9 @@
 #![allow(unused_parens)]
 use itertools::Itertools;
+use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim};
+use crate::cairo_air::poseidon::deduce_output::PoseidonFullRoundChain;
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::range_check_3_3_3_3_3;
 use crate::components::{cube_252, poseidon_round_keys};
@@ -61,6 +63,37 @@ impl ClaimGenerator {
 
     pub fn add_inputs(&mut self, inputs: &[InputType]) {
         self.inputs.extend_from_slice(inputs);
+    }
+
+    pub fn deduce_output(&self, input: PackedInputType) -> PackedInputType {
+        let unpacked_inputs = (
+            input.0.to_array(),
+            input.1.to_array(),
+            <_ as Unpack>::unpack(input.2),
+        );
+
+        let mut unpacked_deduced_outputs: (
+            [M31; N_LANES],
+            [M31; N_LANES],
+            [[Felt252Width27; 3]; N_LANES],
+        ) = Default::default();
+        (0..N_LANES).for_each(|i| {
+            (
+                unpacked_deduced_outputs.0[i],
+                unpacked_deduced_outputs.1[i],
+                unpacked_deduced_outputs.2[i],
+            ) = PoseidonFullRoundChain::deduce_output(
+                unpacked_inputs.0[i],
+                unpacked_inputs.1[i],
+                unpacked_inputs.2[i],
+            )
+        });
+
+        (
+            PackedM31::from_array(unpacked_deduced_outputs.0),
+            PackedM31::from_array(unpacked_deduced_outputs.0),
+            <_ as Pack>::pack(unpacked_deduced_outputs.2),
+        )
     }
 }
 
