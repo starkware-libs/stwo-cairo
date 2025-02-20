@@ -2,6 +2,7 @@
 members = [
     "crates/bounded_int",
     "crates/cairo_air",
+    "crates/cairo_verifier",
     "crates/constraint_framework",
     "crates/verifier_core",
 ]

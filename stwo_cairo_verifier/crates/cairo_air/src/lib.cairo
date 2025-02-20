@@ -1913,7 +1913,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-
         if let Option::Some(component) = self.range_check_96_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
