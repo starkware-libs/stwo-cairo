@@ -117,6 +117,16 @@ impl ClaimGenerator {
         }
     }
 
+    pub fn get_small_value(&self, encoded_memory_id: &M31) -> u128 {
+        match EncodedMemoryValueId(encoded_memory_id.0).decode() {
+            MemoryValueId::F252(_) => {
+                panic!("Expected small memory value at id {} ", encoded_memory_id);
+            }
+            MemoryValueId::Small(id) => self.small_values[id as usize],
+            MemoryValueId::Empty => panic!("Attempted get_value on empty memory cell"),
+        }
+    }
+
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
