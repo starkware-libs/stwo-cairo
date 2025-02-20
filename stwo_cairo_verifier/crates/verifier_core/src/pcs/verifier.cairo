@@ -20,7 +20,7 @@ pub struct CommitmentSchemeProof<HashT> {
     pub commitments: TreeSpan<HashT>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
-    pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
+    pub decommitments: TreeArray<MerkleDecommitment<HashT>>,
     /// All queried trace values.
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,

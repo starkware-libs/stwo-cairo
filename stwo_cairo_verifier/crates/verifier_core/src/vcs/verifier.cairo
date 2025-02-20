@@ -1,17 +1,16 @@
 use core::array::{ArrayTrait, SpanTrait, ToSpanTrait};
 use core::cmp::min;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
-use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
 use crate::utils::{ArrayExTrait, DictTrait, SpanExTrait};
 use crate::vcs::hasher::MerkleHasher;
 use crate::BaseField;
 
-pub struct MerkleDecommitment<impl H: MerkleHasher> {
+pub struct MerkleDecommitment<HashT> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the
     /// order they are needed.
-    pub hash_witness: Span<H::Hash>,
+    pub hash_witness: Span<HashT>,
     /// Column values that the verifier needs but cannot deduce from previous computations, in the
     /// order they are needed.
     /// This complements the column values that were queried. These must be supplied directly to
@@ -19,35 +18,17 @@ pub struct MerkleDecommitment<impl H: MerkleHasher> {
     pub column_witness: Span<BaseField>,
 }
 
-impl MerkleDecommitmentDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleDecommitment<H>>;
+impl MerkleDecommitmentDrop<HashT> of Drop<MerkleDecommitment<HashT>>;
 
-impl MerkleDecommitmentDebug<
-    impl H: MerkleHasher, +Debug<H::Hash>,
-> of Debug<MerkleDecommitment<H>> {
-    fn fmt(self: @MerkleDecommitment<H>, ref f: Formatter) -> Result<(), Error> {
-        Ok(())
-    }
-}
+impl MerkleDecommitmentCopy<HashT> of Copy<MerkleDecommitment<HashT>>;
 
-impl MerkleDecommitmentClone<
-    impl H: MerkleHasher, +Clone<Array<H::Hash>>, +Drop<Array<H::Hash>>,
-> of Clone<MerkleDecommitment<H>> {
-    fn clone(self: @MerkleDecommitment<H>) -> MerkleDecommitment<H> {
-        MerkleDecommitment::<
-            H,
-        > { hash_witness: self.hash_witness.clone(), column_witness: self.column_witness.clone() }
-    }
-}
-
-impl MerkleDecommitmentSerde<
-    impl H: MerkleHasher, +Serde<Span<H::Hash>>,
-> of Serde<MerkleDecommitment<H>> {
-    fn serialize(self: @MerkleDecommitment<H>, ref output: Array<felt252>) {
+impl MerkleDecommitmentSerde<HashT, +Serde<Span<HashT>>> of Serde<MerkleDecommitment<HashT>> {
+    fn serialize(self: @MerkleDecommitment<HashT>, ref output: Array<felt252>) {
         self.hash_witness.serialize(ref output);
         self.column_witness.serialize(ref output);
     }
 
-    fn deserialize(ref serialized: Span<felt252>) -> Option<MerkleDecommitment<H>> {
+    fn deserialize(ref serialized: Span<felt252>) -> Option<MerkleDecommitment<HashT>> {
         Some(
             MerkleDecommitment {
                 hash_witness: Serde::deserialize(ref serialized)?,
@@ -61,6 +42,7 @@ pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,
     pub column_log_sizes: Array<u32>,
 }
+
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
 pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
@@ -91,7 +73,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
         self: @MerkleVerifier<H>,
         queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         queried_values: Span<BaseField>,
-        decommitment: MerkleDecommitment<H>,
+        decommitment: MerkleDecommitment<H::Hash>,
     ) -> Result<(), MerkleVerificationError>;
 
     fn cols_by_size(self: @MerkleVerifier<H>) -> Felt252Dict<Nullable<Array<u32>>>;
@@ -104,7 +86,7 @@ impl MerkleVerifierImpl<
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         mut queried_values: Span<BaseField>,
-        decommitment: MerkleDecommitment<H>,
+        decommitment: MerkleDecommitment<H::Hash>,
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
@@ -285,9 +267,7 @@ mod tests {
     fn test_verifier() {
         let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
         let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
-        let decommitment = MerkleDecommitment::<
-            PoseidonMerkleHasher,
-        > {
+        let decommitment = MerkleDecommitment {
             hash_witness: array![
                 0x037056abc40b9e8c2a67826f54a8c379b0b3ef46629e6a19609e1144bf230f36,
                 0x068708ce1c3fc019a43494bd262e87fc70e5c1f68f42881f120fe90ea2bf2201,
