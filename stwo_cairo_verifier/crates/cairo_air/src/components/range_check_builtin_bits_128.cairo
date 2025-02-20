@@ -15,26 +15,23 @@ mod constraints;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
-    n_rows: u32,
+    pub log_size: u32,
+    pub range_check_builtin_segment_start: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
-    fn log_size(self: @Claim) -> u32 {
-        core::cmp::max((*self.n_rows).next_power_of_two().ilog2(), 4)
-    }
-
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = self.log_size();
+        let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(12, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 4, log_size)
-            .span();
+        let trace_log_sizes = ArrayImpl::new_repeated(17, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE, log_size).span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_nonce((*self.n_rows).into());
+        channel.mix_nonce((*self.log_size).into());
+        channel.mix_nonce((*self.range_check_builtin_segment_start).into());
     }
 }
 
@@ -56,11 +53,9 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub opcodes_lookup_elements: crate::OpcodeElements,
-    pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -68,7 +63,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
+        let log_size = *self.claim.log_size;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         constraints::mask_points(
             ref preprocessed_column_set,
@@ -81,7 +76,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        self.claim.log_size() + 1
+        *self.claim.log_size + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -93,45 +88,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
-
-        let VerifyInstruction_z = *self.verify_instruction_lookup_elements.z;
-        let mut verify_instruction_alpha_powers = self
-            .verify_instruction_lookup_elements
-            .alpha_powers
-            .span();
-        let VerifyInstruction_alpha0 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha1 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha2 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha3 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha4 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha5 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha6 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha7 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha8 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha9 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha10 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha11 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha12 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha13 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha14 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha15 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha16 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha17 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha18 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha19 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha20 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha21 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha22 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha23 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha24 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha25 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha26 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha27 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha28 = *verify_instruction_alpha_powers.pop_front().unwrap();
-
         let MemoryAddressToId_z = *self.memory_address_to_id_lookup_elements.z;
         let mut memory_address_to_id_alpha_powers = self
             .memory_address_to_id_lookup_elements
@@ -175,40 +131,41 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
         let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
 
-        let Opcodes_z = *self.opcodes_lookup_elements.z;
-        let mut opcodes_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
-        let Opcodes_alpha0 = *opcodes_alpha_powers.pop_front().unwrap();
-        let Opcodes_alpha1 = *opcodes_alpha_powers.pop_front().unwrap();
-        let Opcodes_alpha2 = *opcodes_alpha_powers.pop_front().unwrap();
+        let log_size = *self.claim.log_size;
 
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
+        let range_check_builtin_segment_start = *self.claim.range_check_builtin_segment_start;
+
         let params = constraints::ConstraintParams {
             log_size,
-            VerifyInstruction_z,
-            VerifyInstruction_alpha0,
-            VerifyInstruction_alpha1,
-            VerifyInstruction_alpha2,
-            VerifyInstruction_alpha3,
-            VerifyInstruction_alpha4,
-            VerifyInstruction_alpha5,
-            VerifyInstruction_alpha7,
-            VerifyInstruction_alpha11,
-            VerifyInstruction_alpha17,
-            MemoryAddressToId_z,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,
-            MemoryIdToBig_z,
+            MemoryAddressToId_z,
             MemoryIdToBig_alpha0,
             MemoryIdToBig_alpha1,
+            MemoryIdToBig_alpha10,
+            MemoryIdToBig_alpha11,
+            MemoryIdToBig_alpha12,
+            MemoryIdToBig_alpha13,
+            MemoryIdToBig_alpha14,
+            MemoryIdToBig_alpha15,
             MemoryIdToBig_alpha2,
             MemoryIdToBig_alpha3,
-            Opcodes_z,
-            Opcodes_alpha0,
-            Opcodes_alpha1,
-            Opcodes_alpha2,
+            MemoryIdToBig_alpha4,
+            MemoryIdToBig_alpha5,
+            MemoryIdToBig_alpha6,
+            MemoryIdToBig_alpha7,
+            MemoryIdToBig_alpha8,
+            MemoryIdToBig_alpha9,
+            MemoryIdToBig_z,
             claimed_sum,
+            range_check_builtin_segment_start,
+            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size)),
         };
+
+        let trace_domain = CanonicCosetImpl::new(log_size);
+        let vanish_eval = trace_domain.eval_vanishing(point);
 
         constraints::evaluate_constraints_at_point(
             ref sum,
@@ -216,7 +173,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             params,
             random_coeff,
-            domain_vanishing_eval_inv,
-        )
+            vanish_eval.inverse(),
+        );
     }
 }
