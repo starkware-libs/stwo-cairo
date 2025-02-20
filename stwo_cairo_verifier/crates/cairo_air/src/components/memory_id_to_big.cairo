@@ -24,18 +24,13 @@ pub const N_M31_IN_SMALL_FELT252: usize = 8; // 72 bits.
 
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 
-pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = BIG_N_ID_AND_VALUE_COLUMNS;
+pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252;
 
-pub const BIG_N_COLUMNS: usize = BIG_N_ID_AND_VALUE_COLUMNS + N_MULTIPLICITY_COLUMNS;
+pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
 
-pub const BIG_N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
+pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_SMALL_FELT252;
 
-pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = SMALL_N_ID_AND_VALUE_COLUMNS;
-
-pub const SMALL_N_COLUMNS: usize = SMALL_N_ID_AND_VALUE_COLUMNS + N_MULTIPLICITY_COLUMNS;
-
-pub const SMALL_N_ID_AND_VALUE_COLUMNS: usize = MEMORY_ID_SIZE + N_M31_IN_SMALL_FELT252;
-
+pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -205,6 +200,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
             claimed_sum: *self.interaction_claim.big_claimed_sum,
+            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
@@ -294,6 +290,7 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
             claimed_sum: *self.interaction_claim.small_claimed_sum,
+            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
