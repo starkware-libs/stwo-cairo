@@ -7,5 +7,5 @@ members = [
     "crates/verifier_core",
 ]
 
-[cairo]
-enable-gas = false
+# [cairo]
+# enable-gas = false

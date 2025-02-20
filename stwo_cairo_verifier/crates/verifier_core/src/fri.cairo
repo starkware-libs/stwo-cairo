@@ -11,7 +11,7 @@ use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
-use crate::vcs::hasher::PoseidonMerkleHasher;
+use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::ColumnArray;
 

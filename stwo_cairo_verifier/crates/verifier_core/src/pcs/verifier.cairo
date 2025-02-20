@@ -7,7 +7,7 @@ use crate::fields::qm31::{QM31, QM31Impl};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
-use crate::vcs::hasher::PoseidonMerkleHasher;
+use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
