@@ -24,6 +24,7 @@ pub struct ProverInput {
     pub memory: Memory,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
+    pub has_output: bool,
 }
 
 /// Sizes of memory address to ID and ID to value tables.

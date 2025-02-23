@@ -22,10 +22,10 @@ use crate::components::{
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
-    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
-    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
+    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {

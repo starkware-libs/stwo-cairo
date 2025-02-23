@@ -112,6 +112,7 @@ pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+    pub has_output: bool,
 }
 impl PublicData {
     /// Sums the logup of the public data.
@@ -175,6 +176,7 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
+        let has_output = input.has_output;
         let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
@@ -209,6 +211,7 @@ impl CairoClaimGenerator {
             public_memory,
             initial_state,
             final_state,
+            has_output,
         };
 
         Self {

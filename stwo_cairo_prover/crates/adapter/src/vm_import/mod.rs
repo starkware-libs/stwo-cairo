@@ -122,6 +122,7 @@ pub fn adapt_to_stwo_input(
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segments(&mut memory);
+    let has_output = memory_segments.get("output").is_some();
 
     Ok(ProverInput {
         state_transitions,
@@ -129,6 +130,7 @@ pub fn adapt_to_stwo_input(
         memory: memory.build(),
         public_memory_addresses,
         builtins_segments,
+        has_output,
     })
 }
 
