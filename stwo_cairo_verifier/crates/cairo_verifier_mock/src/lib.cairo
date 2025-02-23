@@ -1,7 +1,6 @@
-use stwo_cairo_air::VerificationOutput;
+// use stwo_cairo_air::VerificationOutput;
 
-pub type MockVerifierInput = VerificationOutput;
-
+// pub type MockVerifierInput = VerificationOutput;
 /// An executable (can be run using cairo-execute) of a mock verifier.
 /// To build, run this from the root folder:
 /// ```
@@ -20,7 +19,9 @@ pub type MockVerifierInput = VerificationOutput;
 /// Note: the input JSON file should contain data that is deserialized to `MockVerifierInput`. The
 /// data should be given as an array of hex numbers (felt252s) as strings. For example: ["0x7",
 /// "0x80"].
-#[executable]
-pub fn main(mock_verifier_input: MockVerifierInput) -> VerificationOutput {
-    mock_verifier_input
-}
+// #[executable]
+// pub fn main(mock_verifier_input: MockVerifierInput) -> VerificationOutput {
+//     mock_verifier_input
+// }
+
+

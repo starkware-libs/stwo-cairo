@@ -145,21 +145,21 @@ pub impl QM31Impl of QM31Trait {
 }
 
 pub impl QM31Add of core::traits::Add<QM31> {
-    #[inline]
+    #[inline(never)]
     fn add(lhs: QM31, rhs: QM31) -> QM31 {
         QM31 { a: lhs.a + rhs.a, b: lhs.b + rhs.b }
     }
 }
 
 pub impl QM31Sub of core::traits::Sub<QM31> {
-    #[inline]
+    #[inline(never)]
     fn sub(lhs: QM31, rhs: QM31) -> QM31 {
         QM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
     }
 }
 
 pub impl QM31Mul of core::traits::Mul<QM31> {
-    #[inline]
+    #[inline(never)]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
         QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
