@@ -17,7 +17,7 @@ mod constraints;
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub log_size: u32,
-    pub range_check_builtin_segment_start: u32,
+    pub bitwise_builtin_segment_start: u32,
 }
 
 #[generate_trait]
@@ -25,15 +25,15 @@ pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(12, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 2, log_size)
+        let trace_log_sizes = ArrayImpl::new_repeated(89, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 19, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_nonce((*self.log_size).into());
-        channel.mix_nonce((*self.range_check_builtin_segment_start).into());
+        channel.mix_nonce((*self.bitwise_builtin_segment_start).into());
     }
 }
 
@@ -56,7 +56,7 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_6_lookup_elements: crate::RangeCheck6BitElements,
+    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor9BitElements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
@@ -135,15 +135,22 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
         let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
 
-        let RangeCheck_6_z = *self.range_check_6_lookup_elements.z;
-        let mut range_check_6_alpha_powers = self.range_check_6_lookup_elements.alpha_powers.span();
-        let RangeCheck_6_alpha0 = *range_check_6_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_9_z = *self.verify_bitwise_xor_9_lookup_elements.z;
+        let mut verify_bitwise_xor_9_alpha_powers = self
+            .verify_bitwise_xor_9_lookup_elements
+            .alpha_powers
+            .span();
+        let VerifyBitwiseXor_9_alpha0 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_9_alpha1 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_9_alpha2 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
 
         let log_size = *self.claim.log_size;
 
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
-        let range_check_builtin_segment_start = *self.claim.range_check_builtin_segment_start;
+        let bitwise_builtin_segment_start = *self.claim.bitwise_builtin_segment_start;
+
+        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size));
 
         let params = constraints::ConstraintParams {
             column_size: m31(pow2(log_size)),
@@ -162,12 +169,31 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             MemoryIdToBig_alpha7,
             MemoryIdToBig_alpha8,
             MemoryIdToBig_alpha9,
+            MemoryIdToBig_alpha12,
+            MemoryIdToBig_alpha13,
+            MemoryIdToBig_alpha14,
+            MemoryIdToBig_alpha15,
+            MemoryIdToBig_alpha16,
+            MemoryIdToBig_alpha17,
+            MemoryIdToBig_alpha18,
+            MemoryIdToBig_alpha19,
+            MemoryIdToBig_alpha20,
+            MemoryIdToBig_alpha21,
+            MemoryIdToBig_alpha22,
+            MemoryIdToBig_alpha23,
+            MemoryIdToBig_alpha24,
+            MemoryIdToBig_alpha25,
+            MemoryIdToBig_alpha26,
+            MemoryIdToBig_alpha27,
+            MemoryIdToBig_alpha28,
             MemoryIdToBig_z,
-            RangeCheck_6_alpha0,
-            RangeCheck_6_z,
+            VerifyBitwiseXor_9_alpha0,
+            VerifyBitwiseXor_9_alpha1,
+            VerifyBitwiseXor_9_alpha2,
+            VerifyBitwiseXor_9_z,
             claimed_sum,
-            range_check_builtin_segment_start,
-            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size)),
+            bitwise_builtin_segment_start,
+            seq,
         };
 
         let trace_domain = CanonicCosetImpl::new(log_size);

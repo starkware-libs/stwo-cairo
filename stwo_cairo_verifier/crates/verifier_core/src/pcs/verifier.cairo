@@ -16,6 +16,7 @@ use super::PcsConfig;
 // TODO(andrew): Change all `Array` types to `Span`.
 #[derive(Drop)]
 pub struct CommitmentSchemeProof<HashT> {
+    pub config: PcsConfig,
     pub commitments: TreeArray<HashT>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
@@ -31,6 +32,7 @@ impl CommitmentSchemeProofSerde<
     HashT, +Drop<HashT>, +core::serde::Serde<HashT>, +core::traits::Destruct<HashT>,
 > of core::serde::Serde<CommitmentSchemeProof<HashT>> {
     fn serialize(self: @CommitmentSchemeProof<HashT>, ref output: Array<felt252>) {
+        self.config.serialize(ref output);
         self.commitments.serialize(ref output);
         self.sampled_values.serialize(ref output);
         self.decommitments.serialize(ref output);
@@ -42,16 +44,13 @@ impl CommitmentSchemeProofSerde<
     fn deserialize(ref serialized: Span<felt252>) -> Option<CommitmentSchemeProof<HashT>> {
         Option::Some(
             CommitmentSchemeProof {
-                commitments: Serde::<TreeArray<HashT>>::deserialize(ref serialized)?,
-                sampled_values: Serde::<
-                    TreeArray<ColumnArray<Array<QM31>>>,
-                >::deserialize(ref serialized)?,
-                decommitments: Serde::<
-                    TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
-                >::deserialize(ref serialized)?,
-                queried_values: Serde::<TreeArray<Span<M31>>>::deserialize(ref serialized)?,
-                proof_of_work_nonce: Serde::<u64>::deserialize(ref serialized)?,
-                fri_proof: Serde::<FriProof>::deserialize(ref serialized)?,
+                config: Serde::deserialize(ref serialized)?,
+                commitments: Serde::deserialize(ref serialized)?,
+                sampled_values: Serde::deserialize(ref serialized)?,
+                decommitments: Serde::deserialize(ref serialized)?,
+                queried_values: Serde::deserialize(ref serialized)?,
+                proof_of_work_nonce: Serde::deserialize(ref serialized)?,
+                fri_proof: Serde::deserialize(ref serialized)?,
             },
         )
     }
@@ -107,6 +106,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
         let CommitmentSchemeProof {
+            config: _,
             commitments: _,
             sampled_values,
             decommitments,
