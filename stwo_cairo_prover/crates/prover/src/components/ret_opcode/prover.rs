@@ -85,7 +85,7 @@ fn write_trace_simd(
         .enumerate()
         .zip(inputs.into_par_iter())
         .zip(lookup_data.par_iter_mut())
-        .for_each(|(((row_index, row), ret_opcode_input), lookup_data)| {
+        .for_each(|(((row_index, mut row), ret_opcode_input), lookup_data)| {
             let input_tmp_e23a5_0 = ret_opcode_input;
             let input_pc_col0 = input_tmp_e23a5_0.pc;
             *row[0] = input_pc_col0;
