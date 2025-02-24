@@ -7,6 +7,7 @@ pub fn init_logging(log_level: log::LevelFilter) {
     env_logger::Builder::new().filter_level(log_level).init();
 
     let subscriber = tracing_subscriber::fmt()
+        .with_ansi(false)
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("Setting tracing default failed")
