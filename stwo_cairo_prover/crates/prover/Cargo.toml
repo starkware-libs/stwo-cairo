@@ -27,7 +27,9 @@ stwo-cairo-adapter.workspace = true
 rayon = { version = "1.10.0" }
 serde.workspace = true
 serde_json.workspace = true
+starknet-curve = "0.5.1"
 starknet-ff.workspace = true
+starknet-types-core = "0.1.7"
 stwo_cairo_utils = { path = "../utils" }
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
