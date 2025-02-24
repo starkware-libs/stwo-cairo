@@ -38,11 +38,11 @@ stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad", features = [
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "6f91336", features = [
     "parallel",
 ], default-features = false }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "6f91336" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "6f91336" }
 thiserror = { version = "2.0.10", default-features = false }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
