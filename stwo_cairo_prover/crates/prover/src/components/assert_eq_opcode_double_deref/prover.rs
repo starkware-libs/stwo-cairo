@@ -99,7 +99,7 @@ fn write_trace_simd(
         .zip(inputs.into_par_iter())
         .zip(lookup_data.par_iter_mut())
         .for_each(
-            |(((row_index, row), assert_eq_opcode_double_deref_input), lookup_data)| {
+            |(((row_index, mut row), assert_eq_opcode_double_deref_input), lookup_data)| {
                 let input_tmp_26616_0 = assert_eq_opcode_double_deref_input;
                 let input_pc_col0 = input_tmp_26616_0.pc;
                 *row[0] = input_pc_col0;

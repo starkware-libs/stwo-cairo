@@ -86,7 +86,7 @@ fn write_trace_simd(
         .par_iter_mut()
         .enumerate()
         .zip(lookup_data.par_iter_mut())
-        .for_each(|((row_index, row), lookup_data)| {
+        .for_each(|((row_index, mut row), lookup_data)| {
             let seq = Seq::new(log_size).packed_at(row_index);
 
             // Read Positive Num Bits 252.
