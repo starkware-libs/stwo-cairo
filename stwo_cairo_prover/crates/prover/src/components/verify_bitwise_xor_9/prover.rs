@@ -58,7 +58,7 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
         .par_iter_mut()
         .enumerate()
         .zip(lookup_data.par_iter_mut())
-        .for_each(|((row_index, row), lookup_data)| {
+        .for_each(|((row_index, mut row), lookup_data)| {
             *row[0] = mults[row_index];
 
             *lookup_data.bitwise_xor_trios = [

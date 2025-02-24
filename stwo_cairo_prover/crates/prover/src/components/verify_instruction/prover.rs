@@ -163,7 +163,7 @@ fn write_trace_simd(
         .zip(lookup_data.par_iter_mut())
         .zip(mults.into_par_iter())
         .for_each(
-            |(((row, verify_instruction_input), lookup_data), multiplicity)| {
+            |(((mut row, verify_instruction_input), lookup_data), multiplicity)| {
                 let input_tmp_16a4f_0 = (
                     verify_instruction_input.0,
                     [
