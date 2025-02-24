@@ -26,7 +26,7 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
         let mut values_span = values.span();
         let mut cumulative_product = *values_span.pop_back().unwrap();
 
-        while let Option::Some(value) = values_span.pop_back() {
+        while let Some(value) = values_span.pop_back() {
             prefix_product_rev.append(cumulative_product);
             cumulative_product = cumulative_product * *value;
         }
@@ -39,7 +39,7 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
         let mut prefix_product_rev_span = prefix_product_rev.span();
         let mut values = values;
 
-        while let (Option::Some(prefix_product), Option::Some(value)) =
+        while let (Some(prefix_product), Some(value)) =
             (prefix_product_rev_span.pop_back(), values.pop_front()) {
             inverses.append(cumulative_product_inv * *prefix_product);
             cumulative_product_inv = cumulative_product_inv * value;
