@@ -6,7 +6,7 @@ use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
 use crate::utils::{ArrayImpl, SpanImpl};
-use crate::vcs::hasher::PoseidonMerkleHasher;
+use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
@@ -95,20 +95,14 @@ pub struct StarkProof<HashT> {
 }
 
 impl StarkProofSerde<
-    HashT, +Drop<HashT>, +core::serde::Serde<HashT>,
+    HashT, +Drop<HashT>, +Serde<Span<HashT>>,
 > of core::serde::Serde<StarkProof<HashT>> {
     fn serialize(self: @StarkProof<HashT>, ref output: Array<felt252>) {
         self.commitment_scheme_proof.serialize(ref output);
     }
 
     fn deserialize(ref serialized: Span<felt252>) -> Option<StarkProof<HashT>> {
-        Option::Some(
-            StarkProof {
-                commitment_scheme_proof: Serde::<
-                    CommitmentSchemeProof<HashT>,
-                >::deserialize(ref serialized)?,
-            },
-        )
+        Option::Some(StarkProof { commitment_scheme_proof: Serde::deserialize(ref serialized)? })
     }
 }
 
