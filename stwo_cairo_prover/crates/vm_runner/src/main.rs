@@ -52,7 +52,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<ProverInput, Error> {
     // `disable_trace_padding`. If it runs the VM in proof-mode, it should also disable trace
     // padding as this is the padding relevant for Stwo.
     let disable_trace_padding = args.vm_args.proof_mode;
-    let cairo_runner = run_vm(&args.vm_args, disable_trace_padding)?;
+    let cairo_runner = run_vm(&args.vm_args, false, disable_trace_padding)?;
     let cairo_input = adapt_finished_runner(cairo_runner)?;
 
     let execution_resources = ExecutionResources::from_prover_input(&cairo_input);

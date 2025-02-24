@@ -67,7 +67,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 
     // `disable_trace_padding` is set to true as run_and_prove runs the VM in proof mode, and
     // should disable trace padding (this is the mode Stwo uses).
-    let cairo_runner = run_vm(&args.vm_args, true)?;
+    let cairo_runner = run_vm(&args.vm_args, true, true)?;
     let cairo_input = adapt_finished_runner(cairo_runner)?;
     let prover_config = ConfigBuilder::default()
         .track_relations(args.track_relations)
