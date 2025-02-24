@@ -33,6 +33,7 @@ num-traits = "0.2.17"
 rand = "0.8.5"
 serde = "1.0.207"
 serde_json = "1.0.1"
+starknet-types-core = "0.1.7"
 stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
