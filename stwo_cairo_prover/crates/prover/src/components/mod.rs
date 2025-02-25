@@ -22,24 +22,19 @@ pub mod jump_opcode;
 pub mod jump_opcode_double_deref;
 pub mod jump_opcode_rel;
 pub mod jump_opcode_rel_imm;
-pub mod memory;
-pub mod mul_mod_builtin;
 pub mod mul_opcode;
 pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
-pub mod range_check_vector;
 pub mod ret_opcode;
-pub mod utils;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
-mod prelude;
-
-pub use memory::{memory_address_to_id, memory_id_to_big};
-pub use range_check_vector::{
+pub use component_utils::components::memory::{memory_address_to_id, memory_id_to_big};
+use component_utils::components::prelude;
+pub use component_utils::components::range_check_vector::{
     range_check_11, range_check_19, range_check_4_3, range_check_6, range_check_7_2_5,
     range_check_9_9,
 };

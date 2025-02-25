@@ -496,6 +496,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5b63caa9aa9397e2d9480a9b13673856c78d8ac123288526c37d7839f2a86990"
 
 [[package]]
+name = "component_utils"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rand",
+ "rayon",
+ "serde",
+ "starknet-ff",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+]
+
+[[package]]
 name = "const_format"
 version = "0.2.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -990,6 +1010,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b3b1c9bd4fe1f0f8b387f6eb9eb3b4a1aa26185e5750efb9140301703f62cd1b"
 dependencies = [
  "adler2",
+]
+
+[[package]]
+name = "mul_mod_builtin"
+version = "0.1.0"
+dependencies = [
+ "component_utils",
+ "rayon",
+ "serde",
+ "serde_json",
+ "starknet-ff",
+ "stwo-cairo-serialize",
+ "stwo-prover",
 ]
 
 [[package]]
@@ -1856,8 +1889,10 @@ dependencies = [
  "bytemuck",
  "cairo-lang-casm",
  "cairo-vm",
+ "component_utils",
  "hex",
  "itertools 0.12.1",
+ "mul_mod_builtin",
  "num-traits",
  "paste",
  "rand",

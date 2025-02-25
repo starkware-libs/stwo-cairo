@@ -19,7 +19,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use super::component::{Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT};
 use crate::cairo_air::preprocessed::Seq;
 use crate::cairo_air::relations;
-use crate::components::memory_address_to_id::component::{
+use crate::components::memory::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
 use crate::components::utils::AtomicMultiplicityColumn;
@@ -39,6 +39,10 @@ impl AddressToId {
 
     pub fn len(&self) -> usize {
         self.data.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
     }
 
     pub fn resize(&mut self, new_len: usize, value: u32) {

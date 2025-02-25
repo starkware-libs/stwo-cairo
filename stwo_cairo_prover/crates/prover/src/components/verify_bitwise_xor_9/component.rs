@@ -1,3 +1,5 @@
+use component_utils::cairo_air::relations;
+
 use crate::components::prelude::constraint_eval::*;
 
 pub const N_BITS: u32 = 9;

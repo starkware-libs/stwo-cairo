@@ -1,5 +1,12 @@
 use itertools::Itertools;
 use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
+// use component_utils::components::range_check_vector::{
+//     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
+//     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
+//     range_check_6, range_check_7_2_5, range_check_9_9,
+// };
+// use itertools::Itertools;
+// use mul_mod_builtin;
 // use num_traits::One;
 // use stwo_prover::constraint_framework::relation_tracker::{
 //     RelationTrackerComponent, RelationTrackerEntry,
@@ -16,11 +23,6 @@ use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
 
 // use super::air::CairoClaim;
 // use crate::cairo_air::relations;
-// use crate::components::range_check_vector::{
-//     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
-//     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
-//     range_check_6, range_check_7_2_5, range_check_9_9,
-// };
 // use crate::components::{
 //     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_mod_builtin, add_opcode,
 //     add_opcode_imm, add_opcode_small, add_opcode_small_imm, assert_eq_opcode,
@@ -28,10 +30,9 @@ use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
 //     call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode, jnz_opcode,
 // jnz_opcode_dst_base_fp,     jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode,
 // jump_opcode_double_deref,     jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
-// memory_id_to_big, mul_mod_builtin,     mul_opcode, mul_opcode_imm, mul_opcode_small,
-// mul_opcode_small_imm,     range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode,
-// verify_bitwise_xor_9,     verify_instruction,
-// };
+// memory_id_to_big, mul_opcode,     mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
+// range_check_builtin_bits_128,     range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9,
+// verify_instruction, };
 // use crate::felt::split_f252;
 
 // pub fn track_cairo_relations<MC: MerkleChannel>(

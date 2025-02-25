@@ -1,0 +1,22 @@
+[package]
+name = "component_utils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stwo-prover.workspace = true
+num-traits.workspace = true
+stwo-air-utils-derive.workspace = true
+stwo-air-utils.workspace = true
+rayon = { version = "1.10.0" }
+stwo-cairo-common.workspace = true
+serde.workspace = true
+stwo-cairo-serialize = { path = "../cairo-serialize" }
+itertools.workspace = true
+hex.workspace = true
+starknet-ff.workspace = true
+stwo-cairo-adapter.workspace = true
+paste.workspace = true
+
+[dev-dependencies]
+rand.workspace = true

@@ -1,6 +1,8 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]#![allow(unused_parens)]
 #![allow(unused_imports)]
 use crate::components::prelude::proving::*;
+use component_utils::cairo_air::relations;
+
 use super::component::{Claim, InteractionClaim};
 
 use crate::components::memory_address_to_id;use crate::components::memory_id_to_big;use crate::components::verify_instruction;use crate::components::range_check_9_9;use crate::components::range_check_19;

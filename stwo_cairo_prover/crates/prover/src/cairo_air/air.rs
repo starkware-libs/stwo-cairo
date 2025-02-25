@@ -1,3 +1,4 @@
+use component_utils::components::memory::{memory_address_to_id, memory_id_to_big};
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -33,7 +34,6 @@ use super::range_checks_air::{
     RangeChecksInteractionElements,
 };
 use crate::cairo_air::relations;
-use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::{verify_bitwise_xor_9, verify_instruction};
 use crate::felt::split_f252;
 

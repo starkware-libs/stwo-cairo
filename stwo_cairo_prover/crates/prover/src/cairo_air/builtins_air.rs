@@ -1,4 +1,8 @@
+use component_utils::components::range_check_vector::{
+    range_check_12, range_check_18, range_check_3_6, range_check_3_6_6_3,
+};
 use itertools::chain;
+use mul_mod_builtin;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::builtins::{
@@ -16,12 +20,9 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
-use crate::components::range_check_vector::{
-    range_check_12, range_check_18, range_check_3_6, range_check_3_6_6_3,
-};
 use crate::components::{
-    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
-    range_check_6, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
+    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]

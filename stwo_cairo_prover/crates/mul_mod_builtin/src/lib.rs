@@ -1,5 +1,7 @@
-// TODO(Gali): remove unused.
-#![allow(unused)]
+#![feature(raw_slice_split)]
+// TODO(Ohad): remove.
+#![allow(clippy::too_many_arguments)]
+
 pub mod component;
 pub mod prover;
 

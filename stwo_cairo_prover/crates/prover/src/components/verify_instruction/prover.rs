@@ -2,6 +2,7 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use component_utils::cairo_air::relations;
 use itertools::Itertools;
 use stwo_cairo_adapter::decode::deconstruct_instruction;
 

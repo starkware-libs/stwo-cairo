@@ -24,6 +24,8 @@ paste.workspace = true
 # TODO(Ohad): Add parallel config.
 stwo-cairo-common.workspace = true
 stwo-cairo-adapter.workspace = true
+mul_mod_builtin.workspace = true
+component_utils.workspace = true
 rayon = { version = "1.10.0" }
 serde.workspace = true
 serde_json.workspace = true

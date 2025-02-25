@@ -2,6 +2,8 @@ use stwo_cairo_common::preprocessed_consts::blake::{
     BLAKE_SIGMA, N_BLAKE_ROUNDS, N_BLAKE_SIGMA_COLS,
 };
 use stwo_cairo_common::prover_types::cpu::M31;
+use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
@@ -9,8 +11,6 @@ use stwo_prover::core::poly::BitReversedOrder;
 
 use crate::cairo_air::preprocessed::PreProcessedColumn;
 use crate::cairo_air::preprocessed_utils::pad;
-use crate::stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use crate::stwo_prover::core::backend::simd::column::BaseColumn;
 
 pub const BLAKE_SIGMA_TABLE: &str = "blake_sigma";
 const LOG_N_ROWS: u32 = (N_BLAKE_ROUNDS as u32).next_power_of_two().ilog2();

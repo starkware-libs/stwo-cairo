@@ -1,4 +1,5 @@
-use crate::components::prelude::constraint_eval::*;
+use component_utils::cairo_air::relations;
+use component_utils::components::prelude::constraint_eval::*;
 
 pub struct Eval {
     pub claim: Claim,

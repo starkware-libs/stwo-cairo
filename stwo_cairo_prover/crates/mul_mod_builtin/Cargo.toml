@@ -1,0 +1,13 @@
+[package]
+name = "mul_mod_builtin"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stwo-prover.workspace = true
+component_utils.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+rayon = { version = "1.10.0" }
+stwo-cairo-serialize = { path = "../cairo-serialize" }
+starknet-ff.workspace = true
