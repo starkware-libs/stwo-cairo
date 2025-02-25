@@ -10,23 +10,17 @@ pub struct Eval {
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Claim {
-    pub n_rows: usize,
+    pub log_size: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
-        let trace_log_sizes = vec![log_size; 13];
-        let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 3];
-        let preprocessed_log_sizes = vec![log_size];
-        TreeVec::new(vec![
-            preprocessed_log_sizes,
-            trace_log_sizes,
-            interaction_log_sizes,
-        ])
+        let trace_log_sizes = vec![self.log_size; 13];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
+        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.n_rows as u64);
+        channel.mix_u64(self.log_size as u64);
     }
 }
 
@@ -44,7 +38,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        std::cmp::max(self.claim.n_rows.next_power_of_two().ilog2(), LOG_N_LANES)
+        self.claim.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
