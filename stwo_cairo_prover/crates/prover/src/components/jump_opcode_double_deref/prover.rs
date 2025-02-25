@@ -75,10 +75,14 @@ fn write_trace_simd(
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_16 = PackedM31::broadcast(M31::from(16));
+    let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
+    let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
     let UInt16_13 = PackedUInt16::broadcast(UInt16::from(13));
@@ -160,22 +164,13 @@ fn write_trace_simd(
                     input_pc_col0,
                     [M31_32767, offset1_col3, offset2_col4],
                     [
-                        M31_1,
-                        op0_base_fp_col5,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_1,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        ap_update_add_1_col6,
-                        M31_0,
-                        M31_0,
-                        M31_0,
+                        ((((((M31_8) + ((op0_base_fp_col5) * (M31_16))) + (M31_0)) + (M31_0))
+                            + (M31_0))
+                            + (M31_0)),
+                        (((((M31_2) + ((ap_update_add_1_col6) * (M31_32))) + (M31_0)) + (M31_0))
+                            + (M31_0)),
                     ],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -183,20 +178,11 @@ fn write_trace_simd(
                     M31_32767,
                     offset1_col3,
                     offset2_col4,
-                    M31_1,
-                    op0_base_fp_col5,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    ap_update_add_1_col6,
-                    M31_0,
-                    M31_0,
+                    ((((((M31_8) + ((op0_base_fp_col5) * (M31_16))) + (M31_0)) + (M31_0))
+                        + (M31_0))
+                        + (M31_0)),
+                    (((((M31_2) + ((ap_update_add_1_col6) * (M31_32))) + (M31_0)) + (M31_0))
+                        + (M31_0)),
                     M31_0,
                 ];
 
@@ -348,7 +334,7 @@ struct LookupData {
     memory_id_to_big_1: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {
