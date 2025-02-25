@@ -53,6 +53,10 @@ impl ClaimGenerator {
             self.add_input(input);
         }
     }
+
+    pub fn deduce_output(&self, _s: [PackedM31; 1]) -> [PackedM31; 16] {
+        unimplemented!("Implement manually");
+    }
 }
 
 fn write_trace_simd(

@@ -68,6 +68,13 @@ impl ClaimGenerator {
             self.add_input(input);
         }
     }
+
+    pub fn deduce_output(
+        &self,
+        input: (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)),
+    ) -> (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)) {
+        todo!()
+    }
 }
 
 #[allow(clippy::useless_conversion)]
