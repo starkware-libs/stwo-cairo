@@ -179,10 +179,11 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_8 =
-                ((UInt16::from_m31(
-                    ((triple_sum32_res_low_col12) - ((ms_8_bits_col14) * (M31_256))),
-                )) ^ (UInt16::from_m31(((input_limb_6_col6) - ((ms_8_bits_col16) * (M31_256))))));
+            let xor_tmp_f72c8_8 = ((PackedUInt16::from_m31(
+                ((triple_sum32_res_low_col12) - ((ms_8_bits_col14) * (M31_256))),
+            )) ^ (PackedUInt16::from_m31(
+                ((input_limb_6_col6) - ((ms_8_bits_col16) * (M31_256))),
+            )));
             let xor_col18 = xor_tmp_f72c8_8.as_m31();
             *row[18] = xor_col18;
             let verify_bitwise_xor_8_inputs_0 = [
@@ -199,8 +200,8 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_9 =
-                ((UInt16::from_m31(ms_8_bits_col14)) ^ (UInt16::from_m31(ms_8_bits_col16)));
+            let xor_tmp_f72c8_9 = ((PackedUInt16::from_m31(ms_8_bits_col14))
+                ^ (PackedUInt16::from_m31(ms_8_bits_col16)));
             let xor_col19 = xor_tmp_f72c8_9.as_m31();
             *row[19] = xor_col19;
             let verify_bitwise_xor_8_inputs_1 =
@@ -209,10 +210,11 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_10 =
-                ((UInt16::from_m31(
-                    ((triple_sum32_res_high_col13) - ((ms_8_bits_col15) * (M31_256))),
-                )) ^ (UInt16::from_m31(((input_limb_7_col7) - ((ms_8_bits_col17) * (M31_256))))));
+            let xor_tmp_f72c8_10 = ((PackedUInt16::from_m31(
+                ((triple_sum32_res_high_col13) - ((ms_8_bits_col15) * (M31_256))),
+            )) ^ (PackedUInt16::from_m31(
+                ((input_limb_7_col7) - ((ms_8_bits_col17) * (M31_256))),
+            )));
             let xor_col20 = xor_tmp_f72c8_10.as_m31();
             *row[20] = xor_col20;
             let verify_bitwise_xor_8_inputs_2 = [
@@ -229,15 +231,15 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_11 =
-                ((UInt16::from_m31(ms_8_bits_col15)) ^ (UInt16::from_m31(ms_8_bits_col17)));
+            let xor_tmp_f72c8_11 = ((PackedUInt16::from_m31(ms_8_bits_col15))
+                ^ (PackedUInt16::from_m31(ms_8_bits_col17)));
             let xor_col21 = xor_tmp_f72c8_11.as_m31();
             *row[21] = xor_col21;
             let verify_bitwise_xor_8_inputs_3 =
                 [ms_8_bits_col15, ms_8_bits_col17, xor_col21].unpack();
             *lookup_data.verify_bitwise_xor_8_3 = [ms_8_bits_col15, ms_8_bits_col17, xor_col21];
 
-            let xor_rot_16_output_tmp_f72c8_12 = UInt32::from_limbs(
+            let xor_rot_16_output_tmp_f72c8_12 = PackedUInt32::from_limbs(
                 ((xor_col20) + ((xor_col21) * (M31_256))),
                 ((xor_col18) + ((xor_col19) * (M31_256))),
             );
@@ -281,11 +283,11 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 12.
 
-            let xor_tmp_f72c8_20 =
-                ((UInt16::from_m31(((input_limb_2_col2) - ((ms_4_bits_col24) * (M31_4096)))))
-                    ^ (UInt16::from_m31(
-                        ((triple_sum32_res_low_col22) - ((ms_4_bits_col26) * (M31_4096))),
-                    )));
+            let xor_tmp_f72c8_20 = ((PackedUInt16::from_m31(
+                ((input_limb_2_col2) - ((ms_4_bits_col24) * (M31_4096))),
+            )) ^ (PackedUInt16::from_m31(
+                ((triple_sum32_res_low_col22) - ((ms_4_bits_col26) * (M31_4096))),
+            )));
             let xor_col28 = xor_tmp_f72c8_20.as_m31();
             *row[28] = xor_col28;
             let verify_bitwise_xor_12_inputs_0 = [
@@ -302,8 +304,8 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 4.
 
-            let xor_tmp_f72c8_21 =
-                ((UInt16::from_m31(ms_4_bits_col24)) ^ (UInt16::from_m31(ms_4_bits_col26)));
+            let xor_tmp_f72c8_21 = ((PackedUInt16::from_m31(ms_4_bits_col24))
+                ^ (PackedUInt16::from_m31(ms_4_bits_col26)));
             let xor_col29 = xor_tmp_f72c8_21.as_m31();
             *row[29] = xor_col29;
             let verify_bitwise_xor_4_inputs_0 =
@@ -312,11 +314,11 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 12.
 
-            let xor_tmp_f72c8_22 =
-                ((UInt16::from_m31(((input_limb_3_col3) - ((ms_4_bits_col25) * (M31_4096)))))
-                    ^ (UInt16::from_m31(
-                        ((triple_sum32_res_high_col23) - ((ms_4_bits_col27) * (M31_4096))),
-                    )));
+            let xor_tmp_f72c8_22 = ((PackedUInt16::from_m31(
+                ((input_limb_3_col3) - ((ms_4_bits_col25) * (M31_4096))),
+            )) ^ (PackedUInt16::from_m31(
+                ((triple_sum32_res_high_col23) - ((ms_4_bits_col27) * (M31_4096))),
+            )));
             let xor_col30 = xor_tmp_f72c8_22.as_m31();
             *row[30] = xor_col30;
             let verify_bitwise_xor_12_inputs_1 = [
@@ -333,15 +335,15 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 4.
 
-            let xor_tmp_f72c8_23 =
-                ((UInt16::from_m31(ms_4_bits_col25)) ^ (UInt16::from_m31(ms_4_bits_col27)));
+            let xor_tmp_f72c8_23 = ((PackedUInt16::from_m31(ms_4_bits_col25))
+                ^ (PackedUInt16::from_m31(ms_4_bits_col27)));
             let xor_col31 = xor_tmp_f72c8_23.as_m31();
             *row[31] = xor_col31;
             let verify_bitwise_xor_4_inputs_1 =
                 [ms_4_bits_col25, ms_4_bits_col27, xor_col31].unpack();
             *lookup_data.verify_bitwise_xor_4_1 = [ms_4_bits_col25, ms_4_bits_col27, xor_col31];
 
-            let xor_rot_12_output_tmp_f72c8_24 = UInt32::from_limbs(
+            let xor_rot_12_output_tmp_f72c8_24 = PackedUInt32::from_limbs(
                 ((xor_col29) + ((xor_col30) * (M31_16))),
                 ((xor_col31) + ((xor_col28) * (M31_16))),
             );
@@ -386,9 +388,9 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_32 = ((UInt16::from_m31(
+            let xor_tmp_f72c8_32 = ((PackedUInt16::from_m31(
                 ((triple_sum32_res_low_col32) - ((ms_8_bits_col34) * (M31_256))),
-            )) ^ (UInt16::from_m31(
+            )) ^ (PackedUInt16::from_m31(
                 ((xor_rot_16_output_tmp_f72c8_12_limb_0) - ((ms_8_bits_col36) * (M31_256))),
             )));
             let xor_col38 = xor_tmp_f72c8_32.as_m31();
@@ -407,8 +409,8 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_33 =
-                ((UInt16::from_m31(ms_8_bits_col34)) ^ (UInt16::from_m31(ms_8_bits_col36)));
+            let xor_tmp_f72c8_33 = ((PackedUInt16::from_m31(ms_8_bits_col34))
+                ^ (PackedUInt16::from_m31(ms_8_bits_col36)));
             let xor_col39 = xor_tmp_f72c8_33.as_m31();
             *row[39] = xor_col39;
             let verify_bitwise_xor_8_inputs_5 =
@@ -417,9 +419,9 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_34 = ((UInt16::from_m31(
+            let xor_tmp_f72c8_34 = ((PackedUInt16::from_m31(
                 ((triple_sum32_res_high_col33) - ((ms_8_bits_col35) * (M31_256))),
-            )) ^ (UInt16::from_m31(
+            )) ^ (PackedUInt16::from_m31(
                 ((xor_rot_16_output_tmp_f72c8_12_limb_1) - ((ms_8_bits_col37) * (M31_256))),
             )));
             let xor_col40 = xor_tmp_f72c8_34.as_m31();
@@ -438,15 +440,15 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 8.
 
-            let xor_tmp_f72c8_35 =
-                ((UInt16::from_m31(ms_8_bits_col35)) ^ (UInt16::from_m31(ms_8_bits_col37)));
+            let xor_tmp_f72c8_35 = ((PackedUInt16::from_m31(ms_8_bits_col35))
+                ^ (PackedUInt16::from_m31(ms_8_bits_col37)));
             let xor_col41 = xor_tmp_f72c8_35.as_m31();
             *row[41] = xor_col41;
             let verify_bitwise_xor_8_inputs_7 =
                 [ms_8_bits_col35, ms_8_bits_col37, xor_col41].unpack();
             *lookup_data.verify_bitwise_xor_8_7 = [ms_8_bits_col35, ms_8_bits_col37, xor_col41];
 
-            let xor_rot_8_output_tmp_f72c8_36 = UInt32::from_limbs(
+            let xor_rot_8_output_tmp_f72c8_36 = PackedUInt32::from_limbs(
                 ((xor_col39) + ((xor_col40) * (M31_256))),
                 ((xor_col41) + ((xor_col38) * (M31_256))),
             );
@@ -490,9 +492,9 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 7.
 
-            let xor_tmp_f72c8_44 = ((UInt16::from_m31(
+            let xor_tmp_f72c8_44 = ((PackedUInt16::from_m31(
                 ((xor_rot_12_output_tmp_f72c8_24_limb_0) - ((ms_9_bits_col44) * (M31_128))),
-            )) ^ (UInt16::from_m31(
+            )) ^ (PackedUInt16::from_m31(
                 ((triple_sum32_res_low_col42) - ((ms_9_bits_col46) * (M31_128))),
             )));
             let xor_col48 = xor_tmp_f72c8_44.as_m31();
@@ -511,8 +513,8 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 9.
 
-            let xor_tmp_f72c8_45 =
-                ((UInt16::from_m31(ms_9_bits_col44)) ^ (UInt16::from_m31(ms_9_bits_col46)));
+            let xor_tmp_f72c8_45 = ((PackedUInt16::from_m31(ms_9_bits_col44))
+                ^ (PackedUInt16::from_m31(ms_9_bits_col46)));
             let xor_col49 = xor_tmp_f72c8_45.as_m31();
             *row[49] = xor_col49;
             let verify_bitwise_xor_9_inputs_0 =
@@ -521,9 +523,9 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 7.
 
-            let xor_tmp_f72c8_46 = ((UInt16::from_m31(
+            let xor_tmp_f72c8_46 = ((PackedUInt16::from_m31(
                 ((xor_rot_12_output_tmp_f72c8_24_limb_1) - ((ms_9_bits_col45) * (M31_128))),
-            )) ^ (UInt16::from_m31(
+            )) ^ (PackedUInt16::from_m31(
                 ((triple_sum32_res_high_col43) - ((ms_9_bits_col47) * (M31_128))),
             )));
             let xor_col50 = xor_tmp_f72c8_46.as_m31();
@@ -542,15 +544,15 @@ fn write_trace_simd(
 
             // Bitwise Xor Num Bits 9.
 
-            let xor_tmp_f72c8_47 =
-                ((UInt16::from_m31(ms_9_bits_col45)) ^ (UInt16::from_m31(ms_9_bits_col47)));
+            let xor_tmp_f72c8_47 = ((PackedUInt16::from_m31(ms_9_bits_col45))
+                ^ (PackedUInt16::from_m31(ms_9_bits_col47)));
             let xor_col51 = xor_tmp_f72c8_47.as_m31();
             *row[51] = xor_col51;
             let verify_bitwise_xor_9_inputs_1 =
                 [ms_9_bits_col45, ms_9_bits_col47, xor_col51].unpack();
             *lookup_data.verify_bitwise_xor_9_1 = [ms_9_bits_col45, ms_9_bits_col47, xor_col51];
 
-            let xor_rot_7_output_tmp_f72c8_48 = UInt32::from_limbs(
+            let xor_rot_7_output_tmp_f72c8_48 = PackedUInt32::from_limbs(
                 ((xor_col49) + ((xor_col50) * (M31_512))),
                 ((xor_col51) + ((xor_col48) * (M31_512))),
             );

@@ -79,7 +79,7 @@ pub struct BlakeRound<'a> {
 // TODO(Stav): remove '#[allow(unused)]' when possible.
 #[allow(unused)]
 impl BlakeRound<'_> {
-    fn deduce_output(
+    pub fn deduce_output(
         &self,
         chain: M31,
         round: M31,

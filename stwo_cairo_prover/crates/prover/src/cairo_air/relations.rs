@@ -26,3 +26,4 @@ relation!(VerifyBitwiseXor_7, 3);
 relation!(VerifyBitwiseXor_8, 3);
 relation!(TripleXor32, 3);
 relation!(BlakeRound, 35);
+relation!(BlakeRoundSigma, 99);

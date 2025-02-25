@@ -205,7 +205,7 @@ fn write_trace_simd(
             *row[34] = input_limb_34_col34;
             let blake_round_sigma_inputs_0 = [input_limb_1_col1].unpack();
             let blake_round_sigma_output_tmp_92ff8_1 =
-                BlakeRoundSigma::deduce_output([input_limb_1_col1]);
+                blake_round_sigma_state.deduce_output([input_limb_1_col1]);
             let blake_round_sigma_output_limb_0_col35 = blake_round_sigma_output_tmp_92ff8_1[0];
             *row[35] = blake_round_sigma_output_limb_0_col35;
             let blake_round_sigma_output_limb_1_col36 = blake_round_sigma_output_tmp_92ff8_1[1];
@@ -265,7 +265,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_3 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_2);
             let tmp_92ff8_4 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_3.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_3.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col51 = ((((memory_id_to_big_value_tmp_92ff8_3.get_m31(1))
                 - ((tmp_92ff8_4.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -277,7 +278,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_4.as_m31()));
             *row[52] = high_16_bits_col52;
             let expected_word_tmp_92ff8_5 =
-                UInt32::from_limbs(low_16_bits_col51, high_16_bits_col52);
+                PackedUInt32::from_limbs(low_16_bits_col51, high_16_bits_col52);
 
             // Verify Blake Word.
 
@@ -355,7 +356,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_11 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_10);
             let tmp_92ff8_12 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_11.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_11.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col57 = ((((memory_id_to_big_value_tmp_92ff8_11.get_m31(1))
                 - ((tmp_92ff8_12.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -367,7 +369,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_12.as_m31()));
             *row[58] = high_16_bits_col58;
             let expected_word_tmp_92ff8_13 =
-                UInt32::from_limbs(low_16_bits_col57, high_16_bits_col58);
+                PackedUInt32::from_limbs(low_16_bits_col57, high_16_bits_col58);
 
             // Verify Blake Word.
 
@@ -445,7 +447,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_19 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_18);
             let tmp_92ff8_20 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_19.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_19.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col63 = ((((memory_id_to_big_value_tmp_92ff8_19.get_m31(1))
                 - ((tmp_92ff8_20.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -457,7 +460,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_20.as_m31()));
             *row[64] = high_16_bits_col64;
             let expected_word_tmp_92ff8_21 =
-                UInt32::from_limbs(low_16_bits_col63, high_16_bits_col64);
+                PackedUInt32::from_limbs(low_16_bits_col63, high_16_bits_col64);
 
             // Verify Blake Word.
 
@@ -535,7 +538,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_27 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_26);
             let tmp_92ff8_28 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_27.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_27.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col69 = ((((memory_id_to_big_value_tmp_92ff8_27.get_m31(1))
                 - ((tmp_92ff8_28.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -547,7 +551,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_28.as_m31()));
             *row[70] = high_16_bits_col70;
             let expected_word_tmp_92ff8_29 =
-                UInt32::from_limbs(low_16_bits_col69, high_16_bits_col70);
+                PackedUInt32::from_limbs(low_16_bits_col69, high_16_bits_col70);
 
             // Verify Blake Word.
 
@@ -625,7 +629,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_35 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_34);
             let tmp_92ff8_36 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_35.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_35.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col75 = ((((memory_id_to_big_value_tmp_92ff8_35.get_m31(1))
                 - ((tmp_92ff8_36.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -637,7 +642,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_36.as_m31()));
             *row[76] = high_16_bits_col76;
             let expected_word_tmp_92ff8_37 =
-                UInt32::from_limbs(low_16_bits_col75, high_16_bits_col76);
+                PackedUInt32::from_limbs(low_16_bits_col75, high_16_bits_col76);
 
             // Verify Blake Word.
 
@@ -715,7 +720,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_43 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_42);
             let tmp_92ff8_44 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_43.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_43.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col81 = ((((memory_id_to_big_value_tmp_92ff8_43.get_m31(1))
                 - ((tmp_92ff8_44.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -727,7 +733,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_44.as_m31()));
             *row[82] = high_16_bits_col82;
             let expected_word_tmp_92ff8_45 =
-                UInt32::from_limbs(low_16_bits_col81, high_16_bits_col82);
+                PackedUInt32::from_limbs(low_16_bits_col81, high_16_bits_col82);
 
             // Verify Blake Word.
 
@@ -805,7 +811,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_51 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_50);
             let tmp_92ff8_52 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_51.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_51.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col87 = ((((memory_id_to_big_value_tmp_92ff8_51.get_m31(1))
                 - ((tmp_92ff8_52.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -817,7 +824,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_52.as_m31()));
             *row[88] = high_16_bits_col88;
             let expected_word_tmp_92ff8_53 =
-                UInt32::from_limbs(low_16_bits_col87, high_16_bits_col88);
+                PackedUInt32::from_limbs(low_16_bits_col87, high_16_bits_col88);
 
             // Verify Blake Word.
 
@@ -895,7 +902,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_59 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_58);
             let tmp_92ff8_60 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_59.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_59.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col93 = ((((memory_id_to_big_value_tmp_92ff8_59.get_m31(1))
                 - ((tmp_92ff8_60.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -907,7 +915,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_60.as_m31()));
             *row[94] = high_16_bits_col94;
             let expected_word_tmp_92ff8_61 =
-                UInt32::from_limbs(low_16_bits_col93, high_16_bits_col94);
+                PackedUInt32::from_limbs(low_16_bits_col93, high_16_bits_col94);
 
             // Verify Blake Word.
 
@@ -985,7 +993,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_67 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_66);
             let tmp_92ff8_68 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_67.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_67.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col99 = ((((memory_id_to_big_value_tmp_92ff8_67.get_m31(1))
                 - ((tmp_92ff8_68.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -997,7 +1006,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_68.as_m31()));
             *row[100] = high_16_bits_col100;
             let expected_word_tmp_92ff8_69 =
-                UInt32::from_limbs(low_16_bits_col99, high_16_bits_col100);
+                PackedUInt32::from_limbs(low_16_bits_col99, high_16_bits_col100);
 
             // Verify Blake Word.
 
@@ -1075,7 +1084,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_75 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_74);
             let tmp_92ff8_76 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_75.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_75.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col105 = ((((memory_id_to_big_value_tmp_92ff8_75.get_m31(1))
                 - ((tmp_92ff8_76.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1087,7 +1097,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_76.as_m31()));
             *row[106] = high_16_bits_col106;
             let expected_word_tmp_92ff8_77 =
-                UInt32::from_limbs(low_16_bits_col105, high_16_bits_col106);
+                PackedUInt32::from_limbs(low_16_bits_col105, high_16_bits_col106);
 
             // Verify Blake Word.
 
@@ -1165,7 +1175,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_83 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_82);
             let tmp_92ff8_84 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_83.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_83.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col111 = ((((memory_id_to_big_value_tmp_92ff8_83.get_m31(1))
                 - ((tmp_92ff8_84.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1177,7 +1188,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_84.as_m31()));
             *row[112] = high_16_bits_col112;
             let expected_word_tmp_92ff8_85 =
-                UInt32::from_limbs(low_16_bits_col111, high_16_bits_col112);
+                PackedUInt32::from_limbs(low_16_bits_col111, high_16_bits_col112);
 
             // Verify Blake Word.
 
@@ -1255,7 +1266,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_91 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_90);
             let tmp_92ff8_92 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_91.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_91.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col117 = ((((memory_id_to_big_value_tmp_92ff8_91.get_m31(1))
                 - ((tmp_92ff8_92.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1267,7 +1279,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_92.as_m31()));
             *row[118] = high_16_bits_col118;
             let expected_word_tmp_92ff8_93 =
-                UInt32::from_limbs(low_16_bits_col117, high_16_bits_col118);
+                PackedUInt32::from_limbs(low_16_bits_col117, high_16_bits_col118);
 
             // Verify Blake Word.
 
@@ -1345,7 +1357,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_99 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_98);
             let tmp_92ff8_100 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_99.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_99.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col123 = ((((memory_id_to_big_value_tmp_92ff8_99.get_m31(1))
                 - ((tmp_92ff8_100.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1357,7 +1370,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_100.as_m31()));
             *row[124] = high_16_bits_col124;
             let expected_word_tmp_92ff8_101 =
-                UInt32::from_limbs(low_16_bits_col123, high_16_bits_col124);
+                PackedUInt32::from_limbs(low_16_bits_col123, high_16_bits_col124);
 
             // Verify Blake Word.
 
@@ -1436,7 +1449,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_107 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_106);
             let tmp_92ff8_108 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_107.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_107.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col129 = ((((memory_id_to_big_value_tmp_92ff8_107.get_m31(1))
                 - ((tmp_92ff8_108.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1448,7 +1462,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_108.as_m31()));
             *row[130] = high_16_bits_col130;
             let expected_word_tmp_92ff8_109 =
-                UInt32::from_limbs(low_16_bits_col129, high_16_bits_col130);
+                PackedUInt32::from_limbs(low_16_bits_col129, high_16_bits_col130);
 
             // Verify Blake Word.
 
@@ -1527,7 +1541,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_115 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_114);
             let tmp_92ff8_116 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_115.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_115.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col135 = ((((memory_id_to_big_value_tmp_92ff8_115.get_m31(1))
                 - ((tmp_92ff8_116.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1539,7 +1554,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_116.as_m31()));
             *row[136] = high_16_bits_col136;
             let expected_word_tmp_92ff8_117 =
-                UInt32::from_limbs(low_16_bits_col135, high_16_bits_col136);
+                PackedUInt32::from_limbs(low_16_bits_col135, high_16_bits_col136);
 
             // Verify Blake Word.
 
@@ -1618,7 +1633,8 @@ fn write_trace_simd(
             let memory_id_to_big_value_tmp_92ff8_123 =
                 memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_122);
             let tmp_92ff8_124 =
-                ((UInt16::from_m31(memory_id_to_big_value_tmp_92ff8_123.get_m31(1))) >> (UInt16_7));
+                ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_123.get_m31(1)))
+                    >> (UInt16_7));
             let low_16_bits_col141 = ((((memory_id_to_big_value_tmp_92ff8_123.get_m31(1))
                 - ((tmp_92ff8_124.as_m31()) * (M31_128)))
                 * (M31_512))
@@ -1630,7 +1646,7 @@ fn write_trace_simd(
                 + (tmp_92ff8_124.as_m31()));
             *row[142] = high_16_bits_col142;
             let expected_word_tmp_92ff8_125 =
-                UInt32::from_limbs(low_16_bits_col141, high_16_bits_col142);
+                PackedUInt32::from_limbs(low_16_bits_col141, high_16_bits_col142);
 
             // Verify Blake Word.
 
