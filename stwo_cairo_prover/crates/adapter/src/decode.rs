@@ -95,8 +95,8 @@ impl Instruction {
 ///
 /// # Returns
 ///
-/// The Deconstructed instruction in the form of (offsets, flags): ([M31;3], [M31;15]).
-pub fn deconstruct_instruction(mut encoded_instr: u128) -> ([M31; 3], [M31; 15], M31) {
+/// The Deconstructed instruction in the form of (offsets, flags, extension).
+pub fn deconstruct_instruction(mut encoded_instr: u128) -> ([M31; 3], [M31; 2], M31) {
     let mut next_offset = || {
         let offset = (encoded_instr & 0xffff) as u16;
         encoded_instr >>= 16;
@@ -105,11 +105,21 @@ pub fn deconstruct_instruction(mut encoded_instr: u128) -> ([M31; 3], [M31; 15],
     let offsets = std::array::from_fn(|_| M31(next_offset() as u32));
 
     let mut next_bit = || {
-        let bit = encoded_instr & 1;
+        let bit = (encoded_instr & 1) as u8;
         encoded_instr >>= 1;
         bit
     };
-    let flags = std::array::from_fn(|_| M31(next_bit() as u32));
+    let flags0: [_; 6] = std::array::from_fn(|_| next_bit());
+    let flags1: [_; 9] = std::array::from_fn(|_| next_bit());
+
+    let mut flags = [0, 0];
+    for (i, flag) in flags0.iter().enumerate() {
+        flags[0] |= (*flag as u32) * (1 << (i + 3));
+    }
+    for (i, flag) in flags1.iter().enumerate() {
+        flags[1] |= (*flag as u32) * (1 << i);
+    }
+    let flags = flags.map(M31);
 
     // The remaining bits in encoded_instr are the opcode extension.
     let opcode_extension = M31(encoded_instr as u32);
@@ -127,7 +137,7 @@ mod tests {
     fn test_deconstruct_instruction() {
         let encoded_instr = 0b10010101010101010000000000000000100000000000000110000000000000111;
         let expected_opcode_extension = M31(2);
-        let expected_flags = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0].map(M31);
+        let expected_flags = [336, 170].map(M31);
         let expected_offsets = [7, 3, 1].map(M31);
 
         let (offsets, flags, opcode_extension) = deconstruct_instruction(encoded_instr);
