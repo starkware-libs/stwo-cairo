@@ -1,4 +1,5 @@
-use crate::channel::{Channel, ChannelTrait};
+use crate::channel::poseidon252::Poseidon252Channel;
+use crate::channel::ChannelTrait;
 use crate::circle::CosetImpl;
 use super::utils::{ArrayImpl, pow2};
 
@@ -14,7 +15,9 @@ pub struct Queries {
 #[generate_trait]
 pub impl QueriesImpl of QueriesImplTrait {
     /// Randomizes a set of query indices uniformly over the range [0, 2^`log_query_size`).
-    fn generate(ref channel: Channel, log_domain_size: u32, n_queries: usize) -> Queries {
+    fn generate(
+        ref channel: Poseidon252Channel, log_domain_size: u32, n_queries: usize,
+    ) -> Queries {
         let mut unsorted_positions = array![];
         let max_query = pow2(log_domain_size) - 1;
         let mut finished = false;
@@ -80,6 +83,7 @@ pub fn get_folded_query_positions(mut query_positions: Span<usize>, n_folds: u32
 
 #[cfg(test)]
 mod test {
+    use crate::channel::poseidon252::new_channel;
     use crate::channel::ChannelTrait;
     use super::{Queries, QueriesImpl};
 
@@ -101,7 +105,7 @@ mod test {
 
     #[test]
     fn test_generate() {
-        let mut channel = ChannelTrait::new(0x00);
+        let mut channel = new_channel(0x00);
         let result = QueriesImpl::generate(ref channel, 31, 100);
         let expected_result = Queries {
             positions: array![

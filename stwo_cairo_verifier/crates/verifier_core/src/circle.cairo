@@ -1,7 +1,7 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::num::traits::{WrappingAdd, WrappingMul, WrappingSub};
-use crate::channel::{Channel, ChannelImpl};
+use crate::channel::ChannelTrait;
 use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
@@ -109,7 +109,9 @@ pub impl CirclePointQM31AddCirclePointM31Impl of CirclePointQM31AddCirclePointM3
 pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
 
 #[generate_trait]
-pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
+pub impl ChannelGetRandomCirclePointImpl<
+    Channel, +ChannelTrait<Channel>, +Drop<Channel>,
+> of ChannelGetRandomCirclePointTrait<Channel> {
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
         let t = self.draw_felt();
         let t_squared = t * t;

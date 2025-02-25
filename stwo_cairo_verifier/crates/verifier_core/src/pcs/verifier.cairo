@@ -1,6 +1,7 @@
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
-use crate::channel::{Channel, ChannelTrait};
+use crate::channel::poseidon252::Poseidon252Channel;
+use crate::channel::ChannelTrait;
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Impl};
@@ -87,9 +88,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref self: CommitmentSchemeVerifier,
         commitment: felt252,
         log_sizes: Span<u32>,
-        ref channel: Channel,
+        ref channel: Poseidon252Channel,
     ) {
-        channel.mix_digest(commitment);
+        channel.mix_root(commitment);
         let mut extended_log_sizes = array![];
         for log_size in log_sizes {
             extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
@@ -103,7 +104,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
         proof: CommitmentSchemeProof<felt252>,
-        ref channel: Channel,
+        ref channel: Poseidon252Channel,
     ) -> Result<(), VerificationError> {
         let CommitmentSchemeProof {
             config: _,
@@ -141,7 +142,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // Verify proof of work.
-        channel.mix_nonce(proof_of_work_nonce);
+        channel.mix_u64(proof_of_work_nonce);
 
         if !channel.check_proof_of_work(self.config.pow_bits) {
             return Err(VerificationError::ProofOfWork);

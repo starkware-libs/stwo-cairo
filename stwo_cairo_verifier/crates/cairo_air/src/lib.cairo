@@ -131,7 +131,8 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::ChannelTrait;
+use stwo_verifier_core::channel::poseidon252::Poseidon252Channel;
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::M31;
@@ -214,7 +215,7 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 15,
         },
     };
-    let mut channel = ChannelImpl::new(0);
+    let mut channel: Poseidon252Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     let log_sizes = claim.log_sizes();
@@ -284,7 +285,7 @@ struct RangeChecksInteractionElements {
 
 #[generate_trait]
 impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTrait {
-    fn draw(ref channel: Channel) -> RangeChecksInteractionElements {
+    fn draw(ref channel: Poseidon252Channel) -> RangeChecksInteractionElements {
         RangeChecksInteractionElements {
             rc_6: LookupElementsImpl::draw(ref channel),
             rc_11: LookupElementsImpl::draw(ref channel),
@@ -312,7 +313,7 @@ struct CairoInteractionElements {
 
 #[generate_trait]
 impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
-    fn draw(ref channel: Channel) -> CairoInteractionElements {
+    fn draw(ref channel: Poseidon252Channel) -> CairoInteractionElements {
         CairoInteractionElements {
             opcodes: LookupElementsImpl::draw(ref channel),
             verify_instruction: LookupElementsImpl::draw(ref channel),
@@ -339,7 +340,7 @@ pub struct BuiltinsClaim {
 
 #[generate_trait]
 impl BuiltinsClaimImpl of BuiltinsClaimTrait {
-    fn mix_into(self: @BuiltinsClaim, ref channel: Channel) {
+    fn mix_into(self: @BuiltinsClaim, ref channel: Poseidon252Channel) {
         if let Some(claim) = self.bitwise_builtin {
             claim.mix_into(ref channel);
         }
@@ -379,7 +380,7 @@ pub struct BuiltinsInteractionClaim {
 
 #[generate_trait]
 impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
-    fn mix_into(self: @BuiltinsInteractionClaim, ref channel: Channel) {
+    fn mix_into(self: @BuiltinsInteractionClaim, ref channel: Poseidon252Channel) {
         if let Some(claim) = self.bitwise_builtin {
             claim.mix_into(ref channel);
         }
@@ -426,7 +427,7 @@ pub struct RangeChecksClaim {
 
 #[generate_trait]
 impl RangeChecksClaimImpl of RangeChecksClaimTrait {
-    fn mix_into(self: @RangeChecksClaim, ref channel: Channel) {
+    fn mix_into(self: @RangeChecksClaim, ref channel: Poseidon252Channel) {
         self.rc_6.mix_into(ref channel);
         self.rc_11.mix_into(ref channel);
         self.rc_12.mix_into(ref channel);
@@ -474,7 +475,7 @@ pub struct RangeChecksInteractionClaim {
 
 #[generate_trait]
 impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
-    fn mix_into(self: @RangeChecksInteractionClaim, ref channel: Channel) {
+    fn mix_into(self: @RangeChecksInteractionClaim, ref channel: Poseidon252Channel) {
         self.rc_6.mix_into(ref channel);
         self.rc_11.mix_into(ref channel);
         self.rc_12.mix_into(ref channel);
@@ -549,7 +550,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         array![preprocessed_trace_log_sizes.span(), trace_log_sizes, interaction_log_sizes]
     }
 
-    fn mix_into(self: @CairoClaim, ref channel: Channel) {
+    fn mix_into(self: @CairoClaim, ref channel: Poseidon252Channel) {
         self.opcodes.mix_into(ref channel);
         self.verify_instruction.mix_into(ref channel);
         self.builtins.mix_into(ref channel);
@@ -573,7 +574,7 @@ pub struct CairoInteractionClaim {
 
 #[generate_trait]
 impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
-    fn mix_into(self: @CairoInteractionClaim, ref channel: Channel) {
+    fn mix_into(self: @CairoInteractionClaim, ref channel: Poseidon252Channel) {
         self.opcodes.mix_into(ref channel);
         self.verify_instruction.mix_into(ref channel);
         self.builtins.mix_into(ref channel);
@@ -617,7 +618,7 @@ pub struct OpcodeInteractionClaim {
 
 #[generate_trait]
 impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
-    fn mix_into(self: @OpcodeInteractionClaim, ref channel: Channel) {
+    fn mix_into(self: @OpcodeInteractionClaim, ref channel: Poseidon252Channel) {
         for interaction_claim in self.add.span() {
             interaction_claim.mix_into(ref channel);
         }
@@ -926,7 +927,7 @@ pub struct OpcodeClaim {
 
 #[generate_trait]
 impl OpcodeClaimImpl of OpcodeClaimTrait {
-    fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
+    fn mix_into(self: @OpcodeClaim, ref channel: Poseidon252Channel) {
         for claim in self.add.span() {
             claim.mix_into(ref channel);
         }
