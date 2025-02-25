@@ -1,7 +1,7 @@
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use stwo_verifier_core::ColumnSpan;
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::{ChannelTrait, Channel};
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
 

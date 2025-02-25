@@ -131,7 +131,7 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::M31;
@@ -201,7 +201,7 @@ type VerifyBitwiseXor9BitElements = LookupElements<3>;
 pub struct CairoProof {
     pub claim: CairoClaim,
     pub interaction_claim: CairoInteractionClaim,
-    pub stark_proof: StarkProof<felt252>,
+    pub stark_proof: StarkProof,
 }
 
 pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
@@ -214,7 +214,7 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 15,
         },
     };
-    let mut channel = ChannelImpl::new(0);
+    let mut channel: Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     let log_sizes = claim.log_sizes();

@@ -1,4 +1,4 @@
-use crate::channel::{Channel, ChannelTrait};
+use crate::channel::{ChannelTrait, Channel};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
 use crate::fields::qm31::{QM31, QM31Impl, QM31_EXTENSION_DEGREE};
 use crate::fri::FriVerificationError;
@@ -29,7 +29,7 @@ pub trait Air<T> {
 pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A,
     ref channel: Channel,
-    proof: StarkProof<felt252>,
+    proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
 ) -> Result<(), VerificationError> {
     let random_coeff = channel.draw_felt();
@@ -89,21 +89,9 @@ pub struct InvalidOodsSampleStructure {}
 
 // TODO(andrew): Consider removing this type and Serde.
 // Instead just read from a proof buffer like the STARK verifier on Ethereum.
-#[derive(Drop)]
-pub struct StarkProof<HashT> {
-    pub commitment_scheme_proof: CommitmentSchemeProof<HashT>,
-}
-
-impl StarkProofSerde<
-    HashT, +Serde<CommitmentSchemeProof<HashT>>,
-> of core::serde::Serde<StarkProof<HashT>> {
-    fn serialize(self: @StarkProof<HashT>, ref output: Array<felt252>) {
-        self.commitment_scheme_proof.serialize(ref output);
-    }
-
-    fn deserialize(ref serialized: Span<felt252>) -> Option<StarkProof<HashT>> {
-        Option::Some(StarkProof { commitment_scheme_proof: Serde::deserialize(ref serialized)? })
-    }
+#[derive(Drop, Serde)]
+pub struct StarkProof {
+    pub commitment_scheme_proof: CommitmentSchemeProof,
 }
 
 #[derive(Drop, Debug)]
