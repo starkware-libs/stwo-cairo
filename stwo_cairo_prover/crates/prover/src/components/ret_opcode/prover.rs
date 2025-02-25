@@ -75,11 +75,13 @@ fn write_trace_simd(
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_130 = PackedM31::broadcast(M31::from(130));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
     let M31_32766 = PackedM31::broadcast(M31::from(32766));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_88 = PackedM31::broadcast(M31::from(88));
     let padding_col = Enabler::new(n_rows);
 
     trace
@@ -105,10 +107,8 @@ fn write_trace_simd(
             let verify_instruction_inputs_0 = (
                 input_pc_col0,
                 [M31_32766, M31_32767, M31_32767],
-                [
-                    M31_1, M31_1, M31_0, M31_1, M31_0, M31_0, M31_0, M31_1, M31_0, M31_0, M31_0,
-                    M31_0, M31_0, M31_1, M31_0,
-                ],
+                [M31_88, M31_130],
+                M31_0,
             )
                 .unpack();
             *lookup_data.verify_instruction_0 = [
@@ -116,20 +116,8 @@ fn write_trace_simd(
                 M31_32766,
                 M31_32767,
                 M31_32767,
-                M31_1,
-                M31_1,
-                M31_0,
-                M31_1,
-                M31_0,
-                M31_0,
-                M31_0,
-                M31_1,
-                M31_0,
-                M31_0,
-                M31_0,
-                M31_0,
-                M31_0,
-                M31_1,
+                M31_88,
+                M31_130,
                 M31_0,
             ];
 
@@ -260,7 +248,7 @@ struct LookupData {
     memory_id_to_big_1: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {
