@@ -4,12 +4,15 @@ use std::process::ExitCode;
 use clap::Parser;
 use stwo_cairo_adapter::plain::adapt_finished_runner;
 use stwo_cairo_adapter::vm_import::VmImportError;
+use stwo_cairo_adapter::ExecutionResources;
 use stwo_cairo_prover::cairo_air::{
     default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError,
     ConfigBuilder, ProverParameters,
 };
 use stwo_cairo_utils::binary_utils::run_binary;
-use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
+use stwo_cairo_utils::program_runner_utils::{
+    run_cairo_program, ProgramRunnerArgs, ProgramRunnerError,
+};
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use thiserror::Error;
@@ -19,17 +22,21 @@ use tracing::{span, Level};
 /// Command line arguments for run_and_prove.
 /// Example command line (use absolute paths):
 ///     ```
-///     cargo run -r --bin run_and_prove -- --run_from_cairo_pie
-///     --proof_path path/to/proof --secure_run=true path/to/cairo/pie
+///     cargo run -r --bin run_and_prove -- --program path/to/program/file --program_input
+///     path/to/input/file --proof_path path/to/proof/output/file
+///     [--output_execution_resources_path path/to/adapted_execution_resources/output/file]
 ///     ```
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
     #[command(flatten)]
-    vm_args: VmArgs,
+    program_runner_args: ProgramRunnerArgs,
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
+    /// The file path for the output (the adapted execution resources of the VM run).
+    #[structopt(long = "output_execution_resources_path")]
+    output_execution_resources_path: Option<PathBuf>,
     #[structopt(long = "track_relations")]
     track_relations: bool,
     #[structopt(long = "display_components")]
@@ -48,11 +55,11 @@ enum Error {
     #[error("Proving failed: {0}")]
     Proving(#[from] ProvingError),
     #[error("Serialization failed: {0}")]
-    Serde(#[from] serde_json::error::Error),
+    Serde(#[from] serde_json::Error),
     #[error("Verification failed: {0}")]
     Verification(#[from] CairoVerificationError),
-    #[error("VM run failed: {0}")]
-    Vm(#[from] VmError),
+    #[error("program-runner run failed: {0}")]
+    ProgramRunner(#[from] ProgramRunnerError),
     #[error("VM import failed: {0}")]
     VmImport(#[from] VmImportError),
 }
@@ -65,10 +72,17 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    // `disable_trace_padding` is set to true as run_and_prove runs the VM in proof mode, and
-    // should disable trace padding (this is the mode Stwo uses).
-    let cairo_runner = run_vm(&args.vm_args, true)?;
+    let cairo_runner = run_cairo_program(&args.program_runner_args)?;
     let cairo_input = adapt_finished_runner(cairo_runner)?;
+
+    if let Some(output_execution_resources_path) = args.output_execution_resources_path {
+        let execution_resources = ExecutionResources::from_prover_input(&cairo_input);
+        std::fs::write(
+            output_execution_resources_path,
+            serde_json::to_string(&execution_resources)?,
+        )?;
+    }
+
     let prover_config = ConfigBuilder::default()
         .track_relations(args.track_relations)
         .display_components(args.display_components)
