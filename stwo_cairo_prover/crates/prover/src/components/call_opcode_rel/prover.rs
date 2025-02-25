@@ -80,10 +80,12 @@ fn write_trace_simd(
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
+    let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_32769 = PackedM31::broadcast(M31::from(32769));
     let M31_511 = PackedM31::broadcast(M31::from(511));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_68 = PackedM31::broadcast(M31::from(68));
     let padding_col = Enabler::new(n_rows);
 
     trace
@@ -110,10 +112,8 @@ fn write_trace_simd(
                 let verify_instruction_inputs_0 = (
                     input_pc_col0,
                     [M31_32768, M31_32769, M31_32769],
-                    [
-                        M31_0, M31_0, M31_1, M31_0, M31_0, M31_0, M31_0, M31_0, M31_1, M31_0,
-                        M31_0, M31_0, M31_1, M31_0, M31_0,
-                    ],
+                    [M31_32, M31_68],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -121,20 +121,8 @@ fn write_trace_simd(
                     M31_32768,
                     M31_32769,
                     M31_32769,
-                    M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
+                    M31_32,
+                    M31_68,
                     M31_0,
                 ];
 
@@ -338,7 +326,7 @@ struct LookupData {
     memory_id_to_big_2: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {

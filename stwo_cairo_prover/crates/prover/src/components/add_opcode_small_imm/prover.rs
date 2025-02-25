@@ -76,11 +76,14 @@ fn write_trace_simd(
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_136 = PackedM31::broadcast(M31::from(136));
+    let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_256 = PackedM31::broadcast(M31::from(256));
+    let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_32769 = PackedM31::broadcast(M31::from(32769));
     let M31_511 = PackedM31::broadcast(M31::from(511));
+    let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
@@ -168,22 +171,16 @@ fn write_trace_simd(
                     input_pc_col0,
                     [offset0_col3, offset1_col4, M31_32769],
                     [
-                        dst_base_fp_col5,
-                        op0_base_fp_col6,
-                        M31_1,
-                        M31_0,
-                        M31_0,
-                        M31_1,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        ap_update_add_1_col7,
-                        M31_0,
-                        M31_0,
-                        M31_1,
+                        (((((((M31_0) + ((dst_base_fp_col5) * (M31_8)))
+                            + ((op0_base_fp_col6) * (M31_16)))
+                            + (M31_32))
+                            + (M31_0))
+                            + (M31_0))
+                            + (M31_256)),
+                        (((((M31_0) + ((ap_update_add_1_col7) * (M31_32))) + (M31_0)) + (M31_0))
+                            + (M31_256)),
                     ],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -191,21 +188,15 @@ fn write_trace_simd(
                     offset0_col3,
                     offset1_col4,
                     M31_32769,
-                    dst_base_fp_col5,
-                    op0_base_fp_col6,
-                    M31_1,
+                    (((((((M31_0) + ((dst_base_fp_col5) * (M31_8)))
+                        + ((op0_base_fp_col6) * (M31_16)))
+                        + (M31_32))
+                        + (M31_0))
+                        + (M31_0))
+                        + (M31_256)),
+                    (((((M31_0) + ((ap_update_add_1_col7) * (M31_32))) + (M31_0)) + (M31_0))
+                        + (M31_256)),
                     M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    ap_update_add_1_col7,
-                    M31_0,
-                    M31_0,
-                    M31_1,
                 ];
 
                 let mem_dst_base_col8 = (((dst_base_fp_col5) * (input_fp_col2))
@@ -435,7 +426,7 @@ struct LookupData {
     memory_id_to_big_2: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {
