@@ -1,7 +1,7 @@
 use stwo_constraint_framework::{
     PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::m31::m31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
@@ -52,7 +52,7 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         for log_range in self.log_ranges.span() {
-            channel.mix_nonce((*log_range).into());
+            channel.mix_u64((*log_range).into());
         };
     }
 }

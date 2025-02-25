@@ -80,7 +80,7 @@ pub fn get_folded_query_positions(mut query_positions: Span<usize>, n_folds: u32
 
 #[cfg(test)]
 mod test {
-    use crate::channel::ChannelTrait;
+    use crate::channel::{Channel, ChannelTrait};
     use super::{Queries, QueriesImpl};
 
     #[test]
@@ -101,7 +101,7 @@ mod test {
 
     #[test]
     fn test_generate() {
-        let mut channel = ChannelTrait::new(0x00);
+        let mut channel: Channel = Default::default();
         let result = QueriesImpl::generate(ref channel, 31, 100);
         let expected_result = Queries {
             positions: array![
