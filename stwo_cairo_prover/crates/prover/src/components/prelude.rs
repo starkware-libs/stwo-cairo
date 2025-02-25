@@ -19,6 +19,7 @@ pub mod proving {
     pub use stwo_prover::core::fields::FieldExpOps;
     pub use stwo_prover::core::pcs::TreeBuilder;
 
+    pub use crate::cairo_air::preprocessed::Seq;
     pub(crate) use crate::cairo_air::relations;
     pub use crate::components::utils::*;
 }

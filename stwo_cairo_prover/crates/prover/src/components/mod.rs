@@ -42,3 +42,12 @@ pub use range_check_vector::{
     range_check_11, range_check_19, range_check_4_3, range_check_6, range_check_7_2_5,
     range_check_9_9,
 };
+pub mod blake_g;
+pub mod blake_compress_opcode;
+pub mod blake_round_sigma;
+pub mod blake_round;
+pub mod verify_bitwise_xor_8;
+pub mod triple_xor_32;
+pub mod verify_bitwise_xor_7;
+pub mod verify_bitwise_xor_4;
+pub mod verify_bitwise_xor_12;

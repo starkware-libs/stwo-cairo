@@ -178,6 +178,13 @@ impl PackedUInt32 {
             value: (self.simd >> 16).cast(),
         }
     }
+
+    pub fn from_limbs(low: PackedM31, high: PackedM31) -> Self {
+        let [low, high] = [low, high].map(PackedM31::into_simd);
+        Self {
+            simd: low + (high << 16),
+        }
+    }
 }
 
 impl Rem for PackedUInt32 {
@@ -249,6 +256,22 @@ unsafe impl Zeroable for PackedUInt32 {
         Self {
             simd: unsafe { core::mem::zeroed() },
         }
+    }
+}
+
+impl Pack for UInt32 {
+    type SimdType = PackedUInt32;
+
+    fn pack(inputs: [UInt32; N_LANES]) -> Self::SimdType {
+        PackedUInt32::from_array(inputs)
+    }
+}
+
+impl Unpack for PackedUInt32 {
+    type CpuType = UInt32;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        self.as_array()
     }
 }
 
