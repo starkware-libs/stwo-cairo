@@ -2,8 +2,9 @@ use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::CheckedSub;
-use crate::channel::{Channel, ChannelTrait};
+// use crate::channel::ChannelTrait;
 use crate::circle::CosetImpl;
+use crate::channel::poseidon252::{Poseidon252Channel, Poseidon252ChannelImpl};
 use crate::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
 use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
@@ -51,13 +52,16 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// `column_log_bounds` should be the committed circle polynomial log
     /// degree bounds in descending order.
     fn commit(
-        ref channel: Channel, config: FriConfig, proof: FriProof, column_log_bounds: Span<u32>,
+        ref channel: Poseidon252Channel,
+        config: FriConfig,
+        proof: FriProof,
+        column_log_bounds: Span<u32>,
     ) -> Result<FriVerifier, FriVerificationError> {
         let FriProof {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
 
-        channel.mix_digest(first_layer_proof.commitment);
+        channel.mix_root(first_layer_proof.commitment);
 
         let mut column_commitment_domains = array![];
 
@@ -92,7 +96,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                 None => { break Ok(()); },
             };
 
-            channel.mix_digest(*proof.commitment);
+            channel.mix_root(*proof.commitment);
 
             inner_layers
                 .append(
@@ -166,7 +170,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// Output is of the form `(unique_log_sizes, queries_by_log_size)`.
     fn sample_query_positions(
-        ref self: FriVerifier, ref channel: Channel,
+        ref self: FriVerifier, ref channel: Poseidon252Channel,
     ) -> (Span<u32>, Felt252Dict<Nullable<Span<usize>>>) {
         // The sizes of input circle polynomial commitment domains.
         let mut column_log_sizes = array![];
@@ -712,6 +716,7 @@ pub enum FriVerificationError {
 
 #[cfg(test)]
 mod test {
+    use crate::channel::poseidon252::Poseidon252Channel;
     use crate::channel::ChannelTrait;
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
     use crate::fields::qm31::qm31;
@@ -783,7 +788,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -846,7 +851,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -993,7 +998,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -1171,7 +1176,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
         let _query_positions_per_log_size = verifier.sample_query_positions(ref channel);
@@ -1264,7 +1269,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -1366,7 +1371,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
 
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
@@ -1465,7 +1470,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
 
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
@@ -1567,7 +1572,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
 
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
@@ -1663,7 +1668,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -1732,7 +1737,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Poseidon252Channel = Default::default();
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
