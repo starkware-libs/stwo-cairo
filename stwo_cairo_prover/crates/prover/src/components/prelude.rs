@@ -30,7 +30,6 @@ pub mod constraint_eval {
     pub use stwo_prover::constraint_framework::{
         EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
     };
-    pub use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
     pub use stwo_prover::core::channel::Channel;
     pub use stwo_prover::core::fields::m31::M31;
     pub use stwo_prover::core::fields::qm31::SecureField;

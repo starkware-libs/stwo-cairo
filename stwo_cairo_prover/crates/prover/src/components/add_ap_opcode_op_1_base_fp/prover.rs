@@ -29,6 +29,7 @@ impl ClaimGenerator {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
+        let log_size = size.ilog2();
         self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
 
@@ -42,9 +43,10 @@ impl ClaimGenerator {
         tree_builder.extend_evals(trace.to_evals());
 
         (
-            Claim { n_rows },
+            Claim { log_size },
             InteractionClaimGenerator {
                 n_rows,
+                log_size,
                 lookup_data,
             },
         )
@@ -248,6 +250,7 @@ struct LookupData {
 
 pub struct InteractionClaimGenerator {
     n_rows: usize,
+    log_size: u32,
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -262,9 +265,8 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
         let padding_col = Enabler::new(self.n_rows);
-        let mut logup_gen = LogupTraceGenerator::new(log_size);
+        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
