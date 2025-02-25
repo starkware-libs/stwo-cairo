@@ -110,34 +110,75 @@ impl BuiltinSegments {
     // TODO (ohadn): relocate this function if a more appropriate place is found.
     pub fn pad_builtin_segments(&mut self, memory: &mut MemoryBuilder) {
         if let Some(segment) = &self.add_mod {
-            self.add_mod = Some(pad_segment(segment, memory, ADD_MOD_MEMORY_CELLS as u32));
+            self.add_mod = Some(pad_segment(
+                segment,
+                memory,
+                ADD_MOD_MEMORY_CELLS as u32,
+                Some("add_mod"),
+            ));
         }
         if let Some(segment) = &self.bitwise {
-            self.bitwise = Some(pad_segment(segment, memory, BITWISE_MEMORY_CELLS as u32));
+            self.bitwise = Some(pad_segment(
+                segment,
+                memory,
+                BITWISE_MEMORY_CELLS as u32,
+                Some("bitwise"),
+            ));
         }
         if let Some(segment) = &self.ec_op {
-            self.ec_op = Some(pad_segment(segment, memory, EC_OP_MEMORY_CELLS as u32));
+            self.ec_op = Some(pad_segment(
+                segment,
+                memory,
+                EC_OP_MEMORY_CELLS as u32,
+                Some("ec_op"),
+            ));
         }
         if let Some(segment) = &self.ecdsa {
-            self.ecdsa = Some(pad_segment(segment, memory, ECDSA_MEMORY_CELLS as u32));
+            self.ecdsa = Some(pad_segment(
+                segment,
+                memory,
+                ECDSA_MEMORY_CELLS as u32,
+                Some("ecdsa"),
+            ));
         }
         if let Some(segment) = &self.keccak {
-            self.keccak = Some(pad_segment(segment, memory, KECCAK_MEMORY_CELLS as u32));
+            self.keccak = Some(pad_segment(
+                segment,
+                memory,
+                KECCAK_MEMORY_CELLS as u32,
+                Some("keccak"),
+            ));
         }
         if let Some(segment) = &self.mul_mod {
-            self.mul_mod = Some(pad_segment(segment, memory, MUL_MOD_MEMORY_CELLS as u32));
+            self.mul_mod = Some(pad_segment(
+                segment,
+                memory,
+                MUL_MOD_MEMORY_CELLS as u32,
+                Some("mul_mod"),
+            ));
         }
         if let Some(segment) = &self.pedersen {
-            self.pedersen = Some(pad_segment(segment, memory, PEDERSEN_MEMORY_CELLS as u32));
+            self.pedersen = Some(pad_segment(
+                segment,
+                memory,
+                PEDERSEN_MEMORY_CELLS as u32,
+                Some("pedersen"),
+            ));
         }
         if let Some(segment) = &self.poseidon {
-            self.poseidon = Some(pad_segment(segment, memory, POSEIDON_MEMORY_CELLS as u32));
+            self.poseidon = Some(pad_segment(
+                segment,
+                memory,
+                POSEIDON_MEMORY_CELLS as u32,
+                Some("poseidon"),
+            ));
         }
         if let Some(segment) = &self.range_check_bits_96 {
             self.range_check_bits_96 = Some(pad_segment(
                 segment,
                 memory,
                 RANGE_CHECK_MEMORY_CELLS as u32,
+                Some("range_check_96"),
             ));
         }
         if let Some(segment) = &self.range_check_bits_128 {
@@ -145,6 +186,7 @@ impl BuiltinSegments {
                 segment,
                 memory,
                 RANGE_CHECK_MEMORY_CELLS as u32,
+                Some("range_check_128"),
             ));
         }
     }
@@ -189,6 +231,17 @@ impl BuiltinSegments {
     }
 }
 
+const MIN_N_INSTANCES_IN_BUILTIN_SEGMENT: u32 = 16;
+
+// Assert MIN_N_INSTANCES_IN_BUILTIN_SEGMENT is a power of 2.
+#[allow(dead_code)]
+const fn assert_min_instances_power_of_2() {
+    assert!(MIN_N_INSTANCES_IN_BUILTIN_SEGMENT.is_power_of_two());
+}
+const _: () = assert_min_instances_power_of_2();
+
+/// Pads the given segment to the next power of 2, and at least MIN_N_INSTANCES_IN_BUILTIN_SEGMENT
+/// (in number of instances).
 fn pad_segment(
     MemorySegmentAddresses {
         begin_addr,
@@ -196,23 +249,30 @@ fn pad_segment(
     }: &MemorySegmentAddresses,
     mem: &mut MemoryBuilder,
     n_cells_per_instance: u32,
+    segment_name: Option<&str>,
 ) -> MemorySegmentAddresses {
     let (begin_addr, stop_ptr) = (*begin_addr as u32, *stop_ptr as u32);
     let initial_length = stop_ptr - begin_addr;
     assert!(initial_length > 0);
     assert!(initial_length % n_cells_per_instance == 0);
     let num_instances = initial_length / n_cells_per_instance;
-    let next_power_of_two = num_instances.next_power_of_two();
+    let padded_size = std::cmp::max(
+        MIN_N_INSTANCES_IN_BUILTIN_SEGMENT,
+        num_instances.next_power_of_two(),
+    );
+
+    let segment_name = segment_name.unwrap_or("<unnamed>");
+    log::info!("Padding segment {segment_name} of size {num_instances} to size {padded_size}");
 
     // Verify that the segment we intend to pad is empty.
     mem.assert_segment_is_empty(
         stop_ptr,
-        (next_power_of_two - num_instances) * n_cells_per_instance,
+        (padded_size - num_instances) * n_cells_per_instance,
     );
 
     let mut instance_to_fill_start = stop_ptr;
     let last_instance_start = stop_ptr - n_cells_per_instance;
-    for _ in num_instances..next_power_of_two {
+    for _ in num_instances..padded_size {
         mem.copy_block(
             last_instance_start,
             instance_to_fill_start,
@@ -220,7 +280,7 @@ fn pad_segment(
         );
         instance_to_fill_start += n_cells_per_instance;
     }
-    let stop_ptr = begin_addr + n_cells_per_instance * next_power_of_two;
+    let stop_ptr = begin_addr + n_cells_per_instance * padded_size;
     MemorySegmentAddresses {
         begin_addr: begin_addr as usize,
         stop_ptr: stop_ptr as usize,
@@ -273,6 +333,7 @@ mod test_builtin_segments {
     use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use test_case::test_case;
 
     use crate::builtins::BITWISE_MEMORY_CELLS;
     use crate::memory::{u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue};
@@ -334,8 +395,13 @@ mod test_builtin_segments {
         memory_builder
     }
 
-    #[test]
-    fn test_pad_builtin_segments() {
+    #[test_case(71, 128; "71->128")]
+    #[test_case(64, 64; "64->64")]
+    #[test_case(11, 16; "11->16")]
+    #[test_case(16, 16; "16->16")]
+    #[test_case(7, 16; "7->16")]
+    #[test_case(1, 16; "1->16")]
+    fn test_pad_builtin_segments(num_instances: usize, padded_num_instances: usize) {
         let instance_example = [
             123456789,
             4385067362534966725237889432551,
@@ -346,7 +412,6 @@ mod test_builtin_segments {
         let mut builtin_segments = BuiltinSegments::default();
         let cells_per_instance = BITWISE_MEMORY_CELLS;
         assert_eq!(cells_per_instance, instance_example.len());
-        let num_instances = 71;
         let begin_addr = 23581;
         let stop_ptr = begin_addr + cells_per_instance * num_instances;
         builtin_segments.bitwise = Some(MemorySegmentAddresses {
@@ -366,7 +431,7 @@ mod test_builtin_segments {
         let segment_length = new_stop_ptr - new_begin_addr;
         assert_eq!(segment_length % cells_per_instance, 0);
         let new_num_instances = segment_length / cells_per_instance;
-        assert_eq!(new_num_instances, 128);
+        assert_eq!(new_num_instances, padded_num_instances);
 
         let memory = memory_builder.build();
         assert_eq!(memory.address_to_id.len(), new_stop_ptr);

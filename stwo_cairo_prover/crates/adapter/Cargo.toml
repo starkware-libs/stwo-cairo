@@ -21,7 +21,9 @@ tracing.workspace = true
 thiserror.workspace = true
 sonic-rs = { version = "0.3.17", optional = true }
 thiserror-no-std = { version = "2.0.2", default-features = false }
+log.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
 rand.workspace = true
+test-case.workspace = true
