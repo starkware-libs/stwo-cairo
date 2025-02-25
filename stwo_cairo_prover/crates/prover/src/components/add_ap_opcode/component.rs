@@ -53,6 +53,8 @@ impl FrameworkEval for Eval {
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_136 = E::F::from(M31::from(136));
+        let M31_152 = E::F::from(M31::from(152));
+        let M31_16 = E::F::from(M31::from(16));
         let M31_256 = E::F::from(M31::from(256));
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_32767 = E::F::from(M31::from(32767));
@@ -83,17 +85,8 @@ impl FrameworkEval for Eval {
                 M31_32767.clone(),
                 M31_32767.clone(),
                 offset2_col3.clone(),
-                M31_1.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
+                M31_152.clone(),
+                M31_16.clone(),
             ],
         ));
 
