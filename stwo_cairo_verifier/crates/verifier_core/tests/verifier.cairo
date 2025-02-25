@@ -1,4 +1,4 @@
-use stwo_verifier_core::channel::ChannelImpl;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
@@ -30,7 +30,7 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
     // Verify.
     let log_size = 20;
     let air = FibAir::<128> { log_size };
-    let mut channel = ChannelImpl::new(0);
+    let mut channel: Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
@@ -63,7 +63,7 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
     // Verify.
     let log_size = 20;
     let air = FibAir::<128> { log_size };
-    let mut channel = ChannelImpl::new(0);
+    let mut channel: Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
