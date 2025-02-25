@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 pub mod proving {
     pub use std::iter::zip;
 
@@ -23,6 +24,7 @@ pub mod proving {
     pub use crate::components::utils::*;
 }
 
+#[allow(unused_imports)]
 pub mod constraint_eval {
     pub use num_traits::One;
     pub use serde::{Deserialize, Serialize};

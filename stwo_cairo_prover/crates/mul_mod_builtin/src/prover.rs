@@ -1,11 +1,13 @@
 #![allow(unused_parens)]
-use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::preprocessed::Seq;
-use crate::components::prelude::proving::*;
-use crate::components::range_check_vector::{
+use component_utils::cairo_air::preprocessed::Seq;
+use component_utils::cairo_air::relations;
+use component_utils::components::memory::{memory_address_to_id, memory_id_to_big};
+use component_utils::components::prelude::proving::*;
+use component_utils::components::range_check_vector::{
     range_check_12, range_check_18, range_check_3_6, range_check_3_6_6_3,
 };
-use crate::components::{memory_address_to_id, memory_id_to_big};
+
+use super::component::{Claim, InteractionClaim};
 
 const N_TRACE_COLUMNS: usize = 410;
 

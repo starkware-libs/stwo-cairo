@@ -1,4 +1,6 @@
 #![allow(unused_parens)]
+use component_utils::cairo_air::relations;
+
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};

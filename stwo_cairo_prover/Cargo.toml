@@ -37,6 +37,8 @@ stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
+mul_mod_builtin = { path = "crates/mul_mod_builtin" }
+component_utils = { path = "crates/component_utils" }
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "6f91336", features = [
     "parallel",
@@ -56,3 +58,8 @@ wasm-bindgen = { version = "= 0.2.92" }
 [profile.bench]
 codegen-units = 1
 lto = true
+
+[profile.release]
+codegen-units = 64
+lto = false
+opt-level = 2

@@ -10,6 +10,6 @@
 
 pub mod cairo_air;
 mod components;
-mod felt;
 
+use component_utils::felt;
 pub use stwo_prover;
