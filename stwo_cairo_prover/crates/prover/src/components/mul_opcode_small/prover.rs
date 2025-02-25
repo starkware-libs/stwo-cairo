@@ -1,4 +1,5 @@
 #![allow(unused_parens)]
+#![allow(unused_imports)]
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
 use crate::components::{
@@ -81,8 +82,14 @@ fn write_trace_simd(
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_128 = PackedM31::broadcast(M31::from(128));
+    let M31_16 = PackedM31::broadcast(M31::from(16));
+    let M31_256 = PackedM31::broadcast(M31::from(256));
+    let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_64 = PackedM31::broadcast(M31::from(64));
+    let M31_8 = PackedM31::broadcast(M31::from(8));
     let M31_8192 = PackedM31::broadcast(M31::from(8192));
     let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
@@ -97,7 +104,8 @@ fn write_trace_simd(
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
-    let padding_col = Enabler::new(n_rows);
+
+    let padding = Enabler::new(n_rows);
 
     trace
         .par_iter_mut()
@@ -206,22 +214,16 @@ fn write_trace_simd(
                     input_pc_col0,
                     [offset0_col3, offset1_col4, offset2_col5],
                     [
-                        dst_base_fp_col6,
-                        op0_base_fp_col7,
-                        M31_0,
-                        op1_base_fp_col8,
-                        op1_base_ap_col9,
-                        M31_0,
-                        M31_1,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        ap_update_add_1_col10,
-                        M31_0,
-                        M31_0,
-                        M31_1,
+                        (((((((M31_0) + ((dst_base_fp_col6) * (M31_8)))
+                            + ((op0_base_fp_col7) * (M31_16)))
+                            + (M31_0))
+                            + ((op1_base_fp_col8) * (M31_64)))
+                            + ((op1_base_ap_col9) * (M31_128)))
+                            + (M31_0)),
+                        (((((M31_1) + ((ap_update_add_1_col10) * (M31_32))) + (M31_0)) + (M31_0))
+                            + (M31_256)),
                     ],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -229,21 +231,15 @@ fn write_trace_simd(
                     offset0_col3,
                     offset1_col4,
                     offset2_col5,
-                    dst_base_fp_col6,
-                    op0_base_fp_col7,
+                    (((((((M31_0) + ((dst_base_fp_col6) * (M31_8)))
+                        + ((op0_base_fp_col7) * (M31_16)))
+                        + (M31_0))
+                        + ((op1_base_fp_col8) * (M31_64)))
+                        + ((op1_base_ap_col9) * (M31_128)))
+                        + (M31_0)),
+                    (((((M31_1) + ((ap_update_add_1_col10) * (M31_32))) + (M31_0)) + (M31_0))
+                        + (M31_256)),
                     M31_0,
-                    op1_base_fp_col8,
-                    op1_base_ap_col9,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    ap_update_add_1_col10,
-                    M31_0,
-                    M31_0,
-                    M31_1,
                 ];
 
                 let mem_dst_base_col11 = (((dst_base_fp_col6) * (input_fp_col2))
@@ -474,7 +470,7 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col10)),
                     input_fp_col2,
                 ];
-                *row[36] = padding_col.packed_at(row_index);
+                *row[36] = padding.packed_at(row_index);
 
                 // Add sub-components inputs.
                 verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
@@ -506,7 +502,7 @@ struct LookupData {
     range_check_11_0: Vec<[PackedM31; 1]>,
     range_check_11_1: Vec<[PackedM31; 1]>,
     range_check_11_2: Vec<[PackedM31; 1]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -604,7 +600,7 @@ impl InteractionClaimGenerator {
             let denom1: PackedQM31 = opcodes.combine(values1);
             col_gen.write_frac(
                 i,
-                (denom1 - denom0) * padding_col.packed_at(i),
+                denom1 * padding_col.packed_at(i) - denom0 * padding_col.packed_at(i),
                 denom0 * denom1,
             );
         }

@@ -1,4 +1,5 @@
 #![allow(unused_parens)]
+#![allow(unused_imports)]
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
@@ -40,6 +41,7 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             verify_instruction_state,
         );
+
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -74,18 +76,21 @@ fn write_trace_simd(
     };
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
-    let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_2 = PackedM31::broadcast(M31::from(2));
+    let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_32769 = PackedM31::broadcast(M31::from(32769));
+    let M31_56 = PackedM31::broadcast(M31::from(56));
+    let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
     let UInt16_127 = PackedUInt16::broadcast(UInt16::from(127));
     let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
-    let padding_col = Enabler::new(n_rows);
+
+    let padding = Enabler::new(n_rows);
 
     trace
         .par_iter_mut()
@@ -130,22 +135,11 @@ fn write_trace_simd(
                     input_pc_col0,
                     [offset0_col3, M31_32767, M31_32769],
                     [
-                        M31_1,
-                        M31_1,
-                        M31_1,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_1,
-                        M31_0,
-                        ap_update_add_1_col4,
-                        M31_0,
-                        M31_0,
-                        M31_0,
+                        M31_56,
+                        (((((M31_8) + ((ap_update_add_1_col4) * (M31_32))) + (M31_0)) + (M31_0))
+                            + (M31_0)),
                     ],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -153,20 +147,9 @@ fn write_trace_simd(
                     offset0_col3,
                     M31_32767,
                     M31_32769,
-                    M31_1,
-                    M31_1,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    ap_update_add_1_col4,
-                    M31_0,
-                    M31_0,
+                    M31_56,
+                    (((((M31_8) + ((ap_update_add_1_col4) * (M31_32))) + (M31_0)) + (M31_0))
+                        + (M31_0)),
                     M31_0,
                 ];
 
@@ -279,7 +262,7 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col4)),
                     input_fp_col2,
                 ];
-                *row[34] = padding_col.packed_at(row_index);
+                *row[34] = padding.packed_at(row_index);
 
                 // Add sub-components inputs.
                 verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
@@ -297,7 +280,7 @@ struct LookupData {
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {
