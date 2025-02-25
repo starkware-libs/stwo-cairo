@@ -24,6 +24,9 @@ cairo-lang-casm = "2.7.1"
 cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "153d3a88", features = [
     "mod_builtin",
 ], default-features = false }
+# TODO(yuval): Use an official version, not a specific commit.
+# TODO(yg): this won't work as it's a private repo. Open it and/or move vm-runner to it.
+cairo-program-runner = { git = "https://github.com/starkware-industries/bootloader-hints", rev = "493811db2381748ca1571192f94b97dce7b4cb8b" }
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = { version = "0.11.5", default-features = false }
 hex = "0.4.3"
