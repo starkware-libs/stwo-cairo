@@ -5,10 +5,13 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput, PublicInputError};
+use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
+use itertools::Itertools;
 use json::PrivateInput;
+use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
+use stwo_cairo_serialize::CairoSerialize;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -16,6 +19,7 @@ use super::builtins::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
+use crate::builtins::MemorySegmentAddresses;
 use crate::memory::{MemoryBuilder, MemoryEntryIter};
 
 #[derive(Debug, Error)]
@@ -35,6 +39,100 @@ pub enum VmImportError {
 
     #[error("Cannot get public input from runner: {0}")]
     PublicInput(#[from] PublicInputError),
+}
+
+// TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct MemorySmallValue {
+    pub id: u32,
+    pub value: u32,
+}
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+pub type PubMemoryValue = (u32, [u32; 8]);
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct SegmentRange {
+    pub start_ptr: MemorySmallValue,
+    pub stop_ptr: MemorySmallValue,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, Default)]
+pub struct PublicSegmentRanges {
+    pub output: Option<SegmentRange>,
+    pub pedersen: Option<SegmentRange>,
+    pub range_check_128: Option<SegmentRange>,
+    pub ecdsa: Option<SegmentRange>,
+    pub bitwise: Option<SegmentRange>,
+    pub ec_op: Option<SegmentRange>,
+    pub keccak: Option<SegmentRange>,
+    pub poseidon: Option<SegmentRange>,
+    pub range_check_96: Option<SegmentRange>,
+    pub add_mod: Option<SegmentRange>,
+    pub mul_mod: Option<SegmentRange>,
+}
+
+impl PublicSegmentRanges {
+    pub fn memory_entries(
+        &self,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let PublicSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = *self;
+        let segments = [
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        ]
+        .into_iter()
+        .flatten()
+        .collect_vec();
+        let n_segments = segments.len() as u32;
+
+        segments
+            .into_iter()
+            .enumerate()
+            .flat_map(
+                move |(
+                    i,
+                    SegmentRange {
+                        start_ptr,
+                        stop_ptr,
+                    },
+                )| {
+                    let start_address = initial_ap + i as u32;
+                    let stop_address = final_ap - n_segments + i as u32;
+                    [
+                        (start_address, start_ptr.id, start_ptr.value),
+                        (stop_address, stop_ptr.id, stop_ptr.value),
+                    ]
+                },
+            )
+            .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
+    }
 }
 
 fn deserialize_inputs<'a>(
@@ -115,12 +213,17 @@ pub fn adapt_vm_output(
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
-    adapt_to_stwo_input(
+    let res = adapt_to_stwo_input(
         TraceIter(&mut trace_file),
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
-        &public_input.memory_segments,
-    )
+        &public_input
+            .memory_segments
+            .into_iter()
+            .map(|(k, v)| (k, v.into()))
+            .collect(),
+    );
+    res
 }
 
 /// Creates Cairo input for Stwo, utilized by:
@@ -137,11 +240,12 @@ pub fn adapt_to_stwo_input(
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segments(&mut memory);
+    let memory = memory.build();
 
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
-        memory: memory.build(),
+        memory,
         public_memory_addresses,
         builtins_segments,
     })
@@ -206,7 +310,7 @@ pub fn generate_test_input(test_name: &str) -> ProverInput {
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 pub mod slow_tests {
-    use super::generate_test_input;
+    use super::{generate_test_input, MemorySegmentAddresses};
 
     #[test]
     fn test_read_from_large_files() {
@@ -246,19 +350,37 @@ pub mod slow_tests {
         let builtins_segments = input.builtins_segments;
         assert_eq!(builtins_segments.add_mod, None);
         assert_eq!(builtins_segments.bitwise, None);
-        assert_eq!(builtins_segments.ec_op, Some((16428600, 16428824).into()));
+        assert_eq!(
+            builtins_segments.ec_op,
+            Some(MemorySegmentAddresses {
+                begin_addr: 16428600,
+                stop_ptr: 16428824
+            })
+        );
         assert_eq!(builtins_segments.ecdsa, None);
         assert_eq!(builtins_segments.keccak, None);
         assert_eq!(builtins_segments.mul_mod, None);
-        assert_eq!(builtins_segments.pedersen, Some((1322552, 1347128).into()));
+        assert_eq!(
+            builtins_segments.pedersen,
+            Some(MemorySegmentAddresses {
+                begin_addr: 1322552,
+                stop_ptr: 1347128
+            })
+        );
         assert_eq!(
             builtins_segments.poseidon,
-            Some((16920120, 17706552).into())
+            Some(MemorySegmentAddresses {
+                begin_addr: 16920120,
+                stop_ptr: 17706552
+            })
         );
         assert_eq!(builtins_segments.range_check_bits_96, None);
         assert_eq!(
             builtins_segments.range_check_bits_128,
-            Some((1715768, 1781304).into())
+            Some(MemorySegmentAddresses {
+                begin_addr: 1715768,
+                stop_ptr: 1781304
+            })
         );
     }
 
@@ -299,20 +421,62 @@ pub mod slow_tests {
         // Test builtins.
         let builtins_segments = input.builtins_segments;
         assert_eq!(builtins_segments.add_mod, None);
-        assert_eq!(builtins_segments.bitwise, Some((22512, 22832).into()));
-        assert_eq!(builtins_segments.ec_op, Some((63472, 63920).into()));
-        assert_eq!(builtins_segments.ecdsa, Some((22384, 22512).into()));
-        assert_eq!(builtins_segments.keccak, Some((64368, 65392).into()));
+        assert_eq!(
+            builtins_segments.bitwise,
+            Some(MemorySegmentAddresses {
+                begin_addr: 22512,
+                stop_ptr: 22832
+            })
+        );
+        assert_eq!(
+            builtins_segments.ec_op,
+            Some(MemorySegmentAddresses {
+                begin_addr: 63472,
+                stop_ptr: 63920
+            })
+        );
+        assert_eq!(
+            builtins_segments.ecdsa,
+            Some(MemorySegmentAddresses {
+                begin_addr: 22384,
+                stop_ptr: 22512
+            })
+        );
+        assert_eq!(
+            builtins_segments.keccak,
+            Some(MemorySegmentAddresses {
+                begin_addr: 64368,
+                stop_ptr: 65392
+            })
+        );
         assert_eq!(builtins_segments.mul_mod, None);
-        assert_eq!(builtins_segments.pedersen, Some((4464, 4656).into()));
-        assert_eq!(builtins_segments.poseidon, Some((65392, 65776).into()));
+        assert_eq!(
+            builtins_segments.pedersen,
+            Some(MemorySegmentAddresses {
+                begin_addr: 4464,
+                stop_ptr: 4656
+            })
+        );
+        assert_eq!(
+            builtins_segments.poseidon,
+            Some(MemorySegmentAddresses {
+                begin_addr: 65392,
+                stop_ptr: 65776
+            })
+        );
         assert_eq!(
             builtins_segments.range_check_bits_96,
-            Some((68464, 68528).into())
+            Some(MemorySegmentAddresses {
+                begin_addr: 68464,
+                stop_ptr: 68528
+            })
         );
         assert_eq!(
             builtins_segments.range_check_bits_128,
-            Some((6000, 6064).into())
+            Some(MemorySegmentAddresses {
+                begin_addr: 6000,
+                stop_ptr: 6064
+            })
         );
     }
 }

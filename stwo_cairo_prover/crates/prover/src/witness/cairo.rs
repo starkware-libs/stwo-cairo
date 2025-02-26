@@ -1,5 +1,10 @@
-use cairo_air::air::{CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData};
+use cairo_air::air::{
+    CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData, PublicMemory,
+};
 use itertools::Itertools;
+use stwo_cairo_adapter::builtins::BuiltinSegments;
+use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_adapter::vm_import::{MemorySmallValue, PublicSegmentRanges, SegmentRange};
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::M31;
@@ -17,6 +22,96 @@ use crate::witness::components::{
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
+
+fn extract_public_segments(
+    memory: &Memory,
+    initial_ap: u32,
+    final_ap: u32,
+    builtin_segments: BuiltinSegments,
+) -> PublicSegmentRanges {
+    let n_public_segments = builtin_segments.n_builtins() as u32;
+
+    let to_memory_value = |addr: u32| {
+        let id = memory.get_raw_id(addr);
+        let value = memory.get(addr).as_small() as u32;
+        MemorySmallValue { id, value }
+    };
+
+    let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(to_memory_value);
+    let end_ptrs = (final_ap - n_public_segments..final_ap).map(to_memory_value);
+    let mut ranges = start_ptrs
+        .zip(end_ptrs)
+        .map(|(start_ptr, stop_ptr)| SegmentRange {
+            start_ptr,
+            stop_ptr,
+        });
+
+    // let output = builtin_segments.output.map(|_| ranges.next().unwrap());
+    // let pedersen = builtin_segments.pedersen.map(|_| ranges.next().unwrap());
+    // let range_check_128 = builtin_segments
+    //     .range_check_bits_128
+    //     .map(|_| ranges.next().unwrap());
+    // let ecdsa = builtin_segments.ecdsa.map(|_| ranges.next().unwrap());
+    // let bitwise = builtin_segments.bitwise.map(|_| ranges.next().unwrap());
+    // let ec_op = builtin_segments.ec_op.map(|_| ranges.next().unwrap());
+    // let keccak = builtin_segments.keccak.map(|_| ranges.next().unwrap());
+    // let poseidon = builtin_segments.poseidon.map(|_| ranges.next().unwrap());
+    // let range_check_96 = builtin_segments
+    //     .range_check_bits_96
+    //     .map(|_| ranges.next().unwrap());
+
+    // let add_mod = builtin_segments.add_mod.map(|_| ranges.next().unwrap());
+    // let mul_mod = builtin_segments.mul_mod.map(|_| ranges.next().unwrap());
+    PublicSegmentRanges {
+        output: ranges.next(),
+        pedersen: ranges.next(),
+        range_check_128: ranges.next(),
+        ecdsa: ranges.next(),
+        bitwise: ranges.next(),
+        ec_op: ranges.next(),
+        keccak: ranges.next(),
+        poseidon: ranges.next(),
+        range_check_96: ranges.next(),
+        add_mod: ranges.next(),
+        mul_mod: ranges.next(),
+    }
+}
+
+fn extract_sections_from_memory(
+    memory: &Memory,
+    builtin_segments: BuiltinSegments,
+    initial_pc: u32,
+    initial_ap: u32,
+    final_ap: u32,
+) -> PublicMemory {
+    let public_segments = extract_public_segments(memory, initial_ap, final_ap, builtin_segments);
+    let program_memory_addresses = initial_pc..initial_ap - 2;
+    let safe_call_addresses = initial_ap - 2..initial_ap;
+    let output_memory_addresses = public_segments
+        .output
+        .map(|range| range.start_ptr.value..range.stop_ptr.value)
+        .unwrap_or(0..0);
+    let [program, safe_call, output] = [
+        program_memory_addresses,
+        safe_call_addresses,
+        output_memory_addresses,
+    ]
+    .map(|range| {
+        range
+            .map(|addr| {
+                let id = memory.get_raw_id(addr);
+                let value = memory.get(addr).as_u256();
+                (id, value)
+            })
+            .collect_vec()
+    });
+    PublicMemory {
+        program,
+        safe_call,
+        public_segments,
+        output,
+    }
+}
 
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
@@ -47,7 +142,7 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
-        let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
+        let builtins = BuiltinsClaimGenerator::new(input.builtins_segments.clone());
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
@@ -72,15 +167,17 @@ impl CairoClaimGenerator {
         }
 
         // Public data.
-        let public_memory = input
-            .public_memory_addresses
-            .iter()
-            .copied()
-            .map(|addr| {
-                let id = input.memory.get_raw_id(addr);
-                (addr, id, input.memory.get(addr).as_u256())
-            })
-            .collect_vec();
+        let initial_pc = initial_state.pc.0;
+        let initial_ap = initial_state.ap.0;
+        let final_ap = final_state.ap.0;
+        let public_memory = extract_sections_from_memory(
+            &input.memory,
+            input.builtins_segments,
+            initial_pc,
+            initial_ap,
+            final_ap,
+        );
+
         let public_data = PublicData {
             public_memory,
             initial_state,

@@ -1,6 +1,8 @@
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_adapter::vm_import::{PubMemoryEntry, PubMemoryValue, PublicSegmentRanges};
+// use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_cairo_serialize::CairoSerialize;
@@ -59,9 +61,6 @@ where
         CairoSerialize::serialize(stark_proof, output);
     }
 }
-
-// (Address, Id, Value)
-pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct CairoClaim {
@@ -132,24 +131,29 @@ impl PublicData {
     /// Sums the logup of the public data.
     pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
         let mut values_to_inverse = vec![];
-
         // Use public memory in the memory relations.
-        self.public_memory.iter().for_each(|(addr, id, val)| {
-            values_to_inverse.push(
-                <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
-                    &lookup_elements.memory_address_to_id,
-                    &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
-                ),
-            );
-            values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
-                &lookup_elements.memory_id_to_value,
-                &[
-                    [M31::from_u32_unchecked(*id)].as_slice(),
-                    split_f252(*val).as_slice(),
-                ]
-                .concat(),
-            ));
-        });
+        self.public_memory
+            .get_entries(
+                self.initial_state.pc.0,
+                self.initial_state.ap.0,
+                self.final_state.ap.0,
+            )
+            .for_each(|(addr, id, val)| {
+                values_to_inverse.push(
+                    <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
+                        &lookup_elements.memory_address_to_id,
+                        &[M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                    ),
+                );
+                values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
+                    &lookup_elements.memory_id_to_value,
+                    &[
+                        [M31::from_u32_unchecked(id)].as_slice(),
+                        split_f252(val).as_slice(),
+                    ]
+                    .concat(),
+                ));
+            });
 
         // Yield initial state and use the final.
         values_to_inverse.push(<relations::Opcodes as Relation<M31, QM31>>::combine(
@@ -165,6 +169,41 @@ impl PublicData {
         inverted_values.iter().sum::<QM31>()
     }
 }
+pub type MemorySection = Vec<PubMemoryValue>;
+
+// TODO(alonf): Perform all public data validations.
+#[derive(Serialize, Deserialize, CairoSerialize)]
+pub struct PublicMemory {
+    pub program: MemorySection,
+    pub public_segments: PublicSegmentRanges,
+    pub output: MemorySection,
+    pub safe_call: MemorySection,
+}
+
+impl PublicMemory {
+    /// Returns [`PubMemoryEntry`] for all public memory.
+    pub fn get_entries(
+        &self,
+        initial_pc: u32,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
+            .map(|section| section.clone().into_iter().enumerate());
+        let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
+        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
+        let safe_call_iter =
+            safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
+        let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
+
+        // public_memory.iter()
+        program_iter
+            .chain(safe_call_iter)
+            .chain(segment_ranges_iter)
+            .chain(output_iter)
+    }
+}
+
 pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
     pub verify_instruction: relations::VerifyInstruction,
