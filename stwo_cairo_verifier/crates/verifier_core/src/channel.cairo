@@ -1,12 +1,6 @@
-use core::array::SpanTrait;
-use core::num::traits::{WrappingMul, WrappingSub};
-use core::poseidon::{hades_permutation, poseidon_hash_span};
-use core::traits::DivRem;
-use crate::fields::m31::M31Trait;
-use crate::fields::qm31::QM31Trait;
-use crate::utils::pack4;
-use crate::{BaseField, SecureField};
+use crate::SecureField;
 
+pub mod blake2s;
 pub mod poseidon252;
 
 #[derive(Default, Drop)]
@@ -36,7 +30,7 @@ pub trait ChannelTrait<Channel> {
 
     fn mix_felts(ref self: Channel, felts: Span<SecureField>);
 
-    fn mix_u64(ref self: Channel, value: u64);
+    fn mix_u64(ref self: Channel, nonce: u64);
 
     fn draw_felt(ref self: Channel) -> SecureField;
 
