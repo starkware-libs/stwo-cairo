@@ -224,13 +224,6 @@ pub mod tests {
     }
 
     #[test]
-    fn test_basic_cairo_constraints() {
-        let input = test_basic_cairo_air_input();
-        let pp_tree = testing_preprocessed_tree(19);
-        assert_cairo_constraints(input, pp_tree);
-    }
-
-    #[test]
     fn test_all_cairo_constraints() {
         let input =
             prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
@@ -353,7 +346,7 @@ pub mod tests {
         pub mod builtin_tests {
             use std::fs::File;
 
-            use cairo_vm::air_public_input::MemorySegmentAddresses;
+            use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
             use stwo_cairo_adapter::memory::MemoryEntryIter;
             use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
             use test_log::test;
