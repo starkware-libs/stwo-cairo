@@ -221,11 +221,15 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     // Preproccessed trace.
     commitment_scheme
-        .commit(*stark_proof.commitment_scheme_proof.commitments[0], *log_sizes[0], ref channel);
+        .commit(
+            stark_proof.commitment_scheme_proof.commitments[0].clone(), *log_sizes[0], ref channel,
+        );
     claim.mix_into(ref channel);
 
     commitment_scheme
-        .commit(*stark_proof.commitment_scheme_proof.commitments[1], *log_sizes[1], ref channel);
+        .commit(
+            stark_proof.commitment_scheme_proof.commitments[1].clone(), *log_sizes[1], ref channel,
+        );
     let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
 
     if lookup_sum(@claim, @interaction_elements, @interaction_claim).is_non_zero() {
@@ -234,7 +238,9 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     interaction_claim.mix_into(ref channel);
     commitment_scheme
-        .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
+        .commit(
+            stark_proof.commitment_scheme_proof.commitments[2].clone(), *log_sizes[2], ref channel,
+        );
 
     let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
     if let Result::Err(err) = verify(cairo_air, ref channel, stark_proof, commitment_scheme) {
