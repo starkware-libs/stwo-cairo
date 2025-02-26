@@ -11,8 +11,8 @@ use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::vcs::MerkleHasher;
 use crate::ColumnArray;
 
 /// Fold step size for circle polynomials.
@@ -672,7 +672,7 @@ pub struct FriLayerProof {
     /// order they are needed. This complements the values that were queried. These must be
     /// supplied directly to the verifier.
     pub fri_witness: Span<QM31>,
-    pub decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
+    pub decommitment: MerkleDecommitment<MerkleHasher>,
     pub commitment: felt252,
 }
 

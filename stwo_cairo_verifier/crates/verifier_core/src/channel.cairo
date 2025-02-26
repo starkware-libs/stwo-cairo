@@ -1,16 +1,18 @@
-use core::array::SpanTrait;
-use core::num::traits::{WrappingMul, WrappingSub};
-use core::poseidon::{hades_permutation, poseidon_hash_span};
-use core::traits::DivRem;
-use crate::fields::m31::M31Trait;
-use crate::fields::qm31::QM31Trait;
-use crate::utils::pack4;
-use crate::{BaseField, Hash, SecureField};
+use crate::{Hash, SecureField};
 
+#[cfg(feature: "blake2s_verifier")]
+pub mod blake2s;
+#[cfg(not(feature: "blake2s_verifier"))]
 pub mod poseidon252;
 
+#[cfg(feature: "blake2s_verifier")]
+pub type Channel = blake2s::Blake2sChannel;
+#[cfg(not(feature: "blake2s_verifier"))]
 pub type Channel = poseidon252::Poseidon252Channel;
 
+#[cfg(feature: "blake2s_verifier")]
+pub use blake2s::Blake2sChannelImpl as ChannelImpl;
+#[cfg(not(feature: "blake2s_verifier"))]
 pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
 #[derive(Default, Drop)]
@@ -32,19 +34,19 @@ impl ChannelTimeImpl of ChannelTimeTrait {
 }
 
 pub trait ChannelTrait {
-    fn mix_felts(ref self: Channel, felts: Span<SecureField>);
+    fn mix_felts(ref self: Channel, felts: Span<crate::SecureField>);
 
-    fn mix_u64(ref self: Channel, value: u64);
+    fn mix_u64(ref self: Channel, nonce: u64);
 
-    fn draw_felt(ref self: Channel) -> SecureField;
+    fn draw_felt(ref self: Channel) -> crate::SecureField;
 
     /// Generates a uniform random vector of SecureField elements.
-    fn draw_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
+    fn draw_felts(ref self: Channel, n_felts: usize) -> Array<crate::SecureField>;
 
     /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
     fn draw_random_bytes(ref self: Channel) -> Array<u8>;
 
-    fn mix_root(ref self: Channel, root: Hash);
+    fn mix_root(ref self: Channel, root: crate::Hash);
 
     // TODO: Consider adding nonce to this function so channel could use different hash function.
     fn check_proof_of_work(self: @Channel, n_bits: u32) -> bool;
