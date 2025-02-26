@@ -161,9 +161,6 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 22] = [
     PreprocessedColumn::Seq(4),
 ];
 
-// (Address, Id, Value)
-pub type PublicMemory = Array<(u32, u32, [u32; 8])>;
-
 type MemoryAddressToIdElements = LookupElements<2>;
 
 type MemoryIdToBigElements = LookupElements<29>;
@@ -848,6 +845,113 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     }
 }
 
+// TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
+#[derive(Clone, Debug, Serde, Copy, Drop)]
+pub struct MemorySmallValue {
+    pub id: u32,
+    pub value: u32,
+}
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+// (id, value)
+pub type PubMemoryValue = (u32, [u32; 8]);
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+// (address, id, value)
+pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+
+#[derive(Debug, Serde, Copy, Drop)]
+pub struct SegmentRange {
+    pub start_ptr: MemorySmallValue,
+    pub stop_ptr: MemorySmallValue,
+}
+
+#[derive(Clone, Debug, Serde, Copy, Drop)]
+pub struct PublicSegmentRanges {
+    pub output: SegmentRange,
+    pub pedersen: SegmentRange,
+    pub range_check_128: SegmentRange,
+    pub ecdsa: SegmentRange,
+    pub bitwise: SegmentRange,
+    pub ec_op: SegmentRange,
+    pub keccak: SegmentRange,
+    pub poseidon: SegmentRange,
+    pub range_check_96: SegmentRange,
+    pub add_mod: SegmentRange,
+    pub mul_mod: SegmentRange,
+}
+pub type MemorySection = Array<PubMemoryValue>;
+
+// TODO(alonf): Perform all public data validations.
+#[derive(Serde, Drop)]
+pub struct PublicMemory {
+    pub program: MemorySection,
+    pub public_segments: PublicSegmentRanges,
+    pub output: MemorySection,
+    pub safe_call: MemorySection,
+}
+
+#[generate_trait]
+pub impl PublicMemoryImpl of PublicMemoryTrait {
+    fn get_entries(
+        self: @PublicMemory, initial_pc: u32, initial_ap: u32, final_ap: u32,
+    ) -> Array<PubMemoryEntry> {
+        let mut entries = array![];
+
+        // Program.
+        let mut i: u32 = 0;
+        for (id, value) in self.program.span() {
+            entries.append((initial_pc + i, *id, *value));
+            i += 1;
+        }
+
+        // Output.
+        i = 0;
+        for (id, value) in self.output.span() {
+            entries.append((final_ap + i, *id, *value));
+            i += 1;
+        }
+
+        // Safe call.
+        i = 0;
+        for (id, value) in self.safe_call.span() {
+            entries.append((initial_ap - 2 + i, *id, *value));
+            i += 1;
+        }
+
+        // Segment ranges.
+        let pub_segs = self.public_segments;
+        i = 0;
+        for segment in [
+            pub_segs.output, pub_segs.pedersen, pub_segs.range_check_128, pub_segs.ecdsa,
+            pub_segs.bitwise, pub_segs.ec_op, pub_segs.keccak, pub_segs.poseidon,
+            pub_segs.range_check_96, pub_segs.add_mod, pub_segs.mul_mod,
+        ]
+            .span() {
+            entries
+                .append(
+                    (
+                        initial_ap + i,
+                        **segment.start_ptr.id,
+                        [**segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                    ),
+                );
+            entries
+                .append(
+                    (
+                        final_ap - 11 + i,
+                        **segment.stop_ptr.id,
+                        [**segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                    ),
+                );
+            i += 1;
+        }
+
+        entries
+    }
+}
+
+
 #[derive(Drop, Serde)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
@@ -862,7 +966,14 @@ impl PublicDataImpl of PublicDataTrait {
         let mut sum = QM31Zero::zero();
 
         // TODO(andrew): Consider batch inverse here.
-        for entry in self.public_memory.span() {
+        for entry in self
+            .public_memory
+            .get_entries(
+                initial_pc: (*self.initial_state.pc).into(),
+                initial_ap: (*self.initial_state.ap).into(),
+                final_ap: (*self.final_state.ap).into(),
+            )
+            .span() {
             let (addr, id, val) = *entry;
 
             let addr_m31 = addr.try_into().unwrap();
@@ -3493,5 +3604,90 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     point,
                 );
         };
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use core::num::traits::one::One;
+    use stwo_constraint_framework::LookupElements;
+    use stwo_verifier_core::fields::qm31::qm31;
+    use stwo_verifier_core::utils::ArrayImpl;
+    use super::{
+        CairoInteractionElements, PublicData, PublicDataImpl, RangeChecksInteractionElements,
+    };
+
+    #[test]
+    #[cairofmt::skip]
+    fn test_public_data_logup_sum() {
+        let mut public_data_felts = array![
+            52,0,2147450879,67600385,0,0,0,0,0,0,1,11,0,0,0,0,0,0,0,2,2147581952,285507585,0,0,0,0,
+            0,0,3,30,0,0,0,0,0,0,0,4,2147450879,17268737,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,2147450879,
+            67600385,0,0,0,0,0,0,6,1,0,0,0,0,0,0,0,7,2147450878,546013183,0,0,0,0,0,0,8,2147450877,
+            34045953,0,0,0,0,0,0,9,4,0,0,0,0,0,0,0,10,2147450880,1208647676,0,0,0,0,0,0,7,
+            2147450878,546013183,0,0,0,0,0,0,11,2147450880,1208385537,0,0,0,0,0,0,12,3,0,0,0,0,0,0,
+            0,13,2147254271,1073905664,0,0,0,0,0,0,11,2147450880,1208385537,0,0,0,0,0,0,14,6,0,0,0,
+            0,0,0,0,15,2147254271,1073905665,0,0,0,0,0,0,16,2147254272,1208123395,0,0,0,0,0,0,17,
+            2147450879,1074167809,0,0,0,0,0,0,18,5,0,0,0,0,0,0,0,19,2147254272,1208123396,0,0,0,0,0,
+            0,17,2147450879,1074167809,0,0,0,0,0,0,20,7,0,0,0,0,0,0,0,21,2147254272,1210482689,0,0,
+            0,0,0,0,18,5,0,0,0,0,0,0,0,22,2147319808,1210482689,0,0,0,0,0,0,1073741824,0,0,0,0,0,0,
+            17,134217728,2,2147581952,285507585,0,0,0,0,0,0,1073741825,4294967277,4294967295,
+            4294967295,4294967295,4294967295,4294967295,16,134217728,7,2147450878,546013183,0,0,0,0,
+            0,0,0,2147450879,67600385,0,0,0,0,0,0,6,1,0,0,0,0,0,0,0,23,2147450880,1074233345,0,0,0,
+            0,0,0,24,50,0,0,0,0,0,0,0,25,2147450880,1208647671,0,0,0,0,0,0,26,2147450880,1208647680,
+            0,0,0,0,0,0,2,2147581952,285507585,0,0,0,0,0,0,1073741826,4294967268,4294967295,
+            4294967295,4294967295,4294967295,4294967295,16,134217728,27,2147450880,1208647667,0,0,0,
+            0,0,0,28,2147450880,1208647668,0,0,0,0,0,0,29,2147450880,1208647669,0,0,0,0,0,0,30,
+            2147450880,1208647670,0,0,0,0,0,0,31,2147450880,1209171963,0,0,0,0,0,0,32,2147450880,
+            1208647672,0,0,0,0,0,0,33,2147450880,1208647673,0,0,0,0,0,0,34,2147450880,1208647674,0,
+            0,0,0,0,0,35,2147450880,1208647675,0,0,0,0,0,0,10,2147450880,1208647676,0,0,0,0,0,0,36,
+            2147450880,1208647677,0,0,0,0,0,0,7,2147450878,546013183,0,0,0,0,0,0,38,485,38,485,38,
+            485,38,485,39,869,39,869,40,4965,40,4965,41,4997,188,5247,42,15237,42,15237,43,15461,43,
+            15461,44,15717,44,15717,45,16485,45,16485,46,20581,46,20581,47,22373,47,22373,0,2,37,55,
+            0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,1,55,55,5,485,55
+        ].span();
+
+        let public_data: PublicData = Serde::deserialize(ref public_data_felts).unwrap();
+        let dummy_lookup_elements = dummy_interaction_lookup_elements();
+
+        let sum = public_data.logup_sum(@dummy_lookup_elements);
+        assert_eq!(sum, qm31(1953467177,1393200374, 79713755, 621084348));
+
+    }
+
+    fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
+        CairoInteractionElements {
+            opcodes: LookupElementsDummyImpl::dummy(),
+            verify_instruction: LookupElementsDummyImpl::dummy(),
+            memory_address_to_id: LookupElementsDummyImpl::dummy(),
+            memory_id_to_value: LookupElementsDummyImpl::dummy(),
+            range_checks: RangeChecksInteractionElements {
+                rc_6: LookupElementsDummyImpl::dummy(),
+                rc_11: LookupElementsDummyImpl::dummy(),
+                rc_12: LookupElementsDummyImpl::dummy(),
+                rc_18: LookupElementsDummyImpl::dummy(),
+                rc_19: LookupElementsDummyImpl::dummy(),
+                rc_3_6: LookupElementsDummyImpl::dummy(),
+                rc_4_3: LookupElementsDummyImpl::dummy(),
+                rc_9_9: LookupElementsDummyImpl::dummy(),
+                rc_7_2_5: LookupElementsDummyImpl::dummy(),
+                rc_3_6_6_3: LookupElementsDummyImpl::dummy(),
+            },
+            verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
+        }
+    }
+
+    #[generate_trait]
+    impl LookupElementsDummyImpl<const N: usize> of LookupElementsDummyTrait<N> {
+        fn dummy() -> LookupElements<N> {
+            LookupElements::<
+                N,
+            > {
+                z: qm31(1, 2, 3, 4),
+                alpha: One::one(),
+                alpha_powers: ArrayImpl::new_repeated(N, One::one()),
+            }
+        }
     }
 }
