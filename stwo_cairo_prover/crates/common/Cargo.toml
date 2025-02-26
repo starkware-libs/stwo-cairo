@@ -10,6 +10,7 @@ num-traits.workspace = true
 ruint.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
+starknet-types-core.workspace = true
 stwo_cairo_utils = { path = "../utils" }
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
