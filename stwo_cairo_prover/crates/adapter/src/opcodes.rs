@@ -686,7 +686,7 @@ mod mappings_tests {
     use crate::memory::*;
     use crate::opcodes::StateTransitions;
     use crate::plain::input_from_plain_casm;
-    use crate::vm_import::TraceEntry;
+    use crate::vm_import::{generate_test_input, TraceEntry};
 
     #[test]
     fn test_jmp_rel() {
@@ -1071,5 +1071,12 @@ mod mappings_tests {
                 .len(),
             1
         );
+    }
+
+    #[test]
+    fn test_blake_opcode() {
+        let input = generate_test_input("blake_opcode");
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+        assert_eq!(casm_states_by_opcode.blake2s_opcode.len(), 2);
     }
 }
