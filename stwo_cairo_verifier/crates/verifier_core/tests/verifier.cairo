@@ -1,5 +1,4 @@
-use stwo_verifier_core::channel::ChannelTrait;
-use stwo_verifier_core::channel::poseidon252::Poseidon252ChannelImpl;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
@@ -12,13 +11,16 @@ use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::verifier::{Air, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
+#[cfg(not(feature: "blake2s_verifier"))]
 mod fib_128_column_with_blowup_16_proof;
+#[cfg(not(feature: "blake2s_verifier"))]
 mod fib_128_column_with_blowup_2_proof;
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
 #[available_gas(100000000000)]
 #[ignore]
+#[cfg(not(feature: "blake2s_verifier"))]
 fn test_horizontal_fib_128_column_with_blowup_16() {
     let proof = fib_128_column_with_blowup_16_proof::proof();
     let config = PcsConfig {
@@ -31,7 +33,7 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
     // Verify.
     let log_size = 20;
     let air = FibAir::<128> { log_size };
-    let mut channel = ChannelImpl::new(0);
+    let mut channel: Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.
@@ -52,6 +54,7 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
 #[test]
 #[available_gas(100000000000)]
 #[ignore]
+#[cfg(not(feature: "blake2s_verifier"))]
 fn test_horizontal_fib_128_column_with_blowup_2() {
     let proof = fib_128_column_with_blowup_2_proof::proof();
     let config = PcsConfig {
@@ -64,7 +67,7 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
     // Verify.
     let log_size = 20;
     let air = FibAir::<128> { log_size };
-    let mut channel = ChannelImpl::new(0);
+    let mut channel: Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     // Decommit.

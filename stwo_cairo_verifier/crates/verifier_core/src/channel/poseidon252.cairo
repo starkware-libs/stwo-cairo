@@ -1,10 +1,9 @@
 use core::array::SpanTrait;
-use core::num::traits::{WrappingMul, WrappingSub};
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
 use crate::fields::m31::M31Trait;
 use crate::fields::qm31::QM31Trait;
-use crate::utils::pack4;
+use crate::utils::{gen_bit_mask, pack4};
 use crate::{BaseField, SecureField};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
@@ -57,8 +56,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.channel_time.inc_challenges();
     }
 
-    fn mix_u64(ref self: Poseidon252Channel, value: u64) {
-        self.mix_root(value.into())
+    fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
+        self.mix_root(nonce.into())
     }
 
     fn draw_felt(ref self: Poseidon252Channel) -> SecureField {
@@ -116,17 +115,6 @@ fn draw_fet252(ref channel: Poseidon252Channel) -> felt252 {
     let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 2);
     channel.channel_time.inc_sent();
     res
-}
-
-/// Generates a bit mask with the least significant `n_bits` set to 1.
-fn gen_bit_mask(n_bits: u32) -> u128 {
-    assert!(n_bits <= 128);
-    let mut mask = 1;
-    for _ in 0..n_bits {
-        mask = mask.wrapping_mul(2);
-    }
-    mask = mask.wrapping_sub(1);
-    mask
 }
 
 #[inline]
@@ -316,21 +304,6 @@ mod tests {
         let first_result = channel.draw_random_bytes();
         let second_result = channel.draw_random_bytes();
         assert_ne!(first_result, second_result);
-    }
-
-    #[test]
-    fn test_gen_bit_mask_with_0_bits() {
-        assert_eq!(gen_bit_mask(0), 0);
-    }
-
-    #[test]
-    fn test_gen_bit_mask_with_8_bits() {
-        assert_eq!(gen_bit_mask(8), 0b11111111);
-    }
-
-    #[test]
-    fn test_gen_bit_mask_with_128_bits() {
-        assert_eq!(gen_bit_mask(128), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 
     #[test]

@@ -1,5 +1,4 @@
-use crate::channel::poseidon252::Poseidon252Channel;
-use crate::channel::ChannelTrait;
+use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
 use crate::fields::qm31::{QM31, QM31Impl, QM31_EXTENSION_DEGREE};
 use crate::fri::FriVerificationError;
@@ -7,8 +6,8 @@ use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
 use crate::utils::{ArrayImpl, SpanImpl};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
+use crate::vcs::MerkleHasher;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 pub trait Air<T> {
@@ -29,7 +28,7 @@ pub trait Air<T> {
 // TODO: Deal with preprocessed columns.
 pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A,
-    ref channel: Poseidon252Channel,
+    ref channel: Channel,
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
 ) -> Result<(), VerificationError> {

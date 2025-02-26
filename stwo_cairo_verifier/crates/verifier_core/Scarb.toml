@@ -6,6 +6,9 @@ edition = "2024_07"
 [lib]
 casm = true
 
+[features]
+blake2s_verifier = []
+
 [tool.fmt]
 sort-module-level-items = true
 

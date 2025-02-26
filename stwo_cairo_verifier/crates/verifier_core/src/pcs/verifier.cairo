@@ -7,8 +7,8 @@ use crate::fields::qm31::{QM31, QM31Impl};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::vcs::MerkleHasher;
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
@@ -20,7 +20,7 @@ pub struct CommitmentSchemeProof {
     pub commitments: TreeSpan<Hash>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
-    pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
+    pub decommitments: TreeArray<MerkleDecommitment<MerkleHasher>>,
     /// All queried trace values.
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
@@ -32,7 +32,7 @@ pub struct CommitmentSchemeProof {
 // TODO(andrew): Make generic on MerkleChannel.
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
-    pub trees: Array<MerkleVerifier<PoseidonMerkleHasher>>,
+    pub trees: Array<MerkleVerifier<MerkleHasher>>,
     pub config: PcsConfig,
 }
 
@@ -56,7 +56,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     // TODO(andrew): Make channel MerkleChannel generic channel.
     fn commit(
         ref self: CommitmentSchemeVerifier,
-        commitment: felt252,
+        commitment: Hash,
         log_sizes: Span<u32>,
         ref channel: Channel,
     ) {
