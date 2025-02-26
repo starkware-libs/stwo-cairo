@@ -5,7 +5,7 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput, PublicInputError};
+use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
@@ -16,6 +16,7 @@ use super::builtins::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
+use crate::builtins::MemorySegmentAddresses;
 use crate::memory::{MemoryBuilder, MemoryEntryIter};
 
 #[derive(Debug, Error)]
@@ -115,12 +116,17 @@ pub fn adapt_vm_output(
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
-    adapt_to_stwo_input(
+    let res = adapt_to_stwo_input(
         TraceIter(&mut trace_file),
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
-        &public_input.memory_segments,
-    )
+        &public_input
+            .memory_segments
+            .into_iter()
+            .map(|(k, v)| (k, v.into()))
+            .collect(),
+    );
+    res
 }
 
 /// Creates Cairo input for Stwo, utilized by:
@@ -137,11 +143,12 @@ pub fn adapt_to_stwo_input(
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segments(&mut memory);
+    let memory = memory.build();
 
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
-        memory: memory.build(),
+        memory,
         public_memory_addresses,
         builtins_segments,
     })
