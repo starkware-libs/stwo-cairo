@@ -699,23 +699,26 @@ where
         .entries(trace),
     );
 
+    let initial_pc = claim.public_data.initial_state.pc.0;
+    let initial_ap = claim.public_data.initial_state.ap.0;
+    let final_ap = claim.public_data.final_state.ap.0;
     // Public data.
     claim
         .public_data
         .public_memory
-        .iter()
+        .get_entries(initial_pc, initial_ap, final_ap)
         .for_each(|(addr, id, val)| {
             entries.push(RelationTrackerEntry {
                 relation: "MemoryAddressToId".to_string(),
                 mult: M31::one(),
-                values: vec![M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
+                values: vec![M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
             });
             entries.push(RelationTrackerEntry {
                 relation: "MemoryIdToBig".to_string(),
                 mult: M31::one(),
                 values: [
-                    [M31::from_u32_unchecked(*id)].as_slice(),
-                    split_f252(*val).as_slice(),
+                    [M31::from_u32_unchecked(id)].as_slice(),
+                    split_f252(val).as_slice(),
                 ]
                 .concat(),
             });

@@ -1,6 +1,11 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_adapter::builtins::BuiltinSegments;
+use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_adapter::vm_import::{
+    MemorySmallValue, PubMemoryEntry, PubMemoryValue, PublicSegmentRanges, SegmentRange,
+};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_serialize::CairoSerialize;
@@ -66,9 +71,6 @@ where
         CairoSerialize::serialize(stark_proof, output);
     }
 }
-
-// (Address, Id, Value)
-pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct CairoClaim {
@@ -139,24 +141,29 @@ impl PublicData {
     /// Sums the logup of the public data.
     pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
         let mut values_to_inverse = vec![];
-
         // Use public memory in the memory relations.
-        self.public_memory.iter().for_each(|(addr, id, val)| {
-            values_to_inverse.push(
-                <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
-                    &lookup_elements.memory_address_to_id,
-                    &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
-                ),
-            );
-            values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
-                &lookup_elements.memory_id_to_value,
-                &[
-                    [M31::from_u32_unchecked(*id)].as_slice(),
-                    split_f252(*val).as_slice(),
-                ]
-                .concat(),
-            ));
-        });
+        self.public_memory
+            .get_entries(
+                self.initial_state.pc.0,
+                self.initial_state.ap.0,
+                self.final_state.ap.0,
+            )
+            .for_each(|(addr, id, val)| {
+                values_to_inverse.push(
+                    <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
+                        &lookup_elements.memory_address_to_id,
+                        &[M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                    ),
+                );
+                values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
+                    &lookup_elements.memory_id_to_value,
+                    &[
+                        [M31::from_u32_unchecked(id)].as_slice(),
+                        split_f252(val).as_slice(),
+                    ]
+                    .concat(),
+                ));
+            });
 
         // Yield initial state and use the final.
         values_to_inverse.push(<relations::Opcodes as Relation<M31, QM31>>::combine(
@@ -172,7 +179,115 @@ impl PublicData {
         inverted_values.iter().sum::<QM31>()
     }
 }
+pub type MemorySection = Vec<PubMemoryValue>;
 
+#[derive(Serialize, Deserialize, CairoSerialize)]
+pub struct PublicMemory {
+    pub program: MemorySection,
+    pub public_segments: PublicSegmentRanges,
+    pub output: MemorySection,
+    pub safe_call: MemorySection,
+}
+
+impl PublicMemory {
+    pub fn get_entries(
+        &self,
+        initial_pc: u32,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
+            .map(|section| section.clone().into_iter().enumerate());
+        let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
+        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
+        let safe_call_iter =
+            safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
+        let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
+
+        // public_memory.iter()
+        program_iter
+            .chain(safe_call_iter)
+            .chain(segment_ranges_iter)
+            .chain(output_iter)
+    }
+}
+
+fn extract_public_segments(
+    memory: &Memory,
+    initial_ap: u32,
+    final_ap: u32,
+    builtin_segments: BuiltinSegments,
+) -> PublicSegmentRanges {
+    let n_public_segments = builtin_segments.n_builtins() as u32;
+
+    let to_memory_value = |addr: u32| {
+        let id = memory.get_raw_id(addr);
+        let value = memory.get(addr).as_small() as u32;
+        MemorySmallValue { id, value }
+    };
+
+    let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(to_memory_value);
+    let end_ptrs = (final_ap - n_public_segments..final_ap).map(to_memory_value);
+    let mut ranges = start_ptrs
+        .zip(end_ptrs)
+        .map(|(start_ptr, stop_ptr)| SegmentRange {
+            start_ptr,
+            stop_ptr,
+        });
+
+    let output = builtin_segments.output.map(|_| ranges.next().unwrap());
+    let range_check_128 = builtin_segments
+        .range_check_bits_128
+        .map(|_| ranges.next().unwrap());
+    let bitwise = builtin_segments.bitwise.map(|_| ranges.next().unwrap());
+    let range_check_96 = builtin_segments
+        .range_check_bits_96
+        .map(|_| ranges.next().unwrap());
+    let add_mod = builtin_segments.add_mod.map(|_| ranges.next().unwrap());
+    PublicSegmentRanges {
+        output,
+        range_check_128,
+        bitwise,
+        range_check_96,
+        add_mod,
+    }
+}
+
+fn extract_sections_from_memory(
+    memory: &Memory,
+    builtin_segments: BuiltinSegments,
+    initial_pc: u32,
+    initial_ap: u32,
+    final_ap: u32,
+) -> PublicMemory {
+    let public_segments = extract_public_segments(&memory, initial_ap, final_ap, builtin_segments);
+    let program_memory_addresses = initial_pc..initial_ap - 2;
+    let safe_call_addresses = initial_ap - 2..initial_ap;
+    let output_memory_addresses = public_segments
+        .output
+        .map(|range| range.start_ptr.value..range.stop_ptr.value)
+        .unwrap_or(0..0);
+    let [program, safe_call, output] = [
+        program_memory_addresses,
+        safe_call_addresses,
+        output_memory_addresses,
+    ]
+    .map(|range| {
+        range
+            .map(|addr| {
+                let id = memory.get_raw_id(addr);
+                let value = memory.get(addr).as_u256();
+                (id, value)
+            })
+            .collect_vec()
+    });
+    PublicMemory {
+        program,
+        safe_call,
+        public_segments,
+        output,
+    }
+}
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
 /// [`CairoInteractionClaim`], [`CairoComponents`], [`CairoInteractionElements`].
@@ -195,6 +310,7 @@ pub struct CairoClaimGenerator {
     verify_bitwise_xor_12_trace_generator: verify_bitwise_xor_12::ClaimGenerator,
     // ...
 }
+
 impl CairoClaimGenerator {
     pub fn new(input: ProverInput) -> Self {
         let initial_state = input.state_transitions.initial_state;
@@ -202,7 +318,7 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
-        let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
+        let builtins = BuiltinsClaimGenerator::new(input.builtins_segments.clone());
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
         let memory_id_to_value_trace_generator =
@@ -225,17 +341,18 @@ impl CairoClaimGenerator {
             memory_address_to_id_trace_generator.add_input(&addr);
             memory_id_to_value_trace_generator.add_input(&id);
         }
-
         // Public data.
-        let public_memory = input
-            .public_memory_addresses
-            .iter()
-            .copied()
-            .map(|addr| {
-                let id = input.memory.get_raw_id(addr);
-                (addr, id, input.memory.get(addr).as_u256())
-            })
-            .collect_vec();
+        let initial_pc = initial_state.pc.0;
+        let initial_ap = initial_state.ap.0;
+        let final_ap = final_state.ap.0;
+        let public_memory = extract_sections_from_memory(
+            &input.memory,
+            input.builtins_segments,
+            initial_pc,
+            initial_ap,
+            final_ap,
+        );
+
         let public_data = PublicData {
             public_memory,
             initial_state,
