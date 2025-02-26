@@ -1,3 +1,4 @@
+use std::array::from_fn;
 use std::fmt::Debug;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 
@@ -460,6 +461,10 @@ impl Felt252 {
                 & mask) as u32
         };
         M31::from_u32_unchecked(value)
+    }
+
+    pub fn get_limbs(&self) -> [M31; FELT252_N_WORDS] {
+        from_fn(|i| self.get_m31(i))
     }
 
     pub fn from_limbs(felts: &[M31]) -> Self {
