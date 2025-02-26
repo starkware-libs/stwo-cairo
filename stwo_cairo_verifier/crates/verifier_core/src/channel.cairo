@@ -1,16 +1,17 @@
-use core::array::SpanTrait;
-use core::num::traits::{WrappingMul, WrappingSub};
-use core::poseidon::{hades_permutation, poseidon_hash_span};
-use core::traits::DivRem;
-use crate::fields::m31::M31Trait;
-use crate::fields::qm31::QM31Trait;
-use crate::utils::pack4;
-use crate::{BaseField, Hash, SecureField};
+use crate::{Hash, SecureField};
 
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub mod blake2s;
+#[cfg(feature: "poseidon252_verifier")]
 pub mod poseidon252;
 
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub type Channel = blake2s::Blake2sChannel;
+#[cfg(feature: "poseidon252_verifier")]
 pub type Channel = poseidon252::Poseidon252Channel;
-
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub use blake2s::Blake2sChannelImpl as ChannelImpl;
+#[cfg(feature: "poseidon252_verifier")]
 pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
 #[derive(Default, Drop)]
@@ -34,7 +35,7 @@ impl ChannelTimeImpl of ChannelTimeTrait {
 pub trait ChannelTrait {
     fn mix_felts(ref self: Channel, felts: Span<SecureField>);
 
-    fn mix_u64(ref self: Channel, value: u64);
+    fn mix_u64(ref self: Channel, nonce: u64);
 
     fn draw_felt(ref self: Channel) -> SecureField;
 

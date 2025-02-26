@@ -11,9 +11,9 @@ use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::ColumnArray;
+use crate::vcs::MerkleHasher;
+use crate::{ColumnArray, Hash};
 
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
@@ -57,7 +57,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
 
-        channel.mix_root(first_layer_proof.commitment);
+        channel.mix_root(first_layer_proof.commitment.clone());
 
         let mut column_commitment_domains = array![];
 
@@ -92,7 +92,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                 None => { break Ok(()); },
             };
 
-            channel.mix_root(*proof.commitment);
+            channel.mix_root(proof.commitment.clone());
 
             inner_layers
                 .append(
@@ -420,7 +420,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         }
 
         let merkle_verifier = MerkleVerifier {
-            root: *self.proof.commitment,
+            root: self.proof.commitment.clone(),
             column_log_sizes: decommitment_coordinate_column_log_sizes,
         };
 
@@ -483,7 +483,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
 
         let column_log_size = self.domain.log_size();
         let merkle_verifier = MerkleVerifier {
-            root: **self.proof.commitment,
+            root: (*self.proof.commitment).clone(),
             column_log_sizes: ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: column_log_size),
         };
 
@@ -672,8 +672,8 @@ pub struct FriLayerProof {
     /// order they are needed. This complements the values that were queried. These must be
     /// supplied directly to the verifier.
     pub fri_witness: Span<QM31>,
-    pub decommitment: MerkleDecommitment<PoseidonMerkleHasher>,
-    pub commitment: felt252,
+    pub decommitment: MerkleDecommitment<MerkleHasher>,
+    pub commitment: Hash,
 }
 
 #[derive(Debug, Drop)]
