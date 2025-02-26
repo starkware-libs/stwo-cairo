@@ -299,7 +299,7 @@ pub mod tests {
         pub mod builtin_tests {
             use std::fs::File;
 
-            use cairo_vm::air_public_input::MemorySegmentAddresses;
+            use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
             use stwo_cairo_adapter::vm_import::{generate_test_input, MemoryEntryIter};
 
             use super::*;
