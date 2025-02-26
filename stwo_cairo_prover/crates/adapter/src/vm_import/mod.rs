@@ -5,18 +5,22 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput, PublicInputError};
+use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
+use itertools::Itertools;
 use json::PrivateInput;
+use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
-use thiserror_no_std::Error;
+use stwo_cairo_serialize::CairoSerialize;
+use thiserror::Error;
 use tracing::{span, Level};
 
 use super::builtins::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
+use crate::builtins::MemorySegmentAddresses;
 use crate::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
@@ -36,6 +40,76 @@ pub enum VmImportError {
 
     #[error("Cannot get public input from runner: {0}")]
     PublicInput(#[from] PublicInputError),
+}
+
+// TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct MemorySmallValue {
+    pub id: u32,
+    pub value: u32,
+}
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+pub type PubMemoryValue = (u32, [u32; 8]);
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct SegmentRange {
+    pub start_ptr: MemorySmallValue,
+    pub stop_ptr: MemorySmallValue,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, Default)]
+pub struct PublicSegmentRanges {
+    pub add_mod: Option<SegmentRange>,
+    pub bitwise: Option<SegmentRange>,
+    pub output: Option<SegmentRange>,
+    pub range_check_128: Option<SegmentRange>,
+    pub range_check_96: Option<SegmentRange>,
+}
+
+impl PublicSegmentRanges {
+    pub fn memory_entries(
+        &self,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let PublicSegmentRanges {
+            add_mod,
+            bitwise,
+            output,
+            range_check_128,
+            range_check_96,
+        } = *self;
+        let segments = [output, range_check_128, bitwise, range_check_96, add_mod]
+            .into_iter()
+            .flatten()
+            .collect_vec();
+        let n_segments = segments.len() as u32;
+
+        segments
+            .into_iter()
+            .enumerate()
+            .flat_map(
+                move |(
+                    i,
+                    SegmentRange {
+                        start_ptr,
+                        stop_ptr,
+                    },
+                )| {
+                    let start_address = initial_ap + i as u32;
+                    let stop_address = final_ap - n_segments + i as u32;
+                    [
+                        (start_address, start_ptr.id, start_ptr.value),
+                        (stop_address, stop_ptr.id, stop_ptr.value),
+                    ]
+                },
+            )
+            .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
+    }
 }
 
 fn deserialize_inputs<'a>(
@@ -120,7 +194,11 @@ pub fn adapt_vm_output(
         TraceIter(&mut trace_file),
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
-        &public_input.memory_segments,
+        &public_input
+            .memory_segments
+            .into_iter()
+            .map(|(k, v)| (k, v.into()))
+            .collect(),
     )
 }
 
@@ -138,11 +216,12 @@ pub fn adapt_to_stwo_input(
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segments(&mut memory);
+    let memory = memory.build();
 
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
-        memory: memory.build(),
+        memory,
         public_memory_addresses,
         builtins_segments,
     })
