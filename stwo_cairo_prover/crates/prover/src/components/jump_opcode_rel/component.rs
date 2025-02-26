@@ -51,14 +51,19 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
+        let M31_128 = E::F::from(M31::from(128));
         let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_136 = E::F::from(M31::from(136));
+        let M31_24 = E::F::from(M31::from(24));
         let M31_256 = E::F::from(M31::from(256));
         let M31_262144 = E::F::from(M31::from(262144));
+        let M31_32 = E::F::from(M31::from(32));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_32768 = E::F::from(M31::from(32768));
+        let M31_4 = E::F::from(M31::from(4));
         let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
+        let M31_64 = E::F::from(M31::from(64));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -79,6 +84,18 @@ impl FrameworkEval for Eval {
 
         // Decode Instruction.
 
+        // Flag op1_base_fp is a bit.
+        eval.add_constraint(
+            (op1_base_fp_col4.clone() * (M31_1.clone() - op1_base_fp_col4.clone())),
+        );
+        // Flag op1_base_ap is a bit.
+        eval.add_constraint(
+            (op1_base_ap_col5.clone() * (M31_1.clone() - op1_base_ap_col5.clone())),
+        );
+        // Flag ap_update_add_1 is a bit.
+        eval.add_constraint(
+            (ap_update_add_1_col6.clone() * (M31_1.clone() - ap_update_add_1_col6.clone())),
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.verify_instruction_lookup_elements,
             E::EF::one(),
@@ -87,18 +104,13 @@ impl FrameworkEval for Eval {
                 M31_32767.clone(),
                 M31_32767.clone(),
                 offset2_col3.clone(),
-                M31_1.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                op1_base_fp_col4.clone(),
-                op1_base_ap_col5.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                ap_update_add_1_col6.clone(),
+                (((M31_24.clone() + (op1_base_fp_col4.clone() * M31_64.clone()))
+                    + (op1_base_ap_col5.clone() * M31_128.clone()))
+                    + M31_0.clone()),
+                ((((M31_4.clone() + (ap_update_add_1_col6.clone() * M31_32.clone()))
+                    + M31_0.clone())
+                    + M31_0.clone())
+                    + M31_0.clone()),
             ],
         ));
 

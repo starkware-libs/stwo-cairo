@@ -5,7 +5,7 @@ use crate::components::{memory_address_to_id, memory_id_to_big, verify_instructi
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
-const N_TRACE_COLUMNS: usize = 13;
+const N_TRACE_COLUMNS: usize = 12;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -75,8 +75,14 @@ fn write_trace_simd(
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_128 = PackedM31::broadcast(M31::from(128));
+    let M31_16 = PackedM31::broadcast(M31::from(16));
+    let M31_256 = PackedM31::broadcast(M31::from(256));
+    let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
+    let M31_64 = PackedM31::broadcast(M31::from(64));
+    let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
@@ -151,17 +157,7 @@ fn write_trace_simd(
                         & (UInt16_1));
                 let op1_base_fp_col6 = op1_base_fp_tmp_d6f03_6.as_m31();
                 *row[6] = op1_base_fp_col6;
-                let op1_base_ap_tmp_d6f03_7 =
-                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_d6f03_2.get_m31(5)))
-                        >> (UInt16_3))
-                        + ((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_d6f03_2.get_m31(6),
-                        )) << (UInt16_6)))
-                        >> (UInt16_4))
-                        & (UInt16_1));
-                let op1_base_ap_col7 = op1_base_ap_tmp_d6f03_7.as_m31();
-                *row[7] = op1_base_ap_col7;
-                let ap_update_add_1_tmp_d6f03_8 =
+                let ap_update_add_1_tmp_d6f03_7 =
                     (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_d6f03_2.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
@@ -169,28 +165,20 @@ fn write_trace_simd(
                         )) << (UInt16_6)))
                         >> (UInt16_11))
                         & (UInt16_1));
-                let ap_update_add_1_col8 = ap_update_add_1_tmp_d6f03_8.as_m31();
-                *row[8] = ap_update_add_1_col8;
+                let ap_update_add_1_col7 = ap_update_add_1_tmp_d6f03_7.as_m31();
+                *row[7] = ap_update_add_1_col7;
                 let verify_instruction_inputs_0 = (
                     input_pc_col0,
                     [offset0_col3, M31_32767, offset2_col4],
                     [
-                        dst_base_fp_col5,
-                        M31_1,
-                        M31_0,
-                        op1_base_fp_col6,
-                        op1_base_ap_col7,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        ap_update_add_1_col8,
-                        M31_0,
-                        M31_0,
-                        M31_1,
+                        (((((((M31_0) + ((dst_base_fp_col5) * (M31_8))) + (M31_16)) + (M31_0))
+                            + ((op1_base_fp_col6) * (M31_64)))
+                            + (((M31_1) - (op1_base_fp_col6)) * (M31_128)))
+                            + (M31_0)),
+                        (((((M31_0) + ((ap_update_add_1_col7) * (M31_32))) + (M31_0)) + (M31_0))
+                            + (M31_256)),
                     ],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -198,56 +186,48 @@ fn write_trace_simd(
                     offset0_col3,
                     M31_32767,
                     offset2_col4,
-                    dst_base_fp_col5,
-                    M31_1,
+                    (((((((M31_0) + ((dst_base_fp_col5) * (M31_8))) + (M31_16)) + (M31_0))
+                        + ((op1_base_fp_col6) * (M31_64)))
+                        + (((M31_1) - (op1_base_fp_col6)) * (M31_128)))
+                        + (M31_0)),
+                    (((((M31_0) + ((ap_update_add_1_col7) * (M31_32))) + (M31_0)) + (M31_0))
+                        + (M31_256)),
                     M31_0,
-                    op1_base_fp_col6,
-                    op1_base_ap_col7,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    ap_update_add_1_col8,
-                    M31_0,
-                    M31_0,
-                    M31_1,
                 ];
 
-                let mem_dst_base_col9 = (((dst_base_fp_col5) * (input_fp_col2))
+                let mem_dst_base_col8 = (((dst_base_fp_col5) * (input_fp_col2))
                     + (((M31_1) - (dst_base_fp_col5)) * (input_ap_col1)));
-                *row[9] = mem_dst_base_col9;
-                let mem1_base_col10 = (((op1_base_fp_col6) * (input_fp_col2))
-                    + ((op1_base_ap_col7) * (input_ap_col1)));
-                *row[10] = mem1_base_col10;
+                *row[8] = mem_dst_base_col8;
+                let mem1_base_col9 = (((op1_base_fp_col6) * (input_fp_col2))
+                    + (((M31_1) - (op1_base_fp_col6)) * (input_ap_col1)));
+                *row[9] = mem1_base_col9;
 
                 // Mem Verify Equal.
 
-                let memory_address_to_id_value_tmp_d6f03_9 = memory_address_to_id_state
-                    .deduce_output(((mem_dst_base_col9) + ((offset0_col3) - (M31_32768))));
-                let dst_id_col11 = memory_address_to_id_value_tmp_d6f03_9;
-                *row[11] = dst_id_col11;
+                let memory_address_to_id_value_tmp_d6f03_8 = memory_address_to_id_state
+                    .deduce_output(((mem_dst_base_col8) + ((offset0_col3) - (M31_32768))));
+                let dst_id_col10 = memory_address_to_id_value_tmp_d6f03_8;
+                *row[10] = dst_id_col10;
                 let memory_address_to_id_inputs_0 =
-                    ((mem_dst_base_col9) + ((offset0_col3) - (M31_32768))).unpack();
+                    ((mem_dst_base_col8) + ((offset0_col3) - (M31_32768))).unpack();
                 *lookup_data.memory_address_to_id_0 = [
-                    ((mem_dst_base_col9) + ((offset0_col3) - (M31_32768))),
-                    dst_id_col11,
+                    ((mem_dst_base_col8) + ((offset0_col3) - (M31_32768))),
+                    dst_id_col10,
                 ];
                 let memory_address_to_id_inputs_1 =
-                    ((mem1_base_col10) + ((offset2_col4) - (M31_32768))).unpack();
+                    ((mem1_base_col9) + ((offset2_col4) - (M31_32768))).unpack();
                 *lookup_data.memory_address_to_id_1 = [
-                    ((mem1_base_col10) + ((offset2_col4) - (M31_32768))),
-                    dst_id_col11,
+                    ((mem1_base_col9) + ((offset2_col4) - (M31_32768))),
+                    dst_id_col10,
                 ];
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
                     ((input_pc_col0) + (M31_1)),
-                    ((input_ap_col1) + (ap_update_add_1_col8)),
+                    ((input_ap_col1) + (ap_update_add_1_col7)),
                     input_fp_col2,
                 ];
-                *row[12] = padding_col.packed_at(row_index);
+                *row[11] = padding_col.packed_at(row_index);
 
                 // Add sub-components inputs.
                 verify_instruction_state.add_inputs(&verify_instruction_inputs_0);
@@ -265,7 +245,7 @@ struct LookupData {
     memory_address_to_id_1: Vec<[PackedM31; 2]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {

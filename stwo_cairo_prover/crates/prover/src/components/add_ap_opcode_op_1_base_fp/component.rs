@@ -53,12 +53,14 @@ impl FrameworkEval for Eval {
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_136 = E::F::from(M31::from(136));
+        let M31_16 = E::F::from(M31::from(16));
         let M31_256 = E::F::from(M31::from(256));
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_32768 = E::F::from(M31::from(32768));
         let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
+        let M31_88 = E::F::from(M31::from(88));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -83,17 +85,8 @@ impl FrameworkEval for Eval {
                 M31_32767.clone(),
                 M31_32767.clone(),
                 offset2_col3.clone(),
-                M31_1.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
+                M31_88.clone(),
+                M31_16.clone(),
             ],
         ));
 

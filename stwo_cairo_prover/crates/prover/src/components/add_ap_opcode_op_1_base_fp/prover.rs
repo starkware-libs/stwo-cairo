@@ -77,12 +77,14 @@ fn write_trace_simd(
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_136 = PackedM31::broadcast(M31::from(136));
+    let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_511 = PackedM31::broadcast(M31::from(511));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_88 = PackedM31::broadcast(M31::from(88));
     let UInt16_13 = PackedUInt16::broadcast(UInt16::from(13));
     let UInt16_4 = PackedUInt16::broadcast(UInt16::from(4));
     let UInt16_5 = PackedUInt16::broadcast(UInt16::from(5));
@@ -125,10 +127,8 @@ fn write_trace_simd(
                 let verify_instruction_inputs_0 = (
                     input_pc_col0,
                     [M31_32767, M31_32767, offset2_col3],
-                    [
-                        M31_1, M31_1, M31_0, M31_1, M31_0, M31_0, M31_0, M31_0, M31_0, M31_0,
-                        M31_1, M31_0, M31_0, M31_0, M31_0,
-                    ],
+                    [M31_88, M31_16],
+                    M31_0,
                 )
                     .unpack();
                 *lookup_data.verify_instruction_0 = [
@@ -136,20 +136,8 @@ fn write_trace_simd(
                     M31_32767,
                     M31_32767,
                     offset2_col3,
-                    M31_1,
-                    M31_1,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_1,
-                    M31_0,
-                    M31_0,
-                    M31_0,
+                    M31_88,
+                    M31_16,
                     M31_0,
                 ];
 
@@ -245,7 +233,7 @@ struct LookupData {
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 19]>,
+    verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
 pub struct InteractionClaimGenerator {
