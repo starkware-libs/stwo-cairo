@@ -1,6 +1,7 @@
-use cairo_vm::air_public_input::MemorySegmentAddresses;
+use cairo_vm::air_public_input::MemorySegmentAddresses as VMMemorySegmentAddresses;
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 use super::memory::MemoryBuilder;
@@ -15,15 +16,30 @@ pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq)]
+pub struct MemorySegmentAddresses {
+    pub begin_addr: usize,
+    pub stop_ptr: usize,
+}
+
+impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
+    fn from(addresses: VMMemorySegmentAddresses) -> Self {
+        MemorySegmentAddresses {
+            begin_addr: addresses.begin_addr,
+            stop_ptr: addresses.stop_ptr,
+        }
+    }
+}
 // TODO(ohadn): change field types in MemorySegmentAddresses to match address type.
 /// This struct holds the builtins used in a Cairo program.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct BuiltinSegments {
     pub add_mod: Option<MemorySegmentAddresses>,
     pub bitwise: Option<MemorySegmentAddresses>,
     pub ec_op: Option<MemorySegmentAddresses>,
     pub ecdsa: Option<MemorySegmentAddresses>,
     pub keccak: Option<MemorySegmentAddresses>,
+    pub output: Option<MemorySegmentAddresses>,
     pub mul_mod: Option<MemorySegmentAddresses>,
     pub pedersen: Option<MemorySegmentAddresses>,
     pub poseidon: Option<MemorySegmentAddresses>,
@@ -32,6 +48,38 @@ pub struct BuiltinSegments {
 }
 
 impl BuiltinSegments {
+    pub fn n_builtins(&self) -> usize {
+        let BuiltinSegments {
+            add_mod,
+            bitwise,
+            ec_op,
+            ecdsa,
+            keccak,
+            output,
+            mul_mod,
+            pedersen,
+            poseidon,
+            range_check_bits_96,
+            range_check_bits_128,
+        } = *self;
+        [
+            add_mod,
+            bitwise,
+            ec_op,
+            ecdsa,
+            keccak,
+            output,
+            mul_mod,
+            pedersen,
+            poseidon,
+            range_check_bits_96,
+            range_check_bits_128,
+        ]
+        .iter()
+        .flatten()
+        .collect_vec()
+        .len()
+    }
     /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
     pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
         let mut res = BuiltinSegments::default();
@@ -47,7 +95,7 @@ impl BuiltinSegments {
                         value.begin_addr,
                         value.stop_ptr,
                     );
-                    Some((value.begin_addr, value.stop_ptr).into())
+                    Some(*value)
                 };
                 match builtin_name {
                     BuiltinName::range_check => res.range_check_bits_128 = segment,
@@ -60,8 +108,9 @@ impl BuiltinSegments {
                     BuiltinName::range_check96 => res.range_check_bits_96 = segment,
                     BuiltinName::add_mod => res.add_mod = segment,
                     BuiltinName::mul_mod => res.mul_mod = segment,
+                    BuiltinName::output => res.output = segment,
                     // Not builtins.
-                    BuiltinName::output | BuiltinName::segment_arena => {}
+                    BuiltinName::segment_arena => {}
                 }
             };
         }
@@ -234,9 +283,9 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
 
 // TODO(Ohad): padding holes should be handled by a proof-mode runner.
 mod builtin_padding {
-    use cairo_vm::air_public_input::MemorySegmentAddresses;
     use itertools::Itertools;
 
+    use super::MemorySegmentAddresses;
     use crate::builtins::BITWISE_MEMORY_CELLS;
     use crate::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
 

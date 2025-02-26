@@ -91,27 +91,28 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    let vm_output: ProverInput =
-        adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
-    let prover_config = ConfigBuilder::default()
-        .track_relations(args.track_relations)
-        .display_components(args.display_components)
-        .build();
+    // let vm_output: ProverInput =
+    //     adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
+    // let prover_config = ConfigBuilder::default()
+    //     .track_relations(args.track_relations)
+    //     .display_components(args.display_components)
+    //     .build();
 
-    log::info!(
-        "Casm states by opcode:\n{}",
-        vm_output.state_transitions.casm_states_by_opcode
-    );
+    // log::info!(
+    //     "Casm states by opcode:\n{}",
+    //     vm_output.state_transitions.casm_states_by_opcode
+    // );
 
     let ProverParameters { pcs_config } = match args.params_json {
         Some(path) => serde_json::from_str(&read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
     };
 
-    // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
+    // // TODO(Ohad): Propagate hash from CLI args.
+    // let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
 
-    std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
+    // std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
+    let proof = serde_json::from_str(&std::fs::read_to_string(args.proof_path)?)?;
 
     if args.verify {
         verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
