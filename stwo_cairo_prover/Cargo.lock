@@ -1804,6 +1804,7 @@ dependencies = [
  "ruint",
  "serde",
  "starknet-ff",
+ "starknet-types-core",
  "stwo-cairo-serialize",
  "stwo-prover",
  "stwo_cairo_utils",
