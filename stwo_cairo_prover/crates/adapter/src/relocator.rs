@@ -6,6 +6,7 @@ use cairo_vm::vm::trace::trace_entry::TraceEntry;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 
+use crate::builtins::MemorySegmentAddresses;
 use crate::memory::{MemoryEntry, F252};
 use crate::vm_import::RelocatedTraceEntry;
 use crate::BuiltinSegments;
@@ -102,7 +103,10 @@ impl Relocator {
             let segment = if start_addr == end_addr {
                 None
             } else {
-                Some((start_addr as usize, end_addr as usize).into())
+                Some(MemorySegmentAddresses {
+                    begin_addr: start_addr as usize,
+                    stop_ptr: end_addr as usize,
+                })
             };
 
             match builtin_name {
@@ -171,6 +175,7 @@ pub mod relocator_tests {
     use cairo_vm::types::relocatable::{MaybeRelocatable, Relocatable};
 
     use super::*;
+    use crate::builtins::MemorySegmentAddresses;
     use crate::relocated_trace_entry;
 
     pub fn create_test_relocator() -> Relocator {
@@ -350,10 +355,19 @@ pub mod relocator_tests {
         let relocator = Relocator::new(relocatble_memory, builtins_segments);
         let builtins_segments = relocator.get_builtin_segments();
 
-        assert_eq!(builtins_segments.bitwise, Some((1, 81).into()));
+        assert_eq!(
+            builtins_segments.bitwise,
+            Some(MemorySegmentAddresses {
+                begin_addr: 1,
+                stop_ptr: 81
+            })
+        );
         assert_eq!(
             builtins_segments.range_check_bits_128,
-            Some((81, 97).into())
+            Some(MemorySegmentAddresses {
+                begin_addr: 81,
+                stop_ptr: 97
+            })
         );
         assert_eq!(builtins_segments.ecdsa, None);
     }

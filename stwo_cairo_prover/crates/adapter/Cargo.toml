@@ -16,11 +16,13 @@ itertools.workspace = true
 log.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-sonic-rs = { version = "0.3.17", optional = true }
+stwo-cairo-serialize.workspace = true
+starknet-ff.workspace = true
 stwo-cairo-common.workspace = true
-stwo-prover.workspace = true
-thiserror.workspace = true
 tracing.workspace = true
+thiserror.workspace = true
+sonic-rs = { version = "0.3.17", optional = true }
+stwo-prover.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
