@@ -4,11 +4,15 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
+use cairo_vm::air_public_input::PublicInput;
 use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
+use itertools::Itertools;
 use json::PrivateInput;
+use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
+use stwo_cairo_serialize::CairoSerialize;
 use stwo_cairo_utils::file_utils::{open_file, read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
@@ -17,7 +21,8 @@ use super::builtins::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
-use crate::memory::MemoryBuilder;
+use crate::builtins::MemorySegmentAddresses;
+use crate::memory::{Memory, MemoryBuilder};
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -39,6 +44,124 @@ pub enum VmImportError {
 
     #[error("Cannot get public input from runner: {0}")]
     PublicInput(#[from] cairo_vm::air_public_input::PublicInputError),
+}
+
+// (id, value)
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct MemorySmallValue {
+    pub id: u32,
+    pub value: u32,
+}
+
+pub type PubMemoryValue = (u32, [u32; 8]);
+// pub type MemorySmallValue = (u32, u32);
+pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct SegmentRange {
+    pub start_ptr: MemorySmallValue,
+    pub stop_ptr: MemorySmallValue,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, Default)]
+pub struct PublicSegmentRanges {
+    pub add_mod: Option<SegmentRange>,
+    pub bitwise: Option<SegmentRange>,
+    pub output: Option<SegmentRange>,
+    pub range_check_128: Option<SegmentRange>,
+    pub range_check_96: Option<SegmentRange>,
+}
+
+impl PublicSegmentRanges {
+    pub fn new_from_memory(
+        memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+        memory: &Memory,
+        initial_pc: u32, 
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> Self {
+        let mut res = PublicSegmentRanges::default();
+        for (name, value) in memory_segments.iter() {
+            if let Some(builtin_name) = BuiltinName::from_str(name) {
+                // Filter empty segments.
+                let segment = if value.begin_addr == value.stop_ptr {
+                    None
+                } else {
+                    let start_ptr = value.begin_addr as u32;
+                    let stop_ptr = value.stop_ptr as u32;
+                    assert!(
+                        start_ptr < stop_ptr,
+                        "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
+                        start_ptr,
+                        stop_ptr,
+                    );
+                    let [start_ptr, stop_ptr] = [start_ptr, stop_ptr].map(|ptr| MemorySmallValue {
+                        id:5,// Alonbalon
+                        value: ptr,
+                    });
+                    Some(SegmentRange{start_ptr, stop_ptr})
+                };
+                match builtin_name {
+                    BuiltinName::add_mod => res.add_mod = segment,
+                    BuiltinName::bitwise => res.bitwise = segment,
+                    BuiltinName::output => res.output = segment,
+                    BuiltinName::range_check => res.range_check_128 = segment,
+                    BuiltinName::range_check96 => res.range_check_96 = segment,
+                    // Not supported
+                    | BuiltinName::segment_arena
+                    | BuiltinName::pedersen
+                    | BuiltinName::ecdsa
+                    | BuiltinName::keccak
+                    | BuiltinName::ec_op
+                    | BuiltinName::poseidon
+                    | BuiltinName::mul_mod => {}
+                }
+            };
+        }
+        res
+    }
+    pub fn memory_entries(
+        &self,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let segments = [
+            self.output,
+            self.range_check_128,
+            self.bitwise,
+            self.range_check_96,
+            self.add_mod,
+        ]
+        .into_iter()
+        .flatten()
+        .collect_vec();
+        println!(
+            "Public segment ranges: {:#?}",
+            segments
+        );
+        let n_segments = segments.len() as u32;
+
+        segments
+            .into_iter()
+            .enumerate()
+            .map(
+                move |(
+                    i,
+                    SegmentRange {
+                        start_ptr,
+                        stop_ptr,
+                    },
+                )| {
+                    let start_address = initial_ap + i as u32;
+                    let stop_address = final_ap - n_segments.clone() as u32 + i as u32;
+                    [
+                        (start_address, start_ptr.id, start_ptr.value),
+                        (stop_address, stop_ptr.id, stop_ptr.value),
+                    ]
+                },
+            )
+            .flatten()
+            .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
+    }
 }
 
 fn deserialize_inputs<'a>(
@@ -94,7 +217,7 @@ pub fn adapt_vm_output(
 
     let mut memory_file = std::io::BufReader::new(open_file(memory_path.as_path())?);
     let mut trace_file = std::io::BufReader::new(open_file(trace_path.as_path())?);
-
+    // let memory_segments = public_input.memory_segments
     let public_memory_addresses = public_input
         .public_memory
         .iter()
@@ -104,7 +227,11 @@ pub fn adapt_vm_output(
         TraceIter(&mut trace_file),
         MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
         public_memory_addresses,
-        &public_input.memory_segments,
+        &public_input
+            .memory_segments
+            .into_iter()
+            .map(|(k, v)| (k, v.into()))
+            .collect(),
     )
 }
 
@@ -122,11 +249,12 @@ pub fn adapt_to_stwo_input(
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segments(&mut memory);
+    let memory = memory.build();
 
     Ok(ProverInput {
         state_transitions,
         instruction_by_pc,
-        memory: memory.build(),
+        memory,
         public_memory_addresses,
         builtins_segments,
     })

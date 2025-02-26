@@ -753,7 +753,7 @@ where
     // Public data.
     claim
         .public_data
-        .public_memory
+        .public_memory_a
         .iter()
         .for_each(|(addr, id, val)| {
             entries.push(RelationTrackerEntry {
