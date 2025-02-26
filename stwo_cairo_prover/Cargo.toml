@@ -37,6 +37,7 @@ stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
+stwo-cairo-serialize = {path = "crates/cairo-serialize", version = "~0.1.0"}
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "a194fad", features = [
     "parallel",

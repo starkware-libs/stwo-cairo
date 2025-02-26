@@ -6,7 +6,7 @@ use memory::Memory;
 use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::cpu::M31;
-
+use vm_import::PublicSegmentRanges;
 pub mod builtins;
 pub mod decode;
 pub mod memory;

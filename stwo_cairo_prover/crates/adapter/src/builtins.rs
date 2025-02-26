@@ -1,6 +1,7 @@
-use cairo_vm::air_public_input::MemorySegmentAddresses;
+use cairo_vm::air_public_input::MemorySegmentAddresses as VMMemorySegmentAddresses;
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 use super::memory::MemoryBuilder;
@@ -15,15 +16,39 @@ pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq)]
+pub struct MemorySegmentAddresses {
+    pub begin_addr: usize,
+    pub stop_ptr: usize,
+}
+
+impl From<(usize, usize)> for MemorySegmentAddresses {
+    fn from(addresses: (usize, usize)) -> Self {
+        let (begin_addr, stop_ptr) = addresses;
+        MemorySegmentAddresses {
+            begin_addr,
+            stop_ptr,
+        }
+    }
+}
+impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
+    fn from(addresses: VMMemorySegmentAddresses) -> Self {
+        MemorySegmentAddresses {
+            begin_addr: addresses.begin_addr,
+            stop_ptr: addresses.stop_ptr,
+        }
+    }
+}
 // TODO(ohadn): change field types in MemorySegmentAddresses to match address type.
 /// This struct holds the builtins used in a Cairo program.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct BuiltinSegments {
     pub add_mod: Option<MemorySegmentAddresses>,
     pub bitwise: Option<MemorySegmentAddresses>,
     pub ec_op: Option<MemorySegmentAddresses>,
     pub ecdsa: Option<MemorySegmentAddresses>,
     pub keccak: Option<MemorySegmentAddresses>,
+    pub output: Option<MemorySegmentAddresses>,
     pub mul_mod: Option<MemorySegmentAddresses>,
     pub pedersen: Option<MemorySegmentAddresses>,
     pub poseidon: Option<MemorySegmentAddresses>,
@@ -32,6 +57,42 @@ pub struct BuiltinSegments {
 }
 
 impl BuiltinSegments {
+    // pub fn iter(&self) -> impl Iterator<Item = (BuiltinName, &Option<MemorySegmentAddresses>)> {
+    //     [
+    //         (BuiltinName::add_mod, &self.add_mod),
+    //         (BuiltinName::bitwise, &self.bitwise),
+    //         (BuiltinName::ec_op, &self.ec_op),
+    //         (BuiltinName::ecdsa, &self.ecdsa),
+    //         (BuiltinName::keccak, &self.keccak),
+    //         (BuiltinName::mul_mod, &self.mul_mod),
+    //         (BuiltinName::pedersen, &self.pedersen),
+    //         (BuiltinName::poseidon, &self.poseidon),
+    //         (
+    //             BuiltinName::range_check96,
+    //             &self.range_check_bits_96,
+    //         ),
+    //         (
+    //             BuiltinName::range_check,
+    //             &self.range_check_bits_128,
+    //         ),
+    //     ]
+    //     .into_iter()
+    // }
+    pub fn n_builtins(&self) -> usize {
+        [
+            self.add_mod,
+            self.bitwise,
+            self.ec_op,
+            self.ecdsa,
+            self.keccak,
+            self.output,
+            self.mul_mod,
+            self.pedersen,
+            self.poseidon,
+            self.range_check_bits_96,
+            self.range_check_bits_128,
+        ].iter().flatten().collect_vec().len()
+    }
     /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
     pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
         let mut res = BuiltinSegments::default();
@@ -60,8 +121,9 @@ impl BuiltinSegments {
                     BuiltinName::range_check96 => res.range_check_bits_96 = segment,
                     BuiltinName::add_mod => res.add_mod = segment,
                     BuiltinName::mul_mod => res.mul_mod = segment,
+                    BuiltinName::output => res.output = segment, 
                     // Not builtins.
-                    BuiltinName::output | BuiltinName::segment_arena => {}
+                    BuiltinName::segment_arena => {}
                 }
             };
         }
@@ -234,7 +296,7 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
 
 // TODO(Ohad): padding holes should be handled by a proof-mode runner.
 mod builtin_padding {
-    use cairo_vm::air_public_input::MemorySegmentAddresses;
+    use super::MemorySegmentAddresses;
     use itertools::Itertools;
 
     use crate::builtins::BITWISE_MEMORY_CELLS;
