@@ -54,25 +54,3 @@ impl PreProcessedColumn for BlakeSigma {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use stwo_prover::core::backend::simd::m31::N_LANES;
-
-    use super::*;
-
-    #[test]
-    fn test_blake_sigma() {
-        // for i in 0..N_BLAKE_SIGMA_COLS {
-        //     let sigma_col: [M31; N_LANES] = BlakeSigma::new(i).gen_column_simd().data[0].to_array();
-
-        //     for (row, value) in sigma_col.iter().enumerate() {
-        //         if row < N_BLAKE_ROUNDS {
-        //             assert_eq!(*value, sigma(row)[i]);
-        //         } else {
-        //             assert_eq!(*value, sigma(0)[i]);
-        //         }
-        //     }
-        // }
-    }
-}
