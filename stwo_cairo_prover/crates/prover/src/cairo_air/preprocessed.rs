@@ -22,7 +22,7 @@ use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: u32 = 9;
+const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
@@ -41,8 +41,14 @@ impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         let seq_columns = (LOG_N_LANES..=LOG_MAX_ROWS).map(Seq::new).collect_vec();
-        let bitwise_xor_columns = (0..3)
-            .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
+        let bitwise_xor_columns = XOR_N_BITS
+            .map(|n_bits| {
+                (0..3)
+                    .map(|col_index| BitwiseXor::new(n_bits, col_index))
+                    .collect_vec()
+            })
+            .into_iter()
+            .flatten()
             .collect_vec();
         let range_check_columns = gen_range_check_columns();
         let poseidon_round_keys_columns = (0..POSEIDON_N_WORDS)
@@ -421,7 +427,7 @@ mod tests {
     fn test_preprocessed_root_regression() {
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("3ca873f18664f36d677f3b6ecf94913a699c90202b043a7ea1ecb104555bd609")
+            hex::decode("86675e025b07125a935fe817101cec65781d574d0a1fbcb85446693bc8a2a2f3")
                 .expect("Invalid hex string"),
         );
 

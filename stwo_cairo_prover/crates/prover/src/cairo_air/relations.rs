@@ -18,4 +18,8 @@ relation!(RangeCheck_3_6_6_3, 4);
 relation!(RangeCheck_4_4_4_4, 4);
 relation!(RangeCheck_3_3_3_3_3, 5);
 relation!(VerifyInstruction, 29);
+relation!(VerifyBitwiseXor_4, 3);
+relation!(VerifyBitwiseXor_7, 3);
+relation!(VerifyBitwiseXor_8, 3);
 relation!(VerifyBitwiseXor_9, 3);
+relation!(VerifyBitwiseXor_12, 3);
