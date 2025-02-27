@@ -206,17 +206,32 @@ impl ConfigBuilder {
 
 /// Concrete parameters of the proving system.
 /// Used both for producing and verifying proofs.
-#[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct ProverParameters {
+    /// Channel hash function.
+    pub channel_hash: ChannelHash,
     /// Parameters of the commitment scheme.
     pub pcs_config: PcsConfig,
-    // TODO(m-kus): add channel hash type here
+}
+
+/// The hash function used for commitments, for the prover-verifier channel,
+/// and for PoW grinding.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ChannelHash {
+    /// Default variant, the fastest option.
+    Blake2s,
+    /// A variant for recursive proof verification.
+    /// Note that using `Poseidon252` results in a significant decrease in proving speed compared
+    /// to `Blake2s` (because of the large field emulation)
+    Poseidon252,
 }
 
 /// The default prover parameters for prod use (96 bits of security).
 /// The formula is `security_bits = pow_bits + log_blowup_factor * n_queries`.
 pub fn default_prod_prover_parameters() -> ProverParameters {
     ProverParameters {
+        channel_hash: ChannelHash::Blake2s,
         pcs_config: PcsConfig {
             // Stay within 500ms on M3.
             pow_bits: 26,
