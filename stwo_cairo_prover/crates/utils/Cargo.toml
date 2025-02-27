@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 cairo-vm = { workspace = true, default_features = true }
+cairo-program-runner.workspace = true
 clap.workspace = true
 env_logger.workspace = true
 log.workspace = true
