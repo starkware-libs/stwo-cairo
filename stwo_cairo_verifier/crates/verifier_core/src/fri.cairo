@@ -1,10 +1,14 @@
 use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
+use core::metaprogramming::TypeEqual;
 use core::num::traits::CheckedSub;
-// use crate::channel::ChannelTrait;
 use crate::circle::CosetImpl;
 use crate::channel::poseidon252::{Poseidon252Channel, Poseidon252ChannelImpl};
+use crate::channel::ChannelTrait;
+use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
+use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::vcs::MerkleHasher;
 use crate::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
 use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
@@ -12,8 +16,6 @@ use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
-use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::ColumnArray;
 
 /// Fold step size for circle polynomials.
@@ -38,8 +40,8 @@ pub struct FriConfig {
 #[derive(Drop)]
 pub struct FriVerifier {
     config: FriConfig,
-    first_layer: FriFirstLayerVerifier,
-    inner_layers: Array<FriInnerLayerVerifier>,
+    first_layer: FriFirstLayerVerifier<PoseidonMerkleHasher>,
+    inner_layers: Array<FriInnerLayerVerifier<PoseidonMerkleHasher>>,
     last_layer_domain: LineDomain,
     last_layer_poly: LinePoly,
     queries: Option<Queries>,
@@ -54,7 +56,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn commit(
         ref channel: Poseidon252Channel,
         config: FriConfig,
-        proof: FriProof,
+        proof: FriProof<felt252>,
         column_log_bounds: Span<u32>,
     ) -> Result<FriVerifier, FriVerificationError> {
         let FriProof {
@@ -245,6 +247,7 @@ fn decommit_inner_layers(
             layer_query_evals = updated_layer_query_evals;
         }
 
+        // TODO: Change to implicit self `layer.verify_and_fold(..)`. Currently has compile error.
         match layer.verify_and_fold(layer_queries, layer_query_evals.span()) {
             Ok((
                 next_layer_queries, next_layer_query_evals,
@@ -316,25 +319,53 @@ fn get_query_positions_by_log_size(
 }
 
 /// A FRI proof.
-#[derive(Drop, Serde)]
-pub struct FriProof {
-    pub first_layer: FriLayerProof<felt252>,
-    pub inner_layers: Span<FriLayerProof<felt252>>,
+#[derive(Drop)]
+pub struct FriProof<HashT> {
+    pub first_layer: FriLayerProof<HashT>,
+    pub inner_layers: Span<FriLayerProof<HashT>>,
     pub last_layer_poly: LinePoly,
 }
 
-#[derive(Drop)]
-struct FriFirstLayerVerifier {
+impl FriProofSerde<
+    HashT,
+    impl FriLayerProofSerde: Serde<FriLayerProof<HashT>>,
+    impl SpanFriLayerProofSerde: Serde<Span<FriLayerProof<HashT>>>,
+    +Drop<HashT>,
+> of Serde<FriProof<HashT>> {
+    fn serialize(self: @FriProof<HashT>, ref output: Array<felt252>) {
+        self.first_layer.serialize(ref output);
+        SpanFriLayerProofSerde::serialize(self.inner_layers, ref output);
+        self.last_layer_poly.serialize(ref output);
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<FriProof<HashT>> {
+        Some(
+            FriProof {
+                first_layer: Serde::deserialize(ref serialized)?,
+                inner_layers: SpanFriLayerProofSerde::deserialize(ref serialized)?,
+                last_layer_poly: Serde::deserialize(ref serialized)?,
+            },
+        )
+    }
+}
+
+struct FriFirstLayerVerifier<impl H: MerkleHasher> {
     /// The list of degree bounds of all circle polynomials commited in the first layer.
     column_log_bounds: Span<u32>,
     /// The commitment domain all the circle polynomials in the first layer.
     column_commitment_domains: Span<CircleDomain>,
     folding_alpha: QM31,
-    proof: FriLayerProof<felt252>,
+    proof: FriLayerProof<H::Hash>,
 }
 
+impl FriFirstLayerVerifierDrop<
+    impl H: MerkleHasher, +Drop<H::Hash>,
+> of Drop<FriFirstLayerVerifier<H>>;
+
 #[generate_trait]
-impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
+impl FriFirstLayerVerifierImpl<
+    impl H: MerkleHasher, +MerkleVerifierTrait<H>, +Drop<H::Hash>, +Copy<H::Hash>,
+> of FriFirstLayerVerifierTrait<H> {
     /// Verifies the first layer's merkle decommitment, and returns the evaluations needed for
     /// folding the columns to their corresponding layer.
     ///
@@ -350,7 +381,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     /// * The queries are sampled on the wrong domain.
     /// * There are an invalid number of provided column evals.
     fn verify(
-        self: @FriFirstLayerVerifier,
+        self: @FriFirstLayerVerifier<H>,
         queries: Queries,
         mut query_evals_by_column: ColumnArray<Span<QM31>>,
     ) -> Result<ColumnArray<SparseEvaluation>, FriVerificationError> {
@@ -422,7 +453,9 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             return Err(FriVerificationError::FirstLayerEvaluationsInvalid);
         }
 
-        let merkle_verifier = MerkleVerifier {
+        let merkle_verifier = MerkleVerifier::<
+            H,
+        > {
             root: *self.proof.commitment,
             column_log_sizes: decommitment_coordinate_column_log_sizes,
         };
@@ -441,19 +474,21 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
 }
 
 #[derive(Drop)]
-struct FriInnerLayerVerifier {
+struct FriInnerLayerVerifier<impl H: MerkleHasher> {
     log_degree_bound: u32,
     domain: LineDomain,
     folding_alpha: QM31,
     layer_index: usize,
-    proof: @FriLayerProof<felt252>,
+    proof: @FriLayerProof<H::Hash>,
 }
 
 #[generate_trait]
-impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
+impl FriInnerLayerVerifierImpl<
+    impl H: MerkleHasher, +MerkleVerifierTrait<H>, +Drop<H::Hash>, +Copy<H::Hash>,
+> of FriInnerLayerVerifierTrait<H> {
     /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
     fn verify_and_fold(
-        self: @FriInnerLayerVerifier, queries: Queries, evals_at_queries: Span<QM31>,
+        self: @FriInnerLayerVerifier<H>, queries: Queries, evals_at_queries: Span<QM31>,
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
         assert!(queries.log_domain_size == self.domain.log_size());
 
@@ -485,7 +520,9 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         }
 
         let column_log_size = self.domain.log_size();
-        let merkle_verifier = MerkleVerifier {
+        let merkle_verifier = MerkleVerifier::<
+            H,
+        > {
             root: **self.proof.commitment,
             column_log_sizes: ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: column_log_size),
         };
@@ -716,12 +753,12 @@ pub enum FriVerificationError {
 #[cfg(test)]
 mod test {
     use crate::channel::poseidon252::Poseidon252Channel;
-    use crate::channel::ChannelTrait;
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
     use crate::fields::qm31::qm31;
     use crate::poly::circle::CircleEvaluationImpl;
     use crate::poly::line::LineDomainImpl;
     use crate::queries::{Queries, QueriesImpl};
+    use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
     use super::{FriConfig, FriVerificationError, FriVerifierImpl};
 
     // TODO(andrew): Add back in with new proof data.

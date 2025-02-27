@@ -96,7 +96,7 @@ pub struct StarkProof<HashT> {
 }
 
 impl StarkProofSerde<
-    HashT, +Drop<HashT>, +Serde<Span<HashT>>,
+    HashT, +Drop<HashT>, +Serde<CommitmentSchemeProof<HashT>>,
 > of core::serde::Serde<StarkProof<HashT>> {
     fn serialize(self: @StarkProof<HashT>, ref output: Array<felt252>) {
         self.commitment_scheme_proof.serialize(ref output);
