@@ -2,6 +2,7 @@
 name = "stwo_verifier_core"
 version = "0.1.0"
 edition = "2024_07"
+experimental-features = ["associated_item_constraints"]
 
 [lib]
 casm = true

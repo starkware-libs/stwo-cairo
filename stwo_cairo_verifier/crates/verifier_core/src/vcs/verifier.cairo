@@ -4,7 +4,7 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
 use crate::utils::{ArrayExTrait, DictTrait, SpanExTrait};
-use crate::vcs::hasher::MerkleHasher;
+use crate::vcs::MerkleHasher;
 use crate::BaseField;
 
 pub struct MerkleDecommitment<HashT> {
@@ -325,7 +325,7 @@ mod tests {
             m31(409791388),
         ]
             .span();
-        MerkleVerifier { root, column_log_sizes }
+        MerkleVerifier::<PoseidonMerkleHasher> { root, column_log_sizes }
             .verify(queries_per_log_size, queried_values, decommitment)
             .expect('verification failed');
     }

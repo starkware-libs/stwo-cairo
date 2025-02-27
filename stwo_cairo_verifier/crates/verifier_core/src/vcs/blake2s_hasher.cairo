@@ -1,10 +1,9 @@
 use core::array::ArrayTrait;
 use core::blake::blake2s_compress;
 use core::box::BoxImpl;
-use core::hash::HashStateTrait;
-use crate::fields::m31::{M31, M31Zero};
-use crate::vcs::hasher::MerkleHasher;
+use crate::fields::m31::M31Zero;
 use crate::BaseField;
+use super::MerkleHasher;
 
 const M31_ELEMENETS_IN_MSG: usize = 16;
 
@@ -18,7 +17,6 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
         let mut state = BoxImpl::new([0, 0, 0, 0, 0, 0, 0, 0]);
-        let mut hash_array: Array<felt252> = Default::default();
         if let Some((x, y)) = children_hashes {
             let [x0, x1, x2, x3, x4, x5, x6, x7] = x.unbox();
             let [y0, y1, y2, y3, y4, y5, y6, y7] = y.unbox();

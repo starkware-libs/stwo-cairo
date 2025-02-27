@@ -5,7 +5,7 @@ use crate::channel::ChannelTrait;
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Impl};
-use crate::fri::{FriProof, FriVerifierImpl};
+use crate::fri::{FriProof, FriVerifier, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
 use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
@@ -25,12 +25,12 @@ pub struct CommitmentSchemeProof<HashT> {
     /// All queried trace values.
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
-    pub fri_proof: FriProof,
+    pub fri_proof: FriProof<HashT>,
 }
 
 
 impl CommitmentSchemeProofSerde<
-    HashT, +Drop<HashT>, +Serde<Span<HashT>>, +Destruct<HashT>,
+    HashT, +Drop<HashT>, +Serde<Span<HashT>>, +Destruct<HashT>, +Serde<FriProof<HashT>>,
 > of core::serde::Serde<CommitmentSchemeProof<HashT>> {
     fn serialize(self: @CommitmentSchemeProof<HashT>, ref output: Array<felt252>) {
         self.config.serialize(ref output);
