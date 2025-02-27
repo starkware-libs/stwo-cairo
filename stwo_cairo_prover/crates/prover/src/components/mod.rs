@@ -32,6 +32,7 @@ pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
 pub mod range_check_vector;
 pub mod ret_opcode;
+pub mod triple_xor_32;
 pub mod utils;
 pub mod verify_bitwise_xor_12;
 pub mod verify_bitwise_xor_4;
