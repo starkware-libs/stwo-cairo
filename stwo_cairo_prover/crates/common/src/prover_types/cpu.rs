@@ -4,6 +4,7 @@ use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 use ruint::Uint;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
+use starknet_types_core::felt::Felt as StarknetTypesFelt;
 use stwo_cairo_serialize::CairoSerialize;
 
 pub type M31 = stwo_prover::core::fields::m31::M31;
@@ -501,6 +502,19 @@ impl From<FieldElement> for Felt252 {
         Felt252 {
             limbs: n.into_mont(),
         }
+    }
+}
+
+impl From<StarknetTypesFelt> for Felt252 {
+    fn from(value: StarknetTypesFelt) -> Self {
+        Felt252 {
+            limbs: value.to_le_digits(),
+        }
+    }
+}
+impl From<Felt252> for StarknetTypesFelt {
+    fn from(value: Felt252) -> StarknetTypesFelt {
+        StarknetTypesFelt::from_bytes_le_slice(&value.limbs.map(|limb| limb.to_le_bytes()).concat())
     }
 }
 
