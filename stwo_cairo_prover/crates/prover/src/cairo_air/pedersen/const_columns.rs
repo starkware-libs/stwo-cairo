@@ -1,3 +1,4 @@
+use std::array::from_fn;
 use std::ops::Neg;
 use std::sync::LazyLock;
 
@@ -9,16 +10,52 @@ use starknet_curve::curve_params::{
 use starknet_types_core::curve::{AffinePoint, ProjectivePoint};
 use starknet_types_core::felt::Felt;
 use stwo_cairo_common::preprocessed_consts::pedersen::{
-    BITS_PER_WINDOW, NUM_WINDOWS, ROWS_PER_WINDOW,
+    BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
-use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
+use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
+use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_prover::core::backend::simd::column::BaseColumn;
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::fields::m31::BaseField;
+use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
+use stwo_prover::core::poly::BitReversedOrder;
 
 use super::utils::felt_batch_inverse;
+use crate::cairo_air::preprocessed::PreProcessedColumn;
 
-#[allow(dead_code)] // Will be used when creating the constant columns
 pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
     LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
+
+#[derive(Debug)]
+pub struct PedersenPoints {
+    index: usize,
+}
+
+impl PedersenPoints {
+    pub fn new(col: usize) -> Self {
+        Self { index: col }
+    }
+}
+
+impl PreProcessedColumn for PedersenPoints {
+    fn log_size(&self) -> u32 {
+        PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+    }
+
+    fn id(&self) -> PreProcessedColumnId {
+        PreProcessedColumnId {
+            id: format!("pedersen_points_{}", self.index),
+        }
+    }
+
+    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+        CircleEvaluation::new(
+            CanonicCoset::new(self.log_size()).circle_domain(),
+            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+        )
+    }
+}
 
 // A table with 2**23 rows, each containing a point on the Stark curve.
 // The table is divided into 4 sections:
@@ -27,14 +64,24 @@ pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 // 3. Next 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
 // 4. Next 16 rows: Row k contains -P_shift + k * P_3
 pub(super) struct PedersenPointsTable {
-    #[allow(dead_code)] // Will be used when creating the constant columns
+    // The one copy of the column contents. Shared by all column instances.
+    column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
+
     rows: Vec<AffinePoint>,
 }
 
 impl PedersenPointsTable {
+    #[allow(dead_code)] //  Will be used by the deduce_output of PartialEcMul
+    pub fn get_row(&self, index: usize) -> AffinePoint {
+        self.rows[index].clone()
+    }
+
     fn new() -> Self {
         let rows = create_table_rows();
-        Self { rows }
+        Self {
+            column_data: rows_to_columns(&rows),
+            rows,
+        }
     }
 }
 
@@ -103,4 +150,23 @@ fn create_table_rows() -> Vec<AffinePoint> {
     }
 
     rows
+}
+
+fn rows_to_columns(rows: &[AffinePoint]) -> [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] {
+    let mut columns_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] =
+        from_fn(|_| Vec::with_capacity(rows.len()));
+    for row in rows {
+        let x_f252: Felt252 = row.x().into();
+        let y_f252: Felt252 = row.y().into();
+        for (col_idx, value) in x_f252
+            .get_limbs()
+            .iter()
+            .chain(y_f252.get_limbs().iter())
+            .enumerate()
+        {
+            columns_data[col_idx].push(*value)
+        }
+    }
+
+    columns_data
 }
