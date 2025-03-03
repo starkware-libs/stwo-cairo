@@ -20,8 +20,8 @@ use crate::components::{
     jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
     jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
     memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small,
-    mul_opcode_small_imm, range_check_11, range_check_19, range_check_9_9, ret_opcode,
-    verify_instruction,
+    mul_opcode_small_imm, qm_31_add_mul_opcode, range_check_11, range_check_19,
+    range_check_4_4_4_4, range_check_9_9, ret_opcode, verify_instruction,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
@@ -52,6 +52,7 @@ pub struct OpcodeClaim {
     pub mul_imm: Vec<mul_opcode_imm::Claim>,
     pub mul_small: Vec<mul_opcode_small::Claim>,
     pub mul_small_imm: Vec<mul_opcode_small_imm::Claim>,
+    pub qm31: Vec<qm_31_add_mul_opcode::Claim>,
     pub ret: Vec<ret_opcode::Claim>,
 }
 impl OpcodeClaim {
@@ -94,6 +95,7 @@ impl OpcodeClaim {
         self.mul_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul_small.iter().for_each(|c| c.mix_into(channel));
         self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
+        self.qm31.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
@@ -125,6 +127,7 @@ impl OpcodeClaim {
             self.mul_imm.iter().map(|c| c.log_sizes()),
             self.mul_small.iter().map(|c| c.log_sizes()),
             self.mul_small_imm.iter().map(|c| c.log_sizes()),
+            self.qm31.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
         ))
     }
@@ -157,6 +160,7 @@ pub struct OpcodesClaimGenerator {
     mul_imm: Vec<mul_opcode_imm::ClaimGenerator>,
     mul_small: Vec<mul_opcode_small::ClaimGenerator>,
     mul_small_imm: Vec<mul_opcode_small_imm::ClaimGenerator>,
+    qm31: Vec<qm_31_add_mul_opcode::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
@@ -188,6 +192,7 @@ impl OpcodesClaimGenerator {
         let mut mul_imm = vec![];
         let mut mul_small = vec![];
         let mut mul_small_imm = vec![];
+        let mut qm31 = vec![];
         let mut ret = vec![];
         if !input.casm_states_by_opcode.add_opcode.is_empty() {
             add.push(add_opcode::ClaimGenerator::new(
@@ -344,6 +349,11 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.mul_opcode_small_imm,
             ));
         }
+        if !input.casm_states_by_opcode.qm31_add_mul_opcode.is_empty() {
+            qm31.push(qm_31_add_mul_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.qm31_add_mul_opcode,
+            ));
+        }
         if !input.casm_states_by_opcode.ret_opcode.is_empty() {
             ret.push(ret_opcode::ClaimGenerator::new(
                 input.casm_states_by_opcode.ret_opcode,
@@ -376,6 +386,7 @@ impl OpcodesClaimGenerator {
             mul_imm,
             mul_small,
             mul_small_imm,
+            qm31,
             ret,
         }
     }
@@ -388,6 +399,7 @@ impl OpcodesClaimGenerator {
         range_check_11_trace_generator: &range_check_11::ClaimGenerator,
         range_check_19_trace_generator: &range_check_19::ClaimGenerator,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
+        range_check_4_4_4_4_trace_generator: &range_check_4_4_4_4::ClaimGenerator,
         verify_instruction_trace_generator: &verify_instruction::ClaimGenerator,
     ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator)
     where
@@ -711,6 +723,19 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
+        let (qm31_claims, qm31_interaction_gens) = self
+            .qm31
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    range_check_4_4_4_4_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
         let (ret_claims, ret_interaction_gens) = self
             .ret
             .into_iter()
@@ -751,6 +776,7 @@ impl OpcodesClaimGenerator {
                 mul_imm: mul_imm_claims,
                 mul_small: mul_small_claims,
                 mul_small_imm: mul_small_imm_claims,
+                qm31: qm31_claims,
                 ret: ret_claims,
             },
             OpcodesInteractionClaimGenerator {
@@ -780,6 +806,7 @@ impl OpcodesClaimGenerator {
                 mul_imm: mul_imm_interaction_gens,
                 mul_small: mul_small_interaction_gens,
                 mul_small_imm: mul_small_imm_interaction_gens,
+                qm31: qm31_interaction_gens,
                 ret_interaction_gens,
             },
         )
@@ -814,6 +841,7 @@ pub struct OpcodeInteractionClaim {
     mul_imm: Vec<mul_opcode_imm::InteractionClaim>,
     mul_small: Vec<mul_opcode_small::InteractionClaim>,
     mul_small_imm: Vec<mul_opcode_small_imm::InteractionClaim>,
+    qm31: Vec<qm_31_add_mul_opcode::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
 }
 impl OpcodeInteractionClaim {
@@ -856,6 +884,7 @@ impl OpcodeInteractionClaim {
         self.mul_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul_small.iter().for_each(|c| c.mix_into(channel));
         self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
+        self.qm31.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
@@ -939,6 +968,9 @@ impl OpcodeInteractionClaim {
         for interaction_claim in &self.mul_small_imm {
             sum += interaction_claim.claimed_sum;
         }
+        for interaction_claim in &self.qm31 {
+            sum += interaction_claim.claimed_sum;
+        }
         for interaction_claim in &self.ret {
             sum += interaction_claim.claimed_sum;
         }
@@ -973,6 +1005,7 @@ pub struct OpcodesInteractionClaimGenerator {
     mul_imm: Vec<mul_opcode_imm::InteractionClaimGenerator>,
     mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
     mul_small_imm: Vec<mul_opcode_small_imm::InteractionClaimGenerator>,
+    qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
 impl OpcodesInteractionClaimGenerator {
@@ -1326,6 +1359,20 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
+        let qm31_interaction_claims = self
+            .qm31
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.range_checks.rc_4_4_4_4,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
         let ret_interaction_claims = self
             .ret_interaction_gens
             .into_iter()
@@ -1366,6 +1413,7 @@ impl OpcodesInteractionClaimGenerator {
             mul_imm: mul_imm_interaction_claims,
             mul_small: mul_small_interaction_claims,
             mul_small_imm: mul_small_imm_interaction_claims,
+            qm31: qm31_interaction_claims,
             ret: ret_interaction_claims,
         }
     }
@@ -1398,6 +1446,7 @@ pub struct OpcodeComponents {
     mul_imm: Vec<mul_opcode_imm::Component>,
     mul_small: Vec<mul_opcode_small::Component>,
     mul_small_imm: Vec<mul_opcode_small_imm::Component>,
+    qm31: Vec<qm_31_add_mul_opcode::Component>,
     ret: Vec<ret_opcode::Component>,
 }
 impl OpcodeComponents {
@@ -2049,6 +2098,34 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
+        let qm31_components = claim
+            .qm31
+            .iter()
+            .zip(interaction_claim.qm31.iter())
+            .map(|(&claim, &interaction_claim)| {
+                qm_31_add_mul_opcode::Component::new(
+                    tree_span_provider,
+                    qm_31_add_mul_opcode::Eval {
+                        claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_4_4_4_4_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_4_4_4_4
+                            .clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
         let ret_components = claim
             .ret
             .iter()
@@ -2100,6 +2177,7 @@ impl OpcodeComponents {
             mul_imm: mul_imm_components,
             mul_small: mul_small_components,
             mul_small_imm: mul_small_imm_components,
+            qm31: qm31_components,
             ret: ret_components,
         }
     }
@@ -2237,6 +2315,11 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
+            self.qm31
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
             self.ret
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
@@ -2299,6 +2382,8 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.mul_small))?;
         writeln!(f, "mul_small_imm:")?;
         writeln!(f, "{}", display_components(&self.mul_small_imm))?;
+        writeln!(f, "qm31:")?;
+        writeln!(f, "{}", display_components(&self.qm31))?;
         writeln!(f, "ret:")?;
         writeln!(f, "{}", display_components(&self.ret))?;
         Ok(())
