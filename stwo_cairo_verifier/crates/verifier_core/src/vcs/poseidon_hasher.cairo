@@ -1,7 +1,6 @@
 use core::array::ArrayTrait;
 use core::hash::HashStateTrait;
 use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
-use crate::vcs::hasher::MerkleHasher;
 use crate::fields::m31::M31_SHIFT;
 use crate::BaseField;
 
