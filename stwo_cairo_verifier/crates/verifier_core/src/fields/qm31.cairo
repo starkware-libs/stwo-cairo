@@ -1,7 +1,7 @@
 use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::cm31::{CM31, cm31};
+use super::cm31::{CM31, CM31Trait, cm31};
 use super::m31::{M31, M31Impl, UnreducedM31};
 use super::Invertible;
 
@@ -14,8 +14,8 @@ pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct QM31 {
-    pub a: CM31,
-    pub b: CM31,
+    a: CM31,
+    b: CM31,
 }
 
 impl QM31InvertibleImpl of Invertible<QM31> {
@@ -141,6 +141,17 @@ pub impl QM31Impl of QM31Trait {
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [e0, e1, e2, e3] = evals;
         e0 + e1 * qm31(0, 1, 0, 0) + e2 * qm31(0, 0, 1, 0) + e3 * qm31(0, 0, 0, 1)
+    }
+
+    #[inline]
+    fn unpack(self: QM31) -> (M31, M31, M31, M31) {
+        let (a, b) = self.a.unpack();
+        let (c, d) = self.b.unpack();
+        (a, b, c, d)
+    }
+
+    fn pack(a: M31, b: M31, c: M31, d: M31) -> QM31 {
+        QM31 { a: CM31 { a, b }, b: CM31 { a: c, b: d } }
     }
 }
 
