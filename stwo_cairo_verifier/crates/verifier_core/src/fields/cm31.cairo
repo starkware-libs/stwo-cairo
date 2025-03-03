@@ -32,6 +32,14 @@ pub impl CM31Impl of CM31Trait {
     fn sub_m31(self: CM31, rhs: M31) -> CM31 {
         CM31 { a: self.a - rhs, b: self.b }
     }
+
+    fn unpack(self: CM31) -> (M31, M31) {
+        (self.a, self.b)
+    }
+
+    fn pack(a: M31, b: M31) -> CM31 {
+        CM31 { a, b }
+    }
 }
 
 pub impl CM31Add of core::traits::Add<CM31> {
