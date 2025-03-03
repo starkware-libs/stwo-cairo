@@ -11,7 +11,7 @@
         "priv.json",
         "trace"
     ],
-    "test_prove_verify_all_opcode_components": [
+    "test_prove_verify_all_opcode_components_v2": [
         "mem",
         "pub.json",
         "priv.json",
