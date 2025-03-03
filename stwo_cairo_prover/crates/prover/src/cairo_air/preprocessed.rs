@@ -16,6 +16,7 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation, PolyOps};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
+use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
 use super::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
@@ -36,6 +37,7 @@ pub struct PreProcessedTrace {
     range_check_columns: Vec<Box<dyn PreProcessedColumn>>,
     poseidon_round_keys_columns: Vec<PoseidonRoundKeys>,
     blake_sigma_columns: Vec<BlakeSigma>,
+    pedersen_points_columns: Vec<PedersenPoints>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
@@ -49,6 +51,9 @@ impl PreProcessedTrace {
             .map(PoseidonRoundKeys::new)
             .collect_vec();
         let blake_sigma_columns = (0..N_BLAKE_SIGMA_COLS).map(BlakeSigma::new).collect_vec();
+        let pedersen_points_columns = (0..PEDERSEN_TABLE_N_COLUMNS)
+            .map(PedersenPoints::new)
+            .collect_vec();
 
         Self {
             seq_columns,
@@ -56,6 +61,7 @@ impl PreProcessedTrace {
             range_check_columns,
             poseidon_round_keys_columns,
             blake_sigma_columns,
+            pedersen_points_columns,
         }
     }
 
@@ -77,9 +83,13 @@ impl PreProcessedTrace {
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
-
         columns.extend(
             self.blake_sigma_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
+        columns.extend(
+            self.pedersen_points_columns
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
@@ -421,7 +431,7 @@ mod tests {
     fn test_preprocessed_root_regression() {
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("3ca873f18664f36d677f3b6ecf94913a699c90202b043a7ea1ecb104555bd609")
+            hex::decode("7b1e8020cdc053c40decc3ca763eea242d8fbd468595ca8257091143d618edf7")
                 .expect("Invalid hex string"),
         );
 
