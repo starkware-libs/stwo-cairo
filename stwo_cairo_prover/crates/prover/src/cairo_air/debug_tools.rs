@@ -24,11 +24,12 @@ use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_mod_builtin, add_opcode,
     add_opcode_imm, add_opcode_small, add_opcode_small_imm, assert_eq_opcode,
     assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, call_opcode,
-    call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp,
-    jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref,
-    jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode,
-    mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm, range_check_builtin_bits_128,
-    range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9, verify_instruction,
+    call_opcode_op_1_base_fp, call_opcode_rel, cube_252, generic_opcode, jnz_opcode,
+    jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode,
+    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
+    memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, ret_opcode, verify_bitwise_xor_9,
+    verify_instruction,
 };
 use crate::felt::split_f252;
 
@@ -524,16 +525,33 @@ where
         );
     }
 
-    if let Some(range_check_128_builtin) = claim.builtins.range_check_128_builtin {
+    if let Some(bitwise_builtin) = claim.builtins.bitwise_builtin {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                range_check_builtin_bits_128::Eval {
-                    claim: range_check_128_builtin,
+                bitwise_builtin::Eval {
+                    claim: bitwise_builtin,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
                 },
-                1 << range_check_128_builtin.log_size,
+                1 << bitwise_builtin.log_size,
+            )
+            .entries(trace),
+        );
+    }
+
+    if let Some(cube_252) = claim.builtins.cube_252 {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                cube_252::Eval {
+                    claim: cube_252,
+                    cube_252_lookup_elements: relations::Cube252::dummy(),
+                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                    range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+                },
+                1 << cube_252.log_size,
             )
             .entries(trace),
         );
@@ -555,17 +573,16 @@ where
         );
     }
 
-    if let Some(bitwise_builtin) = claim.builtins.bitwise_builtin {
+    if let Some(range_check_128_builtin) = claim.builtins.range_check_128_builtin {
         entries.extend(
             RelationTrackerComponent::new(
                 tree_span_provider,
-                bitwise_builtin::Eval {
-                    claim: bitwise_builtin,
+                range_check_builtin_bits_128::Eval {
+                    claim: range_check_128_builtin,
                     memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                     memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-                    verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
                 },
-                1 << bitwise_builtin.log_size,
+                1 << range_check_128_builtin.log_size,
             )
             .entries(trace),
         );
