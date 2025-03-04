@@ -6,7 +6,7 @@ use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::cairo_air::{
     default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError,
-    ConfigBuilder, ProverParameters,
+    ConfigBuilder, ProverConfig, ProverParameters,
 };
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::file_utils::{read_to_string, IoErrorWithPath};
@@ -93,10 +93,9 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 
     let vm_output: ProverInput =
         adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
-    let prover_config = ConfigBuilder::default()
-        .track_relations(args.track_relations)
-        .display_components(args.display_components)
-        .build();
+    let prover_config = ProverConfig {
+        display_components: args.display_components,
+    };
 
     log::info!(
         "Casm states by opcode:\n{}",
