@@ -1,3 +1,4 @@
+use std::cmp::{max, min};
 use std::fmt::Debug;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 
@@ -594,6 +595,67 @@ impl ProverType for Felt252 {
     }
     fn r#type() -> String {
         "Felt252".to_string()
+    }
+}
+
+pub const FELT252_CONV_LEN: usize = 2 * FELT252_N_WORDS - 1;
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Felt252Conv {
+    pub limbs: [M31; FELT252_CONV_LEN],
+}
+
+impl Felt252Conv {
+    // Computes the limbs of a * b - c in long-form: limb i holds the i-th coefficient of the
+    // convolution of a and b, minus the i-th coefficient of c (where i < FELT252_N_WORDS).
+    // TODO: Optimize the convolution: e.g. using Karatsuba, Toom-Cook, or even NTT.
+    // TODO: Optimize the arithmetic in the convolution: M31 muls and adds are slower than u32s,
+    // because of the modulo operations, which are not necessary since the limbs are small.
+    pub fn calc(a: Felt252, b: Felt252, c: Felt252) -> Self {
+        let mut conv_res = vec![];
+
+        for i in 0..FELT252_CONV_LEN {
+            let mut conv = M31::default();
+            if i < FELT252_N_WORDS {
+                conv -= c.get_m31(i);
+            }
+            let convolution_start = max(i, FELT252_N_WORDS - 1) - (FELT252_N_WORDS - 1);
+            let convolution_end = min(i, FELT252_N_WORDS - 1);
+            for j in convolution_start..=convolution_end {
+                conv += a.get_m31(j) * b.get_m31(i - j)
+            }
+            conv_res.push(conv);
+        }
+
+        Self {
+            limbs: conv_res
+                .try_into()
+                .expect("Conv should have the right length"),
+        }
+    }
+}
+
+impl Default for Felt252Conv {
+    fn default() -> Self {
+        Self {
+            limbs: [M31::default(); FELT252_CONV_LEN],
+        }
+    }
+}
+
+impl ProverType for Felt252Conv {
+    fn calc(&self) -> String {
+        format!(
+            "[{}]",
+            self.limbs
+                .iter()
+                .map(|l| l.calc())
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    }
+    fn r#type() -> String {
+        "Felt252Conv".to_string()
     }
 }
 
