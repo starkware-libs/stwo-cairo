@@ -51,11 +51,11 @@ Install [Scarb](https://docs.swmansion.com/scarb/docs.html#installation), the Ca
 
 Make sure to use Scarb 2.10.0 onwards, or alternatively the latest nightly. After going through the installation steps above, you can do this by running:
 
-`asdf global scarb 2.10.0`
+`asdf set --home scarb 2.10.0`
 
 or
 
-`asdf global scarb latest:nightly`
+`asdf set --home scarb latest:nightly`
 
 ## Defining an Executable Package
 
