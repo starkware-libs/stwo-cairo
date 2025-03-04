@@ -17,7 +17,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::poseidon::const_columns::PoseidonRoundKeys;
-use super::LOG_MAX_ROWS;
+use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
