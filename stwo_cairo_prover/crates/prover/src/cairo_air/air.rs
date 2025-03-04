@@ -238,6 +238,7 @@ impl CairoClaimGenerator {
             &self.range_checks_trace_generator.rc_11_trace_generator,
             &self.range_checks_trace_generator.rc_19_trace_generator,
             &self.range_checks_trace_generator.rc_9_9_trace_generator,
+            &self.range_checks_trace_generator.rc_4_4_4_4_trace_generator,
             &self.verify_instruction_trace_generator,
         );
         span.exit();
