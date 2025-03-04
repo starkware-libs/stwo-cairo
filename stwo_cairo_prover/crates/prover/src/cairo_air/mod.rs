@@ -348,30 +348,22 @@ pub mod tests {
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
-            let input = generate_test_input("test_prove_verify_all_opcode_components");
-            for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
+            let input = generate_test_input("test_prove_verify_all_opcode_components_v2");
+            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 // TODO(Stav): Remove when `Blake` opcode is in the VM.
                 if opcode == "blake2s_opcode" {
                     continue;
                 }
 
-                // TODO(Ohadn): Remove when `qm31_add_mul_opcode` opcode is in the VM.
-                if opcode == "qm31_add_mul_opcode" {
-                    continue;
-                }
-
                 assert!(
-                    n_instances > 0,
+                    *n_instances > 0,
                     "{} isn't used in E2E full-Cairo opcode test",
                     opcode
                 );
             }
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                generate_test_input("test_prove_verify_all_opcode_components"),
-                test_cfg(),
-                PcsConfig::default(),
-            )
-            .unwrap();
+            let cairo_proof =
+                prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
+                    .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
         }
 
