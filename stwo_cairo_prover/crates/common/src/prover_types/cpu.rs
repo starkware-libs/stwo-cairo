@@ -1,3 +1,4 @@
+use std::cmp::{max, min};
 use std::fmt::Debug;
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 
@@ -40,6 +41,91 @@ impl ProverType for M31 {
     }
     fn r#type() -> String {
         "M31".to_string()
+    }
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
+pub struct BoundedM31 {
+    pub expr: M31,
+    pub max_bound: i32,
+    pub min_bound: i32,
+}
+
+impl ProverType for BoundedM31 {
+    fn calc(&self) -> String {
+        format!("({}, {}, {})", self.expr, self.max_bound, self.min_bound)
+    }
+    fn r#type() -> String {
+        "BoundedM31".to_string()
+    }
+}
+
+impl Add for BoundedM31 {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        Self {
+            expr: self.expr + other.expr,
+            max_bound: self.max_bound + other.max_bound,
+            min_bound: self.min_bound + other.min_bound,
+        }
+    }
+}
+
+impl Sub for BoundedM31 {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self {
+        Self {
+            expr: self.expr - other.expr,
+            max_bound: self.max_bound - other.min_bound,
+            min_bound: self.min_bound - other.max_bound,
+        }
+    }
+}
+
+impl From<(M31, i32, i32)> for BoundedM31 {
+    fn from((expr, max_bound, min_bound): (M31, i32, i32)) -> Self {
+        Self {
+            expr,
+            max_bound,
+            min_bound,
+        }
+    }
+}
+
+pub const CONV_LEN: usize = 2 * FELT252_N_WORDS - 1;
+pub const CONV_MAX_WORD: i32 = (1 << FELT252_BITS_PER_WORD) - 1;
+
+impl BoundedM31 {
+    // Compute the limbs of a * b - c in long-form: limb i holds the i-th coefficient of the
+    // convolution of a and b, minus the i-th coefficient of c (where i < FELT252_N_WORDS).
+    // TODO: Optimize the convolution: e.g. using Karatsuba, Toom-Cook, or even NTT.
+    // TODO: Optimize the arithmetic in the convolution: M31 muls and adds are slower than u32s,
+    // because of the modulo operations, which are not necessary since the limbs are small.
+    pub fn conv(a: Felt252, b: Felt252, c: Felt252) -> [BoundedM31; CONV_LEN] {
+        let mut conv_res = vec![];
+
+        for i in 0..CONV_LEN {
+            let mut conv = BoundedM31::default();
+            if i < FELT252_N_WORDS {
+                conv = conv - (c.get_m31(i), CONV_MAX_WORD, 0).into();
+            }
+            let convolution_start = max(i, FELT252_N_WORDS - 1) - (FELT252_N_WORDS - 1);
+            let convolution_end = min(i, FELT252_N_WORDS - 1);
+            for j in convolution_start..=convolution_end {
+                conv = conv
+                    + (
+                        a.get_m31(j) * b.get_m31(i - j),
+                        CONV_MAX_WORD * CONV_MAX_WORD,
+                        0,
+                    )
+                        .into()
+            }
+            conv_res.push(conv);
+        }
+
+        conv_res
+            .try_into()
+            .expect("Conv should have the right length")
     }
 }
 
