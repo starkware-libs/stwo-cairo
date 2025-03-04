@@ -112,6 +112,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
+    // let proof = serde_json::from_str(&std::fs::read_to_string(args.proof_path)?)?;
 
     if args.verify {
         verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
