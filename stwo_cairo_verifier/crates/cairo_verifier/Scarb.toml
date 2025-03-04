@@ -1,0 +1,19 @@
+[package]
+name = "stwo_cairo_verifier"
+version = "0.1.0"
+edition = "2024_07"
+
+[[target.executable]]
+
+[tool.fmt]
+sort-module-level-items = true
+
+[cairo]
+enable-gas = false
+
+[dependencies]
+stwo_cairo_air = { path = "../cairo_air" }
+cairo_execute = "2.9.2"
+
+[dev-dependencies]
+cairo_test = "2.9.2"
