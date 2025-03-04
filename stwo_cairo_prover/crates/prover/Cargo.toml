@@ -5,6 +5,7 @@ edition = "2021"
 
 [features]
 slow-tests = []
+relation-tracker = []
 
 # Define Nightly features in order to allow selective tests
 # Use the following #[cfg(feature = "nightly")]

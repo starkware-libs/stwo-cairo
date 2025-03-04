@@ -6,7 +6,7 @@ use stwo_cairo_adapter::plain::adapt_finished_runner;
 use stwo_cairo_adapter::vm_import::VmImportError;
 use stwo_cairo_prover::cairo_air::{
     default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError,
-    ConfigBuilder, ProverParameters,
+    ProverConfig, ProverParameters,
 };
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
@@ -30,8 +30,6 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
-    #[structopt(long = "track_relations")]
-    track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
     /// Verify the generated proof.
@@ -69,10 +67,9 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     // should disable trace padding (this is the mode Stwo uses).
     let cairo_runner = run_vm(&args.vm_args, true)?;
     let cairo_input = adapt_finished_runner(cairo_runner)?;
-    let prover_config = ConfigBuilder::default()
-        .track_relations(args.track_relations)
-        .display_components(args.display_components)
-        .build();
+    let prover_config = ProverConfig {
+        display_components: args.display_components,
+    };
 
     log::info!(
         "Casm states by opcode:\n{}",

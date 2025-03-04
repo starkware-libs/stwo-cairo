@@ -12,13 +12,11 @@ pub(crate) mod relations;
 
 pub use air::CairoProof;
 use air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
-use debug_tools::track_cairo_relations;
 use num_traits::Zero;
 use preprocessed::PreProcessedTrace;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
-use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
@@ -36,10 +34,7 @@ const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
-    ProverConfig {
-        track_relations,
-        display_components,
-    }: ProverConfig,
+    ProverConfig { display_components }: ProverConfig,
     pcs_config: PcsConfig,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
@@ -72,13 +67,19 @@ where
     claim.mix_into(channel);
     tree_builder.commit(channel);
 
-    if track_relations {
-        let relation_summary = RelationSummary::summarize_relations(&track_cairo_relations(
-            &commitment_scheme,
-            &claim,
-        ))
-        .cleaned();
-        println!("Relations summary: {:?}", relation_summary);
+    #[cfg(feature = "relation-tracker")]
+    {
+        use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
+
+        use crate::cairo_air::debug_tools::relation_tracker::track_cairo_relations;
+        tracing::info!(
+            "Relations summary: {:?}",
+            RelationSummary::summarize_relations(&track_cairo_relations(
+                &commitment_scheme,
+                &claim,
+            ))
+            .cleaned()
+        );
     }
 
     // Draw interaction elements.
@@ -168,41 +169,6 @@ pub fn verify_cairo<MC: MerkleChannel>(
 pub struct ProverConfig {
     /// Display components' metadata.
     pub display_components: bool,
-    /// Show the relations that do not sum to 0.
-    /// `Relation` is a proof related concept, and will be properly documented in the future.
-    /// Used for internal debugging of the lookup argument.
-    /// NOTE: Negatively affects performance.
-    // TODO(Ohad): Remove this flag.
-    pub track_relations: bool,
-}
-impl ProverConfig {
-    pub fn builder() -> ConfigBuilder {
-        ConfigBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ConfigBuilder {
-    track_relations: bool,
-    display_components: bool,
-}
-impl ConfigBuilder {
-    pub fn track_relations(mut self, value: bool) -> Self {
-        self.track_relations = value;
-        self
-    }
-
-    pub fn display_components(mut self, value: bool) -> Self {
-        self.display_components = value;
-        self
-    }
-
-    pub fn build(self) -> ProverConfig {
-        ProverConfig {
-            track_relations: self.track_relations,
-            display_components: self.display_components,
-        }
-    }
 }
 
 /// Concrete parameters of the proving system.
@@ -279,9 +245,6 @@ pub mod tests {
 
     pub fn test_cfg() -> ProverConfig {
         ProverConfig {
-            // TODO(Gali): Set track relations to true after implementing get_preprocessed_column in
-            // relation_tracker in stwo.
-            track_relations: false,
             display_components: true,
         }
     }
