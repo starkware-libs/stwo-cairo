@@ -1,5 +1,6 @@
 #![allow(unused_parens)]
 use itertools::Itertools;
+use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
