@@ -46,6 +46,6 @@ mod prelude;
 
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{
-    range_check_11, range_check_19, range_check_4_3, range_check_6, range_check_7_2_5,
-    range_check_9_9,
+    range_check_11, range_check_18, range_check_19, range_check_4_3, range_check_6,
+    range_check_7_2_5, range_check_9_9,
 };
