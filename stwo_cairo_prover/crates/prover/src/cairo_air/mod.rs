@@ -10,7 +10,6 @@ pub mod preprocessed_utils;
 pub mod prover;
 pub mod range_checks_air;
 pub(crate) mod relations;
-// TODO(Ohad): verifier crate.
 pub mod verifier;
 
 pub use air::CairoProof;

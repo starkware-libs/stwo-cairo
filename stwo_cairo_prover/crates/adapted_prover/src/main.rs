@@ -4,10 +4,8 @@ use std::process::ExitCode;
 use clap::Parser;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::cairo_air::prover::{
-    default_prod_prover_parameters, prove_cairo, ProverConfig, ProverParameters,
-};
-use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
+use stwo_cairo_prover::cairo_air::prover::{default_prod_prover_parameters, CairoProver};
+use stwo_cairo_prover::cairo_air::verifier::{CairoVerificationError, CairoVerifier};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::file_utils::{read_to_string, IoErrorWithPath};
 use stwo_prover::core::prover::ProvingError;
@@ -56,8 +54,6 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
-    #[structopt(long = "track_relations")]
-    track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
     /// Verify the generated proof.
@@ -93,27 +89,31 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 
     let vm_output: ProverInput =
         adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
-    let prover_config = ProverConfig {
-        display_components: args.display_components,
-    };
 
     log::info!(
         "Casm states by opcode:\n{}",
         vm_output.state_transitions.casm_states_by_opcode
     );
 
-    let ProverParameters { pcs_config } = match args.params_json {
+    let parameters = match args.params_json {
         Some(path) => serde_json::from_str(&read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
     };
 
+    let prover = CairoProver::new(parameters);
+
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
+    let (proof, component_info) = prover.prove::<Blake2sMerkleChannel>(vm_output)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
+    if args.display_components {
+        log::info!("Components:\n{}", component_info);
+    }
+
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
+        let verifier = CairoVerifier::new(parameters.pcs_config);
+        verifier.verify::<Blake2sMerkleChannel>(proof)?;
         log::info!("Proof verified successfully");
     }
 
