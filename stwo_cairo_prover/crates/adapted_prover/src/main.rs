@@ -101,10 +101,11 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let prover = CairoProver::new(prover_params);
 
     // TODO(Ohad): Propagate hash from CLI args.
-    let (proof, component_info) = prover.prove::<Blake2sMerkleChannel>(vm_output)?;
+    let artifacts = prover.prove::<Blake2sMerkleChannel>(vm_output)?;
+    let proof = artifacts.cairo_proof;
 
     if args.display_components {
-        log::info!("Components:\n{}", component_info);
+        log::info!("Components:\n{}", artifacts.debug_info);
     }
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 

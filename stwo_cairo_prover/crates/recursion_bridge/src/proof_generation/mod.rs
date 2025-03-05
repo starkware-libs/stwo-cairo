@@ -24,7 +24,10 @@ mod tests {
 
         let input = input_from_plain_casm_with_step_limit(instructions, 14);
         let prover = CairoProver::new(default_prod_prover_parameters());
-        let (proof, ..) = prover.prove::<Blake2sMerkleChannel>(input).unwrap();
+        let proof = prover
+            .prove::<Blake2sMerkleChannel>(input)
+            .unwrap()
+            .cairo_proof;
 
         let path = project_root().join("artifacts/jrl0_proof.json");
         std::fs::write(path, serde_json::to_string(&proof).unwrap()).unwrap();
