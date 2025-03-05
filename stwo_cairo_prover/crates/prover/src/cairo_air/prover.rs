@@ -31,7 +31,7 @@ impl CairoProver {
     pub fn prove<MC: MerkleChannel>(
         &self,
         input: ProverInput,
-    ) -> Result<(CairoProof<MC::H>, String), ProvingError>
+    ) -> Result<PostRunProver<MC>, ProvingError>
     where
         SimdBackend: BackendForChannel<MC>,
     {
@@ -100,21 +100,29 @@ impl CairoProver {
             CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
 
         // TODO(Ohad): decide an API for component info.
-        let component_info = format!("{component_builder}");
+        let debug_info = format!("{component_builder}");
         let components = component_builder.provers();
 
         // Prove stark.
-        let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+        let stark_proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
 
-        Ok((
-            CairoProof {
-                claim,
-                interaction_claim,
-                stark_proof: proof,
-            },
-            component_info,
-        ))
+        let cairo_proof = CairoProof {
+            claim,
+            interaction_claim,
+            stark_proof,
+        };
+        let post_run_prover = PostRunProver {
+            cairo_proof,
+            debug_info,
+        };
+
+        Ok(post_run_prover)
     }
+}
+
+pub struct PostRunProver<MC: MerkleChannel> {
+    pub cairo_proof: CairoProof<MC::H>,
+    pub debug_info: String,
 }
 
 /// Concrete parameters of the proving system.
@@ -189,7 +197,7 @@ pub mod tests {
     {
         let prover = CairoProver::new(default_prod_prover_parameters());
 
-        let (cairo_proof, _component_info) = prover.prove::<MC>(input)?;
+        let cairo_proof = prover.prove::<MC>(input)?.cairo_proof;
 
         Ok(cairo_proof)
     }
