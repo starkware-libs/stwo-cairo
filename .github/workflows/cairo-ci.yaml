@@ -31,7 +31,7 @@ jobs:
       - run: scarb test
 
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: stwo-cairo-l
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
