@@ -24,3 +24,4 @@ relation!(RangeCheck_3_3_3_3_3, 5);
 relation!(RangeCheckFelt252Width27, 10);
 relation!(VerifyInstruction, 29);
 relation!(VerifyBitwiseXor_9, 3);
+relation!(VerifyMul252, 56);

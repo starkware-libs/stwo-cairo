@@ -31,6 +31,7 @@ use crate::components::{
     poseidon_3_partial_rounds_chain, poseidon_builtin, poseidon_full_round_chain,
     poseidon_round_keys, range_check_builtin_bits_128, range_check_builtin_bits_96,
     range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9, verify_instruction,
+    verify_mul_252,
 };
 use crate::felt::split_f252;
 
@@ -613,10 +614,25 @@ where
                 cube_252::Eval {
                     claim: cube_252,
                     cube_252_lookup_elements: relations::Cube252::dummy(),
-                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                     range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+                    verify_mul_252_lookup_elements: relations::VerifyMul252::dummy(),
                 },
                 1 << cube_252.log_size,
+            )
+            .entries(trace),
+        );
+    }
+
+    if let Some(verify_mul_252) = claim.builtins.verify_mul_252 {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                verify_mul_252::Eval {
+                    claim: verify_mul_252,
+                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                    verify_mul_252_lookup_elements: relations::VerifyMul252::dummy(),
+                },
+                1 << verify_mul_252.log_size,
             )
             .entries(trace),
         );

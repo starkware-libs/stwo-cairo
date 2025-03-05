@@ -41,6 +41,7 @@ pub mod ret_opcode;
 pub mod utils;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
+pub mod verify_mul_252;
 
 mod prelude;
 

@@ -431,6 +431,22 @@ impl AsRef<[PackedM31; N_M31_IN_FELT252]> for PackedFelt252 {
     }
 }
 
+impl Pack for Felt252 {
+    type SimdType = PackedFelt252;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedFelt252::from_array(&inputs)
+    }
+}
+
+impl Unpack for PackedFelt252 {
+    type CpuType = Felt252;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        self.to_array()
+    }
+}
+
 pub trait EqExtend {
     fn eq(&self, other: Self) -> PackedBool;
 }

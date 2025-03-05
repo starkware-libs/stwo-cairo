@@ -326,7 +326,7 @@ pub mod tests {
     }
 
     #[cfg(test)]
-    #[cfg(feature = "slow-tests")]
+    // #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
         use itertools::Itertools;
         use stwo_cairo_adapter::vm_import::generate_test_input;
