@@ -11,103 +11,110 @@ use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
 use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{span, Level};
 
-use super::CairoProof;
 use crate::cairo_air::air::{
     lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
 };
-use crate::cairo_air::preprocessed::PreProcessedTrace;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 22;
 
-pub fn prove_cairo<MC: MerkleChannel>(
-    input: ProverInput,
-    ProverConfig { display_components }: ProverConfig,
-    pcs_config: PcsConfig,
-) -> Result<CairoProof<MC::H>, ProvingError>
-where
-    SimdBackend: BackendForChannel<MC>,
-{
-    let _span = span!(Level::INFO, "prove_cairo").entered();
-    let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
-            .circle_domain()
-            .half_coset,
-    );
+use super::CairoProof;
+use crate::cairo_air::preprocessed::PreProcessedTrace;
 
-    // Setup protocol.
-    let channel = &mut MC::C::default();
-    let mut commitment_scheme =
-        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
-
-    // Preprocessed trace.
-    let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(PreProcessedTrace::new().gen_trace());
-    tree_builder.commit(channel);
-
-    // Run Cairo.
-    let cairo_claim_generator = CairoClaimGenerator::new(input);
-    // Base trace.
-    let mut tree_builder = commitment_scheme.tree_builder();
-    let span = span!(Level::INFO, "Base trace").entered();
-    let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
-    span.exit();
-    claim.mix_into(channel);
-    tree_builder.commit(channel);
-
-    #[cfg(feature = "relation-tracker")]
-    {
-        use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
-
-        use crate::cairo_air::debug_tools::relation_tracker::track_cairo_relations;
-        tracing::info!(
-            "Relations summary: {:?}",
-            RelationSummary::summarize_relations(&track_cairo_relations(
-                &commitment_scheme,
-                &claim,
-            ))
-            .cleaned()
-        );
-    }
-
-    // Draw interaction elements.
-    let interaction_elements = CairoInteractionElements::draw(channel);
-
-    // Interaction trace.
-    let mut tree_builder = commitment_scheme.tree_builder();
-    let interaction_claim =
-        interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
-
-    // Validate lookup argument.
-    debug_assert_eq!(
-        lookup_sum(&claim, &interaction_elements, &interaction_claim),
-        SecureField::zero()
-    );
-
-    interaction_claim.mix_into(channel);
-    tree_builder.commit(channel);
-
-    // Component provers.
-    let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
-    let components = component_builder.provers();
-
-    // Prove stark.
-    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
-
-    if display_components {
-        println!("{}", component_builder);
-    }
-
-    Ok(CairoProof {
-        claim,
-        interaction_claim,
-        stark_proof: proof,
-    })
+pub struct CairoProver {
+    parameters: ProverParameters,
 }
+impl CairoProver {
+    pub fn new(parameters: ProverParameters) -> Self {
+        Self { parameters }
+    }
 
-#[derive(Default)]
-pub struct ProverConfig {
-    /// Display components' metadata.
-    pub display_components: bool,
+    pub fn prove<MC: MerkleChannel>(
+        &self,
+        input: ProverInput,
+    ) -> Result<(CairoProof<MC::H>, String), ProvingError>
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
+        let ProverParameters { pcs_config } = self.parameters;
+        let _span = span!(Level::INFO, "test_prove").entered();
+        let twiddles = SimdBackend::precompute_twiddles(
+            CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
+                .circle_domain()
+                .half_coset,
+        );
+
+        // Setup protocol.
+        let channel = &mut MC::C::default();
+        let mut commitment_scheme =
+            CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
+
+        // Preprocessed trace.
+        let mut tree_builder = commitment_scheme.tree_builder();
+        tree_builder.extend_evals(PreProcessedTrace::new().gen_trace());
+        tree_builder.commit(channel);
+
+        // Run Cairo.
+        let cairo_claim_generator = CairoClaimGenerator::new(input);
+        // Base trace.
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let span = span!(Level::INFO, "Base trace").entered();
+        let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+        span.exit();
+        claim.mix_into(channel);
+        tree_builder.commit(channel);
+
+        #[cfg(feature = "relation-tracker")]
+        {
+            use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
+
+            use crate::cairo_air::debug_tools::relation_tracker::track_cairo_relations;
+            tracing::info!(
+                "Relations summary: {:?}",
+                RelationSummary::summarize_relations(&track_cairo_relations(
+                    &commitment_scheme,
+                    &claim,
+                ))
+                .cleaned()
+            );
+        }
+
+        // Draw interaction elements.
+        let interaction_elements = CairoInteractionElements::draw(channel);
+
+        // Interaction trace.
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let interaction_claim =
+            interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+
+        // Validate lookup argument.
+        debug_assert_eq!(
+            lookup_sum(&claim, &interaction_elements, &interaction_claim),
+            SecureField::zero()
+        );
+
+        interaction_claim.mix_into(channel);
+        tree_builder.commit(channel);
+
+        // Component provers.
+        let component_builder =
+            CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
+
+        // TODO(Ohad): decide an API for execution resources.
+        let execution_resources = format!("{component_builder}");
+        let components = component_builder.provers();
+
+        // Prove stark.
+        let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+
+        Ok((
+            CairoProof {
+                claim,
+                interaction_claim,
+                stark_proof: proof,
+            },
+            execution_resources,
+        ))
+    }
 }
 
 /// Concrete parameters of the proving system.
@@ -141,21 +148,22 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 
 #[cfg(test)]
 pub mod tests {
-
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_cairo_adapter::ProverInput;
-    use stwo_prover::core::pcs::PcsConfig;
+    use stwo_prover::core::backend::simd::SimdBackend;
+    use stwo_prover::core::backend::BackendForChannel;
+    use stwo_prover::core::channel::MerkleChannel;
+    use stwo_prover::core::prover::ProvingError;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-    use super::{prove_cairo, ProverConfig};
-    use crate::cairo_air::verifier::verify_cairo;
+    use super::{default_prod_prover_parameters, CairoProver};
+    use crate::cairo_air::verifier::{verify_cairo, CairoVerificationError};
+    use crate::cairo_air::CairoProof;
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
         let instructions = casm! {
-            // TODO(AlonH): Add actual range check segment.
-            // Manually writing range check builtin segment of size 40 to memory.
             [ap] = u128_max, ap++;
             [ap + 38] = 1, ap++;
             ap += 38;
@@ -175,21 +183,32 @@ pub mod tests {
         input_from_plain_casm(instructions)
     }
 
-    pub fn test_cfg() -> ProverConfig {
-        ProverConfig {
-            display_components: true,
-        }
+    fn test_prove<MC: MerkleChannel>(input: ProverInput) -> Result<CairoProof<MC::H>, ProvingError>
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
+        let prover = CairoProver::new(default_prod_prover_parameters());
+
+        let (cairo_proof, _component_info) = prover.prove::<MC>(input)?;
+
+        Ok(cairo_proof)
+    }
+
+    fn test_verify<MC: MerkleChannel>(
+        proof: CairoProof<MC::H>,
+    ) -> Result<(), CairoVerificationError>
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
+        let pcs_config = default_prod_prover_parameters().pcs_config;
+        verify_cairo::<MC>(proof, pcs_config)
     }
 
     #[test]
     fn test_basic_cairo_air() {
-        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-            test_basic_cairo_air_input(),
-            test_cfg(),
-            PcsConfig::default(),
-        )
-        .unwrap();
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+        let input = test_basic_cairo_air_input();
+        let proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+        test_verify::<Blake2sMerkleChannel>(proof).unwrap();
     }
 
     #[cfg(test)]
@@ -199,25 +218,22 @@ pub mod tests {
 
         use itertools::Itertools;
         use stwo_cairo_serialize::CairoSerialize;
-        use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
         use super::*;
 
         #[test]
         fn generate_and_serialise_proof() {
-            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
-                test_basic_cairo_air_input(),
-                test_cfg(),
-                PcsConfig::default(),
-            )
-            .unwrap();
+            let input = test_basic_cairo_air_input();
+            let cairo_proof = test_prove::<Poseidon252MerkleChannel>(input).unwrap();
+
             let mut output = Vec::new();
             CairoSerialize::serialize(&cairo_proof, &mut output);
             let proof_str = output.iter().map(|v| v.to_string()).join(",");
             let mut file = std::fs::File::create("proof.cairo").unwrap();
             file.write_all(proof_str.as_bytes()).unwrap();
-            verify_cairo::<Poseidon252MerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+
+            test_verify::<Poseidon252MerkleChannel>(cairo_proof).unwrap();
         }
     }
 
@@ -232,34 +248,33 @@ pub mod tests {
 
         #[test]
         fn test_full_cairo_air() {
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                generate_test_input("test_read_from_small_files"),
-                test_cfg(),
-                PcsConfig::default(),
-            )
+            let cairo_proof = test_prove::<Blake2sMerkleChannel>(generate_test_input(
+                "test_read_from_small_files",
+            ))
             .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
             let input = generate_test_input("test_prove_verify_all_opcode_components_v2");
-            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
+            for (opcode, n_instances) in input.state_transitions.casm_states_by_opcode.counts() {
                 // TODO(Stav): Remove when `Blake` opcode is in the VM.
                 if opcode == "blake2s_opcode" {
                     continue;
                 }
 
                 assert!(
-                    *n_instances > 0,
+                    n_instances > 0,
                     "{} isn't used in E2E full-Cairo opcode test",
                     opcode
                 );
             }
-            let cairo_proof =
-                prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                    .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            let cairo_proof = test_prove::<Blake2sMerkleChannel>(generate_test_input(
+                "test_prove_verify_all_opcode_components_v2",
+            ))
+            .unwrap();
+            test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
         }
 
         // TODO(Ohad): remove ignore.
@@ -267,18 +282,11 @@ pub mod tests {
         #[test]
         fn test_proof_stability() {
             let n_proofs_to_compare = 10;
-
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
-                    serde_json::to_string(
-                        &prove_cairo::<Blake2sMerkleChannel>(
-                            test_basic_cairo_air_input(),
-                            test_cfg(),
-                            PcsConfig::default(),
-                        )
-                        .unwrap(),
-                    )
-                    .unwrap()
+                    let input = test_basic_cairo_air_input();
+                    let proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                    serde_json::to_string(&proof).unwrap()
                 })
                 .collect_vec();
 
@@ -314,19 +322,15 @@ pub mod tests {
             fn test_prove_verify_all_builtins() {
                 let input = generate_test_input("test_prove_verify_all_builtins");
                 assert_all_builtins_in_input(&input);
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                        .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+                let cairo_proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_add_mod_builtin() {
                 let input = generate_test_input("test_prove_verify_add_mod_builtin");
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                        .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+                let cairo_proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             /// Asserts that there is an unused `add` value in the first instance in bitwise
@@ -354,37 +358,29 @@ pub mod tests {
                     "test_prove_verify_bitwise_builtin",
                     &input.builtins_segments.bitwise,
                 );
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                        .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+                let cairo_proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_mul_mod_builtin() {
                 let input = generate_test_input("test_prove_verify_mul_mod_builtin");
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                        .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+                let cairo_proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_96_builtin() {
                 let input = generate_test_input("test_prove_verify_range_check_bits_96_builtin");
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                        .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+                let cairo_proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_128_builtin() {
                 let input = generate_test_input("test_prove_verify_range_check_bits_128_builtin");
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
-                        .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+                let cairo_proof = test_prove::<Blake2sMerkleChannel>(input).unwrap();
+                test_verify::<Blake2sMerkleChannel>(cairo_proof).unwrap();
             }
         }
     }
