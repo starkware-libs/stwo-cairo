@@ -4,10 +4,10 @@ use std::process::ExitCode;
 use clap::Parser;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::cairo_air::{
-    default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError,
-    ProverConfig, ProverParameters,
+use stwo_cairo_prover::cairo_air::prover::{
+    default_prod_prover_parameters, prove_cairo, ProverConfig, ProverParameters,
 };
+use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::file_utils::{read_to_string, IoErrorWithPath};
 use stwo_prover::core::prover::ProvingError;
