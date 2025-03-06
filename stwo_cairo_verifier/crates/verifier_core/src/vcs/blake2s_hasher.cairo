@@ -3,16 +3,15 @@ use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use crate::utils::SpanExTrait;
 use crate::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
-use crate::fields::m31::M31Zero;
-use crate::vcs::hasher::MerkleHasher;
 use crate::BaseField;
+use super::MerkleHasher;
 
 const M31_ELEMENETS_IN_MSG: usize = 16;
 
 /// State for Blake2s hash.
 type Blake2sState = Box<[u32; 8]>;
 
-pub impl Blake2sMerkleHasher of MerkleHasher {
+pub impl Blake2sMerkleHasherImpl of MerkleHasher {
     type Hash = Blake2sHash;
 
     fn hash_node(
@@ -140,12 +139,12 @@ impl Blake2sHashSerde of Serde<Blake2sHash> {
 mod tests {
     use core::box::BoxImpl;
     use crate::fields::m31::m31;
-    use super::{Blake2sHash, Blake2sMerkleHasher};
+    use super::{Blake2sHash, Blake2sMerkleHasherImpl};
 
     #[test]
     fn test_hash_node_with_no_children() {
         assert_eq!(
-            Blake2sMerkleHasher::hash_node(None, array![m31(0), m31(1)].span()).hash.unbox(),
+            Blake2sMerkleHasherImpl::hash_node(None, array![m31(0), m31(1)].span()).hash.unbox(),
             [
                 3950351958, 4278888560, 2450494307, 4106812851, 2998960590, 1139581150, 933467563,
                 4130483740,
@@ -172,7 +171,7 @@ mod tests {
             ),
         };
         assert_eq!(
-            Blake2sMerkleHasher::hash_node(Some((l_node, r_node)), array![m31(3)].span())
+            Blake2sMerkleHasherImpl::hash_node(Some((l_node, r_node)), array![m31(3)].span())
                 .hash
                 .unbox(),
             [
@@ -225,7 +224,7 @@ mod tests {
             m31(21),
         ];
         assert_eq!(
-            Blake2sMerkleHasher::hash_node(Some((l_node, r_node)), values.span()).hash.unbox(),
+            Blake2sMerkleHasherImpl::hash_node(Some((l_node, r_node)), values.span()).hash.unbox(),
             [
                 1822702744, 914685986, 3195420188, 541197842, 3984139296, 2532724566, 4128774187,
                 3849664352,

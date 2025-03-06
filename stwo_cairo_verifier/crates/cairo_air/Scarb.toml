@@ -14,4 +14,4 @@ stwo_verifier_core = { path = "../verifier_core" }
 stwo_constraint_framework = { path = "../constraint_framework" }
 
 [dev-dependencies]
-cairo_test = "2.9.2"
+cairo_test = "2.10.1"
