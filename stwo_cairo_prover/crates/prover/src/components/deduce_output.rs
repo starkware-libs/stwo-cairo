@@ -27,8 +27,6 @@ impl poseidon_round_keys::ClaimGenerator {
 }
 
 impl poseidon_3_partial_rounds_chain::ClaimGenerator {
-    // TODO(Gali): Remove.
-    #[allow(dead_code)]
     pub fn deduce_output(
         &self,
         input: (PackedM31, PackedM31, [PackedFelt252Width27; 4]),
@@ -41,8 +39,6 @@ impl poseidon_3_partial_rounds_chain::ClaimGenerator {
 }
 
 impl poseidon_full_round_chain::ClaimGenerator {
-    // TODO(Gali): Remove.
-    #[allow(dead_code)]
     pub fn deduce_output(
         &self,
         input: (PackedM31, PackedM31, [PackedFelt252Width27; 3]),
