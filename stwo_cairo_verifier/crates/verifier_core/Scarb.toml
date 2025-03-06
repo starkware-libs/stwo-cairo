@@ -7,7 +7,9 @@ edition = "2024_07"
 casm = true
 
 [features]
+default = ["qm31_opcode"]
 blake2s_verifier = []
+qm31_opcode = []
 
 [tool.fmt]
 sort-module-level-items = true
@@ -16,4 +18,4 @@ sort-module-level-items = true
 bounded_int = { path = "../bounded_int" }
 
 [dev-dependencies]
-cairo_test = "2.9.2"
+cairo_test = "2.10.1"

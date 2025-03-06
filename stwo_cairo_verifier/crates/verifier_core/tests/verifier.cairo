@@ -1,8 +1,9 @@
+use core::num::traits::Zero;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -11,16 +12,13 @@ use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::verifier::{Air, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
-#[cfg(not(feature: "blake2s_verifier"))]
 mod fib_128_column_with_blowup_16_proof;
-#[cfg(not(feature: "blake2s_verifier"))]
 mod fib_128_column_with_blowup_2_proof;
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
 #[available_gas(100000000000)]
 #[ignore]
-#[cfg(not(feature: "blake2s_verifier"))]
 fn test_horizontal_fib_128_column_with_blowup_16() {
     let proof = fib_128_column_with_blowup_16_proof::proof();
     let config = PcsConfig {
@@ -54,7 +52,6 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
 #[test]
 #[available_gas(100000000000)]
 #[ignore]
-#[cfg(not(feature: "blake2s_verifier"))]
 fn test_horizontal_fib_128_column_with_blowup_2() {
     let proof = fib_128_column_with_blowup_2_proof::proof();
     let config = PcsConfig {
@@ -107,7 +104,7 @@ impl FibAirImpl<const N_COLUMNS: usize> of Air<FibAir<N_COLUMNS>> {
         random_coeff: QM31,
     ) -> QM31 {
         let base_trace_tree = *mask_values[1];
-        let mut constraint_acc = QM31Zero::zero();
+        let mut constraint_acc = Zero::zero();
 
         for i in 2..N_COLUMNS {
             let a_col = *base_trace_tree[i - 2];
