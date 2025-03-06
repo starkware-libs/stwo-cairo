@@ -1,5 +1,6 @@
 #![allow(unused_parens)]
 use stwo_cairo_common::preprocessed_consts::poseidon::{N_ROUNDS, N_WORDS};
+use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim};
 use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
