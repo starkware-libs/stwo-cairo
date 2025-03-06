@@ -165,7 +165,7 @@ fn draw_random_words(ref channel: Blake2sChannel) -> Box<[u32; 8]> {
 #[cfg(test)]
 mod tests {
     use core::box::BoxImpl;
-    use crate::fields::qm31::qm31;
+    use crate::fields::qm31::qm31_const;
     use super::{Blake2sChannel, ChannelTrait, new_channel};
 
     #[test]
@@ -223,7 +223,7 @@ mod tests {
 
         // Tested against values produced from Rust code.
         // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-        assert_eq!(felt, qm31(2094729646, 876761046, 906620817, 1981437117));
+        assert_eq!(felt, qm31_const::<2094729646, 876761046, 906620817, 1981437117>());
     }
 
     #[test]
@@ -237,14 +237,14 @@ mod tests {
         assert_eq!(
             felts,
             array![
-                qm31(2094729646, 876761046, 906620817, 1981437117),
-                qm31(462808201, 893371832, 1666609051, 592753803),
-                qm31(2092874317, 1414799646, 202729759, 1138457893),
-                qm31(740261418, 1566411288, 1094134286, 1085813917),
-                qm31(1782652641, 591937235, 375882621, 687600507),
-                qm31(417708784, 676515713, 1053713500, 313648782),
-                qm31(1896458727, 242850046, 267152034, 827396985),
-                qm31(1959202869, 765813487, 1783334404, 305015811),
+                qm31_const::<2094729646, 876761046, 906620817, 1981437117>(),
+                qm31_const::<462808201, 893371832, 1666609051, 592753803>(),
+                qm31_const::<2092874317, 1414799646, 202729759, 1138457893>(),
+                qm31_const::<740261418, 1566411288, 1094134286, 1085813917>(),
+                qm31_const::<1782652641, 591937235, 375882621, 687600507>(),
+                qm31_const::<417708784, 676515713, 1053713500, 313648782>(),
+                qm31_const::<1896458727, 242850046, 267152034, 827396985>(),
+                qm31_const::<1959202869, 765813487, 1783334404, 305015811>(),
             ],
         );
     }
@@ -253,7 +253,7 @@ mod tests {
     fn test_mix_felts_with_1_felt() {
         let mut channel: Blake2sChannel = Default::default();
 
-        channel.mix_felts([qm31(1, 2, 3, 4)].span());
+        channel.mix_felts([qm31_const::<1, 2, 3, 4>()].span());
 
         // Tested against values produced from Rust code.
         // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
@@ -270,7 +270,7 @@ mod tests {
     fn test_mix_felts_with_2_felts() {
         let mut channel: Blake2sChannel = Default::default();
 
-        channel.mix_felts([qm31(1, 2, 3, 4), qm31(5, 6, 7, 8)].span());
+        channel.mix_felts([qm31_const::<1, 2, 3, 4>(), qm31_const::<5, 6, 7, 8>()].span());
 
         // Tested against values produced from Rust code.
         // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
@@ -287,7 +287,14 @@ mod tests {
     fn test_mix_felts_with_3_felts() {
         let mut channel: Blake2sChannel = Default::default();
 
-        channel.mix_felts([qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12)].span());
+        channel
+            .mix_felts(
+                [
+                    qm31_const::<1, 2, 3, 4>(), qm31_const::<5, 6, 7, 8>(),
+                    qm31_const::<9, 10, 11, 12>(),
+                ]
+                    .span(),
+            );
 
         // Tested against values produced from Rust code.
         // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
@@ -306,7 +313,10 @@ mod tests {
 
         channel
             .mix_felts(
-                [qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12), qm31(13, 14, 15, 16)]
+                [
+                    qm31_const::<1, 2, 3, 4>(), qm31_const::<5, 6, 7, 8>(),
+                    qm31_const::<9, 10, 11, 12>(), qm31_const::<13, 14, 15, 16>(),
+                ]
                     .span(),
             );
 
@@ -328,8 +338,9 @@ mod tests {
         channel
             .mix_felts(
                 [
-                    qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12), qm31(13, 14, 15, 16),
-                    qm31(17, 18, 19, 20),
+                    qm31_const::<1, 2, 3, 4>(), qm31_const::<5, 6, 7, 8>(),
+                    qm31_const::<9, 10, 11, 12>(), qm31_const::<13, 14, 15, 16>(),
+                    qm31_const::<17, 18, 19, 20>(),
                 ]
                     .span(),
             );

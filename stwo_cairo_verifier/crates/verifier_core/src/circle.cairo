@@ -8,8 +8,8 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
 use crate::fields::cm31::CM31;
-use crate::fields::m31::{M31, M31Impl};
-use crate::fields::qm31::{QM31, QM31Impl, QM31One, QM31Trait};
+use crate::fields::m31::{M31, M31Trait};
+use crate::fields::qm31::{QM31, QM31Trait};
 use crate::fields::Invertible;
 use super::utils::pow2;
 
@@ -100,8 +100,8 @@ pub impl ChannelGetRandomCirclePointImpl<
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
         let t = self.draw_felt();
         let t_squared = t * t;
-        let t_squared_plus_1_inv = (t_squared + QM31One::one()).inverse();
-        let x = (QM31One::one() - t_squared) * t_squared_plus_1_inv;
+        let t_squared_plus_1_inv = (t_squared + One::one()).inverse();
+        let x = (One::one() - t_squared) * t_squared_plus_1_inv;
         let y = (t + t) * t_squared_plus_1_inv;
         CirclePoint { x, y }
     }
@@ -279,7 +279,6 @@ impl CirclePointIndexPartialEx of PartialEq<CirclePointIndex> {
 #[cfg(test)]
 mod tests {
     use crate::fields::m31::m31;
-    use crate::fields::qm31::QM31One;
     use super::{
         CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
         CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,

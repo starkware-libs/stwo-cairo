@@ -10,8 +10,11 @@ casm = true
 [tool.fmt]
 sort-module-level-items = true
 
+[features]
+qm31_opcode = []
+
 [dependencies]
 bounded_int = { path = "../bounded_int" }
 
 [dev-dependencies]
-cairo_test = "2.9.2"
+cairo_test = "2.10.1"

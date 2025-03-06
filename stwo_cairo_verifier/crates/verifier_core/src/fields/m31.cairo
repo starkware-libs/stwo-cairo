@@ -6,14 +6,27 @@ use super::{BatchInvertible, Invertible};
 pub const P: felt252 = 0x7fffffff;
 pub const P_U32: u32 = 0x7fffffff;
 
-type M31InnerT = BoundedInt<0, { P - 1 }>;
+pub type M31InnerT = BoundedInt<0, { P - 1 }>;
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
+#[cfg(feature: "qm31_opcode")]
+pub struct M31 {
+    pub inner: super::qm31::QM31,
+}
+
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
+#[cfg(not(feature: "qm31_opcode"))]
 pub struct M31 {
     pub inner: M31InnerT,
 }
 
 pub impl M31InvertibleImpl of Invertible<M31> {
+    #[cfg(feature: "qm31_opcode")]
+    fn inverse(self: M31) -> M31 {
+        M31 { inner: self.inner.inverse() }
+    }
+
+    #[cfg(not(feature: "qm31_opcode"))]
     fn inverse(self: M31) -> M31 {
         assert!(self.is_non_zero());
         let t0 = sqn(self, 2) * self;
@@ -28,7 +41,42 @@ pub impl M31InvertibleImpl of Invertible<M31> {
 
 pub impl M31BatchInvertibleImpl of BatchInvertible<M31> {}
 
-#[generate_trait]
+pub trait M31Trait {
+    fn reduce_u32(val: u32) -> M31;
+
+    fn reduce_u64(val: u64) -> M31;
+
+    fn reduce_u128(val: u128) -> M31;
+}
+
+#[cfg(feature: "qm31_opcode")]
+pub impl M31Impl of M31Trait {
+    #[inline]
+    fn reduce_u32(val: u32) -> M31 {
+        let (_, res) = div_rem(val, NZ_M31_P);
+        let v: M31InnerT = upcast(res);
+        let zero: M31InnerT = 0;
+        M31 { inner: QM31Impl::from_array([v, zero, zero, zero]) }
+    }
+
+    #[inline]
+    fn reduce_u64(val: u64) -> M31 {
+        let (_, res) = div_rem(val, NZ_M31_P);
+        let v: M31InnerT = upcast(res);
+        let zero: M31InnerT = 0;
+        M31 { inner: QM31Impl::from_array([v, zero, zero, zero]) }
+    }
+
+    #[inline]
+    fn reduce_u128(val: u128) -> M31 {
+        let (_, res) = div_rem(val, NZ_M31_P);
+        let v: M31InnerT = upcast(res);
+        let zero: M31InnerT = 0;
+        M31 { inner: QM31Impl::from_array([v, zero, zero, zero]) }
+    }
+}
+
+#[cfg(not(feature: "qm31_opcode"))]
 pub impl M31Impl of M31Trait {
     #[inline]
     fn reduce_u32(val: u32) -> M31 {
@@ -51,6 +99,13 @@ pub impl M31Impl of M31Trait {
 
 pub impl M31Add of core::traits::Add<M31> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn add(lhs: M31, rhs: M31) -> M31 {
+        M31 { inner: lhs.inner + rhs.inner }
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn add(lhs: M31, rhs: M31) -> M31 {
         let sum = bounded_int::add(lhs.inner, rhs.inner);
         let res = match bounded_int::constrain::<BoundedInt<0, { 2 * (P - 1) }>, P>(sum) {
@@ -64,6 +119,13 @@ pub impl M31Add of core::traits::Add<M31> {
 
 pub impl M31Sub of core::traits::Sub<M31> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn sub(lhs: M31, rhs: M31) -> M31 {
+        M31 { inner: lhs.inner - rhs.inner }
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn sub(lhs: M31, rhs: M31) -> M31 {
         let diff = bounded_int::sub(lhs.inner, rhs.inner);
         let res = match bounded_int::constrain::<BoundedInt<{ -(P - 1) }, { P - 1 }>, 0>(diff) {
@@ -77,9 +139,16 @@ pub impl M31Sub of core::traits::Sub<M31> {
 
 pub impl M31Mul of core::traits::Mul<M31> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn mul(lhs: M31, rhs: M31) -> M31 {
+        M31 { inner: lhs.inner * rhs.inner }
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn mul(lhs: M31, rhs: M31) -> M31 {
         let lhs_as_u32: u32 = upcast(lhs.inner);
-        M31Impl::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner)))
+        M31Trait::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner)))
     }
 }
 
@@ -107,14 +176,37 @@ pub impl M31MulAssign of MulAssign<M31, M31> {
 
 pub impl M31Zero of core::num::traits::Zero<M31> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn zero() -> M31 {
+        M31 { inner: Zero::zero() }
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn zero() -> M31 {
         M31 { inner: 0 }
     }
 
+    #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn is_zero(self: @M31) -> bool {
+        self.inner.is_zero()
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn is_zero(self: @M31) -> bool {
         *self.inner == 0
     }
 
+    #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn is_non_zero(self: @M31) -> bool {
+        self.inner.is_non_zero()
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn is_non_zero(self: @M31) -> bool {
         *self.inner != 0
     }
@@ -122,14 +214,37 @@ pub impl M31Zero of core::num::traits::Zero<M31> {
 
 pub impl M31One of core::num::traits::One<M31> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn one() -> M31 {
+        M31 { inner: One::one() }
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn one() -> M31 {
         M31 { inner: 1 }
     }
 
+    #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn is_one(self: @M31) -> bool {
+        self.inner.is_one()
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn is_one(self: @M31) -> bool {
         *self.inner == 1
     }
 
+    #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn is_non_one(self: @M31) -> bool {
+        self.inner.is_non_one()
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn is_non_one(self: @M31) -> bool {
         *self.inner != 1
     }
@@ -137,6 +252,13 @@ pub impl M31One of core::num::traits::One<M31> {
 
 pub impl M31Neg of Neg<M31> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn neg(a: M31) -> M31 {
+        M31 { inner: -a.inner }
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn neg(a: M31) -> M31 {
         M31 { inner: 0 } - a
     }
@@ -144,6 +266,13 @@ pub impl M31Neg of Neg<M31> {
 
 impl M31IntoU32 of Into<M31, u32> {
     #[inline]
+    #[cfg(feature: "qm31_opcode")]
+    fn into(self: M31) -> u32 { // self.inner.inner.to_array();
+    // TODO
+    }
+
+    #[inline]
+    #[cfg(not(feature: "qm31_opcode"))]
     fn into(self: M31) -> u32 {
         upcast(self.inner)
     }
@@ -156,14 +285,10 @@ impl M31IntoFelt252 of Into<M31, felt252> {
     }
 }
 
-impl U32TryIntoM31 of TryInto<u32, M31> {
+impl U32IntoM31 of Into<u32, M31> {
     #[inline]
-    fn try_into(self: u32) -> Option<M31> {
-        if self >= P_U32 {
-            return None;
-        }
-
-        Some(M31Impl::reduce_u32(self))
+    fn into(self: u32) -> M31 {
+        M31Trait::reduce_u32(self)
     }
 }
 
@@ -179,7 +304,7 @@ impl M31PartialOrd of PartialOrd<M31> {
 
 #[inline]
 pub fn m31(val: u32) -> M31 {
-    M31Impl::reduce_u32(val)
+    M31Trait::reduce_u32(val)
 }
 
 #[derive(Copy, Drop, Debug)]
@@ -209,6 +334,7 @@ impl M31IntoUnreducedM31 of Into<M31, UnreducedM31> {
 }
 
 /// Returns `v^(2^n)`.
+#[cfg(not(feature: "qm31_opcode"))]
 fn sqn(v: M31, n: usize) -> M31 {
     if n == 0 {
         return v;

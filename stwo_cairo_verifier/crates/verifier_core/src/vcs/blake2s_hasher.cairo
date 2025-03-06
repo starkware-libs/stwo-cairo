@@ -1,7 +1,6 @@
 use core::array::ArrayTrait;
 use core::blake::blake2s_compress;
 use core::box::BoxImpl;
-use crate::fields::m31::M31Zero;
 use crate::BaseField;
 use super::MerkleHasher;
 

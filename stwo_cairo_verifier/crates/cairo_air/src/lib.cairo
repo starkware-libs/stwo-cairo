@@ -136,7 +136,7 @@ use stwo_verifier_core::channel::poseidon252::Poseidon252Channel;
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::M31;
-use stwo_verifier_core::fields::qm31::{QM31, QM31Zero};
+use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -393,7 +393,7 @@ impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
     }
 
     fn sum(self: @BuiltinsInteractionClaim) -> QM31 {
-        let mut sum = QM31Zero::zero();
+        let mut sum = Zero::zero();
 
         if let Some(claim) = self.bitwise_builtin {
             sum += *claim.claimed_sum;
@@ -489,7 +489,7 @@ impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
     }
 
     fn sum(self: @RangeChecksInteractionClaim) -> QM31 {
-        let mut sum = QM31Zero::zero();
+        let mut sum = Zero::zero();
         sum += *self.rc_6.claimed_sum;
         sum += *self.rc_11.claimed_sum;
         sum += *self.rc_12.claimed_sum;
@@ -729,7 +729,7 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     }
 
     fn sum(self: @OpcodeInteractionClaim) -> QM31 {
-        let mut sum = QM31Zero::zero();
+        let mut sum = Zero::zero();
 
         for interaction_claim in self.add.span() {
             sum += *interaction_claim.claimed_sum;
@@ -854,7 +854,7 @@ pub struct PublicData {
 impl PublicDataImpl of PublicDataTrait {
     fn logup_sum(self: @PublicData, lookup_elements: @CairoInteractionElements) -> QM31 {
         // TODO(Ohad): Optimized inverse.
-        let mut sum = QM31Zero::zero();
+        let mut sum = Zero::zero();
 
         // TODO(andrew): Consider batch inverse here.
         for entry in self.public_memory.span() {
@@ -1342,7 +1342,7 @@ impl CairoAirImpl of Air<CairoAir> {
         mask_values: TreeSpan<ColumnSpan<Span<QM31>>>,
         random_coeff: QM31,
     ) -> QM31 {
-        let mut sum = QM31Zero::zero();
+        let mut sum = Zero::zero();
 
         let [
             preprocessed_mask_values,
