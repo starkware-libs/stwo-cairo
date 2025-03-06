@@ -14,6 +14,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo_cairo_verifier"
+version = "0.1.0"
+dependencies = [
+ "stwo_cairo_air",
+]
+
+[[package]]
 name = "stwo_constraint_framework"
 version = "0.1.0"
 dependencies = [
