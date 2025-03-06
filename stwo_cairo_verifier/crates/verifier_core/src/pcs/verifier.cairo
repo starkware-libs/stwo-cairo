@@ -8,7 +8,7 @@ use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::vcs::MerkleHasher;
+use crate::vcs::{MerkleHasher, MerkleHasherImpl};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
@@ -20,7 +20,7 @@ pub struct CommitmentSchemeProof {
     pub commitments: TreeSpan<Hash>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
-    pub decommitments: TreeArray<MerkleDecommitment<MerkleHasher>>,
+    pub decommitments: TreeArray<MerkleDecommitment<MerkleHasherImpl>>,
     /// All queried trace values.
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
@@ -29,10 +29,9 @@ pub struct CommitmentSchemeProof {
 
 
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
-// TODO(andrew): Make generic on MerkleChannel.
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
-    pub trees: Array<MerkleVerifier<MerkleHasher>>,
+    pub trees: Array<MerkleVerifier<MerkleHasherImpl>>,
     pub config: PcsConfig,
 }
 
