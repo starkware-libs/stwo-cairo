@@ -16,14 +16,16 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
 use crate::components::{
-    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
-    range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
+    add_mod_builtin, bitwise_builtin, cube_252, memory_address_to_id, memory_id_to_big,
+    range_check_19, range_check_6, range_check_9_9, range_check_builtin_bits_128,
+    range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
+    pub cube_252: Option<cube_252::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
 }
@@ -34,6 +36,9 @@ impl BuiltinsClaim {
         }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             bitwise_builtin.mix_into(channel);
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            cube_252.mix_into(channel);
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             range_check_96_builtin.mix_into(channel);
@@ -51,6 +56,9 @@ impl BuiltinsClaim {
             self.bitwise_builtin
                 .map(|bitwise_builtin| bitwise_builtin.log_sizes())
                 .into_iter(),
+            self.cube_252
+                .map(|cube_252| cube_252.log_sizes())
+                .into_iter(),
             self.range_check_96_builtin
                 .map(|range_check_96_builtin| range_check_96_builtin.log_sizes())
                 .into_iter(),
@@ -64,6 +72,7 @@ impl BuiltinsClaim {
 pub struct BuiltinsClaimGenerator {
     add_mod_builtin_trace_generator: Option<add_mod_builtin::ClaimGenerator>,
     bitwise_builtin_trace_generator: Option<bitwise_builtin::ClaimGenerator>,
+    cube_252_trace_generator: Option<cube_252::ClaimGenerator>,
     range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
     range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
 }
@@ -95,6 +104,9 @@ impl BuiltinsClaimGenerator {
             );
             bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
+        // TODO(Gali): Once poseidon builtin is integrated switch to
+        // builtin_segments.poseidon.as_ref().map(|_| cube_252::ClaimGenerator::new());
+        let cube_252_trace_generator = None;
         let range_check_96_builtin_trace_generator =
             builtin_segments.range_check_bits_96.map(|segment| {
                 let segment_length = segment.stop_ptr - segment.begin_addr;
@@ -124,6 +136,7 @@ impl BuiltinsClaimGenerator {
         Self {
             add_mod_builtin_trace_generator,
             bitwise_builtin_trace_generator,
+            cube_252_trace_generator,
             range_check_96_builtin_trace_generator,
             range_check_128_builtin_trace_generator,
         }
@@ -135,6 +148,8 @@ impl BuiltinsClaimGenerator {
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
+        range_check_19_trace_generator: &range_check_19::ClaimGenerator,
+        range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator)
     where
@@ -158,6 +173,16 @@ impl BuiltinsClaimGenerator {
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
                     verify_bitwise_xor_9_trace_generator,
+                )
+            })
+            .unzip();
+        let (cube_252_claim, cube_252_interaction_gen) = self
+            .cube_252_trace_generator
+            .map(|cube_252_trace_generator| {
+                cube_252_trace_generator.write_trace(
+                    tree_builder,
+                    range_check_19_trace_generator,
+                    range_check_9_9_trace_generator,
                 )
             })
             .unzip();
@@ -187,12 +212,14 @@ impl BuiltinsClaimGenerator {
             BuiltinsClaim {
                 add_mod_builtin: add_mod_builtin_claim,
                 bitwise_builtin: bitwise_builtin_claim,
+                cube_252: cube_252_claim,
                 range_check_96_builtin: range_check_96_builtin_claim,
                 range_check_128_builtin: range_check_128_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
                 add_mod_builtin_interaction_gen,
                 bitwise_builtin_interaction_gen,
+                cube_252_interaction_gen,
                 range_check_96_builtin_interaction_gen,
                 range_check_128_builtin_interaction_gen,
             },
@@ -204,6 +231,7 @@ impl BuiltinsClaimGenerator {
 pub struct BuiltinsInteractionClaim {
     pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
+    pub cube_252: Option<cube_252::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
 }
@@ -214,6 +242,9 @@ impl BuiltinsInteractionClaim {
         }
         if let Some(bitwise_builtin) = self.bitwise_builtin {
             bitwise_builtin.mix_into(channel)
+        }
+        if let Some(cube_252) = self.cube_252 {
+            cube_252.mix_into(channel)
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             range_check_96_builtin.mix_into(channel);
@@ -231,6 +262,9 @@ impl BuiltinsInteractionClaim {
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             sum += bitwise_builtin.claimed_sum;
         }
+        if let Some(cube_252) = &self.cube_252 {
+            sum += cube_252.claimed_sum;
+        }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             sum += range_check_96_builtin.claimed_sum;
         }
@@ -244,6 +278,7 @@ impl BuiltinsInteractionClaim {
 pub struct BuiltinsInteractionClaimGenerator {
     add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
     bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
+    cube_252_interaction_gen: Option<cube_252::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
         Option<range_check_builtin_bits_96::InteractionClaimGenerator>,
     range_check_128_builtin_interaction_gen:
@@ -277,6 +312,16 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.verify_bitwise_xor_9,
                     )
                 });
+        let cube_252_interaction_claim =
+            self.cube_252_interaction_gen
+                .map(|cube_252_interaction_gen| {
+                    cube_252_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.cube_252,
+                        &interaction_elements.range_checks.rc_19,
+                        &interaction_elements.range_checks.rc_9_9,
+                    )
+                });
         let range_check_96_builtin_interaction_claim = self
             .range_check_96_builtin_interaction_gen
             .map(|range_check_96_builtin_interaction_gen| {
@@ -300,6 +345,7 @@ impl BuiltinsInteractionClaimGenerator {
         BuiltinsInteractionClaim {
             add_mod_builtin: add_mod_builtin_interaction_claim,
             bitwise_builtin: bitwise_builtin_interaction_claim,
+            cube_252: cube_252_interaction_claim,
             range_check_96_builtin: range_check_96_builtin_interaction_claim,
             range_check_128_builtin: range_check_128_builtin_interaction_claim,
         }
@@ -309,6 +355,7 @@ impl BuiltinsInteractionClaimGenerator {
 pub struct BuiltinComponents {
     add_mod_builtin: Option<add_mod_builtin::Component>,
     bitwise_builtin: Option<bitwise_builtin::Component>,
+    cube_252: Option<cube_252::Component>,
     range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
     range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
 }
@@ -350,6 +397,21 @@ impl BuiltinComponents {
                         .clone(),
                 },
                 interaction_claim.bitwise_builtin.unwrap().claimed_sum,
+            )
+        });
+        let cube_252_component = claim.cube_252.map(|cube_252| {
+            cube_252::Component::new(
+                tree_span_provider,
+                cube_252::Eval {
+                    claim: cube_252,
+                    cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+                    range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+                    range_check_9_9_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_9_9
+                        .clone(),
+                },
+                interaction_claim.cube_252.unwrap().claimed_sum,
             )
         });
         let range_check_96_builtin_component =
@@ -399,6 +461,7 @@ impl BuiltinComponents {
         Self {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
+            cube_252: cube_252_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
         }
@@ -411,6 +474,9 @@ impl BuiltinComponents {
         }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
             vec.push(bitwise_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            vec.push(cube_252 as &dyn ComponentProver<SimdBackend>);
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             vec.push(range_check_96_builtin as &dyn ComponentProver<SimdBackend>);
@@ -437,6 +503,9 @@ impl std::fmt::Display for BuiltinComponents {
                 "BitwiseBuiltin: {}",
                 indented_component_display(bitwise_builtin)
             )?;
+        }
+        if let Some(cube_252) = &self.cube_252 {
+            writeln!(f, "Cube252: {}", indented_component_display(cube_252))?;
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
             writeln!(
