@@ -6,7 +6,7 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -902,7 +902,7 @@ pub fn intermediate0(
     (VerifyInstruction_alpha0) * (trace_1_column_0_offset_0)
         + (VerifyInstruction_alpha1) * (trace_1_column_3_offset_0)
         + (VerifyInstruction_alpha2) * (trace_1_column_4_offset_0)
-        + (VerifyInstruction_alpha3) * (qm31(32769, 0, 0, 0))
+        + (VerifyInstruction_alpha3) * (qm31_const::<32769, 0, 0, 0>())
         + (VerifyInstruction_alpha4) * (trace_1_column_5_offset_0)
         + (VerifyInstruction_alpha5) * (trace_1_column_6_offset_0)
         + VerifyInstruction_alpha6
