@@ -38,11 +38,11 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
     commitment_scheme
         .commit(
             *proof.commitment_scheme_proof.commitments[1],
-            ArrayImpl::new_repeated(128, log_size).span(),
+            ArrayImpl::new_repeated(n: 128, v: log_size).span(),
             ref channel,
         );
 
-    if let Result::Err(err) = verify(air, ref channel, proof, commitment_scheme) {
+    if let Err(err) = verify(air, ref channel, proof, commitment_scheme) {
         panic!("Verification failed: {:?}", err);
     }
 }
@@ -71,11 +71,11 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
     commitment_scheme
         .commit(
             *proof.commitment_scheme_proof.commitments[1],
-            ArrayImpl::new_repeated(128, log_size).span(),
+            ArrayImpl::new_repeated(n: 128, v: log_size).span(),
             ref channel,
         );
 
-    if let Result::Err(err) = verify(air, ref channel, proof, commitment_scheme) {
+    if let Err(err) = verify(air, ref channel, proof, commitment_scheme) {
         panic!("Verification failed: {:?}", err);
     }
 }
@@ -93,7 +93,7 @@ impl FibAirImpl<const N_COLUMNS: usize> of Air<FibAir<N_COLUMNS>> {
     fn mask_points(
         self: @FibAir<N_COLUMNS>, point: CirclePoint<QM31>,
     ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>> {
-        array![array![], ArrayImpl::new_repeated(N_COLUMNS, array![point])]
+        array![array![], ArrayImpl::new_repeated(n: N_COLUMNS, v: array![point])]
     }
 
     fn eval_composition_polynomial_at_point(

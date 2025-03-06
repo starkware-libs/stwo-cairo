@@ -4,7 +4,12 @@ use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::{BatchInvertible, Invertible};
 
 pub const P: felt252 = 0x7fffffff;
+
 pub const P_U32: u32 = 0x7fffffff;
+
+/// Equals `2^31`.
+pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
+
 
 type M31InnerT = BoundedInt<0, { P - 1 }>;
 
@@ -54,8 +59,8 @@ pub impl M31Add of core::traits::Add<M31> {
     fn add(lhs: M31, rhs: M31) -> M31 {
         let sum = bounded_int::add(lhs.inner, rhs.inner);
         let res = match bounded_int::constrain::<BoundedInt<0, { 2 * (P - 1) }>, P>(sum) {
-            Result::Ok(lt) => lt,
-            Result::Err(gte) => upcast(bounded_int::sub(gte, M31_P)),
+            Ok(lt) => lt,
+            Err(gte) => upcast(bounded_int::sub(gte, M31_P)),
         };
 
         M31 { inner: res }
@@ -67,8 +72,8 @@ pub impl M31Sub of core::traits::Sub<M31> {
     fn sub(lhs: M31, rhs: M31) -> M31 {
         let diff = bounded_int::sub(lhs.inner, rhs.inner);
         let res = match bounded_int::constrain::<BoundedInt<{ -(P - 1) }, { P - 1 }>, 0>(diff) {
-            Result::Ok(lt) => upcast(bounded_int::add(lt, M31_P)),
-            Result::Err(gte) => gte,
+            Ok(lt) => upcast(bounded_int::add(lt, M31_P)),
+            Err(gte) => gte,
         };
 
         M31 { inner: res }
@@ -153,10 +158,10 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
     #[inline]
     fn try_into(self: u32) -> Option<M31> {
         if self >= P_U32 {
-            return Option::None;
+            return None;
         }
 
-        Option::Some(M31Impl::reduce_u32(self))
+        Some(M31Impl::reduce_u32(self))
     }
 }
 

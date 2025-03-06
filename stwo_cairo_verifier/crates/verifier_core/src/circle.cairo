@@ -9,19 +9,19 @@ use crate::circle_mul_table::{
 };
 use crate::fields::cm31::CM31;
 use crate::fields::m31::{M31, M31Impl};
-use crate::fields::qm31::{QM31, QM31Impl, QM31One, QM31Trait};
+use crate::fields::qm31::{P4, QM31, QM31Impl, QM31One, QM31Trait};
 use crate::fields::Invertible;
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].
 pub const M31_CIRCLE_GEN: CirclePoint<M31> = CirclePoint {
-    x: M31 { inner: 2 }, y: M31 { inner: 1268011823 },
+    x: M31 { inner: 0x2 }, y: M31 { inner: 0x4B94532F },
 };
 
 pub const M31_CIRCLE_LOG_ORDER: u32 = 31;
 
 /// Equals `2^31`.
-pub const M31_CIRCLE_ORDER: u32 = 2147483648;
+pub const M31_CIRCLE_ORDER: u32 = 0x80000000;
 
 /// Equals `2^31 - 1`.
 pub const M31_CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
@@ -29,17 +29,17 @@ pub const M31_CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 /// A generator for the circle group over [`QM31`].
 pub const QM31_CIRCLE_GEN: CirclePoint<QM31> = CirclePoint {
     x: QM31 {
-        a: CM31 { a: M31 { inner: 1 }, b: M31 { inner: 0 } },
-        b: CM31 { a: M31 { inner: 478637715 }, b: M31 { inner: 513582971 } },
+        a: CM31 { a: M31 { inner: 0x1 }, b: M31 { inner: 0x0 } },
+        b: CM31 { a: M31 { inner: 0x1C876E93 }, b: M31 { inner: 0x1E9CA77B } },
     },
     y: QM31 {
-        a: CM31 { a: M31 { inner: 992285211 }, b: M31 { inner: 649143431 } },
-        b: CM31 { a: M31 { inner: 740191619 }, b: M31 { inner: 1186584352 } },
+        a: CM31 { a: M31 { inner: 0x3B25121B }, b: M31 { inner: 0x26B12487 } },
+        b: CM31 { a: M31 { inner: 0x2C1E6D83 }, b: M31 { inner: 0x46B9D720 } },
     },
 };
 
 /// Order of [`QM31_CIRCLE_GEN`].
-pub const QM31_CIRCLE_ORDER: u128 = 21267647892944572736998860269687930880;
+pub const QM31_CIRCLE_ORDER: u128 = P4 - 1;
 
 /// A point on the complex circle. Treated as an additive group.
 #[derive(Drop, Copy, Debug, PartialEq)]
