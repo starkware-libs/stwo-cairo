@@ -1,8 +1,5 @@
 #![allow(unused_parens)]
-use itertools::Itertools;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::utils::bit_reverse_coset_to_circle_domain_order;
-
+#![allow(unused_imports)]
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
 use crate::components::{range_check_19, range_check_9_9};
@@ -104,10 +101,10 @@ fn write_trace_simd(
     let padding_col = Enabler::new(n_rows);
 
     trace
-        .iter_mut()
+        .par_iter_mut()
         .enumerate()
-        .zip(inputs.into_iter())
-        .zip(lookup_data.iter_mut())
+        .zip(inputs.into_par_iter())
+        .zip(lookup_data.par_iter_mut())
         .for_each(|(((row_index, mut row), cube_252_input), lookup_data)| {
             let input_tmp_fec87_0 = cube_252_input;
             let input_limb_0_col0 = input_tmp_fec87_0.get_m31(0);
@@ -304,62 +301,53 @@ fn write_trace_simd(
                     * (M31_8192)),
                 input_limb_9_col9,
             ];
-            let unpacked_limb_2 = ((((input_limb_0_col0) - (unpacked_limb_0_col10))
-                - ((unpacked_limb_1_col11) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_5 = ((((input_limb_1_col1) - (unpacked_limb_3_col12))
-                - ((unpacked_limb_4_col13) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_8 = ((((input_limb_2_col2) - (unpacked_limb_6_col14))
-                - ((unpacked_limb_7_col15) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_11 = ((((input_limb_3_col3) - (unpacked_limb_9_col16))
-                - ((unpacked_limb_10_col17) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_14 = ((((input_limb_4_col4) - (unpacked_limb_12_col18))
-                - ((unpacked_limb_13_col19) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_17 = ((((input_limb_5_col5) - (unpacked_limb_15_col20))
-                - ((unpacked_limb_16_col21) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_20 = ((((input_limb_6_col6) - (unpacked_limb_18_col22))
-                - ((unpacked_limb_19_col23) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_23 = ((((input_limb_7_col7) - (unpacked_limb_21_col24))
-                - ((unpacked_limb_22_col25) * (M31_512)))
-                * (M31_8192));
-            let unpacked_limb_26 = ((((input_limb_8_col8) - (unpacked_limb_24_col26))
-                - ((unpacked_limb_25_col27) * (M31_512)))
-                * (M31_8192));
 
             let a_tmp_fec87_2 = PackedFelt252::from_limbs([
                 unpacked_limb_0_col10,
                 unpacked_limb_1_col11,
-                unpacked_limb_2,
+                ((((input_limb_0_col0) - (unpacked_limb_0_col10))
+                    - ((unpacked_limb_1_col11) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_3_col12,
                 unpacked_limb_4_col13,
-                unpacked_limb_5,
+                ((((input_limb_1_col1) - (unpacked_limb_3_col12))
+                    - ((unpacked_limb_4_col13) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_6_col14,
                 unpacked_limb_7_col15,
-                unpacked_limb_8,
+                ((((input_limb_2_col2) - (unpacked_limb_6_col14))
+                    - ((unpacked_limb_7_col15) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_9_col16,
                 unpacked_limb_10_col17,
-                unpacked_limb_11,
+                ((((input_limb_3_col3) - (unpacked_limb_9_col16))
+                    - ((unpacked_limb_10_col17) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_12_col18,
                 unpacked_limb_13_col19,
-                unpacked_limb_14,
+                ((((input_limb_4_col4) - (unpacked_limb_12_col18))
+                    - ((unpacked_limb_13_col19) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_15_col20,
                 unpacked_limb_16_col21,
-                unpacked_limb_17,
+                ((((input_limb_5_col5) - (unpacked_limb_15_col20))
+                    - ((unpacked_limb_16_col21) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_18_col22,
                 unpacked_limb_19_col23,
-                unpacked_limb_20,
+                ((((input_limb_6_col6) - (unpacked_limb_18_col22))
+                    - ((unpacked_limb_19_col23) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_21_col24,
                 unpacked_limb_22_col25,
-                unpacked_limb_23,
+                ((((input_limb_7_col7) - (unpacked_limb_21_col24))
+                    - ((unpacked_limb_22_col25) * (M31_512)))
+                    * (M31_8192)),
                 unpacked_limb_24_col26,
                 unpacked_limb_25_col27,
-                unpacked_limb_26,
+                ((((input_limb_8_col8) - (unpacked_limb_24_col26))
+                    - ((unpacked_limb_25_col27) * (M31_512)))
+                    * (M31_8192)),
                 input_limb_9_col9,
             ]);
             let a_tmp_fec87_2_limb_2 = ((((input_limb_0_col0) - (unpacked_limb_0_col10))
