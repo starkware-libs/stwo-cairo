@@ -905,38 +905,32 @@ fn write_trace_simd(
             memory_id_to_big_state.add_inputs(&memory_id_to_big_inputs_5);
         });
 
-    cube_252_state.add_inputs(
-        &cube_252_inputs_vec
-            .into_iter()
-            .flatten()
-            .into_iter()
-            .flatten()
-            .collect_vec(),
-    );
-    range_check_felt_252_width_27_state.add_inputs(
-        &range_check_felt_252_width_27_inputs_vec
-            .into_iter()
-            .flatten()
-            .into_iter()
-            .flatten()
-            .collect_vec(),
-    );
-    poseidon_full_round_chain_state.add_inputs(
-        &poseidon_full_round_chain_inputs_vec
-            .into_iter()
-            .flatten()
-            .into_iter()
-            .flatten()
-            .collect_vec(),
-    );
-    poseidon_3_partial_rounds_chain_state.add_inputs(
-        &poseidon_3_partial_rounds_chain_inputs_vec
-            .into_iter()
-            .flatten()
-            .into_iter()
-            .flatten()
-            .collect_vec(),
-    );
+    cube_252_inputs_vec.iter().for_each(|inputs_array| {
+        inputs_array
+            .iter()
+            .for_each(|inputs| cube_252_state.add_inputs(inputs))
+    });
+    range_check_felt_252_width_27_inputs_vec
+        .iter()
+        .for_each(|inputs_array| {
+            inputs_array
+                .iter()
+                .for_each(|inputs| range_check_felt_252_width_27_state.add_inputs(inputs))
+        });
+    poseidon_full_round_chain_inputs_vec
+        .iter()
+        .for_each(|inputs_array| {
+            inputs_array
+                .iter()
+                .for_each(|inputs| poseidon_full_round_chain_state.add_inputs(inputs))
+        });
+    poseidon_3_partial_rounds_chain_inputs_vec
+        .iter()
+        .for_each(|inputs_array| {
+            inputs_array
+                .iter()
+                .for_each(|inputs| poseidon_3_partial_rounds_chain_state.add_inputs(inputs))
+        });
 
     (trace, lookup_data)
 }
