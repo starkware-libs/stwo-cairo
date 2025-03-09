@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 
 use super::vm_import::MemoryEntry;
+use crate::relocator::Relocator;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [
@@ -28,6 +29,8 @@ pub const P_MIN_2: [u32; 8] = [
     0x0000_0010,
     0x0800_0000,
 ];
+
+pub type FELT252 = [u32; 8];
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
@@ -89,16 +92,16 @@ impl Memory {
 }
 
 // TODO(spapini): Optimize. This should be SIMD.
-pub fn value_from_felt252(value: [u32; 8]) -> MemoryValue {
-    if value[3..8] == [0; 5] && value[2] < (1 << 8) {
+pub fn value_from_felt252(felt252: FELT252) -> MemoryValue {
+    if felt252[3..8] == [0; 5] && felt252[2] < (1 << 8) {
         MemoryValue::Small(
-            value[0] as u128
-                + ((value[1] as u128) << 32)
-                + ((value[2] as u128) << 64)
-                + ((value[3] as u128) << 96),
+            felt252[0] as u128
+                + ((felt252[1] as u128) << 32)
+                + ((felt252[2] as u128) << 64)
+                + ((felt252[3] as u128) << 96),
         )
     } else {
-        MemoryValue::F252(value)
+        MemoryValue::F252(felt252)
     }
 }
 
@@ -122,6 +125,26 @@ impl MemoryBuilder {
             small_values_cache: HashMap::new(),
         }
     }
+
+    pub fn from_relocator(config: MemoryConfig, relocator: &Relocator) -> MemoryBuilder {
+        let mut builder = Self::new(config);
+        let mem_values = relocator.get_relocatable_memory();
+
+        for (addr, value) in mem_values.iter() {
+            builder.set(*addr, value_from_felt252(*value));
+        }
+
+        builder
+    }
+
+    pub fn pad_segment_extension_with_zeros(&mut self, relocator: &Relocator) {
+        let pad_addresses = relocator.get_memory_zero_padding_addresses();
+        for addr in pad_addresses {
+            self.set(addr, MemoryValue::Small(0));
+        }
+    }
+
+    // TODO(Stav): Remove this functiun and use `from_relocatble_memory` instead.
     pub fn from_iter<I: IntoIterator<Item = MemoryEntry>>(
         config: MemoryConfig,
         iter: I,
@@ -130,7 +153,7 @@ impl MemoryBuilder {
         let mut builder = Self::new(config);
         for entry in memory_entries {
             let value = value_from_felt252(entry.value);
-            builder.set(entry.address, value);
+            builder.set(entry.address as u32, value);
         }
 
         builder
@@ -149,7 +172,7 @@ impl MemoryBuilder {
 
     // TODO(ohadn): settle on an address integer type, and use it consistently.
     // TODO(Ohad): add debug sanity checks.
-    pub fn set(&mut self, addr: u64, value: MemoryValue) {
+    pub fn set(&mut self, addr: u32, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
                 .resize(addr as usize + 1, EncodedMemoryValueId::default());
@@ -180,10 +203,7 @@ impl MemoryBuilder {
     /// the addresses dst_start_addr to dst_start_addr + segment_length - 1.
     pub fn copy_block(&mut self, src_start_addr: u32, dst_start_addr: u32, segment_length: u32) {
         for i in 0..segment_length {
-            self.set(
-                (dst_start_addr + i) as u64,
-                self.memory.get(src_start_addr + i),
-            );
+            self.set(dst_start_addr + i, self.memory.get(src_start_addr + i));
         }
     }
 
@@ -298,8 +318,8 @@ pub fn u128_to_4_limbs(x: u128) -> [u32; 4] {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
+    use crate::relocator::tests::create_test_relocator;
 
     #[test]
     fn test_memory() {
@@ -399,6 +419,19 @@ mod tests {
         assert_eq!(addr_0_id, expxcted_id_addr_0);
         assert_eq!(addr_1_id, expxcted_id_addr_1);
         assert_eq!(addr_2_id, expxcted_id_addr_2);
+    }
+
+    #[test]
+    fn test_memory_from_relocator() {
+        let relocator = create_test_relocator();
+        let mut memory: MemoryBuilder =
+            MemoryBuilder::from_relocator(MemoryConfig::default(), &relocator);
+        assert_eq!(memory.get(1), MemoryValue::Small(1));
+        assert_eq!(memory.get(17), MemoryValue::Small(2));
+
+        memory.pad_segment_extension_with_zeros(&relocator);
+        assert_eq!(memory.get(6), MemoryValue::Small(0));
+        assert_eq!(memory.get(16), MemoryValue::Small(0));
     }
 
     // TODO(Ohad): unignore.
