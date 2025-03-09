@@ -143,7 +143,7 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 pub mod tests {
 
     use cairo_lang_casm::casm;
-    use stwo_cairo_adapter::plain::input_from_plain_casm;
+    use stwo_cairo_adapter::{plain::input_from_plain_casm, vm_import::generate_test_input};
     use stwo_cairo_adapter::ProverInput;
     use stwo_prover::core::pcs::PcsConfig;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -185,6 +185,17 @@ pub mod tests {
     fn test_basic_cairo_air() {
         let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
             test_basic_cairo_air_input(),
+            test_cfg(),
+            PcsConfig::default(),
+        )
+        .unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+    }
+
+    #[test]
+    fn test_blake_cairo_air() {
+        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+            generate_test_input("blake_opcode"),
             test_cfg(),
             PcsConfig::default(),
         )
