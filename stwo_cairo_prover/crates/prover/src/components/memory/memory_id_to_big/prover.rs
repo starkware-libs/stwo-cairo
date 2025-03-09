@@ -429,7 +429,7 @@ mod tests {
         // Create memory.
         let mut mem = MemoryBuilder::new(MemoryConfig::default());
         for (j, a) in memory_addresses.iter().enumerate() {
-            mem.set(*a as u64, value_from_felt252(expected[j]));
+            mem.set(*a, value_from_felt252(expected[j]));
         }
         let mem = mem.build();
         let memory_address_to_id = memory_address_to_id::ClaimGenerator::new(&mem);
