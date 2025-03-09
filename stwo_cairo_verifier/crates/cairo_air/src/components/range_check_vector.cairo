@@ -1,7 +1,8 @@
 use stwo_constraint_framework::{
     PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::ChannelTrait;
+use stwo_verifier_core::channel::poseidon252::Poseidon252Channel;
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::m31::m31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, QM31_EXTENSION_DEGREE};
@@ -50,9 +51,9 @@ pub impl ClaimImpl of ClaimTrait {
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
-    fn mix_into(self: @Claim, ref channel: Channel) {
+    fn mix_into(self: @Claim, ref channel: Poseidon252Channel) {
         for log_range in self.log_ranges.span() {
-            channel.mix_nonce((*log_range).into());
+            channel.mix_u64((*log_range).into());
         };
     }
 }
@@ -64,7 +65,7 @@ pub struct InteractionClaim {
 
 #[generate_trait]
 pub impl InteractionClaimImpl of InteractionClaimTrait {
-    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
+    fn mix_into(self: @InteractionClaim, ref channel: Poseidon252Channel) {
         channel.mix_felts([*self.claimed_sum].span());
     }
 }

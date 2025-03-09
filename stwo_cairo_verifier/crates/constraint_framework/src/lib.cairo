@@ -1,7 +1,8 @@
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use stwo_verifier_core::ColumnSpan;
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::ChannelTrait;
+use stwo_verifier_core::channel::poseidon252::Poseidon252Channel;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
 
@@ -19,7 +20,7 @@ pub struct LookupElements<const N: usize> {
 
 #[generate_trait]
 pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
-    fn draw(ref channel: Channel) -> LookupElements<N> {
+    fn draw(ref channel: Poseidon252Channel) -> LookupElements<N> {
         assert!(N != 0);
         let [z, alpha]: [QM31; 2] = (*channel.draw_felts(2).span().try_into().unwrap()).unbox();
 
