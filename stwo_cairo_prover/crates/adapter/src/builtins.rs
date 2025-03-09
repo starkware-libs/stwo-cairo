@@ -249,17 +249,17 @@ mod builtin_padding {
 
             if let MemoryValueId::Empty = memory.address_to_id[and_addr].decode() {
                 let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
-                memory.set(and_addr as u64, and_res);
+                memory.set(and_addr as u32, and_res);
             }
 
             if let MemoryValueId::Empty = memory.address_to_id[xor_addr].decode() {
                 let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
-                memory.set(xor_addr as u64, xor_res);
+                memory.set(xor_addr as u32, xor_res);
             }
 
             if let MemoryValueId::Empty = memory.address_to_id[or_addr].decode() {
                 let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
-                memory.set(or_addr as u64, or_res);
+                memory.set(or_addr as u32, or_res);
             }
         }
     }
@@ -319,7 +319,7 @@ mod test_builtin_segments {
 
     /// Initializes a memory builder with the given u128 values.
     /// Places the value instance_example[i] at the address memory_write_start + i.
-    fn initialize_memory(memory_write_start: u64, instance_example: &[u128]) -> MemoryBuilder {
+    fn initialize_memory(memory_write_start: u32, instance_example: &[u128]) -> MemoryBuilder {
         let memory_config = MemoryConfig::default();
         let mut memory_builder = MemoryBuilder::new(memory_config.clone());
         for (i, &value) in instance_example.iter().enumerate() {
@@ -329,7 +329,7 @@ mod test_builtin_segments {
                 let x = u128_to_4_limbs(value);
                 MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0])
             };
-            memory_builder.set(memory_write_start + i as u64, memory_value);
+            memory_builder.set(memory_write_start + i as u32, memory_value);
         }
         memory_builder
     }
@@ -353,7 +353,7 @@ mod test_builtin_segments {
             begin_addr,
             stop_ptr,
         });
-        let memory_write_start = (stop_ptr - cells_per_instance) as u64;
+        let memory_write_start = (stop_ptr - cells_per_instance) as u32;
         let mut memory_builder = initialize_memory(memory_write_start, &instance_example);
 
         builtin_segments.pad_builtin_segments(&mut memory_builder);

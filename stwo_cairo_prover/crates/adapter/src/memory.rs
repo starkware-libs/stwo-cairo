@@ -29,6 +29,8 @@ pub const P_MIN_2: [u32; 8] = [
     0x0800_0000,
 ];
 
+pub(crate) type F252 = [u32; 8];
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
     pub small_max: u128,
@@ -89,16 +91,16 @@ impl Memory {
 }
 
 // TODO(spapini): Optimize. This should be SIMD.
-pub fn value_from_felt252(value: [u32; 8]) -> MemoryValue {
-    if value[3..8] == [0; 5] && value[2] < (1 << 8) {
+pub fn value_from_felt252(felt252: F252) -> MemoryValue {
+    if felt252[3..8] == [0; 5] && felt252[2] < (1 << 8) {
         MemoryValue::Small(
-            value[0] as u128
-                + ((value[1] as u128) << 32)
-                + ((value[2] as u128) << 64)
-                + ((value[3] as u128) << 96),
+            felt252[0] as u128
+                + ((felt252[1] as u128) << 32)
+                + ((felt252[2] as u128) << 64)
+                + ((felt252[3] as u128) << 96),
         )
     } else {
-        MemoryValue::F252(value)
+        MemoryValue::F252(felt252)
     }
 }
 
@@ -122,6 +124,20 @@ impl MemoryBuilder {
             small_values_cache: HashMap::new(),
         }
     }
+
+    pub fn from_memory_values(
+        config: MemoryConfig,
+        memory_values: &[(u32, F252)],
+    ) -> MemoryBuilder {
+        let mut builder = Self::new(config);
+        for (addr, value) in memory_values.iter() {
+            builder.set(*addr, value_from_felt252(*value));
+        }
+
+        builder
+    }
+
+    // TODO(Stav): Remove this functiun and use `from_relocatble_memory` instead.
     pub fn from_iter<I: IntoIterator<Item = MemoryEntry>>(
         config: MemoryConfig,
         iter: I,
@@ -130,7 +146,7 @@ impl MemoryBuilder {
         let mut builder = Self::new(config);
         for entry in memory_entries {
             let value = value_from_felt252(entry.value);
-            builder.set(entry.address, value);
+            builder.set(entry.address as u32, value);
         }
 
         builder
@@ -149,7 +165,7 @@ impl MemoryBuilder {
 
     // TODO(ohadn): settle on an address integer type, and use it consistently.
     // TODO(Ohad): add debug sanity checks.
-    pub fn set(&mut self, addr: u64, value: MemoryValue) {
+    pub fn set(&mut self, addr: u32, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
                 .resize(addr as usize + 1, EncodedMemoryValueId::default());
@@ -180,10 +196,7 @@ impl MemoryBuilder {
     /// the addresses dst_start_addr to dst_start_addr + segment_length - 1.
     pub fn copy_block(&mut self, src_start_addr: u32, dst_start_addr: u32, segment_length: u32) {
         for i in 0..segment_length {
-            self.set(
-                (dst_start_addr + i) as u64,
-                self.memory.get(src_start_addr + i),
-            );
+            self.set(dst_start_addr + i, self.memory.get(src_start_addr + i));
         }
     }
 
@@ -300,6 +313,7 @@ pub fn u128_to_4_limbs(x: u128) -> [u32; 4] {
 mod tests {
 
     use super::*;
+    use crate::relocator::relocator_tests::create_test_relocator;
 
     #[test]
     fn test_memory() {
@@ -399,6 +413,17 @@ mod tests {
         assert_eq!(addr_0_id, expxcted_id_addr_0);
         assert_eq!(addr_1_id, expxcted_id_addr_1);
         assert_eq!(addr_2_id, expxcted_id_addr_2);
+    }
+
+    #[test]
+    fn test_memory_from_relocator() {
+        let relocator = create_test_relocator();
+        let memory: MemoryBuilder = MemoryBuilder::from_memory_values(
+            MemoryConfig::default(),
+            &relocator.get_relocated_memory(),
+        );
+        assert_eq!(memory.get(1), MemoryValue::Small(1));
+        assert_eq!(memory.get(85), MemoryValue::Small(2));
     }
 
     // TODO(Ohad): unignore.
