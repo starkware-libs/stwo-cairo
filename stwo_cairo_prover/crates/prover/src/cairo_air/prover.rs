@@ -258,13 +258,9 @@ pub mod tests {
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
-            let input = generate_test_input("test_prove_verify_all_opcode_components_v2");
+            let input = generate_test_input("test_prove_verify_all_opcode_components");
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 // TODO(Stav): Remove when `Blake` opcode is in the VM.
-                if opcode == "blake2s_opcode" {
-                    continue;
-                }
-
                 assert!(
                     *n_instances > 0,
                     "{} isn't used in E2E full-Cairo opcode test",

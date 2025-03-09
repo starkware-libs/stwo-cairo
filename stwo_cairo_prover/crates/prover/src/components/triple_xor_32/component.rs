@@ -8,7 +8,6 @@ pub struct Eval {
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Claim {
-    pub n_padding: usize,
     pub log_size: u32,
 }
 impl Claim {
