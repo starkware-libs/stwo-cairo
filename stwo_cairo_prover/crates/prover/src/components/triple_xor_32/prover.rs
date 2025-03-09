@@ -60,8 +60,6 @@ impl ClaimGenerator {
         )
     }
 
-    // TODO(Ohad): remove unused.
-    #[allow(unused)]
     pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
         self.packed_inputs.extend(inputs);
     }

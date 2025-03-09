@@ -19,6 +19,8 @@ pub mod proving {
     pub use stwo_prover::core::fields::FieldExpOps;
     pub use stwo_prover::core::pcs::TreeBuilder;
 
+    pub use crate::cairo_air::blake::*;
+    pub use crate::cairo_air::preprocessed::Seq;
     pub(crate) use crate::cairo_air::relations;
     pub use crate::components::utils::*;
 }
@@ -36,6 +38,7 @@ pub mod constraint_eval {
     pub use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
     pub use stwo_prover::core::pcs::TreeVec;
 
+    pub use crate::cairo_air::blake::*;
     pub use crate::cairo_air::preprocessed::*;
     pub(crate) use crate::cairo_air::relations;
 }
