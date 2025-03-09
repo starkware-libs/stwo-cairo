@@ -126,7 +126,7 @@ fn extract_m31<const N: usize>(ref num: u256) -> BaseField {
 
 #[cfg(test)]
 mod tests {
-    use crate::fields::qm31::qm31;
+    use crate::fields::qm31::qm31_const;
     use super::{
         ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, gen_bit_mask, new_channel,
     };
@@ -210,7 +210,15 @@ mod tests {
         let initial_digest = 0;
         let mut channel = new_channel(initial_digest);
 
-        channel.mix_felts(array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12)].span());
+        channel
+            .mix_felts(
+                array![
+                    qm31_const::<1, 2, 3, 4>(),
+                    qm31_const::<5, 6, 7, 8>(),
+                    qm31_const::<9, 10, 11, 12>(),
+                ]
+                    .span(),
+            );
 
         assert_ne!(initial_digest, channel.digest);
     }
