@@ -6,8 +6,9 @@ use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
 use super::memory::{MemoryBuilder, MemoryConfig};
-use super::vm_import::{adapt_to_stwo_input, MemoryEntry, VmImportError};
+use super::vm_import::{adapt_to_stwo_input, VmImportError};
 use super::ProverInput;
+use crate::memory::MemoryEntry;
 
 /// Translates a plain casm into a ProverInput by running the program and extracting the memory and
 /// the state transitions.
@@ -83,7 +84,7 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         .enumerate()
         .filter_map(|(i, v)| {
             v.map(|v| MemoryEntry {
-                address: i as u64,
+                address: i as u32,
                 value: bytemuck::cast(v.to_bytes_le()),
             })
         });

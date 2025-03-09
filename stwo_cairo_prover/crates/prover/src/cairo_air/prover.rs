@@ -300,7 +300,8 @@ pub mod tests {
             use std::fs::File;
 
             use cairo_vm::air_public_input::MemorySegmentAddresses;
-            use stwo_cairo_adapter::vm_import::{generate_test_input, MemoryEntryIter};
+            use stwo_cairo_adapter::memory::MemoryEntryIter;
+            use stwo_cairo_adapter::vm_import::generate_test_input;
 
             use super::*;
 
@@ -355,7 +356,7 @@ pub mod tests {
                 let memory_entries = MemoryEntryIter(&mut memory_file).collect_vec();
                 assert!(memory_entries
                     .iter()
-                    .all(|entry| entry.address != (bitwise_segment.begin_addr + 2) as u64));
+                    .all(|entry| entry.address != (bitwise_segment.begin_addr + 2) as u32));
             }
 
             #[test]
