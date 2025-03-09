@@ -1,6 +1,7 @@
 #![allow(non_camel_case_types)]
 use stwo_prover::relation;
 
+relation!(Cube252, 20);
 relation!(MemoryAddressToId, 2);
 relation!(MemoryIdToBig, 29);
 relation!(Opcodes, 3);
