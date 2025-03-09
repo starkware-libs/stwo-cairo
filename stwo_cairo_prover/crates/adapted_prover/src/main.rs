@@ -2,16 +2,22 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Parser;
+use serde::Serialize;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::cairo_air::prover::{
-    default_prod_prover_parameters, prove_cairo, ProverConfig, ProverParameters,
+    default_prod_prover_parameters, prove_cairo, ChannelHash, ProverConfig, ProverParameters,
 };
 use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::file_utils::{read_to_string, IoErrorWithPath};
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::backend::BackendForChannel;
+use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -102,20 +108,50 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         vm_output.state_transitions.casm_states_by_opcode
     );
 
-    let ProverParameters { pcs_config } = match args.params_json {
+    let ProverParameters {
+        channel_hash,
+        pcs_config,
+    } = match args.params_json {
         Some(path) => serde_json::from_str(&read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
     };
 
-    // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, prover_config, pcs_config)?;
+    let run_inner_fn = match channel_hash {
+        ChannelHash::Blake2s => run_inner::<Blake2sMerkleChannel>,
+        ChannelHash::Poseidon252 => run_inner::<Poseidon252MerkleChannel>,
+    };
 
-    std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
+    run_inner_fn(
+        vm_output,
+        prover_config,
+        pcs_config,
+        args.verify,
+        args.proof_path,
+    )?;
 
-    if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
+    Ok(())
+}
+
+/// Generates proof given the Cairo VM output and prover config/parameters.
+/// Serializes the proof as JSON and write to the output path.
+/// Verifies the proof in case the respective flag is set.
+fn run_inner<MC: MerkleChannel>(
+    vm_output: ProverInput,
+    prover_config: ProverConfig,
+    pcs_config: PcsConfig,
+    verify: bool,
+    proof_path: PathBuf,
+) -> Result<(), Error>
+where
+    SimdBackend: BackendForChannel<MC>,
+    MC::H: Serialize,
+{
+    let proof = prove_cairo::<MC>(vm_output, prover_config, pcs_config)?;
+    std::fs::write(&proof_path, serde_json::to_string(&proof)?)?;
+
+    if verify {
+        verify_cairo::<MC>(proof, pcs_config)?;
         log::info!("Proof verified successfully");
     }
-
     Ok(())
 }
