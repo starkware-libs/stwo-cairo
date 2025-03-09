@@ -87,14 +87,17 @@ impl BlakeRoundSigma {
     }
 }
 
-pub struct BlakeRound<'a> {
-    memory: &'a Memory,
+pub struct BlakeRound {
+    memory: Memory,
 }
 
 // TODO(Stav): remove '#[allow(unused)]' when possible.
 #[allow(unused)]
-impl BlakeRound<'_> {
-    fn deduce_output(
+impl BlakeRound {
+    pub fn new(memory: Memory) -> Self {
+        Self { memory }
+    }
+    pub fn deduce_output(
         &self,
         chain: PackedM31,
         round: PackedM31,
@@ -117,7 +120,6 @@ impl BlakeRound<'_> {
             )
         }
     }
-
     fn blake_round(
         &self,
         chain: u32x16,
@@ -256,7 +258,8 @@ mod tests {
             })
             .collect();
         let memory =
-            MemoryBuilder::from_iter(MemoryConfig::default(), memory_entries.iter().cloned());
+            MemoryBuilder::from_iter(MemoryConfig::default(), memory_entries.iter().cloned())
+                .build();
 
         // Expected output
         let exp0 = [
@@ -285,7 +288,7 @@ mod tests {
         let expected: [PackedUInt32; 16] =
             from_fn(|i| PackedUInt32::from_simd(u32x16::from_slice(&[exp0[i], exp1[i]].repeat(8))));
 
-        let blake_round = BlakeRound { memory: &memory };
+        let blake_round = BlakeRound { memory };
         let actual = blake_round.deduce_output(chains, rounds, (state, message_pointer));
 
         let (actual_chain, actual_round, (actual_state, actual_message_pointer)) = actual;
