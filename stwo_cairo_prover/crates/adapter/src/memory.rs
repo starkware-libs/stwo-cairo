@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
+use cairo_vm::types::relocatable::MaybeRelocatable;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
@@ -32,17 +33,42 @@ pub const P_MIN_2: [u32; 8] = [
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
     pub small_max: u128,
+    pub relocation_table: Option<Vec<u32>>,
 }
 impl MemoryConfig {
     pub fn new(small_max: u128) -> MemoryConfig {
         assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * N_BITS_PER_FELT));
-        MemoryConfig { small_max }
+        MemoryConfig {
+            small_max,
+            relocation_table: None,
+        }
+    }
+
+    pub fn create_relocation_table(&mut self, relocatable_mem: &[Vec<MaybeRelocatable>]) {
+        assert!(
+            self.relocation_table.is_none(),
+            "Relocation table already exists"
+        );
+
+        let first_addr = 1;
+        let mut relocation_table = vec![first_addr];
+        for segment in relocatable_mem.iter() {
+            let segment_size = segment.len().next_power_of_two().max(16);
+            let addr = relocation_table.last().unwrap() + segment_size as u32;
+            relocation_table.push(addr);
+        }
+
+        // The last value corresponds to the total amount of elements across all segments, which
+        // isnt needed for relocation.
+        relocation_table.pop();
+        self.relocation_table = Some(relocation_table.clone());
     }
 }
 impl Default for MemoryConfig {
     fn default() -> Self {
         MemoryConfig {
             small_max: (1 << 72) - 1,
+            relocation_table: None,
         }
     }
 }
@@ -122,15 +148,46 @@ impl MemoryBuilder {
             small_values_cache: HashMap::new(),
         }
     }
+
+    pub fn from_relocatble_memory(
+        mut memory_config: MemoryConfig,
+        relocatable_mem: &[Vec<MaybeRelocatable>],
+    ) -> MemoryBuilder {
+        memory_config.create_relocation_table(relocatable_mem);
+        let mut builder = Self::new(memory_config.clone());
+
+        let relocation_table = memory_config
+            .relocation_table
+            .expect("Expected relocation table to be set after 'create_relocation_table' call");
+
+        for (segment_index, segment) in relocatable_mem.iter().enumerate() {
+            for (offset, value) in segment.iter().enumerate() {
+                let addr = relocation_table[segment_index] + offset as u32;
+                let val = match value {
+                    MaybeRelocatable::Int(val) => {
+                        value_from_felt252(bytemuck::cast(val.to_bytes_le()))
+                    }
+                    // Addresses fit in a small memory value.
+                    MaybeRelocatable::RelocatableValue(val) => MemoryValue::Small(
+                        relocation_table[val.segment_index as usize] as u128 + val.offset as u128,
+                    ),
+                };
+                builder.set(addr, val);
+            }
+        }
+        builder
+    }
+
+    // TODO(Stav): Remove this functiun and use `from_relocatble_memory` instead.
     pub fn from_iter<I: IntoIterator<Item = MemoryEntry>>(
         config: MemoryConfig,
         iter: I,
     ) -> MemoryBuilder {
-        let memory_entries = iter.into_iter();
+        let memory_entries: <I as IntoIterator>::IntoIter = iter.into_iter();
         let mut builder = Self::new(config);
         for entry in memory_entries {
             let value = value_from_felt252(entry.value);
-            builder.set(entry.address, value);
+            builder.set(entry.address as u32, value);
         }
 
         builder
@@ -149,7 +206,7 @@ impl MemoryBuilder {
 
     // TODO(ohadn): settle on an address integer type, and use it consistently.
     // TODO(Ohad): add debug sanity checks.
-    pub fn set(&mut self, addr: u64, value: MemoryValue) {
+    pub fn set(&mut self, addr: u32, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
                 .resize(addr as usize + 1, EncodedMemoryValueId::default());
@@ -180,10 +237,7 @@ impl MemoryBuilder {
     /// the addresses dst_start_addr to dst_start_addr + segment_length - 1.
     pub fn copy_block(&mut self, src_start_addr: u32, dst_start_addr: u32, segment_length: u32) {
         for i in 0..segment_length {
-            self.set(
-                (dst_start_addr + i) as u64,
-                self.memory.get(src_start_addr + i),
-            );
+            self.set(dst_start_addr + i, self.memory.get(src_start_addr + i));
         }
     }
 
@@ -299,6 +353,9 @@ pub fn u128_to_4_limbs(x: u128) -> [u32; 4] {
 #[cfg(test)]
 mod tests {
 
+    use cairo_vm::relocatable;
+    use cairo_vm::types::relocatable::Relocatable;
+
     use super::*;
 
     #[test]
@@ -399,6 +456,37 @@ mod tests {
         assert_eq!(addr_0_id, expxcted_id_addr_0);
         assert_eq!(addr_1_id, expxcted_id_addr_1);
         assert_eq!(addr_2_id, expxcted_id_addr_2);
+    }
+
+    #[test]
+    fn test_memory_from_relocatable_memory() {
+        let segment0 = vec![
+            MaybeRelocatable::Int(1.into()),
+            MaybeRelocatable::Int(9.into()),
+            MaybeRelocatable::RelocatableValue(relocatable!(2, 1)),
+        ];
+        let segment1 = vec![MaybeRelocatable::RelocatableValue(relocatable!(0, 1))];
+        let segment2 = vec![
+            MaybeRelocatable::Int(1.into()),
+            MaybeRelocatable::Int(2.into()),
+            MaybeRelocatable::Int(3.into()),
+        ];
+
+        let relocatble_memory = vec![segment0, segment1, segment2];
+
+        let memory =
+            MemoryBuilder::from_relocatble_memory(MemoryConfig::default(), &relocatble_memory)
+                .build();
+        assert!(memory.config.relocation_table == Some(vec![1, 17, 33]));
+
+        // mem[1] = mem[0,0] = 1
+        assert_eq!(memory.get(1), MemoryValue::Small(1));
+
+        // mem[17] = mem[1,0] = [0,1] = 2
+        assert_eq!(memory.get(17), MemoryValue::Small(2));
+
+        // memory hole is zero.
+        assert_eq!(memory.get(6),  MemoryValue::Small(0));
     }
 
     // TODO(Ohad): unignore.
