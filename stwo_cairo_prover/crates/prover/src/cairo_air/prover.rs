@@ -17,7 +17,7 @@ use crate::cairo_air::air::{
 };
 use crate::cairo_air::preprocessed::PreProcessedTrace;
 
-pub(crate) const LOG_MAX_ROWS: u32 = 22;
+pub(crate) const LOG_MAX_ROWS: u32 = 24;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
