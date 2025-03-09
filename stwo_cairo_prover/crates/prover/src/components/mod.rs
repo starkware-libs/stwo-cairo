@@ -33,6 +33,10 @@ pub mod range_check_builtin_bits_96;
 pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod utils;
+pub mod verify_bitwise_xor_12;
+pub mod verify_bitwise_xor_4;
+pub mod verify_bitwise_xor_7;
+pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
