@@ -110,6 +110,7 @@ pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
 
 #[generate_trait]
 pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
+    /// Returns a random QM31 circle point.
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
         let t = self.draw_felt();
         let t_squared = t * t;
@@ -295,8 +296,8 @@ mod tests {
     use crate::fields::qm31::QM31One;
     use super::{
         CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
-        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
-        QM31_CIRCLE_GEN,
+        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, CirclePointTrait, Coset,
+        CosetImpl, M31_CIRCLE_GEN, QM31_CIRCLE_GEN,
     };
 
 
@@ -430,6 +431,15 @@ mod tests {
             QM31_CIRCLE_GEN
                 + CirclePoint { x: M31_CIRCLE_GEN.x.into(), y: M31_CIRCLE_GEN.y.into() },
         );
+    }
+
+    #[test]
+    fn test_neg() {
+        let point = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
+
+        let neg_point = -point;
+
+        assert_eq!(point + neg_point, CirclePointTrait::zero());
     }
 }
 
