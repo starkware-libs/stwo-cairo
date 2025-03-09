@@ -147,6 +147,13 @@ pub impl M31Neg of Neg<M31> {
     }
 }
 
+impl M31IntoU32 of Into<M31, u32> {
+    #[inline]
+    fn into(self: M31) -> u32 {
+        upcast(self.inner)
+    }
+}
+
 impl M31IntoFelt252 of Into<M31, felt252> {
     #[inline]
     fn into(self: M31) -> felt252 {
