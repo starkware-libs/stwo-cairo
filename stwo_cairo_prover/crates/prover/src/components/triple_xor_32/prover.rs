@@ -8,15 +8,9 @@ use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
 use crate::components::verify_bitwise_xor_8;
 
-pub type InputType = [UInt32; 3];
 pub type PackedInputType = [PackedUInt32; 3];
 const N_TRACE_COLUMNS: usize = 20;
 
-pub const TRIPLE_XOR_32_DEFAULT_VALUE: InputType = [UInt32 { value: 0 }; 3];
-
-fn default_packed_input() -> PackedInputType {
-    <InputType as Pack>::pack([TRIPLE_XOR_32_DEFAULT_VALUE; N_LANES])
-}
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub packed_inputs: Vec<PackedInputType>,
@@ -29,7 +23,7 @@ impl ClaimGenerator {
     }
 
     pub fn write_trace<MC: MerkleChannel>(
-        mut self,
+        self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
@@ -37,11 +31,8 @@ impl ClaimGenerator {
         SimdBackend: BackendForChannel<MC>,
     {
         let n_vec_rows = self.packed_inputs.len();
-        let padded_size = n_vec_rows.next_power_of_two();
-        let n_padding = (padded_size - n_vec_rows) * N_LANES;
-        let log_size = padded_size.ilog2() + LOG_N_LANES;
-        self.packed_inputs
-            .resize(padded_size, default_packed_input());
+        assert!(n_vec_rows.is_power_of_two());
+        let log_size = n_vec_rows.ilog2() + LOG_N_LANES;
 
         let (trace, lookup_data) =
             write_trace_simd(n_vec_rows, self.packed_inputs, verify_bitwise_xor_8_state);
@@ -49,10 +40,7 @@ impl ClaimGenerator {
         tree_builder.extend_evals(trace.to_evals());
 
         (
-            Claim {
-                log_size,
-                n_padding,
-            },
+            Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,
@@ -60,8 +48,6 @@ impl ClaimGenerator {
         )
     }
 
-    // TODO(Ohad): remove unused.
-    #[allow(unused)]
     pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
         self.packed_inputs.extend(inputs);
     }
