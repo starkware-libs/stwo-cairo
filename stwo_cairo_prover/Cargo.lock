@@ -1883,6 +1883,7 @@ dependencies = [
 name = "stwo_cairo_utils"
 version = "0.1.0"
 dependencies = [
+ "blake2",
  "cairo-vm",
  "clap",
  "env_logger",
