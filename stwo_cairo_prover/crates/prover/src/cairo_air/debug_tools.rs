@@ -69,7 +69,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -85,7 +84,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -101,7 +99,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -117,7 +114,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -133,7 +129,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -149,7 +144,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -165,7 +159,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -181,7 +174,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -196,7 +188,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -212,7 +203,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             )
@@ -228,7 +218,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -244,7 +233,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -260,7 +248,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -278,7 +265,6 @@ pub mod relation_tracker {
                         range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                         range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -294,7 +280,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -310,7 +295,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -326,7 +310,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -342,7 +325,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -358,7 +340,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -374,7 +355,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -390,7 +370,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -406,7 +385,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -423,7 +401,6 @@ pub mod relation_tracker {
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                         range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -440,7 +417,6 @@ pub mod relation_tracker {
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                         range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -457,7 +433,6 @@ pub mod relation_tracker {
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                         range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -474,7 +449,6 @@ pub mod relation_tracker {
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                         range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -490,7 +464,6 @@ pub mod relation_tracker {
                         opcodes_lookup_elements: relations::Opcodes::dummy(),
                         verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                     },
-                    1 << claim.log_size,
                 )
                 .entries(trace),
             );
@@ -508,7 +481,6 @@ pub mod relation_tracker {
                     range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
                     verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
                 },
-                1 << claim.verify_instruction.log_size,
             )
             .entries(trace),
         );
@@ -522,7 +494,6 @@ pub mod relation_tracker {
                         memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                         memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     },
-                    1 << add_mod_builtin.log_size,
                 )
                 .entries(trace),
             );
@@ -537,7 +508,6 @@ pub mod relation_tracker {
                         memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
                         memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                     },
-                    1 << range_check_128_builtin.log_size,
                 )
                 .entries(trace),
             );
@@ -553,7 +523,6 @@ pub mod relation_tracker {
                         memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
                         range_check_6_lookup_elements: relations::RangeCheck_6::dummy(),
                     },
-                    1 << range_check_96_builtin.log_size,
                 )
                 .entries(trace),
             );
@@ -570,7 +539,6 @@ pub mod relation_tracker {
                         verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(
                         ),
                     },
-                    1 << bitwise_builtin.log_size,
                 )
                 .entries(trace),
             );
@@ -582,7 +550,6 @@ pub mod relation_tracker {
                 verify_bitwise_xor_9::Eval {
                     verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
                 },
-                1 << crate::components::verify_bitwise_xor_9::component::LOG_SIZE,
             )
             .entries(trace),
         );
@@ -594,7 +561,6 @@ pub mod relation_tracker {
                     log_size: claim.memory_address_to_id.log_size,
                     lookup_elements: relations::MemoryAddressToId::dummy(),
                 },
-                1 << claim.memory_address_to_id.log_size,
             )
             .entries(trace),
         );
@@ -606,7 +572,6 @@ pub mod relation_tracker {
                     lookup_elements: relations::MemoryIdToBig::dummy(),
                     range9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
                 },
-                1 << claim.memory_id_to_value.big_log_size,
             )
             .entries(trace),
         );
@@ -618,7 +583,6 @@ pub mod relation_tracker {
                     lookup_elements: relations::MemoryIdToBig::dummy(),
                     range_check_9_9_relation: relations::RangeCheck_9_9::dummy(),
                 },
-                1 << claim.memory_id_to_value.small_log_size,
             )
             .entries(trace),
         );
@@ -630,7 +594,6 @@ pub mod relation_tracker {
                 range_check_6::Eval {
                     lookup_elements: relations::RangeCheck_6::dummy(),
                 },
-                1 << 6,
             )
             .entries(trace),
         );
@@ -640,7 +603,6 @@ pub mod relation_tracker {
                 range_check_11::Eval {
                     lookup_elements: relations::RangeCheck_11::dummy(),
                 },
-                1 << 11,
             )
             .entries(trace),
         );
@@ -650,7 +612,6 @@ pub mod relation_tracker {
                 range_check_12::Eval {
                     lookup_elements: relations::RangeCheck_12::dummy(),
                 },
-                1 << 12,
             )
             .entries(trace),
         );
@@ -660,7 +621,6 @@ pub mod relation_tracker {
                 range_check_18::Eval {
                     lookup_elements: relations::RangeCheck_18::dummy(),
                 },
-                1 << 18,
             )
             .entries(trace),
         );
@@ -670,7 +630,6 @@ pub mod relation_tracker {
                 range_check_19::Eval {
                     lookup_elements: relations::RangeCheck_19::dummy(),
                 },
-                1 << 19,
             )
             .entries(trace),
         );
@@ -680,7 +639,6 @@ pub mod relation_tracker {
                 range_check_3_6::Eval {
                     lookup_elements: relations::RangeCheck_3_6::dummy(),
                 },
-                1 << 9,
             )
             .entries(trace),
         );
@@ -690,7 +648,6 @@ pub mod relation_tracker {
                 range_check_4_3::Eval {
                     lookup_elements: relations::RangeCheck_4_3::dummy(),
                 },
-                1 << 7,
             )
             .entries(trace),
         );
@@ -700,7 +657,6 @@ pub mod relation_tracker {
                 range_check_4_4::Eval {
                     lookup_elements: relations::RangeCheck_4_4::dummy(),
                 },
-                1 << 8,
             )
             .entries(trace),
         );
@@ -710,7 +666,6 @@ pub mod relation_tracker {
                 range_check_9_9::Eval {
                     lookup_elements: relations::RangeCheck_9_9::dummy(),
                 },
-                1 << 18,
             )
             .entries(trace),
         );
@@ -720,7 +675,6 @@ pub mod relation_tracker {
                 range_check_7_2_5::Eval {
                     lookup_elements: relations::RangeCheck_7_2_5::dummy(),
                 },
-                1 << 14,
             )
             .entries(trace),
         );
@@ -730,7 +684,6 @@ pub mod relation_tracker {
                 range_check_3_6_6_3::Eval {
                     lookup_elements: relations::RangeCheck_3_6_6_3::dummy(),
                 },
-                1 << 18,
             )
             .entries(trace),
         );
@@ -740,7 +693,6 @@ pub mod relation_tracker {
                 range_check_4_4_4_4::Eval {
                     lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
                 },
-                1 << 16,
             )
             .entries(trace),
         );
@@ -750,7 +702,6 @@ pub mod relation_tracker {
                 range_check_3_3_3_3_3::Eval {
                     lookup_elements: relations::RangeCheck_3_3_3_3_3::dummy(),
                 },
-                1 << 15,
             )
             .entries(trace),
         );
