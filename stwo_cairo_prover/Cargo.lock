@@ -405,8 +405,8 @@ dependencies = [
 
 [[package]]
 name = "cairo-vm"
-version = "2.0.0-rc4"
-source = "git+https://github.com/lambdaclass/cairo-vm?rev=153d3a88#153d3a88b579a85de42bc14b7f0d06e7e9597fd4"
+version = "2.0.0"
+source = "git+https://github.com/lambdaclass/cairo-vm?rev=60c1fa0f#60c1fa0fca62fed6cfa304cb8fdc0d7ec4c23d02"
 dependencies = [
  "anyhow",
  "bincode",
@@ -431,7 +431,6 @@ dependencies = [
  "starknet-crypto 0.7.4",
  "starknet-types-core",
  "thiserror-no-std",
- "wasm-bindgen",
  "zip",
 ]
 
