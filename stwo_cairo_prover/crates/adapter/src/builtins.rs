@@ -33,6 +33,7 @@ pub struct BuiltinSegments {
 
 impl BuiltinSegments {
     /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
+    /// TODO(Stav): remove after using 'get_builtins_segment'.
     pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
         let mut res = BuiltinSegments::default();
         for (name, value) in memory_segments.iter() {
@@ -446,4 +447,5 @@ mod test_builtin_segments {
         builtin_segments.resize_memory_to_cover_holes(&mut memory);
         assert_eq!(memory.address_to_id.len(), 5);
     }
+
 }
