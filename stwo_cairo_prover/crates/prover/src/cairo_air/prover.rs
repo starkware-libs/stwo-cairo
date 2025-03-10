@@ -83,6 +83,8 @@ where
         SecureField::zero()
     );
 
+    // println!("Lookup sum is valid");
+
     interaction_claim.mix_into(channel);
     tree_builder.commit(channel);
 

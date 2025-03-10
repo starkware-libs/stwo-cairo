@@ -33,6 +33,7 @@ impl ClaimGenerator {
         self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
 
+        println!("Writing trace simd for cube252");
         let (trace, lookup_data) = write_trace_simd(
             n_rows,
             packed_inputs,
@@ -72,6 +73,7 @@ fn write_trace_simd(
 ) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
+    println!("Initialize trace, lookup_data structs");
     let (mut trace, mut lookup_data) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
@@ -100,12 +102,15 @@ fn write_trace_simd(
     let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
     let padding_col = Enabler::new(n_rows);
 
+    println!("Filling trace");
     trace
         .par_iter_mut()
         .enumerate()
         .zip(inputs.into_par_iter())
         .zip(lookup_data.par_iter_mut())
         .for_each(|(((row_index, mut row), cube_252_input), lookup_data)| {
+            // println!("Iter inputs index {}", row_index);
+
             let input_limb_0_col0 = cube_252_input.get_m31(0);
             *row[0] = input_limb_0_col0;
             let input_limb_1_col1 = cube_252_input.get_m31(1);
@@ -169,7 +174,6 @@ fn write_trace_simd(
             *row[27] = unpacked_limb_25_col27;
 
             // Range Check Mem Value N 28.
-
             let range_check_9_9_inputs_0 = [unpacked_limb_0_col10, unpacked_limb_1_col11].unpack();
             *lookup_data.range_check_9_9_0 = [unpacked_limb_0_col10, unpacked_limb_1_col11];
             let range_check_9_9_inputs_1 = [
@@ -300,53 +304,61 @@ fn write_trace_simd(
                     * (M31_8192)),
                 input_limb_9_col9,
             ];
-
+            let unpacked_limb_1_cola = ((((input_limb_0_col0) - (unpacked_limb_0_col10))
+                - ((unpacked_limb_1_col11) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_colb = ((((input_limb_1_col1) - (unpacked_limb_3_col12))
+                - ((unpacked_limb_4_col13) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_colc = ((((input_limb_2_col2) - (unpacked_limb_6_col14))
+                - ((unpacked_limb_7_col15) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_cold = ((((input_limb_3_col3) - (unpacked_limb_9_col16))
+                - ((unpacked_limb_10_col17) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_cole = ((((input_limb_4_col4) - (unpacked_limb_12_col18))
+                - ((unpacked_limb_13_col19) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_colf = ((((input_limb_5_col5) - (unpacked_limb_15_col20))
+                - ((unpacked_limb_16_col21) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_colg = ((((input_limb_6_col6) - (unpacked_limb_18_col22))
+                - ((unpacked_limb_19_col23) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_colh = ((((input_limb_7_col7) - (unpacked_limb_21_col24))
+                - ((unpacked_limb_22_col25) * (M31_512)))
+                * (M31_8192));
+            let unpacked_limb_1_colj = ((((input_limb_8_col8) - (unpacked_limb_24_col26))
+                - ((unpacked_limb_25_col27) * (M31_512)))
+                * (M31_8192));
             let a_tmp_fec87_1 = PackedFelt252::from_limbs([
                 unpacked_limb_0_col10,
                 unpacked_limb_1_col11,
-                ((((input_limb_0_col0) - (unpacked_limb_0_col10))
-                    - ((unpacked_limb_1_col11) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_cola,
                 unpacked_limb_3_col12,
                 unpacked_limb_4_col13,
-                ((((input_limb_1_col1) - (unpacked_limb_3_col12))
-                    - ((unpacked_limb_4_col13) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_colb,
                 unpacked_limb_6_col14,
                 unpacked_limb_7_col15,
-                ((((input_limb_2_col2) - (unpacked_limb_6_col14))
-                    - ((unpacked_limb_7_col15) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_colc,
                 unpacked_limb_9_col16,
                 unpacked_limb_10_col17,
-                ((((input_limb_3_col3) - (unpacked_limb_9_col16))
-                    - ((unpacked_limb_10_col17) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_cold,
                 unpacked_limb_12_col18,
                 unpacked_limb_13_col19,
-                ((((input_limb_4_col4) - (unpacked_limb_12_col18))
-                    - ((unpacked_limb_13_col19) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_cole,
                 unpacked_limb_15_col20,
                 unpacked_limb_16_col21,
-                ((((input_limb_5_col5) - (unpacked_limb_15_col20))
-                    - ((unpacked_limb_16_col21) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_colf,
                 unpacked_limb_18_col22,
                 unpacked_limb_19_col23,
-                ((((input_limb_6_col6) - (unpacked_limb_18_col22))
-                    - ((unpacked_limb_19_col23) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_colg,
                 unpacked_limb_21_col24,
                 unpacked_limb_22_col25,
-                ((((input_limb_7_col7) - (unpacked_limb_21_col24))
-                    - ((unpacked_limb_22_col25) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_colh,
                 unpacked_limb_24_col26,
                 unpacked_limb_25_col27,
-                ((((input_limb_8_col8) - (unpacked_limb_24_col26))
-                    - ((unpacked_limb_25_col27) * (M31_512)))
-                    * (M31_8192)),
+                unpacked_limb_1_colj,
                 input_limb_9_col9,
             ]);
             let a_tmp_fec87_1_limb_2 = ((((input_limb_0_col0) - (unpacked_limb_0_col10))

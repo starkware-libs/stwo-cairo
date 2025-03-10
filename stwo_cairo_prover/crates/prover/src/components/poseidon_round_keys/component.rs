@@ -30,7 +30,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 0];
+        let trace_log_sizes = vec![self.log_size; 1];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE];
         let preprocessed_log_sizes = vec![self.log_size];
         TreeVec::new(vec![
