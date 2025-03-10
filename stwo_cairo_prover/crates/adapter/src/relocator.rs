@@ -5,9 +5,9 @@ use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 
 use crate::builtins::{
-    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS, EC_OP_MEMORY_CELLS,
-    KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS, POSEIDON_MEMORY_CELLS,
-    RANGE_CHECK_MEMORY_CELLS,
+    BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS,
+    EC_OP_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
+    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 use crate::memory::{MemoryEntry, F252};
 
@@ -117,6 +117,32 @@ impl Relocator {
         let mut res = vec![];
         for (segment_index, _) in self.relocatable_mem.iter().enumerate() {
             res.extend(self.get_relocated_segment(segment_index));
+        }
+        res
+    }
+
+    // Return the segment info (start_address, exclusive end_address) for each builtin.
+    pub fn get_builtin_segments(&self) -> BuiltinSegments {
+        let mut res = BuiltinSegments::default();
+        for (segment_index, builtin_name) in self.builtins_segments_indices.iter() {
+            let start_addr = self.relocation_table[*segment_index];
+            let end_addr = self.relocation_table[*segment_index + 1];
+            let segment = Some((start_addr as usize, end_addr as usize).into());
+
+            match builtin_name {
+                BuiltinName::range_check => res.range_check_bits_128 = segment,
+                BuiltinName::pedersen => res.pedersen = segment,
+                BuiltinName::ecdsa => res.ecdsa = segment,
+                BuiltinName::keccak => res.keccak = segment,
+                BuiltinName::bitwise => res.bitwise = segment,
+                BuiltinName::ec_op => res.ec_op = segment,
+                BuiltinName::poseidon => res.poseidon = segment,
+                BuiltinName::range_check96 => res.range_check_bits_96 = segment,
+                BuiltinName::add_mod => res.add_mod = segment,
+                BuiltinName::mul_mod => res.mul_mod = segment,
+                // Not builtins.
+                BuiltinName::output | BuiltinName::segment_arena => {}
+            };
         }
         res
     }
@@ -230,5 +256,36 @@ pub mod relocator_tests {
                 }
             ]
         );
+    }
+
+    #[test]
+    fn test_create_builtins_segments() {
+        let builtin_segment0 = vec![
+            MaybeRelocatable::Int(1.into()),
+            MaybeRelocatable::Int(9.into()),
+            MaybeRelocatable::RelocatableValue(relocatable!(2, 1)),
+            MaybeRelocatable::Int(5498.into()),
+            MaybeRelocatable::RelocatableValue(relocatable!(2, 1478)),
+        ];
+        let builtin_segment1 = vec![MaybeRelocatable::RelocatableValue(relocatable!(0, 1))];
+        let segment2 = vec![
+            MaybeRelocatable::Int(1.into()),
+            MaybeRelocatable::Int(2.into()),
+            MaybeRelocatable::Int(3.into()),
+        ];
+
+        let relocatble_memory = vec![builtin_segment0, builtin_segment1, segment2];
+        let builtins_segments =
+            HashMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
+
+        let relocator = Relocator::new(relocatble_memory, builtins_segments);
+        let builtins_segments = relocator.get_builtin_segments();
+
+        assert_eq!(builtins_segments.bitwise, Some((1, 81).into()));
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((81, 97).into())
+        );
+        assert_eq!(builtins_segments.ecdsa, None);
     }
 }
