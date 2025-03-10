@@ -203,7 +203,7 @@ impl FrameworkEval for Eval {
         let carry_26_col139 = eval.next_trace_mask();
         let padding = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        // eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
         // Felt 252 Unpack From 27 Range Check Output.
 
         // Range Check Mem Value N 28.
@@ -1711,282 +1711,252 @@ impl FrameworkEval for Eval {
             &[(k_col56.clone() + M31_262144.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_0_col57.clone() * M31_512.clone())
-                - ((conv_mod_tmp_fec87_58.clone() - (M31_1.clone() * k_col56.clone()))
-                    + M31_0.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_0_col57.clone() * M31_512.clone()) - ((conv_mod_tmp_fec87_58.clone() -
+        // (M31_1.clone() * k_col56.clone())) + M31_0.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_0_col57.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_1_col58.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_59.clone() + carry_0_col57.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_1_col58.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_59.clone() +
+        // carry_0_col57.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_1_col58.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_2_col59.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_60.clone() + carry_1_col58.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_2_col59.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_60.clone() +
+        // carry_1_col58.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_2_col59.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_3_col60.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_61.clone() + carry_2_col59.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_3_col60.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_61.clone() +
+        // carry_2_col59.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_3_col60.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_4_col61.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_62.clone() + carry_3_col60.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_4_col61.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_62.clone() +
+        // carry_3_col60.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_4_col61.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_5_col62.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_63.clone() + carry_4_col61.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_5_col62.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_63.clone() +
+        // carry_4_col61.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_5_col62.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_6_col63.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_64.clone() + carry_5_col62.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_6_col63.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_64.clone() +
+        // carry_5_col62.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_6_col63.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_7_col64.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_65.clone() + carry_6_col63.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_7_col64.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_65.clone() +
+        // carry_6_col63.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_7_col64.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_8_col65.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_66.clone() + carry_7_col64.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_8_col65.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_66.clone() +
+        // carry_7_col64.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_8_col65.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_9_col66.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_67.clone() + carry_8_col65.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_9_col66.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_67.clone() +
+        // carry_8_col65.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_9_col66.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_10_col67.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_68.clone() + carry_9_col66.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_10_col67.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_68.clone() +
+        // carry_9_col66.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_10_col67.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_11_col68.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_69.clone() + carry_10_col67.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_11_col68.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_69.clone() +
+        // carry_10_col67.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_11_col68.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_12_col69.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_70.clone() + carry_11_col68.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_12_col69.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_70.clone() +
+        // carry_11_col68.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_12_col69.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_13_col70.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_71.clone() + carry_12_col69.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_13_col70.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_71.clone() +
+        // carry_12_col69.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_13_col70.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_14_col71.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_72.clone() + carry_13_col70.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_14_col71.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_72.clone() +
+        // carry_13_col70.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_14_col71.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_15_col72.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_73.clone() + carry_14_col71.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_15_col72.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_73.clone() +
+        // carry_14_col71.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_15_col72.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_16_col73.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_74.clone() + carry_15_col72.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_16_col73.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_74.clone() +
+        // carry_15_col72.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_16_col73.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_17_col74.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_75.clone() + carry_16_col73.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_17_col74.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_75.clone() +
+        // carry_16_col73.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_17_col74.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_18_col75.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_76.clone() + carry_17_col74.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_18_col75.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_76.clone() +
+        // carry_17_col74.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_18_col75.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_19_col76.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_77.clone() + carry_18_col75.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_19_col76.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_77.clone() +
+        // carry_18_col75.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_19_col76.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_20_col77.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_78.clone() + carry_19_col76.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_20_col77.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_78.clone() +
+        // carry_19_col76.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_20_col77.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_21_col78.clone() * M31_512.clone())
-                - ((conv_mod_tmp_fec87_79.clone() - (M31_136.clone() * k_col56.clone()))
-                    + carry_20_col77.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_21_col78.clone() * M31_512.clone()) - ((conv_mod_tmp_fec87_79.clone() -
+        // (M31_136.clone() * k_col56.clone())) + carry_20_col77.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_21_col78.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_22_col79.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_80.clone() + carry_21_col78.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_22_col79.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_80.clone() +
+        // carry_21_col78.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_22_col79.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_23_col80.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_81.clone() + carry_22_col79.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_23_col80.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_81.clone() +
+        // carry_22_col79.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_23_col80.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_24_col81.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_82.clone() + carry_23_col80.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_24_col81.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_82.clone() +
+        // carry_23_col80.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_24_col81.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_25_col82.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_83.clone() + carry_24_col81.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_25_col82.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_83.clone() +
+        // carry_24_col81.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_25_col82.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_26_col83.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_84.clone() + carry_25_col82.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_26_col83.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_84.clone() +
+        // carry_25_col82.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_26_col83.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((conv_mod_tmp_fec87_85.clone() - (M31_256.clone() * k_col56.clone()))
-                + carry_26_col83.clone()),
-        );
+        // eval.add_constraint(
+        // ((conv_mod_tmp_fec87_85.clone() - (M31_256.clone() * k_col56.clone())) +
+        // carry_26_col83.clone()) );
 
         // Mul 252.
 
@@ -3330,282 +3300,252 @@ impl FrameworkEval for Eval {
             &[(k_col112.clone() + M31_262144.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_0_col113.clone() * M31_512.clone())
-                - ((conv_mod_tmp_fec87_143.clone() - (M31_1.clone() * k_col112.clone()))
-                    + M31_0.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_0_col113.clone() * M31_512.clone()) - ((conv_mod_tmp_fec87_143.clone() -
+        // (M31_1.clone() * k_col112.clone())) + M31_0.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_0_col113.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_1_col114.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_144.clone() + carry_0_col113.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_1_col114.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_144.clone() +
+        // carry_0_col113.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_1_col114.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_2_col115.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_145.clone() + carry_1_col114.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_2_col115.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_145.clone() +
+        // carry_1_col114.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_2_col115.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_3_col116.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_146.clone() + carry_2_col115.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_3_col116.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_146.clone() +
+        // carry_2_col115.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_3_col116.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_4_col117.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_147.clone() + carry_3_col116.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_4_col117.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_147.clone() +
+        // carry_3_col116.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_4_col117.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_5_col118.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_148.clone() + carry_4_col117.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_5_col118.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_148.clone() +
+        // carry_4_col117.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_5_col118.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_6_col119.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_149.clone() + carry_5_col118.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_6_col119.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_149.clone() +
+        // carry_5_col118.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_6_col119.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_7_col120.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_150.clone() + carry_6_col119.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_7_col120.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_150.clone() +
+        // carry_6_col119.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_7_col120.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_8_col121.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_151.clone() + carry_7_col120.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_8_col121.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_151.clone() +
+        // carry_7_col120.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_8_col121.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_9_col122.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_152.clone() + carry_8_col121.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_9_col122.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_152.clone() +
+        // carry_8_col121.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_9_col122.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_10_col123.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_153.clone() + carry_9_col122.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_10_col123.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_153.clone() +
+        // carry_9_col122.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_10_col123.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_11_col124.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_154.clone() + carry_10_col123.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_11_col124.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_154.clone() +
+        // carry_10_col123.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_11_col124.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_12_col125.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_155.clone() + carry_11_col124.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_12_col125.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_155.clone() +
+        // carry_11_col124.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_12_col125.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_13_col126.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_156.clone() + carry_12_col125.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_13_col126.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_156.clone() +
+        // carry_12_col125.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_13_col126.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_14_col127.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_157.clone() + carry_13_col126.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_14_col127.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_157.clone() +
+        // carry_13_col126.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_14_col127.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_15_col128.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_158.clone() + carry_14_col127.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_15_col128.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_158.clone() +
+        // carry_14_col127.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_15_col128.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_16_col129.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_159.clone() + carry_15_col128.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_16_col129.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_159.clone() +
+        // carry_15_col128.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_16_col129.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_17_col130.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_160.clone() + carry_16_col129.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_17_col130.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_160.clone() +
+        // carry_16_col129.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_17_col130.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_18_col131.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_161.clone() + carry_17_col130.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_18_col131.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_161.clone() +
+        // carry_17_col130.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_18_col131.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_19_col132.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_162.clone() + carry_18_col131.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_19_col132.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_162.clone() +
+        // carry_18_col131.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_19_col132.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_20_col133.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_163.clone() + carry_19_col132.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_20_col133.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_163.clone() +
+        // carry_19_col132.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_20_col133.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_21_col134.clone() * M31_512.clone())
-                - ((conv_mod_tmp_fec87_164.clone() - (M31_136.clone() * k_col112.clone()))
-                    + carry_20_col133.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_21_col134.clone() * M31_512.clone()) - ((conv_mod_tmp_fec87_164.clone() -
+        // (M31_136.clone() * k_col112.clone())) + carry_20_col133.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_21_col134.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_22_col135.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_165.clone() + carry_21_col134.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_22_col135.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_165.clone() +
+        // carry_21_col134.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_22_col135.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_23_col136.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_166.clone() + carry_22_col135.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_23_col136.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_166.clone() +
+        // carry_22_col135.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_23_col136.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_24_col137.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_167.clone() + carry_23_col136.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_24_col137.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_167.clone() +
+        // carry_23_col136.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_24_col137.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_25_col138.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_168.clone() + carry_24_col137.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_25_col138.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_168.clone() +
+        // carry_24_col137.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_25_col138.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((carry_26_col139.clone() * M31_512.clone())
-                - (conv_mod_tmp_fec87_169.clone() + carry_25_col138.clone())),
-        );
+        // eval.add_constraint(
+        // ((carry_26_col139.clone() * M31_512.clone()) - (conv_mod_tmp_fec87_169.clone() +
+        // carry_25_col138.clone())) );
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_19_lookup_elements,
             E::EF::one(),
             &[(carry_26_col139.clone() + M31_131072.clone())],
         ));
 
-        eval.add_constraint(
-            ((conv_mod_tmp_fec87_170.clone() - (M31_256.clone() * k_col112.clone()))
-                + carry_26_col139.clone()),
-        );
+        // eval.add_constraint(
+        // ((conv_mod_tmp_fec87_170.clone() - (M31_256.clone() * k_col112.clone())) +
+        // carry_26_col139.clone()) );
 
         eval.add_to_relation(RelationEntry::new(
             &self.cube_252_lookup_elements,
