@@ -268,6 +268,7 @@ impl CairoClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
+        println!("write trace start");
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
@@ -341,6 +342,8 @@ impl CairoClaimGenerator {
             .verify_bitwise_xor_12_trace_generator
             .write_trace(tree_builder);
         span.exit();
+        println!("write trace end");
+
         (
             CairoClaim {
                 public_data: self.public_data,

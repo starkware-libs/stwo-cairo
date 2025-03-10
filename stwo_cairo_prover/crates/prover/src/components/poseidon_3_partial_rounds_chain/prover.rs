@@ -107,10 +107,11 @@ fn write_trace_simd(
     let M31_4 = PackedM31::broadcast(M31::from(4));
     let padding_col = Enabler::new(n_rows);
 
-    let mut cube_252_inputs_vec = vec![[[Felt252Width27::default(); 16]; 3]; n_rows];
+    let mut cube_252_inputs_vec = vec![[[Felt252Width27::default(); 16]; 3]; inputs.len()];
     let mut range_check_felt_252_width_27_inputs_vec =
-        vec![[[Felt252Width27::default(); 16]; 3]; n_rows];
-
+        vec![[[Felt252Width27::default(); 16]; 3]; inputs.len()];
+    // println!("n_rows: {}", n_rows);
+    // println!("inputs len: {}", inputs.len());
     trace
         .par_iter_mut()
         .enumerate()
@@ -126,6 +127,8 @@ fn write_trace_simd(
                 ),
                 range_check_felt_252_width_27_input,
             )| {
+                // println!("row_index: {}", row_index);
+
                 let input_tmp_44f04_0 = (
                     poseidon_3_partial_rounds_chain_input.0,
                     poseidon_3_partial_rounds_chain_input.1,
@@ -1452,7 +1455,6 @@ fn write_trace_simd(
                 range_check_4_4_state.add_inputs(&range_check_4_4_inputs_2);
             },
         );
-
     cube_252_state.add_inputs(
         &cube_252_inputs_vec
             .into_iter()

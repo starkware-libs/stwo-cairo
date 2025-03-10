@@ -92,7 +92,7 @@ impl FrameworkEval for Eval {
         let limb_8_high_part_col18 = eval.next_trace_mask();
         let padding = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        // eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_9_9_lookup_elements,

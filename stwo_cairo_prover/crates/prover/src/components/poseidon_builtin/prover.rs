@@ -258,16 +258,17 @@ fn write_trace_simd(
     let M31_95050340 = PackedM31::broadcast(M31::from(95050340));
     let seq = Seq::new(log_size);
 
-    let mut cube_252_inputs_vec = vec![[[Felt252Width27::default(); 16]; 2]; 1 << log_size];
+    let mut cube_252_inputs_vec =
+        vec![[[Felt252Width27::default(); 16]; 2]; 1 << log_n_packed_rows];
     let mut range_check_felt_252_width_27_inputs_vec =
-        vec![[[Felt252Width27::default(); 16]; 2]; 1 << log_size];
+        vec![[[Felt252Width27::default(); 16]; 2]; 1 << log_n_packed_rows];
     let mut poseidon_full_round_chain_inputs_vec = vec![
         [[(
             M31::default(),
             M31::default(),
             [Felt252Width27::default(); 3]
         ); N_LANES]; 8];
-        1 << log_size
+        1 << log_n_packed_rows
     ];
     let mut poseidon_3_partial_rounds_chain_inputs_vec = vec![
         [[(
@@ -275,9 +276,10 @@ fn write_trace_simd(
             M31::default(),
             [Felt252Width27::default(); 4]
         ); N_LANES]; 27];
-        1 << log_size
+        1 << log_n_packed_rows
     ];
-
+    println!("log_size: {}", log_size);
+    println!("log_n_packed_rows: {}", log_n_packed_rows);
     trace
     .par_iter_mut()
     .enumerate()
@@ -904,7 +906,7 @@ fn write_trace_simd(
             memory_address_to_id_state.add_inputs(&memory_address_to_id_inputs_5);
             memory_id_to_big_state.add_inputs(&memory_id_to_big_inputs_5);
         });
-
+    println!("cube_252_inputs_vec: {:?}", cube_252_inputs_vec);
     cube_252_inputs_vec.iter().for_each(|inputs_array| {
         inputs_array
             .iter()

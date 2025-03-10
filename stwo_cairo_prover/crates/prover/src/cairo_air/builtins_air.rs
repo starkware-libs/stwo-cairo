@@ -168,6 +168,10 @@ impl BuiltinsClaimGenerator {
                     "poseidon segment length is not a multiple of it's cells_per_instance"
                 );
                 let n_instances = segment_length / POSEIDON_MEMORY_CELLS;
+                println!(
+                    "Poseidon segment len {}, n_instances {}",
+                    segment_length, n_instances
+                );
                 assert!(
                     n_instances.is_power_of_two(),
                     "poseidon instances number is not a power of two"
@@ -264,6 +268,7 @@ impl BuiltinsClaimGenerator {
                 )
             })
             .unzip();
+        println!("write_trace poseidon_builtin_trace_generator");
         let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
             .poseidon_builtin_trace_generator
             .map(|poseidon_builtin_trace_generator| {
@@ -287,6 +292,7 @@ impl BuiltinsClaimGenerator {
                 )
             })
             .unzip();
+        println!("write_trace poseidon_3_partial_rounds_chain");
         let (
             poseidon_3_partial_rounds_chain_claim,
             poseidon_3_partial_rounds_chain_interaction_gen,
@@ -309,6 +315,7 @@ impl BuiltinsClaimGenerator {
             None
         })
         .unzip();
+        println!("write_trace poseidon_full_round_chain");
         let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) =
             (if let Some(poseidon_full_round_chain_trace_generator) =
                 self.poseidon_full_round_chain_trace_generator
@@ -323,6 +330,7 @@ impl BuiltinsClaimGenerator {
                 None
             })
             .unzip();
+        println!("write_trace cube252");
         let (cube_252_claim, cube_252_interaction_gen) = self
             .cube_252_trace_generator
             .map(|cube_252_trace_generator| {
@@ -333,12 +341,14 @@ impl BuiltinsClaimGenerator {
                 )
             })
             .unzip();
+        println!("write_trace poseidon_round_keys");
         let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
             .poseidon_round_keys_trace_generator
             .map(|poseidon_round_keys_trace_generator| {
                 poseidon_round_keys_trace_generator.write_trace(tree_builder)
             })
             .unzip();
+        println!("write_trace range_check_felt_252_width_27");
         let (range_check_felt_252_width_27_claim, range_check_felt_252_width_27_interaction_gen) =
             self.range_check_felt_252_width_27_trace_generator
                 .map(|range_check_felt_252_width_27_trace_generator| {
