@@ -1808,7 +1808,6 @@ dependencies = [
  "starknet-types-core",
  "stwo-cairo-serialize",
  "stwo-prover",
- "stwo_cairo_utils",
 ]
 
 [[package]]
@@ -1875,7 +1874,6 @@ dependencies = [
  "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-prover",
- "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",
 ]

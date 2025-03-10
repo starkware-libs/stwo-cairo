@@ -31,7 +31,6 @@ serde_json.workspace = true
 starknet-curve = "0.5.1"
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
-stwo_cairo_utils = { path = "../utils" }
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
 thiserror.workspace = true

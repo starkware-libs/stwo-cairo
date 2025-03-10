@@ -298,9 +298,10 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
+            use std::fs::File;
+
             use cairo_vm::air_public_input::MemorySegmentAddresses;
             use stwo_cairo_adapter::vm_import::{generate_test_input, MemoryEntryIter};
-            use stwo_cairo_utils::file_utils::open_file;
 
             use super::*;
 
@@ -351,7 +352,7 @@ pub mod tests {
                 d.push("../../test_data/");
                 d.push(test_name);
                 let mut memory_file =
-                    std::io::BufReader::new(open_file(d.join("mem").as_path()).unwrap());
+                    std::io::BufReader::new(File::open(d.join("mem").as_path()).unwrap());
                 let memory_entries = MemoryEntryIter(&mut memory_file).collect_vec();
                 assert!(memory_entries
                     .iter()
