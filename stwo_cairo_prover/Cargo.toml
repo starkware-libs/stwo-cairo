@@ -50,9 +50,6 @@ tracing-subscriber = "0.3.18"
 paste = "1.0"
 starknet-ff = "0.3.7"
 ruint = "1.12.3"
-# Pin wasm-bindgen version to the version pinned by lambdaclass/cairo-vm/vm
-# TODO(yuval): remove the pin once the pinning in lambdaclass/cairo-vm/vm is removed.
-wasm-bindgen = { version = "= 0.2.92" }
 
 [profile.bench]
 codegen-units = 1
