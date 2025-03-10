@@ -8,11 +8,7 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 
 use super::vm_import::MemoryEntry;
-use crate::builtins::{
-    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS, EC_OP_MEMORY_CELLS,
-    KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS, POSEIDON_MEMORY_CELLS,
-    RANGE_CHECK_MEMORY_CELLS,
-};
+use crate::builtins::get_num_cells_per_instance;
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [
@@ -63,19 +59,11 @@ impl MemoryConfig {
         let first_addr = 1;
         let mut relocation_table = vec![first_addr];
         for (index_segment, segment) in relocatable_mem.iter().enumerate() {
-            let cells_per_instance = match builtins_segments_indices.get(&index_segment) {
-                Some(BuiltinName::add_mod) => ADD_MOD_MEMORY_CELLS,
-                Some(BuiltinName::bitwise) => BITWISE_MEMORY_CELLS,
-                Some(BuiltinName::ec_op) => EC_OP_MEMORY_CELLS,
-                Some(BuiltinName::ecdsa) => ECDSA_MEMORY_CELLS,
-                Some(BuiltinName::keccak) => KECCAK_MEMORY_CELLS,
-                Some(BuiltinName::mul_mod) => MUL_MOD_MEMORY_CELLS,
-                Some(BuiltinName::pedersen) => PEDERSEN_MEMORY_CELLS,
-                Some(BuiltinName::poseidon) => POSEIDON_MEMORY_CELLS,
-                Some(BuiltinName::range_check96) => RANGE_CHECK_MEMORY_CELLS,
-                Some(BuiltinName::range_check) => RANGE_CHECK_MEMORY_CELLS,
-                _ => 1,
-            };
+            let cells_per_instance = get_num_cells_per_instance(
+                builtins_segments_indices
+                    .get(&index_segment)
+                    .unwrap_or(&BuiltinName::range_check),
+            );
             let segment_size = (segment.len() / cells_per_instance)
                 .next_power_of_two()
                 .max(16)
@@ -212,6 +200,14 @@ impl MemoryBuilder {
         }
 
         builder
+    }
+
+    pub fn get_reloaction_table(&self) -> &[u32] {
+        self.memory
+            .config
+            .relocation_table
+            .as_ref()
+            .expect("Relocation table is not set")
     }
 
     // TODO(Stav): Remove this functiun and use `from_relocatble_memory` instead.

@@ -31,8 +31,63 @@ pub struct BuiltinSegments {
     pub range_check_bits_128: Option<MemorySegmentAddresses>,
 }
 
+pub fn get_num_cells_per_instance(name: &BuiltinName) -> usize {
+    match *name {
+        BuiltinName::add_mod => ADD_MOD_MEMORY_CELLS,
+        BuiltinName::bitwise => BITWISE_MEMORY_CELLS,
+        BuiltinName::ec_op => EC_OP_MEMORY_CELLS,
+        BuiltinName::ecdsa => ECDSA_MEMORY_CELLS,
+        BuiltinName::keccak => KECCAK_MEMORY_CELLS,
+        BuiltinName::mul_mod => MUL_MOD_MEMORY_CELLS,
+        BuiltinName::pedersen => PEDERSEN_MEMORY_CELLS,
+        BuiltinName::poseidon => POSEIDON_MEMORY_CELLS,
+        BuiltinName::range_check => RANGE_CHECK_MEMORY_CELLS,
+        BuiltinName::range_check96 => RANGE_CHECK_MEMORY_CELLS,
+        BuiltinName::output | BuiltinName::segment_arena => 1,
+    }
+}
+
 impl BuiltinSegments {
+    pub fn from_relocatble_builtins_segments(
+        relocatble_builtins_segments: &HashMap<usize, BuiltinName>,
+        memory: &MemoryBuilder,
+    ) -> Self {
+        let mut res = BuiltinSegments::default();
+        let reloaction_table = memory.get_reloaction_table();
+        for (segment_index, builtin_name) in relocatble_builtins_segments.iter() {
+            let start_addr = reloaction_table[*segment_index];
+            let stop_addr = reloaction_table[*segment_index + 1] - 1;
+            let segment = Some((start_addr as usize, stop_addr as usize).into());
+
+            match builtin_name {
+                BuiltinName::range_check => res.range_check_bits_128 = segment,
+                BuiltinName::pedersen => res.pedersen = segment,
+                BuiltinName::ecdsa => res.ecdsa = segment,
+                BuiltinName::keccak => res.keccak = segment,
+                BuiltinName::bitwise => res.bitwise = segment,
+                BuiltinName::ec_op => res.ec_op = segment,
+                BuiltinName::poseidon => res.poseidon = segment,
+                BuiltinName::range_check96 => res.range_check_bits_96 = segment,
+                BuiltinName::add_mod => res.add_mod = segment,
+                BuiltinName::mul_mod => res.mul_mod = segment,
+                // Not builtins.
+                BuiltinName::output | BuiltinName::segment_arena => {}
+            };
+
+            let instance_number =
+                (stop_addr - start_addr + 1) / get_num_cells_per_instance(builtin_name) as u32;
+            assert!(
+                (instance_number.is_power_of_two() && instance_number >= 16),
+                "Invalid number of instances for builtin '{}': {}",
+                builtin_name,
+                instance_number,
+            );
+        }
+        res
+    }
+
     /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
+    /// TODO(Stav): remove after using 'from_relocatble_builtins_segments'.
     pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
         let mut res = BuiltinSegments::default();
         for (name, value) in memory_segments.iter() {
@@ -268,9 +323,13 @@ mod builtin_padding {
 // TODO(Stav): move read json to a test function.
 #[cfg(test)]
 mod test_builtin_segments {
+    use std::collections::HashMap;
     use std::path::PathBuf;
 
     use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
+    use cairo_vm::relocatable;
+    use cairo_vm::types::builtin_name::BuiltinName;
+    use cairo_vm::types::relocatable::*;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
 
@@ -445,5 +504,41 @@ mod test_builtin_segments {
         assert_eq!(memory.address_to_id.len(), 2);
         builtin_segments.resize_memory_to_cover_holes(&mut memory);
         assert_eq!(memory.address_to_id.len(), 5);
+    }
+
+    #[test]
+    fn test_from_relocatble_memory_segments() {
+        let builtin_segment0 = vec![
+            MaybeRelocatable::Int(1.into()),
+            MaybeRelocatable::Int(9.into()),
+            MaybeRelocatable::RelocatableValue(relocatable!(2, 1)),
+            MaybeRelocatable::Int(5498.into()),
+            MaybeRelocatable::RelocatableValue(relocatable!(2, 1478)),
+        ];
+        let builtin_segment1 = vec![MaybeRelocatable::RelocatableValue(relocatable!(0, 1))];
+        let segment2 = vec![
+            MaybeRelocatable::Int(1.into()),
+            MaybeRelocatable::Int(2.into()),
+            MaybeRelocatable::Int(3.into()),
+        ];
+
+        let relocatble_memory = vec![builtin_segment0, builtin_segment1, segment2];
+        let builtins_segments =
+            HashMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
+
+        let memory = MemoryBuilder::from_relocatble_memory(
+            MemoryConfig::default(),
+            &relocatble_memory,
+            &builtins_segments,
+        );
+        let builtins_segments =
+            BuiltinSegments::from_relocatble_builtins_segments(&builtins_segments, &memory);
+
+        assert_eq!(builtins_segments.bitwise, Some((1, 80).into()));
+        assert_eq!(
+            builtins_segments.range_check_bits_128,
+            Some((81, 96).into())
+        );
+        assert_eq!(builtins_segments.ecdsa, None);
     }
 }
