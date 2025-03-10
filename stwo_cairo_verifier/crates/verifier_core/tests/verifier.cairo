@@ -1,4 +1,5 @@
-use stwo_verifier_core::channel::ChannelImpl;
+use stwo_verifier_core::channel::ChannelTrait;
+use stwo_verifier_core::channel::poseidon252::Poseidon252ChannelImpl;
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };

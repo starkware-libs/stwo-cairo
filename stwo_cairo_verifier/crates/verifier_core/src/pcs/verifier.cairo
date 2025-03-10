@@ -10,14 +10,14 @@ use crate::utils::{ArrayImpl, DictImpl};
 use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
-use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
 
 // TODO(andrew): Change all `Array` types to `Span`.
-#[derive(Drop)]
-pub struct CommitmentSchemeProof<HashT> {
+#[derive(Drop, Serde)]
+pub struct CommitmentSchemeProof {
     pub config: PcsConfig,
-    pub commitments: TreeSpan<HashT>,
+    pub commitments: TreeSpan<Hash>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
@@ -25,35 +25,6 @@ pub struct CommitmentSchemeProof<HashT> {
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
-}
-
-
-impl CommitmentSchemeProofSerde<
-    HashT, +Drop<HashT>, +Serde<Span<HashT>>, +Destruct<HashT>,
-> of core::serde::Serde<CommitmentSchemeProof<HashT>> {
-    fn serialize(self: @CommitmentSchemeProof<HashT>, ref output: Array<felt252>) {
-        self.config.serialize(ref output);
-        self.commitments.serialize(ref output);
-        self.sampled_values.serialize(ref output);
-        self.decommitments.serialize(ref output);
-        self.queried_values.serialize(ref output);
-        self.proof_of_work_nonce.serialize(ref output);
-        self.fri_proof.serialize(ref output);
-    }
-
-    fn deserialize(ref serialized: Span<felt252>) -> Option<CommitmentSchemeProof<HashT>> {
-        Option::Some(
-            CommitmentSchemeProof {
-                config: Serde::deserialize(ref serialized)?,
-                commitments: Serde::deserialize(ref serialized)?,
-                sampled_values: Serde::deserialize(ref serialized)?,
-                decommitments: Serde::deserialize(ref serialized)?,
-                queried_values: Serde::deserialize(ref serialized)?,
-                proof_of_work_nonce: Serde::deserialize(ref serialized)?,
-                fri_proof: Serde::deserialize(ref serialized)?,
-            },
-        )
-    }
 }
 
 
@@ -89,7 +60,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         log_sizes: Span<u32>,
         ref channel: Channel,
     ) {
-        channel.mix_digest(commitment);
+        channel.mix_root(commitment);
         let mut extended_log_sizes = array![];
         for log_size in log_sizes {
             extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
@@ -102,7 +73,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn verify_values(
         self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
-        proof: CommitmentSchemeProof<felt252>,
+        proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) -> Result<(), VerificationError> {
         let CommitmentSchemeProof {
@@ -141,7 +112,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // Verify proof of work.
-        channel.mix_nonce(proof_of_work_nonce);
+        channel.mix_u64(proof_of_work_nonce);
 
         if !channel.check_proof_of_work(self.config.pow_bits) {
             return Err(VerificationError::ProofOfWork);
