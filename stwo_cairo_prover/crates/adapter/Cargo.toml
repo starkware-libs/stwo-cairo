@@ -16,7 +16,6 @@ itertools.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 stwo-cairo-common.workspace = true
-stwo_cairo_utils.workspace = true
 bytemuck.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
