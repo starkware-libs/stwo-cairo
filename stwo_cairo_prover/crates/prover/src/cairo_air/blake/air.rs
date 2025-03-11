@@ -284,7 +284,7 @@ impl InteractionClaim {
 }
 
 pub struct BlakeContextComponents {
-    components: Option<Components>,
+    pub components: Option<Components>,
 }
 impl BlakeContextComponents {
     pub fn new(
@@ -317,15 +317,15 @@ impl std::fmt::Display for BlakeContextComponents {
     }
 }
 
-struct Components {
-    blake_round: blake_round::Component,
-    blake_g: blake_g::Component,
-    blake_sigma: blake_round_sigma::Component,
-    triple_xor_32: triple_xor_32::Component,
-    verify_bitwise_xor_12: verify_bitwise_xor_12::Component,
+pub struct Components {
+    pub blake_round: blake_round::Component,
+    pub blake_g: blake_g::Component,
+    pub blake_sigma: blake_round_sigma::Component,
+    pub triple_xor_32: triple_xor_32::Component,
+    pub verify_bitwise_xor_12: verify_bitwise_xor_12::Component,
 }
 impl Components {
-    pub fn new(
+    fn new(
         tree_span_provider: &mut TraceLocationAllocator,
         claim: &BlakeContextClaim,
         interaction_elements: &CairoInteractionElements,
