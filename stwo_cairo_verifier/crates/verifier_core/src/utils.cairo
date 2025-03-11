@@ -4,47 +4,48 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
+use crate::fields::m31::M31_SHIFT;
 use crate::BaseField;
-
-/// Look up table where index `i` stores value `2^i`.
-const POW_2: [u32; 32] = [
-    0b1, // 
-    0b10, //
-    0b100, //
-    0b1000, //
-    0b10000, //
-    0b100000, //
-    0b1000000, //
-    0b10000000, //
-    0b100000000, //
-    0b1000000000, //
-    0b10000000000, //
-    0b100000000000, //
-    0b1000000000000, //
-    0b10000000000000, //
-    0b100000000000000, //
-    0b1000000000000000, //
-    0b10000000000000000, //
-    0b100000000000000000, //
-    0b1000000000000000000, //
-    0b10000000000000000000, //
-    0b100000000000000000000, //
-    0b1000000000000000000000, //
-    0b10000000000000000000000, //
-    0b100000000000000000000000, //
-    0b1000000000000000000000000, //
-    0b10000000000000000000000000, //
-    0b100000000000000000000000000, //
-    0b1000000000000000000000000000, //
-    0b10000000000000000000000000000, //
-    0b100000000000000000000000000000, //
-    0b1000000000000000000000000000000, //
-    0b10000000000000000000000000000000,
-];
 
 /// Returns `2^n`.
 #[inline(always)]
 pub fn pow2(n: u32) -> u32 {
+    /// Look up table where index `i` stores value `2^i`.
+    const POW_2: [u32; 32] = [
+        0b1, // 
+        0b10, //
+        0b100, //
+        0b1000, //
+        0b10000, //
+        0b100000, //
+        0b1000000, //
+        0b10000000, //
+        0b100000000, //
+        0b1000000000, //
+        0b10000000000, //
+        0b100000000000, //
+        0b1000000000000, //
+        0b10000000000000, //
+        0b100000000000000, //
+        0b1000000000000000, //
+        0b10000000000000000, //
+        0b100000000000000000, //
+        0b1000000000000000000, //
+        0b10000000000000000000, //
+        0b100000000000000000000, //
+        0b1000000000000000000000, //
+        0b10000000000000000000000, //
+        0b100000000000000000000000, //
+        0b1000000000000000000000000, //
+        0b10000000000000000000000000, //
+        0b100000000000000000000000000, //
+        0b1000000000000000000000000000, //
+        0b10000000000000000000000000000, //
+        0b100000000000000000000000000000, //
+        0b1000000000000000000000000000000, //
+        0b10000000000000000000000000000000,
+    ];
+
     *POW_2.span()[n]
 }
 
@@ -73,8 +74,8 @@ pub impl DictImpl<T, +Felt252DictValue<T>> of DictTrait<T> {
 pub impl OptBoxImpl<T> of OptBoxTrait<T> {
     fn as_unboxed(self: Option<Box<T>>) -> Option<T> {
         match self {
-            Option::Some(value) => Option::Some(value.unbox()),
-            Option::None => Option::None,
+            Some(value) => Some(value.unbox()),
+            None => None,
         }
     }
 }
@@ -84,8 +85,8 @@ pub impl OptionImpl<T> of OptionExTrait<T> {
     /// Converts from `@Option<T>` to `Option<@T>`.
     fn as_snap(self: @Option<T>) -> Option<@T> {
         match self {
-            Option::Some(x) => Option::Some(x),
-            Option::None => Option::None,
+            Some(x) => Some(x),
+            None => None,
         }
     }
 }
@@ -162,6 +163,11 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
         self.pop_front()
     }
 
+    #[inline]
+    fn last(mut self: Span<T>) -> Option<@T> {
+        self.pop_back()
+    }
+
     fn pop_front_n(ref self: Span<T>, n: usize) -> Span<T> {
         let (res, remainder) = self.split_at(n);
         self = remainder;
@@ -175,19 +181,19 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
 
     fn next_if_eq<+PartialEq<T>>(ref self: Span<T>, other: @T) -> Option<@T> {
         let mut self_copy = self;
-        if let Option::Some(value) = self_copy.pop_front() {
+        if let Some(value) = self_copy.pop_front() {
             if value == other {
                 self = self_copy;
-                return Option::Some(other);
+                return Some(other);
             }
         }
-        Option::None
+        None
     }
 
     fn max<+PartialOrd<T>, +Copy<T>>(mut self: Span<T>) -> Option<@T> {
         let mut max = self.pop_front()?;
         loop {
-            if let Option::Some(next) = self.pop_front() {
+            if let Some(next) = self.pop_front() {
                 if *next > *max {
                     max = next;
                 }
@@ -195,11 +201,10 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
                 break;
             }
         }
-        Option::Some(max)
+        Some(max)
     }
 }
 
-const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 // Packs 4 BaseField values and "append" to a felt252.
 // The resulting felt252 is: cur || x0 || x1 || x2 || x3.
 pub fn pack4(cur: felt252, values: [BaseField; 4]) -> felt252 {
@@ -264,6 +269,6 @@ mod tests {
 
     #[test]
     fn test_array_new_repeated() {
-        assert_eq!(ArrayImpl::new_repeated(5, 3_usize), array![3, 3, 3, 3, 3]);
+        assert_eq!(ArrayImpl::new_repeated(n: 5, v: 3_usize), array![3, 3, 3, 3, 3]);
     }
 }

@@ -7,7 +7,7 @@ use crate::fields::qm31::{QM31, QM31Impl};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
-use crate::vcs::hasher::PoseidonMerkleHasher;
+use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
@@ -17,7 +17,7 @@ use super::PcsConfig;
 #[derive(Drop)]
 pub struct CommitmentSchemeProof<HashT> {
     pub config: PcsConfig,
-    pub commitments: TreeArray<HashT>,
+    pub commitments: TreeSpan<HashT>,
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<PoseidonMerkleHasher>>,
@@ -29,7 +29,7 @@ pub struct CommitmentSchemeProof<HashT> {
 
 
 impl CommitmentSchemeProofSerde<
-    HashT, +Drop<HashT>, +core::serde::Serde<HashT>, +core::traits::Destruct<HashT>,
+    HashT, +Drop<HashT>, +Serde<Span<HashT>>, +Destruct<HashT>,
 > of core::serde::Serde<CommitmentSchemeProof<HashT>> {
     fn serialize(self: @CommitmentSchemeProof<HashT>, ref output: Array<felt252>) {
         self.config.serialize(ref output);
@@ -136,15 +136,15 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier =
             match FriVerifierImpl::commit(ref channel, fri_config, fri_proof, column_log_bounds) {
-            Result::Ok(fri_verifier) => fri_verifier,
-            Result::Err(err) => { return Result::Err(VerificationError::Fri(err)); },
+            Ok(fri_verifier) => fri_verifier,
+            Err(err) => { return Err(VerificationError::Fri(err)); },
         };
 
         // Verify proof of work.
         channel.mix_nonce(proof_of_work_nonce);
 
         if !channel.check_proof_of_work(self.config.pow_bits) {
-            return Result::Err(VerificationError::ProofOfWork);
+            return Err(VerificationError::ProofOfWork);
         }
 
         // Get FRI query positions.
@@ -158,7 +158,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let mut tree_i = 0;
         loop {
             if tree_i == n_trees {
-                break Result::Ok(());
+                break Ok(());
             }
 
             let tree = self.trees[tree_i];
@@ -167,13 +167,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
             // TODO(andrew): Unfortunately the current merkle implementation pops values from the
             // query position dict so it has to be duplicated.
-            if let Result::Err(err) = tree
+            if let Err(err) = tree
                 .verify(
                     query_positions_by_log_size.clone_subset(unique_column_log_sizes),
                     queried_values,
                     decommitment,
                 ) {
-                break Result::Err(VerificationError::Merkle(err));
+                break Err(VerificationError::Merkle(err));
             }
 
             tree_i += 1;
@@ -193,11 +193,11 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             queried_values,
         )?;
 
-        if let Result::Err(err) = fri_verifier.decommit(fri_answers) {
-            return Result::Err(VerificationError::Fri(err));
+        if let Err(err) = fri_verifier.decommit(fri_answers) {
+            return Err(VerificationError::Fri(err));
         }
 
-        Result::Ok(())
+        Ok(())
     }
 }
 

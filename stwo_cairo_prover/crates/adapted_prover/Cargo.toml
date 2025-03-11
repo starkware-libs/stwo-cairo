@@ -9,6 +9,7 @@ std = ["stwo-cairo-adapter/std"]
 [dependencies]
 clap.workspace = true
 log.workspace = true
+serde.workspace = true
 serde_json.workspace = true
 stwo_cairo_prover.workspace = true
 stwo_cairo_utils.workspace = true

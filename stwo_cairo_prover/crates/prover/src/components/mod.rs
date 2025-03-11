@@ -27,11 +27,17 @@ pub mod mul_opcode;
 pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
+pub mod qm_31_add_mul_opcode;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
 pub mod range_check_vector;
 pub mod ret_opcode;
+pub mod triple_xor_32;
 pub mod utils;
+pub mod verify_bitwise_xor_12;
+pub mod verify_bitwise_xor_4;
+pub mod verify_bitwise_xor_7;
+pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
@@ -39,6 +45,10 @@ mod prelude;
 
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{
-    range_check_11, range_check_19, range_check_4_3, range_check_6, range_check_7_2_5,
-    range_check_9_9,
+    range_check_11, range_check_19, range_check_4_3, range_check_4_4_4_4, range_check_6,
+    range_check_7_2_5, range_check_9_9,
 };
+pub mod blake_compress_opcode;
+pub mod blake_g;
+pub mod blake_round;
+pub mod blake_round_sigma;

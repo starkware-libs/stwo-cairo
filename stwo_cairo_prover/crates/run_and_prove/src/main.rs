@@ -4,10 +4,10 @@ use std::process::ExitCode;
 use clap::Parser;
 use stwo_cairo_adapter::plain::adapt_finished_runner;
 use stwo_cairo_adapter::vm_import::VmImportError;
-use stwo_cairo_prover::cairo_air::{
-    default_prod_prover_parameters, prove_cairo, verify_cairo, CairoVerificationError,
-    ConfigBuilder, ProverParameters,
+use stwo_cairo_prover::cairo_air::prover::{
+    default_prod_prover_parameters, prove_cairo, ProverConfig, ProverParameters,
 };
+use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};
 use stwo_prover::core::prover::ProvingError;
@@ -30,8 +30,6 @@ struct Args {
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
-    #[structopt(long = "track_relations")]
-    track_relations: bool,
     #[structopt(long = "display_components")]
     display_components: bool,
     /// Verify the generated proof.
@@ -69,17 +67,19 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     // should disable trace padding (this is the mode Stwo uses).
     let cairo_runner = run_vm(&args.vm_args, true)?;
     let cairo_input = adapt_finished_runner(cairo_runner)?;
-    let prover_config = ConfigBuilder::default()
-        .track_relations(args.track_relations)
-        .display_components(args.display_components)
-        .build();
+    let prover_config = ProverConfig {
+        display_components: args.display_components,
+    };
 
     log::info!(
         "Casm states by opcode:\n{}",
         cairo_input.state_transitions.casm_states_by_opcode
     );
 
-    let ProverParameters { pcs_config } = default_prod_prover_parameters();
+    let ProverParameters {
+        channel_hash: _,
+        pcs_config,
+    } = default_prod_prover_parameters();
 
     // TODO(Ohad): Propagate hash from CLI args.
     let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, prover_config, pcs_config)?;

@@ -13,12 +13,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![LOG_SIZE; 1];
         let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
-        let preprocessed_log_sizes = vec![LOG_SIZE];
-        TreeVec::new(vec![
-            preprocessed_log_sizes,
-            trace_log_sizes,
-            interaction_log_sizes,
-        ])
+        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {

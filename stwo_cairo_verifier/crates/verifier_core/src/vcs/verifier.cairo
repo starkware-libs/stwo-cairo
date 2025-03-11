@@ -25,7 +25,7 @@ impl MerkleDecommitmentDebug<
     impl H: MerkleHasher, +Debug<H::Hash>,
 > of Debug<MerkleDecommitment<H>> {
     fn fmt(self: @MerkleDecommitment<H>, ref f: Formatter) -> Result<(), Error> {
-        Result::Ok(())
+        Ok(())
     }
 }
 
@@ -48,7 +48,7 @@ impl MerkleDecommitmentSerde<
     }
 
     fn deserialize(ref serialized: Span<felt252>) -> Option<MerkleDecommitment<H>> {
-        Option::Some(
+        Some(
             MerkleDecommitment {
                 hash_witness: Serde::deserialize(ref serialized)?,
                 column_witness: Serde::deserialize(ref serialized)?,
@@ -109,8 +109,8 @@ impl MerkleVerifierImpl<
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
         let mut layer_log_size = match self.column_log_sizes.max() {
-            Option::Some(max_log_size) => *max_log_size,
-            Option::None => { return Result::Ok(()); },
+            Some(max_log_size) => *max_log_size,
+            None => { return Ok(()); },
         };
 
         let mut cols_by_size = Self::cols_by_size(self);
@@ -136,34 +136,34 @@ impl MerkleVerifierImpl<
             // Merge previous layer queries and column queries.
             let res = loop {
                 // Fetch the next query.
-                let current_query = if let Option::Some(current_query) =
+                let current_query = if let Some(current_query) =
                     next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
                     current_query
                 } else {
-                    break Result::Ok(());
+                    break Ok(());
                 };
 
                 let node_hashes = if is_first_layer {
-                    Option::None
+                    None
                 } else {
-                    let left_hash = if let Option::Some(val) =
+                    let left_hash = if let Some(val) =
                         fetch_prev_node_hash(
                             ref prev_layer_hashes, ref hash_witness, current_query * 2,
                         ) {
                         val
                     } else {
-                        break Result::Err(MerkleVerificationError::WitnessTooShort);
+                        break Err(MerkleVerificationError::WitnessTooShort);
                     };
 
-                    let right_hash = if let Option::Some(val) =
+                    let right_hash = if let Some(val) =
                         fetch_prev_node_hash(
                             ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
                         ) {
                         val
                     } else {
-                        break Result::Err(MerkleVerificationError::WitnessTooShort);
+                        break Err(MerkleVerificationError::WitnessTooShort);
                     };
-                    Option::Some((*left_hash, *right_hash))
+                    Some((*left_hash, *right_hash))
                 };
 
                 // If the column values were queried, read them from `queried_value`.
@@ -174,19 +174,19 @@ impl MerkleVerifierImpl<
                 };
 
                 if column_values.len() != n_columns_in_layer {
-                    break Result::Err(MerkleVerificationError::WitnessTooShort);
+                    break Err(MerkleVerificationError::WitnessTooShort);
                 }
 
                 layer_total_queries
                     .append((current_query, H::hash_node(node_hashes, column_values)));
             };
-            if let Result::Err(err) = res {
-                break Result::Err(err);
+            if let Err(err) = res {
+                break Err(err);
             }
 
             prev_layer_hashes = layer_total_queries;
             if layer_log_size == 0 {
-                break Result::Ok(());
+                break Ok(());
             }
             is_first_layer = false;
             layer_log_size -= 1;
@@ -194,26 +194,26 @@ impl MerkleVerifierImpl<
 
         // Check that all witnesses and values have been consumed.
         if !hash_witness.is_empty() {
-            return Result::Err(MerkleVerificationError::WitnessTooLong);
+            return Err(MerkleVerificationError::WitnessTooLong);
         }
         if !column_witness.is_empty() {
-            return Result::Err(MerkleVerificationError::WitnessTooLong);
+            return Err(MerkleVerificationError::WitnessTooLong);
         }
 
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
 
         if @computed_root != self.root {
-            return Result::Err(MerkleVerificationError::RootMismatch);
+            return Err(MerkleVerificationError::RootMismatch);
         }
 
-        Result::Ok(())
+        Ok(())
     }
 
     fn cols_by_size(self: @MerkleVerifier<H>) -> Felt252Dict<Nullable<Array<u32>>> {
         let mut column_log_sizes = self.column_log_sizes.span();
         let mut res_dict = Default::default();
         let mut col_index = 0;
-        while let Option::Some(col_size) = column_log_sizes.pop_front() {
+        while let Some(col_size) = column_log_sizes.pop_front() {
             let (res_dict_entry, value) = res_dict.entry((*col_size).into());
             let mut value = value.deref_or(array![]);
             value.append(col_index);
@@ -230,19 +230,17 @@ fn next_decommitment_node<H>(
 ) -> Option<usize> {
     // Fetch the next query.
     let layer_query_head = layer_queries.first();
-    let prev_query_head = if let Option::Some((prev_query, _)) = prev_queries.first() {
-        Option::Some(*prev_query / 2)
+    let prev_query_head = if let Some((prev_query, _)) = prev_queries.first() {
+        Some(*prev_query / 2)
     } else {
-        Option::None
+        None
     };
 
     match (layer_query_head, prev_query_head) {
-        (Option::None, Option::None) => { Option::None },
-        (Option::Some(column_query), Option::None) => { Option::Some(*column_query) },
-        (Option::None, Option::Some(prev_query)) => { Option::Some(prev_query) },
-        (
-            Option::Some(column_query), Option::Some(prev_query),
-        ) => { Option::Some(min(*column_query, prev_query)) },
+        (None, None) => { None },
+        (Some(column_query), None) => { Some(*column_query) },
+        (None, Some(prev_query)) => { Some(prev_query) },
+        (Some(column_query), Some(prev_query)) => { Some(min(*column_query, prev_query)) },
     }
 }
 
@@ -254,10 +252,10 @@ fn fetch_prev_node_hash<H, +Copy<H>, +Drop<H>>(
 ) -> Option<@H> {
     // If the child was computed, use that value.
     let mut prev_layer_hashes_span = prev_layer_hashes.span();
-    if let Option::Some((q, h)) = prev_layer_hashes_span.pop_front() {
+    if let Some((q, h)) = prev_layer_hashes_span.pop_front() {
         if *q == expected_query {
             let _ = prev_layer_hashes.pop_front();
-            return Option::Some(h);
+            return Some(h);
         }
     }
     // If the child was not computed, read it from the witness.
@@ -280,13 +278,16 @@ mod tests {
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
     use crate::fields::m31::m31;
+    use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
     use super::{MerkleDecommitment, MerkleVerifier, MerkleVerifierImpl};
 
     #[test]
     fn test_verifier() {
         let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
         let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
-        let decommitment = MerkleDecommitment {
+        let decommitment = MerkleDecommitment::<
+            PoseidonMerkleHasher,
+        > {
             hash_witness: array![
                 0x037056abc40b9e8c2a67826f54a8c379b0b3ef46629e6a19609e1144bf230f36,
                 0x068708ce1c3fc019a43494bd262e87fc70e5c1f68f42881f120fe90ea2bf2201,

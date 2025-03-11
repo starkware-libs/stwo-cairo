@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "log",
+ "serde",
  "serde_json",
  "stwo-cairo-adapter",
  "stwo-prover",
@@ -709,9 +710,9 @@ dependencies = [
 
 [[package]]
 name = "faststr"
-version = "0.2.27"
+version = "0.2.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9154486833a83cb5d99de8c4d831314b8ae810dd4ef18d89ceb7a9c7c728dd74"
+checksum = "16c6338e632ed4711dd1327f6dc607e72e3f02a591ddd46f2bbee878f2d93c65"
 dependencies = [
  "bytes",
  "rkyv",
@@ -1754,7 +1755,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=6f91336#6f913360a3c8e9f8626573a45199640dfcb71ede"
+source = "git+https://github.com/starkware-libs/stwo?rev=305cabc#305cabc2b06dd86aa1af678af1064dbc038323a8"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -1766,7 +1767,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=6f91336#6f913360a3c8e9f8626573a45199640dfcb71ede"
+source = "git+https://github.com/starkware-libs/stwo?rev=305cabc#305cabc2b06dd86aa1af678af1064dbc038323a8"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -1807,7 +1808,6 @@ dependencies = [
  "starknet-types-core",
  "stwo-cairo-serialize",
  "stwo-prover",
- "stwo_cairo_utils",
 ]
 
 [[package]]
@@ -1831,7 +1831,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=6f91336#6f913360a3c8e9f8626573a45199640dfcb71ede"
+source = "git+https://github.com/starkware-libs/stwo?rev=305cabc#305cabc2b06dd86aa1af678af1064dbc038323a8"
 dependencies = [
  "blake2",
  "blake3",
@@ -1865,14 +1865,15 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
+ "starknet-curve 0.5.1",
  "starknet-ff",
+ "starknet-types-core",
  "stwo-air-utils",
  "stwo-air-utils-derive",
  "stwo-cairo-adapter",
  "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-prover",
- "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",
 ]

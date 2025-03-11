@@ -93,7 +93,6 @@ impl InteractionClaimGenerator {
         assert!(self.lookup_data.bitwise_xor_trios.len() == 1 << PACKED_LOG_SIZE);
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
-        // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
         for (i, (values, mults)) in self
             .lookup_data

@@ -49,13 +49,14 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_32768 = E::F::from(M31::from(32768));
         let M31_32769 = E::F::from(M31::from(32769));
         let M31_512 = E::F::from(M31::from(512));
+        let M31_64 = E::F::from(M31::from(64));
+        let M31_66 = E::F::from(M31::from(66));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -86,19 +87,8 @@ impl FrameworkEval for Eval {
                 M31_32768.clone(),
                 M31_32769.clone(),
                 offset2_col3.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
+                M31_64.clone(),
+                M31_66.clone(),
             ],
         ));
 

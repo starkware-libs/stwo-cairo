@@ -16,13 +16,14 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation, PolyOps};
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
+use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
-use super::LOG_MAX_ROWS;
+use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: u32 = 9;
+const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
@@ -36,19 +37,29 @@ pub struct PreProcessedTrace {
     range_check_columns: Vec<Box<dyn PreProcessedColumn>>,
     poseidon_round_keys_columns: Vec<PoseidonRoundKeys>,
     blake_sigma_columns: Vec<BlakeSigma>,
+    pedersen_points_columns: Vec<PedersenPoints>,
 }
 impl PreProcessedTrace {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         let seq_columns = (LOG_N_LANES..=LOG_MAX_ROWS).map(Seq::new).collect_vec();
-        let bitwise_xor_columns = (0..3)
-            .map(move |col_index| BitwiseXor::new(XOR_N_BITS, col_index))
+        let bitwise_xor_columns = XOR_N_BITS
+            .map(|n_bits| {
+                (0..3)
+                    .map(|col_index| BitwiseXor::new(n_bits, col_index))
+                    .collect_vec()
+            })
+            .into_iter()
+            .flatten()
             .collect_vec();
         let range_check_columns = gen_range_check_columns();
         let poseidon_round_keys_columns = (0..POSEIDON_N_WORDS)
             .map(PoseidonRoundKeys::new)
             .collect_vec();
         let blake_sigma_columns = (0..N_BLAKE_SIGMA_COLS).map(BlakeSigma::new).collect_vec();
+        let pedersen_points_columns = (0..PEDERSEN_TABLE_N_COLUMNS)
+            .map(PedersenPoints::new)
+            .collect_vec();
 
         Self {
             seq_columns,
@@ -56,6 +67,7 @@ impl PreProcessedTrace {
             range_check_columns,
             poseidon_round_keys_columns,
             blake_sigma_columns,
+            pedersen_points_columns,
         }
     }
 
@@ -77,9 +89,13 @@ impl PreProcessedTrace {
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
-
         columns.extend(
             self.blake_sigma_columns
+                .iter()
+                .map(|c| c as &dyn PreProcessedColumn),
+        );
+        columns.extend(
+            self.pedersen_points_columns
                 .iter()
                 .map(|c| c as &dyn PreProcessedColumn),
         );
@@ -421,7 +437,7 @@ mod tests {
     fn test_preprocessed_root_regression() {
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("3ca873f18664f36d677f3b6ecf94913a699c90202b043a7ea1ecb104555bd609")
+            hex::decode("94405250507742f038e5496b3597e37f07043d59cd788844b479ab310c1a4300")
                 .expect("Invalid hex string"),
         );
 

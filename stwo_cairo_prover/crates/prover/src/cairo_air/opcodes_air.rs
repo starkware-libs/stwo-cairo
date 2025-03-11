@@ -12,18 +12,19 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
+use super::blake::air::BlakeContextClaimGenerator;
 use super::debug_tools::display_components;
+use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, call_opcode, call_opcode_op_1_base_fp, call_opcode_rel, generic_opcode,
-    jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp,
-    jump_opcode, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small,
-    mul_opcode_small_imm, range_check_11, range_check_19, range_check_9_9, ret_opcode,
+    assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,
+    call_opcode_rel, generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken,
+    jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
+    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
+    mul_opcode_small, mul_opcode_small_imm, qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8,
     verify_instruction,
 };
-
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {
     pub add: Vec<add_opcode::Claim>,
@@ -36,6 +37,7 @@ pub struct OpcodeClaim {
     pub assert_eq: Vec<assert_eq_opcode::Claim>,
     pub assert_eq_imm: Vec<assert_eq_opcode_imm::Claim>,
     pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Claim>,
+    pub blake: Vec<blake_compress_opcode::Claim>,
     pub call: Vec<call_opcode::Claim>,
     pub call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::Claim>,
     pub call_rel: Vec<call_opcode_rel::Claim>,
@@ -52,6 +54,7 @@ pub struct OpcodeClaim {
     pub mul_imm: Vec<mul_opcode_imm::Claim>,
     pub mul_small: Vec<mul_opcode_small::Claim>,
     pub mul_small_imm: Vec<mul_opcode_small_imm::Claim>,
+    pub qm31: Vec<qm_31_add_mul_opcode::Claim>,
     pub ret: Vec<ret_opcode::Claim>,
 }
 impl OpcodeClaim {
@@ -70,6 +73,7 @@ impl OpcodeClaim {
         self.assert_eq_double_deref
             .iter()
             .for_each(|c| c.mix_into(channel));
+        self.blake.iter().for_each(|c| c.mix_into(channel));
         self.call.iter().for_each(|c| c.mix_into(channel));
         self.call_op_1_base_fp
             .iter()
@@ -94,6 +98,7 @@ impl OpcodeClaim {
         self.mul_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul_small.iter().for_each(|c| c.mix_into(channel));
         self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
+        self.qm31.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
@@ -109,6 +114,7 @@ impl OpcodeClaim {
             self.assert_eq.iter().map(|c| c.log_sizes()),
             self.assert_eq_imm.iter().map(|c| c.log_sizes()),
             self.assert_eq_double_deref.iter().map(|c| c.log_sizes()),
+            self.blake.iter().map(|c| c.log_sizes()),
             self.call.iter().map(|c| c.log_sizes()),
             self.call_op_1_base_fp.iter().map(|c| c.log_sizes()),
             self.call_rel.iter().map(|c| c.log_sizes()),
@@ -125,6 +131,7 @@ impl OpcodeClaim {
             self.mul_imm.iter().map(|c| c.log_sizes()),
             self.mul_small.iter().map(|c| c.log_sizes()),
             self.mul_small_imm.iter().map(|c| c.log_sizes()),
+            self.qm31.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
         ))
     }
@@ -141,6 +148,7 @@ pub struct OpcodesClaimGenerator {
     assert_eq: Vec<assert_eq_opcode::ClaimGenerator>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::ClaimGenerator>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::ClaimGenerator>,
+    blake: Vec<blake_compress_opcode::ClaimGenerator>,
     call: Vec<call_opcode::ClaimGenerator>,
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::ClaimGenerator>,
     call_rel: Vec<call_opcode_rel::ClaimGenerator>,
@@ -157,6 +165,7 @@ pub struct OpcodesClaimGenerator {
     mul_imm: Vec<mul_opcode_imm::ClaimGenerator>,
     mul_small: Vec<mul_opcode_small::ClaimGenerator>,
     mul_small_imm: Vec<mul_opcode_small_imm::ClaimGenerator>,
+    qm31: Vec<qm_31_add_mul_opcode::ClaimGenerator>,
     ret: Vec<ret_opcode::ClaimGenerator>,
 }
 impl OpcodesClaimGenerator {
@@ -172,6 +181,7 @@ impl OpcodesClaimGenerator {
         let mut assert_eq = vec![];
         let mut assert_eq_imm = vec![];
         let mut assert_eq_double_deref = vec![];
+        let mut blake = vec![];
         let mut call = vec![];
         let mut call_op_1_base_fp = vec![];
         let mut call_rel = vec![];
@@ -188,6 +198,7 @@ impl OpcodesClaimGenerator {
         let mut mul_imm = vec![];
         let mut mul_small = vec![];
         let mut mul_small_imm = vec![];
+        let mut qm31 = vec![];
         let mut ret = vec![];
         if !input.casm_states_by_opcode.add_opcode.is_empty() {
             add.push(add_opcode::ClaimGenerator::new(
@@ -245,6 +256,11 @@ impl OpcodesClaimGenerator {
         {
             assert_eq_double_deref.push(assert_eq_opcode_double_deref::ClaimGenerator::new(
                 input.casm_states_by_opcode.assert_eq_opcode_double_deref,
+            ));
+        }
+        if !input.casm_states_by_opcode.blake2s_opcode.is_empty() {
+            blake.push(blake_compress_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.blake2s_opcode,
             ));
         }
         if !input.casm_states_by_opcode.call_opcode.is_empty() {
@@ -344,6 +360,11 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.mul_opcode_small_imm,
             ));
         }
+        if !input.casm_states_by_opcode.qm31_add_mul_opcode.is_empty() {
+            qm31.push(qm_31_add_mul_opcode::ClaimGenerator::new(
+                input.casm_states_by_opcode.qm31_add_mul_opcode,
+            ));
+        }
         if !input.casm_states_by_opcode.ret_opcode.is_empty() {
             ret.push(ret_opcode::ClaimGenerator::new(
                 input.casm_states_by_opcode.ret_opcode,
@@ -360,6 +381,7 @@ impl OpcodesClaimGenerator {
             assert_eq,
             assert_eq_imm,
             assert_eq_double_deref,
+            blake,
             call,
             call_op_1_base_fp,
             call_rel,
@@ -376,6 +398,7 @@ impl OpcodesClaimGenerator {
             mul_imm,
             mul_small,
             mul_small_imm,
+            qm31,
             ret,
         }
     }
@@ -383,12 +406,12 @@ impl OpcodesClaimGenerator {
     pub fn write_trace<MC: MerkleChannel>(
         self,
         tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        blake_context_trace_generator: &mut BlakeContextClaimGenerator,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
-        range_check_11_trace_generator: &range_check_11::ClaimGenerator,
-        range_check_19_trace_generator: &range_check_19::ClaimGenerator,
-        range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
+        range_checks_trace_generator: &RangeChecksClaimGenerator,
         verify_instruction_trace_generator: &verify_instruction::ClaimGenerator,
+        verify_bitwise_xor_8_trace_generator: &mut verify_bitwise_xor_8::ClaimGenerator,
     ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator)
     where
         SimdBackend: BackendForChannel<MC>,
@@ -513,6 +536,22 @@ impl OpcodesClaimGenerator {
                 )
             })
             .unzip();
+        let (blake_claims, blake_interaction_gens) = self
+            .blake
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &mut blake_context_trace_generator.blake_round,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    &range_checks_trace_generator.rc_7_2_5_trace_generator,
+                    &mut blake_context_trace_generator.triple_xor_32,
+                    verify_bitwise_xor_8_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
         let (call_claims, call_interaction_gens) = self
             .call
             .into_iter()
@@ -557,8 +596,8 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    range_check_19_trace_generator,
-                    range_check_9_9_trace_generator,
+                    &range_checks_trace_generator.rc_19_trace_generator,
+                    &range_checks_trace_generator.rc_9_9_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -667,7 +706,7 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    range_check_19_trace_generator,
+                    &range_checks_trace_generator.rc_19_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -680,7 +719,7 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    range_check_19_trace_generator,
+                    &range_checks_trace_generator.rc_19_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -693,7 +732,7 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    range_check_11_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -706,7 +745,20 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    range_check_11_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
+                    verify_instruction_trace_generator,
+                )
+            })
+            .unzip();
+        let (qm31_claims, qm31_interaction_gens) = self
+            .qm31
+            .into_iter()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    &range_checks_trace_generator.rc_4_4_4_4_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -735,6 +787,7 @@ impl OpcodesClaimGenerator {
                 assert_eq: assert_eq_claims,
                 assert_eq_imm: assert_eq_imm_claims,
                 assert_eq_double_deref: assert_eq_double_deref_claims,
+                blake: blake_claims,
                 call: call_claims,
                 call_op_1_base_fp: call_op_1_base_fp_claims,
                 call_rel: call_rel_claims,
@@ -751,6 +804,7 @@ impl OpcodesClaimGenerator {
                 mul_imm: mul_imm_claims,
                 mul_small: mul_small_claims,
                 mul_small_imm: mul_small_imm_claims,
+                qm31: qm31_claims,
                 ret: ret_claims,
             },
             OpcodesInteractionClaimGenerator {
@@ -764,6 +818,7 @@ impl OpcodesClaimGenerator {
                 assert_eq: assert_eq_interaction_gens,
                 assert_eq_imm: assert_eq_imm_interaction_gens,
                 assert_eq_double_deref: assert_eq_double_deref_interaction_gens,
+                blake: blake_interaction_gens,
                 call: call_interaction_gens,
                 call_op_1_base_fp: call_op_1_base_fp_interaction_gens,
                 call_rel: call_rel_interaction_gens,
@@ -780,6 +835,7 @@ impl OpcodesClaimGenerator {
                 mul_imm: mul_imm_interaction_gens,
                 mul_small: mul_small_interaction_gens,
                 mul_small_imm: mul_small_imm_interaction_gens,
+                qm31: qm31_interaction_gens,
                 ret_interaction_gens,
             },
         )
@@ -798,6 +854,7 @@ pub struct OpcodeInteractionClaim {
     assert_eq: Vec<assert_eq_opcode::InteractionClaim>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaim>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
+    blake: Vec<blake_compress_opcode::InteractionClaim>,
     call: Vec<call_opcode::InteractionClaim>,
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::InteractionClaim>,
     call_rel: Vec<call_opcode_rel::InteractionClaim>,
@@ -814,6 +871,7 @@ pub struct OpcodeInteractionClaim {
     mul_imm: Vec<mul_opcode_imm::InteractionClaim>,
     mul_small: Vec<mul_opcode_small::InteractionClaim>,
     mul_small_imm: Vec<mul_opcode_small_imm::InteractionClaim>,
+    qm31: Vec<qm_31_add_mul_opcode::InteractionClaim>,
     ret: Vec<ret_opcode::InteractionClaim>,
 }
 impl OpcodeInteractionClaim {
@@ -832,6 +890,7 @@ impl OpcodeInteractionClaim {
         self.assert_eq_double_deref
             .iter()
             .for_each(|c| c.mix_into(channel));
+        self.blake.iter().for_each(|c| c.mix_into(channel));
         self.call.iter().for_each(|c| c.mix_into(channel));
         self.call_op_1_base_fp
             .iter()
@@ -856,6 +915,7 @@ impl OpcodeInteractionClaim {
         self.mul_imm.iter().for_each(|c| c.mix_into(channel));
         self.mul_small.iter().for_each(|c| c.mix_into(channel));
         self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
+        self.qm31.iter().for_each(|c| c.mix_into(channel));
         self.ret.iter().for_each(|c| c.mix_into(channel));
     }
 
@@ -889,6 +949,9 @@ impl OpcodeInteractionClaim {
             sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.assert_eq_double_deref {
+            sum += interaction_claim.claimed_sum;
+        }
+        for interaction_claim in &self.blake {
             sum += interaction_claim.claimed_sum;
         }
         for interaction_claim in &self.call {
@@ -939,6 +1002,9 @@ impl OpcodeInteractionClaim {
         for interaction_claim in &self.mul_small_imm {
             sum += interaction_claim.claimed_sum;
         }
+        for interaction_claim in &self.qm31 {
+            sum += interaction_claim.claimed_sum;
+        }
         for interaction_claim in &self.ret {
             sum += interaction_claim.claimed_sum;
         }
@@ -957,6 +1023,7 @@ pub struct OpcodesInteractionClaimGenerator {
     assert_eq: Vec<assert_eq_opcode::InteractionClaimGenerator>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
+    blake: Vec<blake_compress_opcode::InteractionClaimGenerator>,
     call: Vec<call_opcode::InteractionClaimGenerator>,
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::InteractionClaimGenerator>,
     call_rel: Vec<call_opcode_rel::InteractionClaimGenerator>,
@@ -973,6 +1040,7 @@ pub struct OpcodesInteractionClaimGenerator {
     mul_imm: Vec<mul_opcode_imm::InteractionClaimGenerator>,
     mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
     mul_small_imm: Vec<mul_opcode_small_imm::InteractionClaimGenerator>,
+    qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
 impl OpcodesInteractionClaimGenerator {
@@ -1108,6 +1176,23 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
                     &interaction_elements.opcodes,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
+        let blake_interaction_claims = self
+            .blake
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.blake_round,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.range_checks.rc_7_2_5,
+                    &interaction_elements.triple_xor_32,
+                    &interaction_elements.verify_bitwise_xor_8,
                     &interaction_elements.verify_instruction,
                 )
             })
@@ -1326,6 +1411,20 @@ impl OpcodesInteractionClaimGenerator {
                 )
             })
             .collect();
+        let qm31_interaction_claims = self
+            .qm31
+            .into_iter()
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.opcodes,
+                    &interaction_elements.range_checks.rc_4_4_4_4,
+                    &interaction_elements.verify_instruction,
+                )
+            })
+            .collect();
         let ret_interaction_claims = self
             .ret_interaction_gens
             .into_iter()
@@ -1350,6 +1449,7 @@ impl OpcodesInteractionClaimGenerator {
             assert_eq: assert_eq_interaction_claims,
             assert_eq_imm: assert_eq_imm_interaction_claims,
             assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
+            blake: blake_interaction_claims,
             call: call_interaction_claims,
             call_op_1_base_fp: call_op_1_base_fp_interaction_claims,
             call_rel: call_rel_interaction_claims,
@@ -1366,6 +1466,7 @@ impl OpcodesInteractionClaimGenerator {
             mul_imm: mul_imm_interaction_claims,
             mul_small: mul_small_interaction_claims,
             mul_small_imm: mul_small_imm_interaction_claims,
+            qm31: qm31_interaction_claims,
             ret: ret_interaction_claims,
         }
     }
@@ -1382,6 +1483,7 @@ pub struct OpcodeComponents {
     assert_eq: Vec<assert_eq_opcode::Component>,
     assert_eq_imm: Vec<assert_eq_opcode_imm::Component>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Component>,
+    blake: Vec<blake_compress_opcode::Component>,
     call: Vec<call_opcode::Component>,
     call_op_1_base_fp: Vec<call_opcode_op_1_base_fp::Component>,
     call_rel: Vec<call_opcode_rel::Component>,
@@ -1398,6 +1500,7 @@ pub struct OpcodeComponents {
     mul_imm: Vec<mul_opcode_imm::Component>,
     mul_small: Vec<mul_opcode_small::Component>,
     mul_small_imm: Vec<mul_opcode_small_imm::Component>,
+    qm31: Vec<qm_31_add_mul_opcode::Component>,
     ret: Vec<ret_opcode::Component>,
 }
 impl OpcodeComponents {
@@ -1633,6 +1736,39 @@ impl OpcodeComponents {
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect_vec();
+        let blake_components = claim
+            .blake
+            .iter()
+            .zip(interaction_claim.blake.iter())
+            .map(|(&claim, &interaction_claim)| {
+                blake_compress_opcode::Component::new(
+                    tree_span_provider,
+                    blake_compress_opcode::Eval {
+                        claim,
+                        blake_round_lookup_elements: interaction_elements.blake_round.clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_7_2_5_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_7_2_5
+                            .clone(),
+                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+                        verify_bitwise_xor_8_lookup_elements: interaction_elements
+                            .verify_bitwise_xor_8
+                            .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
@@ -2049,6 +2185,34 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
+        let qm31_components = claim
+            .qm31
+            .iter()
+            .zip(interaction_claim.qm31.iter())
+            .map(|(&claim, &interaction_claim)| {
+                qm_31_add_mul_opcode::Component::new(
+                    tree_span_provider,
+                    qm_31_add_mul_opcode::Eval {
+                        claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_4_4_4_4_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_4_4_4_4
+                            .clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
         let ret_components = claim
             .ret
             .iter()
@@ -2084,6 +2248,7 @@ impl OpcodeComponents {
             assert_eq: assert_eq_components,
             assert_eq_imm: assert_eq_imm_components,
             assert_eq_double_deref: assert_eq_double_deref_components,
+            blake: blake_components,
             call: call_components,
             call_op_1_base_fp: call_op_1_base_fp_components,
             call_rel: call_rel_components,
@@ -2100,6 +2265,7 @@ impl OpcodeComponents {
             mul_imm: mul_imm_components,
             mul_small: mul_small_components,
             mul_small_imm: mul_small_imm_components,
+            qm31: qm31_components,
             ret: ret_components,
         }
     }
@@ -2153,6 +2319,11 @@ impl OpcodeComponents {
         );
         vec.extend(
             self.assert_eq_double_deref
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
+            self.blake
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
@@ -2237,6 +2408,11 @@ impl OpcodeComponents {
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
         );
         vec.extend(
+            self.qm31
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+        );
+        vec.extend(
             self.ret
                 .iter()
                 .map(|component| component as &dyn ComponentProver<SimdBackend>),
@@ -2267,6 +2443,8 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.assert_eq_imm))?;
         writeln!(f, "assert_eq_double_deref:")?;
         writeln!(f, "{}", display_components(&self.assert_eq_double_deref))?;
+        writeln!(f, "blake:")?;
+        writeln!(f, "{}", display_components(&self.blake))?;
         writeln!(f, "call:")?;
         writeln!(f, "{}", display_components(&self.call))?;
         writeln!(f, "call_op_1_base_fp:")?;
@@ -2299,6 +2477,8 @@ impl std::fmt::Display for OpcodeComponents {
         writeln!(f, "{}", display_components(&self.mul_small))?;
         writeln!(f, "mul_small_imm:")?;
         writeln!(f, "{}", display_components(&self.mul_small_imm))?;
+        writeln!(f, "qm31:")?;
+        writeln!(f, "{}", display_components(&self.qm31))?;
         writeln!(f, "ret:")?;
         writeln!(f, "{}", display_components(&self.ret))?;
         Ok(())

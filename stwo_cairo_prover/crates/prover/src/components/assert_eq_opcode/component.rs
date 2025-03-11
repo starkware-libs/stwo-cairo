@@ -13,7 +13,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 13];
+        let trace_log_sizes = vec![self.log_size; 12];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -50,8 +50,14 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
+        let M31_128 = E::F::from(M31::from(128));
+        let M31_16 = E::F::from(M31::from(16));
+        let M31_256 = E::F::from(M31::from(256));
+        let M31_32 = E::F::from(M31::from(32));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_32768 = E::F::from(M31::from(32768));
+        let M31_64 = E::F::from(M31::from(64));
+        let M31_8 = E::F::from(M31::from(8));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -59,17 +65,28 @@ impl FrameworkEval for Eval {
         let offset2_col4 = eval.next_trace_mask();
         let dst_base_fp_col5 = eval.next_trace_mask();
         let op1_base_fp_col6 = eval.next_trace_mask();
-        let op1_base_ap_col7 = eval.next_trace_mask();
-        let ap_update_add_1_col8 = eval.next_trace_mask();
-        let mem_dst_base_col9 = eval.next_trace_mask();
-        let mem1_base_col10 = eval.next_trace_mask();
-        let dst_id_col11 = eval.next_trace_mask();
+        let ap_update_add_1_col7 = eval.next_trace_mask();
+        let mem_dst_base_col8 = eval.next_trace_mask();
+        let mem1_base_col9 = eval.next_trace_mask();
+        let dst_id_col10 = eval.next_trace_mask();
         let padding = eval.next_trace_mask();
 
         eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
 
         // Decode Instruction.
 
+        // Flag dst_base_fp is a bit.
+        eval.add_constraint(
+            (dst_base_fp_col5.clone() * (M31_1.clone() - dst_base_fp_col5.clone())),
+        );
+        // Flag op1_base_fp is a bit.
+        eval.add_constraint(
+            (op1_base_fp_col6.clone() * (M31_1.clone() - op1_base_fp_col6.clone())),
+        );
+        // Flag ap_update_add_1 is a bit.
+        eval.add_constraint(
+            (ap_update_add_1_col7.clone() * (M31_1.clone() - ap_update_add_1_col7.clone())),
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.verify_instruction_lookup_elements,
             E::EF::one(),
@@ -78,39 +95,30 @@ impl FrameworkEval for Eval {
                 offset0_col3.clone(),
                 M31_32767.clone(),
                 offset2_col4.clone(),
-                dst_base_fp_col5.clone(),
-                M31_1.clone(),
-                M31_0.clone(),
-                op1_base_fp_col6.clone(),
-                op1_base_ap_col7.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                ap_update_add_1_col8.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_1.clone(),
+                ((((((M31_0.clone() + (dst_base_fp_col5.clone() * M31_8.clone()))
+                    + M31_16.clone())
+                    + M31_0.clone())
+                    + (op1_base_fp_col6.clone() * M31_64.clone()))
+                    + ((M31_1.clone() - op1_base_fp_col6.clone()) * M31_128.clone()))
+                    + M31_0.clone()),
+                ((((M31_0.clone() + (ap_update_add_1_col7.clone() * M31_32.clone()))
+                    + M31_0.clone())
+                    + M31_0.clone())
+                    + M31_256.clone()),
             ],
         ));
 
         // mem_dst_base.
         eval.add_constraint(
-            (mem_dst_base_col9.clone()
+            (mem_dst_base_col8.clone()
                 - ((dst_base_fp_col5.clone() * input_fp_col2.clone())
                     + ((M31_1.clone() - dst_base_fp_col5.clone()) * input_ap_col1.clone()))),
         );
-        // Either flag op1_base_fp is on or flag op1_base_ap is on.
-        eval.add_constraint(
-            ((op1_base_fp_col6.clone() + op1_base_ap_col7.clone()) - M31_1.clone()),
-        );
         // mem1_base.
         eval.add_constraint(
-            (mem1_base_col10.clone()
+            (mem1_base_col9.clone()
                 - ((op1_base_fp_col6.clone() * input_fp_col2.clone())
-                    + (op1_base_ap_col7.clone() * input_ap_col1.clone()))),
+                    + ((M31_1.clone() - op1_base_fp_col6.clone()) * input_ap_col1.clone()))),
         );
 
         // Mem Verify Equal.
@@ -119,8 +127,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem_dst_base_col9.clone() + (offset0_col3.clone() - M31_32768.clone())),
-                dst_id_col11.clone(),
+                (mem_dst_base_col8.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                dst_id_col10.clone(),
             ],
         ));
 
@@ -128,8 +136,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem1_base_col10.clone() + (offset2_col4.clone() - M31_32768.clone())),
-                dst_id_col11.clone(),
+                (mem1_base_col9.clone() + (offset2_col4.clone() - M31_32768.clone())),
+                dst_id_col10.clone(),
             ],
         ));
 
@@ -148,7 +156,7 @@ impl FrameworkEval for Eval {
             -E::EF::from(padding.clone()),
             &[
                 (input_pc_col0.clone() + M31_1.clone()),
-                (input_ap_col1.clone() + ap_update_add_1_col8.clone()),
+                (input_ap_col1.clone() + ap_update_add_1_col7.clone()),
                 input_fp_col2.clone(),
             ],
         ));
