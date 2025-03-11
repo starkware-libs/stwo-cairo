@@ -40,8 +40,9 @@ where
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
 
     // Preprocessed trace.
+    let preprocessed_trace = PreProcessedTrace::new();
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(PreProcessedTrace::new().gen_trace());
+    tree_builder.extend_evals(preprocessed_trace.gen_trace());
     tree_builder.commit(channel);
 
     // Run Cairo.
@@ -87,7 +88,12 @@ where
     tree_builder.commit(channel);
 
     // Component provers.
-    let component_builder = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
+    let component_builder = CairoComponents::new(
+        &claim,
+        &interaction_elements,
+        &interaction_claim,
+        &preprocessed_trace.ids(),
+    );
     let components = component_builder.provers();
 
     // Prove stark.
@@ -164,6 +170,8 @@ pub mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::{prove_cairo, ProverConfig};
+    use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
+    use crate::cairo_air::preprocessed::tests::testing_preprocessed_tree;
     use crate::cairo_air::verifier::verify_cairo;
 
     fn test_basic_cairo_air_input() -> ProverInput {
@@ -205,6 +213,13 @@ pub mod tests {
         )
         .unwrap();
         verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+    }
+
+    #[test]
+    fn test_basic_cairo_constraints() {
+        let input = test_basic_cairo_air_input();
+        let pp_tree = testing_preprocessed_tree(19);
+        assert_cairo_constraints(input, pp_tree);
     }
 
     #[cfg(test)]
