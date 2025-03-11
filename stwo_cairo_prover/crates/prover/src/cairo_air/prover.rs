@@ -244,6 +244,14 @@ pub mod tests {
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
+        use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
+
+        // TODO(Ohad): fine-grained constraints tests.
+        #[test]
+        fn test_cairo_constraints() {
+            let input = generate_test_input("test_prove_verify_all_opcode_components");
+            assert_cairo_constraints(input);
+        }
 
         #[test]
         fn test_full_cairo_air() {
