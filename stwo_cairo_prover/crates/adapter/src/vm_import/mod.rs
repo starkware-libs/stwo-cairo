@@ -1,5 +1,6 @@
 mod json;
 
+use std::fs::{read_to_string, File};
 use std::io::Read;
 use std::path::Path;
 
@@ -9,7 +10,6 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
-use stwo_cairo_utils::file_utils::{open_file, read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -21,9 +21,6 @@ use crate::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
-    #[error("IO error: {0}")]
-    Io(#[from] IoErrorWithPath),
-
     #[cfg(not(feature = "std"))]
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
@@ -69,8 +66,18 @@ pub fn adapt_vm_output(
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
 
     let (public_input_string, private_input_string) = (
-        read_to_string(public_input_json)?,
-        read_to_string(private_input_json)?,
+        read_to_string(public_input_json).unwrap_or_else(|_| {
+            panic!(
+                "Unable to read public input file at path {:?}",
+                public_input_json
+            )
+        }),
+        read_to_string(private_input_json).unwrap_or_else(|_| {
+            panic!(
+                "Unable to read private input file at path {:?}",
+                private_input_json
+            )
+        }),
     );
     let (public_input, private_input) =
         deserialize_inputs(&public_input_string, &private_input_string)?;
@@ -92,8 +99,14 @@ pub fn adapt_vm_output(
         .unwrap()
         .join(&private_input.trace_path);
 
-    let mut memory_file = std::io::BufReader::new(open_file(memory_path.as_path())?);
-    let mut trace_file = std::io::BufReader::new(open_file(trace_path.as_path())?);
+    let mut memory_file = std::io::BufReader::new(
+        File::open(memory_path.as_path())
+            .unwrap_or_else(|_| panic!("Unable to open mem file at path {:?}", memory_path)),
+    );
+    let mut trace_file = std::io::BufReader::new(
+        File::open(trace_path.as_path())
+            .unwrap_or_else(|_| panic!("Unable to open mem file at path {:?}", memory_path)),
+    );
 
     let public_memory_addresses = public_input
         .public_memory
