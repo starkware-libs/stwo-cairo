@@ -164,6 +164,7 @@ pub mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use super::{prove_cairo, ProverConfig};
+    use crate::cairo_air::debug_tools::logup_check::quick_interaction_claim;
     use crate::cairo_air::verifier::verify_cairo;
 
     fn test_basic_cairo_air_input() -> ProverInput {
@@ -194,6 +195,13 @@ pub mod tests {
         ProverConfig {
             display_components: true,
         }
+    }
+
+    #[test]
+    fn test_logup_sum() {
+        let input = test_basic_cairo_air_input();
+        let claimed_sum = quick_interaction_claim(input);
+        assert_eq!(claimed_sum, 0.into());
     }
 
     #[test]
