@@ -30,3 +30,4 @@ relation!(TripleXor32, 3);
 relation!(BlakeRound, 35);
 relation!(BlakeRoundSigma, 99);
 relation!(PartialEcMul, 73); //
+relation!(PedersenPointsTable, 57); //

@@ -54,3 +54,4 @@ pub mod blake_round;
 pub mod blake_round_sigma;
 pub mod partial_ec_mul;
 pub mod pedersen_builtin;
+pub mod pedersen_points_table;
