@@ -349,19 +349,19 @@ impl RangeChecksInteractionElements {
 }
 
 pub struct RangeChecksComponents {
-    rc_6: range_check_6::Component,
-    rc_11: range_check_11::Component,
-    rc_12: range_check_12::Component,
-    rc_18: range_check_18::Component,
-    rc_19: range_check_19::Component,
-    rc_3_6: range_check_3_6::Component,
-    rc_4_3: range_check_4_3::Component,
-    rc_4_4: range_check_4_4::Component,
-    rc_9_9: range_check_9_9::Component,
-    rc_7_2_5: range_check_7_2_5::Component,
-    rc_3_6_6_3: range_check_3_6_6_3::Component,
-    rc_4_4_4_4: range_check_4_4_4_4::Component,
-    rc_3_3_3_3_3: range_check_3_3_3_3_3::Component,
+    pub rc_6: range_check_6::Component,
+    pub rc_11: range_check_11::Component,
+    pub rc_12: range_check_12::Component,
+    pub rc_18: range_check_18::Component,
+    pub rc_19: range_check_19::Component,
+    pub rc_3_6: range_check_3_6::Component,
+    pub rc_4_3: range_check_4_3::Component,
+    pub rc_4_4: range_check_4_4::Component,
+    pub rc_9_9: range_check_9_9::Component,
+    pub rc_7_2_5: range_check_7_2_5::Component,
+    pub rc_3_6_6_3: range_check_3_6_6_3::Component,
+    pub rc_4_4_4_4: range_check_4_4_4_4::Component,
+    pub rc_3_3_3_3_3: range_check_3_3_3_3_3::Component,
 }
 impl RangeChecksComponents {
     pub fn new(
