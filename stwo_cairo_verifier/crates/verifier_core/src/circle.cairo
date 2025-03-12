@@ -26,21 +26,6 @@ pub const M31_CIRCLE_ORDER: u32 = 0x80000000;
 /// Equals `2^31 - 1`.
 pub const M31_CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 
-/// A generator for the circle group over [`QM31`].
-pub const QM31_CIRCLE_GEN: CirclePoint<QM31> = CirclePoint {
-    x: QM31 {
-        a: CM31 { a: M31 { inner: 0x1 }, b: M31 { inner: 0x0 } },
-        b: CM31 { a: M31 { inner: 0x1C876E93 }, b: M31 { inner: 0x1E9CA77B } },
-    },
-    y: QM31 {
-        a: CM31 { a: M31 { inner: 0x3B25121B }, b: M31 { inner: 0x26B12487 } },
-        b: CM31 { a: M31 { inner: 0x2C1E6D83 }, b: M31 { inner: 0x46B9D720 } },
-    },
-};
-
-/// Order of [`QM31_CIRCLE_GEN`].
-pub const QM31_CIRCLE_ORDER: u128 = P4 - 1;
-
 /// A point on the complex circle. Treated as an additive group.
 #[derive(Drop, Copy, Debug, PartialEq)]
 pub struct CirclePoint<F> {
@@ -296,8 +281,7 @@ mod tests {
     use crate::fields::qm31::QM31One;
     use super::{
         CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
-        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, CirclePointTrait, Coset,
-        CosetImpl, M31_CIRCLE_GEN, QM31_CIRCLE_GEN,
+        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
     };
 
 
@@ -422,24 +406,6 @@ mod tests {
         let result = coset.size();
 
         assert_eq!(result, 32);
-    }
-
-    #[test]
-    fn test_add_circle_point_m31() {
-        assert_eq!(
-            QM31_CIRCLE_GEN.add_circle_point_m31(M31_CIRCLE_GEN),
-            QM31_CIRCLE_GEN
-                + CirclePoint { x: M31_CIRCLE_GEN.x.into(), y: M31_CIRCLE_GEN.y.into() },
-        );
-    }
-
-    #[test]
-    fn test_neg() {
-        let point = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
-
-        let neg_point = -point;
-
-        assert_eq!(point + neg_point, CirclePointTrait::zero());
     }
 }
 

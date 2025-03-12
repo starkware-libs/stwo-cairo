@@ -330,10 +330,12 @@ fn quotient_denominator_inverses(
 
     for sample_batch in sample_batches {
         // Extract Pr, Pi.
-        let prx = *sample_batch.point.x.a;
-        let pry = *sample_batch.point.y.a;
-        let pix = *sample_batch.point.x.b;
-        let piy = *sample_batch.point.y.b;
+        let (a, b, c, d) = sample_batch.point.x.unpack();
+        let prx = CM31Impl::pack(a, b);
+        let pix = CM31Impl::pack(c, d);
+        let (a, b, c, d) = sample_batch.point.y.unpack();
+        let pry = CM31Impl::pack(a, b);
+        let piy = CM31Impl::pack(c, d);
         denominators.append(prx.sub_m31(domain_point.x) * piy - pry.sub_m31(domain_point.y) * pix);
     }
 
@@ -480,8 +482,9 @@ impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
 /// Returns `complex_conjugate(v) - v`.
 #[inline]
 pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
-    let b = *v.b;
-    QM31 { a: Zero::zero(), b: -(b + b) }
+    let (_, _, c, d) = v.unpack();
+    let v = QM31Impl::pack(Zero::zero(), Zero::zero(), c, d);
+    -(v + v)
 }
 
 #[derive(Copy, Debug, Drop)]
@@ -494,8 +497,8 @@ pub struct PointSample {
 #[generate_trait]
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
     fn encode(key: @CirclePoint<QM31>) -> felt252 {
-        let y_identifier = (*key.y.a.a.inner).into();
-        pack4(y_identifier, (*key.x).to_array())
+        let (y_identifier, _, _, _) = key.y.unpack();
+        pack4(y_identifier.into(), (*key.x).to_array())
     }
 }
 
@@ -504,9 +507,9 @@ mod tests {
     use core::array::ArrayImpl;
     use core::dict::Felt252Dict;
     use core::nullable::NullableTrait;
-    use crate::circle::{CirclePointIndexImpl, CosetImpl, QM31_CIRCLE_GEN};
+    use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl};
     use crate::fields::m31::m31;
-    use crate::fields::qm31::{PackedUnreducedQM31Impl, qm31};
+    use crate::fields::qm31::{PackedUnreducedQM31Impl, QM31, qm31};
     use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
     use crate::utils::DictImpl;
     use super::{
@@ -517,9 +520,9 @@ mod tests {
     #[test]
     fn test_fri_answers_for_log_size() {
         let log_size = 5;
-        let p0 = QM31_CIRCLE_GEN;
-        let p1 = p0 + QM31_CIRCLE_GEN;
-        let p2 = p1 + QM31_CIRCLE_GEN;
+        let p0 = qm31_circle_gen();
+        let p1 = p0 + qm31_circle_gen();
+        let p2 = p1 + qm31_circle_gen();
         let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
         let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
         let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
@@ -556,8 +559,8 @@ mod tests {
         let col0_log_size = 5;
         let col1_log_size = 7;
         let log_size_tree = array![@array![], @array![], @array![col0_log_size, col1_log_size]];
-        let p0 = QM31_CIRCLE_GEN;
-        let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
+        let p0 = qm31_circle_gen();
+        let p1 = qm31_circle_gen() + qm31_circle_gen();
         let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
         let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
         let col0_samples = array![sample0, sample1];
@@ -601,7 +604,7 @@ mod tests {
 
     #[test]
     fn test_complex_conjugate_line_coeffs_impl() {
-        let point = QM31_CIRCLE_GEN;
+        let point = qm31_circle_gen();
         let value = qm31(9, 8, 7, 6);
         let alpha = qm31(2, 3, 4, 5);
 
@@ -614,9 +617,9 @@ mod tests {
 
     #[test]
     fn test_column_sample_batch_group_by_point() {
-        let p0 = QM31_CIRCLE_GEN;
-        let p1 = p0 + QM31_CIRCLE_GEN;
-        let p2 = p1 + QM31_CIRCLE_GEN;
+        let p0 = qm31_circle_gen();
+        let p1 = p0 + qm31_circle_gen();
+        let p2 = p1 + qm31_circle_gen();
         let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
         let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
         let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
@@ -651,8 +654,8 @@ mod tests {
         let alpha = qm31(4, 3, 2, 1);
         let domain = CircleDomainImpl::new(CosetImpl::new(CirclePointIndexImpl::new(1), 0));
         let queried_values_at_row = array![m31(5), m31(1)].span();
-        let p0 = QM31_CIRCLE_GEN;
-        let p1 = QM31_CIRCLE_GEN + QM31_CIRCLE_GEN;
+        let p0 = qm31_circle_gen();
+        let p1 = qm31_circle_gen() + qm31_circle_gen();
         let sample_batches = array![
             ColumnSampleBatch { point: p0, columns_and_values: array![(0, @qm31(0, 1, 2, 3))] },
             ColumnSampleBatch { point: p1, columns_and_values: array![(1, @qm31(1, 2, 3, 4))] },
@@ -679,9 +682,9 @@ mod tests {
         for query_position in 0..n_queries {
             query_positions.append(query_position);
         }
-        let p0 = QM31_CIRCLE_GEN;
-        let p1 = p0 + QM31_CIRCLE_GEN;
-        let p2 = p1 + QM31_CIRCLE_GEN;
+        let p0 = qm31_circle_gen();
+        let p1 = p0 + qm31_circle_gen();
+        let p2 = p1 + qm31_circle_gen();
         let sample0 = PointSample { point: p0, value: qm31(0, 1, 2, 3) };
         let sample1 = PointSample { point: p1, value: qm31(1, 2, 3, 4) };
         let sample2 = PointSample { point: p2, value: qm31(2, 3, 4, 5) };
@@ -711,5 +714,12 @@ mod tests {
             ref query_evals,
             n_columns,
         );
+    }
+
+    /// Returns a generator for the circle group over [`QM31`].
+    fn qm31_circle_gen() -> CirclePoint<QM31> {
+        let x = qm31(0x1, 0x0, 0x1C876E93, 0x1E9CA77B);
+        let y = qm31(0x3B25121B, 0x26B12487, 0x2C1E6D83, 0x46B9D720);
+        CirclePoint { x, y }
     }
 }
