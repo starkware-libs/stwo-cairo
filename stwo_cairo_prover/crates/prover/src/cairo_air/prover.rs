@@ -40,7 +40,7 @@ where
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
 
     // Preprocessed trace.
-    let preprocessed_trace = PreProcessedTrace::new();
+    let preprocessed_trace = PreProcessedTrace::canonical();
     let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(preprocessed_trace.gen_trace());
     tree_builder.commit(channel);
@@ -257,7 +257,7 @@ pub mod tests {
         #[test]
         fn test_cairo_constraints() {
             let input = generate_test_input("test_prove_verify_all_opcode_components");
-            assert_cairo_constraints(input, PreProcessedTrace::new());
+            assert_cairo_constraints(input, PreProcessedTrace::canonical());
         }
 
         #[test]

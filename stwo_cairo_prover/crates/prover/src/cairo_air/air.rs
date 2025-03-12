@@ -122,7 +122,7 @@ impl CairoClaim {
         let mut log_sizes = TreeVec::concat_cols(log_sizes_list.into_iter());
 
         // Add preprocessed trace log sizes.
-        log_sizes[PREPROCESSED_TRACE_IDX] = PreProcessedTrace::new().log_sizes();
+        log_sizes[PREPROCESSED_TRACE_IDX] = PreProcessedTrace::canonical().log_sizes();
         log_sizes
     }
 }
