@@ -2,8 +2,8 @@ use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::CheckedSub;
-use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
+use crate::channel::{Channel, ChannelImpl};
 use crate::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
 use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
@@ -57,7 +57,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
 
-        channel.mix_digest(first_layer_proof.commitment);
+        channel.mix_root(first_layer_proof.commitment);
 
         let mut column_commitment_domains = array![];
 
@@ -92,7 +92,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                 None => { break Ok(()); },
             };
 
-            channel.mix_digest(*proof.commitment);
+            channel.mix_root(*proof.commitment);
 
             inner_layers
                 .append(
@@ -689,7 +689,7 @@ pub enum FriVerificationError {
 
 #[cfg(test)]
 mod test {
-    use crate::channel::ChannelTrait;
+    use crate::channel::{Channel, ChannelTrait};
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
     use crate::fields::qm31::qm31;
     use crate::poly::circle::CircleEvaluationImpl;
@@ -760,7 +760,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -823,7 +823,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -970,7 +970,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -1148,7 +1148,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
         let _query_positions_per_log_size = verifier.sample_query_positions(ref channel);
@@ -1241,7 +1241,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -1343,7 +1343,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
 
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
@@ -1442,7 +1442,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
 
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
@@ -1544,7 +1544,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
 
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
@@ -1640,7 +1640,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
@@ -1709,7 +1709,7 @@ mod test {
         ]
             .span();
         let proof = Serde::deserialize(ref proof_data).unwrap();
-        let mut channel = ChannelTrait::new(0);
+        let mut channel: Channel = Default::default();
         let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
             .unwrap();
 
