@@ -17,7 +17,7 @@ use crate::cairo_air::air::{
     lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
 };
 use crate::cairo_air::opcodes_air::OpcodeComponents;
-use crate::cairo_air::preprocessed::PreProcessedTrace;
+use crate::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
 use crate::cairo_air::prover::LOG_MAX_ROWS;
 
 pub fn assert_component<E: FrameworkEval>(
@@ -171,7 +171,7 @@ fn assert_cairo_components(
     }
 }
 
-pub fn assert_cairo_constraints(input: ProverInput) {
+pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProcessedTrace) {
     let pcs_config = PcsConfig::default();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
@@ -184,8 +184,7 @@ pub fn assert_cairo_constraints(input: ProverInput) {
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-    // TODO(Ohad): allow to pass the preprocessed trace columns as an argument.
-    tree_builder.extend_evals(PreProcessedTrace::new().gen_trace());
+    tree_builder.extend_evals(preprocessed_trace.gen_trace());
     tree_builder.commit(channel);
 
     // Base trace.
@@ -202,13 +201,17 @@ pub fn assert_cairo_constraints(input: ProverInput) {
         interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
     tree_builder.commit(channel);
 
-    let components = CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
+    let components = CairoComponents::new(
+        &claim,
+        &interaction_elements,
+        &interaction_claim,
+        &preprocessed_trace.ids(),
+    );
 
     assert_eq!(
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
         SecureField::zero()
     );
-
     assert_cairo_components(commitment_scheme.polynomials(), &components);
 }
 
