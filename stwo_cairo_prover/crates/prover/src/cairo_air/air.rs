@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_serialize::CairoSerialize;
+use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -554,10 +555,11 @@ impl CairoComponents {
         cairo_claim: &CairoClaim,
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &CairoInteractionClaim,
+        // Describes the structure of the preprocessed trace. Sensitive to order.
+        preprocessed_column_ids: &[PreProcessedColumnId],
     ) -> Self {
-        let tree_span_provider = &mut TraceLocationAllocator::new_with_preproccessed_columns(
-            &PreProcessedTrace::new().ids(),
-        );
+        let tree_span_provider =
+            &mut TraceLocationAllocator::new_with_preproccessed_columns(preprocessed_column_ids);
 
         let opcode_components = OpcodeComponents::new(
             tree_span_provider,
