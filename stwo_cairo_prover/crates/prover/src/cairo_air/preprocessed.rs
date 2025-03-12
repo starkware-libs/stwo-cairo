@@ -38,8 +38,23 @@ pub struct PreProcessedTrace {
     columns: Vec<Box<dyn PreProcessedColumn>>,
 }
 impl PreProcessedTrace {
-    /// Generates a canonical preprocessed trace.
-    pub fn new() -> Self {
+    /// Generates a canonical preprocessed trace. Used in proving Generic Cairo code & Starknet
+    /// blocks.
+    pub fn canonical() -> Self {
+        let canonical_without_pedersen = Self::canonical_without_pedersen().columns;
+        let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
+            .map(|x| Box::new(PedersenPoints::new(x)) as Box<dyn PreProcessedColumn>);
+
+        let columns = chain!(canonical_without_pedersen, pedersen_points)
+            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+            .collect();
+
+        Self { columns }
+    }
+
+    /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
+    /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
+    pub fn canonical_without_pedersen() -> Self {
         let seq = (LOG_N_LANES..=LOG_MAX_ROWS)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
@@ -55,19 +70,10 @@ impl PreProcessedTrace {
             .map(|x| Box::new(PoseidonRoundKeys::new(x)) as Box<dyn PreProcessedColumn>);
         let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
             .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
-        let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
-            .map(|x| Box::new(PedersenPoints::new(x)) as Box<dyn PreProcessedColumn>);
 
-        let columns = chain!(
-            seq,
-            bitwise_xor,
-            range_check,
-            poseidon_keys,
-            blake_sigma,
-            pedersen_points
-        )
-        .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
-        .collect();
+        let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
+            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+            .collect();
 
         Self { columns }
     }
@@ -294,7 +300,7 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let preprocessed_trace = PreProcessedTrace::new();
+    let preprocessed_trace = PreProcessedTrace::canonical();
 
     // Precompute twiddles for the commitment scheme.
     let max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
@@ -327,7 +333,7 @@ pub mod tests {
     /// Generates a dummy preprocessed trace with columns up to `max_log_size`.
     /// As such, tests that use columns larger than `max_log_size` will fail.
     pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
-        let canonical = PreProcessedTrace::new();
+        let canonical = PreProcessedTrace::canonical();
         let columns = canonical
             .columns
             .into_iter()
@@ -338,7 +344,7 @@ pub mod tests {
 
     #[test]
     fn test_columns_are_in_decending_order() {
-        let preprocessed_trace = PreProcessedTrace::new();
+        let preprocessed_trace = PreProcessedTrace::canonical();
 
         let columns = preprocessed_trace.columns;
 

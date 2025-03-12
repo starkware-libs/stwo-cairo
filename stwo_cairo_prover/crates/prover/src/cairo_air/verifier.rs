@@ -49,7 +49,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         &claim,
         &interaction_elements,
         &interaction_claim,
-        &PreProcessedTrace::new().ids(),
+        &PreProcessedTrace::canonical().ids(),
     );
     let components = component_generator.components();
 
