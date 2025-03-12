@@ -8,6 +8,7 @@ use thiserror::Error;
 
 use super::CairoProof;
 use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use crate::cairo_air::preprocessed::PreProcessedTrace;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 
 pub fn verify_cairo<MC: MerkleChannel>(
@@ -44,8 +45,12 @@ pub fn verify_cairo<MC: MerkleChannel>(
     interaction_claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[2], &log_sizes[2], channel);
 
-    let component_generator =
-        CairoComponents::new(&claim, &interaction_elements, &interaction_claim);
+    let component_generator = CairoComponents::new(
+        &claim,
+        &interaction_elements,
+        &interaction_claim,
+        &PreProcessedTrace::new().ids(),
+    );
     let components = component_generator.components();
 
     // Verify stark.
