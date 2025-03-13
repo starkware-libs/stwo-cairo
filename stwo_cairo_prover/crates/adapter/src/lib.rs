@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use builtins::BuiltinSegments;
+use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use memory::Memory;
 use opcodes::StateTransitions;

@@ -1792,6 +1792,7 @@ dependencies = [
  "stwo-cairo-common",
  "stwo-prover",
  "thiserror 2.0.11",
+ "thiserror-no-std",
  "tracing",
 ]
 
