@@ -9,19 +9,19 @@ slow-tests = []
 std = ["dep:sonic-rs"]
 
 [dependencies]
-cairo-vm.workspace = true
-stwo-prover.workspace = true
+bytemuck.workspace = true
 cairo-lang-casm.workspace = true
+cairo-vm.workspace = true
 itertools.workspace = true
+log.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-stwo-cairo-common.workspace = true
-bytemuck.workspace = true
-tracing.workspace = true
-thiserror.workspace = true
 sonic-rs = { version = "0.3.17", optional = true }
+stwo-cairo-common.workspace = true
+stwo-prover.workspace = true
+thiserror.workspace = true
 thiserror-no-std = { version = "2.0.2", default-features = false }
-log.workspace = true
+tracing.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
