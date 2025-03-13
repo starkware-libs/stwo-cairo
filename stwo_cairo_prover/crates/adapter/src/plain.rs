@@ -95,7 +95,11 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         None => return Err(VmImportError::TraceNotRelocated),
     };
 
-    let memory_segments = &public_input.memory_segments;
+    let memory_segments = &public_input
+        .memory_segments
+        .into_iter()
+        .map(|(k, v)| (k, v.into()))
+        .collect();
 
     let public_memory_addresses = public_input
         .public_memory
