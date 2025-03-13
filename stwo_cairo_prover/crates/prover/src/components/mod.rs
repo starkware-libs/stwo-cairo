@@ -13,6 +13,8 @@ pub mod bitwise_builtin;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
+pub mod cube_252;
+pub mod deduce_output;
 pub mod generic_opcode;
 pub mod jnz_opcode;
 pub mod jnz_opcode_dst_base_fp;
@@ -27,9 +29,14 @@ pub mod mul_opcode;
 pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
+pub mod poseidon_3_partial_rounds_chain;
+pub mod poseidon_builtin;
+pub mod poseidon_full_round_chain;
+pub mod poseidon_round_keys;
 pub mod qm_31_add_mul_opcode;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
+pub mod range_check_felt_252_width_27;
 pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod triple_xor_32;
@@ -45,8 +52,8 @@ mod prelude;
 
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{
-    range_check_11, range_check_19, range_check_4_3, range_check_4_4_4_4, range_check_6,
-    range_check_7_2_5, range_check_9_9,
+    range_check_11, range_check_18, range_check_19, range_check_4_3, range_check_4_4_4_4,
+    range_check_6, range_check_7_2_5, range_check_9_9,
 };
 pub mod blake_compress_opcode;
 pub mod blake_g;
