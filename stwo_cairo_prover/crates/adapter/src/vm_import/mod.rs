@@ -5,12 +5,12 @@ use std::io::Read;
 use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput};
+use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
-use thiserror::Error;
+use thiserror_no_std::Error;
 use tracing::{span, Level};
 
 use super::builtins::BuiltinSegments;
@@ -35,7 +35,7 @@ pub enum VmImportError {
     TraceNotRelocated,
 
     #[error("Cannot get public input from runner: {0}")]
-    PublicInput(#[from] cairo_vm::air_public_input::PublicInputError),
+    PublicInput(#[from] PublicInputError),
 }
 
 fn deserialize_inputs<'a>(

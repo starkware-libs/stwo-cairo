@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use std::fmt::Display;
 
+use cairo_vm::stdlib::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;

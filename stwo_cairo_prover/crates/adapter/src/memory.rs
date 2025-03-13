@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
+use cairo_vm::stdlib::collections::HashMap;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
