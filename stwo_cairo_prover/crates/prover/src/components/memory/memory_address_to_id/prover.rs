@@ -212,20 +212,19 @@ impl InteractionClaimGenerator {
 #[cfg(test)]
 mod tests {
     use itertools::Itertools;
-    use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig};
-    use stwo_cairo_adapter::vm_import::MemoryEntry;
+    use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
     use stwo_prover::core::fields::m31::{BaseField, M31};
 
     use crate::components::memory::memory_address_to_id;
 
     #[test]
     fn test_memory_multiplicities() {
-        const N_ENTRIES: u64 = 10;
+        const N_ENTRIES: u32 = 10;
         let memory = MemoryBuilder::from_iter(
             MemoryConfig::default(),
             (0..N_ENTRIES).map(|i| MemoryEntry {
-                address: i,
-                value: [i as u32; 8],
+                address: i as u64,
+                value: [i; 8],
             }),
         )
         .build();

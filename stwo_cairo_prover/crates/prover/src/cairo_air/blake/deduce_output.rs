@@ -152,8 +152,7 @@ impl BlakeRound {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig};
-    use stwo_cairo_adapter::vm_import::MemoryEntry;
+    use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
     use stwo_prover::core::fields::m31::M31;
 
     use super::*;
@@ -247,11 +246,11 @@ mod tests {
             .flat_map(|i| {
                 [
                     MemoryEntry {
-                        address: message_pointer.to_array()[0].0 as u64 + i as u64,
+                        address: (message_pointer.to_array()[0].0 + i) as u64,
                         value: [message0[i as usize], 0, 0, 0, 0, 0, 0, 0],
                     },
                     MemoryEntry {
-                        address: message_pointer.to_array()[1].0 as u64 + i as u64,
+                        address: (message_pointer.to_array()[1].0 + i) as u64,
                         value: [message1[i as usize], 0, 0, 0, 0, 0, 0, 0],
                     },
                 ]
