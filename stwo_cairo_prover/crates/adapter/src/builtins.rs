@@ -232,14 +232,12 @@ impl BuiltinSegments {
     }
 }
 
+/// The minimum number of instances in a builtin segment supported by the prover. This must be a
+/// power of 2.
 const MIN_N_INSTANCES_IN_BUILTIN_SEGMENT: u32 = 16;
 
 // Assert MIN_N_INSTANCES_IN_BUILTIN_SEGMENT is a power of 2.
-#[allow(dead_code)]
-const fn assert_min_instances_power_of_2() {
-    assert!(MIN_N_INSTANCES_IN_BUILTIN_SEGMENT.is_power_of_two());
-}
-const _: () = assert_min_instances_power_of_2();
+const _: () = assert!(MIN_N_INSTANCES_IN_BUILTIN_SEGMENT.is_power_of_two());
 
 /// Pads the given segment to the next power of 2, and at least MIN_N_INSTANCES_IN_BUILTIN_SEGMENT
 /// (in number of instances).
