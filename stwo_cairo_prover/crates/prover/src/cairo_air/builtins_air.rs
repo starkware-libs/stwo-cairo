@@ -307,10 +307,10 @@ impl BuiltinsInteractionClaimGenerator {
 }
 
 pub struct BuiltinComponents {
-    add_mod_builtin: Option<add_mod_builtin::Component>,
-    bitwise_builtin: Option<bitwise_builtin::Component>,
-    range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
-    range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
+    pub add_mod_builtin: Option<add_mod_builtin::Component>,
+    pub bitwise_builtin: Option<bitwise_builtin::Component>,
+    pub range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
 }
 impl BuiltinComponents {
     pub fn new(

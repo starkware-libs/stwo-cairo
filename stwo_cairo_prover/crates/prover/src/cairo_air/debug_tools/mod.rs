@@ -1,6 +1,9 @@
 use itertools::Itertools;
 use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
 
+#[cfg(test)]
+pub mod assert_constraints;
+
 #[cfg(feature = "relation-tracker")]
 pub mod relation_tracker;
 

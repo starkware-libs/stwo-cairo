@@ -553,21 +553,21 @@ pub fn lookup_sum(
 }
 
 pub struct CairoComponents {
-    opcodes: OpcodeComponents,
-    verify_instruction: verify_instruction::Component,
-    blake_context: BlakeContextComponents,
-    builtins: BuiltinComponents,
-    memory_address_to_id: memory_address_to_id::Component,
-    memory_id_to_value: (
+    pub opcodes: OpcodeComponents,
+    pub verify_instruction: verify_instruction::Component,
+    pub blake_context: BlakeContextComponents,
+    pub builtins: BuiltinComponents,
+    pub memory_address_to_id: memory_address_to_id::Component,
+    pub memory_id_to_value: (
         memory_id_to_big::BigComponent,
         memory_id_to_big::SmallComponent,
     ),
-    range_checks: RangeChecksComponents,
-    verify_bitwise_xor_4: verify_bitwise_xor_4::Component,
-    verify_bitwise_xor_7: verify_bitwise_xor_7::Component,
-    verify_bitwise_xor_8: verify_bitwise_xor_8::Component,
-    verify_bitwise_xor_9: verify_bitwise_xor_9::Component,
-    verify_bitwise_xor_12: verify_bitwise_xor_12::Component,
+    pub range_checks: RangeChecksComponents,
+    pub verify_bitwise_xor_4: verify_bitwise_xor_4::Component,
+    pub verify_bitwise_xor_7: verify_bitwise_xor_7::Component,
+    pub verify_bitwise_xor_8: verify_bitwise_xor_8::Component,
+    pub verify_bitwise_xor_9: verify_bitwise_xor_9::Component,
+    pub verify_bitwise_xor_12: verify_bitwise_xor_12::Component,
     // ...
 }
 impl CairoComponents {
