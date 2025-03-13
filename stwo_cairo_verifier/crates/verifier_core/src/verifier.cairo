@@ -6,8 +6,8 @@ use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
 use crate::utils::{ArrayImpl, SpanImpl};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
+use crate::vcs::MerkleHasher;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 pub trait Air<T> {
