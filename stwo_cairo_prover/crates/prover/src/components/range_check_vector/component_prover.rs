@@ -144,6 +144,7 @@ macro_rules! range_check_prover {
 
 #[cfg(test)]
 mod tests {
+    use std::ops::Deref;
     use std::simd::Simd;
 
     use itertools::Itertools;
@@ -230,11 +231,12 @@ mod tests {
             .as_ref()
             .map(|t| t.polynomials.iter().cloned().collect_vec());
 
-        stwo_prover::constraint_framework::assert_constraints(
+        let component_eval = component.deref();
+        stwo_prover::constraint_framework::assert_constraints_on_polys(
             &trace_polys,
             CanonicCoset::new(LOG_HEIGHT),
             |eval| {
-                component.evaluate(eval);
+                component_eval.evaluate(eval);
             },
             interaction_claim.claimed_sum,
         )
