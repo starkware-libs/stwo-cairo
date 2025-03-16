@@ -7,6 +7,7 @@ edition = "2024_07"
 casm = true
 
 [features]
+default = ["qm31_opcode"]
 poseidon252_verifier = []
 qm31_opcode = []
 
@@ -17,4 +18,4 @@ sort-module-level-items = true
 bounded_int = { path = "../bounded_int" }
 
 [dev-dependencies]
-cairo_test = "2.10.1"
+cairo_test = "2.11.2"

@@ -1,6 +1,7 @@
 mod air;
 pub(crate) mod blake;
 mod builtins_air;
+mod constraint_gen;
 pub(crate) mod debug_tools;
 pub mod opcodes_air;
 pub mod pedersen;

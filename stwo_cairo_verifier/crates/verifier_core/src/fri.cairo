@@ -2,17 +2,17 @@ use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::{CheckedSub, Zero};
-use crate::circle::CosetImpl;
 use crate::channel::{Channel, ChannelImpl};
+use crate::circle::CosetImpl;
 use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::fields::BatchInvertible;
-use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::vcs::{MerkleHasher, MerkleHasherImpl};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
+use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::vcs::{MerkleHasher, MerkleHasherImpl};
 use crate::{ColumnArray, Hash};
 
 /// Fold step size for circle polynomials.

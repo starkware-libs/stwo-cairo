@@ -6,7 +6,7 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -185,15 +185,10 @@ pub struct ConstraintParams {
     pub Opcodes_z: QM31,
     pub VerifyInstruction_alpha0: QM31,
     pub VerifyInstruction_alpha1: QM31,
-    pub VerifyInstruction_alpha15: QM31,
-    pub VerifyInstruction_alpha18: QM31,
     pub VerifyInstruction_alpha2: QM31,
     pub VerifyInstruction_alpha3: QM31,
     pub VerifyInstruction_alpha4: QM31,
     pub VerifyInstruction_alpha5: QM31,
-    pub VerifyInstruction_alpha7: QM31,
-    pub VerifyInstruction_alpha8: QM31,
-    pub VerifyInstruction_alpha9: QM31,
     pub VerifyInstruction_z: QM31,
     pub claimed_sum: QM31,
     pub column_size: M31,
@@ -247,15 +242,10 @@ pub fn evaluate_constraints_at_point(
         Opcodes_z,
         VerifyInstruction_alpha0,
         VerifyInstruction_alpha1,
-        VerifyInstruction_alpha15,
-        VerifyInstruction_alpha18,
         VerifyInstruction_alpha2,
         VerifyInstruction_alpha3,
         VerifyInstruction_alpha4,
         VerifyInstruction_alpha5,
-        VerifyInstruction_alpha7,
-        VerifyInstruction_alpha8,
-        VerifyInstruction_alpha9,
         VerifyInstruction_z,
         claimed_sum,
         column_size,
@@ -720,15 +710,10 @@ pub fn evaluate_constraints_at_point(
         Opcodes_z,
         VerifyInstruction_alpha0,
         VerifyInstruction_alpha1,
-        VerifyInstruction_alpha15,
-        VerifyInstruction_alpha18,
         VerifyInstruction_alpha2,
         VerifyInstruction_alpha3,
         VerifyInstruction_alpha4,
         VerifyInstruction_alpha5,
-        VerifyInstruction_alpha7,
-        VerifyInstruction_alpha8,
-        VerifyInstruction_alpha9,
         VerifyInstruction_z,
         trace_1_column_0_offset_0,
         trace_1_column_100_offset_0,
@@ -878,204 +863,234 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 1
+    let constraint_quotient = ((trace_1_column_6_offset_0)
+        * (m31(1).into() - (trace_1_column_6_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constraint 2
+    let constraint_quotient = ((trace_1_column_7_offset_0)
+        * (m31(1).into() - (trace_1_column_7_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constraint 3
+    let constraint_quotient = ((trace_1_column_8_offset_0)
+        * (m31(1).into() - (trace_1_column_8_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constraint 4
+    let constraint_quotient = ((trace_1_column_9_offset_0)
+        * (m31(1).into() - (trace_1_column_9_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constraint 5
+    let constraint_quotient = ((trace_1_column_10_offset_0)
+        * (m31(1).into() - (trace_1_column_10_offset_0)))
+        * domain_vanish_at_point_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    // Constraint 6
     let constraint_quotient = (trace_1_column_11_offset_0
         - ((trace_1_column_6_offset_0) * (trace_1_column_2_offset_0)
             + (m31(1).into() - (trace_1_column_6_offset_0)) * (trace_1_column_1_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 2
+    // Constraint 7
     let constraint_quotient = (trace_1_column_12_offset_0
         - ((trace_1_column_7_offset_0) * (trace_1_column_2_offset_0)
             + (m31(1).into() - (trace_1_column_7_offset_0)) * (trace_1_column_1_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 3
+    // Constraint 8
     let constraint_quotient = (trace_1_column_8_offset_0
         + trace_1_column_9_offset_0
         - (m31(1).into()))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 4
+    // Constraint 9
     let constraint_quotient = (trace_1_column_13_offset_0
         - ((trace_1_column_8_offset_0) * (trace_1_column_2_offset_0)
             + (trace_1_column_9_offset_0) * (trace_1_column_1_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 5
+    // Constraint 10
     let constraint_quotient = ((trace_1_column_101_offset_0)
         * (trace_1_column_101_offset_0 - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 6
+    // Constraint 11
     let constraint_quotient = ((intermediate7)
         * ((intermediate7) * (intermediate7) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 7
+    // Constraint 12
     let constraint_quotient = ((intermediate8)
         * ((intermediate8) * (intermediate8) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 8
+    // Constraint 13
     let constraint_quotient = ((intermediate9)
         * ((intermediate9) * (intermediate9) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 9
+    // Constraint 14
     let constraint_quotient = ((intermediate10)
         * ((intermediate10) * (intermediate10) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 10
+    // Constraint 15
     let constraint_quotient = ((intermediate11)
         * ((intermediate11) * (intermediate11) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 11
+    // Constraint 16
     let constraint_quotient = ((intermediate12)
         * ((intermediate12) * (intermediate12) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 12
+    // Constraint 17
     let constraint_quotient = ((intermediate13)
         * ((intermediate13) * (intermediate13) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 13
+    // Constraint 18
     let constraint_quotient = ((intermediate14)
         * ((intermediate14) * (intermediate14) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 14
+    // Constraint 19
     let constraint_quotient = ((intermediate15)
         * ((intermediate15) * (intermediate15) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 15
+    // Constraint 20
     let constraint_quotient = ((intermediate16)
         * ((intermediate16) * (intermediate16) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 16
+    // Constraint 21
     let constraint_quotient = ((intermediate17)
         * ((intermediate17) * (intermediate17) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 17
+    // Constraint 22
     let constraint_quotient = ((intermediate18)
         * ((intermediate18) * (intermediate18) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 18
+    // Constraint 23
     let constraint_quotient = ((intermediate19)
         * ((intermediate19) * (intermediate19) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 19
+    // Constraint 24
     let constraint_quotient = ((intermediate20)
         * ((intermediate20) * (intermediate20) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 20
+    // Constraint 25
     let constraint_quotient = ((intermediate21)
         * ((intermediate21) * (intermediate21) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 21
+    // Constraint 26
     let constraint_quotient = ((intermediate22)
         * ((intermediate22) * (intermediate22) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 22
+    // Constraint 27
     let constraint_quotient = ((intermediate23)
         * ((intermediate23) * (intermediate23) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 23
+    // Constraint 28
     let constraint_quotient = ((intermediate24)
         * ((intermediate24) * (intermediate24) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 24
+    // Constraint 29
     let constraint_quotient = ((intermediate25)
         * ((intermediate25) * (intermediate25) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 25
+    // Constraint 30
     let constraint_quotient = ((intermediate26)
         * ((intermediate26) * (intermediate26) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 26
+    // Constraint 31
     let constraint_quotient = ((intermediate27)
         * ((intermediate27) * (intermediate27) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 27
+    // Constraint 32
     let constraint_quotient = ((intermediate28)
         * ((intermediate28) * (intermediate28) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 28
+    // Constraint 33
     let constraint_quotient = ((intermediate29)
         * ((intermediate29) * (intermediate29) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 29
+    core::internal::revoke_ap_tracking();
+
+    // Constraint 34
     let constraint_quotient = ((intermediate30)
         * ((intermediate30) * (intermediate30) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 30
+    // Constraint 35
     let constraint_quotient = ((intermediate31)
         * ((intermediate31) * (intermediate31) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 31
+    // Constraint 36
     let constraint_quotient = ((intermediate32)
         * ((intermediate32) * (intermediate32) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 32
+    // Constraint 37
     let constraint_quotient = ((intermediate33)
         * ((intermediate33) * (intermediate33) - (m31(1).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    core::internal::revoke_ap_tracking();
-
-    // Constraint 33
+    // Constraint 38
     let constraint_quotient = (trace_1_column_71_offset_0
         + trace_1_column_100_offset_0
         + intermediate33
@@ -1084,8 +1099,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 34
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    // Constraint 39
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_103_offset_0, trace_2_column_104_offset_0, trace_2_column_105_offset_0,
             trace_2_column_106_offset_0,
@@ -1096,14 +1111,14 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 35
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    // Constraint 40
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_107_offset_0, trace_2_column_108_offset_0, trace_2_column_109_offset_0,
             trace_2_column_110_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_103_offset_0, trace_2_column_104_offset_0,
                 trace_2_column_105_offset_0, trace_2_column_106_offset_0,
@@ -1114,14 +1129,14 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 36
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    // Constraint 41
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_111_offset_0, trace_2_column_112_offset_0, trace_2_column_113_offset_0,
             trace_2_column_114_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_107_offset_0, trace_2_column_108_offset_0,
                 trace_2_column_109_offset_0, trace_2_column_110_offset_0,
@@ -1132,14 +1147,14 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 37
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    // Constraint 42
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_115_offset_0, trace_2_column_116_offset_0, trace_2_column_117_offset_0,
             trace_2_column_118_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_111_offset_0, trace_2_column_112_offset_0,
                 trace_2_column_113_offset_0, trace_2_column_114_offset_0,
@@ -1150,20 +1165,20 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    // Constraint 38
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    // Constraint 43
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_119_offset_0, trace_2_column_120_offset_0, trace_2_column_121_offset_0,
             trace_2_column_122_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_119_offset_neg_1, trace_2_column_120_offset_neg_1,
                 trace_2_column_121_offset_neg_1, trace_2_column_122_offset_neg_1,
             ],
         ))
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_115_offset_0, trace_2_column_116_offset_0,
                 trace_2_column_117_offset_0, trace_2_column_118_offset_0,
@@ -1217,15 +1232,10 @@ fn intermediates(
     Opcodes_z: QM31,
     VerifyInstruction_alpha0: QM31,
     VerifyInstruction_alpha1: QM31,
-    VerifyInstruction_alpha15: QM31,
-    VerifyInstruction_alpha18: QM31,
     VerifyInstruction_alpha2: QM31,
     VerifyInstruction_alpha3: QM31,
     VerifyInstruction_alpha4: QM31,
     VerifyInstruction_alpha5: QM31,
-    VerifyInstruction_alpha7: QM31,
-    VerifyInstruction_alpha8: QM31,
-    VerifyInstruction_alpha9: QM31,
     VerifyInstruction_z: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_100_offset_0: QM31,
@@ -1522,15 +1532,10 @@ fn intermediates(
     let intermediate0 = intermediate0(
         VerifyInstruction_alpha0,
         VerifyInstruction_alpha1,
-        VerifyInstruction_alpha15,
-        VerifyInstruction_alpha18,
         VerifyInstruction_alpha2,
         VerifyInstruction_alpha3,
         VerifyInstruction_alpha4,
         VerifyInstruction_alpha5,
-        VerifyInstruction_alpha7,
-        VerifyInstruction_alpha8,
-        VerifyInstruction_alpha9,
         VerifyInstruction_z,
         trace_1_column_0_offset_0,
         trace_1_column_10_offset_0,
@@ -2173,15 +2178,10 @@ pub fn intermediate33(
 pub fn intermediate0(
     VerifyInstruction_alpha0: QM31,
     VerifyInstruction_alpha1: QM31,
-    VerifyInstruction_alpha15: QM31,
-    VerifyInstruction_alpha18: QM31,
     VerifyInstruction_alpha2: QM31,
     VerifyInstruction_alpha3: QM31,
     VerifyInstruction_alpha4: QM31,
     VerifyInstruction_alpha5: QM31,
-    VerifyInstruction_alpha7: QM31,
-    VerifyInstruction_alpha8: QM31,
-    VerifyInstruction_alpha9: QM31,
     VerifyInstruction_z: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_10_offset_0: QM31,
@@ -2197,13 +2197,14 @@ pub fn intermediate0(
         + (VerifyInstruction_alpha1) * (trace_1_column_3_offset_0)
         + (VerifyInstruction_alpha2) * (trace_1_column_4_offset_0)
         + (VerifyInstruction_alpha3) * (trace_1_column_5_offset_0)
-        + (VerifyInstruction_alpha4) * (trace_1_column_6_offset_0)
-        + (VerifyInstruction_alpha5) * (trace_1_column_7_offset_0)
-        + (VerifyInstruction_alpha7) * (trace_1_column_8_offset_0)
-        + (VerifyInstruction_alpha8) * (trace_1_column_9_offset_0)
-        + VerifyInstruction_alpha9
-        + (VerifyInstruction_alpha15) * (trace_1_column_10_offset_0)
-        + VerifyInstruction_alpha18
+        + (VerifyInstruction_alpha4)
+            * ((trace_1_column_6_offset_0) * (m31(8).into())
+                + (trace_1_column_7_offset_0) * (m31(16).into())
+                + (trace_1_column_8_offset_0) * (m31(64).into())
+                + (trace_1_column_9_offset_0) * (m31(128).into())
+                + m31(256).into())
+        + (VerifyInstruction_alpha5)
+            * ((trace_1_column_10_offset_0) * (m31(32).into()) + m31(256).into())
         - (VerifyInstruction_z)
 }
 
