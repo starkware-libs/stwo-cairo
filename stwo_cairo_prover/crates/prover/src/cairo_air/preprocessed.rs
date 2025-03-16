@@ -327,8 +327,6 @@ pub mod tests {
     use super::*;
     const LOG_SIZE: u32 = 8;
     use stwo_prover::core::backend::Column;
-    use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
-    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     /// Generates a dummy preprocessed trace with columns up to `max_log_size`.
     /// As such, tests that use columns larger than `max_log_size` will fail.
@@ -416,8 +414,12 @@ pub mod tests {
         assert_eq!(id.id, "range_check_1_2_3_4_column_2");
     }
 
+    #[cfg(feature = "slow-tests")]
     #[test]
     fn test_canonical_preprocessed_root_regression() {
+        use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
+        use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
             hex::decode("94405250507742f038e5496b3597e37f07043d59cd788844b479ab310c1a4300")
