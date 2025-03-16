@@ -37,6 +37,17 @@ impl PackedM31Type for PackedBool {
         unsafe { PackedM31::from_simd_unchecked(self.value.cast()) }
     }
 }
+
+impl BitAnd for PackedBool {
+    type Output = Self;
+
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self {
+            value: self.value & rhs.value, // correct?
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Default)]
 pub struct PackedUInt16 {
     value: Simd<u16, N_LANES>,
@@ -397,9 +408,15 @@ impl PackedFelt252 {
             .map(|v| Felt252::from_limbs(v))
     }
 
+    /// Constructs a new instance with all vector elements set to `value`.
     pub fn broadcast(value: Felt252) -> Self {
         Self::from_array(&[value; N_LANES])
     }
+    // pub fn broadcast(value_unpacked: Felt252) -> Self {
+    //     let limbs_unpacked = value_unpacked.get_limbs();
+    //     let limbs = limbs_unpacked.map(PackedM31::broadcast);
+    //     Self::from_limbs(limbs)
+    // }
 
     pub fn from_array(arr: &[Felt252; N_LANES]) -> Self {
         let limbs = arr.map(|felt| std::array::from_fn(|i| felt.get_m31(i)));
@@ -441,6 +458,17 @@ impl Mul for PackedFelt252 {
         let lhs = self.to_array();
         let rhs = rhs.to_array();
         let result = std::array::from_fn(|i| lhs[i] * rhs[i]);
+        Self::from_array(&result)
+    }
+}
+
+impl Div for PackedFelt252 {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        let lhs = self.to_array();
+        let rhs = rhs.to_array();
+        let result = std::array::from_fn(|i| lhs[i] / rhs[i]);
         Self::from_array(&result)
     }
 }
@@ -655,6 +683,14 @@ impl Unpack for PackedCasmState {
             ap: ap[i],
             fp: fp[i],
         })
+    }
+}
+
+impl Pack for Felt252 {
+    type SimdType = PackedFelt252;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedFelt252::from_array(&inputs)
     }
 }
 
