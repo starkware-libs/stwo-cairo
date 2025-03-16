@@ -27,32 +27,50 @@ pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
     LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
+
+const LOG_N_ROWS: u32 = (PEDERSEN_TABLE_N_ROWS as u32).next_power_of_two().ilog2();
+
+pub fn pedersen_points_table_f252(index: usize) -> [Felt252; 2] {
+    let x_f252: Felt252 = PEDERSEN_TABLE.rows[index].x().into();
+    let y_f252: Felt252 = PEDERSEN_TABLE.rows[index].y().into();
+    [x_f252, y_f252]
+}
+
 #[derive(Debug)]
 pub struct PedersenPoints {
-    index: usize,
+    pub col: usize,
 }
 
 impl PedersenPoints {
     pub fn new(col: usize) -> Self {
-        Self { index: col }
+        Self { col }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        let array = PEDERSEN_TABLE.column_data[self.col]
+            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+            .try_into()
+            .expect("Slice has incorrect length");
+        PackedM31::from_array(array)
     }
 }
 
 impl PreProcessedColumn for PedersenPoints {
     fn log_size(&self) -> u32 {
-        PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        LOG_N_ROWS
     }
 
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("pedersen_points_{}", self.index),
+            id: format!("pedersen_points_{}", self.col),
         }
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.col].clone()),
         )
     }
 }

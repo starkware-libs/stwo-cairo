@@ -16,7 +16,7 @@ use crate::cairo_air::relations;
 use crate::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
-    range_check_6, range_check_7_2_5, range_check_9_9,
+    range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_mod_builtin, add_opcode,
@@ -26,9 +26,10 @@ use crate::components::{
     jnz_opcode_dst_base_fp, jnz_opcode_taken, jnz_opcode_taken_dst_base_fp, jump_opcode,
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
     memory_id_to_big, mul_opcode, mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
-    poseidon_3_partial_rounds_chain, poseidon_builtin, poseidon_full_round_chain,
-    poseidon_round_keys, range_check_builtin_bits_128, range_check_builtin_bits_96,
-    range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9, verify_instruction,
+    partial_ec_mul, pedersen_builtin, pedersen_points_table, poseidon_3_partial_rounds_chain,
+    poseidon_builtin, poseidon_full_round_chain, poseidon_round_keys, range_check_builtin_bits_128,
+    range_check_builtin_bits_96, range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9,
+    verify_instruction,
 };
 use crate::felt::split_f252;
 
@@ -632,6 +633,49 @@ where
         );
     }
 
+    if let Some(pedersen_builtin) = claim.builtins.pedersen_builtin {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                pedersen_builtin::Eval {
+                    claim: pedersen_builtin,
+                    memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+                    memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+                    partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
+                    range_check_5_4_lookup_elements: relations::RangeCheck_5_4::dummy(),
+                    range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
+                },
+            )
+            .entries(trace),
+        );
+    }
+
+    if let Some(claim) = &claim.pedersen_context.claim {
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                partial_ec_mul::Eval {
+                    claim: claim.partial_ec_mul,
+                    partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
+                    pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
+                    range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+                    range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+                },
+            )
+            .entries(trace),
+        );
+        entries.extend(
+            RelationTrackerComponent::new(
+                tree_span_provider,
+                pedersen_points_table::Eval {
+                    claim: claim.pedersen_points_table,
+                    pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
+                },
+            )
+            .entries(trace),
+        );
+    }
+
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
@@ -681,6 +725,15 @@ where
             tree_span_provider,
             range_check_6::Eval {
                 lookup_elements: relations::RangeCheck_6::dummy(),
+            },
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_8::Eval {
+                lookup_elements: relations::RangeCheck_8::dummy(),
             },
         )
         .entries(trace),
@@ -744,6 +797,15 @@ where
             tree_span_provider,
             range_check_4_4::Eval {
                 lookup_elements: relations::RangeCheck_4_4::dummy(),
+            },
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_5_4::Eval {
+                lookup_elements: relations::RangeCheck_5_4::dummy(),
             },
         )
         .entries(trace),

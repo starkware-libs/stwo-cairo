@@ -59,6 +59,7 @@ fn assert_cairo_components(
         verify_instruction,
         blake_context,
         builtins,
+        pedersen_context,
         poseidon_context,
         memory_address_to_id,
         memory_id_to_value,
@@ -132,6 +133,7 @@ fn assert_cairo_components(
     assert_component(verify_instruction, &trace_polys);
     assert_component(verify_instruction, &trace_polys);
     assert_component(&range_checks.rc_6, &trace_polys);
+    assert_component(&range_checks.rc_8, &trace_polys);
     assert_component(&range_checks.rc_11, &trace_polys);
     assert_component(&range_checks.rc_12, &trace_polys);
     assert_component(&range_checks.rc_18, &trace_polys);
@@ -139,6 +141,7 @@ fn assert_cairo_components(
     assert_component(&range_checks.rc_3_6, &trace_polys);
     assert_component(&range_checks.rc_4_3, &trace_polys);
     assert_component(&range_checks.rc_4_4, &trace_polys);
+    assert_component(&range_checks.rc_5_4, &trace_polys);
     assert_component(&range_checks.rc_9_9, &trace_polys);
     assert_component(&range_checks.rc_7_2_5, &trace_polys);
     assert_component(&range_checks.rc_3_6_6_3, &trace_polys);
@@ -167,6 +170,9 @@ fn assert_cairo_components(
     if let Some(bitwise) = &builtins.bitwise_builtin {
         assert_component(bitwise, &trace_polys);
     }
+    if let Some(pedersen) = &builtins.pedersen_builtin {
+        assert_component(pedersen, &trace_polys);
+    }
     if let Some(poseidon) = &builtins.poseidon_builtin {
         assert_component(poseidon, &trace_polys);
     }
@@ -176,7 +182,10 @@ fn assert_cairo_components(
     if let Some(rc_128) = &builtins.range_check_128_builtin {
         assert_component(rc_128, &trace_polys);
     }
-
+    if let Some(components) = &pedersen_context.components {
+        assert_component(&components.partial_ec_mul, &trace_polys);
+        assert_component(&components.pedersen_points_table, &trace_polys);
+    }
     if let Some(components) = &poseidon_context.components {
         assert_component(&components.poseidon_3_partial_rounds_chain, &trace_polys);
         assert_component(&components.poseidon_full_round_chain, &trace_polys);
@@ -223,11 +232,11 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
         &preprocessed_trace.ids(),
     );
 
+    assert_cairo_components(commitment_scheme.polynomials(), &components);
     assert_eq!(
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
         SecureField::zero()
     );
-    assert_cairo_components(commitment_scheme.polynomials(), &components);
 }
 
 fn assert_many<E: FrameworkEval + Sync>(
