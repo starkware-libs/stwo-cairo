@@ -315,7 +315,8 @@ pub mod tests {
             use std::fs::File;
 
             use cairo_vm::air_public_input::MemorySegmentAddresses;
-            use stwo_cairo_adapter::vm_import::{generate_test_input, MemoryEntryIter};
+            use stwo_cairo_adapter::memory::MemoryEntryIter;
+            use stwo_cairo_adapter::vm_import::generate_test_input;
 
             use super::*;
 

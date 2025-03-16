@@ -17,7 +17,7 @@ use super::builtins::BuiltinSegments;
 use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
-use crate::memory::MemoryBuilder;
+use crate::memory::{MemoryBuilder, MemoryEntryIter};
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -174,28 +174,6 @@ impl<R: Read> Iterator for TraceIter<'_, R> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let mut entry = TraceEntry::default();
-        self.0
-            .read_exact(bytes_of_mut(&mut entry))
-            .ok()
-            .map(|_| entry)
-    }
-}
-
-/// A single entry from the memory file.
-/// Note: This struct must be kept in sync with the Cairo VM's memory output file.
-#[repr(C)]
-#[derive(Copy, Clone, Default, Pod, Zeroable)]
-pub struct MemoryEntry {
-    pub address: u64,
-    pub value: [u32; 8],
-}
-
-pub struct MemoryEntryIter<'a, R: Read>(pub &'a mut R);
-impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
-    type Item = MemoryEntry;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut entry = MemoryEntry::default();
         self.0
             .read_exact(bytes_of_mut(&mut entry))
             .ok()
