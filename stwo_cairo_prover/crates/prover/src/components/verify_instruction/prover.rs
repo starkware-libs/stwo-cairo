@@ -1,9 +1,9 @@
 #![allow(unused_parens)]
-use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use itertools::{zip_eq, Itertools};
 use stwo_cairo_adapter::decode::deconstruct_instruction;
+use stwo_cairo_adapter::HashMap;
 
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
