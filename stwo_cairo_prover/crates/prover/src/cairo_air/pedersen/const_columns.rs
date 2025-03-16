@@ -12,7 +12,8 @@ use starknet_types_core::felt::Felt;
 use stwo_cairo_common::preprocessed_consts::pedersen::{
     BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
-use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS, M31};
+use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -27,14 +28,30 @@ pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
     LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES}; //
+
 #[derive(Debug)]
 pub struct PedersenPoints {
     index: usize,
+    // zxc: PedersenPointsTable,
+    // zxc: PedersenPointsTable, //debug trait?
 }
 
 impl PedersenPoints {
     pub fn new(col: usize) -> Self {
         Self { index: col }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        // // PedersenPointsTable::new().column_data[self.index][vec_row]
+        // // let zxc = PEDERSEN_TABLE.column_data[self.index].clone();
+        // let zxc = PEDERSEN_TABLE.column_data[self.index][vec_row * N_LANES].clone();
+        // // unsafe { PackedM31::from_simd_unchecked(simd) }
+        let array = PEDERSEN_TABLE.column_data[self.index]
+            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+            .try_into()
+            .expect("Slice has incorrect length");
+        PackedM31::from_array(array)
     }
 }
 
@@ -83,6 +100,40 @@ impl PedersenPointsTable {
             rows,
         }
     }
+}
+
+//(round: M31) -> [Felt252Width27; 3]
+pub fn pedersen_points_table_deduce_output(index: M31) -> [Felt252; 2] {
+    let index_usize = index.0 as usize;
+    let array1: [M31; FELT252_N_WORDS] = from_fn(|i| PEDERSEN_TABLE.column_data[i][index_usize]); //.clone()?
+    let array2: [M31; FELT252_N_WORDS] =
+        from_fn(|i| PEDERSEN_TABLE.column_data[i + FELT252_N_WORDS][index_usize]);
+    let output1 = Felt252::from_limbs(&array1);
+    let output2 = Felt252::from_limbs(&array2);
+    // self.get_row(index)
+    [output1, output2]
+}
+// fn deduce_output(&self, index: usize) -> AffinePoint {
+//     self.get_row(index)
+// }
+pub fn pedersen_points_table_deduce_output_packed(indexes: PackedM31) -> [PackedFelt252; 2] {
+    let index_array = indexes.to_array();
+
+    // let zxc = index_array
+    //     .iter()
+    //     .map(|&index| self.deduce_output(index))
+    //     .collect::<Vec<[Felt252; 2]>>();
+
+    let (output1_vec, output2_vec): (Vec<Felt252>, Vec<Felt252>) = index_array
+        .iter()
+        .map(|&index| pedersen_points_table_deduce_output(index))
+        .map(|[a, b]| (a, b))
+        .unzip();
+
+    let output1 = PackedFelt252::from_array(&output1_vec.try_into().unwrap());
+    let output2 = PackedFelt252::from_array(&output2_vec.try_into().unwrap());
+
+    [output1, output2]
 }
 
 fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
