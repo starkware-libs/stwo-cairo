@@ -1,0 +1,12 @@
+{
+  "trace_path": "trace",
+  "memory_path": "mem",
+  "pedersen": [],
+  "range_check": [],
+  "range_check96": [],
+  "ecdsa": [],
+  "bitwise": [],
+  "ec_op": [],
+  "keccak": [],
+  "poseidon": []
+}
