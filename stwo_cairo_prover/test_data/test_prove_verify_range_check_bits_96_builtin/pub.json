@@ -1,0 +1,233 @@
+{
+  "layout": "all_cairo",
+  "rc_min": 0,
+  "rc_max": 32769,
+  "n_steps": 65536,
+  "memory_segments": {
+    "output": {
+      "begin_addr": 242,
+      "stop_ptr": 242
+    },
+    "poseidon": {
+      "begin_addr": 30706,
+      "stop_ptr": 30706
+    },
+    "bitwise": {
+      "begin_addr": 9266,
+      "stop_ptr": 9266
+    },
+    "ecdsa": {
+      "begin_addr": 9202,
+      "stop_ptr": 9202
+    },
+    "add_mod": {
+      "begin_addr": 40434,
+      "stop_ptr": 40434
+    },
+    "pedersen": {
+      "begin_addr": 242,
+      "stop_ptr": 242
+    },
+    "program": {
+      "begin_addr": 1,
+      "stop_ptr": 5
+    },
+    "execution": {
+      "begin_addr": 33,
+      "stop_ptr": 242
+    },
+    "range_check": {
+      "begin_addr": 1010,
+      "stop_ptr": 1010
+    },
+    "ec_op": {
+      "begin_addr": 29746,
+      "stop_ptr": 29746
+    },
+    "keccak": {
+      "begin_addr": 30194,
+      "stop_ptr": 30194
+    },
+    "mul_mod": {
+      "begin_addr": 44018,
+      "stop_ptr": 44018
+    },
+    "range_check96": {
+      "begin_addr": 32242,
+      "stop_ptr": 32292
+    }
+  },
+  "public_memory": [
+    {
+      "address": 1,
+      "value": "0x40780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 2,
+      "value": "0x1",
+      "page": 0
+    },
+    {
+      "address": 3,
+      "value": "0x1104800180018000",
+      "page": 0
+    },
+    {
+      "address": 4,
+      "value": "0x13",
+      "page": 0
+    },
+    {
+      "address": 5,
+      "value": "0x10780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 6,
+      "value": "0x0",
+      "page": 0
+    },
+    {
+      "address": 7,
+      "value": "0x40780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 8,
+      "value": "0x1",
+      "page": 0
+    },
+    {
+      "address": 9,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 10,
+      "value": "0x20780017fff7ffd",
+      "page": 0
+    },
+    {
+      "address": 11,
+      "value": "0x4",
+      "page": 0
+    },
+    {
+      "address": 12,
+      "value": "0x480a7ffc7fff8000",
+      "page": 0
+    },
+    {
+      "address": 13,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 14,
+      "value": "0x400380007ffc7ffd",
+      "page": 0
+    },
+    {
+      "address": 15,
+      "value": "0x482680017ffc8000",
+      "page": 0
+    },
+    {
+      "address": 16,
+      "value": "0x1",
+      "page": 0
+    },
+    {
+      "address": 17,
+      "value": "0x482680017ffd8000",
+      "page": 0
+    },
+    {
+      "address": 18,
+      "value": "0x800000000000011000000000000000000000000000000000000000000000000",
+      "page": 0
+    },
+    {
+      "address": 19,
+      "value": "0x1104800180018000",
+      "page": 0
+    },
+    {
+      "address": 20,
+      "value": "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffff8",
+      "page": 0
+    },
+    {
+      "address": 21,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 22,
+      "value": "0x40780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 23,
+      "value": "0x1",
+      "page": 0
+    },
+    {
+      "address": 24,
+      "value": "0x400780017fff8000",
+      "page": 0
+    },
+    {
+      "address": 25,
+      "value": "0x32",
+      "page": 0
+    },
+    {
+      "address": 26,
+      "value": "0x480a7ffd7fff8000",
+      "page": 0
+    },
+    {
+      "address": 27,
+      "value": "0x480a80007fff8000",
+      "page": 0
+    },
+    {
+      "address": 28,
+      "value": "0x1104800180018000",
+      "page": 0
+    },
+    {
+      "address": 29,
+      "value": "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffef",
+      "page": 0
+    },
+    {
+      "address": 30,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 31,
+      "value": "0x21",
+      "page": 0
+    },
+    {
+      "address": 32,
+      "value": "0x0",
+      "page": 0
+    },
+    {
+      "address": 33,
+      "value": "0x7df2",
+      "page": 0
+    },
+    {
+      "address": 241,
+      "value": "0x7e24",
+      "page": 0
+    }
+  ],
+  "dynamic_params": null
+}
