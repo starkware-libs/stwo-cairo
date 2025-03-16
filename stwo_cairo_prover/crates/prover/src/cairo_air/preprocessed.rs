@@ -427,7 +427,6 @@ pub mod tests {
         );
 
         let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(log_blowup_factor);
-
         assert_eq!(root, expected);
     }
 }
