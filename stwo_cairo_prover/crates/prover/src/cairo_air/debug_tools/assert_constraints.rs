@@ -1,10 +1,12 @@
 // TODO(Ohad):remove allow.
 #![allow(unused)]
+use std::ops::Deref;
+
 use itertools::Itertools;
 use num_traits::Zero;
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::constraint_framework::{
-    assert_constraints, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
+    assert_constraints_on_polys, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
 };
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Blake2sChannel;
@@ -20,7 +22,7 @@ use crate::cairo_air::opcodes_air::OpcodeComponents;
 use crate::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
 use crate::cairo_air::prover::LOG_MAX_ROWS;
 
-pub fn assert_component<E: FrameworkEval>(
+pub fn assert_component<E: FrameworkEval + Sync>(
     component: &FrameworkComponent<E>,
     trace_polys: &TreeVec<Vec<&CirclePoly<SimdBackend>>>,
 ) {
@@ -37,11 +39,12 @@ pub fn assert_component<E: FrameworkEval>(
     let log_size = component.log_size();
     let trace_domain = CanonicCoset::new(log_size);
 
-    assert_constraints(
+    let component_eval = component.deref();
+    assert_constraints_on_polys(
         &polys,
         trace_domain,
         |eval| {
-            component.evaluate(eval);
+            component_eval.evaluate(eval);
         },
         component.claimed_sum(),
     );
@@ -215,7 +218,7 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
     assert_cairo_components(commitment_scheme.polynomials(), &components);
 }
 
-fn assert_many<E: FrameworkEval>(
+fn assert_many<E: FrameworkEval + Sync>(
     components: &[FrameworkComponent<E>],
     trace_polys: &TreeVec<Vec<&CirclePoly<SimdBackend>>>,
 ) {
