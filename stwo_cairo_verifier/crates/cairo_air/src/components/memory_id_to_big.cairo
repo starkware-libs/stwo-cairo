@@ -6,7 +6,7 @@ use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::{QM31, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::ArrayImpl;
+use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use super::super::utils::UsizeImpl;
@@ -166,7 +166,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
         let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
 
         let params = constraints_big::ConstraintParams {
-            log_size: *self.log_n_rows,
+            column_size: pow2(*self.log_n_rows).into(),
             MemoryIdToBig_alpha0: id_to_value_alpha_0,
             MemoryIdToBig_alpha1: id_to_value_alpha_1,
             MemoryIdToBig_alpha10: id_to_value_alpha_10,
@@ -276,7 +276,7 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
         let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
 
         let params = constraints_small::ConstraintParams {
-            log_size: *self.log_n_rows,
+            column_size: pow2(*self.log_n_rows).into(),
             MemoryIdToBig_alpha0: id_to_value_alpha_0,
             MemoryIdToBig_alpha1: id_to_value_alpha_1,
             MemoryIdToBig_alpha2: id_to_value_alpha_2,

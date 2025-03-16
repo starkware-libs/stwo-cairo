@@ -39,3 +39,6 @@ cairo-vm = { workspace = true, default-features = true }
 test-log = { version = "0.2.17", features = ["trace"] }
 tracing-subscriber.workspace = true
 rand.workspace = true
+
+[profile.release]
+incremental = true

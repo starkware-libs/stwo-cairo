@@ -6,9 +6,9 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
-use stwo_verifier_core::utils::pow2;
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
+
 
 pub fn mask_points(
     ref preprocessed_column_set: PreprocessedColumnSet,
@@ -68,7 +68,7 @@ pub struct ConstraintParams {
     pub RangeCheck_9_9_z: QM31,
     pub claimed_sum: QM31,
     pub seq: QM31,
-    pub log_size: u32,
+    pub column_size: M31,
 }
 
 pub fn evaluate_constraints_at_point(
@@ -95,7 +95,7 @@ pub fn evaluate_constraints_at_point(
         RangeCheck_9_9_z,
         claimed_sum,
         seq,
-        log_size,
+        column_size,
     } = params;
     let [
         trace_1_column_0,
@@ -248,7 +248,7 @@ pub fn evaluate_constraints_at_point(
     let intermediate4 = *intermediates.pop_front().unwrap();
 
     // Constraint 0
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_9_offset_0, trace_2_column_10_offset_0, trace_2_column_11_offset_0,
             trace_2_column_12_offset_0,
@@ -260,13 +260,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 1
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
             trace_2_column_16_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_9_offset_0, trace_2_column_10_offset_0, trace_2_column_11_offset_0,
                 trace_2_column_12_offset_0,
@@ -278,13 +278,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 2
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
             trace_2_column_20_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
                 trace_2_column_16_offset_0,
@@ -296,13 +296,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 3
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
             trace_2_column_24_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
                 trace_2_column_20_offset_0,
@@ -314,25 +314,25 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 4
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_25_offset_0, trace_2_column_26_offset_0, trace_2_column_27_offset_0,
             trace_2_column_28_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_25_offset_neg_1, trace_2_column_26_offset_neg_1,
                 trace_2_column_27_offset_neg_1, trace_2_column_28_offset_neg_1,
             ],
         ))
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
                 trace_2_column_24_offset_0,
             ],
         ))
-        + (claimed_sum) * (m31(pow2(log_size)).inverse().into()))
+        + (claimed_sum) * (column_size.inverse().into()))
         * (intermediate4)
         - (-(trace_1_column_8_offset_0)))
         * domain_vanish_at_point_inv;
@@ -364,6 +364,36 @@ fn intermediates(
     trace_1_column_6_offset_0: QM31,
     trace_1_column_7_offset_0: QM31,
 ) -> Array<QM31> {
+    let intermediate4 = intermediate4(
+        MemoryIdToBig_alpha0,
+        MemoryIdToBig_alpha1,
+        MemoryIdToBig_alpha2,
+        MemoryIdToBig_alpha3,
+        MemoryIdToBig_alpha4,
+        MemoryIdToBig_alpha5,
+        MemoryIdToBig_alpha6,
+        MemoryIdToBig_alpha7,
+        MemoryIdToBig_alpha8,
+        MemoryIdToBig_z,
+        seq,
+        trace_1_column_0_offset_0,
+        trace_1_column_1_offset_0,
+        trace_1_column_2_offset_0,
+        trace_1_column_3_offset_0,
+        trace_1_column_4_offset_0,
+        trace_1_column_5_offset_0,
+        trace_1_column_6_offset_0,
+        trace_1_column_7_offset_0,
+    );
+
+    let intermediate3 = intermediate3(
+        RangeCheck_9_9_alpha0,
+        RangeCheck_9_9_alpha1,
+        RangeCheck_9_9_z,
+        trace_1_column_6_offset_0,
+        trace_1_column_7_offset_0,
+    );
+
     let intermediate0 = intermediate0(
         RangeCheck_9_9_alpha0,
         RangeCheck_9_9_alpha1,
@@ -387,39 +417,54 @@ fn intermediates(
         trace_1_column_4_offset_0,
         trace_1_column_5_offset_0,
     );
-
-    let intermediate3 = intermediate3(
-        RangeCheck_9_9_alpha0,
-        RangeCheck_9_9_alpha1,
-        RangeCheck_9_9_z,
-        trace_1_column_6_offset_0,
-        trace_1_column_7_offset_0,
-    );
-
-    let intermediate4 = intermediate4(
-        MemoryIdToBig_alpha0,
-        MemoryIdToBig_alpha1,
-        MemoryIdToBig_alpha2,
-        MemoryIdToBig_alpha3,
-        MemoryIdToBig_alpha4,
-        MemoryIdToBig_alpha5,
-        MemoryIdToBig_alpha6,
-        MemoryIdToBig_alpha7,
-        MemoryIdToBig_alpha8,
-        MemoryIdToBig_z,
-        seq,
-        trace_1_column_0_offset_0,
-        trace_1_column_1_offset_0,
-        trace_1_column_2_offset_0,
-        trace_1_column_3_offset_0,
-        trace_1_column_4_offset_0,
-        trace_1_column_5_offset_0,
-        trace_1_column_6_offset_0,
-        trace_1_column_7_offset_0,
-    );
     array![intermediate0, intermediate1, intermediate2, intermediate3, intermediate4]
 }
 
+
+pub fn intermediate4(
+    MemoryIdToBig_alpha0: QM31,
+    MemoryIdToBig_alpha1: QM31,
+    MemoryIdToBig_alpha2: QM31,
+    MemoryIdToBig_alpha3: QM31,
+    MemoryIdToBig_alpha4: QM31,
+    MemoryIdToBig_alpha5: QM31,
+    MemoryIdToBig_alpha6: QM31,
+    MemoryIdToBig_alpha7: QM31,
+    MemoryIdToBig_alpha8: QM31,
+    MemoryIdToBig_z: QM31,
+    seq: QM31,
+    trace_1_column_0_offset_0: QM31,
+    trace_1_column_1_offset_0: QM31,
+    trace_1_column_2_offset_0: QM31,
+    trace_1_column_3_offset_0: QM31,
+    trace_1_column_4_offset_0: QM31,
+    trace_1_column_5_offset_0: QM31,
+    trace_1_column_6_offset_0: QM31,
+    trace_1_column_7_offset_0: QM31,
+) -> QM31 {
+    (MemoryIdToBig_alpha0) * (seq)
+        + (MemoryIdToBig_alpha1) * (trace_1_column_0_offset_0)
+        + (MemoryIdToBig_alpha2) * (trace_1_column_1_offset_0)
+        + (MemoryIdToBig_alpha3) * (trace_1_column_2_offset_0)
+        + (MemoryIdToBig_alpha4) * (trace_1_column_3_offset_0)
+        + (MemoryIdToBig_alpha5) * (trace_1_column_4_offset_0)
+        + (MemoryIdToBig_alpha6) * (trace_1_column_5_offset_0)
+        + (MemoryIdToBig_alpha7) * (trace_1_column_6_offset_0)
+        + (MemoryIdToBig_alpha8) * (trace_1_column_7_offset_0)
+        - (MemoryIdToBig_z)
+}
+
+pub fn intermediate3(
+    RangeCheck_9_9_alpha0: QM31,
+    RangeCheck_9_9_alpha1: QM31,
+    RangeCheck_9_9_z: QM31,
+    trace_1_column_6_offset_0: QM31,
+    trace_1_column_7_offset_0: QM31,
+) -> QM31 {
+    (RangeCheck_9_9_alpha0) * (trace_1_column_6_offset_0)
+        + (RangeCheck_9_9_alpha1) * (trace_1_column_7_offset_0)
+        - (RangeCheck_9_9_z)
+}
 
 pub fn intermediate0(
     RangeCheck_9_9_alpha0: QM31,
@@ -455,50 +500,5 @@ pub fn intermediate2(
     (RangeCheck_9_9_alpha0) * (trace_1_column_4_offset_0)
         + (RangeCheck_9_9_alpha1) * (trace_1_column_5_offset_0)
         - (RangeCheck_9_9_z)
-}
-
-pub fn intermediate3(
-    RangeCheck_9_9_alpha0: QM31,
-    RangeCheck_9_9_alpha1: QM31,
-    RangeCheck_9_9_z: QM31,
-    trace_1_column_6_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-) -> QM31 {
-    (RangeCheck_9_9_alpha0) * (trace_1_column_6_offset_0)
-        + (RangeCheck_9_9_alpha1) * (trace_1_column_7_offset_0)
-        - (RangeCheck_9_9_z)
-}
-
-pub fn intermediate4(
-    MemoryIdToBig_alpha0: QM31,
-    MemoryIdToBig_alpha1: QM31,
-    MemoryIdToBig_alpha2: QM31,
-    MemoryIdToBig_alpha3: QM31,
-    MemoryIdToBig_alpha4: QM31,
-    MemoryIdToBig_alpha5: QM31,
-    MemoryIdToBig_alpha6: QM31,
-    MemoryIdToBig_alpha7: QM31,
-    MemoryIdToBig_alpha8: QM31,
-    MemoryIdToBig_z: QM31,
-    seq: QM31,
-    trace_1_column_0_offset_0: QM31,
-    trace_1_column_1_offset_0: QM31,
-    trace_1_column_2_offset_0: QM31,
-    trace_1_column_3_offset_0: QM31,
-    trace_1_column_4_offset_0: QM31,
-    trace_1_column_5_offset_0: QM31,
-    trace_1_column_6_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-) -> QM31 {
-    (MemoryIdToBig_alpha0) * (seq)
-        + (MemoryIdToBig_alpha1) * (trace_1_column_0_offset_0)
-        + (MemoryIdToBig_alpha2) * (trace_1_column_1_offset_0)
-        + (MemoryIdToBig_alpha3) * (trace_1_column_2_offset_0)
-        + (MemoryIdToBig_alpha4) * (trace_1_column_3_offset_0)
-        + (MemoryIdToBig_alpha5) * (trace_1_column_4_offset_0)
-        + (MemoryIdToBig_alpha6) * (trace_1_column_5_offset_0)
-        + (MemoryIdToBig_alpha7) * (trace_1_column_6_offset_0)
-        + (MemoryIdToBig_alpha8) * (trace_1_column_7_offset_0)
-        - (MemoryIdToBig_z)
 }
 

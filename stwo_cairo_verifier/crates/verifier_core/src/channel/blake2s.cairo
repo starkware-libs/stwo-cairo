@@ -174,8 +174,8 @@ fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
 #[cfg(test)]
 mod tests {
     use core::box::BoxImpl;
-    use crate::vcs::blake2s_hasher::Blake2sHash;
     use crate::fields::qm31::qm31_const;
+    use crate::vcs::blake2s_hasher::Blake2sHash;
     use super::{Blake2sChannel, ChannelTrait, new_channel};
 
     #[test]
