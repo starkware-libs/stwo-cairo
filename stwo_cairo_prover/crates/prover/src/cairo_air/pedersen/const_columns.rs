@@ -12,7 +12,8 @@ use starknet_types_core::felt::Felt;
 use stwo_cairo_common::preprocessed_consts::pedersen::{
     BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
-use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS}; // M31
+// use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -22,39 +23,83 @@ use stwo_prover::core::poly::BitReversedOrder;
 
 use super::utils::felt_batch_inverse;
 use crate::cairo_air::preprocessed::PreProcessedColumn;
+// use crate::cairo_air::preprocessed_utils::pad;
 
 pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
     LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES}; //
+
+const LOG_N_ROWS: u32 = (PEDERSEN_TABLE_N_ROWS as u32).next_power_of_two().ilog2();
+// const N_PACKED_ROWS: usize = (2_u32.pow(LOG_N_ROWS)) as usize / N_LANES;
+
+pub fn pedersen_points_table_f252(index: usize) -> [Felt252; 2] {
+    let x_f252: Felt252 = PEDERSEN_TABLE.rows[index].x().into();
+    let y_f252: Felt252 = PEDERSEN_TABLE.rows[index].y().into();
+    [x_f252, y_f252]
+}
+
 #[derive(Debug)]
 pub struct PedersenPoints {
-    index: usize,
+    // pub packed_limbs: [PackedM31; N_PACKED_ROWS], // ?
+    pub col: usize,
 }
 
 impl PedersenPoints {
     pub fn new(col: usize) -> Self {
-        Self { index: col }
+        // let packed_limbs =
+        //     BaseColumn::from_iter(pad(pedersen_points_table_m31, PEDERSEN_TABLE_N_ROWS,
+        // col)).data;
+        Self {
+            // packed_limbs: packed_limbs.try_into().unwrap(),
+            col,
+        }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        let array = PEDERSEN_TABLE.column_data[self.col]
+            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+            .try_into()
+            .expect("Slice has incorrect length");
+        PackedM31::from_array(array)
     }
 }
 
 impl PreProcessedColumn for PedersenPoints {
     fn log_size(&self) -> u32 {
-        PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        // PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        LOG_N_ROWS
     }
 
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("pedersen_points_{}", self.index),
+            id: format!("pedersen_points_{}", self.col),
         }
     }
 
+    // fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    //     CircleEvaluation::new(
+    //         CanonicCoset::new(self.log_size()).circle_domain(),
+    //         BaseColumn::from_iter(pad(
+    //             pedersen_points_table_m31,
+    //             PEDERSEN_TABLE_N_ROWS,
+    //             self.col,
+    //         )),
+    //     )
+    // }
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.col].clone()),
         )
     }
+    // fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    //     CircleEvaluation::new(
+    //         CanonicCoset::new(LOG_N_ROWS).circle_domain(),
+    //         BaseColumn::from_simd(self.packed_keys.to_vec()),
+    //     )
+    // }
 }
 
 // A table with 2**23 rows, each containing a point on the Stark curve.
