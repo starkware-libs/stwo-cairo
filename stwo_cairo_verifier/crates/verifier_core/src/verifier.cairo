@@ -10,13 +10,23 @@ use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
+/// Arithmetic Intermediate Representation (AIR).
+///
+/// An Air instance is assumed to already contain all the information needed to evaluate the
+/// constraints. For instance, all interaction elements are assumed to be present in it. Therefore,
+/// an AIR is generated only after the initial trace commitment phase.
 pub trait Air<T> {
+    // The degree of the composition polynomial.
+    // Determined by the largest constraint in the AIR.
     fn composition_log_degree_bound(self: @T) -> u32;
 
+    // Returns the mask points for each trace column.
+    // The returned TreeArray should be of size `n_interaction_phases`.
     fn mask_points(
         self: @T, point: CirclePoint<QM31>,
     ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>;
 
+    // Evaluates the constraint quotients combination of the AIR at `point`.
     fn eval_composition_polynomial_at_point(
         self: @T,
         point: CirclePoint<QM31>,
@@ -25,7 +35,7 @@ pub trait Air<T> {
     ) -> QM31;
 }
 
-// TODO: Deal with preprocessed columns.
+/// Given a commitment to the traces, and an AIR definition, verifies the proof.
 pub fn verify<A, +Air<A>, +Drop<A>>(
     air: A,
     ref channel: Channel,
