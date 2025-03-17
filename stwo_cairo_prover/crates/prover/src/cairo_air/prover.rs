@@ -236,6 +236,7 @@ pub mod tests {
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
+        use super::*;
         use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::cairo_air::preprocessed::PreProcessedTrace;
         use crate::cairo_air::prover::tests::test_basic_cairo_air_input;
@@ -376,6 +377,13 @@ pub mod tests {
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            }
+
+            #[test]
+            fn test_poseidon_builtin_constraints() {
+                let input = generate_test_input("test_prove_verify_poseidon_builtin");
+                let pp_tree = testing_preprocessed_tree(19);
+                assert_cairo_constraints(input, pp_tree);
             }
 
             #[test]
