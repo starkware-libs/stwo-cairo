@@ -29,6 +29,7 @@ pub mod mul_opcode;
 pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
+pub mod poseidon_full_round_chain;
 pub mod poseidon_round_keys;
 pub mod qm_31_add_mul_opcode;
 pub mod range_check_builtin_bits_128;
