@@ -397,6 +397,15 @@ pub mod tests {
             }
 
             #[test]
+            fn test_prove_verify_poseidon_builtin() {
+                let input = generate_test_input("test_prove_verify_poseidon_builtin");
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, test_cfg(), PcsConfig::default())
+                        .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            }
+
+            #[test]
             fn test_prove_verify_range_check_bits_96_builtin() {
                 let input = generate_test_input("test_prove_verify_range_check_bits_96_builtin");
                 let cairo_proof =
