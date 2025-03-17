@@ -10,7 +10,10 @@ use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
-use super::cpu::{BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, PRIME};
+use super::cpu::{
+    BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
+    PRIME,
+};
 use crate::memory::N_M31_IN_FELT252;
 
 pub const LOG_N_LANES: u32 = 4;
@@ -394,6 +397,10 @@ impl PackedFelt252 {
             .map(|v| Felt252::from_limbs(v))
     }
 
+    pub fn broadcast(value: Felt252) -> Self {
+        Self::from_array(&[value; N_LANES])
+    }
+
     pub fn from_array(arr: &[Felt252; N_LANES]) -> Self {
         let limbs = arr.map(|felt| std::array::from_fn(|i| felt.get_m31(i)));
         Self::from_limbs(<_ as Pack>::pack(limbs))
@@ -481,9 +488,31 @@ pub struct PackedFelt252Width27 {
     value: [Felt252Width27; N_LANES],
 }
 impl PackedFelt252Width27 {
+    pub fn to_array(&self) -> [Felt252Width27; N_LANES] {
+        self.value
+    }
+
+    pub fn from_array(arr: [Felt252Width27; N_LANES]) -> Self {
+        Self { value: arr }
+    }
+
+    pub fn from_limbs(limbs: [PackedM31; FELT252WIDTH27_N_WORDS]) -> Self {
+        let limbs = limbs.unpack();
+        Self {
+            value: std::array::from_fn(|i| Felt252Width27::from_limbs(&limbs[i])),
+        }
+    }
+
     pub fn from_packed_felt252width27(other: PackedFelt252Width27) -> Self {
         Self { value: other.value }
     }
+
+    pub fn from_packed_felt252(other: PackedFelt252) -> Self {
+        Self {
+            value: other.to_array().map(Felt252Width27::from),
+        }
+    }
+
     pub fn get_m31(&self, index: usize) -> PackedM31 {
         PackedM31::from_array(std::array::from_fn(|i| self.value[i].get_m31(index)))
     }
@@ -493,6 +522,14 @@ impl Pack for Felt252Width27 {
 
     fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
         PackedFelt252Width27 { value: inputs }
+    }
+}
+
+impl Unpack for PackedFelt252Width27 {
+    type CpuType = Felt252Width27;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        self.value
     }
 }
 
