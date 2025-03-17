@@ -31,6 +31,7 @@ pub mod mul_opcode_small_imm;
 pub mod qm_31_add_mul_opcode;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
+pub mod range_check_felt_252_width_27;
 pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod triple_xor_32;
