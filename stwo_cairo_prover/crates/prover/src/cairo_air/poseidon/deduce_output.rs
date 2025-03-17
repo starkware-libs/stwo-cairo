@@ -85,6 +85,17 @@ impl PoseidonFullRoundChain {
         (chain, round + M31::from(1), state)
     }
 }
+pub struct PackedPoseidonFullRoundChain {}
+impl PackedPoseidonFullRoundChain {
+    pub fn deduce_output(
+        input: (PackedM31, PackedM31, [PackedFelt252Width27; 3]),
+    ) -> (PackedM31, PackedM31, [PackedFelt252Width27; 3]) {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(|(chain, round, state)| {
+            PoseidonFullRoundChain::deduce_output(chain, round, state)
+        }))
+    }
+}
 
 #[derive(Debug)]
 pub struct Poseidon3PartialRoundsChain {}
@@ -120,6 +131,17 @@ impl Poseidon3PartialRoundsChain {
         let state = state.map(Felt252Width27::from);
 
         (chain, round + M31::from(1), state)
+    }
+}
+pub struct PackedPoseidon3PartialRoundsChain {}
+impl PackedPoseidon3PartialRoundsChain {
+    pub fn deduce_output(
+        input: (PackedM31, PackedM31, [PackedFelt252Width27; 4]),
+    ) -> (PackedM31, PackedM31, [PackedFelt252Width27; 4]) {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(|(chain, round, state)| {
+            Poseidon3PartialRoundsChain::deduce_output(chain, round, state)
+        }))
     }
 }
 
