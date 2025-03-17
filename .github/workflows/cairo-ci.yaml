@@ -43,8 +43,11 @@ jobs:
           components: rustfmt
           profile: minimal
           toolchain: nightly-2025-01-02
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo +nightly-2025-01-02 test --release --features slow-tests,std -- --test-threads=1
+      - name: Install latest nextest release
+        uses: taiki-e/install-action@nextest
+      - name: s2
+        uses: Swatinem/rust-cache@v2
+      - run: cargo nextest run --release --features slow-tests,std -j 1
         env:
           RUSTFLAGS: -C target-cpu=native -C opt-level=3
 
