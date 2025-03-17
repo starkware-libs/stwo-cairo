@@ -1,6 +1,9 @@
 use starknet_ff::FieldElement;
 use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, POSEIDON_ROUND_KEYS};
 use stwo_cairo_common::prover_types::cpu::{Felt252Width27, M31};
+use stwo_cairo_common::prover_types::simd::PackedFelt252Width27;
+use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
+use stwo_prover::core::backend::simd::m31::PackedM31;
 
 pub fn round_keys_field_elements(round: usize) -> [FieldElement; 3] {
     POSEIDON_ROUND_KEYS[round].map(FieldElement::from_mont)
@@ -11,6 +14,14 @@ pub struct PoseidonRoundKeys {}
 impl PoseidonRoundKeys {
     pub fn deduce_output(round: M31) -> [Felt252Width27; 3] {
         round_keys(round.0 as usize)
+    }
+}
+
+pub struct PackedPoseidonRoundKeys {}
+impl PackedPoseidonRoundKeys {
+    pub fn deduce_output(input: [PackedM31; 1]) -> [PackedFelt252Width27; 3] {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(|round| PoseidonRoundKeys::deduce_output(round[0])))
     }
 }
 
@@ -36,6 +47,14 @@ impl Cube252 {
     pub fn deduce_output(x: Felt252Width27) -> Felt252Width27 {
         let x: FieldElement = x.into();
         Self::cube(x).into()
+    }
+}
+
+pub struct PackedCube252 {}
+impl PackedCube252 {
+    pub fn deduce_output(input: PackedFelt252Width27) -> PackedFelt252Width27 {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(Cube252::deduce_output))
     }
 }
 
