@@ -14,6 +14,7 @@ pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
 pub mod cube_252;
+pub mod deduce_output;
 pub mod generic_opcode;
 pub mod jnz_opcode;
 pub mod jnz_opcode_dst_base_fp;
