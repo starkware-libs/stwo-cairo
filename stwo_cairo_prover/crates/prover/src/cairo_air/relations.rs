@@ -18,6 +18,7 @@ relation!(RangeCheck_7_2_5, 3);
 relation!(RangeCheck_3_6_6_3, 4);
 relation!(RangeCheck_4_4_4_4, 4);
 relation!(RangeCheck_3_3_3_3_3, 5);
+relation!(RangeCheckFelt252Width27, 10);
 relation!(VerifyInstruction, 29);
 relation!(VerifyBitwiseXor_4, 3);
 relation!(VerifyBitwiseXor_7, 3);
