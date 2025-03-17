@@ -4,7 +4,7 @@ mod tests {
 
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm_with_step_limit;
-    use stwo_cairo_prover::cairo_air::prover::{prove_cairo, ProverConfig};
+    use stwo_cairo_prover::cairo_air::prover::prove_cairo;
     use stwo_cairo_prover::cairo_air::verifier::verify_cairo;
     use stwo_prover::core::pcs::PcsConfig;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -23,12 +23,7 @@ mod tests {
         .instructions;
 
         let input = input_from_plain_casm_with_step_limit(instructions, 14);
-        let proof = prove_cairo::<Blake2sMerkleChannel>(
-            input,
-            ProverConfig::default(),
-            PcsConfig::default(),
-        )
-        .unwrap();
+        let proof = prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
 
         let path = project_root().join("artifacts/jrl0_proof.json");
         std::fs::write(path, serde_json::to_string(&proof).unwrap()).unwrap();

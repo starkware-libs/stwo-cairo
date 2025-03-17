@@ -6,7 +6,7 @@ use serde::Serialize;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::cairo_air::prover::{
-    default_prod_prover_parameters, prove_cairo, ChannelHash, ProverConfig, ProverParameters,
+    default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };
 use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use stwo_cairo_serialize::CairoSerialize;
@@ -71,8 +71,6 @@ struct Args {
     proof_format: ProofFormat,
     #[structopt(long = "track_relations")]
     track_relations: bool,
-    #[structopt(long = "display_components")]
-    display_components: bool,
     /// Verify the generated proof.
     #[structopt(long = "verify")]
     verify: bool,
@@ -115,9 +113,6 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 
     let vm_output: ProverInput =
         adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
-    let prover_config = ProverConfig {
-        display_components: args.display_components,
-    };
 
     log::info!(
         "Casm states by opcode:\n{}",
@@ -139,7 +134,6 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 
     run_inner_fn(
         vm_output,
-        prover_config,
         pcs_config,
         args.verify,
         args.proof_path,
@@ -154,7 +148,6 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 /// Verifies the proof in case the respective flag is set.
 fn run_inner<MC: MerkleChannel>(
     vm_output: ProverInput,
-    prover_config: ProverConfig,
     pcs_config: PcsConfig,
     verify: bool,
     proof_path: PathBuf,
@@ -165,7 +158,7 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(vm_output, prover_config, pcs_config)?;
+    let proof = prove_cairo::<MC>(vm_output, pcs_config)?;
     let proof_file = create_file(&proof_path)?;
 
     match proof_format {
