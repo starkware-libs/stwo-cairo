@@ -13,12 +13,16 @@ pub struct Queries {
 
 #[generate_trait]
 pub impl QueriesImpl of QueriesImplTrait {
-    /// Randomizes a set of query indices uniformly over the range [0, 2^`log_query_size`).
+    /// Randomizes an ascending list of query indices uniformly over the range
+    /// [0, 2^`log_query_size`).
+    /// Assumes `log_domain_size` is bounded by 32.
     fn generate(ref channel: Channel, log_domain_size: u32, n_queries: usize) -> Queries {
+        const BYTE: u32 = 0x100;
         let mut unsorted_positions = array![];
-        let max_query = pow2(log_domain_size) - 1;
+        let max_query_mask = pow2(log_domain_size) - 1;
         let mut finished = false;
         loop {
+            // In each iteration, random_bytes is truncated to multiples of 4 bytes.
             let random_bytes = channel.draw_random_bytes();
             let mut i = 0;
             while i + 3 < random_bytes.len() {
@@ -26,7 +30,7 @@ pub impl QueriesImpl of QueriesImplTrait {
                 let b1: u32 = (*random_bytes[i + 1]).into();
                 let b2: u32 = (*random_bytes[i + 2]).into();
                 let b3: u32 = (*random_bytes[i + 3]).into();
-                let position = (((b3 * 0x100 + b2) * 0x100 + b1) * 0x100 + b0) & max_query;
+                let position = (((b3 * BYTE + b2) * BYTE + b1) * BYTE + b0) & max_query_mask;
                 unsorted_positions.append(position);
                 if unsorted_positions.len() == n_queries {
                     finished = true;
