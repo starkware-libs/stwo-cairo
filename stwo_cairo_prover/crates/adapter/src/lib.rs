@@ -70,3 +70,25 @@ impl ExecutionResources {
         }
     }
 }
+
+#[macro_export]
+macro_rules! casm_state {
+    ($val1 : expr, $val2 : expr, $val3: expr) => {
+        CasmState {
+            pc: M31($val1),
+            ap: M31($val2),
+            fp: M31($val3),
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! relocated_trace_entry {
+    ($val1 : expr, $val2 : expr, $val3: expr) => {
+        RelocatedTraceEntry {
+            ap: $val1,
+            fp: $val2,
+            pc: $val3,
+        }
+    };
+}

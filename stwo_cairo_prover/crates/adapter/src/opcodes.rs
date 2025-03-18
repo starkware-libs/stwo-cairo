@@ -7,7 +7,8 @@ use stwo_prover::core::fields::m31::M31;
 
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
-use super::vm_import::TraceEntry;
+use super::vm_import::RelocatedTraceEntry;
+use crate::casm_state;
 
 // Small add operands are 27 bits.
 const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
@@ -137,13 +138,9 @@ impl Display for CasmStatesByOpcode {
     }
 }
 
-impl From<TraceEntry> for CasmState {
-    fn from(entry: TraceEntry) -> Self {
-        Self {
-            pc: M31(entry.pc as u32),
-            ap: M31(entry.ap as u32),
-            fp: M31(entry.fp as u32),
-        }
+impl From<RelocatedTraceEntry> for CasmState {
+    fn from(entry: RelocatedTraceEntry) -> Self {
+        casm_state!(entry.pc as u32, entry.ap as u32, entry.fp as u32)
     }
 }
 
@@ -165,7 +162,7 @@ impl StateTransitions {
     /// - A map from pc to instruction that is used to feed
     ///   [`crate::components::verify_instruction::ClaimGenerator`].
     pub fn from_iter(
-        iter: impl Iterator<Item = TraceEntry>,
+        iter: impl Iterator<Item = RelocatedTraceEntry>,
         memory: &mut MemoryBuilder,
     ) -> (Self, HashMap<M31, u128>) {
         let mut res = Self::default();
@@ -681,12 +678,16 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 mod mappings_tests {
 
     use cairo_lang_casm::casm;
+    use stwo_cairo_common::prover_types::cpu::CasmState;
+    use stwo_prover::core::fields::m31::M31;
 
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
     use crate::opcodes::StateTransitions;
     use crate::plain::input_from_plain_casm;
-    use crate::vm_import::TraceEntry;
+    use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
+    use crate::vm_import::RelocatedTraceEntry;
+    use crate::{casm_state, relocated_trace_entry};
 
     #[test]
     fn test_jmp_rel() {
@@ -698,11 +699,7 @@ mod mappings_tests {
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
-        let trace_entry = TraceEntry {
-            ap: 1,
-            fp: 1,
-            pc: 1,
-        };
+        let trace_entry = relocated_trace_entry!(1, 1, 1);
         let (state_transitions, _) =
             StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
         assert_eq!(
@@ -724,11 +721,7 @@ mod mappings_tests {
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
-        let trace_entry = TraceEntry {
-            ap: 1,
-            fp: 1,
-            pc: 1,
-        };
+        let trace_entry = relocated_trace_entry!(1, 1, 1);
         let (state_transitions, _) =
             StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
         assert_eq!(
@@ -1031,11 +1024,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let instruction = Instruction::decode(memory_builder.get_inst(1));
-        let trace_entry = TraceEntry {
-            ap: 1,
-            fp: 1,
-            pc: 1,
-        };
+        let trace_entry = relocated_trace_entry!(1, 1, 1);
+
         let (state_transitions, _) =
             StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
 
@@ -1055,11 +1045,7 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let instruction = Instruction::decode(memory_builder.get_inst(1));
-        let trace_entry = TraceEntry {
-            ap: 1,
-            fp: 1,
-            pc: 1,
-        };
+        let trace_entry = relocated_trace_entry!(1, 1, 1);
         let (state_transitions, _) =
             StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
 
@@ -1071,5 +1057,32 @@ mod mappings_tests {
                 .len(),
             1
         );
+    }
+
+    #[test]
+    fn test_casm_state_from_relocator() {
+        let relocator = create_test_relocator();
+        let encoded_qm31_add_mul_inst =
+            0b11100000001001010011111111111110101111111111111001000000000000000;
+        let x = u128_to_4_limbs(encoded_qm31_add_mul_inst);
+
+        let memory_value = MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, memory_value);
+        memory_builder.set(5, memory_value);
+        memory_builder.set(85, memory_value);
+
+        let (state_transitions, _) = StateTransitions::from_iter(
+            relocator
+                .relocate_trace(&get_test_relocatble_trace())
+                .into_iter(),
+            &mut memory_builder,
+        );
+        assert_eq!(
+            state_transitions.casm_states_by_opcode.qm31_add_mul_opcode,
+            vec![casm_state!(1, 5, 5), casm_state!(5, 6, 6)]
+        );
+        assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
+        assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
     }
 }
