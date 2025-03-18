@@ -7,7 +7,6 @@ use std::path::Path;
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::air_public_input::{MemorySegmentAddresses, PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
-use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror_no_std::Error;
@@ -128,7 +127,7 @@ pub fn adapt_vm_output(
 /// - `adapt_vm_output` in the prover.
 /// - `adapt_finished_runner` in the validator.
 pub fn adapt_to_stwo_input(
-    trace_iter: impl Iterator<Item = TraceEntry>,
+    trace_iter: impl Iterator<Item = RelocatedTraceEntry>,
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
@@ -150,30 +149,32 @@ pub fn adapt_to_stwo_input(
 
 /// A single entry from the trace file.
 /// Note: This struct must be kept in sync with the Cairo VM's trace output file.
+/// TODO(Stav): delete after being able to use
+/// 'cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry'.
 #[repr(C)]
-#[derive(Copy, Clone, Default, Pod, Zeroable)]
-pub struct TraceEntry {
+#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq)]
+pub struct RelocatedTraceEntry {
     pub ap: u64,
     pub fp: u64,
     pub pc: u64,
 }
 
-impl From<RelocatedTraceEntry> for TraceEntry {
-    fn from(value: RelocatedTraceEntry) -> Self {
-        Self {
-            ap: value.ap as u64,
-            fp: value.fp as u64,
-            pc: value.pc as u64,
+impl From<cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry> for RelocatedTraceEntry {
+    fn from(entry: cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry) -> Self {
+        RelocatedTraceEntry {
+            ap: entry.ap as u64,
+            fp: entry.fp as u64,
+            pc: entry.pc as u64,
         }
     }
 }
 
 pub struct TraceIter<'a, R: Read>(pub &'a mut R);
 impl<R: Read> Iterator for TraceIter<'_, R> {
-    type Item = TraceEntry;
+    type Item = RelocatedTraceEntry;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut entry = TraceEntry::default();
+        let mut entry = RelocatedTraceEntry::default();
         self.0
             .read_exact(bytes_of_mut(&mut entry))
             .ok()

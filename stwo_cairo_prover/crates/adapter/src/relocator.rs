@@ -1,6 +1,7 @@
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
+use cairo_vm::vm::trace::trace_entry::TraceEntry;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 
@@ -10,6 +11,7 @@ use crate::builtins::{
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 use crate::memory::{MemoryEntry, F252};
+use crate::vm_import::RelocatedTraceEntry;
 
 // Minimal builtins instances per segment, chosen to fit SIMD requirements.
 pub const MIN_SEGMENT_SIZE: usize = N_LANES;
@@ -21,6 +23,7 @@ pub struct Relocator {
     pub relocatable_mem: Vec<Vec<MaybeRelocatable>>,
     pub builtins_segments_indices: HashMap<usize, BuiltinName>,
 }
+
 impl Relocator {
     /// Allocates an address for each segment according to the relocatable memory.
     /// Each built-in segment is rounded up to the nearest power of two instances
@@ -146,6 +149,19 @@ impl Relocator {
         }
         res
     }
+
+    pub fn relocate_trace(&self, relocatble_trace: Vec<TraceEntry>) -> Vec<RelocatedTraceEntry> {
+        let mut res = vec![];
+        for entry in relocatble_trace {
+            res.push(RelocatedTraceEntry {
+                pc: self.relocation_table[entry.pc.segment_index as usize] as u64
+                    + entry.pc.offset as u64,
+                ap: self.relocation_table[1] as u64 + entry.ap as u64,
+                fp: self.relocation_table[1] as u64 + entry.fp as u64,
+            })
+        }
+        res
+    }
 }
 
 #[cfg(test)]
@@ -177,6 +193,26 @@ pub mod relocator_tests {
             HashMap::from([(1, BuiltinName::bitwise), (2, BuiltinName::segment_arena)]);
 
         Relocator::new(relocatble_memory, builtins_segments)
+    }
+
+    pub fn get_relocatble_test_trace() -> Vec<TraceEntry> {
+        vec![
+            TraceEntry {
+                pc: relocatable!(0, 0),
+                ap: 1,
+                fp: 1,
+            },
+            TraceEntry {
+                pc: relocatable!(1, 1),
+                ap: 2,
+                fp: 2,
+            },
+            TraceEntry {
+                pc: relocatable!(2, 1),
+                ap: 2,
+                fp: 2,
+            },
+        ]
     }
 
     #[test]
@@ -287,5 +323,31 @@ pub mod relocator_tests {
             Some((81, 97).into())
         );
         assert_eq!(builtins_segments.ecdsa, None);
+    }
+
+    #[test]
+    fn test_relocate_trace() {
+        let relocatble_trace: Vec<TraceEntry> = get_relocatble_test_trace();
+        let relocator = create_test_relocator();
+        let relocated_trace = relocator.relocate_trace(relocatble_trace);
+
+        let expected_relocated_trace = vec![
+            RelocatedTraceEntry {
+                ap: 5,
+                fp: 5,
+                pc: 1,
+            },
+            RelocatedTraceEntry {
+                ap: 6,
+                fp: 6,
+                pc: 5,
+            },
+            RelocatedTraceEntry {
+                ap: 6,
+                fp: 6,
+                pc: 85,
+            },
+        ];
+        assert_eq!(relocated_trace, expected_relocated_trace);
     }
 }
