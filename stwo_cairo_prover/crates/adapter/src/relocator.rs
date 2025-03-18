@@ -162,6 +162,29 @@ impl Relocator {
         }
         res
     }
+
+    pub fn relocate_public_addresses(
+        &self,
+        public_addresses: HashMap<usize, Vec<usize>>,
+    ) -> Vec<u32> {
+        let mut res = vec![];
+        for (segment_index, offsets) in public_addresses {
+            let base_addr = self.relocation_table[segment_index];
+
+            for offset in offsets {
+                let addr = base_addr + offset as u32;
+                assert!(
+                    addr < self.relocation_table[segment_index + 1],
+                    "Offset {} is out of segment {}",
+                    offset,
+                    segment_index
+                );
+                res.push(base_addr + offset as u32);
+            }
+        }
+
+        res
+    }
 }
 
 #[cfg(test)]
@@ -349,5 +372,16 @@ pub mod relocator_tests {
             },
         ];
         assert_eq!(relocated_trace, expected_relocated_trace);
+    }
+
+    #[test]
+    fn test_relocate_public_adresses() {
+        let relocator = create_test_relocator();
+
+        let relocatble_public_addrs = HashMap::from([(0, vec![2]), (1, vec![0, 1, 43])]);
+        let relocated_public_addrs = relocator.relocate_public_addresses(relocatble_public_addrs);
+
+        let expected_relocated_public_addresses = vec![3, 4, 5, 47];
+        assert_eq!(relocated_public_addrs, expected_relocated_public_addresses);
     }
 }
