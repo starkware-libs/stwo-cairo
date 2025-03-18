@@ -10,7 +10,7 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use json::PrivateInput;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
-use thiserror_no_std::Error;
+use thiserror::Error;
 use tracing::{span, Level};
 
 use super::builtins::BuiltinSegments;

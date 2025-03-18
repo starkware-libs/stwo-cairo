@@ -407,8 +407,8 @@ dependencies = [
 
 [[package]]
 name = "cairo-vm"
-version = "2.0.0-rc4"
-source = "git+https://github.com/lambdaclass/cairo-vm?rev=153d3a88#153d3a88b579a85de42bc14b7f0d06e7e9597fd4"
+version = "2.0.1"
+source = "git+https://github.com/lambdaclass/cairo-vm?rev=c87b23d1#c87b23d15bc8c111c3f48b015fc1ac72faa42b95"
 dependencies = [
  "anyhow",
  "bincode",
@@ -432,8 +432,7 @@ dependencies = [
  "sha3",
  "starknet-crypto 0.7.4",
  "starknet-types-core",
- "thiserror-no-std",
- "wasm-bindgen",
+ "thiserror 2.0.11",
  "zip",
 ]
 
@@ -1794,7 +1793,6 @@ dependencies = [
  "stwo-prover",
  "test-case",
  "thiserror 2.0.11",
- "thiserror-no-std",
  "tracing",
 ]
 
@@ -2016,26 +2014,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.98",
-]
-
-[[package]]
-name = "thiserror-impl-no-std"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58e6318948b519ba6dc2b442a6d0b904ebfb8d411a3ad3e07843615a72249758"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "thiserror-no-std"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3ad459d94dd517257cc96add8a43190ee620011bb6e6cdc82dafd97dfafafea"
-dependencies = [
- "thiserror-impl-no-std",
 ]
 
 [[package]]
