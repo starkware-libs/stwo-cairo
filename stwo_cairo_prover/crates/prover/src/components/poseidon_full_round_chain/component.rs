@@ -1,22 +1,4 @@
-#![allow(non_camel_case_types)]
-#![allow(unused_imports)]
-use num_traits::{One, Zero};
-use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
-use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
-};
-use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
-use stwo_prover::core::channel::Channel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
-use stwo_prover::core::pcs::TreeVec;
-
-use crate::cairo_air::preprocessed::PreProcessedColumn;
-use crate::cairo_air::relations;
-
+use crate::components::prelude::constraint_eval::*;
 pub const N_TRACE_COLUMNS: usize = 126;
 
 pub struct Eval {
@@ -35,12 +17,7 @@ impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 6];
-        let preprocessed_log_sizes = vec![self.log_size];
-        TreeVec::new(vec![
-            preprocessed_log_sizes,
-            trace_log_sizes,
-            interaction_log_sizes,
-        ])
+        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -330,94 +307,87 @@ impl FrameworkEval for Eval {
 
         // Linear Combination N 4 Coefs 3 1 1 1.
 
-        let carry_0_tmp_f9fbc_7 = eval.add_intermediate(
+        let carry_0_tmp_f9fbc_6 = eval.add_intermediate(
             (((((((M31_0.clone() - combination_limb_0_col92.clone())
                 + (M31_3.clone() * cube_252_output_limb_0_col32.clone()))
-                + (M31_1.clone() * cube_252_output_limb_0_col42.clone()))
-                + (M31_1.clone() * cube_252_output_limb_0_col52.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_0_col62.clone()))
-                - (p_coef_col102.clone() * M31_1.clone()))
+                + cube_252_output_limb_0_col42.clone())
+                + cube_252_output_limb_0_col52.clone())
+                + poseidon_round_keys_output_limb_0_col62.clone())
+                - p_coef_col102.clone())
                 * M31_16.clone()),
         );
-        let carry_1_tmp_f9fbc_8 = eval.add_intermediate(
-            (((((((carry_0_tmp_f9fbc_7.clone() - combination_limb_1_col93.clone())
+        let carry_1_tmp_f9fbc_7 = eval.add_intermediate(
+            ((((((carry_0_tmp_f9fbc_6.clone() - combination_limb_1_col93.clone())
                 + (M31_3.clone() * cube_252_output_limb_1_col33.clone()))
-                + (M31_1.clone() * cube_252_output_limb_1_col43.clone()))
-                + (M31_1.clone() * cube_252_output_limb_1_col53.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_1_col63.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_1_col43.clone())
+                + cube_252_output_limb_1_col53.clone())
+                + poseidon_round_keys_output_limb_1_col63.clone())
                 * M31_16.clone()),
         );
-        let carry_2_tmp_f9fbc_9 = eval.add_intermediate(
-            (((((((carry_1_tmp_f9fbc_8.clone() - combination_limb_2_col94.clone())
+        let carry_2_tmp_f9fbc_8 = eval.add_intermediate(
+            ((((((carry_1_tmp_f9fbc_7.clone() - combination_limb_2_col94.clone())
                 + (M31_3.clone() * cube_252_output_limb_2_col34.clone()))
-                + (M31_1.clone() * cube_252_output_limb_2_col44.clone()))
-                + (M31_1.clone() * cube_252_output_limb_2_col54.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_2_col64.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_2_col44.clone())
+                + cube_252_output_limb_2_col54.clone())
+                + poseidon_round_keys_output_limb_2_col64.clone())
                 * M31_16.clone()),
         );
-        let carry_3_tmp_f9fbc_10 = eval.add_intermediate(
-            (((((((carry_2_tmp_f9fbc_9.clone() - combination_limb_3_col95.clone())
+        let carry_3_tmp_f9fbc_9 = eval.add_intermediate(
+            ((((((carry_2_tmp_f9fbc_8.clone() - combination_limb_3_col95.clone())
                 + (M31_3.clone() * cube_252_output_limb_3_col35.clone()))
-                + (M31_1.clone() * cube_252_output_limb_3_col45.clone()))
-                + (M31_1.clone() * cube_252_output_limb_3_col55.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_3_col65.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_3_col45.clone())
+                + cube_252_output_limb_3_col55.clone())
+                + poseidon_round_keys_output_limb_3_col65.clone())
                 * M31_16.clone()),
         );
-        let carry_4_tmp_f9fbc_11 = eval.add_intermediate(
-            (((((((carry_3_tmp_f9fbc_10.clone() - combination_limb_4_col96.clone())
+        let carry_4_tmp_f9fbc_10 = eval.add_intermediate(
+            ((((((carry_3_tmp_f9fbc_9.clone() - combination_limb_4_col96.clone())
                 + (M31_3.clone() * cube_252_output_limb_4_col36.clone()))
-                + (M31_1.clone() * cube_252_output_limb_4_col46.clone()))
-                + (M31_1.clone() * cube_252_output_limb_4_col56.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_4_col66.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_4_col46.clone())
+                + cube_252_output_limb_4_col56.clone())
+                + poseidon_round_keys_output_limb_4_col66.clone())
                 * M31_16.clone()),
         );
-        let carry_5_tmp_f9fbc_12 = eval.add_intermediate(
-            (((((((carry_4_tmp_f9fbc_11.clone() - combination_limb_5_col97.clone())
+        let carry_5_tmp_f9fbc_11 = eval.add_intermediate(
+            ((((((carry_4_tmp_f9fbc_10.clone() - combination_limb_5_col97.clone())
                 + (M31_3.clone() * cube_252_output_limb_5_col37.clone()))
-                + (M31_1.clone() * cube_252_output_limb_5_col47.clone()))
-                + (M31_1.clone() * cube_252_output_limb_5_col57.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_5_col67.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_5_col47.clone())
+                + cube_252_output_limb_5_col57.clone())
+                + poseidon_round_keys_output_limb_5_col67.clone())
                 * M31_16.clone()),
         );
-        let carry_6_tmp_f9fbc_13 = eval.add_intermediate(
-            (((((((carry_5_tmp_f9fbc_12.clone() - combination_limb_6_col98.clone())
+        let carry_6_tmp_f9fbc_12 = eval.add_intermediate(
+            ((((((carry_5_tmp_f9fbc_11.clone() - combination_limb_6_col98.clone())
                 + (M31_3.clone() * cube_252_output_limb_6_col38.clone()))
-                + (M31_1.clone() * cube_252_output_limb_6_col48.clone()))
-                + (M31_1.clone() * cube_252_output_limb_6_col58.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_6_col68.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_6_col48.clone())
+                + cube_252_output_limb_6_col58.clone())
+                + poseidon_round_keys_output_limb_6_col68.clone())
                 * M31_16.clone()),
         );
-        let carry_7_tmp_f9fbc_14 = eval.add_intermediate(
-            (((((((carry_6_tmp_f9fbc_13.clone() - combination_limb_7_col99.clone())
+        let carry_7_tmp_f9fbc_13 = eval.add_intermediate(
+            (((((((carry_6_tmp_f9fbc_12.clone() - combination_limb_7_col99.clone())
                 + (M31_3.clone() * cube_252_output_limb_7_col39.clone()))
-                + (M31_1.clone() * cube_252_output_limb_7_col49.clone()))
-                + (M31_1.clone() * cube_252_output_limb_7_col59.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_7_col69.clone()))
+                + cube_252_output_limb_7_col49.clone())
+                + cube_252_output_limb_7_col59.clone())
+                + poseidon_round_keys_output_limb_7_col69.clone())
                 - (p_coef_col102.clone() * M31_136.clone()))
                 * M31_16.clone()),
         );
-        let carry_8_tmp_f9fbc_15 = eval.add_intermediate(
-            (((((((carry_7_tmp_f9fbc_14.clone() - combination_limb_8_col100.clone())
+        let carry_8_tmp_f9fbc_14 = eval.add_intermediate(
+            ((((((carry_7_tmp_f9fbc_13.clone() - combination_limb_8_col100.clone())
                 + (M31_3.clone() * cube_252_output_limb_8_col40.clone()))
-                + (M31_1.clone() * cube_252_output_limb_8_col50.clone()))
-                + (M31_1.clone() * cube_252_output_limb_8_col60.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_8_col70.clone()))
-                - (p_coef_col102.clone() * M31_0.clone()))
+                + cube_252_output_limb_8_col50.clone())
+                + cube_252_output_limb_8_col60.clone())
+                + poseidon_round_keys_output_limb_8_col70.clone())
                 * M31_16.clone()),
         );
         // final limb constraint.
         eval.add_constraint(
-            ((((((carry_8_tmp_f9fbc_15.clone() - combination_limb_9_col101.clone())
+            ((((((carry_8_tmp_f9fbc_14.clone() - combination_limb_9_col101.clone())
                 + (M31_3.clone() * cube_252_output_limb_9_col41.clone()))
-                + (M31_1.clone() * cube_252_output_limb_9_col51.clone()))
-                + (M31_1.clone() * cube_252_output_limb_9_col61.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_9_col71.clone()))
+                + cube_252_output_limb_9_col51.clone())
+                + cube_252_output_limb_9_col61.clone())
+                + poseidon_round_keys_output_limb_9_col71.clone())
                 - (p_coef_col102.clone() * M31_256.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
@@ -425,10 +395,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 (p_coef_col102.clone() + M31_1.clone()),
-                (carry_0_tmp_f9fbc_7.clone() + M31_1.clone()),
-                (carry_1_tmp_f9fbc_8.clone() + M31_1.clone()),
-                (carry_2_tmp_f9fbc_9.clone() + M31_1.clone()),
-                (carry_3_tmp_f9fbc_10.clone() + M31_1.clone()),
+                (carry_0_tmp_f9fbc_6.clone() + M31_1.clone()),
+                (carry_1_tmp_f9fbc_7.clone() + M31_1.clone()),
+                (carry_2_tmp_f9fbc_8.clone() + M31_1.clone()),
+                (carry_3_tmp_f9fbc_9.clone() + M31_1.clone()),
             ],
         ));
 
@@ -436,104 +406,97 @@ impl FrameworkEval for Eval {
             &self.range_check_3_3_3_3_3_lookup_elements,
             E::EF::one(),
             &[
-                (carry_4_tmp_f9fbc_11.clone() + M31_1.clone()),
-                (carry_5_tmp_f9fbc_12.clone() + M31_1.clone()),
-                (carry_6_tmp_f9fbc_13.clone() + M31_1.clone()),
-                (carry_7_tmp_f9fbc_14.clone() + M31_1.clone()),
-                (carry_8_tmp_f9fbc_15.clone() + M31_1.clone()),
+                (carry_4_tmp_f9fbc_10.clone() + M31_1.clone()),
+                (carry_5_tmp_f9fbc_11.clone() + M31_1.clone()),
+                (carry_6_tmp_f9fbc_12.clone() + M31_1.clone()),
+                (carry_7_tmp_f9fbc_13.clone() + M31_1.clone()),
+                (carry_8_tmp_f9fbc_14.clone() + M31_1.clone()),
             ],
         ));
 
         // Linear Combination N 4 Coefs 1 M 1 1 1.
 
-        let carry_0_tmp_f9fbc_18 = eval.add_intermediate(
+        let carry_0_tmp_f9fbc_17 = eval.add_intermediate(
             (((((((M31_0.clone() - combination_limb_0_col103.clone())
-                + (M31_1.clone() * cube_252_output_limb_0_col32.clone()))
-                - (M31_1.clone() * cube_252_output_limb_0_col42.clone()))
-                + (M31_1.clone() * cube_252_output_limb_0_col52.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_10_col72.clone()))
-                - (p_coef_col113.clone() * M31_1.clone()))
+                + cube_252_output_limb_0_col32.clone())
+                - cube_252_output_limb_0_col42.clone())
+                + cube_252_output_limb_0_col52.clone())
+                + poseidon_round_keys_output_limb_10_col72.clone())
+                - p_coef_col113.clone())
                 * M31_16.clone()),
         );
-        let carry_1_tmp_f9fbc_19 = eval.add_intermediate(
-            (((((((carry_0_tmp_f9fbc_18.clone() - combination_limb_1_col104.clone())
-                + (M31_1.clone() * cube_252_output_limb_1_col33.clone()))
-                - (M31_1.clone() * cube_252_output_limb_1_col43.clone()))
-                + (M31_1.clone() * cube_252_output_limb_1_col53.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_11_col73.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_1_tmp_f9fbc_18 = eval.add_intermediate(
+            ((((((carry_0_tmp_f9fbc_17.clone() - combination_limb_1_col104.clone())
+                + cube_252_output_limb_1_col33.clone())
+                - cube_252_output_limb_1_col43.clone())
+                + cube_252_output_limb_1_col53.clone())
+                + poseidon_round_keys_output_limb_11_col73.clone())
                 * M31_16.clone()),
         );
-        let carry_2_tmp_f9fbc_20 = eval.add_intermediate(
-            (((((((carry_1_tmp_f9fbc_19.clone() - combination_limb_2_col105.clone())
-                + (M31_1.clone() * cube_252_output_limb_2_col34.clone()))
-                - (M31_1.clone() * cube_252_output_limb_2_col44.clone()))
-                + (M31_1.clone() * cube_252_output_limb_2_col54.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_12_col74.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_2_tmp_f9fbc_19 = eval.add_intermediate(
+            ((((((carry_1_tmp_f9fbc_18.clone() - combination_limb_2_col105.clone())
+                + cube_252_output_limb_2_col34.clone())
+                - cube_252_output_limb_2_col44.clone())
+                + cube_252_output_limb_2_col54.clone())
+                + poseidon_round_keys_output_limb_12_col74.clone())
                 * M31_16.clone()),
         );
-        let carry_3_tmp_f9fbc_21 = eval.add_intermediate(
-            (((((((carry_2_tmp_f9fbc_20.clone() - combination_limb_3_col106.clone())
-                + (M31_1.clone() * cube_252_output_limb_3_col35.clone()))
-                - (M31_1.clone() * cube_252_output_limb_3_col45.clone()))
-                + (M31_1.clone() * cube_252_output_limb_3_col55.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_13_col75.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_3_tmp_f9fbc_20 = eval.add_intermediate(
+            ((((((carry_2_tmp_f9fbc_19.clone() - combination_limb_3_col106.clone())
+                + cube_252_output_limb_3_col35.clone())
+                - cube_252_output_limb_3_col45.clone())
+                + cube_252_output_limb_3_col55.clone())
+                + poseidon_round_keys_output_limb_13_col75.clone())
                 * M31_16.clone()),
         );
-        let carry_4_tmp_f9fbc_22 = eval.add_intermediate(
-            (((((((carry_3_tmp_f9fbc_21.clone() - combination_limb_4_col107.clone())
-                + (M31_1.clone() * cube_252_output_limb_4_col36.clone()))
-                - (M31_1.clone() * cube_252_output_limb_4_col46.clone()))
-                + (M31_1.clone() * cube_252_output_limb_4_col56.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_14_col76.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_4_tmp_f9fbc_21 = eval.add_intermediate(
+            ((((((carry_3_tmp_f9fbc_20.clone() - combination_limb_4_col107.clone())
+                + cube_252_output_limb_4_col36.clone())
+                - cube_252_output_limb_4_col46.clone())
+                + cube_252_output_limb_4_col56.clone())
+                + poseidon_round_keys_output_limb_14_col76.clone())
                 * M31_16.clone()),
         );
-        let carry_5_tmp_f9fbc_23 = eval.add_intermediate(
-            (((((((carry_4_tmp_f9fbc_22.clone() - combination_limb_5_col108.clone())
-                + (M31_1.clone() * cube_252_output_limb_5_col37.clone()))
-                - (M31_1.clone() * cube_252_output_limb_5_col47.clone()))
-                + (M31_1.clone() * cube_252_output_limb_5_col57.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_15_col77.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_5_tmp_f9fbc_22 = eval.add_intermediate(
+            ((((((carry_4_tmp_f9fbc_21.clone() - combination_limb_5_col108.clone())
+                + cube_252_output_limb_5_col37.clone())
+                - cube_252_output_limb_5_col47.clone())
+                + cube_252_output_limb_5_col57.clone())
+                + poseidon_round_keys_output_limb_15_col77.clone())
                 * M31_16.clone()),
         );
-        let carry_6_tmp_f9fbc_24 = eval.add_intermediate(
-            (((((((carry_5_tmp_f9fbc_23.clone() - combination_limb_6_col109.clone())
-                + (M31_1.clone() * cube_252_output_limb_6_col38.clone()))
-                - (M31_1.clone() * cube_252_output_limb_6_col48.clone()))
-                + (M31_1.clone() * cube_252_output_limb_6_col58.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_16_col78.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_6_tmp_f9fbc_23 = eval.add_intermediate(
+            ((((((carry_5_tmp_f9fbc_22.clone() - combination_limb_6_col109.clone())
+                + cube_252_output_limb_6_col38.clone())
+                - cube_252_output_limb_6_col48.clone())
+                + cube_252_output_limb_6_col58.clone())
+                + poseidon_round_keys_output_limb_16_col78.clone())
                 * M31_16.clone()),
         );
-        let carry_7_tmp_f9fbc_25 = eval.add_intermediate(
-            (((((((carry_6_tmp_f9fbc_24.clone() - combination_limb_7_col110.clone())
-                + (M31_1.clone() * cube_252_output_limb_7_col39.clone()))
-                - (M31_1.clone() * cube_252_output_limb_7_col49.clone()))
-                + (M31_1.clone() * cube_252_output_limb_7_col59.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_17_col79.clone()))
+        let carry_7_tmp_f9fbc_24 = eval.add_intermediate(
+            (((((((carry_6_tmp_f9fbc_23.clone() - combination_limb_7_col110.clone())
+                + cube_252_output_limb_7_col39.clone())
+                - cube_252_output_limb_7_col49.clone())
+                + cube_252_output_limb_7_col59.clone())
+                + poseidon_round_keys_output_limb_17_col79.clone())
                 - (p_coef_col113.clone() * M31_136.clone()))
                 * M31_16.clone()),
         );
-        let carry_8_tmp_f9fbc_26 = eval.add_intermediate(
-            (((((((carry_7_tmp_f9fbc_25.clone() - combination_limb_8_col111.clone())
-                + (M31_1.clone() * cube_252_output_limb_8_col40.clone()))
-                - (M31_1.clone() * cube_252_output_limb_8_col50.clone()))
-                + (M31_1.clone() * cube_252_output_limb_8_col60.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_18_col80.clone()))
-                - (p_coef_col113.clone() * M31_0.clone()))
+        let carry_8_tmp_f9fbc_25 = eval.add_intermediate(
+            ((((((carry_7_tmp_f9fbc_24.clone() - combination_limb_8_col111.clone())
+                + cube_252_output_limb_8_col40.clone())
+                - cube_252_output_limb_8_col50.clone())
+                + cube_252_output_limb_8_col60.clone())
+                + poseidon_round_keys_output_limb_18_col80.clone())
                 * M31_16.clone()),
         );
         // final limb constraint.
         eval.add_constraint(
-            ((((((carry_8_tmp_f9fbc_26.clone() - combination_limb_9_col112.clone())
-                + (M31_1.clone() * cube_252_output_limb_9_col41.clone()))
-                - (M31_1.clone() * cube_252_output_limb_9_col51.clone()))
-                + (M31_1.clone() * cube_252_output_limb_9_col61.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_19_col81.clone()))
+            ((((((carry_8_tmp_f9fbc_25.clone() - combination_limb_9_col112.clone())
+                + cube_252_output_limb_9_col41.clone())
+                - cube_252_output_limb_9_col51.clone())
+                + cube_252_output_limb_9_col61.clone())
+                + poseidon_round_keys_output_limb_19_col81.clone())
                 - (p_coef_col113.clone() * M31_256.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
@@ -541,10 +504,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 (p_coef_col113.clone() + M31_2.clone()),
-                (carry_0_tmp_f9fbc_18.clone() + M31_2.clone()),
-                (carry_1_tmp_f9fbc_19.clone() + M31_2.clone()),
-                (carry_2_tmp_f9fbc_20.clone() + M31_2.clone()),
-                (carry_3_tmp_f9fbc_21.clone() + M31_2.clone()),
+                (carry_0_tmp_f9fbc_17.clone() + M31_2.clone()),
+                (carry_1_tmp_f9fbc_18.clone() + M31_2.clone()),
+                (carry_2_tmp_f9fbc_19.clone() + M31_2.clone()),
+                (carry_3_tmp_f9fbc_20.clone() + M31_2.clone()),
             ],
         ));
 
@@ -552,104 +515,97 @@ impl FrameworkEval for Eval {
             &self.range_check_3_3_3_3_3_lookup_elements,
             E::EF::one(),
             &[
-                (carry_4_tmp_f9fbc_22.clone() + M31_2.clone()),
-                (carry_5_tmp_f9fbc_23.clone() + M31_2.clone()),
-                (carry_6_tmp_f9fbc_24.clone() + M31_2.clone()),
-                (carry_7_tmp_f9fbc_25.clone() + M31_2.clone()),
-                (carry_8_tmp_f9fbc_26.clone() + M31_2.clone()),
+                (carry_4_tmp_f9fbc_21.clone() + M31_2.clone()),
+                (carry_5_tmp_f9fbc_22.clone() + M31_2.clone()),
+                (carry_6_tmp_f9fbc_23.clone() + M31_2.clone()),
+                (carry_7_tmp_f9fbc_24.clone() + M31_2.clone()),
+                (carry_8_tmp_f9fbc_25.clone() + M31_2.clone()),
             ],
         ));
 
         // Linear Combination N 4 Coefs 1 1 M 2 1.
 
-        let carry_0_tmp_f9fbc_29 = eval.add_intermediate(
+        let carry_0_tmp_f9fbc_28 = eval.add_intermediate(
             (((((((M31_0.clone() - combination_limb_0_col114.clone())
-                + (M31_1.clone() * cube_252_output_limb_0_col32.clone()))
-                + (M31_1.clone() * cube_252_output_limb_0_col42.clone()))
+                + cube_252_output_limb_0_col32.clone())
+                + cube_252_output_limb_0_col42.clone())
                 - (M31_2.clone() * cube_252_output_limb_0_col52.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_20_col82.clone()))
-                - (p_coef_col124.clone() * M31_1.clone()))
+                + poseidon_round_keys_output_limb_20_col82.clone())
+                - p_coef_col124.clone())
                 * M31_16.clone()),
         );
-        let carry_1_tmp_f9fbc_30 = eval.add_intermediate(
-            (((((((carry_0_tmp_f9fbc_29.clone() - combination_limb_1_col115.clone())
-                + (M31_1.clone() * cube_252_output_limb_1_col33.clone()))
-                + (M31_1.clone() * cube_252_output_limb_1_col43.clone()))
+        let carry_1_tmp_f9fbc_29 = eval.add_intermediate(
+            ((((((carry_0_tmp_f9fbc_28.clone() - combination_limb_1_col115.clone())
+                + cube_252_output_limb_1_col33.clone())
+                + cube_252_output_limb_1_col43.clone())
                 - (M31_2.clone() * cube_252_output_limb_1_col53.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_21_col83.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_21_col83.clone())
                 * M31_16.clone()),
         );
-        let carry_2_tmp_f9fbc_31 = eval.add_intermediate(
-            (((((((carry_1_tmp_f9fbc_30.clone() - combination_limb_2_col116.clone())
-                + (M31_1.clone() * cube_252_output_limb_2_col34.clone()))
-                + (M31_1.clone() * cube_252_output_limb_2_col44.clone()))
+        let carry_2_tmp_f9fbc_30 = eval.add_intermediate(
+            ((((((carry_1_tmp_f9fbc_29.clone() - combination_limb_2_col116.clone())
+                + cube_252_output_limb_2_col34.clone())
+                + cube_252_output_limb_2_col44.clone())
                 - (M31_2.clone() * cube_252_output_limb_2_col54.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_22_col84.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_22_col84.clone())
                 * M31_16.clone()),
         );
-        let carry_3_tmp_f9fbc_32 = eval.add_intermediate(
-            (((((((carry_2_tmp_f9fbc_31.clone() - combination_limb_3_col117.clone())
-                + (M31_1.clone() * cube_252_output_limb_3_col35.clone()))
-                + (M31_1.clone() * cube_252_output_limb_3_col45.clone()))
+        let carry_3_tmp_f9fbc_31 = eval.add_intermediate(
+            ((((((carry_2_tmp_f9fbc_30.clone() - combination_limb_3_col117.clone())
+                + cube_252_output_limb_3_col35.clone())
+                + cube_252_output_limb_3_col45.clone())
                 - (M31_2.clone() * cube_252_output_limb_3_col55.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_23_col85.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_23_col85.clone())
                 * M31_16.clone()),
         );
-        let carry_4_tmp_f9fbc_33 = eval.add_intermediate(
-            (((((((carry_3_tmp_f9fbc_32.clone() - combination_limb_4_col118.clone())
-                + (M31_1.clone() * cube_252_output_limb_4_col36.clone()))
-                + (M31_1.clone() * cube_252_output_limb_4_col46.clone()))
+        let carry_4_tmp_f9fbc_32 = eval.add_intermediate(
+            ((((((carry_3_tmp_f9fbc_31.clone() - combination_limb_4_col118.clone())
+                + cube_252_output_limb_4_col36.clone())
+                + cube_252_output_limb_4_col46.clone())
                 - (M31_2.clone() * cube_252_output_limb_4_col56.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_24_col86.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_24_col86.clone())
                 * M31_16.clone()),
         );
-        let carry_5_tmp_f9fbc_34 = eval.add_intermediate(
-            (((((((carry_4_tmp_f9fbc_33.clone() - combination_limb_5_col119.clone())
-                + (M31_1.clone() * cube_252_output_limb_5_col37.clone()))
-                + (M31_1.clone() * cube_252_output_limb_5_col47.clone()))
+        let carry_5_tmp_f9fbc_33 = eval.add_intermediate(
+            ((((((carry_4_tmp_f9fbc_32.clone() - combination_limb_5_col119.clone())
+                + cube_252_output_limb_5_col37.clone())
+                + cube_252_output_limb_5_col47.clone())
                 - (M31_2.clone() * cube_252_output_limb_5_col57.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_25_col87.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_25_col87.clone())
                 * M31_16.clone()),
         );
-        let carry_6_tmp_f9fbc_35 = eval.add_intermediate(
-            (((((((carry_5_tmp_f9fbc_34.clone() - combination_limb_6_col120.clone())
-                + (M31_1.clone() * cube_252_output_limb_6_col38.clone()))
-                + (M31_1.clone() * cube_252_output_limb_6_col48.clone()))
+        let carry_6_tmp_f9fbc_34 = eval.add_intermediate(
+            ((((((carry_5_tmp_f9fbc_33.clone() - combination_limb_6_col120.clone())
+                + cube_252_output_limb_6_col38.clone())
+                + cube_252_output_limb_6_col48.clone())
                 - (M31_2.clone() * cube_252_output_limb_6_col58.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_26_col88.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_26_col88.clone())
                 * M31_16.clone()),
         );
-        let carry_7_tmp_f9fbc_36 = eval.add_intermediate(
-            (((((((carry_6_tmp_f9fbc_35.clone() - combination_limb_7_col121.clone())
-                + (M31_1.clone() * cube_252_output_limb_7_col39.clone()))
-                + (M31_1.clone() * cube_252_output_limb_7_col49.clone()))
+        let carry_7_tmp_f9fbc_35 = eval.add_intermediate(
+            (((((((carry_6_tmp_f9fbc_34.clone() - combination_limb_7_col121.clone())
+                + cube_252_output_limb_7_col39.clone())
+                + cube_252_output_limb_7_col49.clone())
                 - (M31_2.clone() * cube_252_output_limb_7_col59.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_27_col89.clone()))
+                + poseidon_round_keys_output_limb_27_col89.clone())
                 - (p_coef_col124.clone() * M31_136.clone()))
                 * M31_16.clone()),
         );
-        let carry_8_tmp_f9fbc_37 = eval.add_intermediate(
-            (((((((carry_7_tmp_f9fbc_36.clone() - combination_limb_8_col122.clone())
-                + (M31_1.clone() * cube_252_output_limb_8_col40.clone()))
-                + (M31_1.clone() * cube_252_output_limb_8_col50.clone()))
+        let carry_8_tmp_f9fbc_36 = eval.add_intermediate(
+            ((((((carry_7_tmp_f9fbc_35.clone() - combination_limb_8_col122.clone())
+                + cube_252_output_limb_8_col40.clone())
+                + cube_252_output_limb_8_col50.clone())
                 - (M31_2.clone() * cube_252_output_limb_8_col60.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_28_col90.clone()))
-                - (p_coef_col124.clone() * M31_0.clone()))
+                + poseidon_round_keys_output_limb_28_col90.clone())
                 * M31_16.clone()),
         );
         // final limb constraint.
         eval.add_constraint(
-            ((((((carry_8_tmp_f9fbc_37.clone() - combination_limb_9_col123.clone())
-                + (M31_1.clone() * cube_252_output_limb_9_col41.clone()))
-                + (M31_1.clone() * cube_252_output_limb_9_col51.clone()))
+            ((((((carry_8_tmp_f9fbc_36.clone() - combination_limb_9_col123.clone())
+                + cube_252_output_limb_9_col41.clone())
+                + cube_252_output_limb_9_col51.clone())
                 - (M31_2.clone() * cube_252_output_limb_9_col61.clone()))
-                + (M31_1.clone() * poseidon_round_keys_output_limb_29_col91.clone()))
+                + poseidon_round_keys_output_limb_29_col91.clone())
                 - (p_coef_col124.clone() * M31_256.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
@@ -657,10 +613,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 (p_coef_col124.clone() + M31_3.clone()),
-                (carry_0_tmp_f9fbc_29.clone() + M31_3.clone()),
-                (carry_1_tmp_f9fbc_30.clone() + M31_3.clone()),
-                (carry_2_tmp_f9fbc_31.clone() + M31_3.clone()),
-                (carry_3_tmp_f9fbc_32.clone() + M31_3.clone()),
+                (carry_0_tmp_f9fbc_28.clone() + M31_3.clone()),
+                (carry_1_tmp_f9fbc_29.clone() + M31_3.clone()),
+                (carry_2_tmp_f9fbc_30.clone() + M31_3.clone()),
+                (carry_3_tmp_f9fbc_31.clone() + M31_3.clone()),
             ],
         ));
 
@@ -668,11 +624,11 @@ impl FrameworkEval for Eval {
             &self.range_check_3_3_3_3_3_lookup_elements,
             E::EF::one(),
             &[
-                (carry_4_tmp_f9fbc_33.clone() + M31_3.clone()),
-                (carry_5_tmp_f9fbc_34.clone() + M31_3.clone()),
-                (carry_6_tmp_f9fbc_35.clone() + M31_3.clone()),
-                (carry_7_tmp_f9fbc_36.clone() + M31_3.clone()),
-                (carry_8_tmp_f9fbc_37.clone() + M31_3.clone()),
+                (carry_4_tmp_f9fbc_32.clone() + M31_3.clone()),
+                (carry_5_tmp_f9fbc_33.clone() + M31_3.clone()),
+                (carry_6_tmp_f9fbc_34.clone() + M31_3.clone()),
+                (carry_7_tmp_f9fbc_35.clone() + M31_3.clone()),
+                (carry_8_tmp_f9fbc_36.clone() + M31_3.clone()),
             ],
         ));
 
