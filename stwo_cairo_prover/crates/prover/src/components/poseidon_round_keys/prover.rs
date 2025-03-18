@@ -1,10 +1,10 @@
 #![allow(unused_parens)]
 use stwo_cairo_common::preprocessed_consts::poseidon::{N_ROUNDS, N_WORDS};
+use stwo_cairo_component_utils::poseidon::const_columns::PoseidonRoundKeys;
+use stwo_cairo_component_utils::preprocessed::Seq;
 use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
-use crate::cairo_air::preprocessed::Seq;
 use crate::components::prelude::proving::*;
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];

@@ -1,6 +1,6 @@
+use stwo_cairo_component_utils::poseidon::deduce_output;
 use stwo_prover::core::backend::simd::conversion::Pack;
 
-use crate::cairo_air::poseidon::deduce_output;
 use crate::components::prelude::proving::*;
 use crate::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,

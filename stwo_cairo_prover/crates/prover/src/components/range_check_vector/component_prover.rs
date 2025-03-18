@@ -19,7 +19,7 @@ macro_rules! range_check_prover {
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
             use $crate::components::utils::AtomicMultiplicityColumn;
-            use $crate::components::range_check_vector::{partition_into_bit_segments,
+            use stwo_cairo_component_utils::preprocessed::{partition_into_bit_segments,
                                                     SIMD_ENUMERATION_0};
             pub type PackedInputType = [PackedM31; N_RANGES];
             pub type InputType = [M31; N_RANGES];
@@ -150,6 +150,10 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo_cairo_component_utils::preprocessed::{
+        partition_into_bit_segments, PreProcessedColumn, RangeCheck,
+    };
+    use stwo_cairo_component_utils::relations;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
@@ -160,9 +164,7 @@ mod tests {
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-    use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
-    use crate::cairo_air::relations;
-    use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
+    use crate::components::range_check_vector::range_check_7_2_5;
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);

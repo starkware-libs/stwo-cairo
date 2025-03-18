@@ -4,6 +4,8 @@ use std::simd::Simd;
 
 use itertools::{izip, Itertools};
 use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_component_utils::preprocessed::Seq;
+use stwo_cairo_component_utils::relations;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
@@ -17,8 +19,6 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT};
-use crate::cairo_air::preprocessed::Seq;
-use crate::cairo_air::relations;
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
@@ -37,6 +37,7 @@ impl AddressToId {
         Self { data }
     }
 
+    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         self.data.len()
     }

@@ -7,6 +7,9 @@ pub mod proving {
     pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
     pub use stwo_cairo_common::prover_types::cpu::*;
     pub use stwo_cairo_common::prover_types::simd::*;
+    pub use stwo_cairo_component_utils::blake::deduce_output::*;
+    pub use stwo_cairo_component_utils::preprocessed::Seq;
+    pub(crate) use stwo_cairo_component_utils::relations;
     pub use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
     pub use stwo_prover::constraint_framework::Relation;
     pub use stwo_prover::core::backend::simd::conversion::Unpack;
@@ -19,15 +22,15 @@ pub mod proving {
     pub use stwo_prover::core::fields::FieldExpOps;
     pub use stwo_prover::core::pcs::TreeBuilder;
 
-    pub use crate::cairo_air::blake::*;
-    pub use crate::cairo_air::preprocessed::Seq;
-    pub(crate) use crate::cairo_air::relations;
     pub use crate::components::utils::*;
 }
 
 pub mod constraint_eval {
     pub use num_traits::One;
     pub use serde::{Deserialize, Serialize};
+    pub use stwo_cairo_component_utils::blake::const_columns::*;
+    pub use stwo_cairo_component_utils::preprocessed::*;
+    pub(crate) use stwo_cairo_component_utils::relations;
     pub use stwo_cairo_serialize::CairoSerialize;
     pub use stwo_prover::constraint_framework::{
         EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
@@ -37,8 +40,4 @@ pub mod constraint_eval {
     pub use stwo_prover::core::fields::qm31::SecureField;
     pub use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
     pub use stwo_prover::core::pcs::TreeVec;
-
-    pub use crate::cairo_air::blake::*;
-    pub use crate::cairo_air::preprocessed::*;
-    pub(crate) use crate::cairo_air::relations;
 }

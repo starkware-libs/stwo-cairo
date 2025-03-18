@@ -1,8 +1,8 @@
 #![allow(unused_parens)]
 use itertools::Itertools;
+use stwo_cairo_component_utils::preprocessed::Seq;
 
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::preprocessed::Seq;
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::{
     range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,

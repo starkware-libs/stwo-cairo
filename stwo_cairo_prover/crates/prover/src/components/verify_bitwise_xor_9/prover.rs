@@ -1,6 +1,7 @@
 #![allow(unused_parens)]
+use stwo_cairo_component_utils::preprocessed::BitwiseXor;
+
 use super::component::{Claim, InteractionClaim, LOG_SIZE, N_BITS};
-use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::prelude::proving::*;
 
 pub type InputType = [M31; 3];

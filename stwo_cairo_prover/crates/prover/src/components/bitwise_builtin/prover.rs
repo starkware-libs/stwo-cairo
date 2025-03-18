@@ -1,6 +1,7 @@
 #![allow(unused_parens)]
+use stwo_cairo_component_utils::preprocessed::Seq;
+
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::preprocessed::Seq;
 use crate::components::prelude::proving::*;
 use crate::components::{memory_address_to_id, memory_id_to_big, verify_bitwise_xor_9};
 

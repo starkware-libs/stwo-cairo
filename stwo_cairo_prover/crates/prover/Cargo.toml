@@ -25,6 +25,7 @@ paste.workspace = true
 # TODO(Ohad): Add parallel config.
 stwo-cairo-common.workspace = true
 stwo-cairo-adapter.workspace = true
+stwo_cairo_component_utils.workspace = true
 rayon = { version = "1.10.0" }
 serde.workspace = true
 serde_json.workspace = true
@@ -39,3 +40,9 @@ tracing.workspace = true
 [dev-dependencies]
 cairo-lang-casm.workspace = true
 rand.workspace = true
+
+[profile.dev]
+opt-level = 3
+
+[profile.test]
+opt-level = 3

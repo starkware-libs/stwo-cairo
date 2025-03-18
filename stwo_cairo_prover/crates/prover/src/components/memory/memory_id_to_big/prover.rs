@@ -8,6 +8,9 @@ use stwo_cairo_adapter::memory::{
 };
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
+use stwo_cairo_component_utils::felt::split_f252_simd;
+use stwo_cairo_component_utils::preprocessed::SIMD_ENUMERATION_0;
+use stwo_cairo_component_utils::relations;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -23,10 +26,8 @@ use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use crate::cairo_air::relations;
-use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
+use crate::components::range_check_vector::range_check_9_9;
 use crate::components::utils::AtomicMultiplicityColumn;
-use crate::felt::split_f252_simd;
 
 pub type InputType = BaseField;
 
@@ -398,11 +399,11 @@ mod tests {
     use itertools::Itertools;
     use stwo_cairo_adapter::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
     use stwo_cairo_common::memory::N_M31_IN_FELT252;
+    use stwo_cairo_component_utils::felt::split_f252;
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
     use crate::components::memory::memory_address_to_id;
-    use crate::felt::split_f252;
 
     #[test]
     fn test_deduce_output_simd() {
