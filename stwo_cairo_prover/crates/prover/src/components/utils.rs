@@ -4,7 +4,12 @@ use num_traits::{One, Zero};
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
+use stwo_prover::core::backend::{Backend, BackendForChannel};
+use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::pcs::TreeSubspan;
+use stwo_prover::core::poly::circle::CircleEvaluation;
+use stwo_prover::core::poly::BitReversedOrder;
 
 // When padding is needed, the inputs must be arranged in the order defined by the neighbor
 // function. This order allows using the partial sum mechanism to sum only the first n_call inputs.
@@ -79,6 +84,25 @@ impl Enabler {
             *v = M31::one();
         }
         PackedM31::from_array(res)
+    }
+}
+
+/// Extenders of a commitment-tree with evaluations.
+pub trait TreeBuilder<B: Backend> {
+    fn extend_evals(
+        &mut self,
+        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+    ) -> TreeSubspan;
+}
+
+impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
+    for stwo_prover::core::pcs::TreeBuilder<'_, '_, B, MC>
+{
+    fn extend_evals(
+        &mut self,
+        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+    ) -> TreeSubspan {
+        self.extend_evals(columns)
     }
 }
 
