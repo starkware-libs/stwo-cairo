@@ -6,6 +6,7 @@ use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim};
 use crate::components::prelude::proving::*;
+use crate::components::utils::TreeBuilder;
 use crate::components::verify_bitwise_xor_8;
 
 pub type PackedInputType = [PackedUInt32; 3];
@@ -22,14 +23,11 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (Claim, InteractionClaimGenerator) {
         let n_vec_rows = self.packed_inputs.len();
         assert!(n_vec_rows.is_power_of_two());
         let log_size = n_vec_rows.ilog2() + LOG_N_LANES;
@@ -309,15 +307,12 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         triple_xor_32: &relations::TripleXor32,
         verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
