@@ -10,10 +10,8 @@ use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{BackendForChannel, Col, Column};
-use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::backend::{Col, Column};
 use stwo_prover::core::fields::m31::{BaseField, M31};
-use stwo_prover::core::pcs::TreeBuilder;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
@@ -23,7 +21,7 @@ use crate::cairo_air::relations;
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
 };
-use crate::components::utils::AtomicMultiplicityColumn;
+use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
@@ -116,13 +114,10 @@ impl ClaimGenerator {
         self.multiplicities.increase_at(addr.0 - 1);
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (Claim, InteractionClaimGenerator) {
         let size = std::cmp::max(
             (self.address_to_raw_id.len() / MEMORY_ADDRESS_TO_ID_SPLIT).next_power_of_two(),
             N_LANES,
@@ -180,14 +175,11 @@ pub struct InteractionClaimGenerator {
     pub multiplicities: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         lookup_elements: &relations::MemoryAddressToId,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         let n_rows = 1 << log_size;

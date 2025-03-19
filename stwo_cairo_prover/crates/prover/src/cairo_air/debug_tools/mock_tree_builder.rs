@@ -32,6 +32,8 @@ impl MockCommitmentScheme {
         self.trees.push(evals);
     }
 
+    /// Returns the trace domain evaluations.
+    /// Used for testing purposes.
     pub fn trace_domain_evaluations(&self) -> TreeVec<ColumnVec<&Vec<M31>>> {
         self.trees.as_cols_ref()
     }

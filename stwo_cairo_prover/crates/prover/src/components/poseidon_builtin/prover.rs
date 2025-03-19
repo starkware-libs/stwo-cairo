@@ -28,9 +28,9 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         cube_252_state: &mut cube_252::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
@@ -40,10 +40,7 @@ impl ClaimGenerator {
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
         range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
@@ -926,9 +923,9 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         cube_252: &relations::Cube252,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
@@ -938,10 +935,7 @@ impl InteractionClaimGenerator {
         range_check_3_3_3_3_3: &relations::RangeCheck_3_3_3_3_3,
         range_check_4_4: &relations::RangeCheck_4_4,
         range_check_4_4_4_4: &relations::RangeCheck_4_4_4_4,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.

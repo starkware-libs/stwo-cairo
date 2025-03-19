@@ -2,25 +2,7 @@
 macro_rules! range_check_prover {
     ($($log_range:expr),+) => {
         paste::paste! {
-            use std::iter::zip;
-            use std::simd::Simd;
-
-            use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
-            use stwo_prover::constraint_framework::Relation;
-            use stwo_prover::core::backend::simd::column::BaseColumn;
-            use stwo_prover::core::fields::m31::BaseField;
-            use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-            use stwo_prover::core::backend::simd::SimdBackend;
-            use stwo_prover::core::backend::BackendForChannel;
-            use stwo_prover::core::channel::MerkleChannel;
-            use stwo_prover::core::fields::m31::M31;
-            use stwo_prover::core::pcs::TreeBuilder;
-            use stwo_prover::core::poly::BitReversedOrder;
-            use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-            use rayon::iter::IntoParallelIterator;
-            use rayon::iter::ParallelIterator;
-
-            use $crate::components::utils::AtomicMultiplicityColumn;
+            use $crate::components::prelude::proving::*;
             use $crate::components::range_check_vector::{partition_into_bit_segments,
                                                     SIMD_ENUMERATION_0};
             pub type PackedInputType = [PackedM31; N_RANGES];
@@ -74,12 +56,10 @@ macro_rules! range_check_prover {
                     }
                 }
 
-                pub fn write_trace<MC: MerkleChannel>(
+                pub fn write_trace(
                     self,
-                    tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-                ) -> (Claim, InteractionClaimGenerator)
-                where
-                SimdBackend: BackendForChannel<MC>, {
+                    tree_builder: &mut impl TreeBuilder<SimdBackend>,
+                ) -> (Claim, InteractionClaimGenerator) {
                     let log_size = self.log_size();
 
                     let multiplicity_data = self.multiplicities.into_simd_vec();
@@ -88,7 +68,7 @@ macro_rules! range_check_prover {
                     let domain = CanonicCoset::new(log_size).circle_domain();
                     let trace = [multiplicity_column]
                         .map(|col|
-                            CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(domain, col)
+                            CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(domain, col)
                         );
 
                     tree_builder.extend_evals(trace);
@@ -110,13 +90,11 @@ macro_rules! range_check_prover {
                 pub multiplicities: Vec<PackedM31>,
             }
             impl InteractionClaimGenerator {
-                pub fn write_interaction_trace<MC: MerkleChannel>(
+                pub fn write_interaction_trace(
                     &self,
-                    tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+                    tree_builder: &mut impl TreeBuilder<SimdBackend>,
                     lookup_elements: &relations::[<RangeCheck_$($log_range)_*>],
-                ) -> InteractionClaim
-                where
-                SimdBackend: BackendForChannel<MC>, {
+                ) -> InteractionClaim {
                     let log_size = RANGES.iter().sum::<u32>();
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
                     let mut col_gen = logup_gen.new_col();

@@ -6,15 +6,15 @@ use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
 use super::blake::air::BlakeContextClaimGenerator;
 use super::debug_tools::display_components;
 use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
+use crate::components::utils::TreeBuilder;
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
@@ -25,6 +25,7 @@ use crate::components::{
     mul_opcode_small, mul_opcode_small_imm, qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8,
     verify_instruction,
 };
+
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {
     pub add: Vec<add_opcode::Claim>,
@@ -403,19 +404,16 @@ impl OpcodesClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         blake_context_trace_generator: &mut BlakeContextClaimGenerator,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
         verify_instruction_trace_generator: &verify_instruction::ClaimGenerator,
         verify_bitwise_xor_8_trace_generator: &mut verify_bitwise_xor_8::ClaimGenerator,
-    ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
         let (add_claims, add_interaction_gens) = self
             .add
             .into_iter()
@@ -1044,14 +1042,11 @@ pub struct OpcodesInteractionClaimGenerator {
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
 impl OpcodesInteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> OpcodeInteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> OpcodeInteractionClaim {
         let add_interaction_claims = self
             .add
             .into_iter()
