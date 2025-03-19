@@ -21,18 +21,15 @@ impl ClaimGenerator {
         Self { inputs: vec![] }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_12_state: &verify_bitwise_xor_12::ClaimGenerator,
         verify_bitwise_xor_4_state: &verify_bitwise_xor_4::ClaimGenerator,
         verify_bitwise_xor_7_state: &verify_bitwise_xor_7::ClaimGenerator,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
         verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (Claim, InteractionClaimGenerator) {
         let n_vec_rows = self.inputs.len();
         assert!(n_vec_rows.is_power_of_two());
         let log_size = n_vec_rows.ilog2() + LOG_N_LANES;
@@ -621,19 +618,16 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         blake_g: &relations::BlakeG,
         verify_bitwise_xor_12: &relations::VerifyBitwiseXor_12,
         verify_bitwise_xor_4: &relations::VerifyBitwiseXor_4,
         verify_bitwise_xor_7: &relations::VerifyBitwiseXor_7,
         verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
         verify_bitwise_xor_9: &relations::VerifyBitwiseXor_9,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.

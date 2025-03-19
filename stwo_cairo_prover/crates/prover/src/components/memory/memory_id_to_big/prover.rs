@@ -8,27 +8,15 @@ use stwo_cairo_adapter::memory::{
 };
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
-use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
-use stwo_prover::constraint_framework::Relation;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-use stwo_prover::core::backend::simd::qm31::PackedQM31;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{BackendForChannel, Column};
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::fields::m31::{BaseField, M31};
-use stwo_prover::core::fields::qm31::QM31;
-use stwo_prover::core::pcs::TreeBuilder;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use crate::cairo_air::relations;
+use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
-use crate::components::utils::AtomicMultiplicityColumn;
+use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};
 use crate::felt::split_f252_simd;
 
-pub type InputType = BaseField;
+pub type InputType = M31;
 
 /// Generates the trace and the claim for the id -> f252 memory table.
 /// Generates 2 table, one for large values and one for small values. A large value is a full 28
@@ -117,14 +105,11 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (Claim, InteractionClaimGenerator) {
         let big_table_trace = gen_big_memory_trace(self.big_values, self.big_mults.into_simd_vec());
         let small_table_trace =
             gen_small_memory_trace(self.small_values, self.small_mults.into_simd_vec());
@@ -158,7 +143,7 @@ impl ClaimGenerator {
         let trace = big_table_trace
             .into_iter()
             .map(|eval| {
-                CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(
+                CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
                     CanonicCoset::new(big_log_size).circle_domain(),
                     eval,
                 )
@@ -169,7 +154,7 @@ impl ClaimGenerator {
         let trace = small_table_trace
             .into_iter()
             .map(|eval| {
-                CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(
+                CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
                     CanonicCoset::new(small_log_size).circle_domain(),
                     eval,
                 )
@@ -273,15 +258,12 @@ impl InteractionClaimGenerator {
         }
     }
 
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let (big_trace, big_claimed_sum) =
             self.gen_big_memory_interaction_trace(lookup_elements, range9_9_lookup_elements);
         tree_builder.extend_evals(big_trace);

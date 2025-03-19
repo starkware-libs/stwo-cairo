@@ -29,13 +29,10 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (Claim, InteractionClaimGenerator) {
         let multiplicity_data = self.mults.into_simd_vec();
         let multiplicity_column = BaseColumn::from_simd(multiplicity_data.clone());
 
@@ -74,14 +71,11 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         blake_round_sigma: &relations::BlakeRoundSigma,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(BLAKE_SIGMA_LOG_SIZE);
         let mult = <_ as Into<PackedQM31>>::into(self.lookup_data.multiplicities[0]);
         let sigmas = BlakeRoundSigma::deduce_output(unsafe {
