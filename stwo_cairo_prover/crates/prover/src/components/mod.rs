@@ -47,7 +47,7 @@ pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
-mod prelude;
+pub(crate) mod prelude;
 
 pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{

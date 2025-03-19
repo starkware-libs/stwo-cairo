@@ -8,12 +8,11 @@ use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnI
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
 use stwo_prover::core::air::{Component, ComponentProver};
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::FieldExpOps;
-use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::prover::StarkProof;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use tracing::{span, Level};
@@ -43,6 +42,7 @@ use super::range_checks_air::{
 };
 use crate::cairo_air::relations;
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
+use crate::components::utils::TreeBuilder;
 use crate::components::{
     verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
     verify_instruction,
@@ -266,13 +266,10 @@ impl CairoClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-    ) -> (CairoClaim, CairoInteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (CairoClaim, CairoInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
@@ -393,14 +390,11 @@ pub struct CairoInteractionClaimGenerator {
     // ...
 }
 impl CairoInteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> CairoInteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> CairoInteractionClaim {
         let opcodes_interaction_claims = self
             .opcodes_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);

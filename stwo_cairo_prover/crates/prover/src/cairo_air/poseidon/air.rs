@@ -1,18 +1,13 @@
-use num_traits::Zero;
-use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
-use stwo_prover::core::fields::qm31::QM31;
-use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use tracing::{span, Level};
 
 use crate::cairo_air::air::CairoInteractionElements;
 use crate::cairo_air::debug_tools::indented_component_display;
 use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
+use crate::components::prelude::constraint_eval::*;
+use crate::components::prelude::proving::*;
+use crate::components::utils::TreeBuilder;
 use crate::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
     range_check_felt_252_width_27,
@@ -103,17 +98,14 @@ impl PoseidonContextClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
     ) -> (
         PoseidonContextClaim,
         PoseidonContextInteractionClaimGenerator,
-    )
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) {
         let span = span!(Level::INFO, "write poseidon context trace").entered();
         if self
             .poseidon_3_partial_rounds_chain_trace_generator
@@ -186,14 +178,11 @@ pub struct PoseidonContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
 impl PoseidonContextInteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> PoseidonContextInteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> PoseidonContextInteractionClaim {
         PoseidonContextInteractionClaim {
             claim: self
                 .gen
@@ -212,14 +201,11 @@ struct InteractionClaimGenerator {
         range_check_felt_252_width_27::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let poseidon_3_partial_rounds_chain_interaction_claim = self
             .poseidon_3_partial_rounds_chain_interaction_gen
             .write_interaction_trace(
