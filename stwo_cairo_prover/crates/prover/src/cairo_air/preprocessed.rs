@@ -20,7 +20,8 @@ use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
 use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
-use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
+use crate::components::range_check_vector::SIMD_ENUMERATION_0;
+use crate::components::utils::generate_expanded_enumeration;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
@@ -275,8 +276,11 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
-        let partitions = generate_partitioned_enumeration(self.ranges);
-        let column = partitions.into_iter().nth(self.column_idx).unwrap();
+        let log_reps = self.ranges[..self.column_idx].iter().sum();
+        let bits = self.ranges[self.column_idx];
+        let trailing = self.ranges[self.column_idx + 1..].iter().sum();
+
+        let column = generate_expanded_enumeration(log_reps, bits, trailing);
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
             BaseColumn::from_simd(column),
