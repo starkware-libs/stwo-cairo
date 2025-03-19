@@ -6,7 +6,6 @@ use itertools::Itertools;
 use stwo_cairo_adapter::memory::Memory;
 
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::blake::deduce_output::{BlakeRound, BlakeRoundSigma};
 use crate::components::prelude::proving::*;
 use crate::components::{
     blake_g, blake_round_sigma, memory_address_to_id, memory_id_to_big, range_check_7_2_5,

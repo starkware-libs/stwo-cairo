@@ -8,8 +8,6 @@
 // TODO(Ohad): remove.
 #![allow(clippy::too_many_arguments)]
 
-pub mod cairo_air;
-mod components;
-mod felt;
+pub mod components;
 
 pub use stwo_prover;

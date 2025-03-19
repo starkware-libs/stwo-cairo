@@ -2,7 +2,7 @@
 members = [
     "crates/adapted_prover",
     "crates/adapter",
-    "crates/prover",
+    "crates/components",
     "crates/cairo-serialize",
     "crates/cairo-serialize-derive",
     "crates/utils",
@@ -34,10 +34,12 @@ rand = "0.8.5"
 serde = "1.0.207"
 serde_json = "1.0.1"
 starknet-types-core = "0.1.7"
-stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
+stwo_cairo_components = { path = "crates/components", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
+stwo_cairo_air = { path = "crates/cairo_air" }
 stwo-cairo-common = { path = "crates/common" }
+stwo_cairo_component_utils = { path = "crates/component_utils" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "9790656", features = [

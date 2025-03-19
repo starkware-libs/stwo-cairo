@@ -14,7 +14,8 @@ dependencies = [
  "stwo-cairo-adapter",
  "stwo-cairo-serialize",
  "stwo-prover",
- "stwo_cairo_prover",
+ "stwo_cairo_air",
+ "stwo_cairo_components",
  "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",
@@ -1320,7 +1321,7 @@ dependencies = [
  "serde_json",
  "stwo-cairo-adapter",
  "stwo-prover",
- "stwo_cairo_prover",
+ "stwo_cairo_air",
 ]
 
 [[package]]
@@ -1445,7 +1446,7 @@ dependencies = [
  "serde_json",
  "stwo-cairo-adapter",
  "stwo-prover",
- "stwo_cairo_prover",
+ "stwo_cairo_air",
  "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",
@@ -1853,7 +1854,56 @@ dependencies = [
 ]
 
 [[package]]
-name = "stwo_cairo_prover"
+name = "stwo_cairo_air"
+version = "0.1.0"
+dependencies = [
+ "cairo-lang-casm",
+ "cairo-vm",
+ "hex",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rand",
+ "rayon",
+ "serde",
+ "serde_json",
+ "starknet-ff",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+ "stwo_cairo_component_utils",
+ "stwo_cairo_components",
+ "thiserror 2.0.11",
+ "tracing",
+]
+
+[[package]]
+name = "stwo_cairo_component_utils"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rand",
+ "rayon",
+ "serde",
+ "starknet-curve 0.5.1",
+ "starknet-ff",
+ "starknet-types-core",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+]
+
+[[package]]
+name = "stwo_cairo_components"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
@@ -1876,6 +1926,7 @@ dependencies = [
  "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-prover",
+ "stwo_cairo_component_utils",
  "thiserror 2.0.11",
  "tracing",
 ]
@@ -1903,7 +1954,6 @@ dependencies = [
  "num-traits",
  "serde_json",
  "stwo-cairo-adapter",
- "stwo_cairo_prover",
  "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",

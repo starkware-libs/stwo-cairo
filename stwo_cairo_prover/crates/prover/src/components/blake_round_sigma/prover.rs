@@ -4,14 +4,13 @@
 use std::simd::u32x16;
 
 use itertools::{chain, Itertools};
+use stwo_cairo_component_utils::preprocessed::SIMD_ENUMERATION_0;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::blake::deduce_output::BlakeRoundSigma;
 use crate::components::prelude::proving::*;
-use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];
