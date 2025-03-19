@@ -1,7 +1,7 @@
 mod air;
 pub(crate) mod blake;
 mod builtins_air;
-mod debug_tools;
+pub(crate) mod debug_tools;
 pub mod opcodes_air;
 pub mod pedersen;
 pub mod poseidon;
