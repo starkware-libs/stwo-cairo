@@ -21,7 +21,7 @@ edition = "2021"
 bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "153d3a88", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "60c1fa0f", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
@@ -52,9 +52,6 @@ tracing-subscriber = "0.3.18"
 paste = "1.0"
 starknet-ff = "0.3.7"
 ruint = "1.12.3"
-# Pin wasm-bindgen version to the version pinned by lambdaclass/cairo-vm/vm
-# TODO(yuval): remove the pin once the pinning in lambdaclass/cairo-vm/vm is removed.
-wasm-bindgen = { version = "= 0.2.92" }
 
 [profile.bench]
 codegen-units = 1
