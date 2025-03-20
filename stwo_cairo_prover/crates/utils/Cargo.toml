@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 cairo-vm = { workspace = true, default_features = true }
+blake2 = "0.10.6"
 clap.workspace = true
 env_logger.workspace = true
 log.workspace = true

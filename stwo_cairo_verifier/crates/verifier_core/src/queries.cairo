@@ -100,6 +100,7 @@ mod test {
     }
 
     #[test]
+    #[cfg(not(feature: "blake2s_verifier"))]
     fn test_generate() {
         let mut channel: Channel = Default::default();
         let result = QueriesImpl::generate(ref channel, 31, 100);
