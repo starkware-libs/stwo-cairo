@@ -3,6 +3,7 @@ use std::ops::Index;
 use std::simd::Simd;
 
 use itertools::{izip, Itertools};
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use stwo_cairo_adapter::memory::Memory;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
@@ -25,6 +26,7 @@ use crate::components::memory_address_to_id::component::{
 use crate::components::utils::AtomicMultiplicityColumn;
 
 pub type InputType = M31;
+pub type PackedInputType = PackedM31;
 
 /// A struct that represents a mapping from Address to ID. Zero address is not allowed.
 pub struct AddressToId {
@@ -94,6 +96,12 @@ impl ClaimGenerator {
         for input in inputs {
             self.add_input(input);
         }
+    }
+
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType]) {
+        inputs.into_par_iter().for_each(|input| {
+            self.add_packed_m31(input);
+        });
     }
 
     pub fn add_packed_m31(&self, inputs: &PackedBaseField) {

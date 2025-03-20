@@ -17,6 +17,8 @@ macro_rules! range_check_prover {
             use stwo_prover::core::pcs::TreeBuilder;
             use stwo_prover::core::poly::BitReversedOrder;
             use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
+            use rayon::iter::IntoParallelIterator;
+            use rayon::iter::ParallelIterator;
 
             use $crate::components::utils::AtomicMultiplicityColumn;
             use $crate::components::range_check_vector::{partition_into_bit_segments,
@@ -46,6 +48,12 @@ macro_rules! range_check_prover {
                     for input in inputs {
                         self.add_input(input);
                     }
+                }
+
+                pub fn add_packed_inputs(&self, inputs: &[[PackedM31; N_RANGES]]) {
+                    inputs.into_par_iter().for_each(|input| {
+                        self.add_packed_m31(input);
+                    });
                 }
 
                 // TODO(Ohad): test.
