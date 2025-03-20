@@ -24,6 +24,7 @@ pub mod jump_opcode_double_deref;
 pub mod jump_opcode_rel;
 pub mod jump_opcode_rel_imm;
 pub mod memory;
+pub mod mul_mod_builtin;
 pub mod mul_opcode;
 pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
