@@ -4,11 +4,69 @@ use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
+use stwo_cairo_common::prover_types::simd::{PackedFelt252, N_LANES};
+// use stwo_prover::core::backend::simd::conversion::Unpack;
+use stwo_prover::core::backend::simd::m31::PackedM31;
 
 use super::const_columns::PEDERSEN_TABLE;
 
 type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
+// type PackedPartialEcMulState = (PackedM31, [PackedM31; 14], [PackedFelt252; 2]);
 
+// impl Unpack for PackedPartialEcMulState {
+//     type CpuType = PartialEcMulState;
+//     fn unpack(self) -> [PartialEcMulState; N_LANES] {
+//         self.to_array()
+//     }
+// }
+
+#[derive(Copy, Clone, Debug)]
+pub struct WrapperPartialEcMul(
+    pub PackedM31,
+    pub PackedM31,
+    pub (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+);
+
+// impl Unpack for WrapperPartialEcMul {
+//     type CpuType = (M31, M31, (M31, [M31; 14], [Felt252; 2]));
+//     fn unpack(self) -> [(M31, M31, (M31, [M31; 14], [Felt252; 2])); N_LANES] {
+//         let chain_arr = self.0.to_array();
+//         let round_arr = self.1.to_array();
+//         let table_offset_arr = self.2 .0.to_array();
+//         let m_shifted_arr1: [[M31; N_LANES]; 14] = from_fn(|i| self.2 .1[i].to_array()); //
+// N_LANES         let m_shifted_arr2: [[M31; 14]; N_LANES] =
+//             from_fn(|i| from_fn(|j| m_shifted_arr1[j][i].clone())); // N_LANES
+//         let accumulator_arr1: [[Felt252; N_LANES]; 2] = from_fn(|i| self.2 .2[i].to_array()); //
+// N_LANES         let accumulator_arr2: [[Felt252; 2]; N_LANES] =
+//             from_fn(|i| from_fn(|j| accumulator_arr1[j][i].clone())); // N_LANES
+//         from_fn(|i| {
+//             (
+//                 chain_arr[i].clone(),
+//                 round_arr[i].clone(),
+//                 (
+//                     table_offset_arr[i].clone(),
+//                     m_shifted_arr2[i].clone(),
+//                     accumulator_arr2[i].clone(),
+//                     // from_fn(|j| m_shifted_arr2[j][i].clone()),
+//                     // from_fn(|j| accumulator_arr2[j][i].clone()),
+//                 ),
+//             )
+//         })
+//     }
+// }
+
+// impl Unpack
+//     for (
+//         PackedM31,
+//         PackedM31,
+//         (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+//     )
+// {
+//     type CpuType = (M31, M31, (M31, [M31; 14], [Felt252; 2]));
+//     fn unpack(self) -> [(M31, M31, (M31, [M31; 14], [Felt252; 2])); N_LANES] {
+//         self.to_array()
+//     }
+// }
 #[derive(Debug)]
 pub struct PartialEcMul {}
 impl PartialEcMul {
@@ -54,6 +112,63 @@ impl PartialEcMul {
                 new_m_shifted,
                 [new_accumulator_x, new_accumulator_y],
             ),
+        )
+    }
+
+    pub fn packed_deduce_output(
+        chain: PackedM31,
+        round: PackedM31,
+        (table_offset, m_shifted, accumulator): (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+    ) -> (
+        PackedM31,
+        PackedM31,
+        (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+    ) {
+        let chain_arr = chain.to_array();
+        let round_arr = round.to_array();
+        let table_offset_arr = table_offset.to_array();
+        let m_shifted_arr1: [[M31; N_LANES]; 14] = from_fn(|i| m_shifted[i].to_array()); // N_LANES
+        let m_shifted_arr2: [[M31; 14]; N_LANES] = from_fn(|i| from_fn(|j| m_shifted_arr1[j][i])); // N_LANES
+        let accumulator_arr1: [[Felt252; N_LANES]; 2] = from_fn(|i| accumulator[i].to_array()); // N_LANES
+        let accumulator_arr2: [[Felt252; 2]; N_LANES] =
+            from_fn(|i| from_fn(|j| accumulator_arr1[j][i])); // N_LANES
+
+        let mut chain_output_vec = vec![];
+        let mut round_output_vec = vec![];
+        let mut table_offset_output = vec![];
+        let mut m_shifted_output_vec = vec![];
+        let mut accumulator_output_vec = vec![];
+
+        for i in 0..N_LANES {
+            let (
+                curr_chain_output,
+                curr_round_output,
+                (curr_table_offset_output, curr_m_shifted_output, curr_accumulator_output),
+            ) = PartialEcMul::deduce_output(
+                chain_arr[i],
+                round_arr[i],
+                (table_offset_arr[i], m_shifted_arr2[i], accumulator_arr2[i]),
+            );
+
+            chain_output_vec.push(curr_chain_output);
+            round_output_vec.push(curr_round_output);
+            table_offset_output.push(curr_table_offset_output);
+            m_shifted_output_vec.push(curr_m_shifted_output);
+            accumulator_output_vec.push(curr_accumulator_output);
+        }
+
+        let chain_output = PackedM31::from_array(chain_output_vec.try_into().unwrap());
+        let round_output = PackedM31::from_array(round_output_vec.try_into().unwrap());
+        let table_offset_output = PackedM31::from_array(table_offset_output.try_into().unwrap());
+        let m_shifted_output =
+            from_fn(|i| PackedM31::from_array(from_fn(|j| m_shifted_output_vec[j][i])));
+        let accumulator_output =
+            from_fn(|i| PackedFelt252::from_array(&from_fn(|j| accumulator_output_vec[j][i])));
+
+        (
+            chain_output,
+            round_output,
+            (table_offset_output, m_shifted_output, accumulator_output),
         )
     }
 }
