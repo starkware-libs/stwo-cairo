@@ -3,6 +3,14 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::prover_types::cpu::CasmState;
+use stwo_cairo_prover::cairo_air::preprocessed::PreProcessedTrace;
+use stwo_cairo_prover::cairo_air::relations;
+use stwo_cairo_prover::components::memory::{memory_address_to_id, memory_id_to_big};
+use stwo_cairo_prover::components::{
+    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
+    verify_instruction,
+};
+use stwo_cairo_prover::felt::split_f252;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
@@ -18,10 +26,6 @@ use stwo_prover::core::prover::StarkProof;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use tracing::{span, Level};
 
-use super::blake::air::{
-    BlakeContextClaim, BlakeContextClaimGenerator, BlakeContextComponents,
-    BlakeContextInteractionClaim, BlakeContextInteractionClaimGenerator,
-};
 use super::builtins_air::{
     BuiltinComponents, BuiltinsClaim, BuiltinsClaimGenerator, BuiltinsInteractionClaim,
     BuiltinsInteractionClaimGenerator,
@@ -31,23 +35,19 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
-use super::poseidon::air::{
-    PoseidonContextClaim, PoseidonContextClaimGenerator, PoseidonContextComponents,
-    PoseidonContextInteractionClaim, PoseidonContextInteractionClaimGenerator,
-};
-use super::preprocessed::PreProcessedTrace;
 use super::range_checks_air::{
     RangeChecksClaim, RangeChecksClaimGenerator, RangeChecksComponents,
     RangeChecksInteractionClaim, RangeChecksInteractionClaimGenerator,
     RangeChecksInteractionElements,
 };
-use crate::cairo_air::relations;
-use crate::components::memory::{memory_address_to_id, memory_id_to_big};
-use crate::components::{
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
-    verify_instruction,
+use crate::blake_air::{
+    BlakeContextClaim, BlakeContextClaimGenerator, BlakeContextComponents,
+    BlakeContextInteractionClaim, BlakeContextInteractionClaimGenerator,
 };
-use crate::felt::split_f252;
+use crate::poseidon_air::{
+    PoseidonContextClaim, PoseidonContextClaimGenerator, PoseidonContextComponents,
+    PoseidonContextInteractionClaim, PoseidonContextInteractionClaimGenerator,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {

@@ -5,6 +5,13 @@ use stwo_cairo_adapter::builtins::{
     BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, POSEIDON_MEMORY_CELLS,
     RANGE_CHECK_MEMORY_CELLS,
 };
+use stwo_cairo_prover::components::range_check_vector::{
+    range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
+};
+use stwo_cairo_prover::components::{
+    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, poseidon_builtin,
+    range_check_6, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -16,14 +23,7 @@ use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
-use super::poseidon::air::PoseidonContextClaimGenerator;
-use crate::components::range_check_vector::{
-    range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
-};
-use crate::components::{
-    add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, poseidon_builtin,
-    range_check_6, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
-};
+use crate::poseidon_air::PoseidonContextClaimGenerator;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BuiltinsClaim {

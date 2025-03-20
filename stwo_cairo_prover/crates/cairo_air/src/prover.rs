@@ -1,6 +1,7 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_prover::cairo_air::preprocessed::PreProcessedTrace;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
@@ -12,10 +13,7 @@ use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
 use super::CairoProof;
-use crate::cairo_air::air::{
-    lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
-};
-use crate::cairo_air::preprocessed::PreProcessedTrace;
+use crate::air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
 
 pub(crate) const LOG_MAX_ROWS: u32 = 24;
 
@@ -58,7 +56,7 @@ where
     {
         use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
 
-        use crate::cairo_air::debug_tools::relation_tracker::track_cairo_relations;
+        use crate::debug_tools::relation_tracker::track_cairo_relations;
         tracing::info!(
             "Relations summary: {:?}",
             RelationSummary::summarize_relations(&track_cairo_relations(
@@ -163,9 +161,9 @@ pub mod tests {
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_cairo_adapter::ProverInput;
+    use stwo_cairo_prover::cairo_air::preprocessed::testing_preprocessed_tree;
 
-    use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
-    use crate::cairo_air::preprocessed::tests::testing_preprocessed_tree;
+    use crate::debug_tools::assert_constraints::assert_cairo_constraints;
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -209,8 +207,8 @@ pub mod tests {
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
         use super::*;
-        use crate::cairo_air::prover::prove_cairo;
-        use crate::cairo_air::verifier::verify_cairo;
+        use crate::prover::prove_cairo;
+        use crate::verifier::verify_cairo;
 
         #[test]
         fn generate_and_serialise_proof() {
@@ -233,15 +231,15 @@ pub mod tests {
     pub mod slow_tests {
         use itertools::Itertools;
         use stwo_cairo_adapter::vm_import::generate_test_input;
+        use stwo_cairo_prover::cairo_air::preprocessed::PreProcessedTrace;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
-        use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
-        use crate::cairo_air::preprocessed::PreProcessedTrace;
-        use crate::cairo_air::prover::tests::test_basic_cairo_air_input;
-        use crate::cairo_air::prover::{prove_cairo, ProverInput};
-        use crate::cairo_air::verifier::verify_cairo;
+        use crate::debug_tools::assert_constraints::assert_cairo_constraints;
+        use crate::prover::tests::test_basic_cairo_air_input;
+        use crate::prover::{prove_cairo, ProverInput};
+        use crate::verifier::verify_cairo;
 
         // TODO(Ohad): fine-grained constraints tests.
         #[test]
@@ -380,7 +378,7 @@ pub mod tests {
             }
 
             #[test]
-            fn test_poseidon_builtin_constraints() {
+            fn test_basic_cairo_constraints() {
                 let input = generate_test_input("test_prove_verify_poseidon_builtin");
                 let pp_tree = testing_preprocessed_tree(19);
                 assert_cairo_constraints(input, pp_tree);

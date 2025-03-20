@@ -1,5 +1,7 @@
 use num_traits::Zero;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
+use stwo_cairo_prover::cairo_air::preprocessed::PreProcessedTrace;
+use stwo_cairo_prover::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{CommitmentSchemeVerifier, PcsConfig};
@@ -7,9 +9,7 @@ use stwo_prover::core::prover::{verify, VerificationError};
 use thiserror::Error;
 
 use super::CairoProof;
-use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
-use crate::cairo_air::preprocessed::PreProcessedTrace;
-use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::air::{lookup_sum, CairoComponents, CairoInteractionElements};
 
 pub fn verify_cairo<MC: MerkleChannel>(
     CairoProof {

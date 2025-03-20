@@ -14,7 +14,7 @@ dependencies = [
  "stwo-cairo-adapter",
  "stwo-cairo-serialize",
  "stwo-prover",
- "stwo_cairo_prover",
+ "stwo_cairo_air",
  "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",
@@ -1320,7 +1320,7 @@ dependencies = [
  "serde_json",
  "stwo-cairo-adapter",
  "stwo-prover",
- "stwo_cairo_prover",
+ "stwo_cairo_air",
 ]
 
 [[package]]
@@ -1445,7 +1445,7 @@ dependencies = [
  "serde_json",
  "stwo-cairo-adapter",
  "stwo-prover",
- "stwo_cairo_prover",
+ "stwo_cairo_air",
  "stwo_cairo_utils",
  "thiserror 2.0.11",
  "tracing",
@@ -1849,6 +1849,32 @@ dependencies = [
  "starknet-crypto 0.6.2",
  "starknet-ff",
  "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
+name = "stwo_cairo_air"
+version = "0.1.0"
+dependencies = [
+ "cairo-lang-casm",
+ "cairo-vm",
+ "hex",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rand",
+ "rayon",
+ "serde",
+ "serde_json",
+ "starknet-ff",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+ "stwo_cairo_prover",
+ "thiserror 2.0.11",
  "tracing",
 ]
 

@@ -9,7 +9,7 @@
 #![allow(clippy::too_many_arguments)]
 
 pub mod cairo_air;
-mod components;
-mod felt;
+pub mod components;
+pub mod felt;
 
 pub use stwo_prover;

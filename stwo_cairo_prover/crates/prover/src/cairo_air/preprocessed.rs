@@ -18,9 +18,10 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
-use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
+
+pub(crate) const LOG_MAX_ROWS: u32 = 24;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
@@ -322,23 +323,23 @@ where
     commitment_scheme.commitment.root()
 }
 
+/// Generates a dummy preprocessed trace with columns up to `max_log_size`.
+/// As such, tests that use columns larger than `max_log_size` will fail.
+pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
+    let canonical = PreProcessedTrace::canonical();
+    let columns = canonical
+        .columns
+        .into_iter()
+        .filter(|c| c.log_size() <= max_log_size)
+        .collect();
+    PreProcessedTrace { columns }
+}
+
 #[cfg(test)]
 pub mod tests {
     use super::*;
     const LOG_SIZE: u32 = 8;
     use stwo_prover::core::backend::Column;
-
-    /// Generates a dummy preprocessed trace with columns up to `max_log_size`.
-    /// As such, tests that use columns larger than `max_log_size` will fail.
-    pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
-        let canonical = PreProcessedTrace::canonical();
-        let columns = canonical
-            .columns
-            .into_iter()
-            .filter(|c| c.log_size() <= max_log_size)
-            .collect();
-        PreProcessedTrace { columns }
-    }
 
     #[test]
     fn test_columns_are_in_decending_order() {

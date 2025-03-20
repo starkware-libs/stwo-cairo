@@ -1,6 +1,11 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_prover::components::{
+    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
+    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
+    verify_bitwise_xor_9,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -11,13 +16,8 @@ use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use tracing::{span, Level};
 
-use crate::cairo_air::air::CairoInteractionElements;
-use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
-use crate::components::{
-    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
-    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
-    verify_bitwise_xor_9,
-};
+use crate::air::CairoInteractionElements;
+use crate::range_checks_air::RangeChecksClaimGenerator;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct BlakeContextClaim {

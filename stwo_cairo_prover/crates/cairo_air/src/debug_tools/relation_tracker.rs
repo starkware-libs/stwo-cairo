@@ -1,24 +1,12 @@
 use itertools::Itertools;
 use num_traits::One;
-use stwo_prover::constraint_framework::relation_tracker::{
-    RelationTrackerComponent, RelationTrackerEntry,
-};
-use stwo_prover::constraint_framework::TraceLocationAllocator;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::pcs::CommitmentSchemeProver;
-use stwo_prover::core::poly::circle::CanonicCoset;
-
-use crate::cairo_air::air::CairoClaim;
-use crate::cairo_air::relations;
-use crate::components::range_check_vector::{
+use stwo_cairo_prover::cairo_air::relations;
+use stwo_cairo_prover::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
     range_check_6, range_check_7_2_5, range_check_9_9,
 };
-use crate::components::{
+use stwo_cairo_prover::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_mod_builtin, add_opcode,
     add_opcode_imm, add_opcode_small, add_opcode_small_imm, assert_eq_opcode,
     assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, call_opcode,
@@ -30,7 +18,19 @@ use crate::components::{
     poseidon_round_keys, range_check_builtin_bits_128, range_check_builtin_bits_96,
     range_check_felt_252_width_27, ret_opcode, verify_bitwise_xor_9, verify_instruction,
 };
-use crate::felt::split_f252;
+use stwo_cairo_prover::felt::split_f252;
+use stwo_prover::constraint_framework::relation_tracker::{
+    RelationTrackerComponent, RelationTrackerEntry,
+};
+use stwo_prover::constraint_framework::TraceLocationAllocator;
+use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::core::backend::BackendForChannel;
+use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::fields::m31::M31;
+use stwo_prover::core::pcs::CommitmentSchemeProver;
+use stwo_prover::core::poly::circle::CanonicCoset;
+
+use crate::air::CairoClaim;
 
 pub fn track_cairo_relations<MC: MerkleChannel>(
     commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
