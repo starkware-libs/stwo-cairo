@@ -5,6 +5,7 @@ use std::ops::Deref;
 use itertools::Itertools;
 use num_traits::Zero;
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_prover::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
 use stwo_prover::constraint_framework::{
     assert_constraints_on_polys, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
 };
@@ -15,12 +16,9 @@ use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig, TreeVec};
 use stwo_prover::core::poly::circle::{CanonicCoset, CirclePoly, PolyOps};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use crate::cairo_air::air::{
-    lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
-};
-use crate::cairo_air::opcodes_air::OpcodeComponents;
-use crate::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
-use crate::cairo_air::prover::LOG_MAX_ROWS;
+use crate::air::{lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements};
+use crate::opcodes_air::OpcodeComponents;
+use crate::prover::LOG_MAX_ROWS;
 
 pub fn assert_component<E: FrameworkEval + Sync>(
     component: &FrameworkComponent<E>,

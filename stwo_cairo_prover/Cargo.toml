@@ -35,6 +35,7 @@ serde = "1.0.207"
 serde_json = "1.0.1"
 starknet-types-core = "0.1.7"
 stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
+stwo_cairo_air = { path = "crates/cairo_air" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
