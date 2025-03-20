@@ -23,7 +23,7 @@ use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
+const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
