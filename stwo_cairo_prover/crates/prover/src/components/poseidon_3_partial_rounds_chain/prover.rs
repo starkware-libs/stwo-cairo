@@ -1,7 +1,4 @@
 #![allow(unused_parens)]
-use itertools::Itertools;
-use stwo_prover::core::backend::simd::conversion::Pack;
-
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::cairo_air::poseidon::deduce_output::{PackedCube252, PackedPoseidonRoundKeys};
 use crate::components::prelude::proving::*;
@@ -13,11 +10,17 @@ pub type PackedInputType = (PackedM31, PackedM31, [PackedFelt252Width27; 4]);
 
 #[derive(Default)]
 pub struct ClaimGenerator {
-    pub inputs: Vec<InputType>,
+    pub packed_inputs: Vec<PackedInputType>,
 }
 impl ClaimGenerator {
     pub fn new() -> Self {
-        Self { inputs: Vec::new() }
+        Self {
+            packed_inputs: vec![],
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.packed_inputs.is_empty()
     }
 
     pub fn write_trace<MC: MerkleChannel>(
@@ -32,45 +35,74 @@ impl ClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let n_rows = self.inputs.len();
-        assert_ne!(n_rows, 0);
-        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
-        let log_size = size.ilog2();
-        self.inputs.resize(size, *self.inputs.first().unwrap());
-        let packed_inputs = pack_values(&self.inputs);
+        assert!(!self.packed_inputs.is_empty());
+        let n_vec_rows = self.packed_inputs.len();
+        let n_rows = n_vec_rows * N_LANES;
+        let packed_size = n_vec_rows.next_power_of_two();
+        let log_size = packed_size.ilog2() + LOG_N_LANES;
+        self.packed_inputs
+            .resize(packed_size, *self.packed_inputs.first().unwrap());
 
-        let (trace, lookup_data) = write_trace_simd(
+        let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             n_rows,
-            packed_inputs,
+            self.packed_inputs,
             cube_252_state,
             poseidon_round_keys_state,
             range_check_4_4_state,
             range_check_4_4_4_4_state,
             range_check_felt_252_width_27_state,
         );
-
+        sub_component_inputs
+            .poseidon_round_keys
+            .iter()
+            .for_each(|inputs| {
+                poseidon_round_keys_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs.cube_252.iter().for_each(|inputs| {
+            cube_252_state.add_packed_inputs(inputs);
+        });
+        sub_component_inputs
+            .range_check_4_4_4_4
+            .iter()
+            .for_each(|inputs| {
+                range_check_4_4_4_4_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_4_4
+            .iter()
+            .for_each(|inputs| {
+                range_check_4_4_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_felt_252_width_27
+            .iter()
+            .for_each(|inputs| {
+                range_check_felt_252_width_27_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
             Claim { log_size },
             InteractionClaimGenerator {
                 n_rows,
+                log_size,
                 lookup_data,
             },
         )
     }
 
-    pub fn add_input(&mut self, input: &InputType) {
-        self.inputs.push(*input);
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+        self.packed_inputs.extend(inputs);
     }
+}
 
-    pub fn add_inputs(&mut self, inputs: &[InputType]) {
-        self.inputs.extend_from_slice(inputs);
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.inputs.is_empty()
-    }
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    poseidon_round_keys: [Vec<poseidon_round_keys::PackedInputType>; 1],
+    cube_252: [Vec<cube_252::PackedInputType>; 3],
+    range_check_4_4_4_4: [Vec<range_check_4_4_4_4::PackedInputType>; 6],
+    range_check_4_4: [Vec<range_check_4_4::PackedInputType>; 3],
+    range_check_felt_252_width_27: [Vec<range_check_felt_252_width_27::PackedInputType>; 3],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -80,18 +112,23 @@ impl ClaimGenerator {
 fn write_trace_simd(
     n_rows: usize,
     inputs: Vec<PackedInputType>,
-    cube_252_state: &mut cube_252::ClaimGenerator,
+    cube_252_state: &cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-    range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
-) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
+    range_check_felt_252_width_27_state: &range_check_felt_252_width_27::ClaimGenerator,
+) -> (
+    ComponentTrace<N_TRACE_COLUMNS>,
+    LookupData,
+    SubComponentInputs,
+) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
-    let (mut trace, mut lookup_data) = unsafe {
+    let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -111,30 +148,18 @@ fn write_trace_simd(
     let M31_4 = PackedM31::broadcast(M31::from(4));
     let padding_col = Enabler::new(n_rows);
 
-    let mut cube_252_inputs_vec =
-        vec![[[Felt252Width27::default(); 16]; 3]; 1 << log_n_packed_rows];
-    let mut range_check_felt_252_width_27_inputs_vec =
-        vec![[[Felt252Width27::default(); 16]; 3]; 1 << log_n_packed_rows];
-
     (
         trace.par_iter_mut(),
         lookup_data.par_iter_mut(),
+        sub_component_inputs.par_iter_mut(),
         inputs.into_par_iter(),
-        cube_252_inputs_vec.par_iter_mut(),
-        range_check_felt_252_width_27_inputs_vec.par_iter_mut(),
     )
         .into_par_iter()
         .enumerate()
         .for_each(
             |(
                 row_index,
-                (
-                    mut row,
-                    lookup_data,
-                    poseidon_3_partial_rounds_chain_input,
-                    cube_252_input,
-                    range_check_felt_252_width_27_input,
-                ),
+                (mut row, lookup_data, sub_component_inputs, poseidon_3_partial_rounds_chain_input),
             )| {
                 let input_limb_0_col0 = poseidon_3_partial_rounds_chain_input.0;
                 *row[0] = input_limb_0_col0;
@@ -220,7 +245,7 @@ fn write_trace_simd(
                 *row[40] = input_limb_40_col40;
                 let input_limb_41_col41 = poseidon_3_partial_rounds_chain_input.2[3].get_m31(9);
                 *row[41] = input_limb_41_col41;
-                let poseidon_round_keys_inputs_0 = [input_limb_1_col1].unpack();
+                *sub_component_inputs.poseidon_round_keys[0] = [input_limb_1_col1];
                 let poseidon_round_keys_output_tmp_44f04_0 =
                     PackedPoseidonRoundKeys::deduce_output([input_limb_1_col1]);
                 let poseidon_round_keys_output_limb_0_col42 =
@@ -349,7 +374,7 @@ fn write_trace_simd(
 
                 // Poseidon Partial Round.
 
-                let cube_252_inputs_0 = poseidon_3_partial_rounds_chain_input.2[3].unpack();
+                *sub_component_inputs.cube_252[0] = poseidon_3_partial_rounds_chain_input.2[3];
                 let cube_252_output_tmp_44f04_1 =
                     PackedCube252::deduce_output(poseidon_3_partial_rounds_chain_input.2[3]);
                 let cube_252_output_limb_0_col72 = cube_252_output_tmp_44f04_1.get_m31(0);
@@ -539,43 +564,40 @@ fn write_trace_simd(
                     - (cube_252_output_limb_8_col80))
                     + (poseidon_round_keys_output_limb_8_col50))
                     * (M31_16));
-                let range_check_4_4_4_4_inputs_0 = [
+                *sub_component_inputs.range_check_4_4_4_4[0] = [
                     ((p_coef_col92) + (M31_2)),
                     ((carry_0_tmp_44f04_4) + (M31_2)),
                     ((carry_1_tmp_44f04_5) + (M31_2)),
                     ((carry_2_tmp_44f04_6) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_4_4_0 = [
                     ((p_coef_col92) + (M31_2)),
                     ((carry_0_tmp_44f04_4) + (M31_2)),
                     ((carry_1_tmp_44f04_5) + (M31_2)),
                     ((carry_2_tmp_44f04_6) + (M31_2)),
                 ];
-                let range_check_4_4_4_4_inputs_1 = [
+                *sub_component_inputs.range_check_4_4_4_4[1] = [
                     ((carry_3_tmp_44f04_7) + (M31_2)),
                     ((carry_4_tmp_44f04_8) + (M31_2)),
                     ((carry_5_tmp_44f04_9) + (M31_2)),
                     ((carry_6_tmp_44f04_10) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_4_4_1 = [
                     ((carry_3_tmp_44f04_7) + (M31_2)),
                     ((carry_4_tmp_44f04_8) + (M31_2)),
                     ((carry_5_tmp_44f04_9) + (M31_2)),
                     ((carry_6_tmp_44f04_10) + (M31_2)),
                 ];
-                let range_check_4_4_inputs_0 = [
+                *sub_component_inputs.range_check_4_4[0] = [
                     ((carry_7_tmp_44f04_11) + (M31_2)),
                     ((carry_8_tmp_44f04_12) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_0 = [
                     ((carry_7_tmp_44f04_11) + (M31_2)),
                     ((carry_8_tmp_44f04_12) + (M31_2)),
                 ];
 
-                let range_check_felt_252_width_27_inputs_0 = combination_tmp_44f04_2.unpack();
+                *sub_component_inputs.range_check_felt_252_width_27[0] = combination_tmp_44f04_2;
                 *lookup_data.range_check_felt_252_width_27_0 = [
                     combination_limb_0_col82,
                     combination_limb_1_col83,
@@ -666,7 +688,7 @@ fn write_trace_simd(
 
                 // Poseidon Partial Round.
 
-                let cube_252_inputs_1 = combination_tmp_44f04_13.unpack();
+                *sub_component_inputs.cube_252[1] = combination_tmp_44f04_13;
                 let cube_252_output_tmp_44f04_34 =
                     PackedCube252::deduce_output(combination_tmp_44f04_13);
                 let cube_252_output_limb_0_col104 = cube_252_output_tmp_44f04_34.get_m31(0);
@@ -856,43 +878,40 @@ fn write_trace_simd(
                     - (cube_252_output_limb_8_col112))
                     + (poseidon_round_keys_output_limb_18_col60))
                     * (M31_16));
-                let range_check_4_4_4_4_inputs_2 = [
+                *sub_component_inputs.range_check_4_4_4_4[2] = [
                     ((p_coef_col124) + (M31_2)),
                     ((carry_0_tmp_44f04_37) + (M31_2)),
                     ((carry_1_tmp_44f04_38) + (M31_2)),
                     ((carry_2_tmp_44f04_39) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_4_4_2 = [
                     ((p_coef_col124) + (M31_2)),
                     ((carry_0_tmp_44f04_37) + (M31_2)),
                     ((carry_1_tmp_44f04_38) + (M31_2)),
                     ((carry_2_tmp_44f04_39) + (M31_2)),
                 ];
-                let range_check_4_4_4_4_inputs_3 = [
+                *sub_component_inputs.range_check_4_4_4_4[3] = [
                     ((carry_3_tmp_44f04_40) + (M31_2)),
                     ((carry_4_tmp_44f04_41) + (M31_2)),
                     ((carry_5_tmp_44f04_42) + (M31_2)),
                     ((carry_6_tmp_44f04_43) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_4_4_3 = [
                     ((carry_3_tmp_44f04_40) + (M31_2)),
                     ((carry_4_tmp_44f04_41) + (M31_2)),
                     ((carry_5_tmp_44f04_42) + (M31_2)),
                     ((carry_6_tmp_44f04_43) + (M31_2)),
                 ];
-                let range_check_4_4_inputs_1 = [
+                *sub_component_inputs.range_check_4_4[1] = [
                     ((carry_7_tmp_44f04_44) + (M31_2)),
                     ((carry_8_tmp_44f04_45) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_1 = [
                     ((carry_7_tmp_44f04_44) + (M31_2)),
                     ((carry_8_tmp_44f04_45) + (M31_2)),
                 ];
 
-                let range_check_felt_252_width_27_inputs_1 = combination_tmp_44f04_35.unpack();
+                *sub_component_inputs.range_check_felt_252_width_27[1] = combination_tmp_44f04_35;
                 *lookup_data.range_check_felt_252_width_27_1 = [
                     combination_limb_0_col114,
                     combination_limb_1_col115,
@@ -983,7 +1002,7 @@ fn write_trace_simd(
 
                 // Poseidon Partial Round.
 
-                let cube_252_inputs_2 = combination_tmp_44f04_46.unpack();
+                *sub_component_inputs.cube_252[2] = combination_tmp_44f04_46;
                 let cube_252_output_tmp_44f04_67 =
                     PackedCube252::deduce_output(combination_tmp_44f04_46);
                 let cube_252_output_limb_0_col136 = cube_252_output_tmp_44f04_67.get_m31(0);
@@ -1173,43 +1192,40 @@ fn write_trace_simd(
                     - (cube_252_output_limb_8_col144))
                     + (poseidon_round_keys_output_limb_28_col70))
                     * (M31_16));
-                let range_check_4_4_4_4_inputs_4 = [
+                *sub_component_inputs.range_check_4_4_4_4[4] = [
                     ((p_coef_col156) + (M31_2)),
                     ((carry_0_tmp_44f04_70) + (M31_2)),
                     ((carry_1_tmp_44f04_71) + (M31_2)),
                     ((carry_2_tmp_44f04_72) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_4_4_4 = [
                     ((p_coef_col156) + (M31_2)),
                     ((carry_0_tmp_44f04_70) + (M31_2)),
                     ((carry_1_tmp_44f04_71) + (M31_2)),
                     ((carry_2_tmp_44f04_72) + (M31_2)),
                 ];
-                let range_check_4_4_4_4_inputs_5 = [
+                *sub_component_inputs.range_check_4_4_4_4[5] = [
                     ((carry_3_tmp_44f04_73) + (M31_2)),
                     ((carry_4_tmp_44f04_74) + (M31_2)),
                     ((carry_5_tmp_44f04_75) + (M31_2)),
                     ((carry_6_tmp_44f04_76) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_4_4_5 = [
                     ((carry_3_tmp_44f04_73) + (M31_2)),
                     ((carry_4_tmp_44f04_74) + (M31_2)),
                     ((carry_5_tmp_44f04_75) + (M31_2)),
                     ((carry_6_tmp_44f04_76) + (M31_2)),
                 ];
-                let range_check_4_4_inputs_2 = [
+                *sub_component_inputs.range_check_4_4[2] = [
                     ((carry_7_tmp_44f04_77) + (M31_2)),
                     ((carry_8_tmp_44f04_78) + (M31_2)),
-                ]
-                .unpack();
+                ];
                 *lookup_data.range_check_4_4_2 = [
                     ((carry_7_tmp_44f04_77) + (M31_2)),
                     ((carry_8_tmp_44f04_78) + (M31_2)),
                 ];
 
-                let range_check_felt_252_width_27_inputs_2 = combination_tmp_44f04_68.unpack();
+                *sub_component_inputs.range_check_felt_252_width_27[2] = combination_tmp_44f04_68;
                 *lookup_data.range_check_felt_252_width_27_2 = [
                     combination_limb_0_col146,
                     combination_limb_1_col147,
@@ -1387,45 +1403,10 @@ fn write_trace_simd(
                     combination_limb_9_col166,
                 ];
                 *row[168] = padding_col.packed_at(row_index);
-
-                // Add sub-components inputs.
-                *cube_252_input = [cube_252_inputs_0, cube_252_inputs_1, cube_252_inputs_2];
-                *range_check_felt_252_width_27_input = [
-                    range_check_felt_252_width_27_inputs_0,
-                    range_check_felt_252_width_27_inputs_1,
-                    range_check_felt_252_width_27_inputs_2,
-                ];
-                poseidon_round_keys_state.add_inputs(&poseidon_round_keys_inputs_0);
-                range_check_4_4_4_4_state.add_inputs(&range_check_4_4_4_4_inputs_0);
-                range_check_4_4_4_4_state.add_inputs(&range_check_4_4_4_4_inputs_1);
-                range_check_4_4_state.add_inputs(&range_check_4_4_inputs_0);
-                range_check_4_4_4_4_state.add_inputs(&range_check_4_4_4_4_inputs_2);
-                range_check_4_4_4_4_state.add_inputs(&range_check_4_4_4_4_inputs_3);
-                range_check_4_4_state.add_inputs(&range_check_4_4_inputs_1);
-                range_check_4_4_4_4_state.add_inputs(&range_check_4_4_4_4_inputs_4);
-                range_check_4_4_4_4_state.add_inputs(&range_check_4_4_4_4_inputs_5);
-                range_check_4_4_state.add_inputs(&range_check_4_4_inputs_2);
             },
         );
 
-    cube_252_state.add_inputs(
-        &cube_252_inputs_vec
-            .into_iter()
-            .flatten()
-            .into_iter()
-            .flatten()
-            .collect_vec(),
-    );
-    range_check_felt_252_width_27_state.add_inputs(
-        &range_check_felt_252_width_27_inputs_vec
-            .into_iter()
-            .flatten()
-            .into_iter()
-            .flatten()
-            .collect_vec(),
-    );
-
-    (trace, lookup_data)
+    (trace, lookup_data, sub_component_inputs)
 }
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
@@ -1452,6 +1433,7 @@ struct LookupData {
 
 pub struct InteractionClaimGenerator {
     n_rows: usize,
+    log_size: u32,
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -1468,9 +1450,8 @@ impl InteractionClaimGenerator {
     where
         SimdBackend: BackendForChannel<MC>,
     {
-        let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
         let padding_col = Enabler::new(self.n_rows);
-        let mut logup_gen = LogupTraceGenerator::new(log_size);
+        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();

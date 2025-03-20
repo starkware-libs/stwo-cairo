@@ -1,4 +1,5 @@
 use crate::components::prelude::constraint_eval::*;
+
 pub(super) const N_TRACE_COLUMNS: usize = 169;
 
 pub struct Eval {
@@ -231,7 +232,6 @@ impl FrameworkEval for Eval {
         let padding = eval.next_trace_mask();
 
         eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
-
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_round_keys_lookup_elements,
             E::EF::one(),

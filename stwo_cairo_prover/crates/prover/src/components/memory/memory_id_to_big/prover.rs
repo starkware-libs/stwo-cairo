@@ -2,7 +2,9 @@ use std::iter::zip;
 use std::simd::Simd;
 
 use itertools::{chain, izip, Itertools};
-use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
+use rayon::iter::{
+    IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
+};
 use stwo_cairo_adapter::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
 };
@@ -11,7 +13,7 @@ use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::backend::simd::qm31::PackedQM31;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Column};
@@ -29,6 +31,7 @@ use crate::components::utils::AtomicMultiplicityColumn;
 use crate::felt::split_f252_simd;
 
 pub type InputType = BaseField;
+pub type PackedInputType = PackedBaseField;
 
 /// Generates the trace and the claim for the id -> f252 memory table.
 /// Generates 2 table, one for large values and one for small values. A large value is a full 28
@@ -96,6 +99,12 @@ impl ClaimGenerator {
         for input in inputs {
             self.add_input(input);
         }
+    }
+
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType]) {
+        inputs.into_par_iter().for_each(|input| {
+            self.add_packed_m31(input);
+        });
     }
 
     pub fn add_packed_m31(&self, inputs: &PackedM31) {
