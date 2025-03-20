@@ -8,13 +8,13 @@ use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
+use crate::components::utils::TreeBuilder;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, range_check_6,
     range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
@@ -129,17 +129,14 @@ impl BuiltinsClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
-    ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
         let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
             .add_mod_builtin_trace_generator
             .map(|add_mod_builtin_trace_generator| {
@@ -250,14 +247,11 @@ pub struct BuiltinsInteractionClaimGenerator {
         Option<range_check_builtin_bits_128::InteractionClaimGenerator>,
 }
 impl BuiltinsInteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> BuiltinsInteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> BuiltinsInteractionClaim {
         let add_mod_builtin_interaction_claim =
             self.add_mod_builtin_interaction_gen
                 .map(|add_mod_builtin_interaction_gen| {

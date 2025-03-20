@@ -4,10 +4,9 @@ use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::pcs::TreeVec;
 
 use super::debug_tools::indented_component_display;
 use crate::cairo_air::relations;
@@ -16,6 +15,7 @@ use crate::components::range_check_vector::{
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
     range_check_6, range_check_7_2_5, range_check_9_9,
 };
+use crate::components::utils::TreeBuilder;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct RangeChecksClaim {
@@ -111,13 +111,10 @@ impl RangeChecksClaimGenerator {
             rc_3_3_3_3_3_trace_generator: range_check_3_3_3_3_3::ClaimGenerator::new(),
         }
     }
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-    ) -> (RangeChecksClaim, RangeChecksInteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (RangeChecksClaim, RangeChecksInteractionClaimGenerator) {
         let (rc_6_claim, rc_6_interaction_gen) =
             self.rc_6_trace_generator.write_trace(tree_builder);
         let (rc_11_claim, rc_11_interaction_gen) =
@@ -247,14 +244,11 @@ pub struct RangeChecksInteractionClaimGenerator {
     rc_3_3_3_3_3_interaction_gen: range_check_3_3_3_3_3::InteractionClaimGenerator,
 }
 impl RangeChecksInteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &RangeChecksInteractionElements,
-    ) -> RangeChecksInteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> RangeChecksInteractionClaim {
         let rc_6_interaction_claim = self
             .rc_6_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_6);

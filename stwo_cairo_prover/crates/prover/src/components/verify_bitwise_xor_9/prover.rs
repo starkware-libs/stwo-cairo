@@ -18,13 +18,10 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.into_simd_vec();
         let (trace, lookup_data) = write_trace_simd(mults);
         tree_builder.extend_evals(trace.to_evals());
@@ -82,14 +79,11 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_9: &relations::VerifyBitwiseXor_9,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         assert!(self.lookup_data.bitwise_xor_trios.len() == 1 << PACKED_LOG_SIZE);
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 

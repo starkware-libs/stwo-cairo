@@ -5,14 +5,14 @@ use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
+use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::QM31;
-use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
+use stwo_prover::core::pcs::TreeVec;
 use tracing::{span, Level};
 
 use crate::cairo_air::air::CairoInteractionElements;
 use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
+use crate::components::utils::TreeBuilder;
 use crate::components::{
     blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
     verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
@@ -93,9 +93,9 @@ impl BlakeContextClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
@@ -103,10 +103,7 @@ impl BlakeContextClaimGenerator {
         verify_bitwise_xor_7_trace_generator: &verify_bitwise_xor_7::ClaimGenerator,
         verify_bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
-    ) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write blake context trace").entered();
         if self.blake_round.is_empty() {
             return (
@@ -164,14 +161,11 @@ pub struct BlakeContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
 impl BlakeContextInteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> BlakeContextInteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> BlakeContextInteractionClaim {
         BlakeContextInteractionClaim {
             claim: self
                 .gen
@@ -188,14 +182,11 @@ struct InteractionClaimGenerator {
     verify_bitwise_xor_12_interaction_gen: verify_bitwise_xor_12::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let blake_round_interaction_claim =
             self.blake_round_interaction_gen.write_interaction_trace(
                 tree_builder,

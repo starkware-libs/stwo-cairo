@@ -20,16 +20,13 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_6_state: &range_check_6::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
         let (trace, lookup_data) = write_trace_simd(
@@ -184,16 +181,13 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         range_check_6: &relations::RangeCheck_6,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.

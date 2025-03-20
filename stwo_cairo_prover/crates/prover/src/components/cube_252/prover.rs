@@ -16,15 +16,12 @@ impl ClaimGenerator {
         Self { inputs: Vec::new() }
     }
 
-    pub fn write_trace<MC: MerkleChannel>(
+    pub fn write_trace(
         mut self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_19_state: &range_check_19::ClaimGenerator,
         range_check_9_9_state: &range_check_9_9::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator)
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> (Claim, InteractionClaimGenerator) {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
@@ -2828,16 +2825,13 @@ pub struct InteractionClaimGenerator {
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
-    pub fn write_interaction_trace<MC: MerkleChannel>(
+    pub fn write_interaction_trace(
         self,
-        tree_builder: &mut TreeBuilder<'_, '_, SimdBackend, MC>,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         cube_252: &relations::Cube252,
         range_check_19: &relations::RangeCheck_19,
         range_check_9_9: &relations::RangeCheck_9_9,
-    ) -> InteractionClaim
-    where
-        SimdBackend: BackendForChannel<MC>,
-    {
+    ) -> InteractionClaim {
         let log_size = std::cmp::max(self.n_rows.next_power_of_two().ilog2(), LOG_N_LANES);
         let padding_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(log_size);
