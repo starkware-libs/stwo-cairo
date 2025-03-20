@@ -18,7 +18,7 @@ use stwo_prover::core::pcs::TreeVec;
 use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
 use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
 use crate::cairo_air::relations;
-pub const N_TRACE_COLUMNS: usize = 1;
+pub(super) const N_TRACE_COLUMNS: usize = 1;
 
 pub struct Eval {
     pub claim: Claim,

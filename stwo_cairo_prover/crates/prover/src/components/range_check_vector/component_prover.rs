@@ -48,6 +48,12 @@ macro_rules! range_check_prover {
                     }
                 }
 
+                pub fn add_packed_inputs(&self, inputs: &[[PackedM31; N_RANGES]]) {
+                    for input in inputs {
+                        self.add_packed_m31(input);
+                    }
+                }
+
                 // TODO(Ohad): test.
                 pub fn add_input(&self, input: &InputType) {
                     let mut value = 0_u32;
