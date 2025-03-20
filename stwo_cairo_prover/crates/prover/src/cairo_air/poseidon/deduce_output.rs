@@ -13,7 +13,7 @@ pub fn round_keys_field_elements(round: usize) -> [FieldElement; 3] {
 pub struct PoseidonRoundKeys {}
 impl PoseidonRoundKeys {
     pub fn deduce_output(round: M31) -> [Felt252Width27; 3] {
-        round_keys(round.0 as usize)
+        round_keys(round.0 as usize) //
     }
 }
 
