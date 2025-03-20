@@ -703,8 +703,9 @@ pub const BIGUINT_BITS_PER_WORD: usize = 12;
 // B is the number of bits in the BigUInt.
 // L is the number of 64-bit limbs in the BigUInt.
 // F is the number of BIGUINT_BITS_PER_M31-bit limbs in the BigUInt.
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct BigUInt<const B: usize, const L: usize, const F: usize> {
+    #[serde(with = "serde_arrays")]
     pub limbs: [u64; L],
 }
 

@@ -52,6 +52,7 @@ test-case = "3.3.1"
 thiserror = { version = "2.0.10", default-features = false }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
+serde_arrays = "0.1.0"
 
 [profile.bench]
 codegen-units = 1
