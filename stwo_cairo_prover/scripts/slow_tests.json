@@ -42,6 +42,14 @@
         "compiled.json",
         "builtin_usage_flexible_cairo.cairo"
     ],
+    "test_prove_verify_pedersen_builtin": [
+        "mem",
+        "pub.json",
+        "priv.json",
+        "trace",
+        "compiled.json",
+        "builtin_usage_flexible_cairo.cairo"
+    ],
     "test_prove_verify_range_check_bits_96_builtin": [
         "mem",
         "pub.json",

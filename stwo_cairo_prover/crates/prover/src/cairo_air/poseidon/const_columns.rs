@@ -26,7 +26,8 @@ pub fn round_keys_m31(round: usize, col: usize) -> M31 {
 
 #[derive(Debug)]
 pub struct PoseidonRoundKeys {
-    pub packed_keys: [PackedM31; N_PACKED_ROWS],
+    //
+    pub packed_keys: [PackedM31; N_PACKED_ROWS], //
     pub col: usize,
 }
 
