@@ -1,6 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
-pub const N_TRACE_COLUMNS: usize = 141;
+pub(super) const N_TRACE_COLUMNS: usize = 141;
+
 pub struct Eval {
     pub claim: Claim,
     pub cube_252_lookup_elements: relations::Cube252,
