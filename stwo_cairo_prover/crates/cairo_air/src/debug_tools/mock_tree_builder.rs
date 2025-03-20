@@ -1,12 +1,11 @@
 use itertools::Itertools;
+use stwo_cairo_prover::components::utils::TreeBuilder;
 use stwo_prover::core::backend::{Backend, Column};
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
-
-use crate::components::utils::TreeBuilder;
 
 /// A mock commitment scheme implementation used for testing purposes.
 pub struct MockCommitmentScheme {
@@ -82,10 +81,10 @@ mod tests {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
     use stwo_cairo_common::prover_types::simd::PackedUInt32;
+    use stwo_cairo_prover::cairo_air::relations;
+    use stwo_cairo_prover::components::{triple_xor_32, verify_bitwise_xor_8};
 
     use super::MockCommitmentScheme;
-    use crate::cairo_air::relations;
-    use crate::components::{triple_xor_32, verify_bitwise_xor_8};
 
     #[test]
     fn test_mock_commitment_scheme() {
