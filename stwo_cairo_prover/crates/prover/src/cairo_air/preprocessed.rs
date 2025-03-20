@@ -23,7 +23,7 @@ use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
+const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
@@ -422,7 +422,7 @@ pub mod tests {
 
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("94405250507742f038e5496b3597e37f07043d59cd788844b479ab310c1a4300")
+            hex::decode("d1b8cea9ca1346282bf3363bf4a2960e37efe7756a9b833fd28c93661a9328de")
                 .expect("Invalid hex string"),
         );
 
