@@ -52,6 +52,12 @@ impl ClaimGenerator {
             self.add_input(input);
         }
     }
+
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType]) {
+        for input in inputs {
+            self.add_inputs(&input.unpack());
+        }
+    }
 }
 
 fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {

@@ -25,6 +25,7 @@ use crate::components::memory_address_to_id::component::{
 use crate::components::utils::AtomicMultiplicityColumn;
 
 pub type InputType = M31;
+pub type PackedInputType = PackedM31;
 
 /// A struct that represents a mapping from Address to ID. Zero address is not allowed.
 pub struct AddressToId {
@@ -93,6 +94,12 @@ impl ClaimGenerator {
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
             self.add_input(input);
+        }
+    }
+
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType]) {
+        for input in inputs {
+            self.add_packed_m31(input);
         }
     }
 
