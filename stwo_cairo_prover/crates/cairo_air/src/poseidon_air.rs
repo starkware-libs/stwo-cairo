@@ -1,5 +1,9 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_prover::components::{
+    cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
+    range_check_felt_252_width_27,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -10,13 +14,9 @@ use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 use tracing::{span, Level};
 
-use crate::cairo_air::air::CairoInteractionElements;
-use crate::cairo_air::debug_tools::indented_component_display;
-use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
-use crate::components::{
-    cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
-    range_check_felt_252_width_27,
-};
+use crate::air::CairoInteractionElements;
+use crate::debug_tools::indented_component_display;
+use crate::range_checks_air::RangeChecksClaimGenerator;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct PoseidonContextClaim {

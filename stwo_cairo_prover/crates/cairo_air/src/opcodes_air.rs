@@ -2,6 +2,16 @@ use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::opcodes::StateTransitions;
+use stwo_cairo_prover::components::{
+    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
+    add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
+    assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,
+    call_opcode_rel, generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken,
+    jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
+    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
+    mul_opcode_small, mul_opcode_small_imm, qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8,
+    verify_instruction,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -12,19 +22,9 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::{TreeBuilder, TreeVec};
 
 use super::air::CairoInteractionElements;
-use super::blake::air::BlakeContextClaimGenerator;
 use super::debug_tools::display_components;
-use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
-use crate::components::{
-    add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
-    add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,
-    call_opcode_rel, generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken,
-    jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
-    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
-    mul_opcode_small, mul_opcode_small_imm, qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8,
-    verify_instruction,
-};
+use crate::blake_air::BlakeContextClaimGenerator;
+use crate::range_checks_air::RangeChecksClaimGenerator;
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct OpcodeClaim {
     pub add: Vec<add_opcode::Claim>,
