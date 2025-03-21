@@ -83,11 +83,11 @@ struct BlakeRoundInput {
 fn write_trace_simd(
     n_rows: usize,
     inputs: Vec<PackedInputType>,
-    blake_round_state: &mut blake_round::ClaimGenerator,
+    blake_round_state: &mut blake_round::ClaimGenerator, //
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-    triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
+    triple_xor_32_state: &mut triple_xor_32::ClaimGenerator, //
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
 ) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
@@ -98,7 +98,7 @@ fn write_trace_simd(
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
             TripleXor32Input::uninitialized(log_n_packed_rows),
-            BlakeRoundInput::uninitialized(log_n_packed_rows),
+            BlakeRoundInput::uninitialized(log_n_packed_rows), //
         )
     };
 

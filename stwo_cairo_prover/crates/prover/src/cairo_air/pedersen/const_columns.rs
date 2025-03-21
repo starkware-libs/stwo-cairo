@@ -12,7 +12,8 @@ use starknet_types_core::felt::Felt;
 use stwo_cairo_common::preprocessed_consts::pedersen::{
     BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
-use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS, M31};
+// use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -22,39 +23,135 @@ use stwo_prover::core::poly::BitReversedOrder;
 
 use super::utils::felt_batch_inverse;
 use crate::cairo_air::preprocessed::PreProcessedColumn;
+use crate::cairo_air::preprocessed_utils::pad;
 
 pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
     LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES}; //
+
+const LOG_N_ROWS: u32 = (PEDERSEN_TABLE_N_ROWS as u32).next_power_of_two().ilog2();
+// const N_PACKED_ROWS: usize = (2_u32.pow(LOG_N_ROWS)) as usize / N_LANES;
+
+// pub fn pedersen_points_table_m31(row: usize, col: usize) -> M31 {
+//     assert!(col < PEDERSEN_TABLE_N_COLUMNS);
+//     assert!(row < PEDERSEN_TABLE_N_ROWS); // PEDERSEN_TABLE_N_ROWS
+
+//     // let felt252_index = col / FELT252WIDTH27_N_WORDS;
+//     // let m31_index = col % FELT252WIDTH27_N_WORDS;
+//     // round_keys(row)[felt252_index].get_m31(m31_index)
+//     PEDERSEN_TABLE.column_data[col][row] // correct?
+// }
+
+pub fn pedersen_points_table_m31(row: usize, col: usize) -> M31 {
+    assert!(col < PEDERSEN_TABLE_N_COLUMNS);
+    assert!(row < PEDERSEN_TABLE_N_ROWS); // PEDERSEN_TABLE_N_ROWS
+
+    let felt252_index = col / FELT252_N_WORDS;
+    let m31_index = col % FELT252_N_WORDS;
+    pedersen_points_table_f252(row)[felt252_index].get_m31(m31_index)
+    // PEDERSEN_TABLE.column_data[col][row] // correct?
+}
+
+pub fn pedersen_points_table_f252(index: usize) -> [Felt252; 2] {
+    // POSEIDON_ROUND_KEYS[round].map(|k| Felt252Width27 { limbs: k })
+    // let index_usize = index.0 as usize;
+    let array1: [M31; FELT252_N_WORDS] = from_fn(|i| PEDERSEN_TABLE.column_data[i][index]);
+    let array2: [M31; FELT252_N_WORDS] =
+        from_fn(|i| PEDERSEN_TABLE.column_data[i + FELT252_N_WORDS][index]);
+    let output1 = Felt252::from_limbs(&array1);
+    let output2 = Felt252::from_limbs(&array2);
+
+    [output1, output2]
+}
+
 #[derive(Debug)]
 pub struct PedersenPoints {
-    index: usize,
+    // pub packed_limbs: [PackedM31; N_PACKED_ROWS], // ?
+    pub col: usize,
+    // zxc: PedersenPointsTable,
+    // zxc: PedersenPointsTable, //debug trait?
 }
 
 impl PedersenPoints {
     pub fn new(col: usize) -> Self {
-        Self { index: col }
+        // let packed_limbs =
+        //     BaseColumn::from_iter(pad(pedersen_points_table_m31, PEDERSEN_TABLE_N_ROWS,
+        // col)).data;
+        Self {
+            // packed_limbs: packed_limbs.try_into().unwrap(),
+            col,
+        }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        // // // PedersenPointsTable::new().column_data[self.index][vec_row]
+        // // // let zxc = PEDERSEN_TABLE.column_data[self.index].clone();
+        // // let zxc = PEDERSEN_TABLE.column_data[self.index][vec_row * N_LANES].clone();
+        // // // unsafe { PackedM31::from_simd_unchecked(simd) }
+        // let array = PEDERSEN_TABLE.column_data[self.index]
+        //     [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+        //     .try_into()
+        //     .expect("Slice has incorrect length");
+        // PackedM31::from_array(array)
+        // self.packed_limbs[vec_row] //
+        // let packed_keys = BaseColumn::from_iter(pad(round_keys_m31, N_ROUNDS, col)).data;
+        let full_col = PEDERSEN_TABLE.column_data[self.col].clone();
+        // let zxc = full_col[(vec_row * N_LANES)..((vec_row + 1) * N_LANES)];
+        let array16 = (0..N_LANES)
+            .map(|i| vec_row * N_LANES + i)
+            .map(|i| if i < PEDERSEN_TABLE_N_ROWS { i } else { 0 })
+            .map(|i| full_col[i])
+            .collect::<Vec<_>>()
+            .try_into()
+            .expect("vec has incorrect length");
+        // use pedersen_points_table_m31?
+        PackedM31::from_array(array16)
     }
 }
 
 impl PreProcessedColumn for PedersenPoints {
     fn log_size(&self) -> u32 {
-        PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        // PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        LOG_N_ROWS
     }
 
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("pedersen_points_{}", self.index),
+            id: format!("pedersen_points_{}", self.col),
         }
     }
 
+    // fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    //     CircleEvaluation::new(
+    //         CanonicCoset::new(self.log_size()).circle_domain(),
+    //         BaseColumn::from_iter(pad(
+    //             pedersen_points_table_m31,
+    //             PEDERSEN_TABLE_N_ROWS,
+    //             self.index,
+    //         )), /* PEDERSEN_TABLE.
+    //              * column_data[self.index].
+    //              * clone()
+    //              * BaseColumn::from_cpu( */
+    //     )
+    // }
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+            BaseColumn::from_iter(pad(
+                pedersen_points_table_m31,
+                PEDERSEN_TABLE_N_ROWS,
+                self.col,
+            )),
         )
     }
+    // fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    //     CircleEvaluation::new(
+    //         CanonicCoset::new(LOG_N_ROWS).circle_domain(),
+    //         BaseColumn::from_simd(self.packed_limbs.to_vec()),
+    //     )
+    // }
 }
 
 // A table with 2**23 rows, each containing a point on the Stark curve.
@@ -84,6 +181,40 @@ impl PedersenPointsTable {
         }
     }
 }
+
+// //(round: M31) -> [Felt252Width27; 3]
+// pub fn pedersen_points_table_deduce_output(index: M31) -> [Felt252; 2] {
+//     let index_usize = index.0 as usize;
+//     let array1: [M31; FELT252_N_WORDS] = from_fn(|i| PEDERSEN_TABLE.column_data[i][index_usize]);
+// //.clone()?     let array2: [M31; FELT252_N_WORDS] =
+//         from_fn(|i| PEDERSEN_TABLE.column_data[i + FELT252_N_WORDS][index_usize]);
+//     let output1 = Felt252::from_limbs(&array1);
+//     let output2 = Felt252::from_limbs(&array2);
+//     // self.get_row(index)
+//     [output1, output2]
+// }
+// // fn deduce_output(&self, index: usize) -> AffinePoint {
+// //     self.get_row(index)
+// // }
+// pub fn pedersen_points_table_deduce_output_packed(indexes: PackedM31) -> [PackedFelt252; 2] {
+//     let index_array = indexes.to_array();
+
+//     // let zxc = index_array
+//     //     .iter()
+//     //     .map(|&index| self.deduce_output(index))
+//     //     .collect::<Vec<[Felt252; 2]>>();
+
+//     let (output1_vec, output2_vec): (Vec<Felt252>, Vec<Felt252>) = index_array
+//         .iter()
+//         .map(|&index| pedersen_points_table_deduce_output(index))
+//         .map(|[a, b]| (a, b))
+//         .unzip();
+
+//     let output1 = PackedFelt252::from_array(&output1_vec.try_into().unwrap());
+//     let output2 = PackedFelt252::from_array(&output2_vec.try_into().unwrap());
+
+//     [output1, output2]
+// }
 
 fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
     // Initialize the accumulator to -SHIFT_POINT
