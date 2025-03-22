@@ -16,7 +16,7 @@ impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: AtomicMultiplicityColumn::new(N_ROUNDS),
+            mults: AtomicMultiplicityColumn::new(N_ROUNDS), //
         }
     }
 

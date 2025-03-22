@@ -31,6 +31,10 @@ use super::opcodes_air::{
     OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim, OpcodesClaimGenerator,
     OpcodesInteractionClaimGenerator,
 };
+use super::pedersen::air::{
+    PedersenContextClaim, PedersenContextClaimGenerator, PedersenContextComponents,
+    PedersenContextInteractionClaim, PedersenContextInteractionClaimGenerator,
+};
 use super::poseidon::air::{
     PoseidonContextClaim, PoseidonContextClaimGenerator, PoseidonContextComponents,
     PoseidonContextInteractionClaim, PoseidonContextInteractionClaimGenerator,
@@ -83,6 +87,7 @@ pub struct CairoClaim {
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
     pub poseidon_context: PoseidonContextClaim,
+    pub pedersen_context: PedersenContextClaim,
     pub memory_address_to_id: memory_address_to_id::Claim,
     pub memory_id_to_value: memory_id_to_big::Claim,
     pub range_checks: RangeChecksClaim,
@@ -101,6 +106,7 @@ impl CairoClaim {
         self.blake_context.mix_into(channel);
         self.builtins.mix_into(channel);
         self.poseidon_context.mix_into(channel);
+        self.pedersen_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
         self.range_checks.mix_into(channel);
@@ -117,6 +123,7 @@ impl CairoClaim {
             self.blake_context.log_sizes(),
             self.builtins.log_sizes(),
             self.poseidon_context.log_sizes(),
+            self.pedersen_context.log_sizes(),
             self.memory_address_to_id.log_sizes(),
             self.memory_id_to_value.log_sizes(),
             self.range_checks.log_sizes(),
@@ -191,6 +198,7 @@ pub struct CairoClaimGenerator {
     builtins: BuiltinsClaimGenerator,
     blake_context_trace_generator: BlakeContextClaimGenerator,
     poseidon_context_trace_generator: PoseidonContextClaimGenerator,
+    pedersen_context_trace_generator: PedersenContextClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
     range_checks_trace_generator: RangeChecksClaimGenerator,
@@ -209,6 +217,7 @@ impl CairoClaimGenerator {
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
         let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
+        let pedersen_context_trace_generator = PedersenContextClaimGenerator::default();
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
         let memory_id_to_value_trace_generator =
@@ -256,6 +265,7 @@ impl CairoClaimGenerator {
             builtins,
             blake_context_trace_generator,
             poseidon_context_trace_generator,
+            pedersen_context_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
             range_checks_trace_generator,
@@ -315,8 +325,14 @@ impl CairoClaimGenerator {
             &self
                 .range_checks_trace_generator
                 .rc_3_3_3_3_3_trace_generator,
+            &mut self.pedersen_context_trace_generator,
+            &self.range_checks_trace_generator.rc_5_4_trace_generator,
+            &self.range_checks_trace_generator.rc_8_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
+        let (pedersen_context_claim, pedersen_context_interaction_gen) = self
+            .pedersen_context_trace_generator
+            .write_trace(tree_builder, &self.range_checks_trace_generator); // ?
         let (poseidon_context_claim, poseidon_context_interaction_gen) = self
             .poseidon_context_trace_generator
             .write_trace(tree_builder, &self.range_checks_trace_generator);
@@ -351,6 +367,7 @@ impl CairoClaimGenerator {
                 blake_context: blake_context_claim,
                 builtins: builtins_claim,
                 poseidon_context: poseidon_context_claim,
+                pedersen_context: pedersen_context_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
                 range_checks: range_checks_claim,
@@ -365,6 +382,7 @@ impl CairoClaimGenerator {
                 verify_instruction_interaction_gen,
                 builtins_interaction_gen,
                 poseidon_context_interaction_gen,
+                pedersen_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
                 range_checks_interaction_gen,
@@ -383,6 +401,7 @@ pub struct CairoInteractionClaimGenerator {
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
+    pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
     range_checks_interaction_gen: RangeChecksInteractionClaimGenerator,
@@ -423,6 +442,9 @@ impl CairoInteractionClaimGenerator {
         let poseidon_context_interaction_claim = self
             .poseidon_context_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
+        let pedersen_context_interaction_claim = self
+            .pedersen_context_interaction_gen
+            .write_interaction_trace(tree_builder, interaction_elements);
         let memory_address_to_id_interaction_claim = self
             .memory_address_to_id_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.memory_address_to_id);
@@ -456,6 +478,7 @@ impl CairoInteractionClaimGenerator {
             blake_context: blake_context_interaction_claim,
             builtins: builtins_interaction_claims,
             poseidon_context: poseidon_context_interaction_claim,
+            pedersen_context: pedersen_context_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
             range_checks: range_checks_interaction_claim,
@@ -473,6 +496,8 @@ pub struct CairoInteractionElements {
     pub blake_g: relations::BlakeG,
     pub blake_sigma: relations::BlakeRoundSigma,
     pub triple_xor_32: relations::TripleXor32,
+    pub partial_ec_mul: relations::PartialEcMul, //
+    pub pedersen_points_table: relations::PedersenPointsTable, //
     pub verify_instruction: relations::VerifyInstruction,
     pub poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain,
     pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
@@ -502,6 +527,8 @@ impl CairoInteractionElements {
             cube_252: relations::Cube252::draw(channel),
             poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
             range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
+            partial_ec_mul: relations::PartialEcMul::draw(channel), //
+            pedersen_points_table: relations::PedersenPointsTable::draw(channel), //
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
             range_checks: RangeChecksInteractionElements::draw(channel),
@@ -521,6 +548,7 @@ pub struct CairoInteractionClaim {
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
+    pub pedersen_context: PedersenContextInteractionClaim,
     pub memory_address_to_id: memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: memory_id_to_big::InteractionClaim,
     pub range_checks: RangeChecksInteractionClaim,
@@ -535,6 +563,7 @@ impl CairoInteractionClaim {
         self.verify_instruction.mix_into(channel);
         self.builtins.mix_into(channel);
         self.poseidon_context.mix_into(channel);
+        self.pedersen_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
         self.range_checks.mix_into(channel);
@@ -560,6 +589,7 @@ pub fn lookup_sum(
     sum += interaction_claim.blake_context.sum();
     sum += interaction_claim.builtins.sum();
     sum += interaction_claim.poseidon_context.sum();
+    sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.memory_address_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
     sum += interaction_claim.memory_id_to_value.small_claimed_sum;
@@ -578,6 +608,7 @@ pub struct CairoComponents {
     pub blake_context: BlakeContextComponents,
     pub builtins: BuiltinComponents,
     pub poseidon_context: PoseidonContextComponents,
+    pub pedersen_context: PedersenContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
     pub memory_id_to_value: (
         memory_id_to_big::BigComponent,
@@ -644,6 +675,13 @@ impl CairoComponents {
             interaction_elements,
             &interaction_claim.poseidon_context,
         );
+        let pedersen_context = PedersenContextComponents::new(
+            tree_span_provider,
+            &cairo_claim.pedersen_context,
+            interaction_elements,
+            &interaction_claim.pedersen_context,
+        );
+
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,
             memory_address_to_id::Eval::new(
@@ -721,6 +759,7 @@ impl CairoComponents {
             blake_context,
             builtins: builtin_components,
             poseidon_context,
+            pedersen_context,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (
                 memory_id_to_value_component,
@@ -741,6 +780,7 @@ impl CairoComponents {
             self.blake_context.provers(),
             self.builtins.provers(),
             self.poseidon_context.provers(),
+            self.pedersen_context.provers(), //
             [
                 &self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.0 as &dyn ComponentProver<SimdBackend>,
@@ -777,6 +817,7 @@ impl std::fmt::Display for CairoComponents {
         writeln!(f, "BlakeContext: {}", self.blake_context)?;
         writeln!(f, "Builtins: {}", self.builtins)?;
         writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
+        writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
         writeln!(
             f,
             "MemoryAddressToId: {}",

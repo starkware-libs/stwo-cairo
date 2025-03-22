@@ -4,10 +4,29 @@ use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
+use stwo_cairo_common::prover_types::simd::{PackedFelt252, N_LANES};
+use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
+use stwo_prover::core::backend::simd::m31::PackedM31;
 
-use super::const_columns::PEDERSEN_TABLE;
+use super::const_columns::{pedersen_points_table_f252, PEDERSEN_TABLE};
 
 type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
+
+#[derive(Debug)]
+pub struct PedersenPointsDeduction {}
+impl PedersenPointsDeduction {
+    pub fn deduce_output(index: M31) -> [Felt252; 2] {
+        pedersen_points_table_f252(index.0 as usize)
+    }
+}
+
+pub struct PackedPedersenPointsDeduction {}
+impl PackedPedersenPointsDeduction {
+    pub fn deduce_output(input: [PackedM31; 1]) -> [PackedFelt252; 2] {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(|row| PedersenPointsDeduction::deduce_output(row[0])))
+    }
+}
 
 #[derive(Debug)]
 pub struct PartialEcMul {}
@@ -54,6 +73,27 @@ impl PartialEcMul {
                 new_m_shifted,
                 [new_accumulator_x, new_accumulator_y],
             ),
+        )
+    }
+}
+
+pub struct PackedPartialEcMul {}
+impl PackedPartialEcMul {
+    pub fn deduce_output(
+        input: (
+            PackedM31,
+            PackedM31,
+            (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+        ),
+    ) -> (
+        PackedM31,
+        PackedM31,
+        (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+    ) {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(
+            unpacked_inputs
+                .map(|(chain, round, state)| PartialEcMul::deduce_output(chain, round, state)),
         )
     }
 }

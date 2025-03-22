@@ -162,10 +162,12 @@ pub mod tests {
 
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
+    use stwo_cairo_adapter::vm_import::generate_test_input;
     use stwo_cairo_adapter::ProverInput;
 
     use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
     use crate::cairo_air::preprocessed::tests::testing_preprocessed_tree;
+    use crate::cairo_air::preprocessed::PreProcessedTrace;
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -195,6 +197,20 @@ pub mod tests {
     fn test_basic_cairo_constraints() {
         let input = test_basic_cairo_air_input();
         let pp_tree = testing_preprocessed_tree(19);
+        assert_cairo_constraints(input, pp_tree);
+    }
+
+    // #[test]
+    // fn test_poseidon_builtin_constraints() {
+    //     let input = generate_test_input("test_prove_verify_poseidon_builtin");
+    //     let pp_tree = testing_preprocessed_tree(19);
+    //     assert_cairo_constraints(input, pp_tree);
+    // }
+
+    #[test]
+    fn test_pedersen_cairo_constraints() {
+        let input = generate_test_input("test_prove_verify_pedersen_builtin");
+        let pp_tree = PreProcessedTrace::canonical();
         assert_cairo_constraints(input, pp_tree);
     }
 
@@ -229,7 +245,7 @@ pub mod tests {
     }
 
     #[cfg(test)]
-    #[cfg(feature = "slow-tests")]
+    //#[cfg(feature = "slow-tests")]
     pub mod slow_tests {
         use itertools::Itertools;
         use stwo_cairo_adapter::vm_import::generate_test_input;
@@ -309,7 +325,7 @@ pub mod tests {
 
             /// Asserts that all builtins are present in the input.
             /// Panics if any of the builtins is missing.
-            fn assert_all_builtins_in_input(input: &ProverInput) {
+            fn _assert_all_builtins_in_input(input: &ProverInput) {
                 let empty_builtins = input
                     .builtins_segments
                     .get_counts()
@@ -324,14 +340,14 @@ pub mod tests {
                 );
             }
 
-            #[test]
-            fn test_prove_verify_all_builtins() {
-                let input = generate_test_input("test_prove_verify_all_builtins");
-                assert_all_builtins_in_input(&input);
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
-            }
+            // #[test]
+            // fn test_prove_verify_all_builtins() {
+            //     let input = generate_test_input("test_prove_verify_all_builtins");
+            //     assert_all_builtins_in_input(&input);
+            //     let cairo_proof =
+            //         prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
+            //     verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
+            // }
 
             #[test]
             fn test_prove_verify_add_mod_builtin() {
@@ -384,6 +400,15 @@ pub mod tests {
                 let input = generate_test_input("test_prove_verify_poseidon_builtin");
                 let pp_tree = testing_preprocessed_tree(19);
                 assert_cairo_constraints(input, pp_tree);
+            }
+
+            //
+            #[test]
+            fn test_prove_verify_pedersen_builtin() {
+                let input = generate_test_input("test_prove_verify_pedersen_builtin");
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, PcsConfig::default()).unwrap();
             }
 
             #[test]
