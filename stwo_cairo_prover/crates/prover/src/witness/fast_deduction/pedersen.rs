@@ -1,14 +1,26 @@
 #![allow(unused)]
 use std::array::from_fn;
 
+use cairo_air::pedersen::const_columns::PEDERSEN_TABLE;
 use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
-
-use super::const_columns::PEDERSEN_TABLE;
+use stwo_cairo_common::prover_types::simd::PackedFelt252;
+use stwo_prover::core::backend::simd::conversion::Pack;
+use stwo_prover::core::backend::simd::m31::PackedM31;
 
 type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
+
+pub struct PackedPedersenPointsTable {}
+impl PackedPedersenPointsTable {
+    pub fn deduce_output([input]: [PackedM31; 1]) -> [PackedFelt252; 2] {
+        let arr = input
+            .to_array()
+            .map(|i| PEDERSEN_TABLE.get_row_coordinates(i.0 as usize));
+        <_ as Pack>::pack(arr)
+    }
+}
 
 #[derive(Debug)]
 pub struct PartialEcMul {}
