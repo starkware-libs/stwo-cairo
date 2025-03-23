@@ -78,6 +78,27 @@ impl PartialEcMul {
     }
 }
 
+pub struct PackedPartialEcMul {}
+impl PackedPartialEcMul {
+    pub fn deduce_output(
+        input: (
+            PackedM31,
+            PackedM31,
+            (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+        ),
+    ) -> (
+        PackedM31,
+        PackedM31,
+        (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
+    ) {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(
+            unpacked_inputs
+                .map(|(chain, round, state)| PartialEcMul::deduce_output(chain, round, state)),
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use starknet_curve::curve_params::{PEDERSEN_P1, PEDERSEN_P2, SHIFT_POINT};
