@@ -20,7 +20,7 @@ pub const MIN_SEGMENT_SIZE: usize = N_LANES;
 /// The relocator is responsible for relocating addresses for the memory and the builtins segments.
 pub struct Relocator {
     pub relocation_table: Vec<u32>,
-    pub relocatable_mem: Vec<Vec<MaybeRelocatable>>,
+    pub relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
     pub builtins_segments_indices: HashMap<usize, BuiltinName>,
 }
 impl Relocator {
@@ -28,7 +28,7 @@ impl Relocator {
     /// Each built-in segment is rounded up to the nearest power of two instances
     /// or `MIN_SEGMENT_SIZE`, taking the maximum of the two.
     pub fn new(
-        relocatable_mem: Vec<Vec<MaybeRelocatable>>,
+        relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
         builtins_segments_indices: HashMap<usize, BuiltinName>,
     ) -> Self {
         let address_base = 1;
@@ -108,7 +108,12 @@ impl Relocator {
         let segment = &self.relocatable_mem[segment_index];
         for (offset, value) in segment.iter().enumerate() {
             let address = self.calc_relocated_addr(segment_index, offset) as u64;
-            let value = self.relocate_value(value);
+            let value = if let Some(val) = value {
+                self.relocate_value(val)
+            } else {
+                // If this cell is None, fill with zero.
+                [0; 8]
+            };
             res.push(MemoryEntry { address, value });
         }
         res
@@ -203,15 +208,15 @@ pub mod relocator_tests {
 
     pub fn create_test_relocator() -> Relocator {
         let segment0 = vec![
-            MaybeRelocatable::Int(1.into()),
-            MaybeRelocatable::Int(9.into()),
-            MaybeRelocatable::RelocatableValue(relocatable!(2, 1)),
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(9.into())),
+            Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1))),
         ];
-        let builtin_segment1 = vec![MaybeRelocatable::RelocatableValue(relocatable!(0, 1))];
+        let builtin_segment1 = vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1)))];
         let segment2 = vec![
-            MaybeRelocatable::Int(1.into()),
-            MaybeRelocatable::Int(2.into()),
-            MaybeRelocatable::Int(3.into()),
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(2.into())),
+            Some(MaybeRelocatable::Int(3.into())),
         ];
 
         let relocatble_memory = vec![segment0, builtin_segment1, segment2];
@@ -323,17 +328,17 @@ pub mod relocator_tests {
     #[test]
     fn test_create_builtins_segments() {
         let builtin_segment0 = vec![
-            MaybeRelocatable::Int(1.into()),
-            MaybeRelocatable::Int(9.into()),
-            MaybeRelocatable::RelocatableValue(relocatable!(2, 1)),
-            MaybeRelocatable::Int(5498.into()),
-            MaybeRelocatable::RelocatableValue(relocatable!(2, 1478)),
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(9.into())),
+            Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1))),
+            Some(MaybeRelocatable::Int(5498.into())),
+            Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1478))),
         ];
-        let builtin_segment1 = vec![MaybeRelocatable::RelocatableValue(relocatable!(0, 1))];
+        let builtin_segment1 = vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1)))];
         let segment2 = vec![
-            MaybeRelocatable::Int(1.into()),
-            MaybeRelocatable::Int(2.into()),
-            MaybeRelocatable::Int(3.into()),
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(2.into())),
+            Some(MaybeRelocatable::Int(3.into())),
         ];
 
         let relocatble_memory = vec![builtin_segment0, builtin_segment1, segment2];
