@@ -5,6 +5,7 @@ relation!(Cube252, 20);
 relation!(MemoryAddressToId, 2);
 relation!(MemoryIdToBig, 29);
 relation!(Opcodes, 3);
+relation!(PedersenPointsTable, 57);
 relation!(PoseidonFullRoundChain, 32);
 relation!(Poseidon3PartialRoundsChain, 42);
 relation!(PoseidonRoundKeys, 31);
