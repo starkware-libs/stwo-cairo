@@ -50,6 +50,12 @@ pub fn assert_component<E: FrameworkEval + Sync>(
     );
 }
 
+// Asserts that all Cairo AIR constraints are satisfied for the given trace and components.
+//
+// # Parameters
+//
+// * `trace` - The evaluated polynomials on the trace domain.
+// * `cairo_components` - The components constraints to check.
 fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &CairoComponents) {
     let CairoComponents {
         opcodes,
@@ -186,8 +192,8 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
     tree_builder.finalize_interaction();
 
     // Interaction trace.
-    let mut channel = Blake2sChannel::default();
-    let interaction_elements = CairoInteractionElements::draw(&mut channel);
+    let mut dummy_channel = Blake2sChannel::default();
+    let interaction_elements = CairoInteractionElements::draw(&mut dummy_channel);
     let mut tree_builder = commitment_scheme.tree_builder();
     let interaction_claim =
         interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
