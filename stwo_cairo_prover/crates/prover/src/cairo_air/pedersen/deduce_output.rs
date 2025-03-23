@@ -4,10 +4,26 @@ use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
+use stwo_cairo_common::prover_types::simd::PackedFelt252;
+use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
+use stwo_prover::core::backend::simd::m31::PackedM31;
 
 use super::const_columns::PEDERSEN_TABLE;
 
 type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
+
+fn pedersen_points_deduce_output(index: M31) -> [Felt252; 2] {
+    let index_usize = index.0 as usize;
+    PEDERSEN_TABLE.get_row_coordinates(index_usize)
+}
+
+pub struct PackedPedersenPoints {}
+impl PackedPedersenPoints {
+    pub fn deduce_output(input: [PackedM31; 1]) -> [PackedFelt252; 2] {
+        let unpacked_inputs = input.unpack();
+        <_ as Pack>::pack(unpacked_inputs.map(|row| pedersen_points_deduce_output(row[0])))
+    }
+}
 
 #[derive(Debug)]
 pub struct PartialEcMul {}
