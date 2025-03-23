@@ -15,6 +15,7 @@ use stwo_cairo_common::preprocessed_consts::pedersen::{
 use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
@@ -35,6 +36,14 @@ pub struct PedersenPoints {
 impl PedersenPoints {
     pub fn new(col: usize) -> Self {
         Self { index: col }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        let array = PEDERSEN_TABLE.column_data[self.index]
+            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+            .try_into()
+            .expect("Slice has incorrect length");
+        PackedM31::from_array(array)
     }
 }
 
