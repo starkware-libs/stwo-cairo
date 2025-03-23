@@ -160,3 +160,5 @@ and a proof for the trace files inside the `execution1` folder will be generated
 ```
 scarb verify <path_to_proof_json>
 ```
+
+maccabi Tel Aviv!
