@@ -26,6 +26,7 @@ pub use stwo_prover::core::poly::BitReversedOrder;
 pub use crate::witness::fast_deduction::blake::{
     BlakeRound, PackedBlakeG, PackedBlakeRoundSigma, PackedTripleXor32,
 };
+pub use crate::witness::fast_deduction::pedersen::PackedPedersenPointsTable;
 pub use crate::witness::fast_deduction::poseidon::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
     PackedPoseidonRoundKeys,
