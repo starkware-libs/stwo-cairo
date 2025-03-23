@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::relations;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
@@ -10,7 +11,6 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
-use crate::cairo_air::relations;
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
 /// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.

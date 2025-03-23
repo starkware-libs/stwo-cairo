@@ -3,6 +3,7 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::prover_types::cpu::CasmState;
+use stwo_cairo_common::relations;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::constraint_framework::{Relation, TraceLocationAllocator, PREPROCESSED_TRACE_IDX};
@@ -40,7 +41,6 @@ use super::range_checks_air::{
     RangeChecksInteractionClaim, RangeChecksInteractionClaimGenerator,
     RangeChecksInteractionElements,
 };
-use crate::cairo_air::relations;
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::utils::TreeBuilder;
 use crate::components::{

@@ -1,5 +1,6 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::relations;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -9,7 +10,6 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::TreeVec;
 
 use super::debug_tools::indented_component_display;
-use crate::cairo_air::relations;
 use crate::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,

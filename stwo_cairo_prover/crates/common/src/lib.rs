@@ -2,3 +2,4 @@
 pub mod memory;
 pub mod preprocessed_consts;
 pub mod prover_types;
+pub mod relations;

@@ -136,6 +136,7 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo_cairo_common::relations;
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
@@ -147,7 +148,6 @@ mod tests {
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
-    use crate::cairo_air::relations;
     use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
     #[test]
     fn test_prove() {

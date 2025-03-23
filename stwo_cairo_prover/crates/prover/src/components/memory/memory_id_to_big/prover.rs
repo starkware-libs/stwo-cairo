@@ -10,9 +10,9 @@ use stwo_cairo_adapter::memory::{
 };
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
+use stwo_cairo_common::relations;
 
 use super::component::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use crate::cairo_air::relations;
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
 use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};

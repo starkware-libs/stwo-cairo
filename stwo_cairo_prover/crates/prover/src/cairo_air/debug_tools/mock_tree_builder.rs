@@ -84,9 +84,9 @@ mod tests {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
     use stwo_cairo_common::prover_types::simd::PackedUInt32;
+    use stwo_cairo_common::relations;
 
     use super::MockCommitmentScheme;
-    use crate::cairo_air::relations;
     use crate::components::{triple_xor_32, verify_bitwise_xor_8};
 
     #[test]

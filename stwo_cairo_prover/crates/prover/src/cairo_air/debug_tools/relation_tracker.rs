@@ -1,5 +1,6 @@
 use itertools::Itertools;
 use num_traits::One;
+use stwo_cairo_common::relations;
 use stwo_prover::constraint_framework::relation_tracker::{
     RelationTrackerComponent, RelationTrackerEntry,
 };
@@ -12,7 +13,6 @@ use stwo_prover::core::pcs::CommitmentSchemeProver;
 use stwo_prover::core::poly::circle::CanonicCoset;
 
 use crate::cairo_air::air::CairoClaim;
-use crate::cairo_air::relations;
 use crate::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
