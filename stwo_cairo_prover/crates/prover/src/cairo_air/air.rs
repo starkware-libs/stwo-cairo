@@ -188,8 +188,8 @@ pub struct CairoClaimGenerator {
 
     // Internal components.
     verify_instruction_trace_generator: verify_instruction::ClaimGenerator,
-    builtins: BuiltinsClaimGenerator,
     blake_context_trace_generator: BlakeContextClaimGenerator,
+    builtins: BuiltinsClaimGenerator,
     poseidon_context_trace_generator: PoseidonContextClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
@@ -253,8 +253,8 @@ impl CairoClaimGenerator {
             public_data,
             opcodes,
             verify_instruction_trace_generator,
-            builtins,
             blake_context_trace_generator,
+            builtins,
             poseidon_context_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
@@ -358,8 +358,8 @@ impl CairoClaimGenerator {
             },
             CairoInteractionClaimGenerator {
                 opcodes_interaction_gen,
-                blake_context_interaction_gen,
                 verify_instruction_interaction_gen,
+                blake_context_interaction_gen,
                 builtins_interaction_gen,
                 poseidon_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
@@ -376,8 +376,8 @@ impl CairoClaimGenerator {
 
 pub struct CairoInteractionClaimGenerator {
     opcodes_interaction_gen: OpcodesInteractionClaimGenerator,
-    blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
+    blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
@@ -463,11 +463,11 @@ impl CairoInteractionClaimGenerator {
 
 pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
+    pub verify_instruction: relations::VerifyInstruction,
     pub blake_round: relations::BlakeRound,
     pub blake_g: relations::BlakeG,
     pub blake_sigma: relations::BlakeRoundSigma,
     pub triple_xor_32: relations::TripleXor32,
-    pub verify_instruction: relations::VerifyInstruction,
     pub poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain,
     pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
     pub cube_252: relations::Cube252,
@@ -527,6 +527,7 @@ impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.opcodes.mix_into(channel);
         self.verify_instruction.mix_into(channel);
+        self.blake_context.mix_into(channel);
         self.builtins.mix_into(channel);
         self.poseidon_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
