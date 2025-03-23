@@ -12,7 +12,8 @@ use starknet_types_core::felt::Felt;
 use stwo_cairo_common::preprocessed_consts::pedersen::{
     BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
-use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS}; // M31
+// use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -22,37 +23,83 @@ use stwo_prover::core::poly::BitReversedOrder;
 
 use super::utils::felt_batch_inverse;
 use crate::cairo_air::preprocessed::PreProcessedColumn;
+// use crate::cairo_air::preprocessed_utils::pad;
 
 pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
     LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
+use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES}; //
+
+const PADDED_N_ROWS: u32 = (PEDERSEN_TABLE_N_ROWS as u32).next_power_of_two();
+
+const LOG_N_ROWS: u32 = (PEDERSEN_TABLE_N_ROWS as u32).next_power_of_two().ilog2();
+const N_PACKED_ROWS: usize = (2_u32.pow(LOG_N_ROWS)) as usize / N_LANES;
+
+// pub fn pedersen_points_table_m31(row: usize, col: usize) -> M31 {
+//     assert!(col < PEDERSEN_TABLE_N_COLUMNS);
+//     assert!(row < PEDERSEN_TABLE_N_ROWS); // PEDERSEN_TABLE_N_ROWS
+
+//     let felt252_index = col / FELT252_N_WORDS;
+//     let m31_index = col % FELT252_N_WORDS;
+//     pedersen_points_table_f252(row)[felt252_index].get_m31(m31_index)
+//     // PEDERSEN_TABLE.column_data[col][row] // correct?
+// }
+
+// pub fn pedersen_points_table_f252(index: usize) -> [Felt252; 2] {
+//     // POSEIDON_ROUND_KEYS[round].map(|k| Felt252Width27 { limbs: k })
+//     // let index_usize = index.0 as usize;
+//     let array1: [M31; FELT252_N_WORDS] = from_fn(|i| PEDERSEN_TABLE.column_data[i][index]);
+//     let array2: [M31; FELT252_N_WORDS] =
+//         from_fn(|i| PEDERSEN_TABLE.column_data[i + FELT252_N_WORDS][index]);
+//     let output1 = Felt252::from_limbs(&array1);
+//     let output2 = Felt252::from_limbs(&array2);
+
+//     [output1, output2]
+// }
+
 #[derive(Debug)]
 pub struct PedersenPoints {
-    index: usize,
+    pub packed_limbs: [PackedM31; N_PACKED_ROWS],
+    pub col: usize,
 }
 
 impl PedersenPoints {
     pub fn new(col: usize) -> Self {
-        Self { index: col }
+        let packed_limbs = BaseColumn::from_iter(PEDERSEN_TABLE.column_data[col].clone()).data;
+        assert_eq!(packed_limbs.len(), PADDED_N_ROWS as usize);
+        Self {
+            packed_limbs: packed_limbs.try_into().unwrap(),
+            col,
+        }
+    }
+
+    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        self.packed_limbs[vec_row] //
     }
 }
 
 impl PreProcessedColumn for PedersenPoints {
     fn log_size(&self) -> u32 {
-        PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        LOG_N_ROWS
     }
 
     fn id(&self) -> PreProcessedColumnId {
         PreProcessedColumnId {
-            id: format!("pedersen_points_{}", self.index),
+            id: format!("pedersen_points_{}", self.col),
         }
     }
 
+    // fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    //     CircleEvaluation::new(
+    //         CanonicCoset::new(self.log_size()).circle_domain(),
+    //         BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+    //     )
+    // }
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
-            CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+            CanonicCoset::new(LOG_N_ROWS).circle_domain(),
+            BaseColumn::from_simd(self.packed_limbs.to_vec()),
         )
     }
 }
