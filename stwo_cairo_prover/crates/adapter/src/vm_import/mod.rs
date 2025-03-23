@@ -123,9 +123,9 @@ pub fn adapt_vm_output(
     )
 }
 
-/// Creates Cairo input for Stwo, utilized by:
-/// - `adapt_vm_output` in the prover.
-/// - `adapt_finished_runner` in the validator.
+// / Creates Cairo input for Stwo, utilized by:
+// / - `adapt_vm_output` in the prover.
+// / - `adapt_finished_runner` in the validator.
 pub fn adapt_to_stwo_input(
     trace_iter: impl Iterator<Item = RelocatedTraceEntry>,
     mut memory: MemoryBuilder,
