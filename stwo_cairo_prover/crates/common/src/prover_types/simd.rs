@@ -445,6 +445,17 @@ impl Mul for PackedFelt252 {
     }
 }
 
+impl Div for PackedFelt252 {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        let lhs = self.to_array();
+        let rhs = rhs.to_array();
+        let result = std::array::from_fn(|i| lhs[i] / rhs[i]);
+        Self::from_array(&result)
+    }
+}
+
 impl PartialEq for PackedFelt252 {
     fn eq(&self, other: &Self) -> bool {
         self.to_array() == other.to_array()
