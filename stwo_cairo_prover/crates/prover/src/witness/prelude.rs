@@ -23,7 +23,7 @@ pub use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 pub use stwo_prover::core::poly::BitReversedOrder;
 
 pub use crate::witness::fast_deduction::blake::{BlakeG, BlakeRound, BlakeRoundSigma, TripleXor32};
-pub use crate::witness::fast_deduction::pedersen::PackedPedersenPointsTable;
+pub use crate::witness::fast_deduction::pedersen::{PackedPartialEcMul, PackedPedersenPointsTable};
 pub use crate::witness::fast_deduction::poseidon::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
     PackedPoseidonRoundKeys,
