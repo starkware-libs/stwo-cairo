@@ -29,6 +29,7 @@ pub mod mul_opcode;
 pub mod mul_opcode_imm;
 pub mod mul_opcode_small;
 pub mod mul_opcode_small_imm;
+pub mod pedersen_points_table;
 pub mod poseidon_3_partial_rounds_chain;
 pub mod poseidon_builtin;
 pub mod poseidon_full_round_chain;
