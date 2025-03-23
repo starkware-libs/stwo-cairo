@@ -162,6 +162,7 @@ pub mod tests {
 
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
+    use stwo_cairo_adapter::vm_import::generate_test_input;
     use stwo_cairo_adapter::ProverInput;
 
     use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
@@ -195,6 +196,13 @@ pub mod tests {
     fn test_basic_cairo_constraints() {
         let input = test_basic_cairo_air_input();
         let pp_tree = testing_preprocessed_tree(19);
+        assert_cairo_constraints(input, pp_tree);
+    }
+
+    #[test]
+    fn test_all_cairo_constraints() {
+        let input = generate_test_input("test_prove_verify_all_opcode_components");
+        let pp_tree = testing_preprocessed_tree(20);
         assert_cairo_constraints(input, pp_tree);
     }
 
