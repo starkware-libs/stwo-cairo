@@ -6,7 +6,8 @@ use serde::Serialize;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::cairo_air::prover::{
-    default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
+    default_prod_prover_parameters, prove_cairo, ChannelHash, PreProcessedTraceVariant,
+    ProverParameters,
 };
 use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use stwo_cairo_serialize::CairoSerialize;
@@ -56,6 +57,7 @@ struct Args {
     ///                 "n_queries": 70
     ///             }
     ///         }
+    ///         "preprocessed_trace": "canonical"
     ///     }
     ///
     /// Default parameters are chosen to ensure 96 bits of security.
@@ -122,6 +124,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let ProverParameters {
         channel_hash,
         pcs_config,
+        preprocessed_trace,
     } = match args.params_json {
         Some(path) => serde_json::from_str(&read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
@@ -135,6 +138,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     run_inner_fn(
         vm_output,
         pcs_config,
+        preprocessed_trace,
         args.verify,
         args.proof_path,
         args.proof_format,
@@ -149,6 +153,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 fn run_inner<MC: MerkleChannel>(
     vm_output: ProverInput,
     pcs_config: PcsConfig,
+    preprocessed_trace: PreProcessedTraceVariant,
     verify: bool,
     proof_path: PathBuf,
     proof_format: ProofFormat,
@@ -158,7 +163,7 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(vm_output, pcs_config)?;
+    let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
     let proof_file = create_file(&proof_path)?;
 
     match proof_format {
@@ -179,7 +184,7 @@ where
     }
 
     if verify {
-        verify_cairo::<MC>(proof, pcs_config)?;
+        verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
 
