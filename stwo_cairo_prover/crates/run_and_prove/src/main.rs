@@ -76,15 +76,16 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let ProverParameters {
         channel_hash: _,
         pcs_config,
+        preprocessed_trace,
     } = default_prod_prover_parameters();
 
     // TODO(Ohad): Propagate hash from CLI args.
-    let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, pcs_config)?;
+    let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, pcs_config, preprocessed_trace)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
 
     if args.verify {
-        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config)?;
+        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
 

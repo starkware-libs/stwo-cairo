@@ -6,9 +6,9 @@ use stwo_prover::core::pcs::{CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::prover::{verify, VerificationError};
 use thiserror::Error;
 
+use super::prover::PreProcessedTraceVariant;
 use super::CairoProof;
 use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
-use crate::cairo_air::preprocessed::PreProcessedTrace;
 use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPLIT;
 
 pub fn verify_cairo<MC: MerkleChannel>(
@@ -18,6 +18,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         stark_proof,
     }: CairoProof<MC::H>,
     pcs_config: PcsConfig,
+    preprocessed_trace: PreProcessedTraceVariant,
 ) -> Result<(), CairoVerificationError> {
     // Auxiliary verifications.
     // Assert that ADDRESS->ID component does not overflow.
@@ -49,7 +50,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         &claim,
         &interaction_elements,
         &interaction_claim,
-        &PreProcessedTrace::canonical().ids(),
+        &preprocessed_trace.to_preprocessed_trace().ids(),
     );
     let components = component_generator.components();
 
