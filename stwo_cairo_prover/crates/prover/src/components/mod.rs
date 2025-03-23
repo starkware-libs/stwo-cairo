@@ -58,3 +58,52 @@ pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
 pub mod blake_round_sigma;
+
+#[cfg(feature = "slow-tests")]
+#[cfg(test)]
+mod tests {
+    use itertools::chain;
+    use stwo_cairo_adapter::vm_import::generate_test_input;
+    use stwo_prover::core::pcs::PcsConfig;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+
+    use crate::cairo_air::prover::prove_cairo;
+    use crate::cairo_air::verifier::verify_cairo;
+
+    #[test]
+    fn test_generic_opcode() {
+        let mut input = generate_test_input("test_prove_verify_all_opcode_components");
+        let casm_state_by_opcode = &mut input.state_transitions.casm_states_by_opcode;
+        casm_state_by_opcode.generic_opcode.extend(chain!(
+            casm_state_by_opcode.add_ap_opcode.drain(..),
+            casm_state_by_opcode.add_ap_opcode_imm.drain(..),
+            casm_state_by_opcode.add_ap_opcode_op_1_base_fp.drain(..),
+            casm_state_by_opcode.add_opcode_small_imm.drain(..),
+            casm_state_by_opcode.add_opcode.drain(..),
+            casm_state_by_opcode.add_opcode_small.drain(..),
+            casm_state_by_opcode.add_opcode_imm.drain(..),
+            casm_state_by_opcode.assert_eq_opcode.drain(..),
+            casm_state_by_opcode.assert_eq_opcode_double_deref.drain(..),
+            casm_state_by_opcode.assert_eq_opcode_imm.drain(..),
+            casm_state_by_opcode.call_opcode.drain(..),
+            casm_state_by_opcode.call_opcode_rel.drain(..),
+            casm_state_by_opcode.call_opcode_op_1_base_fp.drain(..),
+            casm_state_by_opcode.jnz_opcode_taken_dst_base_fp.drain(..),
+            casm_state_by_opcode.jnz_opcode.drain(..),
+            casm_state_by_opcode.jnz_opcode_taken.drain(..),
+            casm_state_by_opcode.jnz_opcode_dst_base_fp.drain(..),
+            casm_state_by_opcode.jump_opcode_rel_imm.drain(..),
+            casm_state_by_opcode.jump_opcode_rel.drain(..),
+            casm_state_by_opcode.jump_opcode_double_deref.drain(..),
+            casm_state_by_opcode.jump_opcode.drain(..),
+            casm_state_by_opcode.mul_opcode_small_imm.drain(..),
+            casm_state_by_opcode.mul_opcode_small.drain(..),
+            casm_state_by_opcode.mul_opcode.drain(..),
+            casm_state_by_opcode.mul_opcode_imm.drain(..),
+            casm_state_by_opcode.ret_opcode.drain(..),
+        ));
+
+        let proof = prove_cairo::<Blake2sMerkleChannel>(input, PcsConfig::default()).unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(proof, PcsConfig::default()).unwrap();
+    }
+}
