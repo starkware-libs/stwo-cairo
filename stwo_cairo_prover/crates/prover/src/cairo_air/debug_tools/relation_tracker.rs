@@ -16,7 +16,7 @@ use crate::cairo_air::relations;
 use crate::components::range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
-    range_check_6, range_check_7_2_5, range_check_9_9,
+    range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use crate::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_mod_builtin, add_opcode,
@@ -688,6 +688,15 @@ where
     entries.extend(
         RelationTrackerComponent::new(
             tree_span_provider,
+            range_check_8::Eval {
+                lookup_elements: relations::RangeCheck_8::dummy(),
+            },
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
             range_check_11::Eval {
                 lookup_elements: relations::RangeCheck_11::dummy(),
             },
@@ -744,6 +753,15 @@ where
             tree_span_provider,
             range_check_4_4::Eval {
                 lookup_elements: relations::RangeCheck_4_4::dummy(),
+            },
+        )
+        .entries(trace),
+    );
+    entries.extend(
+        RelationTrackerComponent::new(
+            tree_span_provider,
+            range_check_5_4::Eval {
+                lookup_elements: relations::RangeCheck_5_4::dummy(),
             },
         )
         .entries(trace),

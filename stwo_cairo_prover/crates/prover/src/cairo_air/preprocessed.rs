@@ -94,6 +94,8 @@ impl PreProcessedTrace {
 fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     // RangeCheck_6.
     let range_check_6 = RangeCheck::new([6], 0);
+    // RangeCheck_8.
+    let range_check_8 = RangeCheck::new([8], 0);
     // RangeCheck_11.
     let range_check_11 = RangeCheck::new([11], 0);
     // RangeCheck_12.
@@ -111,6 +113,9 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     // RangeCheck_4_4.
     let range_check_4_4_col_0 = RangeCheck::new([4, 4], 0);
     let range_check_4_4_col_1 = RangeCheck::new([4, 4], 1);
+    // RangeCheck_5_4.
+    let range_check_5_4_col_0 = RangeCheck::new([5, 4], 0);
+    let range_check_5_4_col_1 = RangeCheck::new([5, 4], 1);
     // RangeCheck_9_9.
     let range_check_9_9_col_0 = RangeCheck::new([9, 9], 0);
     let range_check_9_9_col_1 = RangeCheck::new([9, 9], 1);
@@ -137,6 +142,7 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
 
     vec![
         Box::new(range_check_6),
+        Box::new(range_check_8),
         Box::new(range_check_11),
         Box::new(range_check_12),
         Box::new(range_check_18),
@@ -147,6 +153,8 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
         Box::new(range_check_4_3_col_1),
         Box::new(range_check_4_4_col_0),
         Box::new(range_check_4_4_col_1),
+        Box::new(range_check_5_4_col_0),
+        Box::new(range_check_5_4_col_1),
         Box::new(range_check_9_9_col_0),
         Box::new(range_check_9_9_col_1),
         Box::new(range_check_7_2_5_col_0),
@@ -422,7 +430,7 @@ pub mod tests {
 
         let log_blowup_factor = 1;
         let expected = Blake2sHash::from(
-            hex::decode("94405250507742f038e5496b3597e37f07043d59cd788844b479ab310c1a4300")
+            hex::decode("46668f6c3bc26275330c1baaba185cb58287ba1b60b72bf3b06f093709771059")
                 .expect("Invalid hex string"),
         );
 
