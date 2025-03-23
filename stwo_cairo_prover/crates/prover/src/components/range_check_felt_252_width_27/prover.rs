@@ -3,7 +3,6 @@ use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::{range_check_18, range_check_9_9};
 
-pub type InputType = Felt252Width27;
 pub type PackedInputType = PackedFelt252Width27;
 
 #[derive(Default)]
