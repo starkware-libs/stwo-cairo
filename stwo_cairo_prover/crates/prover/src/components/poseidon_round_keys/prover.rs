@@ -1,6 +1,5 @@
 #![allow(unused_parens)]
 use stwo_cairo_common::preprocessed_consts::poseidon::{N_ROUNDS, N_WORDS};
-use stwo_prover::core::backend::simd::conversion::Pack;
 
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
@@ -21,7 +20,7 @@ impl ClaimGenerator {
     }
 
     pub fn write_trace(
-        mut self,
+        self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.into_simd_vec();

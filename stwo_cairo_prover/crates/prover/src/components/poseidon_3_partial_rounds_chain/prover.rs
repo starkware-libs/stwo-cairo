@@ -5,7 +5,6 @@ use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::{range_check_4_4, range_check_4_4_4_4};
 use crate::components::{cube_252, poseidon_round_keys, range_check_felt_252_width_27};
 
-pub type InputType = (M31, M31, [Felt252Width27; 4]);
 pub type PackedInputType = (PackedM31, PackedM31, [PackedFelt252Width27; 4]);
 
 #[derive(Default)]

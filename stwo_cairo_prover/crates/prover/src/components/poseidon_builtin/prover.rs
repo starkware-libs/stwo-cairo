@@ -1,6 +1,4 @@
 #![allow(unused_parens)]
-use itertools::Itertools;
-
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::cairo_air::poseidon::deduce_output::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
