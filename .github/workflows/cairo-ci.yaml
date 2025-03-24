@@ -47,9 +47,9 @@ jobs:
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
         uses: Swatinem/rust-cache@v2
-      - run: cargo nextest run --release --features slow-tests,std -j 1
+      - run: cargo nextest run --features slow-tests,std -j 1
         env:
-          RUSTFLAGS: -C target-cpu=native -C opt-level=3
+          RUSTFLAGS: -C target-cpu=native -C opt-level=1
 
   format:
     runs-on: ubuntu-latest
