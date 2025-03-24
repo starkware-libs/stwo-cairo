@@ -98,7 +98,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
 }
 
 impl MerkleVerifierImpl<
-    impl H: MerkleHasher, +Copy<H::Hash>, +Drop<H::Hash>, +PartialEq<H::Hash>,
+    impl H: MerkleHasher, +Clone<H::Hash>, +Drop<H::Hash>, +PartialEq<H::Hash>,
 > of MerkleVerifierTrait<H> {
     fn verify(
         self: @MerkleVerifier<H>,
@@ -163,7 +163,7 @@ impl MerkleVerifierImpl<
                     } else {
                         break Err(MerkleVerificationError::WitnessTooShort);
                     };
-                    Some((*left_hash, *right_hash))
+                    Some((left_hash.clone(), right_hash.clone()))
                 };
 
                 // If the column values were queried, read them from `queried_value`.
@@ -247,7 +247,7 @@ fn next_decommitment_node<H>(
 /// Fetches the hash of the next node from the previous layer in the Merkle tree.
 /// The hash is fetched either from the computed values or from the witness.
 #[inline]
-fn fetch_prev_node_hash<H, +Copy<H>, +Drop<H>>(
+fn fetch_prev_node_hash<H, +Clone<H>, +Drop<H>>(
     ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Span<H>, expected_query: u32,
 ) -> Option<@H> {
     // If the child was computed, use that value.

@@ -2,7 +2,7 @@ use core::array::SpanTrait;
 use core::box::BoxTrait;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
-use core::num::traits::BitSize;
+use core::num::traits::{BitSize, WrappingMul, WrappingSub};
 use core::traits::{DivRem, PanicDestruct};
 use crate::fields::m31::M31_SHIFT;
 use crate::BaseField;
@@ -228,9 +228,20 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
     result
 }
 
+/// Generates a bit mask with the least significant `n_bits` set to 1.
+pub fn gen_bit_mask(n_bits: u32) -> u128 {
+    assert!(n_bits <= 128);
+    let mut mask = 1;
+    for _ in 0..n_bits {
+        mask = mask.wrapping_mul(2);
+    }
+    mask = mask.wrapping_sub(1);
+    mask
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{ArrayImpl, bit_reverse_index};
+    use super::{ArrayImpl, bit_reverse_index, gen_bit_mask};
 
     #[test]
     fn test_bit_reverse() {
@@ -270,5 +281,20 @@ mod tests {
     #[test]
     fn test_array_new_repeated() {
         assert_eq!(ArrayImpl::new_repeated(n: 5, v: 3_usize), array![3, 3, 3, 3, 3]);
+    }
+
+    #[test]
+    fn test_gen_bit_mask_with_0_bits() {
+        assert_eq!(gen_bit_mask(0), 0);
+    }
+
+    #[test]
+    fn test_gen_bit_mask_with_8_bits() {
+        assert_eq!(gen_bit_mask(8), 0b11111111);
+    }
+
+    #[test]
+    fn test_gen_bit_mask_with_128_bits() {
+        assert_eq!(gen_bit_mask(128), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     }
 }

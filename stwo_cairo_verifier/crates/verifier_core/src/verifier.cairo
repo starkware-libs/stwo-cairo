@@ -6,8 +6,8 @@ use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
 use crate::utils::{ArrayImpl, SpanImpl};
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::MerkleVerificationError;
+use crate::vcs::MerkleHasher;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 /// Arithmetic Intermediate Representation (AIR).
@@ -47,7 +47,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            *commitment_scheme_proof.commitments.last().unwrap(),
+            commitment_scheme_proof.commitments.last().unwrap().clone(),
             ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: air.composition_log_degree_bound())
                 .span(),
             ref channel,
