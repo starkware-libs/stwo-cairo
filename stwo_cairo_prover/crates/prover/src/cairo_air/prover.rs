@@ -55,21 +55,6 @@ where
     claim.mix_into(channel);
     tree_builder.commit(channel);
 
-    #[cfg(feature = "relation-tracker")]
-    {
-        use stwo_prover::constraint_framework::relation_tracker::RelationSummary;
-
-        use crate::cairo_air::debug_tools::relation_tracker::track_cairo_relations;
-        tracing::info!(
-            "Relations summary: {:?}",
-            RelationSummary::summarize_relations(&track_cairo_relations(
-                &commitment_scheme,
-                &claim,
-            ))
-            .cleaned()
-        );
-    }
-
     // Draw interaction elements.
     let interaction_elements = CairoInteractionElements::draw(channel);
 
@@ -94,6 +79,19 @@ where
         &interaction_claim,
         &preprocessed_trace.ids(),
     );
+
+    // TODO(Ohad): move to a testing routine.
+    #[cfg(feature = "relation-tracker")]
+    {
+        use crate::cairo_air::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
+        let summary = track_and_summarize_cairo_relations(
+            &commitment_scheme,
+            &component_builder,
+            &claim.public_data,
+        );
+        tracing::info!("Relations summary: {:?}", summary);
+    }
+
     let components = component_builder.provers();
 
     // Prove stark.
