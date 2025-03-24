@@ -59,48 +59,44 @@ pub struct OpcodeClaim {
     pub ret: Vec<ret_opcode::Claim>,
 }
 impl OpcodeClaim {
+    /// For each opcode component vector, mixes the length and then the claims.
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.add.iter().for_each(|c| c.mix_into(channel));
-        self.add_imm.iter().for_each(|c| c.mix_into(channel));
-        self.add_small.iter().for_each(|c| c.mix_into(channel));
-        self.add_small_imm.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap_op_1_base_fp
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.add_ap_imm.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq_imm.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq_double_deref
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.blake.iter().for_each(|c| c.mix_into(channel));
-        self.call.iter().for_each(|c| c.mix_into(channel));
-        self.call_op_1_base_fp
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.call_rel.iter().for_each(|c| c.mix_into(channel));
-        self.generic.iter().for_each(|c| c.mix_into(channel));
-        self.jnz.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_dst_base_fp
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.jnz_taken.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_taken_dst_base_fp
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.jump.iter().for_each(|c| c.mix_into(channel));
-        self.jump_double_deref
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.jump_rel.iter().for_each(|c| c.mix_into(channel));
-        self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
-        self.mul.iter().for_each(|c| c.mix_into(channel));
-        self.mul_imm.iter().for_each(|c| c.mix_into(channel));
-        self.mul_small.iter().for_each(|c| c.mix_into(channel));
-        self.mul_small_imm.iter().for_each(|c| c.mix_into(channel));
-        self.qm31.iter().for_each(|c| c.mix_into(channel));
-        self.ret.iter().for_each(|c| c.mix_into(channel));
+        macro_rules! mix_component_vector {
+            ($field:ident) => {
+                channel.mix_u64(self.$field.len() as u64);
+                self.$field.iter().for_each(|c| c.mix_into(channel));
+            };
+        }
+
+        mix_component_vector!(add);
+        mix_component_vector!(add_imm);
+        mix_component_vector!(add_small);
+        mix_component_vector!(add_small_imm);
+        mix_component_vector!(add_ap);
+        mix_component_vector!(add_ap_op_1_base_fp);
+        mix_component_vector!(add_ap_imm);
+        mix_component_vector!(assert_eq);
+        mix_component_vector!(assert_eq_imm);
+        mix_component_vector!(assert_eq_double_deref);
+        mix_component_vector!(blake);
+        mix_component_vector!(call);
+        mix_component_vector!(call_op_1_base_fp);
+        mix_component_vector!(call_rel);
+        mix_component_vector!(generic);
+        mix_component_vector!(jnz);
+        mix_component_vector!(jnz_dst_base_fp);
+        mix_component_vector!(jnz_taken);
+        mix_component_vector!(jnz_taken_dst_base_fp);
+        mix_component_vector!(jump);
+        mix_component_vector!(jump_double_deref);
+        mix_component_vector!(jump_rel);
+        mix_component_vector!(jump_rel_imm);
+        mix_component_vector!(mul);
+        mix_component_vector!(mul_imm);
+        mix_component_vector!(mul_small);
+        mix_component_vector!(mul_small_imm);
+        mix_component_vector!(qm31);
+        mix_component_vector!(ret);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
