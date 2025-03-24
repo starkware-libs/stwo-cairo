@@ -13,6 +13,7 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new(log_size: u32, pedersen_builtin_segment_start: u32) -> Self {
+        assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,
             pedersen_builtin_segment_start,
