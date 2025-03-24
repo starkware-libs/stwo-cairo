@@ -1,0 +1,473 @@
+{
+  "layout": "all_cairo",
+  "rc_min": 32755,
+  "rc_max": 32773,
+  "n_steps": 32768,
+  "memory_segments": {
+    "output": {
+      "begin_addr": 591,
+      "stop_ptr": 591
+    },
+    "ecdsa": {
+      "begin_addr": 5071,
+      "stop_ptr": 5071
+    },
+    "pedersen": {
+      "begin_addr": 591,
+      "stop_ptr": 891
+    },
+    "range_check96": {
+      "begin_addr": 16591,
+      "stop_ptr": 16591
+    },
+    "keccak": {
+      "begin_addr": 15567,
+      "stop_ptr": 15567
+    },
+    "poseidon": {
+      "begin_addr": 15823,
+      "stop_ptr": 15823
+    },
+    "execution": {
+      "begin_addr": 61,
+      "stop_ptr": 591
+    },
+    "mul_mod": {
+      "begin_addr": 22479,
+      "stop_ptr": 22479
+    },
+    "bitwise": {
+      "begin_addr": 5103,
+      "stop_ptr": 5103
+    },
+    "program": {
+      "begin_addr": 1,
+      "stop_ptr": 5
+    },
+    "ec_op": {
+      "begin_addr": 15343,
+      "stop_ptr": 15343
+    },
+    "add_mod": {
+      "begin_addr": 20687,
+      "stop_ptr": 20687
+    },
+    "range_check": {
+      "begin_addr": 975,
+      "stop_ptr": 975
+    }
+  },
+  "public_memory": [
+    {
+      "address": 1,
+      "value": "0x40780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 2,
+      "value": "0xb",
+      "page": 0
+    },
+    {
+      "address": 3,
+      "value": "0x1104800180018000",
+      "page": 0
+    },
+    {
+      "address": 4,
+      "value": "0x24",
+      "page": 0
+    },
+    {
+      "address": 5,
+      "value": "0x10780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 6,
+      "value": "0x0",
+      "page": 0
+    },
+    {
+      "address": 7,
+      "value": "0x40780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 8,
+      "value": "0x1",
+      "page": 0
+    },
+    {
+      "address": 9,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 10,
+      "value": "0x20780017fff7ffd",
+      "page": 0
+    },
+    {
+      "address": 11,
+      "value": "0x4",
+      "page": 0
+    },
+    {
+      "address": 12,
+      "value": "0x480a7ffc7fff8000",
+      "page": 0
+    },
+    {
+      "address": 13,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 14,
+      "value": "0x480680017fff8000",
+      "page": 0
+    },
+    {
+      "address": 15,
+      "value": "0x5f0e39fd58969f75fd9b3b2267a92c70216592f7a6ee7a577c48b301b7ff541",
+      "page": 0
+    },
+    {
+      "address": 16,
+      "value": "0x400280007ffc7fff",
+      "page": 0
+    },
+    {
+      "address": 17,
+      "value": "0x480680017fff8000",
+      "page": 0
+    },
+    {
+      "address": 18,
+      "value": "0x62ec1af92029a3bf66d7d88cd958c9c859819cc6b83a1b482ddf62def128ba6",
+      "page": 0
+    },
+    {
+      "address": 19,
+      "value": "0x400280017ffc7fff",
+      "page": 0
+    },
+    {
+      "address": 20,
+      "value": "0x480280027ffc8000",
+      "page": 0
+    },
+    {
+      "address": 21,
+      "value": "0x400680017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 22,
+      "value": "0xebbb144fa84e98f353dbcac01fd5ee084c17c5e95d9940d01a3aa9af91ec3d",
+      "page": 0
+    },
+    {
+      "address": 23,
+      "value": "0x480680017fff8000",
+      "page": 0
+    },
+    {
+      "address": 24,
+      "value": "0x7d0",
+      "page": 0
+    },
+    {
+      "address": 25,
+      "value": "0x400280037ffc7fff",
+      "page": 0
+    },
+    {
+      "address": 26,
+      "value": "0x480680017fff8000",
+      "page": 0
+    },
+    {
+      "address": 27,
+      "value": "0xbb8",
+      "page": 0
+    },
+    {
+      "address": 28,
+      "value": "0x400280047ffc7fff",
+      "page": 0
+    },
+    {
+      "address": 29,
+      "value": "0x480280057ffc8000",
+      "page": 0
+    },
+    {
+      "address": 30,
+      "value": "0x400680017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 31,
+      "value": "0x4ff046f280543dc3eac945a45cb534c00829b11e31b94fab1ae6ecb3cf4efa6",
+      "page": 0
+    },
+    {
+      "address": 32,
+      "value": "0x482680017ffc8000",
+      "page": 0
+    },
+    {
+      "address": 33,
+      "value": "0x6",
+      "page": 0
+    },
+    {
+      "address": 34,
+      "value": "0x482680017ffd8000",
+      "page": 0
+    },
+    {
+      "address": 35,
+      "value": "0x800000000000011000000000000000000000000000000000000000000000000",
+      "page": 0
+    },
+    {
+      "address": 36,
+      "value": "0x1104800180018000",
+      "page": 0
+    },
+    {
+      "address": 37,
+      "value": "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffe7",
+      "page": 0
+    },
+    {
+      "address": 38,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 39,
+      "value": "0x40780017fff7fff",
+      "page": 0
+    },
+    {
+      "address": 40,
+      "value": "0x1",
+      "page": 0
+    },
+    {
+      "address": 41,
+      "value": "0x400780017fff8000",
+      "page": 0
+    },
+    {
+      "address": 42,
+      "value": "0x32",
+      "page": 0
+    },
+    {
+      "address": 43,
+      "value": "0x480a7ff47fff8000",
+      "page": 0
+    },
+    {
+      "address": 44,
+      "value": "0x480a80007fff8000",
+      "page": 0
+    },
+    {
+      "address": 45,
+      "value": "0x1104800180018000",
+      "page": 0
+    },
+    {
+      "address": 46,
+      "value": "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffde",
+      "page": 0
+    },
+    {
+      "address": 47,
+      "value": "0x480a7ff37fff8000",
+      "page": 0
+    },
+    {
+      "address": 48,
+      "value": "0x48127ffe7fff8000",
+      "page": 0
+    },
+    {
+      "address": 49,
+      "value": "0x480a7ff57fff8000",
+      "page": 0
+    },
+    {
+      "address": 50,
+      "value": "0x480a7ff67fff8000",
+      "page": 0
+    },
+    {
+      "address": 51,
+      "value": "0x480a7ff77fff8000",
+      "page": 0
+    },
+    {
+      "address": 52,
+      "value": "0x480a7ff87fff8000",
+      "page": 0
+    },
+    {
+      "address": 53,
+      "value": "0x480a7ff97fff8000",
+      "page": 0
+    },
+    {
+      "address": 54,
+      "value": "0x480a7ffa7fff8000",
+      "page": 0
+    },
+    {
+      "address": 55,
+      "value": "0x480a7ffb7fff8000",
+      "page": 0
+    },
+    {
+      "address": 56,
+      "value": "0x480a7ffc7fff8000",
+      "page": 0
+    },
+    {
+      "address": 57,
+      "value": "0x480a7ffd7fff8000",
+      "page": 0
+    },
+    {
+      "address": 58,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 59,
+      "value": "0x3d",
+      "page": 0
+    },
+    {
+      "address": 60,
+      "value": "0x0",
+      "page": 0
+    },
+    {
+      "address": 61,
+      "value": "0x24f",
+      "page": 0
+    },
+    {
+      "address": 62,
+      "value": "0x24f",
+      "page": 0
+    },
+    {
+      "address": 63,
+      "value": "0x3cf",
+      "page": 0
+    },
+    {
+      "address": 64,
+      "value": "0x13cf",
+      "page": 0
+    },
+    {
+      "address": 65,
+      "value": "0x13ef",
+      "page": 0
+    },
+    {
+      "address": 66,
+      "value": "0x3bef",
+      "page": 0
+    },
+    {
+      "address": 67,
+      "value": "0x3ccf",
+      "page": 0
+    },
+    {
+      "address": 68,
+      "value": "0x3dcf",
+      "page": 0
+    },
+    {
+      "address": 69,
+      "value": "0x40cf",
+      "page": 0
+    },
+    {
+      "address": 70,
+      "value": "0x50cf",
+      "page": 0
+    },
+    {
+      "address": 71,
+      "value": "0x57cf",
+      "page": 0
+    },
+    {
+      "address": 580,
+      "value": "0x24f",
+      "page": 0
+    },
+    {
+      "address": 581,
+      "value": "0x37b",
+      "page": 0
+    },
+    {
+      "address": 582,
+      "value": "0x3cf",
+      "page": 0
+    },
+    {
+      "address": 583,
+      "value": "0x13cf",
+      "page": 0
+    },
+    {
+      "address": 584,
+      "value": "0x13ef",
+      "page": 0
+    },
+    {
+      "address": 585,
+      "value": "0x3bef",
+      "page": 0
+    },
+    {
+      "address": 586,
+      "value": "0x3ccf",
+      "page": 0
+    },
+    {
+      "address": 587,
+      "value": "0x3dcf",
+      "page": 0
+    },
+    {
+      "address": 588,
+      "value": "0x40cf",
+      "page": 0
+    },
+    {
+      "address": 589,
+      "value": "0x50cf",
+      "page": 0
+    },
+    {
+      "address": 590,
+      "value": "0x57cf",
+      "page": 0
+    }
+  ],
+  "dynamic_params": null
+}
