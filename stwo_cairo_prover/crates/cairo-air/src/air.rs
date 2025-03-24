@@ -20,6 +20,9 @@ use super::blake::air::{BlakeContextClaim, BlakeContextComponents, BlakeContextI
 use super::builtins_air::{BuiltinComponents, BuiltinsClaim, BuiltinsInteractionClaim};
 use super::components::indented_component_display;
 use super::opcodes_air::{OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim};
+use super::pedersen::air::{
+    PedersenContextClaim, PedersenContextComponents, PedersenContextInteractionClaim,
+};
 use super::poseidon::air::{
     PoseidonContextClaim, PoseidonContextComponents, PoseidonContextInteractionClaim,
 };
@@ -69,6 +72,7 @@ pub struct CairoClaim {
     pub verify_instruction: verify_instruction::Claim,
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
+    pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
     pub memory_address_to_id: memory_address_to_id::Claim,
     pub memory_id_to_value: memory_id_to_big::Claim,
@@ -87,6 +91,7 @@ impl CairoClaim {
         self.verify_instruction.mix_into(channel);
         self.blake_context.mix_into(channel);
         self.builtins.mix_into(channel);
+        self.pedersen_context.mix_into(channel);
         self.poseidon_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
@@ -105,6 +110,7 @@ impl CairoClaim {
             self.verify_instruction.log_sizes(),
             self.blake_context.log_sizes(),
             self.builtins.log_sizes(),
+            self.pedersen_context.log_sizes(),
             self.poseidon_context.log_sizes(),
             self.memory_address_to_id.log_sizes(),
             self.memory_id_to_value.log_sizes(),
@@ -169,6 +175,8 @@ pub struct CairoInteractionElements {
     pub blake_g: relations::BlakeG,
     pub blake_sigma: relations::BlakeRoundSigma,
     pub triple_xor_32: relations::TripleXor32,
+    pub partial_ec_mul: relations::PartialEcMul,
+    pub pedersen_points_table: relations::PedersenPointsTable,
     pub poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain,
     pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
     pub cube_252: relations::Cube252,
@@ -197,6 +205,8 @@ impl CairoInteractionElements {
             cube_252: relations::Cube252::draw(channel),
             poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
             range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
+            partial_ec_mul: relations::PartialEcMul::draw(channel),
+            pedersen_points_table: relations::PedersenPointsTable::draw(channel),
             memory_address_to_id: relations::MemoryAddressToId::draw(channel),
             memory_id_to_value: relations::MemoryIdToBig::draw(channel),
             range_checks: RangeChecksInteractionElements::draw(channel),
@@ -215,6 +225,7 @@ pub struct CairoInteractionClaim {
     pub verify_instruction: verify_instruction::InteractionClaim,
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
+    pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
     pub memory_address_to_id: memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: memory_id_to_big::InteractionClaim,
@@ -230,6 +241,7 @@ impl CairoInteractionClaim {
         self.verify_instruction.mix_into(channel);
         self.blake_context.mix_into(channel);
         self.builtins.mix_into(channel);
+        self.pedersen_context.mix_into(channel);
         self.poseidon_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
@@ -255,6 +267,7 @@ pub fn lookup_sum(
     sum += interaction_claim.verify_instruction.claimed_sum;
     sum += interaction_claim.blake_context.sum();
     sum += interaction_claim.builtins.sum();
+    sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.poseidon_context.sum();
     sum += interaction_claim.memory_address_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
@@ -273,6 +286,7 @@ pub struct CairoComponents {
     pub verify_instruction: verify_instruction::Component,
     pub blake_context: BlakeContextComponents,
     pub builtins: BuiltinComponents,
+    pub pedersen_context: PedersenContextComponents,
     pub poseidon_context: PoseidonContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
     pub memory_id_to_value: (
@@ -333,6 +347,12 @@ impl CairoComponents {
             &cairo_claim.builtins,
             interaction_elements,
             &interaction_claim.builtins,
+        );
+        let pedersen_context = PedersenContextComponents::new(
+            tree_span_provider,
+            &cairo_claim.pedersen_context,
+            interaction_elements,
+            &interaction_claim.pedersen_context,
         );
         let poseidon_context = PoseidonContextComponents::new(
             tree_span_provider,
@@ -416,6 +436,7 @@ impl CairoComponents {
             verify_instruction: verify_instruction_component,
             blake_context,
             builtins: builtin_components,
+            pedersen_context,
             poseidon_context,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (
@@ -436,6 +457,7 @@ impl CairoComponents {
             [&self.verify_instruction as &dyn ComponentProver<SimdBackend>,],
             self.blake_context.provers(),
             self.builtins.provers(),
+            self.pedersen_context.provers(),
             self.poseidon_context.provers(),
             [
                 &self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,
@@ -472,6 +494,7 @@ impl std::fmt::Display for CairoComponents {
         )?;
         writeln!(f, "BlakeContext: {}", self.blake_context)?;
         writeln!(f, "Builtins: {}", self.builtins)?;
+        writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
         writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
         writeln!(
             f,
