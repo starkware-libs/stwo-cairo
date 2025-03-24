@@ -52,6 +52,7 @@ use crate::felt::split_f252;
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
+    pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
 }
@@ -63,10 +64,12 @@ where
     fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
         let Self {
             claim,
+            interaction_pow,
             interaction_claim,
             stark_proof,
         } = self;
         CairoSerialize::serialize(claim, output);
+        CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
     }

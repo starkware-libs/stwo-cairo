@@ -1,6 +1,6 @@
 use num_traits::Zero;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
-use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::prover::{verify, VerificationError};
@@ -14,6 +14,7 @@ use crate::components::memory_address_to_id::component::MEMORY_ADDRESS_TO_ID_SPL
 pub fn verify_cairo<MC: MerkleChannel>(
     CairoProof {
         claim,
+        interaction_pow,
         interaction_claim,
         stark_proof,
     }: CairoProof<MC::H>,
@@ -37,6 +38,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
 
     claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
+    channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Verify lookup argument.
