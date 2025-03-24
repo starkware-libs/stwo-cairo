@@ -103,6 +103,7 @@ fn cairo_relation_entries(
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
+        pedersen_context,
         poseidon_context,
     } = cairo_components;
     let OpcodeComponents {
@@ -210,6 +211,9 @@ fn cairo_relation_entries(
     if let Some(bitwise) = &builtins.bitwise_builtin {
         entries.extend(add_to_relation_entries(bitwise, trace));
     }
+    if let Some(pederson) = &builtins.pedersen_builtin {
+        entries.extend(add_to_relation_entries(pederson, trace));
+    }
     if let Some(poseidon) = &builtins.poseidon_builtin {
         entries.extend(add_to_relation_entries(poseidon, trace));
     }
@@ -230,6 +234,13 @@ fn cairo_relation_entries(
             add_to_relation_entries(&components.cube_252, trace),
             add_to_relation_entries(&components.poseidon_round_keys, trace),
             add_to_relation_entries(&components.range_check_felt_252_width_27, trace),
+        ));
+    }
+
+    if let Some(components) = &pedersen_context.components {
+        entries.extend(chain!(
+            add_to_relation_entries(&components.pedersen_points_table, trace),
+            add_to_relation_entries(&components.partial_ec_mul, trace),
         ));
     }
 

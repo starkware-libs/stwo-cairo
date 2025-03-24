@@ -483,6 +483,24 @@ pub mod tests {
             }
 
             #[test]
+            fn test_prove_verify_pedersen_builtin() {
+                let input = generate_test_input("test_prove_verify_pedersen_builtin");
+                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                    input,
+                    PcsConfig::default(),
+                    preprocessed_trace,
+                )
+                .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(
+                    cairo_proof,
+                    PcsConfig::default(),
+                    preprocessed_trace,
+                )
+                .unwrap();
+            }
+
+            #[test]
             fn test_poseidon_builtin_constraints() {
                 let input = generate_test_input("test_prove_verify_poseidon_builtin");
                 let pp_tree = testing_preprocessed_tree(19);
