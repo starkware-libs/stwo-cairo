@@ -48,17 +48,18 @@ struct Args {
     priv_json: PathBuf,
     /// The path to the JSON file containing the prover parameters (optional).
     /// The expected file format is:
-    ///     {
-    ///         "pcs_config": {
-    ///             "pow_bits": 26,
-    ///             "fri_config": {
-    ///                 "log_last_layer_degree_bound": 0,
-    ///                 "log_blowup_factor": 1,
-    ///                 "n_queries": 70
-    ///             }
+    /// {
+    ///     "channel_hash":"blake2s",
+    ///     "pcs_config": {
+    ///         "pow_bits": 26,
+    ///         "fri_config": {
+    ///             "log_last_layer_degree_bound": 0,
+    ///             "log_blowup_factor": 1,
+    ///             "n_queries": 70
     ///         }
-    ///         "preprocessed_trace": "canonical"
-    ///     }
+    ///     },
+    ///    "preprocessed_trace": "canonical_without_pedersen"
+    /// }
     ///
     /// Default parameters are chosen to ensure 96 bits of security.
     #[structopt(long = "params_json")]
