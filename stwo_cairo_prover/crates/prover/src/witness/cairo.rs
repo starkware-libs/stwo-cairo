@@ -9,6 +9,9 @@ use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionCl
 use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
 use super::opcodes::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
 use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
+use crate::witness::components::pedersen::{
+    PedersenContextClaimGenerator, PedersenContextInteractionClaimGenerator,
+};
 use crate::witness::components::poseidon::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
 };
@@ -30,6 +33,7 @@ pub struct CairoClaimGenerator {
     verify_instruction_trace_generator: verify_instruction::ClaimGenerator,
     blake_context_trace_generator: BlakeContextClaimGenerator,
     builtins: BuiltinsClaimGenerator,
+    pedersen_context_trace_generator: PedersenContextClaimGenerator,
     poseidon_context_trace_generator: PoseidonContextClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
@@ -48,6 +52,7 @@ impl CairoClaimGenerator {
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
         let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
+        let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&input.memory);
@@ -95,6 +100,7 @@ impl CairoClaimGenerator {
             verify_instruction_trace_generator,
             blake_context_trace_generator,
             builtins,
+            pedersen_context_trace_generator,
             poseidon_context_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
@@ -145,6 +151,9 @@ impl CairoClaimGenerator {
             tree_builder,
             &self.memory_address_to_id_trace_generator,
             &self.memory_id_to_value_trace_generator,
+            &mut self.pedersen_context_trace_generator,
+            &self.range_checks_trace_generator.rc_5_4_trace_generator,
+            &self.range_checks_trace_generator.rc_8_trace_generator,
             &mut self.poseidon_context_trace_generator,
             &self.range_checks_trace_generator.rc_6_trace_generator,
             &self.range_checks_trace_generator.rc_12_trace_generator,
@@ -157,6 +166,9 @@ impl CairoClaimGenerator {
                 .rc_3_3_3_3_3_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
+        let (pedersen_context_claim, pedersen_context_interaction_gen) = self
+            .pedersen_context_trace_generator
+            .write_trace(tree_builder, &self.range_checks_trace_generator);
         let (poseidon_context_claim, poseidon_context_interaction_gen) = self
             .poseidon_context_trace_generator
             .write_trace(tree_builder, &self.range_checks_trace_generator);
@@ -190,6 +202,7 @@ impl CairoClaimGenerator {
                 verify_instruction: verify_instruction_claim,
                 blake_context: blake_context_claim,
                 builtins: builtins_claim,
+                pedersen_context: pedersen_context_claim,
                 poseidon_context: poseidon_context_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
@@ -204,6 +217,7 @@ impl CairoClaimGenerator {
                 verify_instruction_interaction_gen,
                 blake_context_interaction_gen,
                 builtins_interaction_gen,
+                pedersen_context_interaction_gen,
                 poseidon_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
@@ -222,6 +236,7 @@ pub struct CairoInteractionClaimGenerator {
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
     blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
+    pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
@@ -256,6 +271,9 @@ impl CairoInteractionClaimGenerator {
             .write_interaction_trace(tree_builder, interaction_elements);
         let builtins_interaction_claims = self
             .builtins_interaction_gen
+            .write_interaction_trace(tree_builder, interaction_elements);
+        let pedersen_context_interaction_claim = self
+            .pedersen_context_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
         let poseidon_context_interaction_claim = self
             .poseidon_context_interaction_gen
@@ -292,6 +310,7 @@ impl CairoInteractionClaimGenerator {
             verify_instruction: verify_instruction_interaction_claim,
             blake_context: blake_context_interaction_claim,
             builtins: builtins_interaction_claims,
+            pedersen_context: pedersen_context_interaction_claim,
             poseidon_context: poseidon_context_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
