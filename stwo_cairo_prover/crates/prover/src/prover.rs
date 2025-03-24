@@ -418,6 +418,13 @@ pub mod tests {
             }
 
             #[test]
+            fn test_pedersen_builtin_constraints() {
+                let input =
+                    prover_input_from_compiled_cairo_program("test_prove_verify_pedersen_builtin");
+                assert_cairo_constraints(input, PreProcessedTrace::canonical());
+            }
+
+            #[test]
             fn test_poseidon_builtin_constraints() {
                 let input =
                     prover_input_from_compiled_cairo_program("test_prove_verify_poseidon_builtin");
