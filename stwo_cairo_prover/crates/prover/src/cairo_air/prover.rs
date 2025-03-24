@@ -3,11 +3,12 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fri::FriConfig;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
+use stwo_prover::core::proof_of_work::GrindOps;
 use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
@@ -18,6 +19,12 @@ use crate::cairo_air::air::{
 use crate::cairo_air::preprocessed::PreProcessedTrace;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 24;
+
+/// Logup security is defined by the `QM31` space (~124 bits) +
+/// `INTERACTION_POW_BITS` over total number of relation terms. E.g. assuming a 100-bit
+/// security target, the witness may contain up to 1 << (24 + INTERACTION_POW_BITS) relation
+/// terms.
+pub const INTERACTION_POW_BITS: u32 = 24;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
@@ -56,6 +63,8 @@ where
     tree_builder.commit(channel);
 
     // Draw interaction elements.
+    let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
+    channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Interaction trace.
@@ -101,6 +110,7 @@ where
 
     Ok(CairoProof {
         claim,
+        interaction_pow,
         interaction_claim,
         stark_proof: proof,
     })
