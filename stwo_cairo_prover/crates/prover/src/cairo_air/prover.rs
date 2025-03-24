@@ -3,11 +3,12 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
+use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fri::FriConfig;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
+use stwo_prover::core::proof_of_work::GrindOps;
 use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
@@ -71,6 +72,8 @@ where
     }
 
     // Draw interaction elements.
+    let interaction_pow = SimdBackend::grind(channel, pcs_config.pow_bits);
+    channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Interaction trace.
@@ -103,6 +106,7 @@ where
 
     Ok(CairoProof {
         claim,
+        interaction_pow,
         interaction_claim,
         stark_proof: proof,
     })
