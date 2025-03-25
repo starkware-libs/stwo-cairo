@@ -60,6 +60,14 @@ impl ClaimGenerator {
             self.add_input(input);
         }
     }
+
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+        packed_inputs.into_par_iter().for_each(|packed_input| {
+            packed_input.unpack().into_par_iter().for_each(|input| {
+                self.add_input(&input);
+            });
+        });
+    }
 }
 
 #[derive(Uninitialized, IterMut, ParIterMut)]

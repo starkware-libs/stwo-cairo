@@ -6,6 +6,8 @@ use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::prelude::proving::*;
 
 pub type InputType = [M31; 3];
+pub type PackedInputType = [PackedM31; 3];
+
 const N_TRACE_COLUMNS: usize = 1;
 const PACKED_LOG_SIZE: u32 = BITWISE_XOR_4_LOG_SIZE - LOG_N_LANES;
 
@@ -40,6 +42,14 @@ impl ClaimGenerator {
         for input in inputs {
             self.add_input(input);
         }
+    }
+
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+        packed_inputs.into_par_iter().for_each(|packed_input| {
+            packed_input.unpack().into_par_iter().for_each(|input| {
+                self.add_input(&input);
+            });
+        });
     }
 }
 
