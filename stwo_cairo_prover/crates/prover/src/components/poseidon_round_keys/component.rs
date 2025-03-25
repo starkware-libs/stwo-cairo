@@ -1,23 +1,7 @@
-#![allow(non_camel_case_types)]
-#![allow(unused_imports)]
-use num_traits::{One, Zero};
-use serde::{Deserialize, Serialize};
 use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS;
-use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::logup::{LogupAtRow, LookupElements};
-use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
-};
-use stwo_prover::core::backend::simd::m31::LOG_N_LANES;
-use stwo_prover::core::channel::Channel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
-use stwo_prover::core::pcs::TreeVec;
 
 use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
-use crate::cairo_air::preprocessed::{PreProcessedColumn, Seq};
-use crate::cairo_air::relations;
+use crate::components::prelude::constraint_eval::*;
 pub(super) const N_TRACE_COLUMNS: usize = 1;
 
 pub struct Eval {

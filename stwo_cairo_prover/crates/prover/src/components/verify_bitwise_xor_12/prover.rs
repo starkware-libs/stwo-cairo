@@ -16,6 +16,7 @@ use crate::components::prelude::proving::*;
 use crate::components::verify_bitwise_xor_12::LIMB_BITS;
 
 pub type InputType = [M31; 3];
+pub type PackedInputType = [PackedM31; 3];
 
 const PACKED_LOG_SIZE: u32 = super::LOG_SIZE - LOG_N_LANES;
 
@@ -61,6 +62,14 @@ impl ClaimGenerator {
         for input in inputs {
             self.add_input(input);
         }
+    }
+
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+        packed_inputs.into_par_iter().for_each(|packed_input| {
+            packed_input.unpack().into_par_iter().for_each(|input| {
+                self.add_input(&input);
+            });
+        });
     }
 }
 

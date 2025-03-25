@@ -89,6 +89,14 @@ impl ClaimGenerator {
         )
     }
 
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+        packed_inputs.into_par_iter().for_each(|packed_input| {
+            packed_input.unpack().into_par_iter().for_each(|input| {
+                self.add_input(&input);
+            });
+        });
+    }
+
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
             self.add_input(input);

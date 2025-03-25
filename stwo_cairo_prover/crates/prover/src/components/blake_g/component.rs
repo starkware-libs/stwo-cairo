@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 52;
+
 pub struct Eval {
     pub claim: Claim,
     pub blake_g_lookup_elements: relations::BlakeG,
@@ -16,7 +18,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 52];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 9];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -51,7 +53,6 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_16 = E::F::from(M31::from(16));
@@ -115,7 +116,7 @@ impl FrameworkEval for Eval {
 
         // Triple Sum 32.
 
-        let carry_low_tmp_f72c8_2 = eval.add_intermediate(
+        let carry_low_tmp_f72c8_1 = eval.add_intermediate(
             ((((input_limb_0_col0.clone() + input_limb_2_col2.clone())
                 + input_limb_8_col8.clone())
                 - triple_sum32_res_low_col12.clone())
@@ -123,20 +124,20 @@ impl FrameworkEval for Eval {
         );
         // carry low is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_low_tmp_f72c8_2.clone() * (carry_low_tmp_f72c8_2.clone() - M31_1.clone()))
-                * (carry_low_tmp_f72c8_2.clone() - M31_2.clone())),
+            ((carry_low_tmp_f72c8_1.clone() * (carry_low_tmp_f72c8_1.clone() - M31_1.clone()))
+                * (carry_low_tmp_f72c8_1.clone() - M31_2.clone())),
         );
-        let carry_high_tmp_f72c8_3 = eval.add_intermediate(
+        let carry_high_tmp_f72c8_2 = eval.add_intermediate(
             (((((input_limb_1_col1.clone() + input_limb_3_col3.clone())
                 + input_limb_9_col9.clone())
-                + carry_low_tmp_f72c8_2.clone())
+                + carry_low_tmp_f72c8_1.clone())
                 - triple_sum32_res_high_col13.clone())
                 * M31_32768.clone()),
         );
         // carry high is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_high_tmp_f72c8_3.clone() * (carry_high_tmp_f72c8_3.clone() - M31_1.clone()))
-                * (carry_high_tmp_f72c8_3.clone() - M31_2.clone())),
+            ((carry_high_tmp_f72c8_2.clone() * (carry_high_tmp_f72c8_2.clone() - M31_1.clone()))
+                * (carry_high_tmp_f72c8_2.clone() - M31_2.clone())),
         );
 
         // Xor Rot 32 R 16.
@@ -189,35 +190,33 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let xor_rot_16_output_tmp_f72c8_12_limb_0 =
+        let xor_rot_16_output_tmp_f72c8_11_limb_0 =
             eval.add_intermediate((xor_col20.clone() + (xor_col21.clone() * M31_256.clone())));
-        let xor_rot_16_output_tmp_f72c8_12_limb_1 =
+        let xor_rot_16_output_tmp_f72c8_11_limb_1 =
             eval.add_intermediate((xor_col18.clone() + (xor_col19.clone() * M31_256.clone())));
 
         // Triple Sum 32.
 
-        let carry_low_tmp_f72c8_14 = eval.add_intermediate(
-            ((((input_limb_4_col4.clone() + xor_rot_16_output_tmp_f72c8_12_limb_0.clone())
-                + M31_0.clone())
+        let carry_low_tmp_f72c8_13 = eval.add_intermediate(
+            (((input_limb_4_col4.clone() + xor_rot_16_output_tmp_f72c8_11_limb_0.clone())
                 - triple_sum32_res_low_col22.clone())
                 * M31_32768.clone()),
         );
         // carry low is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_low_tmp_f72c8_14.clone() * (carry_low_tmp_f72c8_14.clone() - M31_1.clone()))
-                * (carry_low_tmp_f72c8_14.clone() - M31_2.clone())),
+            ((carry_low_tmp_f72c8_13.clone() * (carry_low_tmp_f72c8_13.clone() - M31_1.clone()))
+                * (carry_low_tmp_f72c8_13.clone() - M31_2.clone())),
         );
-        let carry_high_tmp_f72c8_15 = eval.add_intermediate(
-            (((((input_limb_5_col5.clone() + xor_rot_16_output_tmp_f72c8_12_limb_1.clone())
-                + M31_0.clone())
-                + carry_low_tmp_f72c8_14.clone())
+        let carry_high_tmp_f72c8_14 = eval.add_intermediate(
+            ((((input_limb_5_col5.clone() + xor_rot_16_output_tmp_f72c8_11_limb_1.clone())
+                + carry_low_tmp_f72c8_13.clone())
                 - triple_sum32_res_high_col23.clone())
                 * M31_32768.clone()),
         );
         // carry high is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_high_tmp_f72c8_15.clone() * (carry_high_tmp_f72c8_15.clone() - M31_1.clone()))
-                * (carry_high_tmp_f72c8_15.clone() - M31_2.clone())),
+            ((carry_high_tmp_f72c8_14.clone() * (carry_high_tmp_f72c8_14.clone() - M31_1.clone()))
+                * (carry_high_tmp_f72c8_14.clone() - M31_2.clone())),
         );
 
         // Xor Rot 32 R 12.
@@ -271,37 +270,37 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let xor_rot_12_output_tmp_f72c8_24_limb_0 =
+        let xor_rot_12_output_tmp_f72c8_23_limb_0 =
             eval.add_intermediate((xor_col29.clone() + (xor_col30.clone() * M31_16.clone())));
-        let xor_rot_12_output_tmp_f72c8_24_limb_1 =
+        let xor_rot_12_output_tmp_f72c8_23_limb_1 =
             eval.add_intermediate((xor_col31.clone() + (xor_col28.clone() * M31_16.clone())));
 
         // Triple Sum 32.
 
-        let carry_low_tmp_f72c8_26 = eval.add_intermediate(
+        let carry_low_tmp_f72c8_25 = eval.add_intermediate(
             ((((triple_sum32_res_low_col12.clone()
-                + xor_rot_12_output_tmp_f72c8_24_limb_0.clone())
+                + xor_rot_12_output_tmp_f72c8_23_limb_0.clone())
                 + input_limb_10_col10.clone())
                 - triple_sum32_res_low_col32.clone())
                 * M31_32768.clone()),
         );
         // carry low is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_low_tmp_f72c8_26.clone() * (carry_low_tmp_f72c8_26.clone() - M31_1.clone()))
-                * (carry_low_tmp_f72c8_26.clone() - M31_2.clone())),
+            ((carry_low_tmp_f72c8_25.clone() * (carry_low_tmp_f72c8_25.clone() - M31_1.clone()))
+                * (carry_low_tmp_f72c8_25.clone() - M31_2.clone())),
         );
-        let carry_high_tmp_f72c8_27 = eval.add_intermediate(
+        let carry_high_tmp_f72c8_26 = eval.add_intermediate(
             (((((triple_sum32_res_high_col13.clone()
-                + xor_rot_12_output_tmp_f72c8_24_limb_1.clone())
+                + xor_rot_12_output_tmp_f72c8_23_limb_1.clone())
                 + input_limb_11_col11.clone())
-                + carry_low_tmp_f72c8_26.clone())
+                + carry_low_tmp_f72c8_25.clone())
                 - triple_sum32_res_high_col33.clone())
                 * M31_32768.clone()),
         );
         // carry high is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_high_tmp_f72c8_27.clone() * (carry_high_tmp_f72c8_27.clone() - M31_1.clone()))
-                * (carry_high_tmp_f72c8_27.clone() - M31_2.clone())),
+            ((carry_high_tmp_f72c8_26.clone() * (carry_high_tmp_f72c8_26.clone() - M31_1.clone()))
+                * (carry_high_tmp_f72c8_26.clone() - M31_2.clone())),
         );
 
         // Xor Rot 32 R 8.
@@ -313,7 +312,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 (triple_sum32_res_low_col32.clone() - (ms_8_bits_col34.clone() * M31_256.clone())),
-                (xor_rot_16_output_tmp_f72c8_12_limb_0.clone()
+                (xor_rot_16_output_tmp_f72c8_11_limb_0.clone()
                     - (ms_8_bits_col36.clone() * M31_256.clone())),
                 xor_col38.clone(),
             ],
@@ -338,7 +337,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 (triple_sum32_res_high_col33.clone() - (ms_8_bits_col35.clone() * M31_256.clone())),
-                (xor_rot_16_output_tmp_f72c8_12_limb_1.clone()
+                (xor_rot_16_output_tmp_f72c8_11_limb_1.clone()
                     - (ms_8_bits_col37.clone() * M31_256.clone())),
                 xor_col40.clone(),
             ],
@@ -356,37 +355,34 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let xor_rot_8_output_tmp_f72c8_36_limb_0 =
+        let xor_rot_8_output_tmp_f72c8_35_limb_0 =
             eval.add_intermediate((xor_col39.clone() + (xor_col40.clone() * M31_256.clone())));
-        let xor_rot_8_output_tmp_f72c8_36_limb_1 =
+        let xor_rot_8_output_tmp_f72c8_35_limb_1 =
             eval.add_intermediate((xor_col41.clone() + (xor_col38.clone() * M31_256.clone())));
 
         // Triple Sum 32.
 
-        let carry_low_tmp_f72c8_38 = eval.add_intermediate(
-            ((((triple_sum32_res_low_col22.clone()
-                + xor_rot_8_output_tmp_f72c8_36_limb_0.clone())
-                + M31_0.clone())
+        let carry_low_tmp_f72c8_37 = eval.add_intermediate(
+            (((triple_sum32_res_low_col22.clone() + xor_rot_8_output_tmp_f72c8_35_limb_0.clone())
                 - triple_sum32_res_low_col42.clone())
                 * M31_32768.clone()),
         );
         // carry low is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_low_tmp_f72c8_38.clone() * (carry_low_tmp_f72c8_38.clone() - M31_1.clone()))
-                * (carry_low_tmp_f72c8_38.clone() - M31_2.clone())),
+            ((carry_low_tmp_f72c8_37.clone() * (carry_low_tmp_f72c8_37.clone() - M31_1.clone()))
+                * (carry_low_tmp_f72c8_37.clone() - M31_2.clone())),
         );
-        let carry_high_tmp_f72c8_39 = eval.add_intermediate(
-            (((((triple_sum32_res_high_col23.clone()
-                + xor_rot_8_output_tmp_f72c8_36_limb_1.clone())
-                + M31_0.clone())
-                + carry_low_tmp_f72c8_38.clone())
+        let carry_high_tmp_f72c8_38 = eval.add_intermediate(
+            ((((triple_sum32_res_high_col23.clone()
+                + xor_rot_8_output_tmp_f72c8_35_limb_1.clone())
+                + carry_low_tmp_f72c8_37.clone())
                 - triple_sum32_res_high_col43.clone())
                 * M31_32768.clone()),
         );
         // carry high is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_high_tmp_f72c8_39.clone() * (carry_high_tmp_f72c8_39.clone() - M31_1.clone()))
-                * (carry_high_tmp_f72c8_39.clone() - M31_2.clone())),
+            ((carry_high_tmp_f72c8_38.clone() * (carry_high_tmp_f72c8_38.clone() - M31_1.clone()))
+                * (carry_high_tmp_f72c8_38.clone() - M31_2.clone())),
         );
 
         // Xor Rot 32 R 7.
@@ -397,7 +393,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_7_lookup_elements,
             E::EF::one(),
             &[
-                (xor_rot_12_output_tmp_f72c8_24_limb_0.clone()
+                (xor_rot_12_output_tmp_f72c8_23_limb_0.clone()
                     - (ms_9_bits_col44.clone() * M31_128.clone())),
                 (triple_sum32_res_low_col42.clone() - (ms_9_bits_col46.clone() * M31_128.clone())),
                 xor_col48.clone(),
@@ -422,7 +418,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_7_lookup_elements,
             E::EF::one(),
             &[
-                (xor_rot_12_output_tmp_f72c8_24_limb_1.clone()
+                (xor_rot_12_output_tmp_f72c8_23_limb_1.clone()
                     - (ms_9_bits_col45.clone() * M31_128.clone())),
                 (triple_sum32_res_high_col43.clone() - (ms_9_bits_col47.clone() * M31_128.clone())),
                 xor_col50.clone(),
@@ -441,9 +437,9 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let xor_rot_7_output_tmp_f72c8_48_limb_0 =
+        let xor_rot_7_output_tmp_f72c8_47_limb_0 =
             eval.add_intermediate((xor_col49.clone() + (xor_col50.clone() * M31_512.clone())));
-        let xor_rot_7_output_tmp_f72c8_48_limb_1 =
+        let xor_rot_7_output_tmp_f72c8_47_limb_1 =
             eval.add_intermediate((xor_col51.clone() + (xor_col48.clone() * M31_512.clone())));
 
         eval.add_to_relation(RelationEntry::new(
@@ -464,12 +460,12 @@ impl FrameworkEval for Eval {
                 input_limb_11_col11.clone(),
                 triple_sum32_res_low_col32.clone(),
                 triple_sum32_res_high_col33.clone(),
-                xor_rot_7_output_tmp_f72c8_48_limb_0.clone(),
-                xor_rot_7_output_tmp_f72c8_48_limb_1.clone(),
+                xor_rot_7_output_tmp_f72c8_47_limb_0.clone(),
+                xor_rot_7_output_tmp_f72c8_47_limb_1.clone(),
                 triple_sum32_res_low_col42.clone(),
                 triple_sum32_res_high_col43.clone(),
-                xor_rot_8_output_tmp_f72c8_36_limb_0.clone(),
-                xor_rot_8_output_tmp_f72c8_36_limb_1.clone(),
+                xor_rot_8_output_tmp_f72c8_35_limb_0.clone(),
+                xor_rot_8_output_tmp_f72c8_35_limb_1.clone(),
             ],
         ));
 

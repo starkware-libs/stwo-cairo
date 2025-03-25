@@ -1,6 +1,5 @@
 #![allow(unused_parens)]
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::cairo_air::poseidon::deduce_output::{PackedCube252, PackedPoseidonRoundKeys};
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::range_check_3_3_3_3_3;
 use crate::components::{cube_252, poseidon_round_keys};

@@ -3,7 +3,7 @@ pub mod prover;
 
 // TODO(Ohad): generalize, test.
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator};
+pub use prover::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
 
 const ELEM_BITS: u32 = 12;
 const EXPAND_BITS: u32 = 2;

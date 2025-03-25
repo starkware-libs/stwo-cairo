@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 35;
+
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
@@ -14,7 +16,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 35];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -49,7 +51,6 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
         let M31_32 = E::F::from(M31::from(32));
@@ -111,10 +112,7 @@ impl FrameworkEval for Eval {
                 M31_32767.clone(),
                 M31_32769.clone(),
                 M31_56.clone(),
-                ((((M31_8.clone() + (ap_update_add_1_col4.clone() * M31_32.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone()),
+                (M31_8.clone() + (ap_update_add_1_col4.clone() * M31_32.clone())),
             ],
         ));
 
@@ -167,8 +165,7 @@ impl FrameworkEval for Eval {
 
         // dst equals 0.
         eval.add_constraint(
-            ((((((((((((((((((((((((((((M31_0.clone()
-                + dst_limb_0_col6.clone())
+            (((((((((((((((((((((((((((dst_limb_0_col6.clone()
                 + dst_limb_1_col7.clone())
                 + dst_limb_2_col8.clone())
                 + dst_limb_3_col9.clone())

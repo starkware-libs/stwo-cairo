@@ -186,7 +186,7 @@ impl PackedUInt32 {
         }
     }
 
-    pub fn from_limbs(low: PackedM31, high: PackedM31) -> Self {
+    pub fn from_limbs([low, high]: [PackedM31; 2]) -> Self {
         let [low, high] = [low, high].map(PackedM31::into_simd);
         Self {
             simd: low + (high << 16),
@@ -549,8 +549,8 @@ impl<const B: usize, const L: usize, const F: usize> PackedBigUInt<B, L, F> {
         }
     }
 
-    pub fn from_packed_felt252_array(felts: Vec<PackedFelt252>) -> Self {
-        let felts = felts.into_iter().map(|felt| felt.to_array()).collect_vec();
+    pub fn from_packed_felt252_array(felts: &[PackedFelt252]) -> Self {
+        let felts = felts.iter().map(|felt| felt.to_array()).collect_vec();
         let value = std::array::from_fn(|i| {
             BigUInt::from_felt252_array(felts.iter().map(|felt| felt[i]).collect_vec())
         });
@@ -746,7 +746,7 @@ mod tests {
             .into_iter()
             .map(|felt| PackedFelt252::from_array(&[felt; N_LANES]))
             .collect_vec();
-        let packed_big_uint = PackedBigUInt384::from_packed_felt252_array(packed_felts);
+        let packed_big_uint = PackedBigUInt384::from_packed_felt252_array(&packed_felts);
 
         for i in 0..32 {
             assert_eq!(packed_big_uint.to_array(), [big_uint; N_LANES], "i = {}", i);

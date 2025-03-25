@@ -1,5 +1,7 @@
-use super::prover::BLAKE_SIGMA_LOG_SIZE;
 use crate::components::prelude::constraint_eval::*;
+
+pub const BLAKE_SIGMA_LOG_SIZE: u32 = 4;
+pub(super) const N_TRACE_COLUMNS: usize = 1;
 
 pub struct Eval {
     pub blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
@@ -9,7 +11,7 @@ pub struct Eval {
 pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![BLAKE_SIGMA_LOG_SIZE; 1];
+        let trace_log_sizes = vec![BLAKE_SIGMA_LOG_SIZE; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![BLAKE_SIGMA_LOG_SIZE; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }

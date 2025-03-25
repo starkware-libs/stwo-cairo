@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 33;
+
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
@@ -15,7 +17,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 33];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 6];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -50,7 +52,6 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_16 = E::F::from(M31::from(16));
         let M31_2 = E::F::from(M31::from(2));
@@ -119,15 +120,10 @@ impl FrameworkEval for Eval {
                 offset0_col3.clone(),
                 offset1_col4.clone(),
                 M31_32769.clone(),
-                ((((((M31_0.clone() + (dst_base_fp_col5.clone() * M31_8.clone()))
+                (((dst_base_fp_col5.clone() * M31_8.clone())
                     + (op0_base_fp_col6.clone() * M31_16.clone()))
-                    + M31_32.clone())
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone()),
-                ((((M31_1.clone() + (ap_update_add_1_col7.clone() * M31_32.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
+                    + M31_32.clone()),
+                ((M31_1.clone() + (ap_update_add_1_col7.clone() * M31_32.clone()))
                     + M31_256.clone()),
             ],
         ));
@@ -229,9 +225,8 @@ impl FrameworkEval for Eval {
         // carry 1 definition.
         eval.add_constraint(
             ((carry_1_col29.clone() * M31_262144.clone())
-                - (((((M31_0.clone()
-                    + ((op0_limb_0_col20.clone() * op1_limb_0_col25.clone()) * M31_1.clone()))
-                    - (dst_limb_0_col11.clone() * M31_1.clone()))
+                - (((((op0_limb_0_col20.clone() * op1_limb_0_col25.clone())
+                    - dst_limb_0_col11.clone())
                     + ((op0_limb_0_col20.clone() * op1_limb_1_col26.clone()) * M31_512.clone()))
                     + ((op0_limb_1_col21.clone() * op1_limb_0_col25.clone()) * M31_512.clone()))
                     - (dst_limb_1_col12.clone() * M31_512.clone()))),
@@ -246,13 +241,10 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             ((carry_3_col30.clone() * M31_262144.clone())
                 - (((((((((carry_1_col29.clone()
-                    + ((op0_limb_0_col20.clone() * op1_limb_2_col27.clone())
-                        * M31_1.clone()))
-                    + ((op0_limb_1_col21.clone() * op1_limb_1_col26.clone())
-                        * M31_1.clone()))
-                    + ((op0_limb_2_col22.clone() * op1_limb_0_col25.clone())
-                        * M31_1.clone()))
-                    - (dst_limb_2_col13.clone() * M31_1.clone()))
+                    + (op0_limb_0_col20.clone() * op1_limb_2_col27.clone()))
+                    + (op0_limb_1_col21.clone() * op1_limb_1_col26.clone()))
+                    + (op0_limb_2_col22.clone() * op1_limb_0_col25.clone()))
+                    - dst_limb_2_col13.clone())
                     + ((op0_limb_0_col20.clone() * op1_limb_3_col28.clone())
                         * M31_512.clone()))
                     + ((op0_limb_1_col21.clone() * op1_limb_2_col27.clone())
@@ -271,12 +263,10 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             ((carry_5_col31.clone() * M31_262144.clone())
                 - (((((((carry_3_col30.clone()
-                    + ((op0_limb_1_col21.clone() * op1_limb_3_col28.clone())
-                        * M31_1.clone()))
-                    + ((op0_limb_2_col22.clone() * op1_limb_2_col27.clone())
-                        * M31_1.clone()))
-                    + ((op0_limb_3_col23.clone() * op1_limb_1_col26.clone()) * M31_1.clone()))
-                    - (dst_limb_4_col15.clone() * M31_1.clone()))
+                    + (op0_limb_1_col21.clone() * op1_limb_3_col28.clone()))
+                    + (op0_limb_2_col22.clone() * op1_limb_2_col27.clone()))
+                    + (op0_limb_3_col23.clone() * op1_limb_1_col26.clone()))
+                    - dst_limb_4_col15.clone())
                     + ((op0_limb_2_col22.clone() * op1_limb_3_col28.clone()) * M31_512.clone()))
                     + ((op0_limb_3_col23.clone() * op1_limb_2_col27.clone()) * M31_512.clone()))
                     - (dst_limb_5_col16.clone() * M31_512.clone()))),
