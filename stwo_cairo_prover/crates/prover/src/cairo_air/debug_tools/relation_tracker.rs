@@ -213,6 +213,9 @@ fn cairo_relation_entries(
     if let Some(poseidon) = &builtins.poseidon_builtin {
         entries.extend(add_to_relation_entries(poseidon, trace));
     }
+    if let Some(mul_mod) = &builtins.mul_mod_builtin {
+        entries.extend(add_to_relation_entries(mul_mod, trace));
+    }
     if let Some(rc_96) = &builtins.range_check_96_builtin {
         entries.extend(add_to_relation_entries(rc_96, trace));
     }
