@@ -1,9 +1,5 @@
 #![allow(unused_parens)]
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::cairo_air::poseidon::deduce_output::{
-    PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
-};
-use crate::cairo_air::preprocessed::Seq;
 use crate::components::prelude::proving::*;
 use crate::components::{
     cube_252, memory_address_to_id, memory_id_to_big, poseidon_3_partial_rounds_chain,
@@ -18,6 +14,7 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new(log_size: u32, poseidon_builtin_segment_start: u32) -> Self {
+        assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,
             poseidon_builtin_segment_start,

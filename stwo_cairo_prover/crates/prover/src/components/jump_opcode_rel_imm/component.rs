@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 11;
+
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
@@ -14,7 +16,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 11];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -91,10 +93,7 @@ impl FrameworkEval for Eval {
                 M31_32767.clone(),
                 M31_32769.clone(),
                 M31_56.clone(),
-                ((((M31_4.clone() + (ap_update_add_1_col3.clone() * M31_32.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone()),
+                (M31_4.clone() + (ap_update_add_1_col3.clone() * M31_32.clone())),
             ],
         ));
 
@@ -118,9 +117,7 @@ impl FrameworkEval for Eval {
             (mid_limbs_set_col6.clone() * (mid_limbs_set_col6.clone() - M31_1.clone())),
         );
         // Cannot have msb equals 0 and mid_limbs_set equals 1.
-        eval.add_constraint(
-            ((M31_1.clone() * mid_limbs_set_col6.clone()) * (msb_col5.clone() - M31_1.clone())),
-        );
+        eval.add_constraint((mid_limbs_set_col6.clone() * (msb_col5.clone() - M31_1.clone())));
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_id_to_big_lookup_elements,

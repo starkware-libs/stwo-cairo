@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 171;
+
 pub struct Eval {
     pub claim: Claim,
     pub blake_round_lookup_elements: relations::BlakeRound,
@@ -18,7 +20,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 171];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 37];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -297,16 +299,11 @@ impl FrameworkEval for Eval {
                 offset0_col3.clone(),
                 offset1_col4.clone(),
                 offset2_col5.clone(),
-                ((((((M31_0.clone() + (dst_base_fp_col6.clone() * M31_8.clone()))
+                ((((dst_base_fp_col6.clone() * M31_8.clone())
                     + (op0_base_fp_col7.clone() * M31_16.clone()))
-                    + M31_0.clone())
                     + (op1_base_fp_col8.clone() * M31_64.clone()))
-                    + (op1_base_ap_col9.clone() * M31_128.clone()))
-                    + M31_0.clone()),
-                ((((M31_0.clone() + (ap_update_add_1_col10.clone() * M31_32.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone()),
+                    + (op1_base_ap_col9.clone() * M31_128.clone())),
+                (ap_update_add_1_col10.clone() * M31_32.clone()),
                 opcode_extension_col11.clone(),
             ],
         ));
@@ -466,9 +463,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_0.clone()),
+                ((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
+                    + (op0_limb_2_col16.clone() * M31_262144.clone())),
                 state_0_id_col38.clone(),
             ],
         ));
@@ -826,7 +822,7 @@ impl FrameworkEval for Eval {
             &self.blake_round_lookup_elements,
             -E::EF::one(),
             &[
-                (seq.clone() * M31_1.clone()),
+                seq.clone(),
                 M31_0.clone(),
                 low_16_bits_col33.clone(),
                 high_16_bits_col34.clone(),
@@ -1052,9 +1048,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_0.clone()),
+                ((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
+                    + (ap_limb_2_col25.clone() * M31_262144.clone())),
                 new_state_0_id_col141.clone(),
             ],
         ));

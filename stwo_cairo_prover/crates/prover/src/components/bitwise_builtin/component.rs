@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 89;
+
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
@@ -14,14 +16,9 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 89];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 19];
-        let preprocessed_log_sizes = vec![self.log_size];
-        TreeVec::new(vec![
-            preprocessed_log_sizes,
-            trace_log_sizes,
-            interaction_log_sizes,
-        ])
+        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -55,7 +52,6 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_1073741824 = E::F::from(M31::from(1073741824));
         let M31_2 = E::F::from(M31::from(2));
@@ -159,9 +155,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone()))
-                    + M31_0.clone()),
+                (E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
+                    + (seq.clone() * M31_5.clone())),
                 op0_id_col0.clone(),
             ],
         ));
