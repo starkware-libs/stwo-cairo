@@ -51,6 +51,21 @@ pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
+// Subroutines
+pub mod add_252;
+pub mod div_252;
+pub mod double_karatsuba_n_7_limb_max_bound_511;
+pub mod ec_add;
+pub mod mem_verify;
+pub mod mul_252;
+pub mod range_check_mem_value_n_28;
+pub mod read_split;
+pub mod single_karatsuba_n_7;
+pub mod sub_252;
+pub mod verify_add_252;
+pub mod verify_mul_252;
+pub mod verify_reduced_252;
+
 pub(crate) mod prelude;
 
 use itertools::Itertools;
