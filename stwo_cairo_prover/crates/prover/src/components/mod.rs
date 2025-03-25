@@ -59,3 +59,5 @@ pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
 pub mod blake_round_sigma;
+
+// TODO(Gali): Remove add_inputs.
