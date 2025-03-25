@@ -310,7 +310,10 @@ impl CairoClaimGenerator {
             &self.memory_id_to_value_trace_generator,
             &mut self.poseidon_context_trace_generator,
             &self.range_checks_trace_generator.rc_6_trace_generator,
+            &self.range_checks_trace_generator.rc_12_trace_generator,
+            &self.range_checks_trace_generator.rc_18_trace_generator,
             &self.range_checks_trace_generator.rc_4_4_trace_generator,
+            &self.range_checks_trace_generator.rc_3_6_6_3_trace_generator,
             &self.range_checks_trace_generator.rc_4_4_4_4_trace_generator,
             &self
                 .range_checks_trace_generator

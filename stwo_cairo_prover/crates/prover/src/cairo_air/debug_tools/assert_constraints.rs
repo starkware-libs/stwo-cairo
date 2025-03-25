@@ -168,6 +168,9 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     if let Some(add_mod) = &builtins.add_mod_builtin {
         assert_component(add_mod, &trace);
     }
+    if let Some(mul_mod) = &builtins.mul_mod_builtin {
+        assert_component(mul_mod, &trace);
+    }
     if let Some(bitwise) = &builtins.bitwise_builtin {
         assert_component(bitwise, &trace);
     }
