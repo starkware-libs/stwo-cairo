@@ -58,3 +58,6 @@ pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
 pub mod blake_round_sigma;
+pub mod pedersen_builtin;
+pub mod pedersen_points_table;
+pub mod partial_ec_mul;
