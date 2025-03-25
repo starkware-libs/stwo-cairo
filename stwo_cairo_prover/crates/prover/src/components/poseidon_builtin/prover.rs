@@ -5,12 +5,10 @@ use crate::cairo_air::poseidon::deduce_output::{
 };
 use crate::cairo_air::preprocessed::Seq;
 use crate::components::prelude::proving::*;
-use crate::components::range_check_vector::{
-    range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
-};
 use crate::components::{
     cube_252, memory_address_to_id, memory_id_to_big, poseidon_3_partial_rounds_chain,
-    poseidon_full_round_chain, range_check_felt_252_width_27,
+    poseidon_full_round_chain, range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
+    range_check_felt_252_width_27,
 };
 
 #[derive(Default)]
