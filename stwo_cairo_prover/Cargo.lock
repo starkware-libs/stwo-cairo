@@ -414,7 +414,6 @@ dependencies = [
 [[package]]
 name = "cairo-program-runner"
 version = "0.1.0"
-source = "git+https://github.com/starkware-industries/bootloader-hints?rev=493811db2381748ca1571192f94b97dce7b4cb8b#493811db2381748ca1571192f94b97dce7b4cb8b"
 dependencies = [
  "bincode",
  "cairo-vm",
@@ -433,8 +432,8 @@ dependencies = [
 
 [[package]]
 name = "cairo-vm"
-version = "2.0.0-rc4"
-source = "git+https://github.com/lambdaclass/cairo-vm?rev=153d3a88#153d3a88b579a85de42bc14b7f0d06e7e9597fd4"
+version = "2.0.0"
+source = "git+https://github.com/lambdaclass/cairo-vm?rev=b9fb58d6b879f92cbd76abd85ea44db8eb81b554#b9fb58d6b879f92cbd76abd85ea44db8eb81b554"
 dependencies = [
  "anyhow",
  "bincode",

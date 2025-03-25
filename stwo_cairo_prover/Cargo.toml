@@ -21,12 +21,12 @@ edition = "2021"
 bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "153d3a88", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b9fb58d6b879f92cbd76abd85ea44db8eb81b554", features = [
     "mod_builtin",
 ], default-features = false }
 # TODO(yuval): Use an official version, not a specific commit.
 # TODO(yg): this won't work as it's a private repo. Open it and/or move vm-runner to it.
-cairo-program-runner = { git = "https://github.com/starkware-industries/bootloader-hints", rev = "493811db2381748ca1571192f94b97dce7b4cb8b" }
+cairo-program-runner = { git = "https://github.com/starkware-industries/bootloader-hints", rev = "bd23e1fc3b42544c25cab39d8e88e05e52d4e313" }
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = { version = "0.11.5", default-features = false }
 hex = "0.4.3"
