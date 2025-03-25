@@ -21,7 +21,13 @@ pub mod proving {
     pub use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
     pub use stwo_prover::core::poly::BitReversedOrder;
 
-    pub use crate::cairo_air::blake::*;
+    pub use crate::cairo_air::blake::deduce_output::{
+        BlakeG, BlakeRound, BlakeRoundSigma, TripleXor32,
+    };
+    pub use crate::cairo_air::poseidon::deduce_output::{
+        PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
+        PackedPoseidonRoundKeys,
+    };
     pub use crate::cairo_air::preprocessed::Seq;
     pub(crate) use crate::cairo_air::relations;
     pub use crate::components::utils::*;

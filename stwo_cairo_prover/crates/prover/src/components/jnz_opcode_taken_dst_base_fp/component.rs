@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 43;
+
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
@@ -14,7 +16,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 43];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 4];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -124,10 +126,7 @@ impl FrameworkEval for Eval {
                 M31_32767.clone(),
                 M31_32769.clone(),
                 M31_56.clone(),
-                ((((M31_8.clone() + (ap_update_add_1_col4.clone() * M31_32.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone()),
+                (M31_8.clone() + (ap_update_add_1_col4.clone() * M31_32.clone())),
             ],
         ));
 
@@ -180,8 +179,7 @@ impl FrameworkEval for Eval {
 
         // dst doesn't equal 0.
         eval.add_constraint(
-            ((((((((((((((((((((((((((((((M31_0.clone()
-                + dst_limb_0_col6.clone())
+            (((((((((((((((((((((((((((((dst_limb_0_col6.clone()
                 + dst_limb_1_col7.clone())
                 + dst_limb_2_col8.clone())
                 + dst_limb_3_col9.clone())
@@ -212,17 +210,17 @@ impl FrameworkEval for Eval {
                 * res_col34.clone())
                 - M31_1.clone()),
         );
-        let diff_from_p_tmp_8b848_7 =
+        let diff_from_p_tmp_8b848_6 =
             eval.add_intermediate((dst_limb_0_col6.clone() - M31_1.clone()));
-        let diff_from_p_tmp_8b848_8 =
+        let diff_from_p_tmp_8b848_7 =
             eval.add_intermediate((dst_limb_21_col27.clone() - M31_136.clone()));
-        let diff_from_p_tmp_8b848_9 =
+        let diff_from_p_tmp_8b848_8 =
             eval.add_intermediate((dst_limb_27_col33.clone() - M31_256.clone()));
         // dst doesn't equal P.
         eval.add_constraint(
-            ((((((((((((((((((((((((((((((M31_0.clone()
-                + (diff_from_p_tmp_8b848_7.clone()
-                    * diff_from_p_tmp_8b848_7.clone()))
+            ((((((((((((((((((((((((((((((diff_from_p_tmp_8b848_6
+                .clone()
+                * diff_from_p_tmp_8b848_6.clone())
                 + dst_limb_1_col7.clone())
                 + dst_limb_2_col8.clone())
                 + dst_limb_3_col9.clone())
@@ -243,13 +241,13 @@ impl FrameworkEval for Eval {
                 + dst_limb_18_col24.clone())
                 + dst_limb_19_col25.clone())
                 + dst_limb_20_col26.clone())
-                + (diff_from_p_tmp_8b848_8.clone() * diff_from_p_tmp_8b848_8.clone()))
+                + (diff_from_p_tmp_8b848_7.clone() * diff_from_p_tmp_8b848_7.clone()))
                 + dst_limb_22_col28.clone())
                 + dst_limb_23_col29.clone())
                 + dst_limb_24_col30.clone())
                 + dst_limb_25_col31.clone())
                 + dst_limb_26_col32.clone())
-                + (diff_from_p_tmp_8b848_9.clone() * diff_from_p_tmp_8b848_9.clone()))
+                + (diff_from_p_tmp_8b848_8.clone() * diff_from_p_tmp_8b848_8.clone()))
                 * res_squares_col35.clone())
                 - M31_1.clone()),
         );
@@ -274,9 +272,7 @@ impl FrameworkEval for Eval {
             (mid_limbs_set_col38.clone() * (mid_limbs_set_col38.clone() - M31_1.clone())),
         );
         // Cannot have msb equals 0 and mid_limbs_set equals 1.
-        eval.add_constraint(
-            ((M31_1.clone() * mid_limbs_set_col38.clone()) * (msb_col37.clone() - M31_1.clone())),
-        );
+        eval.add_constraint((mid_limbs_set_col38.clone() * (msb_col37.clone() - M31_1.clone())));
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_id_to_big_lookup_elements,

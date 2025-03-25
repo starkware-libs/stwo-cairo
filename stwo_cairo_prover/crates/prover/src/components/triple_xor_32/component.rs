@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 20;
+
 pub struct Eval {
     pub claim: Claim,
     pub triple_xor_32_lookup_elements: relations::TripleXor32,
@@ -12,7 +14,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 20];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 5];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -165,9 +167,9 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let triple_xor32_output_tmp_298db_15_limb_0 =
+        let triple_xor32_output_tmp_298db_14_limb_0 =
             eval.add_intermediate((xor_col13.clone() + (xor_col15.clone() * M31_256.clone())));
-        let triple_xor32_output_tmp_298db_15_limb_1 =
+        let triple_xor32_output_tmp_298db_14_limb_1 =
             eval.add_intermediate((xor_col17.clone() + (xor_col19.clone() * M31_256.clone())));
         eval.add_to_relation(RelationEntry::new(
             &self.triple_xor_32_lookup_elements,
@@ -179,8 +181,8 @@ impl FrameworkEval for Eval {
                 input_limb_3_col3.clone(),
                 input_limb_4_col4.clone(),
                 input_limb_5_col5.clone(),
-                triple_xor32_output_tmp_298db_15_limb_0.clone(),
-                triple_xor32_output_tmp_298db_15_limb_1.clone(),
+                triple_xor32_output_tmp_298db_14_limb_0.clone(),
+                triple_xor32_output_tmp_298db_14_limb_1.clone(),
             ],
         ));
 

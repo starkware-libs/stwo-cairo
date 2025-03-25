@@ -1,22 +1,15 @@
 #![allow(unused_parens)]
-#![allow(unused_imports)]
 #![allow(dead_code)]
 use std::simd::u32x16;
 
 use itertools::{chain, Itertools};
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
-use super::component::{Claim, InteractionClaim};
-use crate::cairo_air::blake::deduce_output::BlakeRoundSigma;
+use super::component::{Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE};
 use crate::components::prelude::proving::*;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];
-const N_TRACE_COLUMNS: usize = 0;
-pub const BLAKE_SIGMA_LOG_SIZE: u32 = 4;
 
 pub struct ClaimGenerator {
     pub mults: AtomicMultiplicityColumn,
@@ -25,7 +18,7 @@ impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: AtomicMultiplicityColumn::new(1 << 4),
+            mults: AtomicMultiplicityColumn::new(1 << BLAKE_SIGMA_LOG_SIZE),
         }
     }
 

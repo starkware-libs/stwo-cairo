@@ -1,5 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
+pub(super) const N_TRACE_COLUMNS: usize = 73;
+
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
@@ -15,7 +17,7 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; 73];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 6];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
@@ -50,7 +52,6 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_134217728 = E::F::from(M31::from(134217728));
@@ -177,22 +178,15 @@ impl FrameworkEval for Eval {
                 offset0_col3.clone(),
                 offset1_col4.clone(),
                 offset2_col5.clone(),
-                ((((((M31_0.clone() + (dst_base_fp_col6.clone() * M31_8.clone()))
+                ((((((dst_base_fp_col6.clone() * M31_8.clone())
                     + (op0_base_fp_col7.clone() * M31_16.clone()))
                     + (op1_imm_col8.clone() * M31_32.clone()))
                     + (op1_base_fp_col9.clone() * M31_64.clone()))
                     + (((M31_1.clone() - op1_imm_col8.clone()) - op1_base_fp_col9.clone())
                         * M31_128.clone()))
                     + (res_add_col10.clone() * M31_256.clone())),
-                (((((((((M31_0.clone()
-                    + ((M31_1.clone() - res_add_col10.clone()) * M31_1.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone())
-                    + M31_0.clone())
+                (((M31_1.clone() - res_add_col10.clone())
                     + (ap_update_add_1_col11.clone() * M31_32.clone()))
-                    + M31_0.clone())
-                    + M31_0.clone())
                     + M31_256.clone()),
                 M31_3.clone(),
             ],
