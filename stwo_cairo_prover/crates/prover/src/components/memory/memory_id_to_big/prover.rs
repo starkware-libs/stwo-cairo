@@ -14,7 +14,8 @@ use stwo_cairo_common::prover_types::simd::PackedFelt252;
 use super::component::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use crate::cairo_air::relations;
 use crate::components::prelude::proving::*;
-use crate::components::range_check_vector::{range_check_9_9, SIMD_ENUMERATION_0};
+use crate::components::range_check_9_9;
+use crate::components::range_check_vector::SIMD_ENUMERATION_0;
 use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};
 use crate::felt::split_f252_simd;
 

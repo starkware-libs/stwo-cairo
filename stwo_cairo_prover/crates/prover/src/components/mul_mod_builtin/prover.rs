@@ -1,8 +1,9 @@
 #![allow(unused_parens)]
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
-use crate::components::range_check_vector::{range_check_12, range_check_18, range_check_3_6_6_3};
-use crate::components::{memory_address_to_id, memory_id_to_big};
+use crate::components::{
+    memory_address_to_id, memory_id_to_big, range_check_12, range_check_18, range_check_3_6_6_3,
+};
 
 #[derive(Default)]
 pub struct ClaimGenerator {

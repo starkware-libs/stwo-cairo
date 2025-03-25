@@ -16,15 +16,12 @@ use stwo_prover::core::pcs::TreeVec;
 use super::air::CairoInteractionElements;
 use super::debug_tools::indented_component_display;
 use super::poseidon::air::PoseidonContextClaimGenerator;
-use crate::components::range_check_vector::{
-    range_check_12, range_check_18, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_4,
-    range_check_4_4_4_4,
-};
 use crate::components::utils::TreeBuilder;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
-    poseidon_builtin, range_check_6, range_check_builtin_bits_128, range_check_builtin_bits_96,
-    verify_bitwise_xor_9,
+    poseidon_builtin, range_check_12, range_check_18, range_check_3_3_3_3_3, range_check_3_6_6_3,
+    range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_builtin_bits_128,
+    range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
