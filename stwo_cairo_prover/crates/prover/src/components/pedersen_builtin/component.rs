@@ -1,4 +1,7 @@
+use crate::components::mem_verify::component::MemVerify;
 use crate::components::prelude::constraint_eval::*;
+use crate::components::read_split::component::ReadSplit;
+use crate::components::verify_reduced_252::component::VerifyReduced252;
 
 pub(super) const N_TRACE_COLUMNS: usize = 359;
 
@@ -58,7 +61,6 @@ impl FrameworkEval for Eval {
         let M31_1 = E::F::from(M31::from(1));
         let M31_102 = E::F::from(M31::from(102));
         let M31_118 = E::F::from(M31::from(118));
-        let M31_120 = E::F::from(M31::from(120));
         let M31_125 = E::F::from(M31::from(125));
         let M31_130 = E::F::from(M31::from(130));
         let M31_145 = E::F::from(M31::from(145));
@@ -88,7 +90,6 @@ impl FrameworkEval for Eval {
         let M31_308 = E::F::from(M31::from(308));
         let M31_31 = E::F::from(M31::from(31));
         let M31_319 = E::F::from(M31::from(319));
-        let M31_32 = E::F::from(M31::from(32));
         let M31_321 = E::F::from(M31::from(321));
         let M31_330 = E::F::from(M31::from(330));
         let M31_334 = E::F::from(M31::from(334));
@@ -481,31 +482,11 @@ impl FrameworkEval for Eval {
             ((seq.clone() * M31_3.clone())
                 + E::F::from(M31::from(self.claim.pedersen_builtin_segment_start))),
         );
-
-        // Read Split.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_5_4_lookup_elements,
-            E::EF::one(),
-            &[ms_limb_low_col27.clone(), ms_limb_high_col28.clone()],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_split_output_tmp_d00c6_6_limb_0, read_split_output_tmp_d00c6_6_limb_1, read_split_output_tmp_d00c6_6_limb_2, read_split_output_tmp_d00c6_6_limb_3, read_split_output_tmp_d00c6_6_limb_4, read_split_output_tmp_d00c6_6_limb_5, read_split_output_tmp_d00c6_6_limb_6, read_split_output_tmp_d00c6_6_limb_7, read_split_output_tmp_d00c6_6_limb_8, read_split_output_tmp_d00c6_6_limb_9, read_split_output_tmp_d00c6_6_limb_10, read_split_output_tmp_d00c6_6_limb_11, read_split_output_tmp_d00c6_6_limb_12, read_split_output_tmp_d00c6_6_limb_13, read_split_output_tmp_d00c6_6_limb_14, read_split_output_tmp_d00c6_6_limb_15, read_split_output_tmp_d00c6_6_limb_16, read_split_output_tmp_d00c6_6_limb_17, read_split_output_tmp_d00c6_6_limb_18, read_split_output_tmp_d00c6_6_limb_19, read_split_output_tmp_d00c6_6_limb_20, read_split_output_tmp_d00c6_6_limb_21, read_split_output_tmp_d00c6_6_limb_22, read_split_output_tmp_d00c6_6_limb_23, read_split_output_tmp_d00c6_6_limb_24, read_split_output_tmp_d00c6_6_limb_25, read_split_output_tmp_d00c6_6_limb_26, read_split_output_tmp_d00c6_6_limb_27, read_split_output_tmp_d00c6_6_limb_28, read_split_output_tmp_d00c6_6_limb_29, read_split_output_tmp_d00c6_6_limb_30, read_split_output_tmp_d00c6_6_limb_31, read_split_output_tmp_d00c6_6_limb_32, read_split_output_tmp_d00c6_6_limb_33, read_split_output_tmp_d00c6_6_limb_34, read_split_output_tmp_d00c6_6_limb_35, read_split_output_tmp_d00c6_6_limb_36, read_split_output_tmp_d00c6_6_limb_37, read_split_output_tmp_d00c6_6_limb_38, read_split_output_tmp_d00c6_6_limb_39, read_split_output_tmp_d00c6_6_limb_40, read_split_output_tmp_d00c6_6_limb_41, read_split_output_tmp_d00c6_6_limb_42, read_split_output_tmp_d00c6_6_limb_43, read_split_output_tmp_d00c6_6_limb_44, read_split_output_tmp_d00c6_6_limb_45, read_split_output_tmp_d00c6_6_limb_46, read_split_output_tmp_d00c6_6_limb_47, read_split_output_tmp_d00c6_6_limb_48, read_split_output_tmp_d00c6_6_limb_49, read_split_output_tmp_d00c6_6_limb_50, read_split_output_tmp_d00c6_6_limb_51, read_split_output_tmp_d00c6_6_limb_52, read_split_output_tmp_d00c6_6_limb_53, read_split_output_tmp_d00c6_6_limb_54, read_split_output_tmp_d00c6_6_limb_55, read_split_output_tmp_d00c6_6_limb_56, read_split_output_tmp_d00c6_6_limb_57, read_split_output_tmp_d00c6_6_limb_58, read_split_output_tmp_d00c6_6_limb_59, read_split_output_tmp_d00c6_6_limb_60, read_split_output_tmp_d00c6_6_limb_61, read_split_output_tmp_d00c6_6_limb_62, read_split_output_tmp_d00c6_6_limb_63, read_split_output_tmp_d00c6_6_limb_64, read_split_output_tmp_d00c6_6_limb_65, read_split_output_tmp_d00c6_6_limb_66, read_split_output_tmp_d00c6_6_limb_67, read_split_output_tmp_d00c6_6_limb_68, read_split_output_tmp_d00c6_6_limb_69, read_split_output_tmp_d00c6_6_limb_70, read_split_output_tmp_d00c6_6_limb_71, read_split_output_tmp_d00c6_6_limb_72, read_split_output_tmp_d00c6_6_limb_73, read_split_output_tmp_d00c6_6_limb_74, read_split_output_tmp_d00c6_6_limb_75, read_split_output_tmp_d00c6_6_limb_76, read_split_output_tmp_d00c6_6_limb_77, read_split_output_tmp_d00c6_6_limb_78, read_split_output_tmp_d00c6_6_limb_79, read_split_output_tmp_d00c6_6_limb_80, read_split_output_tmp_d00c6_6_limb_81, read_split_output_tmp_d00c6_6_limb_82, read_split_output_tmp_d00c6_6_limb_83] =
+            ReadSplit::evaluate(
                 instance_addr_tmp_d00c6_0.clone(),
-                pedersen_a_id_col29.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                pedersen_a_id_col29.clone(),
                 value_limb_0_col0.clone(),
                 value_limb_1_col1.clone(),
                 value_limb_2_col2.clone(),
@@ -533,34 +514,19 @@ impl FrameworkEval for Eval {
                 value_limb_24_col24.clone(),
                 value_limb_25_col25.clone(),
                 value_limb_26_col26.clone(),
-                ((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone()),
-            ],
-        ));
-
-        // Read Split.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_5_4_lookup_elements,
-            E::EF::one(),
-            &[ms_limb_low_col57.clone(), ms_limb_high_col58.clone()],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                ms_limb_low_col27.clone(),
+                ms_limb_high_col28.clone(),
+                pedersen_a_id_col29.clone(),
+                &mut eval,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+                &self.range_check_5_4_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_split_output_tmp_d00c6_12_limb_0, read_split_output_tmp_d00c6_12_limb_1, read_split_output_tmp_d00c6_12_limb_2, read_split_output_tmp_d00c6_12_limb_3, read_split_output_tmp_d00c6_12_limb_4, read_split_output_tmp_d00c6_12_limb_5, read_split_output_tmp_d00c6_12_limb_6, read_split_output_tmp_d00c6_12_limb_7, read_split_output_tmp_d00c6_12_limb_8, read_split_output_tmp_d00c6_12_limb_9, read_split_output_tmp_d00c6_12_limb_10, read_split_output_tmp_d00c6_12_limb_11, read_split_output_tmp_d00c6_12_limb_12, read_split_output_tmp_d00c6_12_limb_13, read_split_output_tmp_d00c6_12_limb_14, read_split_output_tmp_d00c6_12_limb_15, read_split_output_tmp_d00c6_12_limb_16, read_split_output_tmp_d00c6_12_limb_17, read_split_output_tmp_d00c6_12_limb_18, read_split_output_tmp_d00c6_12_limb_19, read_split_output_tmp_d00c6_12_limb_20, read_split_output_tmp_d00c6_12_limb_21, read_split_output_tmp_d00c6_12_limb_22, read_split_output_tmp_d00c6_12_limb_23, read_split_output_tmp_d00c6_12_limb_24, read_split_output_tmp_d00c6_12_limb_25, read_split_output_tmp_d00c6_12_limb_26, read_split_output_tmp_d00c6_12_limb_27, read_split_output_tmp_d00c6_12_limb_28, read_split_output_tmp_d00c6_12_limb_29, read_split_output_tmp_d00c6_12_limb_30, read_split_output_tmp_d00c6_12_limb_31, read_split_output_tmp_d00c6_12_limb_32, read_split_output_tmp_d00c6_12_limb_33, read_split_output_tmp_d00c6_12_limb_34, read_split_output_tmp_d00c6_12_limb_35, read_split_output_tmp_d00c6_12_limb_36, read_split_output_tmp_d00c6_12_limb_37, read_split_output_tmp_d00c6_12_limb_38, read_split_output_tmp_d00c6_12_limb_39, read_split_output_tmp_d00c6_12_limb_40, read_split_output_tmp_d00c6_12_limb_41, read_split_output_tmp_d00c6_12_limb_42, read_split_output_tmp_d00c6_12_limb_43, read_split_output_tmp_d00c6_12_limb_44, read_split_output_tmp_d00c6_12_limb_45, read_split_output_tmp_d00c6_12_limb_46, read_split_output_tmp_d00c6_12_limb_47, read_split_output_tmp_d00c6_12_limb_48, read_split_output_tmp_d00c6_12_limb_49, read_split_output_tmp_d00c6_12_limb_50, read_split_output_tmp_d00c6_12_limb_51, read_split_output_tmp_d00c6_12_limb_52, read_split_output_tmp_d00c6_12_limb_53, read_split_output_tmp_d00c6_12_limb_54, read_split_output_tmp_d00c6_12_limb_55, read_split_output_tmp_d00c6_12_limb_56, read_split_output_tmp_d00c6_12_limb_57, read_split_output_tmp_d00c6_12_limb_58, read_split_output_tmp_d00c6_12_limb_59, read_split_output_tmp_d00c6_12_limb_60, read_split_output_tmp_d00c6_12_limb_61, read_split_output_tmp_d00c6_12_limb_62, read_split_output_tmp_d00c6_12_limb_63, read_split_output_tmp_d00c6_12_limb_64, read_split_output_tmp_d00c6_12_limb_65, read_split_output_tmp_d00c6_12_limb_66, read_split_output_tmp_d00c6_12_limb_67, read_split_output_tmp_d00c6_12_limb_68, read_split_output_tmp_d00c6_12_limb_69, read_split_output_tmp_d00c6_12_limb_70, read_split_output_tmp_d00c6_12_limb_71, read_split_output_tmp_d00c6_12_limb_72, read_split_output_tmp_d00c6_12_limb_73, read_split_output_tmp_d00c6_12_limb_74, read_split_output_tmp_d00c6_12_limb_75, read_split_output_tmp_d00c6_12_limb_76, read_split_output_tmp_d00c6_12_limb_77, read_split_output_tmp_d00c6_12_limb_78, read_split_output_tmp_d00c6_12_limb_79, read_split_output_tmp_d00c6_12_limb_80, read_split_output_tmp_d00c6_12_limb_81, read_split_output_tmp_d00c6_12_limb_82, read_split_output_tmp_d00c6_12_limb_83] =
+            ReadSplit::evaluate(
                 (instance_addr_tmp_d00c6_0.clone() + M31_1.clone()),
-                pedersen_b_id_col59.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                pedersen_b_id_col59.clone(),
                 value_limb_0_col30.clone(),
                 value_limb_1_col31.clone(),
                 value_limb_2_col32.clone(),
@@ -588,182 +554,92 @@ impl FrameworkEval for Eval {
                 value_limb_24_col54.clone(),
                 value_limb_25_col55.clone(),
                 value_limb_26_col56.clone(),
-                ((ms_limb_high_col58.clone() * M31_32.clone()) + ms_limb_low_col57.clone()),
+                ms_limb_low_col57.clone(),
+                ms_limb_high_col58.clone(),
+                pedersen_b_id_col59.clone(),
+                &mut eval,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+                &self.range_check_5_4_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let () = VerifyReduced252::evaluate(
+            [
+                value_limb_0_col0.clone(),
+                value_limb_1_col1.clone(),
+                value_limb_2_col2.clone(),
+                value_limb_3_col3.clone(),
+                value_limb_4_col4.clone(),
+                value_limb_5_col5.clone(),
+                value_limb_6_col6.clone(),
+                value_limb_7_col7.clone(),
+                value_limb_8_col8.clone(),
+                value_limb_9_col9.clone(),
+                value_limb_10_col10.clone(),
+                value_limb_11_col11.clone(),
+                value_limb_12_col12.clone(),
+                value_limb_13_col13.clone(),
+                value_limb_14_col14.clone(),
+                value_limb_15_col15.clone(),
+                value_limb_16_col16.clone(),
+                value_limb_17_col17.clone(),
+                value_limb_18_col18.clone(),
+                value_limb_19_col19.clone(),
+                value_limb_20_col20.clone(),
+                value_limb_21_col21.clone(),
+                value_limb_22_col22.clone(),
+                value_limb_23_col23.clone(),
+                value_limb_24_col24.clone(),
+                value_limb_25_col25.clone(),
+                value_limb_26_col26.clone(),
+                read_split_output_tmp_d00c6_6_limb_83.clone(),
             ],
-        ));
-
-        // Verify Reduced 252.
-
-        // ms_max is bit.
-        eval.add_constraint(
-            (ms_limb_is_max_col60.clone() * (M31_1.clone() - ms_limb_is_max_col60.clone())),
-        );
-        // both_max is bit.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col61.clone()
-                * (M31_1.clone() - ms_and_mid_limbs_are_max_col61.clone())),
-        );
-        eval.add_to_relation(RelationEntry::new(
+            ms_limb_is_max_col60.clone(),
+            ms_and_mid_limbs_are_max_col61.clone(),
+            rc_input_col62.clone(),
+            &mut eval,
             &self.range_check_8_lookup_elements,
-            E::EF::one(),
-            &[
-                (((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone())
-                    - ms_limb_is_max_col60.clone()),
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let () = VerifyReduced252::evaluate(
+            [
+                value_limb_0_col30.clone(),
+                value_limb_1_col31.clone(),
+                value_limb_2_col32.clone(),
+                value_limb_3_col33.clone(),
+                value_limb_4_col34.clone(),
+                value_limb_5_col35.clone(),
+                value_limb_6_col36.clone(),
+                value_limb_7_col37.clone(),
+                value_limb_8_col38.clone(),
+                value_limb_9_col39.clone(),
+                value_limb_10_col40.clone(),
+                value_limb_11_col41.clone(),
+                value_limb_12_col42.clone(),
+                value_limb_13_col43.clone(),
+                value_limb_14_col44.clone(),
+                value_limb_15_col45.clone(),
+                value_limb_16_col46.clone(),
+                value_limb_17_col47.clone(),
+                value_limb_18_col48.clone(),
+                value_limb_19_col49.clone(),
+                value_limb_20_col50.clone(),
+                value_limb_21_col51.clone(),
+                value_limb_22_col52.clone(),
+                value_limb_23_col53.clone(),
+                value_limb_24_col54.clone(),
+                value_limb_25_col55.clone(),
+                value_limb_26_col56.clone(),
+                read_split_output_tmp_d00c6_12_limb_83.clone(),
             ],
-        ));
-
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col60.clone() * value_limb_22_col22.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col60.clone() * value_limb_23_col23.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col60.clone() * value_limb_24_col24.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col60.clone() * value_limb_25_col25.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col60.clone() * value_limb_26_col26.clone()));
-        // rc_input.
-        eval.add_constraint(
-            (rc_input_col62.clone()
-                - (ms_limb_is_max_col60.clone()
-                    * ((M31_120.clone() + value_limb_21_col21.clone())
-                        - ms_and_mid_limbs_are_max_col61.clone()))),
-        );
-        eval.add_to_relation(RelationEntry::new(
+            ms_limb_is_max_col63.clone(),
+            ms_and_mid_limbs_are_max_col64.clone(),
+            rc_input_col65.clone(),
+            &mut eval,
             &self.range_check_8_lookup_elements,
-            E::EF::one(),
-            &[rc_input_col62.clone()],
-        ));
-
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_0_col0.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_1_col1.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_2_col2.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_3_col3.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_4_col4.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_5_col5.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_6_col6.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_7_col7.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_8_col8.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_9_col9.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_10_col10.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_11_col11.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_12_col12.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_13_col13.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_14_col14.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_15_col15.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_16_col16.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_17_col17.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_18_col18.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_19_col19.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col61.clone() * value_limb_20_col20.clone()));
-
-        // Verify Reduced 252.
-
-        // ms_max is bit.
-        eval.add_constraint(
-            (ms_limb_is_max_col63.clone() * (M31_1.clone() - ms_limb_is_max_col63.clone())),
         );
-        // both_max is bit.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col64.clone()
-                * (M31_1.clone() - ms_and_mid_limbs_are_max_col64.clone())),
-        );
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_8_lookup_elements,
-            E::EF::one(),
-            &[
-                (((ms_limb_high_col58.clone() * M31_32.clone()) + ms_limb_low_col57.clone())
-                    - ms_limb_is_max_col63.clone()),
-            ],
-        ));
-
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col63.clone() * value_limb_22_col52.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col63.clone() * value_limb_23_col53.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col63.clone() * value_limb_24_col54.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col63.clone() * value_limb_25_col55.clone()));
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint((ms_limb_is_max_col63.clone() * value_limb_26_col56.clone()));
-        // rc_input.
-        eval.add_constraint(
-            (rc_input_col65.clone()
-                - (ms_limb_is_max_col63.clone()
-                    * ((M31_120.clone() + value_limb_21_col51.clone())
-                        - ms_and_mid_limbs_are_max_col64.clone()))),
-        );
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_8_lookup_elements,
-            E::EF::one(),
-            &[rc_input_col65.clone()],
-        ));
-
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_0_col30.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_1_col31.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_2_col32.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_3_col33.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_4_col34.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_5_col35.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_6_col36.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_7_col37.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_8_col38.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_9_col39.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_10_col40.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_11_col41.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_12_col42.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_13_col43.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_14_col44.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_15_col45.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_16_col46.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_17_col47.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_18_col48.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_19_col49.clone()));
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint((ms_and_mid_limbs_are_max_col64.clone() * value_limb_20_col50.clone()));
-
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
@@ -1404,22 +1280,11 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let () = MemVerify::evaluate(
+            [
                 (instance_addr_tmp_d00c6_0.clone() + M31_2.clone()),
-                pedersen_result_id_col358.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                pedersen_result_id_col358.clone(),
                 partial_ec_mul_output_limb_17_col302.clone(),
                 partial_ec_mul_output_limb_18_col303.clone(),
                 partial_ec_mul_output_limb_19_col304.clone(),
@@ -1449,8 +1314,11 @@ impl FrameworkEval for Eval {
                 partial_ec_mul_output_limb_43_col328.clone(),
                 partial_ec_mul_output_limb_44_col329.clone(),
             ],
-        ));
-
+            pedersen_result_id_col358.clone(),
+            &mut eval,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+        );
         eval.finalize_logup_in_pairs();
         eval
     }
