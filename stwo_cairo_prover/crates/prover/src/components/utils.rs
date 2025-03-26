@@ -11,12 +11,6 @@ use stwo_prover::core::pcs::TreeSubspan;
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
 
-// When padding is needed, the inputs must be arranged in the order defined by the neighbor
-// function. This order allows using the partial sum mechanism to sum only the first n_call inputs.
-// After getting the `SubComponentInputs` we apply the permutation again to ignore padded values at
-// the tail of the vector.
-// TODO(Ohad): generalize the padding logic, and move above doc to the relevant function.
-
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
         .array_chunks::<N_LANES>()
