@@ -1,6 +1,3 @@
-#![allow(unused_parens)]
-// TODO(Ohad): remove allow unused.
-#![allow(unused)]
 use std::array;
 use std::simd::u32x16;
 
