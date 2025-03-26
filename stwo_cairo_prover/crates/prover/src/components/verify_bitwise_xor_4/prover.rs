@@ -1,6 +1,3 @@
-#![allow(unused_parens)]
-// TODO(Ohad): remove allow unused.
-#![allow(unused)]
 use super::component::{Claim, InteractionClaim, BITWISE_XOR_4_LOG_SIZE, BITWISE_XOR_4_N_BITS};
 use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::prelude::proving::*;

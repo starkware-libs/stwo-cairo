@@ -1,24 +1,17 @@
-#![allow(unused_parens)]
-// TODO(Ohad): remove allow unused.
-#![allow(unused)]
 use std::array;
 use std::simd::u32x16;
 
 use itertools::Itertools;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
 use super::component::{Claim, InteractionClaim};
 use super::EXPAND_BITS;
-use crate::cairo_air::preprocessed::BitwiseXor;
 use crate::components::prelude::proving::*;
 use crate::components::verify_bitwise_xor_12::LIMB_BITS;
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
-
-const PACKED_LOG_SIZE: u32 = super::LOG_SIZE - LOG_N_LANES;
 
 pub struct ClaimGenerator {
     pub mults: [AtomicMultiplicityColumn; super::N_MULT_COLUMNS],
