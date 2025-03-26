@@ -179,7 +179,7 @@ impl StateTransitions {
         res.push_instr(memory, first.into(), &mut instruction_by_pc);
 
         while let Some(entry) = iter.next() {
-            // TODO(Ohad): Check if the adapter outputs the final state.
+            // TODO(Stav): Check if the adapter outputs the final state.
             let Some(_) = iter.peek() else {
                 res.final_state = entry.into();
                 break;
@@ -736,7 +736,7 @@ mod mappings_tests {
         );
     }
 
-    // TODO(Ohad): un-ignore when the opcode is in.
+    // TODO(Stav): un-ignore when the opcode is in.
     #[ignore]
     #[test]
     fn test_jmp_abs() {
