@@ -10,6 +10,5 @@
 
 pub mod cairo_air;
 mod components;
-mod felt;
 
 pub use stwo_prover;

@@ -2,6 +2,7 @@ use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_common::memory::split_f252;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
@@ -47,7 +48,6 @@ use crate::components::{
     verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
     verify_instruction,
 };
-use crate::felt::split_f252;
 
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
