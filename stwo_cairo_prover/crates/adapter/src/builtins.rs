@@ -203,7 +203,7 @@ impl BuiltinSegments {
         if let Some(segment) = &self.bitwise {
             builtin_padding::bitwise(segment, memory)
         };
-        // TODO(ohad): fill other builtins.
+        // TODO(Stav): fill other builtins.
     }
 
     // If the final segment in a builtin segment, and the final entry has a hole, the memory must be
@@ -291,7 +291,7 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
     segment.stop_ptr - segment.begin_addr
 }
 
-// TODO(Ohad): padding holes should be handled by a proof-mode runner.
+// TODO(Stav): padding holes should be handled by a proof-mode runner.
 mod builtin_padding {
     use cairo_vm::air_public_input::MemorySegmentAddresses;
     use itertools::Itertools;
