@@ -47,6 +47,8 @@ jobs:
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: stwo_cairo_prover
       - run: cargo nextest run --features slow-tests,std -j 1
         env:
           RUSTFLAGS: -C target-cpu=native -C opt-level=1
