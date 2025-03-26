@@ -271,7 +271,6 @@ pub struct RangeCheck<const N: usize> {
 }
 impl<const N: usize> RangeCheck<N> {
     pub fn new(ranges: [u32; N], column_idx: usize) -> Self {
-        // TODO(Ohad): consider asserting height is lower than some bound.
         assert!(ranges.iter().all(|&r| r > 0));
         assert!(column_idx < N);
         Self { ranges, column_idx }
