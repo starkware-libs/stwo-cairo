@@ -1,28 +1,18 @@
-// TODO(Ohad):remove allow.
-#![allow(unused)]
 use std::ops::Deref;
 
 use itertools::Itertools;
-use num_traits::Zero;
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::constraint_framework::{
     assert_constraints_on_trace, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
 };
-use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Blake2sChannel;
 use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig, TreeVec};
-use stwo_prover::core::poly::circle::{CanonicCoset, CirclePoly, PolyOps};
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_prover::core::pcs::TreeVec;
 
-use crate::cairo_air::air::{
-    lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
-};
+use crate::cairo_air::air::{CairoClaimGenerator, CairoComponents, CairoInteractionElements};
 use crate::cairo_air::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::cairo_air::opcodes_air::OpcodeComponents;
-use crate::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
-use crate::cairo_air::prover::LOG_MAX_ROWS;
+use crate::cairo_air::preprocessed::PreProcessedTrace;
 
 pub fn assert_component<E: FrameworkEval + Sync>(
     component: &FrameworkComponent<E>,
