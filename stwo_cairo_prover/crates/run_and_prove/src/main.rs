@@ -79,7 +79,6 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         preprocessed_trace,
     } = default_prod_prover_parameters();
 
-    // TODO(Ohad): Propagate hash from CLI args.
     let proof = prove_cairo::<Blake2sMerkleChannel>(cairo_input, pcs_config, preprocessed_trace)?;
 
     std::fs::write(args.proof_path, serde_json::to_string(&proof)?)?;
