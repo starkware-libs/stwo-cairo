@@ -37,6 +37,17 @@ impl PackedM31Type for PackedBool {
         unsafe { PackedM31::from_simd_unchecked(self.value.cast()) }
     }
 }
+
+impl BitAnd for PackedBool {
+    type Output = Self;
+
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self {
+            value: self.value & rhs.value,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Default)]
 pub struct PackedUInt16 {
     value: Simd<u16, N_LANES>,
