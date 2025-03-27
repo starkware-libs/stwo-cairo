@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::array::from_fn;
 
 use num_traits::{One, Zero};
