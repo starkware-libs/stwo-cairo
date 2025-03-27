@@ -1,8 +1,24 @@
+%builtins output pedersen range_check ecdsa bitwise ec_op keccak poseidon range_check96 add_mod mul_mod
+
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import FALSE, TRUE
+from starkware.cairo.common.registers import get_fp_and_pc
 
-func main{}() {
-    // add_ap_opcode
+func main{
+    output_ptr: felt,
+    pedersen_ptr,
+    range_check_ptr,
+    ecdsa_ptr,
+    bitwise_ptr,
+    ec_op_ptr,
+    keccak_ptr,
+    poseidon_ptr,
+    range_check96_ptr,
+    add_mod_ptr,
+    mul_mod_ptr,
+}() {
+    blake2s();
+    ap+=1;
     add_ap();
     ap+=1;
     jump_rel_imm();
@@ -58,7 +74,7 @@ func main{}() {
     // ap += 1;
     // [ap] = 1, ap++;
 
-    ret;
+    return ();
 }
 
 func add_ap() {
@@ -85,12 +101,18 @@ func jump_abs(){
 }
 
 func call_abs(){
-    call abs [fp - 1];
+    alloc_locals;
+    let (_, local __pc__) = get_fp_and_pc();
+    local addr = cast(__pc__ + 4, felt);
+    call abs addr;
     ret;
 }
 
 func call_abs_ap(){
-    call abs [ap - 1];
+    alloc_locals;
+    let (_, local __pc__) = get_fp_and_pc();
+    tempvar addr = cast(__pc__ + 4, felt);
+    call abs addr;
     ret;
 }
 
@@ -199,10 +221,12 @@ func jump_rel(){
     [ap] = 2, ap++;
     ret;
 }
-
 func jump_abs_double_deref(){
+    alloc_locals;
+    let (_, local __pc__) = get_fp_and_pc();
+    local x = cast(__pc__ + 8, felt);
     call rel 2;
-    jmp abs [[ap - 2]-1];  
+    jmp abs [[ap - 2] + 1];
     [ap] = 5;
     ret;
 }
