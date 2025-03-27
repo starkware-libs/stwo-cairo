@@ -4,7 +4,6 @@ use tracing::{span, Level};
 
 use crate::cairo_air::air::CairoInteractionElements;
 use crate::cairo_air::debug_tools::indented_component_display;
-use crate::cairo_air::range_checks_air::RangeChecksClaimGenerator;
 use crate::components::prelude::constraint_eval::*;
 use crate::components::prelude::proving::*;
 use crate::components::utils::TreeBuilder;
@@ -12,6 +11,7 @@ use crate::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
     range_check_felt_252_width_27,
 };
+use crate::witness::range_checks::RangeChecksClaimGenerator;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct PoseidonContextClaim {
