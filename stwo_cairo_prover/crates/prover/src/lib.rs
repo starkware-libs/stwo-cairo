@@ -13,3 +13,4 @@ mod components;
 mod felt;
 
 pub use stwo_prover;
+pub mod witness;

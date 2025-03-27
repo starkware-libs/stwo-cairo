@@ -15,7 +15,7 @@ use tracing::{event, span, Level};
 use super::CairoProof;
 use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
 use crate::cairo_air::preprocessed::PreProcessedTrace;
-use crate::cairo_air::witness::CairoClaimGenerator;
+use crate::witness::cairo::CairoClaimGenerator;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 26;
 
