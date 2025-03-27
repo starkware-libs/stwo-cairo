@@ -10,6 +10,8 @@ pub mod preprocessed_utils;
 pub mod prover;
 pub mod range_checks_air;
 pub(crate) mod relations;
+pub mod witness;
+
 // TODO(Ohad): verifier crate.
 pub mod verifier;
 
