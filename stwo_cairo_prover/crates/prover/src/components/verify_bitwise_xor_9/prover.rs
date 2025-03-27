@@ -35,12 +35,8 @@ impl ClaimGenerator {
         self.mults.increase_at((input[0].0 << N_BITS) + input[1].0);
     }
 
-    pub fn add_inputs(&self, inputs: &[InputType]) {
-        for input in inputs {
-            self.add_input(input);
-        }
-    }
-
+    // TODO(Ohad): remove.
+    #[allow(dead_code)]
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_par_iter().for_each(|input| {

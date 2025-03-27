@@ -4,14 +4,20 @@ use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::M31;
 use tracing::{span, Level};
 
-use super::air::{CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData};
-use super::blake::air::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};
-use super::builtins_air::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
-use super::opcodes_air::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
-use super::poseidon::air::{
+use crate::cairo_air::air::{
+    CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData,
+};
+use crate::cairo_air::blake::air::{
+    BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator,
+};
+use crate::cairo_air::builtins_air::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
+use crate::cairo_air::opcodes_air::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
+use crate::cairo_air::poseidon::air::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
 };
-use super::range_checks_air::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
+use crate::cairo_air::range_checks_air::{
+    RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator,
+};
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::utils::TreeBuilder;
 use crate::components::{

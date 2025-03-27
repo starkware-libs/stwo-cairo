@@ -97,12 +97,6 @@ impl ClaimGenerator {
         });
     }
 
-    pub fn add_inputs(&self, inputs: &[InputType]) {
-        for input in inputs {
-            self.add_input(input);
-        }
-    }
-
     // Instruction is determined by PC.
     pub fn add_input(&self, (pc, ..): &InputType) {
         self.multiplicities
