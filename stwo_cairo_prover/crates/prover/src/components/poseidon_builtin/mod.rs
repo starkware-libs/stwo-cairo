@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod poseidon_builtin;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator};
+pub use poseidon_builtin::{ClaimGenerator, InteractionClaimGenerator};
