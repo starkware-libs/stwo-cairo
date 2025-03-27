@@ -179,7 +179,10 @@ impl<R: Read> Iterator for TraceIter<'_, R> {
     }
 }
 
-/// Creates a prover input from `pub.json`, `priv.json`, `mem`, and `trace` files.
+/// TODO(Stav): delete after removing the tests 'test_read_from_large_files'
+/// 'test_read_from_small_files'.
+///  Creates a prover input from `pub.json`, `priv.json`, `mem`, and
+/// `trace` files.
 ///
 /// # Expects
 /// - These files must be stored in the `test_data/test_name` directory and contain valid Cairo
