@@ -259,15 +259,6 @@ pub struct InteractionClaimGenerator {
     pub small_multiplicities: Vec<PackedM31>,
 }
 impl InteractionClaimGenerator {
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self {
-            big_values: std::array::from_fn(|_| Vec::with_capacity(capacity)),
-            big_multiplicities: Vec::with_capacity(capacity),
-            small_values: std::array::from_fn(|_| Vec::with_capacity(capacity)),
-            small_multiplicities: Vec::with_capacity(capacity),
-        }
-    }
-
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
