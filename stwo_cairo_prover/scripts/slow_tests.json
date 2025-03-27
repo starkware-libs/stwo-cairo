@@ -1,16 +1,4 @@
 {
-    "test_read_from_small_files": [
-        "mem",
-        "pub.json",
-        "priv.json",
-        "trace"
-    ],
-    "test_read_from_large_files": [
-        "mem",
-        "pub.json",
-        "priv.json",
-        "trace"
-    ],
     "test_prove_verify_all_opcode_components": [
         "compiled.json",
         "all_opcode_components.cairo"
