@@ -11,13 +11,6 @@
         "priv.json",
         "trace"
     ],
-    "test_prove_verify_all_opcode_components": [
-        "mem",
-        "pub.json",
-        "priv.json",
-        "trace",
-        "all_opcode_components.cairo"
-    ],
     "test_prove_verify_all_builtins": [
         "mem",
         "pub.json",

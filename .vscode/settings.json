@@ -1,0 +1,6 @@
+{
+    "rust-analyzer.cargo.features": ["slow-tests"],
+    "rust-analyzer.diagnostics.disabled": [
+        "macro-error"
+    ],
+}
