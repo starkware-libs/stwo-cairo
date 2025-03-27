@@ -4,9 +4,9 @@ use stwo_cairo_adapter::builtins::{
 };
 use stwo_prover::core::backend::simd::SimdBackend;
 
+use super::components::poseidon::PoseidonContextClaimGenerator;
 use crate::cairo_air::air::CairoInteractionElements;
 use crate::cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
-use crate::cairo_air::poseidon::air::PoseidonContextClaimGenerator;
 use crate::components::utils::TreeBuilder;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
