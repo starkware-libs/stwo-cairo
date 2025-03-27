@@ -12,10 +12,10 @@ use crate::components::{
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,
     call_opcode_rel, generic_opcode, jnz_opcode, jnz_opcode_dst_base_fp, jnz_opcode_taken,
     jnz_opcode_taken_dst_base_fp, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
-    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_imm,
-    mul_opcode_small, mul_opcode_small_imm, qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8,
-    verify_instruction,
+    jump_opcode_rel_imm, mul_opcode, mul_opcode_imm, mul_opcode_small, mul_opcode_small_imm,
+    qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8, verify_instruction,
 };
+use crate::witness::components::{memory_address_to_id, memory_id_to_big};
 
 pub struct OpcodesClaimGenerator {
     add: Vec<add_opcode::ClaimGenerator>,

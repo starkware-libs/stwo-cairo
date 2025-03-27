@@ -11,8 +11,8 @@ use stwo_cairo_adapter::memory::{
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
-use super::component::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use crate::cairo_air::relations;
+use crate::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use crate::components::prelude::proving::*;
 use crate::components::range_check_9_9;
 use crate::components::range_check_vector::SIMD_ENUMERATION_0;
@@ -384,8 +384,8 @@ mod tests {
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::components::memory::memory_address_to_id;
     use crate::felt::split_f252;
+    use crate::witness::components::memory_address_to_id;
 
     #[test]
     fn test_deduce_output_simd() {
