@@ -13,10 +13,9 @@ use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
 use super::CairoProof;
-use crate::cairo_air::air::{
-    lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
-};
+use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
 use crate::cairo_air::preprocessed::PreProcessedTrace;
+use crate::cairo_air::witness::CairoClaimGenerator;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 24;
 
