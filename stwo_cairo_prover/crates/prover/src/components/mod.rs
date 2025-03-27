@@ -59,9 +59,24 @@ pub use range_check_vector::{
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
     range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
+pub mod add_252;
 pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
 pub mod blake_round_sigma;
 
 // TODO(Gali): Remove add_inputs.
+
+// Subroutines
+pub mod div_252;
+pub mod double_karatsuba_n_7_limb_max_bound_511;
+pub mod ec_add;
+pub mod mem_verify;
+pub mod mul_252;
+pub mod range_check_mem_value_n_28;
+pub mod read_split;
+pub mod single_karatsuba_n_7;
+pub mod sub_252;
+pub mod verify_add_252;
+pub mod verify_mul_252;
+pub mod verify_reduced_252;
