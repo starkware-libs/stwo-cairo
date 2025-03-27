@@ -26,9 +26,8 @@ use crate::cairo_air::relations;
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
 pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
-pub(super) const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
-pub(super) const N_TRACE_COLUMNS: usize =
-    MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
+pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
 pub type Component = FrameworkComponent<Eval>;
 
