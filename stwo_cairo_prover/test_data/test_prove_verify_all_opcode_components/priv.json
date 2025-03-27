@@ -8,5 +8,13 @@
   "bitwise": [],
   "ec_op": [],
   "keccak": [],
-  "poseidon": []
+  "poseidon": [],
+  "add_mod": {
+    "instances": [],
+    "zero_value_address": 25163
+  },
+  "mul_mod": {
+    "instances": [],
+    "zero_value_address": 25163
+  }
 }
