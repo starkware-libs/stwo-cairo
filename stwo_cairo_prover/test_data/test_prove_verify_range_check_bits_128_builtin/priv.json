@@ -1,0 +1,221 @@
+{
+  "trace_path": "trace",
+  "memory_path": "mem",
+  "pedersen": [],
+  "range_check": [
+    {
+      "index": 0,
+      "value": "0x32"
+    },
+    {
+      "index": 1,
+      "value": "0x31"
+    },
+    {
+      "index": 2,
+      "value": "0x30"
+    },
+    {
+      "index": 3,
+      "value": "0x2f"
+    },
+    {
+      "index": 4,
+      "value": "0x2e"
+    },
+    {
+      "index": 5,
+      "value": "0x2d"
+    },
+    {
+      "index": 6,
+      "value": "0x2c"
+    },
+    {
+      "index": 7,
+      "value": "0x2b"
+    },
+    {
+      "index": 8,
+      "value": "0x2a"
+    },
+    {
+      "index": 9,
+      "value": "0x29"
+    },
+    {
+      "index": 10,
+      "value": "0x28"
+    },
+    {
+      "index": 11,
+      "value": "0x27"
+    },
+    {
+      "index": 12,
+      "value": "0x26"
+    },
+    {
+      "index": 13,
+      "value": "0x25"
+    },
+    {
+      "index": 14,
+      "value": "0x24"
+    },
+    {
+      "index": 15,
+      "value": "0x23"
+    },
+    {
+      "index": 16,
+      "value": "0x22"
+    },
+    {
+      "index": 17,
+      "value": "0x21"
+    },
+    {
+      "index": 18,
+      "value": "0x20"
+    },
+    {
+      "index": 19,
+      "value": "0x1f"
+    },
+    {
+      "index": 20,
+      "value": "0x1e"
+    },
+    {
+      "index": 21,
+      "value": "0x1d"
+    },
+    {
+      "index": 22,
+      "value": "0x1c"
+    },
+    {
+      "index": 23,
+      "value": "0x1b"
+    },
+    {
+      "index": 24,
+      "value": "0x1a"
+    },
+    {
+      "index": 25,
+      "value": "0x19"
+    },
+    {
+      "index": 26,
+      "value": "0x18"
+    },
+    {
+      "index": 27,
+      "value": "0x17"
+    },
+    {
+      "index": 28,
+      "value": "0x16"
+    },
+    {
+      "index": 29,
+      "value": "0x15"
+    },
+    {
+      "index": 30,
+      "value": "0x14"
+    },
+    {
+      "index": 31,
+      "value": "0x13"
+    },
+    {
+      "index": 32,
+      "value": "0x12"
+    },
+    {
+      "index": 33,
+      "value": "0x11"
+    },
+    {
+      "index": 34,
+      "value": "0x10"
+    },
+    {
+      "index": 35,
+      "value": "0xf"
+    },
+    {
+      "index": 36,
+      "value": "0xe"
+    },
+    {
+      "index": 37,
+      "value": "0xd"
+    },
+    {
+      "index": 38,
+      "value": "0xc"
+    },
+    {
+      "index": 39,
+      "value": "0xb"
+    },
+    {
+      "index": 40,
+      "value": "0xa"
+    },
+    {
+      "index": 41,
+      "value": "0x9"
+    },
+    {
+      "index": 42,
+      "value": "0x8"
+    },
+    {
+      "index": 43,
+      "value": "0x7"
+    },
+    {
+      "index": 44,
+      "value": "0x6"
+    },
+    {
+      "index": 45,
+      "value": "0x5"
+    },
+    {
+      "index": 46,
+      "value": "0x4"
+    },
+    {
+      "index": 47,
+      "value": "0x3"
+    },
+    {
+      "index": 48,
+      "value": "0x2"
+    },
+    {
+      "index": 49,
+      "value": "0x1"
+    }
+  ],
+  "range_check96": [],
+  "ecdsa": [],
+  "bitwise": [],
+  "ec_op": [],
+  "keccak": [],
+  "poseidon": [],
+  "add_mod": {
+    "instances": [],
+    "zero_value_address": 45810
+  },
+  "mul_mod": {
+    "instances": [],
+    "zero_value_address": 45810
+  }
+}
