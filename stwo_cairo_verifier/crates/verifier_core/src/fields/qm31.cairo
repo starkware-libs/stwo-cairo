@@ -38,29 +38,29 @@ pub trait QM31Trait {
 
 #[cfg(feature: "qm31_opcode")]
 pub impl QM31Impl of QM31Trait {
-    #[inline]
+    #[inline(always)]
     fn from_array(arr: [M31InnerT; 4]) -> QM31 {
         let [a, b, c, d] = arr;
         QM31 { inner: core::qm31::QM31Trait::new(a, b, c, d) }
     }
 
-    #[inline]
+    #[inline(always)]
     fn to_array(self: QM31) -> [M31InnerT; 4] {
         let [a, b, c, d] = core::qm31::QM31Trait::unpack(self.inner);
         [a, b, c, d]
     }
 
-    #[inline]
+    #[inline(always)]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
         self * rhs.into()
     }
 
-    #[inline]
+    #[inline(always)]
     fn mul_cm31(self: QM31, rhs: CM31) -> QM31 {
         self * rhs.into()
     }
 
-    #[inline]
+    #[inline(always)]
     fn complex_conjugate(self: QM31) -> QM31 {
         let [a, b, c, d] = self.to_array();
         let v0 = Self::from_array([a, b, 0, 0]);
@@ -69,18 +69,18 @@ pub impl QM31Impl of QM31Trait {
     }
 
     /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
-    #[inline]
+    #[inline(always)]
     fn fms(a: QM31, b: QM31, c: QM31) -> QM31 {
         QM31 { inner: a.inner * b.inner - c.inner }
     }
 
     /// Returns a fused multiply-add i.e. returns `a * b + c`.
-    #[inline]
+    #[inline(always)]
     fn fma(a: QM31, b: QM31, c: QM31) -> QM31 {
         QM31 { inner: a.inner * b.inner + c.inner }
     }
 
-    #[inline]
+    #[inline(always)]
     fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
         UnreducedQM31 { inner: lhs * rhs }
     }
@@ -415,7 +415,7 @@ pub impl CM31IntoQM31 of core::traits::Into<CM31, QM31> {
 }
 
 pub impl QM31Neg of Neg<QM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn neg(a: QM31) -> QM31 {
         qm31_const::<0, 0, 0, 0>() - a
@@ -501,7 +501,7 @@ impl UnreducedQM31Impl of UnreducedQM31Trait {
 }
 
 impl UnreducedQM31Sub of Sub<UnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn sub(lhs: UnreducedQM31, rhs: UnreducedQM31) -> UnreducedQM31 {
         UnreducedQM31 { inner: lhs.inner - rhs.inner }
@@ -515,7 +515,7 @@ impl UnreducedQM31Sub of Sub<UnreducedQM31> {
 }
 
 impl UnreducedQM31Add of Add<UnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn add(lhs: UnreducedQM31, rhs: UnreducedQM31) -> UnreducedQM31 {
         UnreducedQM31 { inner: lhs.inner + rhs.inner }
@@ -529,7 +529,7 @@ impl UnreducedQM31Add of Add<UnreducedQM31> {
 }
 
 impl QM31IntoUnreducedQM31 of Into<QM31, UnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn into(self: QM31) -> UnreducedQM31 {
         UnreducedQM31 { inner: self }
@@ -573,18 +573,18 @@ pub trait PackedUnreducedQM31Trait {
 
 #[cfg(feature: "qm31_opcode")]
 pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
-    #[inline]
+    #[inline(always)]
     fn mul_m31(self: PackedUnreducedQM31, rhs: UnreducedM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { inner: self.inner * rhs.inner.inner }
     }
 
     /// Returns a zero element with each coordinate set to `P*P*P`.
-    #[inline]
+    #[inline(always)]
     fn large_zero() -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { inner: Zero::zero() }
     }
 
-    #[inline]
+    #[inline(always)]
     fn reduce(self: PackedUnreducedQM31) -> QM31 {
         self.inner
     }
@@ -613,14 +613,14 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
 
 
 pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     fn add_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
         self = self + rhs
     }
 }
 
 pub impl PackedUnreducedQM31Add of Add<PackedUnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn add(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { inner: lhs.inner + rhs.inner }
@@ -634,7 +634,7 @@ pub impl PackedUnreducedQM31Add of Add<PackedUnreducedQM31> {
 }
 
 pub impl PackedUnreducedQM31Sub of Sub<PackedUnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn sub(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { inner: lhs.inner - rhs.inner }
@@ -648,7 +648,7 @@ pub impl PackedUnreducedQM31Sub of Sub<PackedUnreducedQM31> {
 }
 
 pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn into(self: QM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { inner: self }
@@ -684,18 +684,18 @@ pub trait PackedUnreducedCM31Trait {
 
 #[cfg(feature: "qm31_opcode")]
 pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
-    #[inline]
+    #[inline(always)]
     fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: CM31 { inner: self.inner.inner * rhs.inner.inner } }
     }
 
     /// Returns a zero element with each coordinate set to `P*P*P`.
-    #[inline]
+    #[inline(always)]
     fn large_zero() -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: Zero::zero() }
     }
 
-    #[inline]
+    #[inline(always)]
     fn reduce(self: PackedUnreducedCM31) -> CM31 {
         self.inner
     }
@@ -724,21 +724,21 @@ pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
 }
 
 pub impl PackedUnreducedCM31Add of Add<PackedUnreducedCM31> {
-    #[inline]
+    #[inline(always)]
     fn add(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: lhs.inner + rhs.inner }
     }
 }
 
 pub impl PackedUnreducedCM31Sub of Sub<PackedUnreducedCM31> {
-    #[inline]
+    #[inline(always)]
     fn sub(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: lhs.inner - rhs.inner }
     }
 }
 
 pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
-    #[inline]
+    #[inline(always)]
     #[cfg(feature: "qm31_opcode")]
     fn into(self: CM31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: self }

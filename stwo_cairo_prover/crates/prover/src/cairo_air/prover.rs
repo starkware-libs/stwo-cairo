@@ -184,9 +184,11 @@ pub mod tests {
     use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_cairo_adapter::vm_import::generate_test_input;
     use stwo_cairo_adapter::ProverInput;
+    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 
     use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
     use crate::cairo_air::preprocessed::tests::testing_preprocessed_tree;
+    use crate::cairo_air::CairoProof;
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -210,6 +212,14 @@ pub mod tests {
         .instructions;
 
         input_from_plain_casm(instructions)
+    }
+
+    #[test]
+    fn test_from_proof() {
+        let proof_file = std::fs::File::open("/home/andrew/Downloads/proof.json")
+            .expect("Failed to open proof file");
+        let cairo_proof: CairoProof<Blake2sMerkleHasher> =
+            serde_json::from_reader(proof_file).expect("Failed to deserialize proof");
     }
 
     #[test]

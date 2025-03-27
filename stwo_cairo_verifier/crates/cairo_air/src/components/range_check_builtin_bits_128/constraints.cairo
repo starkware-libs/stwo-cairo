@@ -6,7 +6,7 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -18,6 +18,7 @@ pub fn mask_points(
     trace_gen: CirclePointIndex,
     log_size: u32,
 ) {
+    preprocessed_column_set.insert(PreprocessedColumn::Seq(log_size));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
@@ -254,13 +255,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 2
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
             trace_2_column_20_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_17_offset_neg_1, trace_2_column_18_offset_neg_1,
                 trace_2_column_19_offset_neg_1, trace_2_column_20_offset_neg_1,

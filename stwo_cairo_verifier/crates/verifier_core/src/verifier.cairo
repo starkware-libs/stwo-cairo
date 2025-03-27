@@ -1,6 +1,6 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
-use crate::fields::qm31::{QM31, QM31Impl, QM31_EXTENSION_DEGREE};
+use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::fri::FriVerificationError;
 use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
@@ -89,7 +89,7 @@ fn extract_composition_eval(
     let [v1] = (*c1.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
     let [v2] = (*c2.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
     let [v3] = (*c3.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    Ok(QM31Impl::from_partial_evals([v0, v1, v2, v3]))
+    Ok(QM31Trait::from_partial_evals([v0, v1, v2, v3]))
 }
 
 /// Error when the sampled values have an invalid structure.

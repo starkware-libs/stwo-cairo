@@ -108,6 +108,7 @@ impl MerkleVerifierImpl<
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
+
         let mut layer_log_size = match self.column_log_sizes.max() {
             Some(max_log_size) => *max_log_size,
             None => { return Ok(()); },
@@ -122,6 +123,7 @@ impl MerkleVerifierImpl<
             // next layer.
             let mut layer_total_queries = array![];
 
+
             // Prepare read buffer for queried values to the current layer.
             let mut layer_cols = cols_by_size
                 .replace(layer_log_size.into(), Default::default())
@@ -135,6 +137,8 @@ impl MerkleVerifierImpl<
 
             // Merge previous layer queries and column queries.
             let res = loop {
+
+
                 // Fetch the next query.
                 let current_query = if let Some(current_query) =
                     next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
@@ -165,9 +169,10 @@ impl MerkleVerifierImpl<
                     };
                     Some((left_hash.clone(), right_hash.clone()))
                 };
-
+                
                 // If the column values were queried, read them from `queried_value`.
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
+                    // BUG HAPPENS HERE.
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
                     column_witness.pop_front_n(n_columns_in_layer)
