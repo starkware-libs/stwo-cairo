@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod triple_xor_32;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
+pub use triple_xor_32::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
