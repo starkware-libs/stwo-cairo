@@ -6,6 +6,7 @@ use tracing::{span, Level};
 
 use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
 use super::opcodes::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
+use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
 use crate::cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData,
 };
@@ -14,9 +15,6 @@ use crate::cairo_air::blake::air::{
 };
 use crate::cairo_air::poseidon::air::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
-};
-use crate::cairo_air::range_checks_air::{
-    RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator,
 };
 use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::utils::TreeBuilder;
