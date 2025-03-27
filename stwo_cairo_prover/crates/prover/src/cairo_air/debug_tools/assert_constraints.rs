@@ -16,13 +16,12 @@ use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig, TreeVec};
 use stwo_prover::core::poly::circle::{CanonicCoset, CirclePoly, PolyOps};
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
-use crate::cairo_air::air::{
-    lookup_sum, CairoClaimGenerator, CairoComponents, CairoInteractionElements,
-};
+use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
 use crate::cairo_air::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::cairo_air::opcodes_air::OpcodeComponents;
 use crate::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
 use crate::cairo_air::prover::LOG_MAX_ROWS;
+use crate::cairo_air::witness::CairoClaimGenerator;
 
 pub fn assert_component<E: FrameworkEval + Sync>(
     component: &FrameworkComponent<E>,
