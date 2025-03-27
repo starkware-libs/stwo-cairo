@@ -1,9 +1,9 @@
 use stwo_cairo_adapter::opcodes::StateTransitions;
 use stwo_prover::core::backend::simd::SimdBackend;
 
+use super::blake_context::BlakeContextClaimGenerator;
 use super::range_checks::RangeChecksClaimGenerator;
 use crate::cairo_air::air::CairoInteractionElements;
-use crate::cairo_air::blake::air::BlakeContextClaimGenerator;
 use crate::cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
 use crate::components::utils::TreeBuilder;
 use crate::components::{

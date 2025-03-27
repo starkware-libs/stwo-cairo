@@ -4,14 +4,12 @@ use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::M31;
 use tracing::{span, Level};
 
+use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};
 use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
 use super::opcodes::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
 use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
 use crate::cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData,
-};
-use crate::cairo_air::blake::air::{
-    BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator,
 };
 use crate::cairo_air::poseidon::air::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
