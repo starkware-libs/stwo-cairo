@@ -9,10 +9,11 @@ use stwo_prover::core::channel::Blake2sChannel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::cairo_air::air::{CairoClaimGenerator, CairoComponents, CairoInteractionElements};
+use crate::cairo_air::air::{CairoComponents, CairoInteractionElements};
 use crate::cairo_air::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::cairo_air::opcodes_air::OpcodeComponents;
-use crate::cairo_air::preprocessed::PreProcessedTrace;
+use crate::cairo_air::preprocessed::{PreProcessedColumn, PreProcessedTrace};
+use crate::cairo_air::witness::CairoClaimGenerator;
 
 pub fn assert_component<E: FrameworkEval + Sync>(
     component: &FrameworkComponent<E>,
