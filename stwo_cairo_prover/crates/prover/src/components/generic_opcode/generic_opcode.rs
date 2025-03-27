@@ -1,7 +1,7 @@
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::components::prelude::proving::*;
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::components::memory_address_to_id;use crate::components::memory_id_to_big;use crate::components::range_check_19;use crate::components::range_check_9_9;use crate::components::verify_instruction;
+use crate::witness::components::memory_address_to_id;use crate::witness::components::memory_id_to_big;use crate::components::range_check_19;use crate::components::range_check_9_9;use crate::components::verify_instruction;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;

@@ -15,11 +15,13 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
-use super::component::{Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT};
 use crate::cairo_air::preprocessed::Seq;
 use crate::cairo_air::relations;
 use crate::components::memory_address_to_id::component::{
     N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
+};
+use crate::components::memory_address_to_id::{
+    Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT,
 };
 use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
@@ -39,6 +41,10 @@ impl AddressToId {
 
     pub fn len(&self) -> usize {
         self.data.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
 
     pub fn resize(&mut self, new_len: usize, value: u32) {
@@ -215,7 +221,7 @@ mod tests {
     use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
     use stwo_prover::core::fields::m31::{BaseField, M31};
 
-    use crate::components::memory::memory_address_to_id;
+    use crate::witness::components::memory_address_to_id;
 
     #[test]
     fn test_memory_multiplicities() {
