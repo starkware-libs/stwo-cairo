@@ -197,13 +197,13 @@ impl BuiltinSegments {
     /// The memory provided by the runner only contains values that were accessed during program
     /// execution. However, the builtin AIR applies constraints on it's entire range, including
     /// addresses that were not accessed.
+    // TODO(Stav): remove when this is fixed by the runner.
     pub fn fill_memory_holes(&self, memory: &mut MemoryBuilder) {
         self.resize_memory_to_cover_holes(memory);
         // bitwise.
         if let Some(segment) = &self.bitwise {
             builtin_padding::bitwise(segment, memory)
         };
-        // TODO(ohad): fill other builtins.
     }
 
     // If the final segment in a builtin segment, and the final entry has a hole, the memory must be
@@ -291,7 +291,6 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
     segment.stop_ptr - segment.begin_addr
 }
 
-// TODO(Ohad): padding holes should be handled by a proof-mode runner.
 mod builtin_padding {
     use cairo_vm::air_public_input::MemorySegmentAddresses;
     use itertools::Itertools;
