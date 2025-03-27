@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod range_check_builtin_bits_128;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator};
+pub use range_check_builtin_bits_128::{ClaimGenerator, InteractionClaimGenerator};
