@@ -658,6 +658,14 @@ impl Unpack for PackedCasmState {
     }
 }
 
+impl Pack for Felt252 {
+    type SimdType = PackedFelt252;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedFelt252::from_array(&inputs)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;

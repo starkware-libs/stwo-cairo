@@ -85,6 +85,12 @@ impl PedersenPointsTable {
         self.rows[index].clone()
     }
 
+    pub fn get_row_coordinates(&self, index: usize) -> [Felt252; 2] {
+        let x_f252: Felt252 = PEDERSEN_TABLE.rows[index].x().into();
+        let y_f252: Felt252 = PEDERSEN_TABLE.rows[index].y().into();
+        [x_f252, y_f252]
+    }
+
     fn new() -> Self {
         let rows = create_table_rows();
         Self {
