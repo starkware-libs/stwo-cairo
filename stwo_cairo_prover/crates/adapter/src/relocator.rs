@@ -1,4 +1,5 @@
-use cairo_vm::stdlib::collections::HashMap;
+use std::collections::BTreeMap;
+
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::trace::trace_entry::TraceEntry;
@@ -21,7 +22,7 @@ pub const MIN_SEGMENT_SIZE: usize = N_LANES;
 pub struct Relocator {
     pub relocation_table: Vec<u32>,
     pub relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
-    pub builtins_segments_indices: HashMap<usize, BuiltinName>,
+    pub builtins_segments_indices: BTreeMap<usize, BuiltinName>,
 }
 impl Relocator {
     /// Allocates an address for each segment according to the relocatable memory.
@@ -29,7 +30,7 @@ impl Relocator {
     /// or `MIN_SEGMENT_SIZE`, taking the maximum of the two.
     pub fn new(
         relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
-        builtins_segments_indices: HashMap<usize, BuiltinName>,
+        builtins_segments_indices: BTreeMap<usize, BuiltinName>,
     ) -> Self {
         let address_base = 1;
         let mut relocation_table = vec![address_base];
@@ -169,10 +170,9 @@ impl Relocator {
         res
     }
 
-    // TODO(Stav): use 'BTreeMap' after update 'ProverInputInfo' in cairo-vm.
     pub fn relocate_public_addresses(
         &self,
-        public_addresses: HashMap<usize, Vec<usize>>,
+        public_addresses: BTreeMap<usize, Vec<usize>>,
     ) -> Vec<u32> {
         let mut res = vec![];
         for (segment_index, offsets) in public_addresses {
@@ -199,7 +199,6 @@ pub mod relocator_tests {
     use std::vec;
 
     use cairo_vm::relocatable;
-    use cairo_vm::stdlib::collections::HashMap;
     use cairo_vm::types::builtin_name::BuiltinName;
     use cairo_vm::types::relocatable::{MaybeRelocatable, Relocatable};
 
@@ -221,7 +220,7 @@ pub mod relocator_tests {
 
         let relocatble_memory = vec![segment0, builtin_segment1, segment2];
         let builtins_segments =
-            HashMap::from([(1, BuiltinName::bitwise), (2, BuiltinName::segment_arena)]);
+            BTreeMap::from([(1, BuiltinName::bitwise), (2, BuiltinName::segment_arena)]);
 
         Relocator::new(relocatble_memory, builtins_segments)
     }
@@ -343,7 +342,7 @@ pub mod relocator_tests {
 
         let relocatble_memory = vec![builtin_segment0, builtin_segment1, segment2];
         let builtins_segments =
-            HashMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
+            BTreeMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
 
         let relocator = Relocator::new(relocatble_memory, builtins_segments);
         let builtins_segments = relocator.get_builtin_segments();
@@ -374,10 +373,8 @@ pub mod relocator_tests {
     fn test_relocate_public_adresses() {
         let relocator = create_test_relocator();
 
-        let relocatble_public_addrs = HashMap::from([(0, vec![2]), (1, vec![0, 1, 43])]);
-        let mut relocated_public_addrs =
-            relocator.relocate_public_addresses(relocatble_public_addrs);
-        relocated_public_addrs.sort_unstable();
+        let relocatble_public_addrs = BTreeMap::from([(0, vec![2]), (1, vec![0, 1, 43])]);
+        let relocated_public_addrs = relocator.relocate_public_addresses(relocatble_public_addrs);
 
         let expected_relocated_public_addresses = vec![3, 4, 5, 47];
         assert_eq!(relocated_public_addrs, expected_relocated_public_addresses);
