@@ -1,9 +1,9 @@
 pub mod component;
-pub mod prover;
+pub mod verify_bitwise_xor_12;
 
 // TODO(Ohad): generalize, test.
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
+pub use verify_bitwise_xor_12::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
 
 const ELEM_BITS: u32 = 12;
 const EXPAND_BITS: u32 = 2;

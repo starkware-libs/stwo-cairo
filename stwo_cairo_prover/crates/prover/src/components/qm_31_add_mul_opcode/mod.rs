@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod qm_31_add_mul_opcode;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator};
+pub use qm_31_add_mul_opcode::{ClaimGenerator, InteractionClaimGenerator};

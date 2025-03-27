@@ -1,5 +1,5 @@
+pub mod bitwise_builtin;
 pub mod component;
-pub mod prover;
 
+pub use bitwise_builtin::{ClaimGenerator, InteractionClaimGenerator};
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator};

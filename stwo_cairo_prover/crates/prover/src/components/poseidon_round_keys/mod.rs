@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod poseidon_round_keys;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
+pub use poseidon_round_keys::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};

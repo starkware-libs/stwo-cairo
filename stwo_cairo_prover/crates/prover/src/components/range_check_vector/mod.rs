@@ -2,7 +2,7 @@ use std::iter::zip;
 use std::simd::Simd;
 
 pub mod component;
-pub mod component_prover;
+pub mod range_check_vector;
 
 use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo_prover::core::fields::m31::MODULUS_BITS;
