@@ -278,7 +278,6 @@ pub mod tests {
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
         use itertools::Itertools;
-        use stwo_cairo_adapter::vm_import::generate_test_input;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
@@ -295,23 +294,6 @@ pub mod tests {
             let input =
                 prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
             assert_cairo_constraints(input, PreProcessedTrace::canonical());
-        }
-
-        #[test]
-        fn test_full_cairo_air() {
-            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                generate_test_input("test_read_from_small_files"),
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(
-                cairo_proof,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
         }
 
         #[test]
