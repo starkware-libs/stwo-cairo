@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod memory_address_to_id;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
+pub use memory_address_to_id::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};

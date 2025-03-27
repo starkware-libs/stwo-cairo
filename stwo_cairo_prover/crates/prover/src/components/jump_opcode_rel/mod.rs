@@ -1,5 +1,5 @@
 pub mod component;
-pub mod prover;
+pub mod jump_opcode_rel;
 
 pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use prover::{ClaimGenerator, InteractionClaimGenerator};
+pub use jump_opcode_rel::{ClaimGenerator, InteractionClaimGenerator};
