@@ -38,10 +38,6 @@ jobs:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v3
-      - run: ./scripts/fetch_large_files.sh ./scripts/slow_tests.json
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly-2025-01-02
       - name: Install latest nextest release
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
