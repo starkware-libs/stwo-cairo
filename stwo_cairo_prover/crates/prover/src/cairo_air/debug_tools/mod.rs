@@ -10,7 +10,7 @@ pub mod mock_tree_builder;
 #[cfg(feature = "relation-tracker")]
 pub mod relation_tracker;
 
-pub(super) fn indented_component_display<E: FrameworkEval>(
+pub(crate) fn indented_component_display<E: FrameworkEval>(
     component: &FrameworkComponent<E>,
 ) -> String {
     let component_display = &format!("\n{}", component);
@@ -20,7 +20,7 @@ pub(super) fn indented_component_display<E: FrameworkEval>(
         .join("\n")
 }
 
-pub(super) fn display_components<E: FrameworkEval>(components: &[FrameworkComponent<E>]) -> String {
+pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkComponent<E>]) -> String {
     components
         .iter()
         .map(|component| indented_component_display(component))
