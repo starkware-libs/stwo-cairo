@@ -62,6 +62,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_instruction,
         blake_context,
         builtins,
+        pedersen_context,
         poseidon_context,
         memory_address_to_id,
         memory_id_to_value,
@@ -174,6 +175,9 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     if let Some(bitwise) = &builtins.bitwise_builtin {
         assert_component(bitwise, &trace);
     }
+    if let Some(pedersen) = &builtins.pedersen_builtin {
+        assert_component(pedersen, &trace);
+    }
     if let Some(poseidon) = &builtins.poseidon_builtin {
         assert_component(poseidon, &trace);
     }
@@ -183,7 +187,10 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     if let Some(rc_128) = &builtins.range_check_128_builtin {
         assert_component(rc_128, &trace);
     }
-
+    if let Some(components) = &pedersen_context.components {
+        assert_component(&components.partial_ec_mul, &trace);
+        assert_component(&components.pedersen_points_table, &trace);
+    }
     if let Some(components) = &poseidon_context.components {
         assert_component(&components.poseidon_3_partial_rounds_chain, &trace);
         assert_component(&components.poseidon_full_round_chain, &trace);
