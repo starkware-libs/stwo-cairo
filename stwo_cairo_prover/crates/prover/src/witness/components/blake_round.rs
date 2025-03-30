@@ -1,7 +1,7 @@
 #![allow(unused_parens)]
+use cairo_air::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use stwo_cairo_adapter::memory::Memory;
 
-use crate::cairo_air::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::{
     blake_g, blake_round_sigma, memory_address_to_id, memory_id_to_big, range_check_7_2_5,
 };

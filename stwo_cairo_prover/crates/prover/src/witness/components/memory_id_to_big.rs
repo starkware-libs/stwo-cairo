@@ -1,6 +1,9 @@
 use std::iter::zip;
 use std::simd::Simd;
 
+use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
+use cairo_air::preprocessed::SIMD_ENUMERATION_0;
+use cairo_air::relations;
 use itertools::{chain, izip, Itertools};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
@@ -9,13 +12,10 @@ use stwo_cairo_adapter::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
 };
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
-use crate::cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use crate::cairo_air::relations;
-use crate::felt::split_f252_simd;
 use crate::witness::components::range_check_9_9;
-use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;
 use crate::witness::prelude::*;
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
@@ -381,10 +381,10 @@ mod tests {
     use itertools::Itertools;
     use stwo_cairo_adapter::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
     use stwo_cairo_common::memory::N_M31_IN_FELT252;
+    use stwo_cairo_common::prover_types::felt::split_f252;
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::felt::split_f252;
     use crate::witness::components::memory_address_to_id;
 
     #[test]

@@ -1,9 +1,8 @@
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
-use crate::cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::memory_address_to_id;use crate::witness::components::memory_id_to_big;use crate::witness::components::verify_instruction;
-use crate::witness::components::range_check_19;
-use crate::witness::components::range_check_9_9;
+use crate::witness::components::{range_check_19, range_check_9_9};
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;

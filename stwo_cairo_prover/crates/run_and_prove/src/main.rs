@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
+use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use clap::Parser;
 use stwo_cairo_adapter::plain::adapt_finished_runner;
 use stwo_cairo_adapter::vm_import::VmImportError;
-use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use stwo_cairo_prover::prover::{default_prod_prover_parameters, prove_cairo, ProverParameters};
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::vm_utils::{run_vm, VmArgs, VmError};

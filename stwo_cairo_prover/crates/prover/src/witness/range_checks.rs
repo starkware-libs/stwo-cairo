@@ -1,8 +1,8 @@
-use stwo_prover::core::backend::simd::SimdBackend;
-
-use crate::cairo_air::range_checks_air::{
+use cairo_air::range_checks_air::{
     RangeChecksClaim, RangeChecksInteractionClaim, RangeChecksInteractionElements,
 };
+use stwo_prover::core::backend::simd::SimdBackend;
+
 use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,

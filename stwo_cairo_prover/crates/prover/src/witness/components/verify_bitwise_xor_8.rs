@@ -1,7 +1,8 @@
-use crate::cairo_air::components::verify_bitwise_xor_8::{
+use cairo_air::components::verify_bitwise_xor_8::{
     Claim, InteractionClaim, BITWISE_XOR_8_LOG_SIZE, BITWISE_XOR_8_N_BITS,
 };
-use crate::cairo_air::preprocessed::BitwiseXor;
+use cairo_air::preprocessed::BitwiseXor;
+
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 3];
