@@ -1,5 +1,5 @@
 #![allow(unused_parens)]
-use crate::components::bitwise_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::cairo_air::components::bitwise_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, verify_bitwise_xor_9};
 use crate::witness::prelude::*;
 

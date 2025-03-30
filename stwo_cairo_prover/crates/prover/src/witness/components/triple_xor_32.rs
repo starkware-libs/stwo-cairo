@@ -1,5 +1,5 @@
 #![allow(unused_parens)]
-use crate::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::cairo_air::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::verify_bitwise_xor_8;
 use crate::witness::prelude::*;
 
