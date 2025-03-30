@@ -5,7 +5,7 @@ use itertools::{zip_eq, Itertools};
 use stwo_cairo_adapter::decode::deconstruct_instruction;
 use stwo_cairo_adapter::HashMap;
 
-use crate::components::verify_instruction::{Claim, InteractionClaim};
+use crate::cairo_air::components::verify_instruction::{Claim, InteractionClaim};
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,
 };

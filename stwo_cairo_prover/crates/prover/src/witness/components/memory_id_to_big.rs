@@ -11,8 +11,8 @@ use stwo_cairo_adapter::memory::{
 use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
+use crate::cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use crate::cairo_air::relations;
-use crate::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use crate::felt::split_f252_simd;
 use crate::witness::components::range_check_9_9;
 use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;

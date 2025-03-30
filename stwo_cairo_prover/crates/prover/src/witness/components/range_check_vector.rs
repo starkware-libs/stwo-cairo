@@ -51,7 +51,7 @@ macro_rules! range_check_prover {
             use $crate::witness::prelude::*;
             use $crate::witness::components::range_check_vector::{partition_into_bit_segments,
                                                     SIMD_ENUMERATION_0};
-            use $crate::components::range_check_vector::[<range_check_$($log_range)_*>]::{Claim, InteractionClaim};
+            use $crate::cairo_air::components::range_check_vector::[<range_check_$($log_range)_*>]::{Claim, InteractionClaim};
             const N_RANGES: usize = $crate::count_elements!($($log_range),*);
             const RANGES : [u32; N_RANGES] = [$($log_range),+];
             pub type PackedInputType = [PackedM31; N_RANGES];
@@ -226,9 +226,9 @@ mod tests {
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
+    use crate::cairo_air::components::range_check_vector::range_check_7_2_5::Eval;
     use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
     use crate::cairo_air::relations;
-    use crate::components::range_check_vector::range_check_7_2_5::Eval;
     use crate::witness::components::range_check_7_2_5;
     use crate::witness::components::range_check_vector::{
         generate_partitioned_enumeration, partition_into_bit_segments,

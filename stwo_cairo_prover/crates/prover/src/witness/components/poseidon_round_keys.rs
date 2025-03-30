@@ -1,9 +1,9 @@
 #![allow(unused_parens)]
 use stwo_cairo_common::preprocessed_consts::poseidon::{N_ROUNDS, N_WORDS};
 
+use crate::cairo_air::components::poseidon_round_keys::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::cairo_air::poseidon::const_columns::PoseidonRoundKeys;
 use crate::cairo_air::preprocessed::Seq;
-use crate::components::poseidon_round_keys::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::prelude::*;
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];
