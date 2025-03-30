@@ -11,7 +11,6 @@ use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaim
 use crate::cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData,
 };
-use crate::components::utils::TreeBuilder;
 use crate::witness::components::poseidon::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
 };
@@ -19,6 +18,7 @@ use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
+use crate::witness::utils::TreeBuilder;
 
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
