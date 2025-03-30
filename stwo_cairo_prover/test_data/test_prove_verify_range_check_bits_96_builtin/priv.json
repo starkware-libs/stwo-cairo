@@ -212,10 +212,10 @@
   "poseidon": [],
   "add_mod": {
     "instances": [],
-    "zero_value_address": 45810
+    "zero_value_address": 45842
   },
   "mul_mod": {
     "instances": [],
-    "zero_value_address": 45810
+    "zero_value_address": 45842
   }
 }

@@ -1,12 +1,22 @@
 {
     "attributes": [],
     "builtins": [
-        "range_check96"
+        "output",
+        "pedersen",
+        "range_check",
+        "ecdsa",
+        "bitwise",
+        "ec_op",
+        "keccak",
+        "poseidon",
+        "range_check96",
+        "add_mod",
+        "mul_mod"
     ],
     "compiler_version": "0.13.3",
     "data": [
         "0x40780017fff7fff",
-        "0x1",
+        "0xb",
         "0x1104800180018000",
         "0x13",
         "0x10780017fff7fff",
@@ -30,10 +40,21 @@
         "0x1",
         "0x400780017fff8000",
         "0x32",
-        "0x480a7ffd7fff8000",
+        "0x480a7ffb7fff8000",
         "0x480a80007fff8000",
         "0x1104800180018000",
         "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffef",
+        "0x480a7ff37fff8000",
+        "0x480a7ff47fff8000",
+        "0x480a7ff57fff8000",
+        "0x480a7ff67fff8000",
+        "0x480a7ff77fff8000",
+        "0x480a7ff87fff8000",
+        "0x480a7ff97fff8000",
+        "0x480a7ffa7fff8000",
+        "0x48127ff77fff8000",
+        "0x480a7ffc7fff8000",
+        "0x480a7ffd7fff8000",
         "0x208b7fff7fff7ffe"
     ],
     "debug_info": {
@@ -70,7 +91,7 @@
                 "flow_tracking_data": {
                     "ap_tracking": {
                         "group": 0,
-                        "offset": 1
+                        "offset": 11
                     },
                     "reference_ids": {}
                 },
@@ -125,7 +146,7 @@
                             "end_col": 38,
                             "end_line": 3,
                             "input_file": {
-                                "filename": "/home/gali/workspace/cairo-vm/cairo-vm-env/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo"
+                                "filename": "/home/alonf/cairo_venv/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo"
                             },
                             "start_col": 5,
                             "start_line": 3
@@ -137,7 +158,7 @@
                     "end_col": 12,
                     "end_line": 4,
                     "input_file": {
-                        "filename": "/home/gali/workspace/cairo-vm/cairo-vm-env/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo"
+                        "filename": "/home/alonf/cairo_venv/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo"
                     },
                     "start_col": 5,
                     "start_line": 4
@@ -160,7 +181,7 @@
                     "end_col": 40,
                     "end_line": 5,
                     "input_file": {
-                        "filename": "/home/gali/workspace/cairo-vm/cairo-vm-env/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo"
+                        "filename": "/home/alonf/cairo_venv/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo"
                     },
                     "start_col": 5,
                     "start_line": 5
@@ -186,7 +207,7 @@
                     "end_col": 7,
                     "end_line": 6,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 6
@@ -212,21 +233,21 @@
                     "end_col": 47,
                     "end_line": 5,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 47,
                             "end_line": 5,
                             "input_file": {
-                                "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 19,
                                     "end_line": 7,
                                     "input_file": {
-                                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 9,
                                     "start_line": 7
@@ -262,7 +283,7 @@
                     "end_col": 19,
                     "end_line": 7,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 9,
                     "start_line": 7
@@ -288,7 +309,7 @@
                     "end_col": 51,
                     "end_line": 11,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 11
@@ -314,21 +335,21 @@
                     "end_col": 50,
                     "end_line": 12,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 47,
                             "end_line": 5,
                             "input_file": {
-                                "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 60,
                                     "end_line": 14,
                                     "input_file": {
-                                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 14
@@ -364,7 +385,7 @@
                     "end_col": 59,
                     "end_line": 14,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 39,
                     "start_line": 14
@@ -390,7 +411,7 @@
                     "end_col": 60,
                     "end_line": 14,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 14
@@ -416,7 +437,7 @@
                     "end_col": 15,
                     "end_line": 15,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 15
@@ -433,18 +454,28 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.main.range_check96_ptr": 4
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 12,
+                        "__main__.main.range_check_ptr": 6
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 18,
-                    "end_line": 23,
+                    "end_line": 33,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 23
+                    "start_line": 33
                 }
             },
             "23": {
@@ -458,18 +489,28 @@
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.main.range_check96_ptr": 4
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 12,
+                        "__main__.main.range_check_ptr": 6
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 32,
-                    "end_line": 24,
+                    "end_line": 34,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 24
+                    "start_line": 34
                 }
             },
             "25": {
@@ -483,33 +524,43 @@
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.main.n_range_check96": 5,
-                        "__main__.main.range_check96_ptr": 4
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 12,
+                        "__main__.main.range_check_ptr": 6
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 29,
-                    "end_line": 21,
+                    "end_line": 29,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 47,
                             "end_line": 5,
                             "input_file": {
-                                "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 55,
-                                    "end_line": 27,
+                                    "end_line": 37,
                                     "input_file": {
-                                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 27
+                                    "start_line": 37
                                 },
                                 "While trying to retrieve the implicit argument 'range_check96_ptr' in:"
                             ],
@@ -519,7 +570,7 @@
                         "While expanding the reference 'range_check96_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 21
+                    "start_line": 29
                 }
             },
             "26": {
@@ -533,31 +584,41 @@
                         "offset": 2
                     },
                     "reference_ids": {
-                        "__main__.main.n_range_check96": 5,
-                        "__main__.main.range_check96_ptr": 4
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 12,
+                        "__main__.main.range_check_ptr": 6
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 26,
-                    "end_line": 24,
+                    "end_line": 34,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 54,
-                            "end_line": 27,
+                            "end_line": 37,
                             "input_file": {
-                                "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "start_col": 39,
-                            "start_line": 27
+                            "start_line": 37
                         },
                         "While expanding the reference 'n_range_check96' in:"
                     ],
                     "start_col": 11,
-                    "start_line": 24
+                    "start_line": 34
                 }
             },
             "27": {
@@ -571,19 +632,29 @@
                         "offset": 3
                     },
                     "reference_ids": {
-                        "__main__.main.n_range_check96": 5,
-                        "__main__.main.range_check96_ptr": 4
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 12,
+                        "__main__.main.range_check_ptr": 6
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 55,
-                    "end_line": 27,
+                    "end_line": 37,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 27
+                    "start_line": 37
                 }
             },
             "29": {
@@ -597,19 +668,701 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.main.n_range_check96": 5,
-                        "__main__.main.range_check96_ptr": 6
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 15,
-                    "end_line": 29,
+                    "end_line": 21,
                     "input_file": {
-                        "filename": "../stwo-cairo/stwo_cairo_prover/crates/prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 15,
+                            "end_line": 21,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'output_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 21
+                        },
+                        "While expanding the reference 'output_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 21
+                }
+            },
+            "30": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 17,
+                    "end_line": 22,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 17,
+                            "end_line": 22,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 22
+                        },
+                        "While expanding the reference 'pedersen_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 22
+                }
+            },
+            "31": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 20,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 20,
+                            "end_line": 23,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 23
+                        },
+                        "While expanding the reference 'range_check_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 23
+                }
+            },
+            "32": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 14,
+                    "end_line": 24,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 14,
+                            "end_line": 24,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'ecdsa_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 24
+                        },
+                        "While expanding the reference 'ecdsa_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 24
+                }
+            },
+            "33": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 4
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 25,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 25,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'bitwise_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 25
+                        },
+                        "While expanding the reference 'bitwise_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 25
+                }
+            },
+            "34": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 5
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 14,
+                    "end_line": 26,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 14,
+                            "end_line": 26,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'ec_op_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 26
+                        },
+                        "While expanding the reference 'ec_op_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 26
+                }
+            },
+            "35": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 27,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 15,
+                            "end_line": 27,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'keccak_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 27
+                        },
+                        "While expanding the reference 'keccak_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 27
+                }
+            },
+            "36": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 7
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 17,
+                    "end_line": 28,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 17,
+                            "end_line": 28,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 28
+                        },
+                        "While expanding the reference 'poseidon_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 28
+                }
+            },
+            "37": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 8
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 47,
+                    "end_line": 5,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 55,
+                            "end_line": 37,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 29,
+                                    "end_line": 29,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "parent_location": [
+                                        {
+                                            "end_col": 15,
+                                            "end_line": 39,
+                                            "input_file": {
+                                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                            },
+                                            "start_col": 5,
+                                            "start_line": 39
+                                        },
+                                        "While trying to retrieve the implicit argument 'range_check96_ptr' in:"
+                                    ],
+                                    "start_col": 5,
+                                    "start_line": 29
+                                },
+                                "While expanding the reference 'range_check96_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 37
+                        },
+                        "While trying to update the implicit return value 'range_check96_ptr' in:"
+                    ],
+                    "start_col": 23,
+                    "start_line": 5
+                }
+            },
+            "38": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 30,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 30,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'add_mod_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 30
+                        },
+                        "While expanding the reference 'add_mod_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 30
+                }
+            },
+            "39": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 31,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 31,
+                            "input_file": {
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 39,
+                                    "input_file": {
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 39
+                                },
+                                "While trying to retrieve the implicit argument 'mul_mod_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 31
+                        },
+                        "While expanding the reference 'mul_mod_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 31
+                }
+            },
+            "40": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 11
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 13,
+                        "__main__.main.bitwise_ptr": 8,
+                        "__main__.main.ec_op_ptr": 9,
+                        "__main__.main.ecdsa_ptr": 7,
+                        "__main__.main.keccak_ptr": 10,
+                        "__main__.main.mul_mod_ptr": 14,
+                        "__main__.main.n_range_check96": 15,
+                        "__main__.main.output_ptr": 4,
+                        "__main__.main.pedersen_ptr": 5,
+                        "__main__.main.poseidon_ptr": 11,
+                        "__main__.main.range_check96_ptr": 16,
+                        "__main__.main.range_check_ptr": 6
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 39,
+                    "input_file": {
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_range_check_bits_96_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 29
+                    "start_line": 39
                 }
             }
         }
@@ -740,12 +1493,52 @@
         "__main__.main.ImplicitArgs": {
             "full_name": "__main__.main.ImplicitArgs",
             "members": {
+                "add_mod_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 9
+                },
+                "bitwise_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "ec_op_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 5
+                },
+                "ecdsa_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "keccak_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "mul_mod_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 10
+                },
+                "output_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "pedersen_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "poseidon_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 7
+                },
                 "range_check96_ptr": {
                     "cairo_type": "felt*",
-                    "offset": 0
+                    "offset": 8
+                },
+                "range_check_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 2
                 }
             },
-            "size": 1,
+            "size": 11,
             "type": "struct"
         },
         "__main__.main.Return": {
@@ -755,6 +1548,96 @@
         "__main__.main.SIZEOF_LOCALS": {
             "type": "const",
             "value": 1
+        },
+        "__main__.main.add_mod_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.add_mod_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-4), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.bitwise_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.bitwise_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-9), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.ec_op_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.ec_op_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-8), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.ecdsa_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.ecdsa_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-10), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.keccak_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.keccak_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-7), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.mul_mod_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.mul_mod_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-3), felt*)]"
+                }
+            ],
+            "type": "reference"
         },
         "__main__.main.n_range_check96": {
             "cairo_type": "felt",
@@ -771,6 +1654,51 @@
             ],
             "type": "reference"
         },
+        "__main__.main.output_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.output_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-13), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.pedersen_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.pedersen_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-12), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.poseidon_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.poseidon_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-6), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
         "__main__.main.range_check96_ptr": {
             "cairo_type": "felt*",
             "full_name": "__main__.main.range_check96_ptr",
@@ -781,7 +1709,7 @@
                         "offset": 0
                     },
                     "pc": 21,
-                    "value": "[cast(fp + (-3), felt**)]"
+                    "value": "[cast(fp + (-5), felt**)]"
                 },
                 {
                     "ap_tracking_data": {
@@ -790,6 +1718,21 @@
                     },
                     "pc": 29,
                     "value": "[cast(ap + (-1), felt**)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.range_check_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.range_check_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 21,
+                    "value": "[cast(fp + (-11), felt*)]"
                 }
             ],
             "type": "reference"
@@ -862,7 +1805,87 @@
                     "offset": 0
                 },
                 "pc": 21,
-                "value": "[cast(fp + (-3), felt**)]"
+                "value": "[cast(fp + (-13), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-12), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-11), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-10), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-9), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-8), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-7), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-6), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-5), felt**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-4), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 21,
+                "value": "[cast(fp + (-3), felt*)]"
             },
             {
                 "ap_tracking_data": {
