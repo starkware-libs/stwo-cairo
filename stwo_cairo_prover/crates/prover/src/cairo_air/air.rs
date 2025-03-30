@@ -17,7 +17,7 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::blake::air::{BlakeContextClaim, BlakeContextComponents, BlakeContextInteractionClaim};
 use super::builtins_air::{BuiltinComponents, BuiltinsClaim, BuiltinsInteractionClaim};
-use super::debug_tools::indented_component_display;
+use super::components::indented_component_display;
 use super::opcodes_air::{OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim};
 use super::poseidon::air::{
     PoseidonContextClaim, PoseidonContextComponents, PoseidonContextInteractionClaim,
