@@ -23,7 +23,8 @@ pub mod jump_opcode;
 pub mod jump_opcode_double_deref;
 pub mod jump_opcode_rel;
 pub mod jump_opcode_rel_imm;
-pub mod memory;
+pub mod memory_address_to_id;
+pub mod memory_id_to_big;
 pub mod mul_mod_builtin;
 pub mod mul_opcode;
 pub mod mul_opcode_imm;
@@ -49,7 +50,6 @@ pub mod verify_instruction;
 
 pub(crate) mod prelude;
 
-pub use memory::{memory_address_to_id, memory_id_to_big};
 pub use range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,

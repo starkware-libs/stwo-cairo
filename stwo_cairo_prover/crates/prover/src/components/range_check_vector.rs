@@ -1,4 +1,37 @@
 #[macro_export]
+macro_rules! count_elements {
+    ($x:expr) => (1);
+    ($x:expr, $($xs:expr),*) => (1 + $crate::count_elements!($($xs),*));
+}
+
+#[macro_export]
+macro_rules! generate_range_check_constraints {
+    ([$($log_range:expr),+]) => {
+        paste::paste!{
+            pub mod [<range_check_$($log_range)_*>] {
+                $crate::range_check_eval!($($log_range),+);
+            }
+        }
+    };
+}
+
+generate_range_check_constraints!([6]);
+generate_range_check_constraints!([8]);
+generate_range_check_constraints!([11]);
+generate_range_check_constraints!([12]);
+generate_range_check_constraints!([18]);
+generate_range_check_constraints!([19]);
+generate_range_check_constraints!([3, 6]);
+generate_range_check_constraints!([4, 3]);
+generate_range_check_constraints!([4, 4]);
+generate_range_check_constraints!([5, 4]);
+generate_range_check_constraints!([9, 9]);
+generate_range_check_constraints!([7, 2, 5]);
+generate_range_check_constraints!([3, 6, 6, 3]);
+generate_range_check_constraints!([4, 4, 4, 4]);
+generate_range_check_constraints!([3, 3, 3, 3, 3]);
+
+#[macro_export]
 macro_rules! range_check_eval{
     ($($log_range:expr),+) => {
         paste::paste! {
@@ -12,11 +45,11 @@ macro_rules! range_check_eval{
                 use stwo_prover::constraint_framework::RelationEntry;
                 use stwo_prover::core::pcs::TreeVec;
 
-                use $crate::components::memory::memory_id_to_big::component::N_MULTIPLICITY_COLUMNS;
                 use $crate::cairo_air::preprocessed::RangeCheck;
                 use $crate::cairo_air::preprocessed::PreProcessedColumn;
                 use $crate::cairo_air::relations;
 
+                const N_MULTIPLICITY_COLUMNS: usize = 1;
                 const N_RANGES:usize = $crate::count_elements!($($log_range),*);
                 const RANGES : [u32; N_RANGES] = [$($log_range),+];
                 pub type Component = FrameworkComponent<[<Eval>]>;
