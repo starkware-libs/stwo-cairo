@@ -1,10 +1,8 @@
 #![allow(unused_parens)]
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
-use crate::components::{
-    blake_round, range_check_7_2_5, triple_xor_32, verify_bitwise_xor_8, verify_instruction,
-};
-use crate::witness::components::{memory_address_to_id, memory_id_to_big};
+use crate::components::{blake_round, triple_xor_32, verify_bitwise_xor_8, verify_instruction};
+use crate::witness::components::{memory_address_to_id, memory_id_to_big, range_check_7_2_5};
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
 

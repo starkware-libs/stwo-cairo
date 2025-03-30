@@ -6,7 +6,7 @@ use itertools::{chain, Itertools};
 
 use super::component::{Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE};
 use crate::components::prelude::proving::*;
-use crate::components::range_check_vector::SIMD_ENUMERATION_0;
+use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;
 
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];
