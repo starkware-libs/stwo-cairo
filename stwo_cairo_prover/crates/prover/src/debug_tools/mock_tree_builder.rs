@@ -9,17 +9,12 @@ use stwo_prover::core::ColumnVec;
 use crate::witness::utils::TreeBuilder;
 
 /// A mock commitment scheme implementation used for testing purposes.
+#[derive(Default)]
 pub struct MockCommitmentScheme {
     pub trees: TreeVec<ColumnVec<Vec<M31>>>,
 }
 
 impl MockCommitmentScheme {
-    pub fn new() -> Self {
-        Self {
-            trees: Default::default(),
-        }
-    }
-
     pub fn tree_builder(&mut self) -> MockTreeBuilder<'_> {
         MockTreeBuilder {
             tree_index: self.trees.len(),
@@ -101,7 +96,7 @@ mod tests {
         let triple_xor_relation = relations::TripleXor32::dummy();
         let verify_bitwise_xor_8_relation = relations::VerifyBitwiseXor_8::dummy();
 
-        let mut mock_commitment_scheme = MockCommitmentScheme::new();
+        let mut mock_commitment_scheme = MockCommitmentScheme::default();
 
         // Preprocessed.
         mock_commitment_scheme.tree_builder().finalize_interaction();

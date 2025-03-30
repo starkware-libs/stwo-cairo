@@ -50,14 +50,32 @@ pub mod verify_instruction;
 
 pub(crate) mod prelude;
 
+use itertools::Itertools;
 pub use range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
     range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
+use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
 pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
 pub mod blake_round_sigma;
 
-// TODO(Gali): Remove add_inputs.
+// TODO(Ohad): move somewhere else.
+pub(crate) fn indented_component_display<E: FrameworkEval>(
+    component: &FrameworkComponent<E>,
+) -> String {
+    let component_display = &format!("\n{}", component);
+    component_display
+        .lines()
+        .map(|line| format!("\t{}", line))
+        .join("\n")
+}
+
+pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkComponent<E>]) -> String {
+    components
+        .iter()
+        .map(|component| indented_component_display(component))
+        .join("\n")
+}

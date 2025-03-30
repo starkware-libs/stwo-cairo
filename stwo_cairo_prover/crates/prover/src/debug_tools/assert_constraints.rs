@@ -10,9 +10,9 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::cairo_air::air::{CairoComponents, CairoInteractionElements};
-use crate::cairo_air::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::cairo_air::opcodes_air::OpcodeComponents;
 use crate::cairo_air::preprocessed::PreProcessedTrace;
+use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::witness::cairo::CairoClaimGenerator;
 
 pub fn assert_component<E: FrameworkEval + Sync>(
@@ -185,7 +185,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
 }
 
 pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProcessedTrace) {
-    let mut commitment_scheme = MockCommitmentScheme::new();
+    let mut commitment_scheme = MockCommitmentScheme::default();
 
     // Preprocessed trace.
     let mut tree_builder = commitment_scheme.tree_builder();
