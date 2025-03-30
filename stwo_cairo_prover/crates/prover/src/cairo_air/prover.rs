@@ -18,7 +18,7 @@ use crate::cairo_air::air::{
 };
 use crate::cairo_air::preprocessed::PreProcessedTrace;
 
-pub(crate) const LOG_MAX_ROWS: u32 = 24;
+pub(crate) const LOG_MAX_ROWS: u32 = 26;
 
 /// Logup security is defined by the `QM31` space (~124 bits) +
 /// `INTERACTION_POW_BITS` over total number of relation terms. E.g. assuming a 100-bit
@@ -35,6 +35,8 @@ where
     SimdBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
+    // Composition polynomial domain log size is LOG_MAX_ROWS + log_blowup_factor + 1, double it
+    // because we compute on a half-coset.
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
             .circle_domain()
