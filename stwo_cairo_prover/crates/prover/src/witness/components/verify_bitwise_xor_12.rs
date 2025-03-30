@@ -5,22 +5,22 @@ use itertools::Itertools;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
-use super::component::{Claim, InteractionClaim};
-use super::EXPAND_BITS;
 use crate::components::prelude::proving::*;
-use crate::components::verify_bitwise_xor_12::LIMB_BITS;
+use crate::components::verify_bitwise_xor_12::{
+    Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
+};
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
 
 pub struct ClaimGenerator {
-    pub mults: [AtomicMultiplicityColumn; super::N_MULT_COLUMNS],
+    pub mults: [AtomicMultiplicityColumn; N_MULT_COLUMNS],
 }
 impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: array::from_fn(|_| AtomicMultiplicityColumn::new(1 << super::LOG_SIZE)),
+            mults: array::from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE)),
         }
     }
 
@@ -30,7 +30,7 @@ impl ClaimGenerator {
     ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
 
-        let domain = CanonicCoset::new(super::LOG_SIZE).circle_domain();
+        let domain = CanonicCoset::new(LOG_SIZE).circle_domain();
         let trace = mults
             .iter()
             .cloned()
@@ -68,7 +68,7 @@ impl ClaimGenerator {
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    mults: [Vec<PackedM31>; super::N_MULT_COLUMNS],
+    mults: [Vec<PackedM31>; N_MULT_COLUMNS],
 }
 
 pub struct InteractionClaimGenerator {
@@ -80,7 +80,7 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_12: &relations::VerifyBitwiseXor_12,
     ) -> InteractionClaim {
-        let mut logup_gen = LogupTraceGenerator::new(super::LOG_SIZE);
+        let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
         // [0, 1, 2, ..., N_LANES - 1].
         let zero_to_n_lanes = u32x16::from_array(std::array::from_fn(|i| i as u32));
