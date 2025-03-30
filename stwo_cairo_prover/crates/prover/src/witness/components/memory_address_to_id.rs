@@ -23,7 +23,7 @@ use crate::components::memory_address_to_id::component::{
 use crate::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT,
 };
-use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};
+use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
