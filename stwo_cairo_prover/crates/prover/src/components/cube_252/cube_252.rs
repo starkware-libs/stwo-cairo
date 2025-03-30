@@ -1,8 +1,7 @@
 #![allow(unused_parens)]
 use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
-use crate::components::{range_check_19, range_check_9_9};
-
+use crate::witness::components::{range_check_19, range_check_9_9};
 pub type PackedInputType = PackedFelt252Width27;
 
 #[derive(Default)]
