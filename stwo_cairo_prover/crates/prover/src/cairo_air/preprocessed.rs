@@ -18,12 +18,14 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
-use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
+
+// Used by every builtin for a read of the memory.
+const MAX_SEQUENCE_LOG_SIZE: u32 = 24;
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
@@ -55,7 +57,7 @@ impl PreProcessedTrace {
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
-        let seq = (LOG_N_LANES..=LOG_MAX_ROWS)
+        let seq = (MAX_SEQUENCE_LOG_SIZE..=MAX_SEQUENCE_LOG_SIZE)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
             .map(|n_bits| {
