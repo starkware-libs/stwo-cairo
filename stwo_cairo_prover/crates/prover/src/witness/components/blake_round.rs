@@ -2,10 +2,10 @@
 use stwo_cairo_adapter::memory::Memory;
 
 use crate::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::components::prelude::proving::*;
 use crate::witness::components::{
     blake_g, blake_round_sigma, memory_address_to_id, memory_id_to_big, range_check_7_2_5,
 };
+use crate::witness::prelude::*;
 
 pub type PackedInputType = (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31));
 

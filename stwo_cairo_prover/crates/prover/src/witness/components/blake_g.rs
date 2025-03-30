@@ -1,10 +1,10 @@
 #![allow(unused_parens)]
 use crate::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::components::prelude::proving::*;
 use crate::witness::components::{
     verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
     verify_bitwise_xor_9,
 };
+use crate::witness::prelude::*;
 
 pub type PackedInputType = [PackedUInt32; 6];
 
