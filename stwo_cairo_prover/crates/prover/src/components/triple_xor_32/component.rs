@@ -1,4 +1,4 @@
-use crate::components::prelude::constraint_eval::*;
+use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
 
