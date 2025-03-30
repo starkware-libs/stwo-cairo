@@ -4,8 +4,9 @@ mod tests {
 
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm_with_step_limit;
-    use stwo_cairo_prover::cairo_air::prover::{prove_cairo, PreProcessedTraceVariant};
     use stwo_cairo_prover::cairo_air::verifier::verify_cairo;
+    use stwo_cairo_prover::cairo_air::PreProcessedTraceVariant;
+    use stwo_cairo_prover::prover::prove_cairo;
     use stwo_prover::core::pcs::PcsConfig;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 

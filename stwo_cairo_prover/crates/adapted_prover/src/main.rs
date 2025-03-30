@@ -5,11 +5,11 @@ use clap::Parser;
 use serde::Serialize;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::cairo_air::prover::{
-    default_prod_prover_parameters, prove_cairo, ChannelHash, PreProcessedTraceVariant,
-    ProverParameters,
-};
 use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
+use stwo_cairo_prover::cairo_air::PreProcessedTraceVariant;
+use stwo_cairo_prover::prover::{
+    default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::file_utils::{create_file, read_to_string, IoErrorWithPath};
