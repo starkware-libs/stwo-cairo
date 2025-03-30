@@ -13,11 +13,11 @@ use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
 use crate::cairo_air::relations;
 use crate::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use crate::components::utils::{AtomicMultiplicityColumn, TreeBuilder};
 use crate::felt::split_f252_simd;
 use crate::witness::components::range_check_9_9;
 use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;
 use crate::witness::prelude::*;
+use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
