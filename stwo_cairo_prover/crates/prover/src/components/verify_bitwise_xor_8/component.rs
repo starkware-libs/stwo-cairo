@@ -1,4 +1,4 @@
-use crate::components::prelude::constraint_eval::*;
+use crate::components::prelude::*;
 
 pub const BITWISE_XOR_8_N_BITS: u32 = 8;
 pub const BITWISE_XOR_8_LOG_SIZE: u32 = BITWISE_XOR_8_N_BITS * 2;

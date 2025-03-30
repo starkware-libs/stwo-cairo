@@ -1,5 +1,5 @@
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
-use crate::components::prelude::proving::*;
+use crate::witness::prelude::*;
 use crate::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::memory_address_to_id;use crate::witness::components::memory_id_to_big;use crate::witness::components::verify_instruction;
 use crate::witness::components::range_check_19;

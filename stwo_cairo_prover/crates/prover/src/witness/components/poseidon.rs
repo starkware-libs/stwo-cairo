@@ -4,12 +4,12 @@ use crate::cairo_air::air::CairoInteractionElements;
 use crate::cairo_air::poseidon::air::{
     Claim, InteractionClaim, PoseidonContextClaim, PoseidonContextInteractionClaim,
 };
-use crate::components::prelude::proving::*;
 use crate::components::utils::TreeBuilder;
 use crate::witness::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
     range_check_felt_252_width_27,
 };
+use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
 
 pub struct PoseidonContextClaimGenerator {

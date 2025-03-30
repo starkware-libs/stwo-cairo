@@ -1,4 +1,4 @@
-use crate::components::prelude::constraint_eval::*;
+use crate::components::prelude::*;
 
 pub const BLAKE_SIGMA_LOG_SIZE: u32 = 4;
 pub const N_TRACE_COLUMNS: usize = 1;

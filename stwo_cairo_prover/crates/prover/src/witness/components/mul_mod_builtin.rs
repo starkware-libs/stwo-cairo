@@ -1,9 +1,9 @@
 #![allow(unused_parens)]
 use crate::components::mul_mod_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::components::prelude::proving::*;
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_12, range_check_18, range_check_3_6_6_3,
 };
+use crate::witness::prelude::*;
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub log_size: u32,
