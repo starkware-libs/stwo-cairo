@@ -87,7 +87,7 @@ mod tests {
 
     use super::MockCommitmentScheme;
     use crate::cairo_air::relations;
-    use crate::components::{triple_xor_32, verify_bitwise_xor_8};
+    use crate::witness::components::{triple_xor_32, verify_bitwise_xor_8};
 
     #[test]
     fn test_mock_commitment_scheme() {

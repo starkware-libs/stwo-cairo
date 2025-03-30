@@ -1,6 +1,6 @@
 #![allow(unused_parens)]
-use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
+use crate::components::range_check_builtin_bits_96::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, range_check_6};
 #[derive(Default)]
 pub struct ClaimGenerator {

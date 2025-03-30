@@ -1,6 +1,6 @@
 use crate::components::prelude::constraint_eval::*;
 
-pub(super) const N_TRACE_COLUMNS: usize = 9;
+pub const N_TRACE_COLUMNS: usize = 9;
 
 pub struct Eval {
     pub claim: Claim,

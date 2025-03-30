@@ -1,5 +1,2 @@
 pub mod component;
-pub mod jnz_opcode_dst_base_fp;
-
-pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use jnz_opcode_dst_base_fp::{ClaimGenerator, InteractionClaimGenerator};
+pub use component::{Claim, Component, Eval, InteractionClaim, N_TRACE_COLUMNS};

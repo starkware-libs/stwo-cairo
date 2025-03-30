@@ -1,8 +1,12 @@
 #![allow(unused_parens)]
-use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::components::poseidon_3_partial_rounds_chain::{
+    Claim, InteractionClaim, N_TRACE_COLUMNS,
+};
 use crate::components::prelude::proving::*;
-use crate::components::{cube_252, poseidon_round_keys, range_check_felt_252_width_27};
-use crate::witness::components::{range_check_4_4, range_check_4_4_4_4};
+use crate::witness::components::{
+    cube_252, poseidon_round_keys, range_check_4_4, range_check_4_4_4_4,
+    range_check_felt_252_width_27,
+};
 
 pub type PackedInputType = (PackedM31, PackedM31, [PackedFelt252Width27; 4]);
 

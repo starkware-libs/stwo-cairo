@@ -7,11 +7,11 @@ use crate::cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
 use crate::components::utils::TreeBuilder;
-use crate::components::{
-    blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
+use crate::witness::components::{
+    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
+    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
+    verify_bitwise_xor_9,
 };
-use crate::witness::components::{memory_address_to_id, memory_id_to_big};
 use crate::witness::range_checks::RangeChecksClaimGenerator;
 pub struct BlakeContextClaimGenerator {
     pub blake_round: blake_round::ClaimGenerator,
