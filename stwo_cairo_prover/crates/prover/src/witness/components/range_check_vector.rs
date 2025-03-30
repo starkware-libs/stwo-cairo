@@ -1,10 +1,59 @@
+use std::iter::zip;
+use std::simd::Simd;
+
+use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::core::fields::m31::MODULUS_BITS;
+
+pub const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
+    Simd::from_array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+
+/// Partitions a number into 'N' bit segments.
+///
+/// For example: partition_into_bit_segments(0b110101010, [3, 4, 2]) -> [0b110, 0b1010, 0b10]
+///
+///
+/// # Arguments
+pub fn partition_into_bit_segments<const N: usize>(
+    mut value: Simd<u32, N_LANES>,
+    n_bits_per_segment: [u32; N],
+) -> [Simd<u32, N_LANES>; N] {
+    let mut segments = [Simd::splat(0); N];
+    for (segment, segment_n_bits) in zip(&mut segments, n_bits_per_segment).rev() {
+        let mask = Simd::splat((1 << segment_n_bits) - 1);
+        *segment = value & mask;
+        value >>= segment_n_bits;
+    }
+    segments
+}
+
+/// Generates the map from 0..2^(sum_bits) to the corresponding value's partition segments.
+pub fn generate_partitioned_enumeration<const N: usize>(
+    n_bits_per_segmants: [u32; N],
+) -> [Vec<PackedM31>; N] {
+    let sum_bits = n_bits_per_segmants.iter().sum::<u32>();
+    assert!(sum_bits < MODULUS_BITS);
+
+    let mut res = std::array::from_fn(|_| vec![]);
+    for vec_row in 0..1 << (sum_bits - LOG_N_LANES) {
+        let value = SIMD_ENUMERATION_0 + Simd::splat(vec_row * N_LANES as u32);
+        let segments = partition_into_bit_segments(value, n_bits_per_segmants);
+        for i in 0..N {
+            res[i].push(unsafe { PackedM31::from_simd_unchecked(segments[i]) });
+        }
+    }
+    res
+}
+
 #[macro_export]
 macro_rules! range_check_prover {
     ($($log_range:expr),+) => {
         paste::paste! {
             use $crate::components::prelude::proving::*;
-            use $crate::components::range_check_vector::{partition_into_bit_segments,
+            use $crate::witness::components::range_check_vector::{partition_into_bit_segments,
                                                     SIMD_ENUMERATION_0};
+            use $crate::components::range_check_vector::[<range_check_$($log_range)_*>]::{Claim, InteractionClaim};
+            const N_RANGES: usize = $crate::count_elements!($($log_range),*);
+            const RANGES : [u32; N_RANGES] = [$($log_range),+];
             pub type PackedInputType = [PackedM31; N_RANGES];
             pub type InputType = [M31; N_RANGES];
 
@@ -128,6 +177,35 @@ macro_rules! range_check_prover {
     };
 }
 
+#[macro_export]
+macro_rules! generate_range_check_witness {
+    ([$($log_range:expr),+]) => {
+        paste::paste!{
+            pub mod [<range_check_$($log_range)_*>] {
+                $crate::range_check_prover!($($log_range),+);
+            }
+        }
+    };
+}
+
+pub mod range_check_trace_generators {
+    generate_range_check_witness!([6]);
+    generate_range_check_witness!([8]);
+    generate_range_check_witness!([11]);
+    generate_range_check_witness!([12]);
+    generate_range_check_witness!([18]);
+    generate_range_check_witness!([19]);
+    generate_range_check_witness!([3, 6]);
+    generate_range_check_witness!([4, 3]);
+    generate_range_check_witness!([4, 4]);
+    generate_range_check_witness!([5, 4]);
+    generate_range_check_witness!([9, 9]);
+    generate_range_check_witness!([7, 2, 5]);
+    generate_range_check_witness!([3, 6, 6, 3]);
+    generate_range_check_witness!([4, 4, 4, 4]);
+    generate_range_check_witness!([3, 3, 3, 3, 3]);
+}
+
 #[cfg(test)]
 mod tests {
     use std::ops::Deref;
@@ -148,7 +226,9 @@ mod tests {
 
     use crate::cairo_air::preprocessed::{PreProcessedColumn, RangeCheck};
     use crate::cairo_air::relations;
-    use crate::components::range_check_vector::{partition_into_bit_segments, range_check_7_2_5};
+    use crate::components::range_check_vector::range_check_7_2_5::Eval;
+    use crate::witness::components::range_check_7_2_5;
+    use crate::witness::components::range_check_vector::partition_into_bit_segments;
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);
@@ -208,7 +288,7 @@ mod tests {
         let tree_span_provider = &mut TraceLocationAllocator::default();
         let component = FrameworkComponent::new(
             tree_span_provider,
-            range_check_7_2_5::Eval { lookup_elements },
+            Eval { lookup_elements },
             interaction_claim.claimed_sum,
         );
 
