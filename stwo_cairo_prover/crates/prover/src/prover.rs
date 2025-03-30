@@ -12,9 +12,8 @@ use stwo_prover::core::proof_of_work::GrindOps;
 use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
-use super::CairoProof;
 use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
-use crate::cairo_air::preprocessed::PreProcessedTrace;
+use crate::cairo_air::{CairoProof, PreProcessedTraceVariant};
 use crate::witness::cairo::CairoClaimGenerator;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 24;
@@ -146,24 +145,6 @@ pub enum ChannelHash {
     Poseidon252,
 }
 
-/// The preprocessed trace used for the prover.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum PreProcessedTraceVariant {
-    Canonical,
-    CanonicalWithoutPedersen,
-}
-impl PreProcessedTraceVariant {
-    pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
-        match self {
-            PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
-            PreProcessedTraceVariant::CanonicalWithoutPedersen => {
-                PreProcessedTrace::canonical_without_pedersen()
-            }
-        }
-    }
-}
-
 /// The default prover parameters for prod use (96 bits of security).
 /// The formula is `security_bits = pow_bits + log_blowup_factor * n_queries`.
 pub fn default_prod_prover_parameters() -> ProverParameters {
@@ -246,8 +227,9 @@ pub mod tests {
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
         use super::*;
-        use crate::cairo_air::prover::{prove_cairo, PreProcessedTraceVariant};
         use crate::cairo_air::verifier::verify_cairo;
+        use crate::cairo_air::PreProcessedTraceVariant;
+        use crate::prover::prove_cairo;
 
         #[test]
         fn generate_and_serialise_proof() {
@@ -283,9 +265,9 @@ pub mod tests {
         use super::*;
         use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::cairo_air::preprocessed::PreProcessedTrace;
-        use crate::cairo_air::prover::tests::test_basic_cairo_air_input;
-        use crate::cairo_air::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
         use crate::cairo_air::verifier::verify_cairo;
+        use crate::prover::tests::test_basic_cairo_air_input;
+        use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
 
         // TODO(Ohad): fine-grained constraints tests.
         #[test]

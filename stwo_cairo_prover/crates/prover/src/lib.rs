@@ -11,6 +11,7 @@
 pub mod cairo_air;
 mod components;
 mod felt;
+pub mod prover;
 
 pub use stwo_prover;
 pub mod witness;

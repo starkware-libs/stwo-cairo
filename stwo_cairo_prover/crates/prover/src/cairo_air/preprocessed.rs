@@ -18,7 +18,6 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
-use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
 use crate::witness::components::range_check_vector::{
     generate_partitioned_enumeration, SIMD_ENUMERATION_0,
@@ -57,8 +56,7 @@ impl PreProcessedTrace {
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
-        let seq = (LOG_N_LANES..=LOG_MAX_ROWS)
-            .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
+        let seq = (LOG_N_LANES..=24).map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
             .map(|n_bits| {
                 (0..3).map(move |col_index| {
