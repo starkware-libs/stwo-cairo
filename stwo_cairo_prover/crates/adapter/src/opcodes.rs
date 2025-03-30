@@ -163,7 +163,7 @@ impl StateTransitions {
     ///
     /// - StateTransitions, used to feed the opcodes' air.
     /// - A map from pc to instruction that is used to feed
-    ///   [`crate::components::verify_instruction::ClaimGenerator`].
+    ///   [`crate::cairo_air::components::verify_instruction::ClaimGenerator`].
     pub fn from_iter(
         iter: impl Iterator<Item = RelocatedTraceEntry>,
         memory: &mut MemoryBuilder,

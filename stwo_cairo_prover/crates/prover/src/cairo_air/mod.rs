@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::components::prelude::PreProcessedTrace;
+use crate::cairo_air::components::prelude::PreProcessedTrace;
 
 pub(crate) mod air;
 pub(crate) mod blake;
 pub(crate) mod builtins_air;
+pub mod components;
 pub(crate) mod debug_tools;
 pub(crate) mod opcodes_air;
 pub(crate) mod pedersen;

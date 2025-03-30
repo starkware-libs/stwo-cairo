@@ -7,8 +7,8 @@ use stwo_prover::core::prover::{verify, VerificationError};
 use thiserror::Error;
 
 use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use crate::cairo_air::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::cairo_air::{CairoProof, PreProcessedTraceVariant};
-use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 
 pub fn verify_cairo<MC: MerkleChannel>(
     CairoProof {

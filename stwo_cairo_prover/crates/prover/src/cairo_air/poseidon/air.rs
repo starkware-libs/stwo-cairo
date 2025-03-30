@@ -2,12 +2,12 @@ use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 
 use crate::cairo_air::air::CairoInteractionElements;
-use crate::cairo_air::debug_tools::indented_component_display;
-use crate::components::prelude::*;
-use crate::components::{
+use crate::cairo_air::components::prelude::*;
+use crate::cairo_air::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
     range_check_felt_252_width_27,
 };
+use crate::cairo_air::debug_tools::indented_component_display;
 use crate::witness::prelude::*;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]

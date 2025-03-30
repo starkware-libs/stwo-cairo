@@ -4,7 +4,9 @@ use std::simd::u32x16;
 
 use itertools::{chain, Itertools};
 
-use crate::components::blake_round_sigma::{Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE};
+use crate::cairo_air::components::blake_round_sigma::{
+    Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE,
+};
 use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;
 use crate::witness::prelude::*;
 
