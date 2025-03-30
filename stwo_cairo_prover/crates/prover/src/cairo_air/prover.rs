@@ -194,7 +194,7 @@ pub mod tests {
 
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
-    use stwo_cairo_adapter::vm_import::generate_test_input;
+    use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
     use stwo_cairo_adapter::ProverInput;
 
     use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
@@ -233,7 +233,8 @@ pub mod tests {
 
     #[test]
     fn test_all_cairo_constraints() {
-        let input = generate_test_input("test_prove_verify_all_opcode_components");
+        let input =
+            prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
         let pp_tree = testing_preprocessed_tree(20);
         assert_cairo_constraints(input, pp_tree);
     }
@@ -293,7 +294,8 @@ pub mod tests {
         // TODO(Ohad): fine-grained constraints tests.
         #[test]
         fn test_cairo_constraints() {
-            let input = generate_test_input("test_prove_verify_all_opcode_components");
+            let input =
+                prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
             assert_cairo_constraints(input, PreProcessedTrace::canonical());
         }
 
@@ -316,7 +318,8 @@ pub mod tests {
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
-            let input = generate_test_input("test_prove_verify_all_opcode_components");
+            let input =
+                prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 assert!(
                     *n_instances > 0,
@@ -368,7 +371,7 @@ pub mod tests {
 
             use cairo_vm::air_public_input::MemorySegmentAddresses;
             use stwo_cairo_adapter::memory::MemoryEntryIter;
-            use stwo_cairo_adapter::vm_import::generate_test_input;
+            use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
 
             use super::*;
 
@@ -391,7 +394,8 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_all_builtins() {
-                let input = generate_test_input("test_prove_verify_all_builtins");
+                let input =
+                    prover_input_from_compiled_cairo_program("test_prove_verify_all_builtins");
                 assert_all_builtins_in_input(&input);
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
@@ -410,7 +414,8 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_add_mod_builtin() {
-                let input = generate_test_input("test_prove_verify_add_mod_builtin");
+                let input =
+                    prover_input_from_compiled_cairo_program("test_prove_verify_add_mod_builtin");
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                     input,
@@ -446,7 +451,8 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_bitwise_builtin() {
-                let input = generate_test_input("test_prove_verify_bitwise_builtin");
+                let input =
+                    prover_input_from_compiled_cairo_program("test_prove_verify_bitwise_builtin");
                 assert_bitwise_builtin_has_holes(
                     "test_prove_verify_bitwise_builtin",
                     &input.builtins_segments.bitwise,
@@ -468,7 +474,8 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_mul_mod_builtin() {
-                let input = generate_test_input("test_prove_verify_mul_mod_builtin");
+                let input =
+                    prover_input_from_compiled_cairo_program("test_prove_verify_mul_mod_builtin");
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                     input,
@@ -486,14 +493,17 @@ pub mod tests {
 
             #[test]
             fn test_poseidon_builtin_constraints() {
-                let input = generate_test_input("test_prove_verify_poseidon_builtin");
+                let input =
+                    prover_input_from_compiled_cairo_program("test_prove_verify_poseidon_builtin");
                 let pp_tree = testing_preprocessed_tree(19);
                 assert_cairo_constraints(input, pp_tree);
             }
 
             #[test]
             fn test_prove_verify_range_check_bits_96_builtin() {
-                let input = generate_test_input("test_prove_verify_range_check_bits_96_builtin");
+                let input = prover_input_from_compiled_cairo_program(
+                    "test_prove_verify_range_check_bits_96_builtin",
+                );
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                     input,
@@ -511,7 +521,9 @@ pub mod tests {
 
             #[test]
             fn test_prove_verify_range_check_bits_128_builtin() {
-                let input = generate_test_input("test_prove_verify_range_check_bits_128_builtin");
+                let input = prover_input_from_compiled_cairo_program(
+                    "test_prove_verify_range_check_bits_128_builtin",
+                );
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                     input,
