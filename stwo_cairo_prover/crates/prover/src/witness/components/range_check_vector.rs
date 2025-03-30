@@ -217,9 +217,11 @@ mod tests {
     use stwo_prover::constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
+    use stwo_prover::core::backend::simd::column::BaseColumn;
     use stwo_prover::core::backend::simd::m31::PackedM31;
     use stwo_prover::core::backend::simd::SimdBackend;
     use stwo_prover::core::channel::Blake2sChannel;
+    use stwo_prover::core::fields::m31::M31;
     use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
     use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -228,7 +230,9 @@ mod tests {
     use crate::cairo_air::relations;
     use crate::components::range_check_vector::range_check_7_2_5::Eval;
     use crate::witness::components::range_check_7_2_5;
-    use crate::witness::components::range_check_vector::partition_into_bit_segments;
+    use crate::witness::components::range_check_vector::{
+        generate_partitioned_enumeration, partition_into_bit_segments,
+    };
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);
@@ -306,5 +310,26 @@ mod tests {
             },
             interaction_claim.claimed_sum,
         )
+    }
+
+    #[test]
+    fn test_packed_partition_enumerate() {
+        let log_ranges = [5, 3, 3];
+        let mut expected = [vec![], vec![], vec![]];
+        for i in 0..1 << 5 {
+            for j in 0..1 << 3 {
+                for k in 0..1 << 3 {
+                    expected[0].push(M31(i));
+                    expected[1].push(M31(j));
+                    expected[2].push(M31(k));
+                }
+            }
+        }
+
+        let mut result = generate_partitioned_enumeration(log_ranges).into_iter();
+        let result: [Vec<M31>; 3] =
+            std::array::from_fn(|_| BaseColumn::from_simd(result.next().unwrap()).into_cpu_vec());
+
+        assert_eq!(result, expected)
     }
 }
