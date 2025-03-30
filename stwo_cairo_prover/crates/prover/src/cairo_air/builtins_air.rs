@@ -10,10 +10,9 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
-use super::debug_tools::indented_component_display;
 use crate::cairo_air::components::{
-    add_mod_builtin, bitwise_builtin, mul_mod_builtin, poseidon_builtin,
-    range_check_builtin_bits_128, range_check_builtin_bits_96,
+    add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
+    poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
