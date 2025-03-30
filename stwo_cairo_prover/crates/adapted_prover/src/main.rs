@@ -1,12 +1,12 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
+use cairo_air::verifier::{verify_cairo, CairoVerificationError};
+use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde::Serialize;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::cairo_air::verifier::{verify_cairo, CairoVerificationError};
-use stwo_cairo_prover::cairo_air::PreProcessedTraceVariant;
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };

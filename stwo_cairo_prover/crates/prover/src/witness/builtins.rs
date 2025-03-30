@@ -1,3 +1,5 @@
+use cairo_air::air::CairoInteractionElements;
+use cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
 use stwo_cairo_adapter::builtins::{
     BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
@@ -5,8 +7,6 @@ use stwo_cairo_adapter::builtins::{
 use stwo_prover::core::backend::simd::SimdBackend;
 
 use super::components::poseidon::PoseidonContextClaimGenerator;
-use crate::cairo_air::air::CairoInteractionElements;
-use crate::cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
     poseidon_builtin, range_check_12, range_check_18, range_check_3_3_3_3_3, range_check_3_6_6_3,

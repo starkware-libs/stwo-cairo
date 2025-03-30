@@ -1,7 +1,8 @@
 #![allow(unused_parens)]
-use crate::cairo_air::components::poseidon_3_partial_rounds_chain::{
+use cairo_air::components::poseidon_3_partial_rounds_chain::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
 };
+
 use crate::witness::components::{
     cube_252, poseidon_round_keys, range_check_4_4, range_check_4_4_4_4,
     range_check_felt_252_width_27,
