@@ -1,8 +1,7 @@
 #![allow(unused_parens)]
-use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::components::jnz_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
-use crate::components::verify_instruction;
-use crate::witness::components::{memory_address_to_id, memory_id_to_big};
+use crate::witness::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
