@@ -11,7 +11,7 @@ use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
 use super::debug_tools::display_components;
-use crate::components::{
+use crate::cairo_air::components::{
     add_ap_opcode, add_ap_opcode_imm, add_ap_opcode_op_1_base_fp, add_opcode, add_opcode_imm,
     add_opcode_small, add_opcode_small_imm, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,

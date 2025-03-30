@@ -1,5 +1,7 @@
 #![allow(unused_parens)]
-use crate::components::range_check_felt_252_width_27::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::cairo_air::components::range_check_felt_252_width_27::{
+    Claim, InteractionClaim, N_TRACE_COLUMNS,
+};
 use crate::witness::components::{range_check_18, range_check_9_9};
 use crate::witness::prelude::*;
 

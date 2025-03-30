@@ -1,5 +1,5 @@
 #![allow(unused_parens)]
-use crate::components::add_ap_opcode_imm::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::cairo_air::components::add_ap_opcode_imm::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::witness::prelude::*;
 
