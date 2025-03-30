@@ -1,4 +1,4 @@
-use crate::components::prelude::constraint_eval::*;
+use crate::components::prelude::*;
 
 pub const N_BITS: u32 = 9;
 pub const LOG_SIZE: u32 = N_BITS * 2;

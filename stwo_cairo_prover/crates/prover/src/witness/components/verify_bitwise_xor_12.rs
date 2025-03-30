@@ -5,10 +5,10 @@ use itertools::Itertools;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 
-use crate::components::prelude::proving::*;
 use crate::components::verify_bitwise_xor_12::{
     Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
 };
+use crate::witness::prelude::*;
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];

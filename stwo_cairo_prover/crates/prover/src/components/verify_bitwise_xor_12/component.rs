@@ -1,5 +1,5 @@
 use super::{LIMB_BITS, N_MULT_COLUMNS};
-use crate::components::prelude::constraint_eval::*;
+use crate::components::prelude::*;
 
 pub struct Eval {
     pub verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12,

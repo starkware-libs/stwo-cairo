@@ -1,7 +1,7 @@
 #![allow(unused_parens)]
 use crate::cairo_air::preprocessed::BitwiseXor;
-use crate::components::prelude::proving::*;
 use crate::components::verify_bitwise_xor_9::{Claim, InteractionClaim, LOG_SIZE, N_BITS};
+use crate::witness::prelude::*;
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];

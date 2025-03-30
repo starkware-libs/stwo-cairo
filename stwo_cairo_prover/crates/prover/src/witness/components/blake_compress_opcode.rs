@@ -1,10 +1,10 @@
 #![allow(unused_parens)]
 use crate::components::blake_compress_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::components::prelude::proving::*;
 use crate::witness::components::{
     blake_round, memory_address_to_id, memory_id_to_big, range_check_7_2_5, triple_xor_32,
     verify_bitwise_xor_8, verify_instruction,
 };
+use crate::witness::prelude::*;
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
 
