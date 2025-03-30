@@ -1,5 +1,5 @@
 #![allow(unused_parens)]
-use crate::components::poseidon_3_partial_rounds_chain::{
+use crate::cairo_air::components::poseidon_3_partial_rounds_chain::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
 };
 use crate::witness::components::{

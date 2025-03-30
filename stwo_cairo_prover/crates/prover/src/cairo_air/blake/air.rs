@@ -9,7 +9,7 @@ use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::cairo_air::air::CairoInteractionElements;
-use crate::components::{
+use crate::cairo_air::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
 

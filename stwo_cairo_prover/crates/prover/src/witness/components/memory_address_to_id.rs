@@ -15,12 +15,12 @@ use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
 
-use crate::cairo_air::preprocessed::Seq;
-use crate::cairo_air::relations;
-use crate::components::memory_address_to_id::{
+use crate::cairo_air::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
     N_TRACE_COLUMNS,
 };
+use crate::cairo_air::preprocessed::Seq;
+use crate::cairo_air::relations;
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
 pub type InputType = M31;
