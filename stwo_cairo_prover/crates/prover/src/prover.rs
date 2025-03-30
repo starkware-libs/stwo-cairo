@@ -92,7 +92,7 @@ where
     // TODO(Ohad): move to a testing routine.
     #[cfg(feature = "relation-tracker")]
     {
-        use crate::cairo_air::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
+        use crate::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
         let summary = track_and_summarize_cairo_relations(
             &commitment_scheme,
             &component_builder,
@@ -177,8 +177,8 @@ pub mod tests {
     use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
     use stwo_cairo_adapter::ProverInput;
 
-    use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
     use crate::cairo_air::preprocessed::tests::testing_preprocessed_tree;
+    use crate::debug_tools::assert_constraints::assert_cairo_constraints;
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
@@ -266,9 +266,9 @@ pub mod tests {
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
-        use crate::cairo_air::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::cairo_air::preprocessed::PreProcessedTrace;
         use crate::cairo_air::verifier::verify_cairo;
+        use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::tests::test_basic_cairo_air_input;
         use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
 
