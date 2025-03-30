@@ -28,10 +28,9 @@ use super::range_checks_air::{
     RangeChecksInteractionElements,
 };
 use crate::cairo_air::relations;
-use crate::components::memory::{memory_address_to_id, memory_id_to_big};
 use crate::components::{
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
-    verify_instruction,
+    memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
+    verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::felt::split_f252;
 
