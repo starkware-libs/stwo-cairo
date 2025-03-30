@@ -1,5 +1,10 @@
-use super::{LIMB_BITS, N_MULT_COLUMNS};
 use crate::components::prelude::*;
+pub const ELEM_BITS: u32 = 12;
+pub const EXPAND_BITS: u32 = 2;
+pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS;
+pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
+pub const N_MULT_COLUMNS: usize = 1 << (EXPAND_BITS * 2);
+pub const N_TRACE_COLUMNS: usize = N_MULT_COLUMNS;
 
 pub struct Eval {
     pub verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12,
@@ -9,9 +14,9 @@ pub struct Eval {
 pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![super::LOG_SIZE; super::N_TRACE_COLUMNS];
+        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
         let interaction_log_sizes =
-            vec![super::LOG_SIZE; SECURE_EXTENSION_DEGREE * N_MULT_COLUMNS.div_ceil(2)];
+            vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * N_MULT_COLUMNS.div_ceil(2)];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -34,7 +39,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        super::LOG_SIZE
+        LOG_SIZE
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -49,8 +54,8 @@ impl FrameworkEval for Eval {
         let b_low = eval.get_preprocessed_column(BitwiseXor::new(LIMB_BITS, 1).id());
         let c_low = eval.get_preprocessed_column(BitwiseXor::new(LIMB_BITS, 2).id());
 
-        for i in 0..1 << super::EXPAND_BITS {
-            for j in 0..1 << super::EXPAND_BITS {
+        for i in 0..1 << EXPAND_BITS {
+            for j in 0..1 << EXPAND_BITS {
                 let multiplicity = eval.next_trace_mask();
 
                 let a = a_low.clone() + E::F::from(M31(i << LIMB_BITS));
