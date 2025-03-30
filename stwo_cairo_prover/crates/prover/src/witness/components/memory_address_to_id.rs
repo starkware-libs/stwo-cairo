@@ -17,11 +17,9 @@ use stwo_prover::core::poly::BitReversedOrder;
 
 use crate::cairo_air::preprocessed::Seq;
 use crate::cairo_air::relations;
-use crate::components::memory_address_to_id::component::{
-    N_ID_AND_MULT_COLUMNS_PER_CHUNK, N_TRACE_COLUMNS,
-};
 use crate::components::memory_address_to_id::{
-    Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT,
+    Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
+    N_TRACE_COLUMNS,
 };
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
