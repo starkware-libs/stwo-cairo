@@ -48,7 +48,7 @@ pub fn generate_partitioned_enumeration<const N: usize>(
 macro_rules! range_check_prover {
     ($($log_range:expr),+) => {
         paste::paste! {
-            use $crate::components::prelude::proving::*;
+            use $crate::witness::prelude::*;
             use $crate::witness::components::range_check_vector::{partition_into_bit_segments,
                                                     SIMD_ENUMERATION_0};
             use $crate::components::range_check_vector::[<range_check_$($log_range)_*>]::{Claim, InteractionClaim};

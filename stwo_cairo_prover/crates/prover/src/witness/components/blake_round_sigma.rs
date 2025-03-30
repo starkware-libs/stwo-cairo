@@ -5,8 +5,8 @@ use std::simd::u32x16;
 use itertools::{chain, Itertools};
 
 use crate::components::blake_round_sigma::{Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE};
-use crate::components::prelude::proving::*;
 use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;
+use crate::witness::prelude::*;
 
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];
