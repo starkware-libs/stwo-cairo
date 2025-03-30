@@ -4,57 +4,57 @@
   "rc_max": 32769,
   "n_steps": 65536,
   "memory_segments": {
-    "output": {
-      "begin_addr": 242,
-      "stop_ptr": 242
-    },
-    "poseidon": {
-      "begin_addr": 30706,
-      "stop_ptr": 30706
-    },
     "bitwise": {
-      "begin_addr": 9266,
-      "stop_ptr": 9266
-    },
-    "ecdsa": {
-      "begin_addr": 9202,
-      "stop_ptr": 9202
-    },
-    "add_mod": {
-      "begin_addr": 40434,
-      "stop_ptr": 40434
-    },
-    "pedersen": {
-      "begin_addr": 242,
-      "stop_ptr": 242
+      "begin_addr": 9298,
+      "stop_ptr": 9298
     },
     "program": {
       "begin_addr": 1,
       "stop_ptr": 5
     },
-    "execution": {
-      "begin_addr": 33,
-      "stop_ptr": 242
+    "ecdsa": {
+      "begin_addr": 9234,
+      "stop_ptr": 9234
     },
-    "range_check": {
-      "begin_addr": 1010,
-      "stop_ptr": 1010
+    "pedersen": {
+      "begin_addr": 274,
+      "stop_ptr": 274
     },
-    "ec_op": {
-      "begin_addr": 29746,
-      "stop_ptr": 29746
-    },
-    "keccak": {
-      "begin_addr": 30194,
-      "stop_ptr": 30194
+    "poseidon": {
+      "begin_addr": 30738,
+      "stop_ptr": 30738
     },
     "mul_mod": {
-      "begin_addr": 44018,
-      "stop_ptr": 44018
+      "begin_addr": 44050,
+      "stop_ptr": 44050
+    },
+    "range_check": {
+      "begin_addr": 1042,
+      "stop_ptr": 1042
+    },
+    "keccak": {
+      "begin_addr": 30226,
+      "stop_ptr": 30226
+    },
+    "execution": {
+      "begin_addr": 44,
+      "stop_ptr": 274
+    },
+    "add_mod": {
+      "begin_addr": 40466,
+      "stop_ptr": 40466
+    },
+    "ec_op": {
+      "begin_addr": 29778,
+      "stop_ptr": 29778
     },
     "range_check96": {
-      "begin_addr": 32242,
-      "stop_ptr": 32292
+      "begin_addr": 32274,
+      "stop_ptr": 32324
+    },
+    "output": {
+      "begin_addr": 274,
+      "stop_ptr": 274
     }
   },
   "public_memory": [
@@ -65,7 +65,7 @@
     },
     {
       "address": 2,
-      "value": "0x1",
+      "value": "0xb",
       "page": 0
     },
     {
@@ -185,7 +185,7 @@
     },
     {
       "address": 26,
-      "value": "0x480a7ffd7fff8000",
+      "value": "0x480a7ffb7fff8000",
       "page": 0
     },
     {
@@ -205,27 +205,182 @@
     },
     {
       "address": 30,
-      "value": "0x208b7fff7fff7ffe",
+      "value": "0x480a7ff37fff8000",
       "page": 0
     },
     {
       "address": 31,
-      "value": "0x21",
+      "value": "0x480a7ff47fff8000",
       "page": 0
     },
     {
       "address": 32,
-      "value": "0x0",
+      "value": "0x480a7ff57fff8000",
       "page": 0
     },
     {
       "address": 33,
-      "value": "0x7df2",
+      "value": "0x480a7ff67fff8000",
       "page": 0
     },
     {
-      "address": 241,
-      "value": "0x7e24",
+      "address": 34,
+      "value": "0x480a7ff77fff8000",
+      "page": 0
+    },
+    {
+      "address": 35,
+      "value": "0x480a7ff87fff8000",
+      "page": 0
+    },
+    {
+      "address": 36,
+      "value": "0x480a7ff97fff8000",
+      "page": 0
+    },
+    {
+      "address": 37,
+      "value": "0x480a7ffa7fff8000",
+      "page": 0
+    },
+    {
+      "address": 38,
+      "value": "0x48127ff77fff8000",
+      "page": 0
+    },
+    {
+      "address": 39,
+      "value": "0x480a7ffc7fff8000",
+      "page": 0
+    },
+    {
+      "address": 40,
+      "value": "0x480a7ffd7fff8000",
+      "page": 0
+    },
+    {
+      "address": 41,
+      "value": "0x208b7fff7fff7ffe",
+      "page": 0
+    },
+    {
+      "address": 42,
+      "value": "0x2c",
+      "page": 0
+    },
+    {
+      "address": 43,
+      "value": "0x0",
+      "page": 0
+    },
+    {
+      "address": 44,
+      "value": "0x112",
+      "page": 0
+    },
+    {
+      "address": 45,
+      "value": "0x112",
+      "page": 0
+    },
+    {
+      "address": 46,
+      "value": "0x412",
+      "page": 0
+    },
+    {
+      "address": 47,
+      "value": "0x2412",
+      "page": 0
+    },
+    {
+      "address": 48,
+      "value": "0x2452",
+      "page": 0
+    },
+    {
+      "address": 49,
+      "value": "0x7452",
+      "page": 0
+    },
+    {
+      "address": 50,
+      "value": "0x7612",
+      "page": 0
+    },
+    {
+      "address": 51,
+      "value": "0x7812",
+      "page": 0
+    },
+    {
+      "address": 52,
+      "value": "0x7e12",
+      "page": 0
+    },
+    {
+      "address": 53,
+      "value": "0x9e12",
+      "page": 0
+    },
+    {
+      "address": 54,
+      "value": "0xac12",
+      "page": 0
+    },
+    {
+      "address": 263,
+      "value": "0x112",
+      "page": 0
+    },
+    {
+      "address": 264,
+      "value": "0x112",
+      "page": 0
+    },
+    {
+      "address": 265,
+      "value": "0x412",
+      "page": 0
+    },
+    {
+      "address": 266,
+      "value": "0x2412",
+      "page": 0
+    },
+    {
+      "address": 267,
+      "value": "0x2452",
+      "page": 0
+    },
+    {
+      "address": 268,
+      "value": "0x7452",
+      "page": 0
+    },
+    {
+      "address": 269,
+      "value": "0x7612",
+      "page": 0
+    },
+    {
+      "address": 270,
+      "value": "0x7812",
+      "page": 0
+    },
+    {
+      "address": 271,
+      "value": "0x7e44",
+      "page": 0
+    },
+    {
+      "address": 272,
+      "value": "0x9e12",
+      "page": 0
+    },
+    {
+      "address": 273,
+      "value": "0xac12",
       "page": 0
     }
   ],

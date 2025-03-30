@@ -403,7 +403,7 @@
                     "end_col": 7,
                     "end_line": 15,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 15
@@ -429,21 +429,21 @@
                     "end_col": 41,
                     "end_line": 14,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 41,
                             "end_line": 14,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 19,
                                     "end_line": 16,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 9,
                                     "start_line": 16
@@ -479,7 +479,7 @@
                     "end_col": 19,
                     "end_line": 16,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 9,
                     "start_line": 16
@@ -505,7 +505,7 @@
                     "end_col": 41,
                     "end_line": 19,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 34,
                     "start_line": 19
@@ -532,7 +532,7 @@
                     "end_col": 38,
                     "end_line": 22,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 22
@@ -560,7 +560,7 @@
                     "end_col": 7,
                     "end_line": 26,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 21
@@ -588,7 +588,7 @@
                     "end_col": 38,
                     "end_line": 23,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 23
@@ -617,7 +617,7 @@
                     "end_col": 7,
                     "end_line": 26,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 21
@@ -646,7 +646,7 @@
                     "end_col": 38,
                     "end_line": 24,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 24
@@ -676,7 +676,7 @@
                     "end_col": 7,
                     "end_line": 26,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 21
@@ -706,7 +706,7 @@
                     "end_col": 38,
                     "end_line": 25,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 25
@@ -737,7 +737,7 @@
                     "end_col": 7,
                     "end_line": 26,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 21
@@ -768,7 +768,7 @@
                     "end_col": 38,
                     "end_line": 29,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 29
@@ -800,7 +800,7 @@
                     "end_col": 7,
                     "end_line": 33,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 28
@@ -832,7 +832,7 @@
                     "end_col": 38,
                     "end_line": 30,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 30
@@ -865,7 +865,7 @@
                     "end_col": 7,
                     "end_line": 33,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 28
@@ -898,7 +898,7 @@
                     "end_col": 38,
                     "end_line": 31,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 31
@@ -932,7 +932,7 @@
                     "end_col": 7,
                     "end_line": 33,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 28
@@ -966,7 +966,7 @@
                     "end_col": 38,
                     "end_line": 32,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 32
@@ -1001,7 +1001,7 @@
                     "end_col": 7,
                     "end_line": 33,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 28
@@ -1036,7 +1036,7 @@
                     "end_col": 38,
                     "end_line": 36,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 36
@@ -1072,7 +1072,7 @@
                     "end_col": 7,
                     "end_line": 40,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 35
@@ -1108,7 +1108,7 @@
                     "end_col": 38,
                     "end_line": 37,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 37
@@ -1145,7 +1145,7 @@
                     "end_col": 7,
                     "end_line": 40,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 35
@@ -1182,7 +1182,7 @@
                     "end_col": 38,
                     "end_line": 38,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 38
@@ -1220,7 +1220,7 @@
                     "end_col": 7,
                     "end_line": 40,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 35
@@ -1258,7 +1258,7 @@
                     "end_col": 38,
                     "end_line": 39,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 12,
                     "start_line": 39
@@ -1297,7 +1297,7 @@
                     "end_col": 7,
                     "end_line": 40,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 35
@@ -1336,7 +1336,7 @@
                     "end_col": 63,
                     "end_line": 42,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 52,
                     "start_line": 42
@@ -1375,7 +1375,7 @@
                     "end_col": 64,
                     "end_line": 42,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 33,
                     "start_line": 42
@@ -1415,7 +1415,7 @@
                     "end_col": 26,
                     "end_line": 47,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 16,
                     "start_line": 47
@@ -1456,7 +1456,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1497,7 +1497,7 @@
                     "end_col": 42,
                     "end_line": 48,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 16,
                     "start_line": 48
@@ -1539,7 +1539,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1581,7 +1581,7 @@
                     "end_col": 42,
                     "end_line": 49,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 16,
                     "start_line": 49
@@ -1624,7 +1624,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1667,7 +1667,7 @@
                     "end_col": 42,
                     "end_line": 50,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 16,
                     "start_line": 50
@@ -1711,7 +1711,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1755,7 +1755,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1799,7 +1799,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1843,7 +1843,7 @@
                     "end_col": 21,
                     "end_line": 54,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 11,
                     "start_line": 54
@@ -1888,7 +1888,7 @@
                     "end_col": 7,
                     "end_line": 55,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 45
@@ -1933,21 +1933,21 @@
                     "end_col": 52,
                     "end_line": 56,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 41,
                             "end_line": 14,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 54,
                                     "end_line": 58,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 58
@@ -2002,7 +2002,7 @@
                     "end_col": 53,
                     "end_line": 58,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 33,
                     "start_line": 58
@@ -2047,7 +2047,7 @@
                     "end_col": 54,
                     "end_line": 58,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 58
@@ -2092,7 +2092,7 @@
                     "end_col": 15,
                     "end_line": 59,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 59
@@ -2115,7 +2115,7 @@
                     "end_col": 9,
                     "end_line": 62,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 62
@@ -2138,7 +2138,7 @@
                     "end_col": 9,
                     "end_line": 63,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 63
@@ -2161,7 +2161,7 @@
                     "end_col": 9,
                     "end_line": 64,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 64
@@ -2196,7 +2196,7 @@
                     "end_col": 18,
                     "end_line": 82,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 82
@@ -2231,7 +2231,7 @@
                     "end_col": 26,
                     "end_line": 83,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 83
@@ -2267,21 +2267,21 @@
                     "end_col": 30,
                     "end_line": 79,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 41,
                             "end_line": 14,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 43,
                                     "end_line": 86,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 86
@@ -2327,14 +2327,14 @@
                     "end_col": 20,
                     "end_line": 83,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 42,
                             "end_line": 86,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "start_col": 33,
                             "start_line": 86
@@ -2375,7 +2375,7 @@
                     "end_col": 43,
                     "end_line": 86,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 86
@@ -2411,21 +2411,21 @@
                     "end_col": 22,
                     "end_line": 70,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 22,
                             "end_line": 70,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2471,21 +2471,21 @@
                     "end_col": 31,
                     "end_line": 71,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 31,
                             "end_line": 71,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2531,21 +2531,21 @@
                     "end_col": 20,
                     "end_line": 72,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 20,
                             "end_line": 72,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2591,21 +2591,21 @@
                     "end_col": 14,
                     "end_line": 73,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 14,
                             "end_line": 73,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2651,21 +2651,21 @@
                     "end_col": 16,
                     "end_line": 74,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
                             "end_line": 74,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2711,21 +2711,21 @@
                     "end_col": 14,
                     "end_line": 75,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 14,
                             "end_line": 75,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2771,21 +2771,21 @@
                     "end_col": 15,
                     "end_line": 76,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 15,
                             "end_line": 76,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2831,21 +2831,21 @@
                     "end_col": 35,
                     "end_line": 77,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 35,
                             "end_line": 77,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2891,21 +2891,21 @@
                     "end_col": 22,
                     "end_line": 78,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 22,
                             "end_line": 78,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -2951,28 +2951,28 @@
                     "end_col": 41,
                     "end_line": 14,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 43,
                             "end_line": 86,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 30,
                                     "end_line": 79,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "parent_location": [
                                         {
                                             "end_col": 15,
                                             "end_line": 88,
                                             "input_file": {
-                                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                             },
                                             "start_col": 5,
                                             "start_line": 88
@@ -3023,21 +3023,21 @@
                     "end_col": 16,
                     "end_line": 80,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
                             "end_line": 80,
                             "input_file": {
-                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 88,
                                     "input_file": {
-                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 88
@@ -3083,7 +3083,7 @@
                     "end_col": 15,
                     "end_line": 88,
                     "input_file": {
-                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo_copy.cairo"
+                        "filename": "/home/alonf/workspace/stwo-cairo-2/stwo_cairo_prover/test_data/test_prove_verify_add_mod_builtin/builtin_usage_flexible_cairo.cairo"
                     },
                     "start_col": 5,
                     "start_line": 88
