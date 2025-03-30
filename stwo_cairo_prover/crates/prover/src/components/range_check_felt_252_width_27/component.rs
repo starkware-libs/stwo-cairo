@@ -1,6 +1,6 @@
 use crate::components::prelude::constraint_eval::*;
 
-pub(super) const N_TRACE_COLUMNS: usize = 20;
+pub const N_TRACE_COLUMNS: usize = 20;
 pub struct Eval {
     pub claim: Claim,
     pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,

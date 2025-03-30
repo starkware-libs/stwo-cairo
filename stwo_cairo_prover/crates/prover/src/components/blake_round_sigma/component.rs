@@ -1,7 +1,7 @@
 use crate::components::prelude::constraint_eval::*;
 
 pub const BLAKE_SIGMA_LOG_SIZE: u32 = 4;
-pub(super) const N_TRACE_COLUMNS: usize = 1;
+pub const N_TRACE_COLUMNS: usize = 1;
 
 pub struct Eval {
     pub blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,

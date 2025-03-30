@@ -1,7 +1,7 @@
 #![allow(unused_parens)]
-use super::component::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use crate::components::prelude::proving::*;
-use crate::components::verify_bitwise_xor_8;
+use crate::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use crate::witness::components::verify_bitwise_xor_8;
 
 pub type PackedInputType = [PackedUInt32; 3];
 

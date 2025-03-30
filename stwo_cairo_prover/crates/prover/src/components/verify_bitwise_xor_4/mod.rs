@@ -1,5 +1,4 @@
 pub mod component;
-pub mod verify_bitwise_xor_4;
-
-pub use component::{Claim, Component, Eval, InteractionClaim};
-pub use verify_bitwise_xor_4::{ClaimGenerator, InteractionClaimGenerator, PackedInputType};
+pub use component::{
+    Claim, Component, Eval, InteractionClaim, BITWISE_XOR_4_LOG_SIZE, BITWISE_XOR_4_N_BITS,
+};
