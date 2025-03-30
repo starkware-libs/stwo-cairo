@@ -1,7 +1,6 @@
 #![allow(unused_parens)]
-use crate::cairo_air::components::blake_compress_opcode::{
-    Claim, InteractionClaim, N_TRACE_COLUMNS,
-};
+use cairo_air::components::blake_compress_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+
 use crate::witness::components::{
     blake_round, memory_address_to_id, memory_id_to_big, range_check_7_2_5, triple_xor_32,
     verify_bitwise_xor_8, verify_instruction,
