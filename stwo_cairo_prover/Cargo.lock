@@ -6,6 +6,7 @@ version = 4
 name = "adapted_stwo"
 version = "0.1.0"
 dependencies = [
+ "cairo-air",
  "clap",
  "log",
  "serde",
@@ -376,6 +377,33 @@ name = "bytes"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f61dac84819c6588b558454b194026eb1f09c293b9036ae9b159e74e73ab6cf9"
+
+[[package]]
+name = "cairo-air"
+version = "0.1.1"
+dependencies = [
+ "bytemuck",
+ "cairo-lang-casm",
+ "cairo-vm",
+ "hex",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rayon",
+ "serde",
+ "serde_json",
+ "starknet-curve 0.5.1",
+ "starknet-ff",
+ "starknet-types-core",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+ "thiserror 2.0.11",
+ "tracing",
+]
 
 [[package]]
 name = "cairo-lang-casm"
@@ -1316,6 +1344,7 @@ dependencies = [
 name = "recursion-bridge"
 version = "0.1.0"
 dependencies = [
+ "cairo-air",
  "cairo-lang-casm",
  "serde_json",
  "stwo-cairo-adapter",
@@ -1440,6 +1469,7 @@ checksum = "48fd7bd8a6377e15ad9d42a8ec25371b94ddc67abe7c8b9127bec79bebaaae18"
 name = "run_and_prove"
 version = "0.1.0"
 dependencies = [
+ "cairo-air",
  "clap",
  "log",
  "serde_json",
@@ -1867,6 +1897,7 @@ name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
+ "cairo-air",
  "cairo-lang-casm",
  "cairo-vm",
  "hex",

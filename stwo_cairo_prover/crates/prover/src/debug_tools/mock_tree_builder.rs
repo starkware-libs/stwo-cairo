@@ -76,12 +76,12 @@ mod tests {
     use std::array;
     use std::simd::u32x16;
 
+    use cairo_air::relations;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
     use stwo_cairo_common::prover_types::simd::PackedUInt32;
 
     use super::MockCommitmentScheme;
-    use crate::cairo_air::relations;
     use crate::witness::components::{triple_xor_32, verify_bitwise_xor_8};
 
     #[test]

@@ -1,3 +1,5 @@
+use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::ProverInput;
@@ -12,8 +14,6 @@ use stwo_prover::core::proof_of_work::GrindOps;
 use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
-use crate::cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
-use crate::cairo_air::{CairoProof, PreProcessedTraceVariant};
 use crate::witness::cairo::CairoClaimGenerator;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 24;
@@ -169,13 +169,12 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 
 #[cfg(test)]
 pub mod tests {
-
+    use cairo_air::preprocessed::testing_preprocessed_tree;
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_cairo_adapter::vm_import::generate_test_input;
     use stwo_cairo_adapter::ProverInput;
 
-    use crate::cairo_air::preprocessed::tests::testing_preprocessed_tree;
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
 
     fn test_basic_cairo_air_input() -> ProverInput {
@@ -221,14 +220,14 @@ pub mod tests {
     mod nightly_tests {
         use std::io::Write;
 
+        use cairo_air::verifier::verify_cairo;
+        use cairo_air::PreProcessedTraceVariant;
         use itertools::Itertools;
         use stwo_cairo_serialize::CairoSerialize;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 
         use super::*;
-        use crate::cairo_air::verifier::verify_cairo;
-        use crate::cairo_air::PreProcessedTraceVariant;
         use crate::prover::prove_cairo;
 
         #[test]
@@ -257,14 +256,14 @@ pub mod tests {
     #[cfg(test)]
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
+        use cairo_air::preprocessed::PreProcessedTrace;
+        use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
         use stwo_cairo_adapter::vm_import::generate_test_input;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
         use super::*;
-        use crate::cairo_air::preprocessed::PreProcessedTrace;
-        use crate::cairo_air::verifier::verify_cairo;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::tests::test_basic_cairo_air_input;
         use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};

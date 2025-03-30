@@ -1,5 +1,8 @@
+use cairo_air::air::{CairoComponents, PublicData};
+use cairo_air::opcodes_air::OpcodeComponents;
 use itertools::{chain, Itertools};
 use num_traits::One;
+use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_prover::constraint_framework::relation_tracker::{
     add_to_relation_entries, RelationSummary, RelationTrackerEntry,
 };
@@ -10,10 +13,6 @@ use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{CommitmentSchemeProver, TreeVec};
 use stwo_prover::core::poly::circle::CanonicCoset;
-
-use crate::cairo_air::air::{CairoComponents, PublicData};
-use crate::cairo_air::opcodes_air::OpcodeComponents;
-use crate::felt::split_f252;
 
 pub fn track_and_summarize_cairo_relations<MC: MerkleChannel>(
     commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,

@@ -1,5 +1,8 @@
 use std::ops::Deref;
 
+use cairo_air::air::{CairoComponents, CairoInteractionElements};
+use cairo_air::opcodes_air::OpcodeComponents;
+use cairo_air::preprocessed::PreProcessedTrace;
 use itertools::Itertools;
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::constraint_framework::{
@@ -9,9 +12,6 @@ use stwo_prover::core::channel::Blake2sChannel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::cairo_air::air::{CairoComponents, CairoInteractionElements};
-use crate::cairo_air::opcodes_air::OpcodeComponents;
-use crate::cairo_air::preprocessed::PreProcessedTrace;
 use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::witness::cairo::CairoClaimGenerator;
 
