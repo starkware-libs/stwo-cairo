@@ -9,6 +9,7 @@
 #![allow(clippy::too_many_arguments, clippy::module_inception)]
 
 pub mod cairo_air;
+pub mod debug_tools;
 mod felt;
 pub mod prover;
 
