@@ -4,33 +4,9 @@
   "rc_max": 32783,
   "n_steps": 32768,
   "memory_segments": {
-    "pedersen": {
-      "begin_addr": 2520,
-      "stop_ptr": 2520
-    },
-    "ec_op": {
-      "begin_addr": 17272,
-      "stop_ptr": 17272
-    },
-    "ecdsa": {
-      "begin_addr": 7000,
-      "stop_ptr": 7000
-    },
-    "poseidon": {
-      "begin_addr": 17752,
-      "stop_ptr": 17752
-    },
-    "mul_mod": {
-      "begin_addr": 24408,
-      "stop_ptr": 24408
-    },
-    "keccak": {
-      "begin_addr": 17496,
-      "stop_ptr": 17496
-    },
-    "output": {
-      "begin_addr": 2520,
-      "stop_ptr": 2520
+    "program": {
+      "begin_addr": 1,
+      "stop_ptr": 5
     },
     "range_check": {
       "begin_addr": 2904,
@@ -40,17 +16,41 @@
       "begin_addr": 18520,
       "stop_ptr": 18520
     },
-    "bitwise": {
-      "begin_addr": 7032,
-      "stop_ptr": 7032
+    "ec_op": {
+      "begin_addr": 17272,
+      "stop_ptr": 17272
     },
-    "program": {
-      "begin_addr": 1,
-      "stop_ptr": 5
+    "pedersen": {
+      "begin_addr": 2520,
+      "stop_ptr": 2520
+    },
+    "mul_mod": {
+      "begin_addr": 24408,
+      "stop_ptr": 24408
     },
     "execution": {
       "begin_addr": 1336,
       "stop_ptr": 2520
+    },
+    "output": {
+      "begin_addr": 2520,
+      "stop_ptr": 2520
+    },
+    "bitwise": {
+      "begin_addr": 7032,
+      "stop_ptr": 7032
+    },
+    "keccak": {
+      "begin_addr": 17496,
+      "stop_ptr": 17496
+    },
+    "ecdsa": {
+      "begin_addr": 7000,
+      "stop_ptr": 7000
+    },
+    "poseidon": {
+      "begin_addr": 17752,
+      "stop_ptr": 17752
     },
     "add_mod": {
       "begin_addr": 22616,
