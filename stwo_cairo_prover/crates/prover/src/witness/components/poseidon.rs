@@ -1,9 +1,9 @@
-use tracing::{span, Level};
-
-use crate::cairo_air::air::CairoInteractionElements;
-use crate::cairo_air::poseidon::air::{
+use cairo_air::air::CairoInteractionElements;
+use cairo_air::poseidon::air::{
     Claim, InteractionClaim, PoseidonContextClaim, PoseidonContextInteractionClaim,
 };
+use tracing::{span, Level};
+
 use crate::witness::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
     range_check_felt_252_width_27,

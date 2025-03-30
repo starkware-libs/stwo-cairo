@@ -1,3 +1,4 @@
+use cairo_air::air::{CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData};
 use itertools::Itertools;
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -8,9 +9,6 @@ use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionCl
 use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
 use super::opcodes::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
 use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
-use crate::cairo_air::air::{
-    CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData,
-};
 use crate::witness::components::poseidon::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
 };

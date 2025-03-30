@@ -2,12 +2,10 @@
 #![allow(dead_code)]
 use std::simd::u32x16;
 
+use cairo_air::components::blake_round_sigma::{Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE};
+use cairo_air::preprocessed::SIMD_ENUMERATION_0;
 use itertools::{chain, Itertools};
 
-use crate::cairo_air::components::blake_round_sigma::{
-    Claim, InteractionClaim, BLAKE_SIGMA_LOG_SIZE,
-};
-use crate::witness::components::range_check_vector::SIMD_ENUMERATION_0;
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 1];
