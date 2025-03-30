@@ -7,13 +7,13 @@ use stwo_prover::core::backend::simd::SimdBackend;
 use super::components::poseidon::PoseidonContextClaimGenerator;
 use crate::cairo_air::air::CairoInteractionElements;
 use crate::cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
-use crate::components::utils::TreeBuilder;
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
     poseidon_builtin, range_check_12, range_check_18, range_check_3_3_3_3_3, range_check_3_6_6_3,
     range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_builtin_bits_128,
     range_check_builtin_bits_96, verify_bitwise_xor_9,
 };
+use crate::witness::utils::TreeBuilder;
 pub struct BuiltinsClaimGenerator {
     add_mod_builtin_trace_generator: Option<add_mod_builtin::ClaimGenerator>,
     bitwise_builtin_trace_generator: Option<bitwise_builtin::ClaimGenerator>,

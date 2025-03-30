@@ -6,7 +6,7 @@ use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
 
-use crate::components::utils::TreeBuilder;
+use crate::witness::utils::TreeBuilder;
 
 /// A mock commitment scheme implementation used for testing purposes.
 pub struct MockCommitmentScheme {

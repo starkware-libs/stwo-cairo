@@ -22,9 +22,9 @@ pub use stwo_prover::core::poly::BitReversedOrder;
 
 pub use crate::cairo_air::preprocessed::Seq;
 pub(crate) use crate::cairo_air::relations;
-pub use crate::components::utils::*;
 pub use crate::witness::fast_deduction::blake::{BlakeG, BlakeRound, BlakeRoundSigma, TripleXor32};
 pub use crate::witness::fast_deduction::poseidon::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
     PackedPoseidonRoundKeys,
 };
+pub use crate::witness::utils::*;
