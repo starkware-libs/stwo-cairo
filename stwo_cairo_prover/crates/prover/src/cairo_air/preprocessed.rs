@@ -20,7 +20,9 @@ use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
 use super::prover::LOG_MAX_ROWS;
 use crate::cairo_air::blake::const_columns::BlakeSigma;
-use crate::components::range_check_vector::{generate_partitioned_enumeration, SIMD_ENUMERATION_0};
+use crate::witness::components::range_check_vector::{
+    generate_partitioned_enumeration, SIMD_ENUMERATION_0,
+};
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
