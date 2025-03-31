@@ -33,3 +33,6 @@ Note: This is an external directory.
     cargo test "<test_name>" --features "slow-tests"
 
 
+# Note on running tests locally.
+Testing unoptimized auto-generated code that runs in parallel is difficult due to stack overflows and compile-time-optimizations taking too long.
+Refer to `stwo_cairo_prover/cargo.toml` files for info on how to alleviate that issue.
