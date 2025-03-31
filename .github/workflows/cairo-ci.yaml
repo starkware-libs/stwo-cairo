@@ -44,9 +44,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: stwo_cairo_prover
-      - run: cargo nextest run --features slow-tests,std -j 1
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests,std -j 1 -P ci
         env:
-          RUSTFLAGS: -C target-cpu=native -C opt-level=1
+          RUSTFLAGS: -C target-cpu=native
 
   format:
     runs-on: ubuntu-latest
