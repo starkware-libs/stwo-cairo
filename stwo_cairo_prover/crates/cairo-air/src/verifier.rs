@@ -1,5 +1,6 @@
 use num_traits::Zero;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
+use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{CommitmentSchemeVerifier, PcsConfig};
@@ -30,7 +31,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
     let channel = &mut MC::C::default();
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
-    let log_sizes = claim.log_sizes();
+    let mut log_sizes = claim.log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.to_preprocessed_trace().log_sizes();
 
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);

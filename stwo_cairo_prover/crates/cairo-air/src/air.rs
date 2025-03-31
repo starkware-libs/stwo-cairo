@@ -23,7 +23,6 @@ use super::opcodes_air::{OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim};
 use super::poseidon::air::{
     PoseidonContextClaim, PoseidonContextComponents, PoseidonContextInteractionClaim,
 };
-use super::preprocessed::PreProcessedTrace;
 use super::range_checks_air::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksInteractionClaim,
     RangeChecksInteractionElements,
@@ -98,6 +97,8 @@ impl CairoClaim {
         self.verify_bitwise_xor_9.mix_into(channel);
     }
 
+    /// Returns the log sizes of the components.
+    /// Does not include the preprocessed trace log sizes.
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_sizes_list = vec![
             self.opcodes.log_sizes(),
@@ -114,11 +115,7 @@ impl CairoClaim {
             self.verify_bitwise_xor_9.log_sizes(),
         ];
 
-        let mut log_sizes = TreeVec::concat_cols(log_sizes_list.into_iter());
-
-        // Add preprocessed trace log sizes.
-        log_sizes[PREPROCESSED_TRACE_IDX] = PreProcessedTrace::canonical().log_sizes();
-        log_sizes
+        TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 }
 
