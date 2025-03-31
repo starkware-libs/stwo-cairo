@@ -23,8 +23,7 @@ use stwo_prover::core::poly::BitReversedOrder;
 use super::utils::felt_batch_inverse;
 use crate::preprocessed::PreProcessedColumn;
 
-pub(super) static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> =
-    LazyLock::new(PedersenPointsTable::new);
+pub static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> = LazyLock::new(PedersenPointsTable::new);
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
 #[derive(Debug)]
@@ -63,7 +62,7 @@ impl PreProcessedColumn for PedersenPoints {
 // 2. Next 16 rows: Row k contains -P_shift + k * P_1
 // 3. Next 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
 // 4. Next 16 rows: Row k contains -P_shift + k * P_3
-pub(super) struct PedersenPointsTable {
+pub struct PedersenPointsTable {
     // The one copy of the column contents. Shared by all column instances.
     column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
 

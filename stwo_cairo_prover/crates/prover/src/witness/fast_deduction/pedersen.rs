@@ -1,12 +1,11 @@
 #![allow(unused)]
 use std::array::from_fn;
 
+use cairo_air::pedersen::const_columns::PEDERSEN_TABLE;
 use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
-
-use super::const_columns::PEDERSEN_TABLE;
 
 type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
 
