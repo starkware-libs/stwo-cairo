@@ -159,9 +159,9 @@ impl FrameworkEval for Eval {
         let op1_limb_26_col95 = eval.next_trace_mask();
         let op1_limb_27_col96 = eval.next_trace_mask();
         let sub_p_bit_col97 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         // Decode Instruction.
 
@@ -193,6 +193,11 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let decode_instruction_ceccedab6d42d5b5_output_tmp_7e965_7_limb_0 =
+            eval.add_intermediate((offset0_col3.clone() - M31_32768.clone()));
+        let decode_instruction_ceccedab6d42d5b5_output_tmp_7e965_7_limb_1 =
+            eval.add_intermediate((offset1_col4.clone() - M31_32768.clone()));
+
         // mem_dst_base.
         eval.add_constraint(
             (mem_dst_base_col8.clone()
@@ -212,7 +217,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem_dst_base_col8.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                (mem_dst_base_col8.clone()
+                    + decode_instruction_ceccedab6d42d5b5_output_tmp_7e965_7_limb_0.clone()),
                 dst_id_col10.clone(),
             ],
         ));
@@ -259,7 +265,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem0_base_col9.clone() + (offset1_col4.clone() - M31_32768.clone())),
+                (mem0_base_col9.clone()
+                    + decode_instruction_ceccedab6d42d5b5_output_tmp_7e965_7_limb_1.clone()),
                 op0_id_col39.clone(),
             ],
         ));
@@ -351,49 +358,9 @@ impl FrameworkEval for Eval {
 
         // sub_p_bit is a bit.
         eval.add_constraint((sub_p_bit_col97.clone() * (sub_p_bit_col97.clone() - M31_1.clone())));
-        let carry_tmp_7e965_14 = eval.add_intermediate(
+        let carry_tmp_7e965_18 = eval.add_intermediate(
             ((((op0_limb_0_col40.clone() + op1_limb_0_col69.clone()) - dst_limb_0_col11.clone())
                 - sub_p_bit_col97.clone())
-                * M31_4194304.clone()),
-        );
-        eval.add_constraint(
-            (carry_tmp_7e965_14.clone()
-                * ((carry_tmp_7e965_14.clone() * carry_tmp_7e965_14.clone()) - M31_1.clone())),
-        );
-        let carry_tmp_7e965_15 = eval.add_intermediate(
-            ((((op0_limb_1_col41.clone() + op1_limb_1_col70.clone())
-                + carry_tmp_7e965_14.clone())
-                - dst_limb_1_col12.clone())
-                * M31_4194304.clone()),
-        );
-        eval.add_constraint(
-            (carry_tmp_7e965_15.clone()
-                * ((carry_tmp_7e965_15.clone() * carry_tmp_7e965_15.clone()) - M31_1.clone())),
-        );
-        let carry_tmp_7e965_16 = eval.add_intermediate(
-            ((((op0_limb_2_col42.clone() + op1_limb_2_col71.clone())
-                + carry_tmp_7e965_15.clone())
-                - dst_limb_2_col13.clone())
-                * M31_4194304.clone()),
-        );
-        eval.add_constraint(
-            (carry_tmp_7e965_16.clone()
-                * ((carry_tmp_7e965_16.clone() * carry_tmp_7e965_16.clone()) - M31_1.clone())),
-        );
-        let carry_tmp_7e965_17 = eval.add_intermediate(
-            ((((op0_limb_3_col43.clone() + op1_limb_3_col72.clone())
-                + carry_tmp_7e965_16.clone())
-                - dst_limb_3_col14.clone())
-                * M31_4194304.clone()),
-        );
-        eval.add_constraint(
-            (carry_tmp_7e965_17.clone()
-                * ((carry_tmp_7e965_17.clone() * carry_tmp_7e965_17.clone()) - M31_1.clone())),
-        );
-        let carry_tmp_7e965_18 = eval.add_intermediate(
-            ((((op0_limb_4_col44.clone() + op1_limb_4_col73.clone())
-                + carry_tmp_7e965_17.clone())
-                - dst_limb_4_col15.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -401,9 +368,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_18.clone() * carry_tmp_7e965_18.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_19 = eval.add_intermediate(
-            ((((op0_limb_5_col45.clone() + op1_limb_5_col74.clone())
+            ((((op0_limb_1_col41.clone() + op1_limb_1_col70.clone())
                 + carry_tmp_7e965_18.clone())
-                - dst_limb_5_col16.clone())
+                - dst_limb_1_col12.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -411,9 +378,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_19.clone() * carry_tmp_7e965_19.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_20 = eval.add_intermediate(
-            ((((op0_limb_6_col46.clone() + op1_limb_6_col75.clone())
+            ((((op0_limb_2_col42.clone() + op1_limb_2_col71.clone())
                 + carry_tmp_7e965_19.clone())
-                - dst_limb_6_col17.clone())
+                - dst_limb_2_col13.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -421,9 +388,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_20.clone() * carry_tmp_7e965_20.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_21 = eval.add_intermediate(
-            ((((op0_limb_7_col47.clone() + op1_limb_7_col76.clone())
+            ((((op0_limb_3_col43.clone() + op1_limb_3_col72.clone())
                 + carry_tmp_7e965_20.clone())
-                - dst_limb_7_col18.clone())
+                - dst_limb_3_col14.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -431,9 +398,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_21.clone() * carry_tmp_7e965_21.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_22 = eval.add_intermediate(
-            ((((op0_limb_8_col48.clone() + op1_limb_8_col77.clone())
+            ((((op0_limb_4_col44.clone() + op1_limb_4_col73.clone())
                 + carry_tmp_7e965_21.clone())
-                - dst_limb_8_col19.clone())
+                - dst_limb_4_col15.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -441,9 +408,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_22.clone() * carry_tmp_7e965_22.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_23 = eval.add_intermediate(
-            ((((op0_limb_9_col49.clone() + op1_limb_9_col78.clone())
+            ((((op0_limb_5_col45.clone() + op1_limb_5_col74.clone())
                 + carry_tmp_7e965_22.clone())
-                - dst_limb_9_col20.clone())
+                - dst_limb_5_col16.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -451,9 +418,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_23.clone() * carry_tmp_7e965_23.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_24 = eval.add_intermediate(
-            ((((op0_limb_10_col50.clone() + op1_limb_10_col79.clone())
+            ((((op0_limb_6_col46.clone() + op1_limb_6_col75.clone())
                 + carry_tmp_7e965_23.clone())
-                - dst_limb_10_col21.clone())
+                - dst_limb_6_col17.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -461,9 +428,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_24.clone() * carry_tmp_7e965_24.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_25 = eval.add_intermediate(
-            ((((op0_limb_11_col51.clone() + op1_limb_11_col80.clone())
+            ((((op0_limb_7_col47.clone() + op1_limb_7_col76.clone())
                 + carry_tmp_7e965_24.clone())
-                - dst_limb_11_col22.clone())
+                - dst_limb_7_col18.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -471,9 +438,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_25.clone() * carry_tmp_7e965_25.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_26 = eval.add_intermediate(
-            ((((op0_limb_12_col52.clone() + op1_limb_12_col81.clone())
+            ((((op0_limb_8_col48.clone() + op1_limb_8_col77.clone())
                 + carry_tmp_7e965_25.clone())
-                - dst_limb_12_col23.clone())
+                - dst_limb_8_col19.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -481,9 +448,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_26.clone() * carry_tmp_7e965_26.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_27 = eval.add_intermediate(
-            ((((op0_limb_13_col53.clone() + op1_limb_13_col82.clone())
+            ((((op0_limb_9_col49.clone() + op1_limb_9_col78.clone())
                 + carry_tmp_7e965_26.clone())
-                - dst_limb_13_col24.clone())
+                - dst_limb_9_col20.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -491,9 +458,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_27.clone() * carry_tmp_7e965_27.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_28 = eval.add_intermediate(
-            ((((op0_limb_14_col54.clone() + op1_limb_14_col83.clone())
+            ((((op0_limb_10_col50.clone() + op1_limb_10_col79.clone())
                 + carry_tmp_7e965_27.clone())
-                - dst_limb_14_col25.clone())
+                - dst_limb_10_col21.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -501,9 +468,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_28.clone() * carry_tmp_7e965_28.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_29 = eval.add_intermediate(
-            ((((op0_limb_15_col55.clone() + op1_limb_15_col84.clone())
+            ((((op0_limb_11_col51.clone() + op1_limb_11_col80.clone())
                 + carry_tmp_7e965_28.clone())
-                - dst_limb_15_col26.clone())
+                - dst_limb_11_col22.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -511,9 +478,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_29.clone() * carry_tmp_7e965_29.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_30 = eval.add_intermediate(
-            ((((op0_limb_16_col56.clone() + op1_limb_16_col85.clone())
+            ((((op0_limb_12_col52.clone() + op1_limb_12_col81.clone())
                 + carry_tmp_7e965_29.clone())
-                - dst_limb_16_col27.clone())
+                - dst_limb_12_col23.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -521,9 +488,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_30.clone() * carry_tmp_7e965_30.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_31 = eval.add_intermediate(
-            ((((op0_limb_17_col57.clone() + op1_limb_17_col86.clone())
+            ((((op0_limb_13_col53.clone() + op1_limb_13_col82.clone())
                 + carry_tmp_7e965_30.clone())
-                - dst_limb_17_col28.clone())
+                - dst_limb_13_col24.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -531,9 +498,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_31.clone() * carry_tmp_7e965_31.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_32 = eval.add_intermediate(
-            ((((op0_limb_18_col58.clone() + op1_limb_18_col87.clone())
+            ((((op0_limb_14_col54.clone() + op1_limb_14_col83.clone())
                 + carry_tmp_7e965_31.clone())
-                - dst_limb_18_col29.clone())
+                - dst_limb_14_col25.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -541,9 +508,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_32.clone() * carry_tmp_7e965_32.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_33 = eval.add_intermediate(
-            ((((op0_limb_19_col59.clone() + op1_limb_19_col88.clone())
+            ((((op0_limb_15_col55.clone() + op1_limb_15_col84.clone())
                 + carry_tmp_7e965_32.clone())
-                - dst_limb_19_col30.clone())
+                - dst_limb_15_col26.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -551,9 +518,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_33.clone() * carry_tmp_7e965_33.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_34 = eval.add_intermediate(
-            ((((op0_limb_20_col60.clone() + op1_limb_20_col89.clone())
+            ((((op0_limb_16_col56.clone() + op1_limb_16_col85.clone())
                 + carry_tmp_7e965_33.clone())
-                - dst_limb_20_col31.clone())
+                - dst_limb_16_col27.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -561,10 +528,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_34.clone() * carry_tmp_7e965_34.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_35 = eval.add_intermediate(
-            (((((op0_limb_21_col61.clone() + op1_limb_21_col90.clone())
+            ((((op0_limb_17_col57.clone() + op1_limb_17_col86.clone())
                 + carry_tmp_7e965_34.clone())
-                - dst_limb_21_col32.clone())
-                - (M31_136.clone() * sub_p_bit_col97.clone()))
+                - dst_limb_17_col28.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -572,9 +538,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_35.clone() * carry_tmp_7e965_35.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_36 = eval.add_intermediate(
-            ((((op0_limb_22_col62.clone() + op1_limb_22_col91.clone())
+            ((((op0_limb_18_col58.clone() + op1_limb_18_col87.clone())
                 + carry_tmp_7e965_35.clone())
-                - dst_limb_22_col33.clone())
+                - dst_limb_18_col29.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -582,9 +548,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_36.clone() * carry_tmp_7e965_36.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_37 = eval.add_intermediate(
-            ((((op0_limb_23_col63.clone() + op1_limb_23_col92.clone())
+            ((((op0_limb_19_col59.clone() + op1_limb_19_col88.clone())
                 + carry_tmp_7e965_36.clone())
-                - dst_limb_23_col34.clone())
+                - dst_limb_19_col30.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -592,9 +558,9 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_37.clone() * carry_tmp_7e965_37.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_38 = eval.add_intermediate(
-            ((((op0_limb_24_col64.clone() + op1_limb_24_col93.clone())
+            ((((op0_limb_20_col60.clone() + op1_limb_20_col89.clone())
                 + carry_tmp_7e965_37.clone())
-                - dst_limb_24_col35.clone())
+                - dst_limb_20_col31.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -602,9 +568,10 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_38.clone() * carry_tmp_7e965_38.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_39 = eval.add_intermediate(
-            ((((op0_limb_25_col65.clone() + op1_limb_25_col94.clone())
+            (((((op0_limb_21_col61.clone() + op1_limb_21_col90.clone())
                 + carry_tmp_7e965_38.clone())
-                - dst_limb_25_col36.clone())
+                - dst_limb_21_col32.clone())
+                - (M31_136.clone() * sub_p_bit_col97.clone()))
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
@@ -612,25 +579,65 @@ impl FrameworkEval for Eval {
                 * ((carry_tmp_7e965_39.clone() * carry_tmp_7e965_39.clone()) - M31_1.clone())),
         );
         let carry_tmp_7e965_40 = eval.add_intermediate(
-            ((((op0_limb_26_col66.clone() + op1_limb_26_col95.clone())
+            ((((op0_limb_22_col62.clone() + op1_limb_22_col91.clone())
                 + carry_tmp_7e965_39.clone())
-                - dst_limb_26_col37.clone())
+                - dst_limb_22_col33.clone())
                 * M31_4194304.clone()),
         );
         eval.add_constraint(
             (carry_tmp_7e965_40.clone()
                 * ((carry_tmp_7e965_40.clone() * carry_tmp_7e965_40.clone()) - M31_1.clone())),
         );
+        let carry_tmp_7e965_41 = eval.add_intermediate(
+            ((((op0_limb_23_col63.clone() + op1_limb_23_col92.clone())
+                + carry_tmp_7e965_40.clone())
+                - dst_limb_23_col34.clone())
+                * M31_4194304.clone()),
+        );
+        eval.add_constraint(
+            (carry_tmp_7e965_41.clone()
+                * ((carry_tmp_7e965_41.clone() * carry_tmp_7e965_41.clone()) - M31_1.clone())),
+        );
+        let carry_tmp_7e965_42 = eval.add_intermediate(
+            ((((op0_limb_24_col64.clone() + op1_limb_24_col93.clone())
+                + carry_tmp_7e965_41.clone())
+                - dst_limb_24_col35.clone())
+                * M31_4194304.clone()),
+        );
+        eval.add_constraint(
+            (carry_tmp_7e965_42.clone()
+                * ((carry_tmp_7e965_42.clone() * carry_tmp_7e965_42.clone()) - M31_1.clone())),
+        );
+        let carry_tmp_7e965_43 = eval.add_intermediate(
+            ((((op0_limb_25_col65.clone() + op1_limb_25_col94.clone())
+                + carry_tmp_7e965_42.clone())
+                - dst_limb_25_col36.clone())
+                * M31_4194304.clone()),
+        );
+        eval.add_constraint(
+            (carry_tmp_7e965_43.clone()
+                * ((carry_tmp_7e965_43.clone() * carry_tmp_7e965_43.clone()) - M31_1.clone())),
+        );
+        let carry_tmp_7e965_44 = eval.add_intermediate(
+            ((((op0_limb_26_col66.clone() + op1_limb_26_col95.clone())
+                + carry_tmp_7e965_43.clone())
+                - dst_limb_26_col37.clone())
+                * M31_4194304.clone()),
+        );
+        eval.add_constraint(
+            (carry_tmp_7e965_44.clone()
+                * ((carry_tmp_7e965_44.clone() * carry_tmp_7e965_44.clone()) - M31_1.clone())),
+        );
         eval.add_constraint(
             ((((op0_limb_27_col67.clone() + op1_limb_27_col96.clone())
-                + carry_tmp_7e965_40.clone())
+                + carry_tmp_7e965_44.clone())
                 - dst_limb_27_col38.clone())
                 - (M31_256.clone() * sub_p_bit_col97.clone())),
         );
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::from(padding.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -640,7 +647,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 (input_pc_col0.clone() + M31_2.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col7.clone()),
@@ -650,5 +657,37 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::ADD_OPCODE_IMM;
+
+    #[test]
+    fn add_opcode_imm_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, ADD_OPCODE_IMM);
     }
 }

@@ -31,8 +31,8 @@ impl ClaimGenerator {
         let packed_inputs = pack_values(&self.inputs);
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            n_rows,
             packed_inputs,
+            n_rows,
             memory_address_to_id_state,
             memory_id_to_big_state,
             verify_instruction_state,
@@ -73,8 +73,8 @@ struct SubComponentInputs {
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
 fn write_trace_simd(
-    n_rows: usize,
     inputs: Vec<PackedInputType>,
+    n_rows: usize,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
@@ -97,6 +97,7 @@ fn write_trace_simd(
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_2 = PackedM31::broadcast(M31::from(2));
+    let M31_2147483646 = PackedM31::broadcast(M31::from(2147483646));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
@@ -110,7 +111,7 @@ fn write_trace_simd(
     let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
-    let padding_col = Enabler::new(n_rows);
+    let enabler_col = Enabler::new(n_rows);
 
     (
         trace.par_iter_mut(),
@@ -184,6 +185,27 @@ fn write_trace_simd(
                     (((ap_update_add_1_col5) * (M31_32)) + (M31_256)),
                     M31_0,
                 ];
+                let decode_instruction_7eff8da090b7d32b_output_tmp_90279_5 = (
+                    [((offset0_col3) - (M31_32768)), M31_2147483646, M31_1],
+                    [
+                        dst_base_fp_col4,
+                        M31_1,
+                        M31_1,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        ap_update_add_1_col5,
+                        M31_0,
+                        M31_0,
+                        M31_1,
+                    ],
+                    M31_0,
+                );
 
                 let mem_dst_base_col6 = (((dst_base_fp_col4) * (input_fp_col2))
                     + (((M31_1) - (dst_base_fp_col4)) * (input_ap_col1)));
@@ -191,14 +213,18 @@ fn write_trace_simd(
 
                 // Mem Verify Equal.
 
-                let memory_address_to_id_value_tmp_90279_5 = memory_address_to_id_state
-                    .deduce_output(((mem_dst_base_col6) + ((offset0_col3) - (M31_32768))));
-                let dst_id_col7 = memory_address_to_id_value_tmp_90279_5;
+                let memory_address_to_id_value_tmp_90279_6 = memory_address_to_id_state
+                    .deduce_output(
+                        ((mem_dst_base_col6)
+                            + (decode_instruction_7eff8da090b7d32b_output_tmp_90279_5.0[0])),
+                    );
+                let dst_id_col7 = memory_address_to_id_value_tmp_90279_6;
                 *row[7] = dst_id_col7;
-                *sub_component_inputs.memory_address_to_id[0] =
-                    ((mem_dst_base_col6) + ((offset0_col3) - (M31_32768)));
+                *sub_component_inputs.memory_address_to_id[0] = ((mem_dst_base_col6)
+                    + (decode_instruction_7eff8da090b7d32b_output_tmp_90279_5.0[0]));
                 *lookup_data.memory_address_to_id_0 = [
-                    ((mem_dst_base_col6) + ((offset0_col3) - (M31_32768))),
+                    ((mem_dst_base_col6)
+                        + (decode_instruction_7eff8da090b7d32b_output_tmp_90279_5.0[0])),
                     dst_id_col7,
                 ];
                 *sub_component_inputs.memory_address_to_id[1] = ((input_pc_col0) + (M31_1));
@@ -210,7 +236,7 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col5)),
                     input_fp_col2,
                 ];
-                *row[8] = padding_col.packed_at(row_index);
+                *row[8] = enabler_col.packed_at(row_index);
             },
         );
 
@@ -239,46 +265,48 @@ impl InteractionClaimGenerator {
         opcodes: &relations::Opcodes,
         verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
-        let padding_col = Enabler::new(self.n_rows);
+        let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.verify_instruction_0,
             &self.lookup_data.memory_address_to_id_0,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = verify_instruction.combine(values0);
-            let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
-        }
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_instruction.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_1,
             &self.lookup_data.opcodes_0,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-            let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(
-                i,
-                denom0 * padding_col.packed_at(i) + denom1,
-                denom0 * denom1,
-            );
-        }
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values0, values1))| {
+                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                let denom1: PackedQM31 = opcodes.combine(values1);
+                writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        for (i, values) in self.lookup_data.opcodes_1.iter().enumerate() {
-            let denom = opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one() * padding_col.packed_at(i), denom);
-        }
+        (col_gen.par_iter_mut(), &self.lookup_data.opcodes_1)
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values))| {
+                let denom = opcodes.combine(values);
+                writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
+            });
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
