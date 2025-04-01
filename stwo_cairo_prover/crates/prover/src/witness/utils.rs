@@ -1,13 +1,16 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use cairo_air::air::CairoClaim;
+use cairo_air::preprocessed::PreProcessedTrace;
 use num_traits::{One, Zero};
+use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::{Backend, BackendForChannel};
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::pcs::TreeSubspan;
+use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
 
@@ -100,6 +103,26 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
     }
 }
 
+fn tree_trace_cells(tree_log_sizes: TreeVec<Vec<u32>>) -> Vec<u64> {
+    tree_log_sizes
+        .iter()
+        .map(|tree| {
+            tree.iter()
+                .map(|col_log_size| 1 << col_log_size)
+                .sum::<u64>()
+        })
+        .collect()
+}
+
+/// Returns the number of cells in each trace interaction of the witness.
+/// Preprocess trace is determined by the `pp_trace` parameter (and not by the claim).
+pub fn witness_trace_cells(claim: &CairoClaim, pp_trace: &PreProcessedTrace) -> Vec<u64> {
+    let mut log_sizes = claim.log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = pp_trace.log_sizes();
+
+    tree_trace_cells(log_sizes)
+}
+
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;
@@ -107,8 +130,10 @@ mod tests {
     use rayon::iter::{IntoParallelIterator, ParallelIterator};
     use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::fields::m31::M31;
+    use stwo_prover::core::pcs::TreeVec;
 
     use super::Enabler;
+    use crate::witness::utils::tree_trace_cells;
 
     #[test]
     fn test_atomic_multiplicities_column() {
@@ -190,5 +215,14 @@ mod tests {
             enabler_column.packed_at(2).to_array(),
             [0; N_LANES].map(M31::from)
         );
+    }
+
+    #[test]
+    fn test_tree_trace_cells() {
+        let tree_sizes = TreeVec::new(vec![vec![1, 2], vec![3, 4], vec![5]]);
+
+        let result = tree_trace_cells(tree_sizes);
+
+        assert_eq!(result, vec![6, 24, 32]);
     }
 }
