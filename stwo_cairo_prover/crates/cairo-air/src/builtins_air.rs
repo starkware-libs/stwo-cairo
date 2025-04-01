@@ -12,7 +12,7 @@ use stwo_prover::core::pcs::TreeVec;
 use super::air::CairoInteractionElements;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
-    poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
+    pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
@@ -20,6 +20,7 @@ pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
     pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
+    pub pedersen_builtin: Option<pedersen_builtin::Claim>,
     pub poseidon_builtin: Option<poseidon_builtin::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
@@ -34,6 +35,9 @@ impl BuiltinsClaim {
         }
         if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
             mul_mod_builtin.mix_into(channel);
+        }
+        if let Some(pedersen_builtin) = &self.pedersen_builtin {
+            pedersen_builtin.mix_into(channel);
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             poseidon_builtin.mix_into(channel);
@@ -57,6 +61,9 @@ impl BuiltinsClaim {
             self.mul_mod_builtin
                 .map(|mul_mod_builtin| mul_mod_builtin.log_sizes())
                 .into_iter(),
+            self.pedersen_builtin
+                .map(|pedersen_builtin| pedersen_builtin.log_sizes())
+                .into_iter(),
             self.poseidon_builtin
                 .map(|poseidon_builtin| poseidon_builtin.log_sizes())
                 .into_iter(),
@@ -75,6 +82,7 @@ pub struct BuiltinsInteractionClaim {
     pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
     pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
+    pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
@@ -89,6 +97,9 @@ impl BuiltinsInteractionClaim {
         }
         if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
             mul_mod_builtin.mix_into(channel);
+        }
+        if let Some(pedersen_builtin) = &self.pedersen_builtin {
+            pedersen_builtin.mix_into(channel);
         }
         if let Some(poseidon_builtin) = self.poseidon_builtin {
             poseidon_builtin.mix_into(channel)
@@ -112,6 +123,9 @@ impl BuiltinsInteractionClaim {
         if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
             sum += mul_mod_builtin.claimed_sum;
         }
+        if let Some(pedersen_builtin) = &self.pedersen_builtin {
+            sum += pedersen_builtin.claimed_sum;
+        }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             sum += poseidon_builtin.claimed_sum;
         }
@@ -128,6 +142,7 @@ pub struct BuiltinComponents {
     pub add_mod_builtin: Option<add_mod_builtin::Component>,
     pub bitwise_builtin: Option<bitwise_builtin::Component>,
     pub mul_mod_builtin: Option<mul_mod_builtin::Component>,
+    pub pedersen_builtin: Option<pedersen_builtin::Component>,
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
@@ -191,6 +206,27 @@ impl BuiltinComponents {
                         .clone(),
                 },
                 interaction_claim.mul_mod_builtin.unwrap().claimed_sum,
+            )
+        });
+        let pedersen_builtin_component = claim.pedersen_builtin.map(|pedersen_builtin| {
+            pedersen_builtin::Component::new(
+                tree_span_provider,
+                pedersen_builtin::Eval {
+                    claim: pedersen_builtin,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+                    range_check_5_4_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_5_4
+                        .clone(),
+                    range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+                },
+                interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
         });
         let poseidon_builtin_component = claim.poseidon_builtin.map(|poseidon_builtin| {
@@ -278,6 +314,7 @@ impl BuiltinComponents {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
             mul_mod_builtin: mul_mod_builtin_component,
+            pedersen_builtin: pedersen_builtin_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -294,6 +331,9 @@ impl BuiltinComponents {
         }
         if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
             vec.push(mul_mod_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(pedersen_builtin) = &self.pedersen_builtin {
+            vec.push(pedersen_builtin as &dyn ComponentProver<SimdBackend>);
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             vec.push(poseidon_builtin as &dyn ComponentProver<SimdBackend>);
@@ -329,6 +369,13 @@ impl std::fmt::Display for BuiltinComponents {
                 f,
                 "MulModBuiltin: {}",
                 indented_component_display(mul_mod_builtin)
+            )?;
+        }
+        if let Some(pedersen_builtin) = &self.pedersen_builtin {
+            writeln!(
+                f,
+                "PedersenBuiltin: {}",
+                indented_component_display(pedersen_builtin)
             )?;
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
