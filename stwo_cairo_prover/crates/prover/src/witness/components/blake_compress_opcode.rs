@@ -22,11 +22,11 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        blake_round_state: &blake_round::ClaimGenerator,
+        blake_round_state: &mut blake_round::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-        triple_xor_32_state: &triple_xor_32::ClaimGenerator,
+        triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
@@ -1688,7 +1688,7 @@ fn write_trace_simd(
                         decode_blake_opcode_output_tmp_53f39_29.0[1],
                     ),
                 );
-                let blake_round_output_round_0_tmp_53f39_115 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_0_tmp_53f39_115 = blake_round_state.deduce_output((
                     seq,
                     M31_0,
                     (
@@ -1738,7 +1738,7 @@ fn write_trace_simd(
                         blake_round_output_round_0_tmp_53f39_115.2 .1,
                     ),
                 );
-                let blake_round_output_round_1_tmp_53f39_116 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_1_tmp_53f39_116 = blake_round_state.deduce_output((
                     seq,
                     M31_1,
                     (
@@ -1788,7 +1788,7 @@ fn write_trace_simd(
                         blake_round_output_round_1_tmp_53f39_116.2 .1,
                     ),
                 );
-                let blake_round_output_round_2_tmp_53f39_117 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_2_tmp_53f39_117 = blake_round_state.deduce_output((
                     seq,
                     M31_2,
                     (
@@ -1838,7 +1838,7 @@ fn write_trace_simd(
                         blake_round_output_round_2_tmp_53f39_117.2 .1,
                     ),
                 );
-                let blake_round_output_round_3_tmp_53f39_118 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_3_tmp_53f39_118 = blake_round_state.deduce_output((
                     seq,
                     M31_3,
                     (
@@ -1888,7 +1888,7 @@ fn write_trace_simd(
                         blake_round_output_round_3_tmp_53f39_118.2 .1,
                     ),
                 );
-                let blake_round_output_round_4_tmp_53f39_119 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_4_tmp_53f39_119 = blake_round_state.deduce_output((
                     seq,
                     M31_4,
                     (
@@ -1938,7 +1938,7 @@ fn write_trace_simd(
                         blake_round_output_round_4_tmp_53f39_119.2 .1,
                     ),
                 );
-                let blake_round_output_round_5_tmp_53f39_120 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_5_tmp_53f39_120 = blake_round_state.deduce_output((
                     seq,
                     M31_5,
                     (
@@ -1988,7 +1988,7 @@ fn write_trace_simd(
                         blake_round_output_round_5_tmp_53f39_120.2 .1,
                     ),
                 );
-                let blake_round_output_round_6_tmp_53f39_121 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_6_tmp_53f39_121 = blake_round_state.deduce_output((
                     seq,
                     M31_6,
                     (
@@ -2038,7 +2038,7 @@ fn write_trace_simd(
                         blake_round_output_round_6_tmp_53f39_121.2 .1,
                     ),
                 );
-                let blake_round_output_round_7_tmp_53f39_122 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_7_tmp_53f39_122 = blake_round_state.deduce_output((
                     seq,
                     M31_7,
                     (
@@ -2088,7 +2088,7 @@ fn write_trace_simd(
                         blake_round_output_round_7_tmp_53f39_122.2 .1,
                     ),
                 );
-                let blake_round_output_round_8_tmp_53f39_123 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_8_tmp_53f39_123 = blake_round_state.deduce_output((
                     seq,
                     M31_8,
                     (
@@ -2138,7 +2138,7 @@ fn write_trace_simd(
                         blake_round_output_round_8_tmp_53f39_123.2 .1,
                     ),
                 );
-                let blake_round_output_round_9_tmp_53f39_124 = PackedBlakeRound::deduce_output((
+                let blake_round_output_round_9_tmp_53f39_124 = blake_round_state.deduce_output((
                     seq,
                     M31_9,
                     (
