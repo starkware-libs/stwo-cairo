@@ -27,15 +27,15 @@ fn rotate<const N: u32>(x: u32x16) -> u32x16 {
 }
 
 #[derive(Debug)]
-pub struct BlakeG {}
+pub struct PackedBlakeG {}
 
 // TODO(Stav): remove '#[allow(unused)]' when possible.
 #[allow(unused)]
-impl BlakeG {
+impl PackedBlakeG {
     pub fn deduce_output(
         input: [PackedUInt32; NUM_INPUT_WORDS_G],
     ) -> [PackedUInt32; NUM_OUTPUT_WORDS_G] {
-        BlakeG::blake_g(input.map(|x| x.simd)).map(|simd| PackedUInt32 { simd })
+        PackedBlakeG::blake_g(input.map(|x| x.simd)).map(|simd| PackedUInt32 { simd })
     }
 
     fn blake_g(input: [u32x16; NUM_INPUT_WORDS_G]) -> [u32x16; NUM_OUTPUT_WORDS_G] {
@@ -62,22 +62,22 @@ impl BlakeG {
 }
 
 #[derive(Debug)]
-pub struct TripleXor32 {}
+pub struct PackedTripleXor32 {}
 
 // TODO(Stav): remove '#[allow(unused)]' when possible.
 #[allow(unused)]
-impl TripleXor32 {
+impl PackedTripleXor32 {
     pub fn deduce_output([a, b, c]: [PackedUInt32; 3]) -> PackedUInt32 {
         a ^ b ^ c
     }
 }
 
 #[derive(Debug)]
-pub struct BlakeRoundSigma {}
+pub struct PackedBlakeRoundSigma {}
 
 // TODO(Stav): remove '#[allow(unused)]' when possible.
 #[allow(unused)]
-impl BlakeRoundSigma {
+impl PackedBlakeRoundSigma {
     pub fn deduce_output(round: PackedM31) -> [PackedM31; N_BLAKE_SIGMA_COLS] {
         Self::packed_sigma(round.into_simd()).map(|v| unsafe { PackedM31::from_simd_unchecked(v) })
     }
@@ -126,7 +126,7 @@ impl BlakeRound {
         round: u32x16,
         (state, message_pointer): ([u32x16; 16], u32x16),
     ) -> (u32x16, u32x16, ([u32x16; 16], u32x16)) {
-        let sigma = BlakeRoundSigma::packed_sigma(round);
+        let sigma = PackedBlakeRoundSigma::packed_sigma(round);
 
         let message: [_; N_LANES] = from_fn(|i| {
             u32x16::from(from_fn(|j| {
@@ -136,7 +136,7 @@ impl BlakeRound {
 
         let mut state = state;
         for (row_index, &[i0, i1, i2, i3]) in G_STATE_INDICES.iter().enumerate() {
-            [state[i0], state[i1], state[i2], state[i3]] = BlakeG::blake_g([
+            [state[i0], state[i1], state[i2], state[i3]] = PackedBlakeG::blake_g([
                 state[i0],
                 state[i1],
                 state[i2],
@@ -179,7 +179,7 @@ mod tests {
         let expected =
             from_fn(|i| PackedUInt32::from_simd(u32x16::from_slice(&[exp0[i], exp1[i]].repeat(8))));
 
-        let actual = BlakeG::deduce_output(input);
+        let actual = PackedBlakeG::deduce_output(input);
 
         assert_eq!(expected, actual);
     }
@@ -198,7 +198,7 @@ mod tests {
             })
         };
 
-        let actual = BlakeRoundSigma::deduce_output(input);
+        let actual = PackedBlakeRoundSigma::deduce_output(input);
 
         for (expected, actual) in expected.iter().zip(actual.iter()) {
             assert_eq!(expected.to_array(), actual.to_array());

@@ -2268,7 +2268,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[8],
                     expected_word_tmp_53f39_27,
                 ];
-                let triple_xor_32_output_tmp_53f39_104 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_104 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[0],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[8],
                     expected_word_tmp_53f39_27,
@@ -2294,7 +2294,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[9],
                     expected_word_tmp_53f39_35,
                 ];
-                let triple_xor_32_output_tmp_53f39_105 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_105 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[1],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[9],
                     expected_word_tmp_53f39_35,
@@ -2320,7 +2320,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[10],
                     expected_word_tmp_53f39_43,
                 ];
-                let triple_xor_32_output_tmp_53f39_106 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_106 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[2],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[10],
                     expected_word_tmp_53f39_43,
@@ -2346,7 +2346,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[11],
                     expected_word_tmp_53f39_51,
                 ];
-                let triple_xor_32_output_tmp_53f39_107 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_107 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[3],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[11],
                     expected_word_tmp_53f39_51,
@@ -2372,7 +2372,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[12],
                     expected_word_tmp_53f39_59,
                 ];
-                let triple_xor_32_output_tmp_53f39_108 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_108 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[4],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[12],
                     expected_word_tmp_53f39_59,
@@ -2398,7 +2398,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[13],
                     expected_word_tmp_53f39_67,
                 ];
-                let triple_xor_32_output_tmp_53f39_109 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_109 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[5],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[13],
                     expected_word_tmp_53f39_67,
@@ -2424,7 +2424,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[14],
                     expected_word_tmp_53f39_75,
                 ];
-                let triple_xor_32_output_tmp_53f39_110 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_110 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[6],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[14],
                     expected_word_tmp_53f39_75,
@@ -2450,7 +2450,7 @@ fn write_trace_simd(
                     blake_round_output_round_9_tmp_53f39_103.2 .0[15],
                     expected_word_tmp_53f39_83,
                 ];
-                let triple_xor_32_output_tmp_53f39_111 = TripleXor32::deduce_output([
+                let triple_xor_32_output_tmp_53f39_111 = PackedTripleXor32::deduce_output([
                     blake_round_output_round_9_tmp_53f39_103.2 .0[7],
                     blake_round_output_round_9_tmp_53f39_103.2 .0[15],
                     expected_word_tmp_53f39_83,

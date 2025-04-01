@@ -232,7 +232,7 @@ fn write_trace_simd(
                 *row[34] = input_limb_34_col34;
                 *sub_component_inputs.blake_round_sigma[0] = [input_limb_1_col1];
                 let blake_round_sigma_output_tmp_92ff8_0 =
-                    BlakeRoundSigma::deduce_output(input_limb_1_col1);
+                    PackedBlakeRoundSigma::deduce_output(input_limb_1_col1);
                 let blake_round_sigma_output_limb_0_col35 = blake_round_sigma_output_tmp_92ff8_0[0];
                 *row[35] = blake_round_sigma_output_limb_0_col35;
                 let blake_round_sigma_output_limb_1_col36 = blake_round_sigma_output_tmp_92ff8_0[1];
@@ -1839,7 +1839,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_4,
                     expected_word_tmp_92ff8_12,
                 ];
-                let blake_g_output_tmp_92ff8_129 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_129 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[0],
                     blake_round_input.2 .0[4],
                     blake_round_input.2 .0[8],
@@ -1893,7 +1893,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_20,
                     expected_word_tmp_92ff8_28,
                 ];
-                let blake_g_output_tmp_92ff8_130 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_130 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[1],
                     blake_round_input.2 .0[5],
                     blake_round_input.2 .0[9],
@@ -1947,7 +1947,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_36,
                     expected_word_tmp_92ff8_44,
                 ];
-                let blake_g_output_tmp_92ff8_131 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_131 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[2],
                     blake_round_input.2 .0[6],
                     blake_round_input.2 .0[10],
@@ -2001,7 +2001,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_52,
                     expected_word_tmp_92ff8_60,
                 ];
-                let blake_g_output_tmp_92ff8_132 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_132 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[3],
                     blake_round_input.2 .0[7],
                     blake_round_input.2 .0[11],
@@ -2055,7 +2055,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_68,
                     expected_word_tmp_92ff8_76,
                 ];
-                let blake_g_output_tmp_92ff8_133 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_133 = PackedBlakeG::deduce_output([
                     blake_g_output_tmp_92ff8_129[0],
                     blake_g_output_tmp_92ff8_130[1],
                     blake_g_output_tmp_92ff8_131[2],
@@ -2109,7 +2109,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_84,
                     expected_word_tmp_92ff8_92,
                 ];
-                let blake_g_output_tmp_92ff8_134 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_134 = PackedBlakeG::deduce_output([
                     blake_g_output_tmp_92ff8_130[0],
                     blake_g_output_tmp_92ff8_131[1],
                     blake_g_output_tmp_92ff8_132[2],
@@ -2163,7 +2163,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_100,
                     expected_word_tmp_92ff8_108,
                 ];
-                let blake_g_output_tmp_92ff8_135 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_135 = PackedBlakeG::deduce_output([
                     blake_g_output_tmp_92ff8_131[0],
                     blake_g_output_tmp_92ff8_132[1],
                     blake_g_output_tmp_92ff8_129[2],
@@ -2217,7 +2217,7 @@ fn write_trace_simd(
                     expected_word_tmp_92ff8_116,
                     expected_word_tmp_92ff8_124,
                 ];
-                let blake_g_output_tmp_92ff8_136 = BlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_136 = PackedBlakeG::deduce_output([
                     blake_g_output_tmp_92ff8_132[0],
                     blake_g_output_tmp_92ff8_129[1],
                     blake_g_output_tmp_92ff8_130[2],
