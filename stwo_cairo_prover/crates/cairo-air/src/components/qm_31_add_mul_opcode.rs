@@ -138,9 +138,9 @@ impl FrameworkEval for Eval {
         let op1_limb_15_col69 = eval.next_trace_mask();
         let op1_delta_ab_inv_col70 = eval.next_trace_mask();
         let op1_delta_cd_inv_col71 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         // Decode Instruction.
 
@@ -192,9 +192,22 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_0 =
+            eval.add_intermediate((offset0_col3.clone() - M31_32768.clone()));
+        let decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_1 =
+            eval.add_intermediate((offset1_col4.clone() - M31_32768.clone()));
+        let decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_2 =
+            eval.add_intermediate((offset2_col5.clone() - M31_32768.clone()));
+        let decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_7 = eval
+            .add_intermediate(((M31_1.clone() - op1_imm_col8.clone()) - op1_base_fp_col9.clone()));
+        let decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_9 =
+            eval.add_intermediate((M31_1.clone() - res_add_col10.clone()));
+
         // Either flag op1_imm is off or offset2 is equal to 1.
         eval.add_constraint(
-            (op1_imm_col8.clone() * ((offset2_col5.clone() - M31_32768.clone()) - M31_1.clone())),
+            (op1_imm_col8.clone()
+                * (decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_2.clone()
+                    - M31_1.clone())),
         );
         // mem_dst_base.
         eval.add_constraint(
@@ -212,7 +225,7 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             (mem1_base_col14.clone()
                 - (((op1_base_fp_col9.clone() * input_fp_col2.clone())
-                    + (((M31_1.clone() - op1_imm_col8.clone()) - op1_base_fp_col9.clone())
+                    + (decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_7.clone()
                         * input_ap_col1.clone()))
                     + (op1_imm_col8.clone() * input_pc_col0.clone()))),
         );
@@ -225,7 +238,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem_dst_base_col12.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                (mem_dst_base_col12.clone()
+                    + decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_0.clone()),
                 dst_id_col15.clone(),
             ],
         ));
@@ -291,6 +305,26 @@ impl FrameworkEval for Eval {
                 * dst_delta_cd_inv_col33.clone())
                 - M31_1.clone()),
         );
+        let qm_31_read_reduced_output_tmp_fa85a_15_limb_0 = eval.add_intermediate(
+            (((dst_limb_0_col16.clone() + (dst_limb_1_col17.clone() * M31_512.clone()))
+                + (dst_limb_2_col18.clone() * M31_262144.clone()))
+                + (dst_limb_3_col19.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_15_limb_1 = eval.add_intermediate(
+            (((dst_limb_4_col20.clone() + (dst_limb_5_col21.clone() * M31_512.clone()))
+                + (dst_limb_6_col22.clone() * M31_262144.clone()))
+                + (dst_limb_7_col23.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_15_limb_2 = eval.add_intermediate(
+            (((dst_limb_8_col24.clone() + (dst_limb_9_col25.clone() * M31_512.clone()))
+                + (dst_limb_10_col26.clone() * M31_262144.clone()))
+                + (dst_limb_11_col27.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_15_limb_3 = eval.add_intermediate(
+            (((dst_limb_12_col28.clone() + (dst_limb_13_col29.clone() * M31_512.clone()))
+                + (dst_limb_14_col30.clone() * M31_262144.clone()))
+                + (dst_limb_15_col31.clone() * M31_134217728.clone())),
+        );
 
         // Qm 31 Read Reduced.
 
@@ -300,7 +334,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem0_base_col13.clone() + (offset1_col4.clone() - M31_32768.clone())),
+                (mem0_base_col13.clone()
+                    + decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_1.clone()),
                 op0_id_col34.clone(),
             ],
         ));
@@ -366,6 +401,26 @@ impl FrameworkEval for Eval {
                 * op0_delta_cd_inv_col52.clone())
                 - M31_1.clone()),
         );
+        let qm_31_read_reduced_output_tmp_fa85a_19_limb_0 = eval.add_intermediate(
+            (((op0_limb_0_col35.clone() + (op0_limb_1_col36.clone() * M31_512.clone()))
+                + (op0_limb_2_col37.clone() * M31_262144.clone()))
+                + (op0_limb_3_col38.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_19_limb_1 = eval.add_intermediate(
+            (((op0_limb_4_col39.clone() + (op0_limb_5_col40.clone() * M31_512.clone()))
+                + (op0_limb_6_col41.clone() * M31_262144.clone()))
+                + (op0_limb_7_col42.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_19_limb_2 = eval.add_intermediate(
+            (((op0_limb_8_col43.clone() + (op0_limb_9_col44.clone() * M31_512.clone()))
+                + (op0_limb_10_col45.clone() * M31_262144.clone()))
+                + (op0_limb_11_col46.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_19_limb_3 = eval.add_intermediate(
+            (((op0_limb_12_col47.clone() + (op0_limb_13_col48.clone() * M31_512.clone()))
+                + (op0_limb_14_col49.clone() * M31_262144.clone()))
+                + (op0_limb_15_col50.clone() * M31_134217728.clone())),
+        );
 
         // Qm 31 Read Reduced.
 
@@ -375,7 +430,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem1_base_col14.clone() + (offset2_col5.clone() - M31_32768.clone())),
+                (mem1_base_col14.clone()
+                    + decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_2.clone()),
                 op1_id_col53.clone(),
             ],
         ));
@@ -441,236 +497,104 @@ impl FrameworkEval for Eval {
                 * op1_delta_cd_inv_col71.clone())
                 - M31_1.clone()),
         );
+        let qm_31_read_reduced_output_tmp_fa85a_23_limb_0 = eval.add_intermediate(
+            (((op1_limb_0_col54.clone() + (op1_limb_1_col55.clone() * M31_512.clone()))
+                + (op1_limb_2_col56.clone() * M31_262144.clone()))
+                + (op1_limb_3_col57.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_23_limb_1 = eval.add_intermediate(
+            (((op1_limb_4_col58.clone() + (op1_limb_5_col59.clone() * M31_512.clone()))
+                + (op1_limb_6_col60.clone() * M31_262144.clone()))
+                + (op1_limb_7_col61.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_23_limb_2 = eval.add_intermediate(
+            (((op1_limb_8_col62.clone() + (op1_limb_9_col63.clone() * M31_512.clone()))
+                + (op1_limb_10_col64.clone() * M31_262144.clone()))
+                + (op1_limb_11_col65.clone() * M31_134217728.clone())),
+        );
+        let qm_31_read_reduced_output_tmp_fa85a_23_limb_3 = eval.add_intermediate(
+            (((op1_limb_12_col66.clone() + (op1_limb_13_col67.clone() * M31_512.clone()))
+                + (op1_limb_14_col68.clone() * M31_262144.clone()))
+                + (op1_limb_15_col69.clone() * M31_134217728.clone())),
+        );
 
         // dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul).
         eval.add_constraint(
-            (((((dst_limb_0_col16.clone() + (dst_limb_1_col17.clone() * M31_512.clone()))
-                + (dst_limb_2_col18.clone() * M31_262144.clone()))
-                + (dst_limb_3_col19.clone() * M31_134217728.clone()))
-                - (((((((((op0_limb_0_col35.clone()
-                    + (op0_limb_1_col36.clone() * M31_512.clone()))
-                    + (op0_limb_2_col37.clone() * M31_262144.clone()))
-                    + (op0_limb_3_col38.clone() * M31_134217728.clone()))
-                    * (((op1_limb_0_col54.clone()
-                        + (op1_limb_1_col55.clone() * M31_512.clone()))
-                        + (op1_limb_2_col56.clone() * M31_262144.clone()))
-                        + (op1_limb_3_col57.clone() * M31_134217728.clone())))
-                    - ((((op0_limb_4_col39.clone()
-                        + (op0_limb_5_col40.clone() * M31_512.clone()))
-                        + (op0_limb_6_col41.clone() * M31_262144.clone()))
-                        + (op0_limb_7_col42.clone() * M31_134217728.clone()))
-                        * (((op1_limb_4_col58.clone()
-                            + (op1_limb_5_col59.clone() * M31_512.clone()))
-                            + (op1_limb_6_col60.clone() * M31_262144.clone()))
-                            + (op1_limb_7_col61.clone() * M31_134217728.clone()))))
+            ((qm_31_read_reduced_output_tmp_fa85a_15_limb_0.clone()
+                - ((((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0.clone()
+                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_0.clone())
+                    - (qm_31_read_reduced_output_tmp_fa85a_19_limb_1.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_1.clone()))
                     + (M31_2.clone()
-                        * (((((op0_limb_8_col43.clone()
-                            + (op0_limb_9_col44.clone() * M31_512.clone()))
-                            + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                            + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                            * (((op1_limb_8_col62.clone()
-                                + (op1_limb_9_col63.clone() * M31_512.clone()))
-                                + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                                + (op1_limb_11_col65.clone() * M31_134217728.clone())))
-                            - ((((op0_limb_12_col47.clone()
-                                + (op0_limb_13_col48.clone() * M31_512.clone()))
-                                + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                                + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                                * (((op1_limb_12_col66.clone()
-                                    + (op1_limb_13_col67.clone() * M31_512.clone()))
-                                    + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                                    + (op1_limb_15_col69.clone() * M31_134217728.clone()))))))
-                    - ((((op0_limb_8_col43.clone()
-                        + (op0_limb_9_col44.clone() * M31_512.clone()))
-                        + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                        + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                        * (((op1_limb_12_col66.clone()
-                            + (op1_limb_13_col67.clone() * M31_512.clone()))
-                            + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                            + (op1_limb_15_col69.clone() * M31_134217728.clone()))))
-                    - ((((op0_limb_12_col47.clone()
-                        + (op0_limb_13_col48.clone() * M31_512.clone()))
-                        + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                        + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                        * (((op1_limb_8_col62.clone()
-                            + (op1_limb_9_col63.clone() * M31_512.clone()))
-                            + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                            + (op1_limb_11_col65.clone() * M31_134217728.clone()))))
-                    * (M31_1.clone() - res_add_col10.clone())))
-                - (((((op0_limb_0_col35.clone()
-                    + (op0_limb_1_col36.clone() * M31_512.clone()))
-                    + (op0_limb_2_col37.clone() * M31_262144.clone()))
-                    + (op0_limb_3_col38.clone() * M31_134217728.clone()))
-                    + (((op1_limb_0_col54.clone()
-                        + (op1_limb_1_col55.clone() * M31_512.clone()))
-                        + (op1_limb_2_col56.clone() * M31_262144.clone()))
-                        + (op1_limb_3_col57.clone() * M31_134217728.clone())))
+                        * ((qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                            * qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone())
+                            - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                                * qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone()))))
+                    - (qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone()))
+                    - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone()))
+                    * decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_9.clone()))
+                - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_0.clone()
+                    + qm_31_read_reduced_output_tmp_fa85a_23_limb_0.clone())
                     * res_add_col10.clone())),
         );
         // dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul).
         eval.add_constraint(
-            (((((dst_limb_4_col20.clone() + (dst_limb_5_col21.clone() * M31_512.clone()))
-                + (dst_limb_6_col22.clone() * M31_262144.clone()))
-                + (dst_limb_7_col23.clone() * M31_134217728.clone()))
-                - (((((((((op0_limb_0_col35.clone()
-                    + (op0_limb_1_col36.clone() * M31_512.clone()))
-                    + (op0_limb_2_col37.clone() * M31_262144.clone()))
-                    + (op0_limb_3_col38.clone() * M31_134217728.clone()))
-                    * (((op1_limb_4_col58.clone()
-                        + (op1_limb_5_col59.clone() * M31_512.clone()))
-                        + (op1_limb_6_col60.clone() * M31_262144.clone()))
-                        + (op1_limb_7_col61.clone() * M31_134217728.clone())))
-                    + ((((op0_limb_4_col39.clone()
-                        + (op0_limb_5_col40.clone() * M31_512.clone()))
-                        + (op0_limb_6_col41.clone() * M31_262144.clone()))
-                        + (op0_limb_7_col42.clone() * M31_134217728.clone()))
-                        * (((op1_limb_0_col54.clone()
-                            + (op1_limb_1_col55.clone() * M31_512.clone()))
-                            + (op1_limb_2_col56.clone() * M31_262144.clone()))
-                            + (op1_limb_3_col57.clone() * M31_134217728.clone()))))
+            ((qm_31_read_reduced_output_tmp_fa85a_15_limb_1.clone()
+                - ((((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0.clone()
+                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_1.clone())
+                    + (qm_31_read_reduced_output_tmp_fa85a_19_limb_1.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_0.clone()))
                     + (M31_2.clone()
-                        * (((((op0_limb_8_col43.clone()
-                            + (op0_limb_9_col44.clone() * M31_512.clone()))
-                            + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                            + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                            * (((op1_limb_12_col66.clone()
-                                + (op1_limb_13_col67.clone() * M31_512.clone()))
-                                + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                                + (op1_limb_15_col69.clone() * M31_134217728.clone())))
-                            + ((((op0_limb_12_col47.clone()
-                                + (op0_limb_13_col48.clone() * M31_512.clone()))
-                                + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                                + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                                * (((op1_limb_8_col62.clone()
-                                    + (op1_limb_9_col63.clone() * M31_512.clone()))
-                                    + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                                    + (op1_limb_11_col65.clone() * M31_134217728.clone()))))))
-                    + ((((op0_limb_8_col43.clone()
-                        + (op0_limb_9_col44.clone() * M31_512.clone()))
-                        + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                        + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                        * (((op1_limb_8_col62.clone()
-                            + (op1_limb_9_col63.clone() * M31_512.clone()))
-                            + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                            + (op1_limb_11_col65.clone() * M31_134217728.clone()))))
-                    - ((((op0_limb_12_col47.clone()
-                        + (op0_limb_13_col48.clone() * M31_512.clone()))
-                        + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                        + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                        * (((op1_limb_12_col66.clone()
-                            + (op1_limb_13_col67.clone() * M31_512.clone()))
-                            + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                            + (op1_limb_15_col69.clone() * M31_134217728.clone()))))
-                    * (M31_1.clone() - res_add_col10.clone())))
-                - (((((op0_limb_4_col39.clone()
-                    + (op0_limb_5_col40.clone() * M31_512.clone()))
-                    + (op0_limb_6_col41.clone() * M31_262144.clone()))
-                    + (op0_limb_7_col42.clone() * M31_134217728.clone()))
-                    + (((op1_limb_4_col58.clone()
-                        + (op1_limb_5_col59.clone() * M31_512.clone()))
-                        + (op1_limb_6_col60.clone() * M31_262144.clone()))
-                        + (op1_limb_7_col61.clone() * M31_134217728.clone())))
+                        * ((qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                            * qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone())
+                            + (qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                                * qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone()))))
+                    + (qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone()))
+                    - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone()))
+                    * decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_9.clone()))
+                - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_1.clone()
+                    + qm_31_read_reduced_output_tmp_fa85a_23_limb_1.clone())
                     * res_add_col10.clone())),
         );
         // dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul).
         eval.add_constraint(
-            (((((dst_limb_8_col24.clone() + (dst_limb_9_col25.clone() * M31_512.clone()))
-                + (dst_limb_10_col26.clone() * M31_262144.clone()))
-                + (dst_limb_11_col27.clone() * M31_134217728.clone()))
-                - ((((((((op0_limb_0_col35.clone()
-                    + (op0_limb_1_col36.clone() * M31_512.clone()))
-                    + (op0_limb_2_col37.clone() * M31_262144.clone()))
-                    + (op0_limb_3_col38.clone() * M31_134217728.clone()))
-                    * (((op1_limb_8_col62.clone()
-                        + (op1_limb_9_col63.clone() * M31_512.clone()))
-                        + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                        + (op1_limb_11_col65.clone() * M31_134217728.clone())))
-                    - ((((op0_limb_4_col39.clone()
-                        + (op0_limb_5_col40.clone() * M31_512.clone()))
-                        + (op0_limb_6_col41.clone() * M31_262144.clone()))
-                        + (op0_limb_7_col42.clone() * M31_134217728.clone()))
-                        * (((op1_limb_12_col66.clone()
-                            + (op1_limb_13_col67.clone() * M31_512.clone()))
-                            + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                            + (op1_limb_15_col69.clone() * M31_134217728.clone()))))
-                    + ((((op0_limb_8_col43.clone()
-                        + (op0_limb_9_col44.clone() * M31_512.clone()))
-                        + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                        + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                        * (((op1_limb_0_col54.clone()
-                            + (op1_limb_1_col55.clone() * M31_512.clone()))
-                            + (op1_limb_2_col56.clone() * M31_262144.clone()))
-                            + (op1_limb_3_col57.clone() * M31_134217728.clone()))))
-                    - ((((op0_limb_12_col47.clone()
-                        + (op0_limb_13_col48.clone() * M31_512.clone()))
-                        + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                        + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                        * (((op1_limb_4_col58.clone()
-                            + (op1_limb_5_col59.clone() * M31_512.clone()))
-                            + (op1_limb_6_col60.clone() * M31_262144.clone()))
-                            + (op1_limb_7_col61.clone() * M31_134217728.clone()))))
-                    * (M31_1.clone() - res_add_col10.clone())))
-                - (((((op0_limb_8_col43.clone()
-                    + (op0_limb_9_col44.clone() * M31_512.clone()))
-                    + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                    + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                    + (((op1_limb_8_col62.clone()
-                        + (op1_limb_9_col63.clone() * M31_512.clone()))
-                        + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                        + (op1_limb_11_col65.clone() * M31_134217728.clone())))
+            ((qm_31_read_reduced_output_tmp_fa85a_15_limb_2.clone()
+                - (((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0.clone()
+                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone())
+                    - (qm_31_read_reduced_output_tmp_fa85a_19_limb_1.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone()))
+                    + (qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_0.clone()))
+                    - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_1.clone()))
+                    * decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_9.clone()))
+                - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                    + qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone())
                     * res_add_col10.clone())),
         );
         // dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul).
         eval.add_constraint(
-            (((((dst_limb_12_col28.clone() + (dst_limb_13_col29.clone() * M31_512.clone()))
-                + (dst_limb_14_col30.clone() * M31_262144.clone()))
-                + (dst_limb_15_col31.clone() * M31_134217728.clone()))
-                - ((((((((op0_limb_0_col35.clone()
-                    + (op0_limb_1_col36.clone() * M31_512.clone()))
-                    + (op0_limb_2_col37.clone() * M31_262144.clone()))
-                    + (op0_limb_3_col38.clone() * M31_134217728.clone()))
-                    * (((op1_limb_12_col66.clone()
-                        + (op1_limb_13_col67.clone() * M31_512.clone()))
-                        + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                        + (op1_limb_15_col69.clone() * M31_134217728.clone())))
-                    + ((((op0_limb_4_col39.clone()
-                        + (op0_limb_5_col40.clone() * M31_512.clone()))
-                        + (op0_limb_6_col41.clone() * M31_262144.clone()))
-                        + (op0_limb_7_col42.clone() * M31_134217728.clone()))
-                        * (((op1_limb_8_col62.clone()
-                            + (op1_limb_9_col63.clone() * M31_512.clone()))
-                            + (op1_limb_10_col64.clone() * M31_262144.clone()))
-                            + (op1_limb_11_col65.clone() * M31_134217728.clone()))))
-                    + ((((op0_limb_8_col43.clone()
-                        + (op0_limb_9_col44.clone() * M31_512.clone()))
-                        + (op0_limb_10_col45.clone() * M31_262144.clone()))
-                        + (op0_limb_11_col46.clone() * M31_134217728.clone()))
-                        * (((op1_limb_4_col58.clone()
-                            + (op1_limb_5_col59.clone() * M31_512.clone()))
-                            + (op1_limb_6_col60.clone() * M31_262144.clone()))
-                            + (op1_limb_7_col61.clone() * M31_134217728.clone()))))
-                    + ((((op0_limb_12_col47.clone()
-                        + (op0_limb_13_col48.clone() * M31_512.clone()))
-                        + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                        + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                        * (((op1_limb_0_col54.clone()
-                            + (op1_limb_1_col55.clone() * M31_512.clone()))
-                            + (op1_limb_2_col56.clone() * M31_262144.clone()))
-                            + (op1_limb_3_col57.clone() * M31_134217728.clone()))))
-                    * (M31_1.clone() - res_add_col10.clone())))
-                - (((((op0_limb_12_col47.clone()
-                    + (op0_limb_13_col48.clone() * M31_512.clone()))
-                    + (op0_limb_14_col49.clone() * M31_262144.clone()))
-                    + (op0_limb_15_col50.clone() * M31_134217728.clone()))
-                    + (((op1_limb_12_col66.clone()
-                        + (op1_limb_13_col67.clone() * M31_512.clone()))
-                        + (op1_limb_14_col68.clone() * M31_262144.clone()))
-                        + (op1_limb_15_col69.clone() * M31_134217728.clone())))
+            ((qm_31_read_reduced_output_tmp_fa85a_15_limb_3.clone()
+                - (((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0.clone()
+                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone())
+                    + (qm_31_read_reduced_output_tmp_fa85a_19_limb_1.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_2.clone()))
+                    + (qm_31_read_reduced_output_tmp_fa85a_19_limb_2.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_1.clone()))
+                    + (qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_0.clone()))
+                    * decode_instruction_2109970de23754c4_output_tmp_fa85a_11_limb_9.clone()))
+                - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_3.clone()
+                    + qm_31_read_reduced_output_tmp_fa85a_23_limb_3.clone())
                     * res_add_col10.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::from(padding.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -680,7 +604,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 ((input_pc_col0.clone() + M31_1.clone()) + op1_imm_col8.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col11.clone()),
@@ -690,5 +614,38 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::QM_31_ADD_MUL_OPCODE;
+
+    #[test]
+    fn qm_31_add_mul_opcode_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, QM_31_ADD_MUL_OPCODE);
     }
 }

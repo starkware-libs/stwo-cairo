@@ -74,9 +74,9 @@ impl FrameworkEval for Eval {
         let next_pc_limb_0_col7 = eval.next_trace_mask();
         let next_pc_limb_1_col8 = eval.next_trace_mask();
         let next_pc_limb_2_col9 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         // Decode Instruction.
 
@@ -155,9 +155,16 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_small_output_tmp_ff4f6_9_limb_0 = eval.add_intermediate(
+            ((((next_pc_limb_0_col7.clone() + (next_pc_limb_1_col8.clone() * M31_512.clone()))
+                + (next_pc_limb_2_col9.clone() * M31_262144.clone()))
+                - msb_col5.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col6.clone())),
+        );
+
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::from(padding.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -167,14 +174,9 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
-                (input_pc_col0.clone()
-                    + ((((next_pc_limb_0_col7.clone()
-                        + (next_pc_limb_1_col8.clone() * M31_512.clone()))
-                        + (next_pc_limb_2_col9.clone() * M31_262144.clone()))
-                        - msb_col5.clone())
-                        - (M31_134217728.clone() * mid_limbs_set_col6.clone()))),
+                (input_pc_col0.clone() + read_small_output_tmp_ff4f6_9_limb_0.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col3.clone()),
                 input_fp_col2.clone(),
             ],
@@ -182,5 +184,37 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::JUMP_OPCODE_REL_IMM;
+
+    #[test]
+    fn jump_opcode_rel_imm_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, JUMP_OPCODE_REL_IMM);
     }
 }
