@@ -22,7 +22,7 @@ edition = "2021"
 bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "c87b23d1", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", branch = "starkware-development", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
