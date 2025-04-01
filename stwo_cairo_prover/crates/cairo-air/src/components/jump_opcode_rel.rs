@@ -80,9 +80,9 @@ impl FrameworkEval for Eval {
         let next_pc_limb_0_col11 = eval.next_trace_mask();
         let next_pc_limb_1_col12 = eval.next_trace_mask();
         let next_pc_limb_2_col13 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         // Decode Instruction.
 
@@ -112,6 +112,9 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let decode_instruction_633e16e9eb708235_output_tmp_c32b8_6_limb_2 =
+            eval.add_intermediate((offset2_col3.clone() - M31_32768.clone()));
+
         // Either flag op1_base_fp is on or flag op1_base_ap is on.
         eval.add_constraint(
             ((op1_base_fp_col4.clone() + op1_base_ap_col5.clone()) - M31_1.clone()),
@@ -129,7 +132,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem1_base_col7.clone() + (offset2_col3.clone() - M31_32768.clone())),
+                (mem1_base_col7.clone()
+                    + decode_instruction_633e16e9eb708235_output_tmp_c32b8_6_limb_2.clone()),
                 next_pc_id_col8.clone(),
             ],
         ));
@@ -181,9 +185,16 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_small_output_tmp_c32b8_12_limb_0 = eval.add_intermediate(
+            ((((next_pc_limb_0_col11.clone() + (next_pc_limb_1_col12.clone() * M31_512.clone()))
+                + (next_pc_limb_2_col13.clone() * M31_262144.clone()))
+                - msb_col9.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col10.clone())),
+        );
+
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::from(padding.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -193,14 +204,9 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
-                (input_pc_col0.clone()
-                    + ((((next_pc_limb_0_col11.clone()
-                        + (next_pc_limb_1_col12.clone() * M31_512.clone()))
-                        + (next_pc_limb_2_col13.clone() * M31_262144.clone()))
-                        - msb_col9.clone())
-                        - (M31_134217728.clone() * mid_limbs_set_col10.clone()))),
+                (input_pc_col0.clone() + read_small_output_tmp_c32b8_12_limb_0.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col6.clone()),
                 input_fp_col2.clone(),
             ],
@@ -208,5 +214,37 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::JUMP_OPCODE_REL;
+
+    #[test]
+    fn jump_opcode_rel_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, JUMP_OPCODE_REL);
     }
 }
