@@ -8,6 +8,7 @@ use bytemuck::Zeroable;
 use itertools::Itertools;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
+use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{
@@ -29,6 +30,18 @@ pub trait PackedM31Type {
 #[derive(Clone, Copy, Debug)]
 pub struct PackedBool {
     pub(crate) value: Simd<i32, N_LANES>,
+}
+impl PackedBool {
+    pub fn from_m31(value: PackedM31) -> Self {
+        value
+            .to_array()
+            .iter()
+            .for_each(|&x| assert!(x == M31(0) || x == M31(1)));
+
+        Self {
+            value: value.into_simd().cast(),
+        }
+    }
 }
 
 impl PackedM31Type for PackedBool {
