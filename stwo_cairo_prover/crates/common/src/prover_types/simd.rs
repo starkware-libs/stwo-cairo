@@ -11,8 +11,8 @@ use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{
-    BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
-    PRIME,
+    BigUInt, Bool, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64,
+    FELT252WIDTH27_N_WORDS, PRIME,
 };
 use crate::memory::N_M31_IN_FELT252;
 
@@ -29,6 +29,16 @@ pub trait PackedM31Type {
 #[derive(Clone, Copy, Debug)]
 pub struct PackedBool {
     pub(crate) value: Simd<i32, N_LANES>,
+}
+impl PackedBool {
+    pub fn from_m31(value: PackedM31) -> Self {
+        let value = value.to_array();
+        Self {
+            value: Simd::from_array(
+                value.map(|felt| if Bool::from_m31(felt).value { 1 } else { 0 }),
+            ),
+        }
+    }
 }
 
 impl PackedM31Type for PackedBool {
