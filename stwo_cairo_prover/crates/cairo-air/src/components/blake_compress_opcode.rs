@@ -215,22 +215,22 @@ impl FrameworkEval for Eval {
         let blake_round_output_limb_32_col119 = eval.next_trace_mask();
         let blake_round_output_limb_33_col120 = eval.next_trace_mask();
         let blake_round_output_limb_34_col121 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col122 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col123 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col124 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col125 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col126 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col127 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col128 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col129 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col130 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col131 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col132 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col133 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col134 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col135 = eval.next_trace_mask();
-        let triple_xor_32_output_low_col136 = eval.next_trace_mask();
-        let triple_xor_32_output_high_col137 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col122 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col123 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col124 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col125 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col126 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col127 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col128 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col129 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col130 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col131 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col132 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col133 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col134 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col135 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col136 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col137 = eval.next_trace_mask();
         let low_7_ms_bits_col138 = eval.next_trace_mask();
         let high_14_ms_bits_col139 = eval.next_trace_mask();
         let high_5_ms_bits_col140 = eval.next_trace_mask();
@@ -263,9 +263,9 @@ impl FrameworkEval for Eval {
         let high_14_ms_bits_col167 = eval.next_trace_mask();
         let high_5_ms_bits_col168 = eval.next_trace_mask();
         let new_state_7_id_col169 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         // Decode Blake Opcode.
 
@@ -308,6 +308,13 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let decode_instruction_275ccfe81e8aa6ca_output_tmp_53f39_10_limb_0 =
+            eval.add_intermediate((offset0_col3.clone() - M31_32768.clone()));
+        let decode_instruction_275ccfe81e8aa6ca_output_tmp_53f39_10_limb_1 =
+            eval.add_intermediate((offset1_col4.clone() - M31_32768.clone()));
+        let decode_instruction_275ccfe81e8aa6ca_output_tmp_53f39_10_limb_2 =
+            eval.add_intermediate((offset2_col5.clone() - M31_32768.clone()));
+
         // Exactly one of op1_base_fp and op1_base_ap is 1.
         eval.add_constraint(
             ((op1_base_fp_col8.clone() + op1_base_ap_col9.clone()) - M31_1.clone()),
@@ -330,7 +337,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem0_base_col12.clone() + (offset1_col4.clone() - M31_32768.clone())),
+                (mem0_base_col12.clone()
+                    + decode_instruction_275ccfe81e8aa6ca_output_tmp_53f39_10_limb_1.clone()),
                 op0_id_col13.clone(),
             ],
         ));
@@ -359,7 +367,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem1_base_col17.clone() + (offset2_col5.clone() - M31_32768.clone())),
+                (mem1_base_col17.clone()
+                    + decode_instruction_275ccfe81e8aa6ca_output_tmp_53f39_10_limb_2.clone()),
                 op1_id_col18.clone(),
             ],
         ));
@@ -421,7 +430,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem_dst_base_col26.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                (mem_dst_base_col26.clone()
+                    + decode_instruction_275ccfe81e8aa6ca_output_tmp_53f39_10_limb_0.clone()),
                 dst_id_col32.clone(),
             ],
         ));
@@ -440,6 +450,21 @@ impl FrameworkEval for Eval {
                 high_5_ms_bits_col31.clone(),
             ],
         ));
+
+        let decode_blake_opcode_output_tmp_53f39_29_limb_0 = eval.add_intermediate(
+            ((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
+                + (op0_limb_2_col16.clone() * M31_262144.clone())),
+        );
+        let decode_blake_opcode_output_tmp_53f39_29_limb_1 = eval.add_intermediate(
+            ((op1_limb_0_col19.clone() + (op1_limb_1_col20.clone() * M31_512.clone()))
+                + (op1_limb_2_col21.clone() * M31_262144.clone())),
+        );
+        let decode_blake_opcode_output_tmp_53f39_29_limb_2 = eval.add_intermediate(
+            ((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
+                + (ap_limb_2_col25.clone() * M31_262144.clone())),
+        );
+        let decode_blake_opcode_output_tmp_53f39_29_limb_6 =
+            eval.add_intermediate((opcode_extension_col11.clone() - M31_1.clone()));
 
         // Create Blake Round Input.
 
@@ -463,8 +488,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone())),
+                decode_blake_opcode_output_tmp_53f39_29_limb_0.clone(),
                 state_0_id_col38.clone(),
             ],
         ));
@@ -504,9 +528,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_1.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_1.clone()),
                 state_1_id_col44.clone(),
             ],
         ));
@@ -546,9 +568,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_2.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_2.clone()),
                 state_2_id_col50.clone(),
             ],
         ));
@@ -588,9 +608,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_3.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_3.clone()),
                 state_3_id_col56.clone(),
             ],
         ));
@@ -630,9 +648,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_4.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_4.clone()),
                 state_4_id_col62.clone(),
             ],
         ));
@@ -672,9 +688,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_5.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_5.clone()),
                 state_5_id_col68.clone(),
             ],
         ));
@@ -714,9 +728,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_6.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_6.clone()),
                 state_6_id_col74.clone(),
             ],
         ));
@@ -756,9 +768,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((op0_limb_0_col14.clone() + (op0_limb_1_col15.clone() * M31_512.clone()))
-                    + (op0_limb_2_col16.clone() * M31_262144.clone()))
-                    + M31_7.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_0.clone() + M31_7.clone()),
                 state_7_id_col80.clone(),
             ],
         ));
@@ -778,13 +788,25 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_53f39_103_limb_0 = eval.add_intermediate(
+            (low_16_bits_col27.clone() - (ms_8_bits_col81.clone() * M31_256.clone())),
+        );
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_53f39_105_limb_0 = eval.add_intermediate(
+            (high_16_bits_col28.clone() - (ms_8_bits_col82.clone() * M31_256.clone())),
+        );
+
         // Bitwise Xor Num Bits 8.
 
         eval.add_to_relation(RelationEntry::new(
             &self.verify_bitwise_xor_8_lookup_elements,
             E::EF::one(),
             &[
-                (low_16_bits_col27.clone() - (ms_8_bits_col81.clone() * M31_256.clone())),
+                split_16_low_part_size_8_output_tmp_53f39_103_limb_0.clone(),
                 M31_127.clone(),
                 xor_col83.clone(),
             ],
@@ -804,7 +826,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_8_lookup_elements,
             E::EF::one(),
             &[
-                (high_16_bits_col28.clone() - (ms_8_bits_col82.clone() * M31_256.clone())),
+                split_16_low_part_size_8_output_tmp_53f39_105_limb_0.clone(),
                 M31_14.clone(),
                 xor_col85.clone(),
             ],
@@ -817,6 +839,21 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[ms_8_bits_col82.clone(), M31_81.clone(), xor_col86.clone()],
         ));
+
+        let create_blake_round_input_output_tmp_53f39_114_limb_24 =
+            eval.add_intermediate((xor_col83.clone() + (xor_col84.clone() * M31_256.clone())));
+        let create_blake_round_input_output_tmp_53f39_114_limb_25 =
+            eval.add_intermediate((xor_col85.clone() + (xor_col86.clone() * M31_256.clone())));
+        let create_blake_round_input_output_tmp_53f39_114_limb_28 = eval.add_intermediate(
+            ((decode_blake_opcode_output_tmp_53f39_29_limb_6.clone() * M31_9812.clone())
+                + ((M31_1.clone() - decode_blake_opcode_output_tmp_53f39_29_limb_6.clone())
+                    * M31_55723.clone())),
+        );
+        let create_blake_round_input_output_tmp_53f39_114_limb_29 = eval.add_intermediate(
+            ((decode_blake_opcode_output_tmp_53f39_29_limb_6.clone() * M31_57468.clone())
+                + ((M31_1.clone() - decode_blake_opcode_output_tmp_53f39_29_limb_6.clone())
+                    * M31_8067.clone())),
+        );
 
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_lookup_elements,
@@ -848,20 +885,15 @@ impl FrameworkEval for Eval {
                 M31_15470.clone(),
                 M31_62778.clone(),
                 M31_42319.clone(),
-                (xor_col83.clone() + (xor_col84.clone() * M31_256.clone())),
-                (xor_col85.clone() + (xor_col86.clone() * M31_256.clone())),
+                create_blake_round_input_output_tmp_53f39_114_limb_24.clone(),
+                create_blake_round_input_output_tmp_53f39_114_limb_25.clone(),
                 M31_26764.clone(),
                 M31_39685.clone(),
-                (((opcode_extension_col11.clone() - M31_1.clone()) * M31_9812.clone())
-                    + ((M31_1.clone() - (opcode_extension_col11.clone() - M31_1.clone()))
-                        * M31_55723.clone())),
-                (((opcode_extension_col11.clone() - M31_1.clone()) * M31_57468.clone())
-                    + ((M31_1.clone() - (opcode_extension_col11.clone() - M31_1.clone()))
-                        * M31_8067.clone())),
+                create_blake_round_input_output_tmp_53f39_114_limb_28.clone(),
+                create_blake_round_input_output_tmp_53f39_114_limb_29.clone(),
                 M31_52505.clone(),
                 M31_23520.clone(),
-                ((op1_limb_0_col19.clone() + (op1_limb_1_col20.clone() * M31_512.clone()))
-                    + (op1_limb_2_col21.clone() * M31_262144.clone())),
+                decode_blake_opcode_output_tmp_53f39_29_limb_1.clone(),
             ],
         ));
 
@@ -919,8 +951,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_19_col106.clone(),
                 low_16_bits_col33.clone(),
                 high_16_bits_col34.clone(),
-                triple_xor_32_output_low_col122.clone(),
-                triple_xor_32_output_high_col123.clone(),
+                triple_xor_32_output_limb_0_col122.clone(),
+                triple_xor_32_output_limb_1_col123.clone(),
             ],
         ));
 
@@ -934,8 +966,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_21_col108.clone(),
                 low_16_bits_col39.clone(),
                 high_16_bits_col40.clone(),
-                triple_xor_32_output_low_col124.clone(),
-                triple_xor_32_output_high_col125.clone(),
+                triple_xor_32_output_limb_0_col124.clone(),
+                triple_xor_32_output_limb_1_col125.clone(),
             ],
         ));
 
@@ -949,8 +981,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_23_col110.clone(),
                 low_16_bits_col45.clone(),
                 high_16_bits_col46.clone(),
-                triple_xor_32_output_low_col126.clone(),
-                triple_xor_32_output_high_col127.clone(),
+                triple_xor_32_output_limb_0_col126.clone(),
+                triple_xor_32_output_limb_1_col127.clone(),
             ],
         ));
 
@@ -964,8 +996,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_25_col112.clone(),
                 low_16_bits_col51.clone(),
                 high_16_bits_col52.clone(),
-                triple_xor_32_output_low_col128.clone(),
-                triple_xor_32_output_high_col129.clone(),
+                triple_xor_32_output_limb_0_col128.clone(),
+                triple_xor_32_output_limb_1_col129.clone(),
             ],
         ));
 
@@ -979,8 +1011,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_27_col114.clone(),
                 low_16_bits_col57.clone(),
                 high_16_bits_col58.clone(),
-                triple_xor_32_output_low_col130.clone(),
-                triple_xor_32_output_high_col131.clone(),
+                triple_xor_32_output_limb_0_col130.clone(),
+                triple_xor_32_output_limb_1_col131.clone(),
             ],
         ));
 
@@ -994,8 +1026,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_29_col116.clone(),
                 low_16_bits_col63.clone(),
                 high_16_bits_col64.clone(),
-                triple_xor_32_output_low_col132.clone(),
-                triple_xor_32_output_high_col133.clone(),
+                triple_xor_32_output_limb_0_col132.clone(),
+                triple_xor_32_output_limb_1_col133.clone(),
             ],
         ));
 
@@ -1009,8 +1041,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_31_col118.clone(),
                 low_16_bits_col69.clone(),
                 high_16_bits_col70.clone(),
-                triple_xor_32_output_low_col134.clone(),
-                triple_xor_32_output_high_col135.clone(),
+                triple_xor_32_output_limb_0_col134.clone(),
+                triple_xor_32_output_limb_1_col135.clone(),
             ],
         ));
 
@@ -1024,8 +1056,8 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_33_col120.clone(),
                 low_16_bits_col75.clone(),
                 high_16_bits_col76.clone(),
-                triple_xor_32_output_low_col136.clone(),
-                triple_xor_32_output_high_col137.clone(),
+                triple_xor_32_output_limb_0_col136.clone(),
+                triple_xor_32_output_limb_1_col137.clone(),
             ],
         ));
 
@@ -1036,7 +1068,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col138.clone(),
-                (triple_xor_32_output_high_col123.clone()
+                (triple_xor_32_output_limb_1_col123.clone()
                     - (high_14_ms_bits_col139.clone() * M31_4.clone())),
                 high_5_ms_bits_col140.clone(),
             ],
@@ -1048,8 +1080,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone())),
+                decode_blake_opcode_output_tmp_53f39_29_limb_2.clone(),
                 new_state_0_id_col141.clone(),
             ],
         ));
@@ -1059,10 +1090,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_0_id_col141.clone(),
-                (triple_xor_32_output_low_col122.clone()
+                (triple_xor_32_output_limb_0_col122.clone()
                     - (low_7_ms_bits_col138.clone() * M31_512.clone())),
                 (low_7_ms_bits_col138.clone()
-                    + ((triple_xor_32_output_high_col123.clone()
+                    + ((triple_xor_32_output_limb_1_col123.clone()
                         - (high_14_ms_bits_col139.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col139.clone()
@@ -1078,7 +1109,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col142.clone(),
-                (triple_xor_32_output_high_col125.clone()
+                (triple_xor_32_output_limb_1_col125.clone()
                     - (high_14_ms_bits_col143.clone() * M31_4.clone())),
                 high_5_ms_bits_col144.clone(),
             ],
@@ -1090,9 +1121,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_1.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_1.clone()),
                 new_state_1_id_col145.clone(),
             ],
         ));
@@ -1102,10 +1131,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_1_id_col145.clone(),
-                (triple_xor_32_output_low_col124.clone()
+                (triple_xor_32_output_limb_0_col124.clone()
                     - (low_7_ms_bits_col142.clone() * M31_512.clone())),
                 (low_7_ms_bits_col142.clone()
-                    + ((triple_xor_32_output_high_col125.clone()
+                    + ((triple_xor_32_output_limb_1_col125.clone()
                         - (high_14_ms_bits_col143.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col143.clone()
@@ -1121,7 +1150,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col146.clone(),
-                (triple_xor_32_output_high_col127.clone()
+                (triple_xor_32_output_limb_1_col127.clone()
                     - (high_14_ms_bits_col147.clone() * M31_4.clone())),
                 high_5_ms_bits_col148.clone(),
             ],
@@ -1133,9 +1162,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_2.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_2.clone()),
                 new_state_2_id_col149.clone(),
             ],
         ));
@@ -1145,10 +1172,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_2_id_col149.clone(),
-                (triple_xor_32_output_low_col126.clone()
+                (triple_xor_32_output_limb_0_col126.clone()
                     - (low_7_ms_bits_col146.clone() * M31_512.clone())),
                 (low_7_ms_bits_col146.clone()
-                    + ((triple_xor_32_output_high_col127.clone()
+                    + ((triple_xor_32_output_limb_1_col127.clone()
                         - (high_14_ms_bits_col147.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col147.clone()
@@ -1164,7 +1191,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col150.clone(),
-                (triple_xor_32_output_high_col129.clone()
+                (triple_xor_32_output_limb_1_col129.clone()
                     - (high_14_ms_bits_col151.clone() * M31_4.clone())),
                 high_5_ms_bits_col152.clone(),
             ],
@@ -1176,9 +1203,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_3.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_3.clone()),
                 new_state_3_id_col153.clone(),
             ],
         ));
@@ -1188,10 +1213,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_3_id_col153.clone(),
-                (triple_xor_32_output_low_col128.clone()
+                (triple_xor_32_output_limb_0_col128.clone()
                     - (low_7_ms_bits_col150.clone() * M31_512.clone())),
                 (low_7_ms_bits_col150.clone()
-                    + ((triple_xor_32_output_high_col129.clone()
+                    + ((triple_xor_32_output_limb_1_col129.clone()
                         - (high_14_ms_bits_col151.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col151.clone()
@@ -1207,7 +1232,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col154.clone(),
-                (triple_xor_32_output_high_col131.clone()
+                (triple_xor_32_output_limb_1_col131.clone()
                     - (high_14_ms_bits_col155.clone() * M31_4.clone())),
                 high_5_ms_bits_col156.clone(),
             ],
@@ -1219,9 +1244,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_4.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_4.clone()),
                 new_state_4_id_col157.clone(),
             ],
         ));
@@ -1231,10 +1254,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_4_id_col157.clone(),
-                (triple_xor_32_output_low_col130.clone()
+                (triple_xor_32_output_limb_0_col130.clone()
                     - (low_7_ms_bits_col154.clone() * M31_512.clone())),
                 (low_7_ms_bits_col154.clone()
-                    + ((triple_xor_32_output_high_col131.clone()
+                    + ((triple_xor_32_output_limb_1_col131.clone()
                         - (high_14_ms_bits_col155.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col155.clone()
@@ -1250,7 +1273,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col158.clone(),
-                (triple_xor_32_output_high_col133.clone()
+                (triple_xor_32_output_limb_1_col133.clone()
                     - (high_14_ms_bits_col159.clone() * M31_4.clone())),
                 high_5_ms_bits_col160.clone(),
             ],
@@ -1262,9 +1285,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_5.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_5.clone()),
                 new_state_5_id_col161.clone(),
             ],
         ));
@@ -1274,10 +1295,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_5_id_col161.clone(),
-                (triple_xor_32_output_low_col132.clone()
+                (triple_xor_32_output_limb_0_col132.clone()
                     - (low_7_ms_bits_col158.clone() * M31_512.clone())),
                 (low_7_ms_bits_col158.clone()
-                    + ((triple_xor_32_output_high_col133.clone()
+                    + ((triple_xor_32_output_limb_1_col133.clone()
                         - (high_14_ms_bits_col159.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col159.clone()
@@ -1293,7 +1314,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col162.clone(),
-                (triple_xor_32_output_high_col135.clone()
+                (triple_xor_32_output_limb_1_col135.clone()
                     - (high_14_ms_bits_col163.clone() * M31_4.clone())),
                 high_5_ms_bits_col164.clone(),
             ],
@@ -1305,9 +1326,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_6.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_6.clone()),
                 new_state_6_id_col165.clone(),
             ],
         ));
@@ -1317,10 +1336,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_6_id_col165.clone(),
-                (triple_xor_32_output_low_col134.clone()
+                (triple_xor_32_output_limb_0_col134.clone()
                     - (low_7_ms_bits_col162.clone() * M31_512.clone())),
                 (low_7_ms_bits_col162.clone()
-                    + ((triple_xor_32_output_high_col135.clone()
+                    + ((triple_xor_32_output_limb_1_col135.clone()
                         - (high_14_ms_bits_col163.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col163.clone()
@@ -1336,7 +1355,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 low_7_ms_bits_col166.clone(),
-                (triple_xor_32_output_high_col137.clone()
+                (triple_xor_32_output_limb_1_col137.clone()
                     - (high_14_ms_bits_col167.clone() * M31_4.clone())),
                 high_5_ms_bits_col168.clone(),
             ],
@@ -1348,9 +1367,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (((ap_limb_0_col23.clone() + (ap_limb_1_col24.clone() * M31_512.clone()))
-                    + (ap_limb_2_col25.clone() * M31_262144.clone()))
-                    + M31_7.clone()),
+                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_7.clone()),
                 new_state_7_id_col169.clone(),
             ],
         ));
@@ -1360,10 +1377,10 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 new_state_7_id_col169.clone(),
-                (triple_xor_32_output_low_col136.clone()
+                (triple_xor_32_output_limb_0_col136.clone()
                     - (low_7_ms_bits_col166.clone() * M31_512.clone())),
                 (low_7_ms_bits_col166.clone()
-                    + ((triple_xor_32_output_high_col137.clone()
+                    + ((triple_xor_32_output_limb_1_col137.clone()
                         - (high_14_ms_bits_col167.clone() * M31_4.clone()))
                         * M31_128.clone())),
                 (high_14_ms_bits_col167.clone()
@@ -1374,7 +1391,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::from(padding.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -1384,7 +1401,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 (input_pc_col0.clone() + M31_1.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col10.clone()),
@@ -1394,5 +1411,41 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::BLAKE_COMPRESS_OPCODE;
+
+    #[test]
+    fn blake_compress_opcode_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            blake_round_lookup_elements: relations::BlakeRound::dummy(),
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
+            triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
+            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, BLAKE_COMPRESS_OPCODE);
     }
 }

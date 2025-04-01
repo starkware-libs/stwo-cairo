@@ -26,3 +26,6 @@ stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+
+[dev-dependencies]
+rand.workspace = true

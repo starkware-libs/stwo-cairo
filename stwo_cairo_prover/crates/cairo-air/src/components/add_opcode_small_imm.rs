@@ -93,9 +93,9 @@ impl FrameworkEval for Eval {
         let op1_limb_0_col25 = eval.next_trace_mask();
         let op1_limb_1_col26 = eval.next_trace_mask();
         let op1_limb_2_col27 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         // Decode Instruction.
 
@@ -127,6 +127,11 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let decode_instruction_ceccedab6d42d5b5_output_tmp_49e92_7_limb_0 =
+            eval.add_intermediate((offset0_col3.clone() - M31_32768.clone()));
+        let decode_instruction_ceccedab6d42d5b5_output_tmp_49e92_7_limb_1 =
+            eval.add_intermediate((offset1_col4.clone() - M31_32768.clone()));
+
         // mem_dst_base.
         eval.add_constraint(
             (mem_dst_base_col8.clone()
@@ -146,7 +151,8 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem_dst_base_col8.clone() + (offset0_col3.clone() - M31_32768.clone())),
+                (mem_dst_base_col8.clone()
+                    + decode_instruction_ceccedab6d42d5b5_output_tmp_49e92_7_limb_0.clone()),
                 dst_id_col10.clone(),
             ],
         ));
@@ -198,13 +204,21 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_small_output_tmp_49e92_13_limb_0 = eval.add_intermediate(
+            ((((dst_limb_0_col13.clone() + (dst_limb_1_col14.clone() * M31_512.clone()))
+                + (dst_limb_2_col15.clone() * M31_262144.clone()))
+                - msb_col11.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col12.clone())),
+        );
+
         // Read Small.
 
         eval.add_to_relation(RelationEntry::new(
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (mem0_base_col9.clone() + (offset1_col4.clone() - M31_32768.clone())),
+                (mem0_base_col9.clone()
+                    + decode_instruction_ceccedab6d42d5b5_output_tmp_49e92_7_limb_1.clone()),
                 op0_id_col16.clone(),
             ],
         ));
@@ -255,6 +269,13 @@ impl FrameworkEval for Eval {
                 (msb_col17.clone() * M31_256.clone()),
             ],
         ));
+
+        let read_small_output_tmp_49e92_19_limb_0 = eval.add_intermediate(
+            ((((op0_limb_0_col19.clone() + (op0_limb_1_col20.clone() * M31_512.clone()))
+                + (op0_limb_2_col21.clone() * M31_262144.clone()))
+                - msb_col17.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col18.clone())),
+        );
 
         // Read Small.
 
@@ -314,26 +335,22 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_small_output_tmp_49e92_25_limb_0 = eval.add_intermediate(
+            ((((op1_limb_0_col25.clone() + (op1_limb_1_col26.clone() * M31_512.clone()))
+                + (op1_limb_2_col27.clone() * M31_262144.clone()))
+                - msb_col23.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col24.clone())),
+        );
+
         // dst equals op0 + op1.
         eval.add_constraint(
-            (((((dst_limb_0_col13.clone() + (dst_limb_1_col14.clone() * M31_512.clone()))
-                + (dst_limb_2_col15.clone() * M31_262144.clone()))
-                - msb_col11.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col12.clone()))
-                - (((((op0_limb_0_col19.clone()
-                    + (op0_limb_1_col20.clone() * M31_512.clone()))
-                    + (op0_limb_2_col21.clone() * M31_262144.clone()))
-                    - msb_col17.clone())
-                    - (M31_134217728.clone() * mid_limbs_set_col18.clone()))
-                    + ((((op1_limb_0_col25.clone()
-                        + (op1_limb_1_col26.clone() * M31_512.clone()))
-                        + (op1_limb_2_col27.clone() * M31_262144.clone()))
-                        - msb_col23.clone())
-                        - (M31_134217728.clone() * mid_limbs_set_col24.clone())))),
+            (read_small_output_tmp_49e92_13_limb_0.clone()
+                - (read_small_output_tmp_49e92_19_limb_0.clone()
+                    + read_small_output_tmp_49e92_25_limb_0.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            E::EF::from(padding.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
@@ -343,7 +360,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 (input_pc_col0.clone() + M31_2.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col7.clone()),
@@ -353,5 +370,37 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::ADD_OPCODE_SMALL_IMM;
+
+    #[test]
+    fn add_opcode_small_imm_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, ADD_OPCODE_SMALL_IMM);
     }
 }
