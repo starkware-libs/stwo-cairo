@@ -122,3 +122,36 @@ impl FrameworkEval for Eval {
         eval
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::RANGE_CHECK_BUILTIN_BITS_128;
+
+    #[test]
+    fn range_check_builtin_bits_128_constraints_regression() {
+        let eval = Eval {
+            claim: Claim {
+                log_size: 4,
+                range_check_builtin_segment_start: 0u32,
+            },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, RANGE_CHECK_BUILTIN_BITS_128);
+    }
+}
