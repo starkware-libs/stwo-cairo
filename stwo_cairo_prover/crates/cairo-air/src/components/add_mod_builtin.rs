@@ -562,7 +562,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let block_reset_condition_tmp_c1b19_21 = eval.add_intermediate(
+        let block_reset_condition_tmp_c1b19_30 = eval.add_intermediate(
             ((((n_prev_limb_0_col66.clone() + (n_prev_limb_1_col67.clone() * M31_512.clone()))
                 + (n_prev_limb_2_col68.clone() * M31_262144.clone()))
                 - M31_1.clone())
@@ -570,7 +570,7 @@ impl FrameworkEval for Eval {
         );
         // Progression of n between instances..
         eval.add_constraint(
-            (block_reset_condition_tmp_c1b19_21.clone()
+            (block_reset_condition_tmp_c1b19_30.clone()
                 * ((((n_prev_limb_0_col66.clone()
                     + (n_prev_limb_1_col67.clone() * M31_512.clone()))
                     + (n_prev_limb_2_col68.clone() * M31_262144.clone()))
@@ -580,7 +580,7 @@ impl FrameworkEval for Eval {
         );
         // Progression of offsets_ptr between instances..
         eval.add_constraint(
-            (block_reset_condition_tmp_c1b19_21.clone()
+            (block_reset_condition_tmp_c1b19_30.clone()
                 * ((((offsets_ptr_limb_0_col54.clone()
                     + (offsets_ptr_limb_1_col55.clone() * M31_512.clone()))
                     + (offsets_ptr_limb_2_col56.clone() * M31_262144.clone()))
@@ -604,7 +604,7 @@ impl FrameworkEval for Eval {
         // The two ids are equal if the condition is met.
         eval.add_constraint(
             ((values_ptr_prev_id_col69.clone() - values_ptr_id_col49.clone())
-                * block_reset_condition_tmp_c1b19_21.clone()),
+                * block_reset_condition_tmp_c1b19_30.clone()),
         );
 
         // Mem Cond Verify Equal Known Id.
@@ -621,7 +621,7 @@ impl FrameworkEval for Eval {
         // The two ids are equal if the condition is met.
         eval.add_constraint(
             ((p_prev0_id_col70.clone() - p0_id_col1.clone())
-                * block_reset_condition_tmp_c1b19_21.clone()),
+                * block_reset_condition_tmp_c1b19_30.clone()),
         );
 
         // Mem Cond Verify Equal Known Id.
@@ -638,7 +638,7 @@ impl FrameworkEval for Eval {
         // The two ids are equal if the condition is met.
         eval.add_constraint(
             ((p_prev1_id_col71.clone() - p1_id_col13.clone())
-                * block_reset_condition_tmp_c1b19_21.clone()),
+                * block_reset_condition_tmp_c1b19_30.clone()),
         );
 
         // Mem Cond Verify Equal Known Id.
@@ -655,7 +655,7 @@ impl FrameworkEval for Eval {
         // The two ids are equal if the condition is met.
         eval.add_constraint(
             ((p_prev2_id_col72.clone() - p2_id_col25.clone())
-                * block_reset_condition_tmp_c1b19_21.clone()),
+                * block_reset_condition_tmp_c1b19_30.clone()),
         );
 
         // Mem Cond Verify Equal Known Id.
@@ -672,7 +672,7 @@ impl FrameworkEval for Eval {
         // The two ids are equal if the condition is met.
         eval.add_constraint(
             ((p_prev3_id_col73.clone() - p3_id_col37.clone())
-                * block_reset_condition_tmp_c1b19_21.clone()),
+                * block_reset_condition_tmp_c1b19_30.clone()),
         );
 
         // Read Small.
@@ -735,6 +735,14 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_small_output_tmp_c1b19_41_limb_0 = eval.add_intermediate(
+            ((((offsets_a_limb_0_col77.clone()
+                + (offsets_a_limb_1_col78.clone() * M31_512.clone()))
+                + (offsets_a_limb_2_col79.clone() * M31_262144.clone()))
+                - msb_col75.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col76.clone())),
+        );
+
         // Read Small.
 
         eval.add_to_relation(RelationEntry::new(
@@ -795,6 +803,14 @@ impl FrameworkEval for Eval {
                 (msb_col81.clone() * M31_256.clone()),
             ],
         ));
+
+        let read_small_output_tmp_c1b19_47_limb_0 = eval.add_intermediate(
+            ((((offsets_b_limb_0_col83.clone()
+                + (offsets_b_limb_1_col84.clone() * M31_512.clone()))
+                + (offsets_b_limb_2_col85.clone() * M31_262144.clone()))
+                - msb_col81.clone())
+                - (M31_134217728.clone() * mid_limbs_set_col82.clone())),
+        );
 
         // Read Small.
 
@@ -857,28 +873,15 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let offsets_val_tmp_c1b19_39_limb_0 = eval.add_intermediate(
-            ((((offsets_a_limb_0_col77.clone()
-                + (offsets_a_limb_1_col78.clone() * M31_512.clone()))
-                + (offsets_a_limb_2_col79.clone() * M31_262144.clone()))
-                - msb_col75.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col76.clone())),
-        );
-        let offsets_val_tmp_c1b19_39_limb_1 = eval.add_intermediate(
-            ((((offsets_b_limb_0_col83.clone()
-                + (offsets_b_limb_1_col84.clone() * M31_512.clone()))
-                + (offsets_b_limb_2_col85.clone() * M31_262144.clone()))
-                - msb_col81.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col82.clone())),
-        );
-        let offsets_val_tmp_c1b19_39_limb_2 = eval.add_intermediate(
+        let read_small_output_tmp_c1b19_53_limb_0 = eval.add_intermediate(
             ((((offsets_c_limb_0_col89.clone()
                 + (offsets_c_limb_1_col90.clone() * M31_512.clone()))
                 + (offsets_c_limb_2_col91.clone() * M31_262144.clone()))
                 - msb_col87.clone())
                 - (M31_134217728.clone() * mid_limbs_set_col88.clone())),
         );
-        let values_ptr_tmp_c1b19_40 = eval.add_intermediate(
+
+        let values_ptr_tmp_c1b19_54 = eval.add_intermediate(
             ((values_ptr_limb_0_col50.clone()
                 + (values_ptr_limb_1_col51.clone() * M31_512.clone()))
                 + (values_ptr_limb_2_col52.clone() * M31_262144.clone())),
@@ -890,7 +893,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_0.clone()),
+                (values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone()),
                 a0_id_col92.clone(),
             ],
         ));
@@ -920,7 +923,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_0.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone())
                     + M31_1.clone()),
                 a1_id_col104.clone(),
             ],
@@ -951,7 +954,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_0.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone())
                     + M31_2.clone()),
                 a2_id_col116.clone(),
             ],
@@ -982,7 +985,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_0.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone())
                     + M31_3.clone()),
                 a3_id_col128.clone(),
             ],
@@ -1013,7 +1016,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_1.clone()),
+                (values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone()),
                 b0_id_col140.clone(),
             ],
         ));
@@ -1043,7 +1046,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_1.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone())
                     + M31_1.clone()),
                 b1_id_col152.clone(),
             ],
@@ -1074,7 +1077,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_1.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone())
                     + M31_2.clone()),
                 b2_id_col164.clone(),
             ],
@@ -1105,7 +1108,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_1.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone())
                     + M31_3.clone()),
                 b3_id_col176.clone(),
             ],
@@ -1136,7 +1139,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                (values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_2.clone()),
+                (values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone()),
                 c0_id_col188.clone(),
             ],
         ));
@@ -1166,7 +1169,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_2.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone())
                     + M31_1.clone()),
                 c1_id_col200.clone(),
             ],
@@ -1197,7 +1200,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_2.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone())
                     + M31_2.clone()),
                 c2_id_col212.clone(),
             ],
@@ -1228,7 +1231,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
-                ((values_ptr_tmp_c1b19_40.clone() + offsets_val_tmp_c1b19_39_limb_2.clone())
+                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone())
                     + M31_3.clone()),
                 c3_id_col224.clone(),
             ],
@@ -1340,5 +1343,38 @@ impl FrameworkEval for Eval {
         );
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::ADD_MOD_BUILTIN;
+
+    #[test]
+    fn add_mod_builtin_constraints_regression() {
+        let eval = Eval {
+            claim: Claim {
+                log_size: 4,
+                add_mod_builtin_segment_start: 0u32,
+            },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, ADD_MOD_BUILTIN);
     }
 }
