@@ -93,6 +93,7 @@ fn write_trace_simd(
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
+    let seq = Seq::new(log_size);
 
     (
         trace.par_iter_mut(),
@@ -103,7 +104,7 @@ fn write_trace_simd(
         .enumerate()
         .for_each(
             |(row_index, (mut row, lookup_data, sub_component_inputs))| {
-                let seq = Seq::new(log_size).packed_at(row_index);
+                let seq = seq.packed_at(row_index);
 
                 // Read Positive Num Bits 128.
 
@@ -192,6 +193,39 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
+                let read_positive_num_bits_128_output_tmp_c9e8f_4 = (
+                    PackedFelt252::from_limbs([
+                        value_limb_0_col1,
+                        value_limb_1_col2,
+                        value_limb_2_col3,
+                        value_limb_3_col4,
+                        value_limb_4_col5,
+                        value_limb_5_col6,
+                        value_limb_6_col7,
+                        value_limb_7_col8,
+                        value_limb_8_col9,
+                        value_limb_9_col10,
+                        value_limb_10_col11,
+                        value_limb_11_col12,
+                        value_limb_12_col13,
+                        value_limb_13_col14,
+                        value_limb_14_col15,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                    ]),
+                    value_id_col0,
+                );
             },
         );
 
@@ -219,16 +253,17 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
             &self.lookup_data.memory_id_to_big_0,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-            let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
-        }
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
