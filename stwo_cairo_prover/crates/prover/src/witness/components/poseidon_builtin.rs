@@ -25,15 +25,15 @@ impl ClaimGenerator {
     pub fn write_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        cube_252_state: &cube_252::ClaimGenerator,
+        cube_252_state: &mut cube_252::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
-        poseidon_full_round_chain_state: &poseidon_full_round_chain::ClaimGenerator,
+        poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
+        poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
         range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-        range_check_felt_252_width_27_state: &range_check_felt_252_width_27::ClaimGenerator,
+        range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
