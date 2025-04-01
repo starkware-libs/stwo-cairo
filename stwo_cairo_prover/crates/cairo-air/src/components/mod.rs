@@ -10,10 +10,13 @@ pub mod assert_eq_opcode;
 pub mod assert_eq_opcode_double_deref;
 pub mod assert_eq_opcode_imm;
 pub mod bitwise_builtin;
+pub mod blake_compress_opcode;
+pub mod blake_g;
+pub mod blake_round;
+pub mod blake_round_sigma;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
-pub mod constraints_regression_test_values;
 pub mod cube_252;
 pub mod generic_opcode;
 pub mod jnz_opcode;
@@ -58,10 +61,9 @@ pub use range_check_vector::{
     range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
-pub mod blake_compress_opcode;
-pub mod blake_g;
-pub mod blake_round;
-pub mod blake_round_sigma;
+
+#[cfg(test)]
+pub mod constraints_regression_test_values;
 
 // TODO(Ohad): move somewhere else.
 pub(crate) fn indented_component_display<E: FrameworkEval>(
