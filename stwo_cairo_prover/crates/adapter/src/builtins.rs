@@ -1,7 +1,11 @@
+use std::collections::BTreeMap;
+
 use cairo_vm::air_public_input::MemorySegmentAddresses;
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
+use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::prover_types::simd::N_LANES;
 
 use super::memory::MemoryBuilder;
 
@@ -15,6 +19,8 @@ pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
+// Minimal builtins instances per segment, chosen to fit SIMD requirements.
+pub const MIN_SEGMENT_SIZE: usize = N_LANES;
 // TODO(ohadn): change field types in MemorySegmentAddresses to match address type.
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -109,6 +115,7 @@ impl BuiltinSegments {
     // and mul_mod, security checks have verified that instance has n=1. Thus the padded segment
     // satisfies all the AIR constraints.
     // TODO (ohadn): relocate this function if a more appropriate place is found.
+    // TODO (Stav): remove when the new adapter is used.
     pub fn pad_builtin_segments(&mut self, memory: &mut MemoryBuilder) {
         if let Some(segment) = &self.add_mod {
             self.add_mod = Some(pad_segment(
@@ -192,6 +199,54 @@ impl BuiltinSegments {
         }
     }
 
+    pub fn pad_relocatble_builtin_segments(
+        relocatable_memory: &mut [Vec<Option<MaybeRelocatable>>],
+        builtins_segments: BTreeMap<usize, BuiltinName>,
+    ) {
+        for (segment_index, builtin_name) in builtins_segments {
+            let current_buitlin_segment = &mut relocatable_memory[segment_index];
+
+            let original_segment_len = current_buitlin_segment.len();
+
+            if original_segment_len == 0 {
+                // Do not pad empty segments.
+                continue;
+            }
+
+            let cells_per_instance = match builtin_name {
+                BuiltinName::add_mod => ADD_MOD_MEMORY_CELLS,
+                BuiltinName::bitwise => BITWISE_MEMORY_CELLS,
+                BuiltinName::ec_op => EC_OP_MEMORY_CELLS,
+                BuiltinName::ecdsa => ECDSA_MEMORY_CELLS,
+                BuiltinName::keccak => KECCAK_MEMORY_CELLS,
+                BuiltinName::mul_mod => MUL_MOD_MEMORY_CELLS,
+                BuiltinName::pedersen => PEDERSEN_MEMORY_CELLS,
+                BuiltinName::poseidon => POSEIDON_MEMORY_CELLS,
+                BuiltinName::range_check96 => RANGE_CHECK_MEMORY_CELLS,
+                BuiltinName::range_check => RANGE_CHECK_MEMORY_CELLS,
+                _ => panic!("Invalid builtin name"),
+            };
+            assert!(
+                original_segment_len % cells_per_instance == 0,
+                "expected builtin segment size to be divisible by cells_per_instance"
+            );
+
+            // Builtin segment size is extended to the next power of two instances.
+            let new_segment_size = original_segment_len
+                .div_ceil(cells_per_instance)
+                .next_power_of_two()
+                .max(MIN_SEGMENT_SIZE)
+                * cells_per_instance;
+            current_buitlin_segment.resize(new_segment_size, None);
+
+            // Fill the segment extension with copies of the first instance.
+            for i in original_segment_len..new_segment_size {
+                current_buitlin_segment[i] =
+                    current_buitlin_segment[i % cells_per_instance].clone();
+            }
+        }
+    }
+
     /// Fills memory cells in builtin segments with the appropriate values according to the builtin.
     ///
     /// The memory provided by the runner only contains values that were accessed during program
@@ -208,6 +263,7 @@ impl BuiltinSegments {
 
     // If the final segment in a builtin segment, and the final entry has a hole, the memory must be
     // resized to include the hole.
+    // TODO (Stav): remove when the new adapter is used.
     fn resize_memory_to_cover_holes(&self, memory: &mut MemoryBuilder) {
         let max_stop_ptr = [
             self.add_mod.as_ref(),
@@ -241,6 +297,7 @@ const _: () = assert!(MIN_N_INSTANCES_IN_BUILTIN_SEGMENT.is_power_of_two());
 
 /// Pads the given segment to the next power of 2, and at least MIN_N_INSTANCES_IN_BUILTIN_SEGMENT
 /// (in number of instances).
+// TODO (Stav): remove when the new adapter is used.
 fn pad_segment(
     MemorySegmentAddresses {
         begin_addr,
@@ -333,11 +390,10 @@ mod test_builtin_segments {
     use rand::{Rng, SeedableRng};
     use test_case::test_case;
 
-    use crate::builtins::BITWISE_MEMORY_CELLS;
+    use super::*;
     use crate::memory::{
         u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryEntry, MemoryValue,
     };
-    use crate::BuiltinSegments;
 
     /// Asserts that the values at addresses start_addr1 to start_addr1 + segment_length - 1
     /// are equal to values at the addresses start_addr2 to start_addr2 + segment_length - 1.
@@ -509,5 +565,50 @@ mod test_builtin_segments {
         assert_eq!(memory.address_to_id.len(), 2);
         builtin_segments.resize_memory_to_cover_holes(&mut memory);
         assert_eq!(memory.address_to_id.len(), 5);
+    }
+
+    #[test]
+    fn test_pad_relocatble_builtin_segments() {
+        let bitwise_instance = [787, 365, 257, 895, 638];
+        let segment0 = bitwise_instance
+            .iter()
+            .map(|&x| Some(MaybeRelocatable::Int(x.into())))
+            .collect::<Vec<_>>();
+        let segment0_extended = segment0
+            .clone()
+            .into_iter()
+            .cycle()
+            .take(17 * 5)
+            .collect::<Vec<_>>();
+
+        let ec_op_instance = [1, 2, 3, 4, 5, 6, 7];
+        let segment1 = ec_op_instance
+            .iter()
+            .map(|&x| Some(MaybeRelocatable::Int(x.into())))
+            .collect::<Vec<_>>();
+
+        let non_builtin_segment = vec![Some(MaybeRelocatable::Int(5.into())); 10];
+
+        let mut relocatable_memory = [segment0_extended, segment1.clone(), non_builtin_segment];
+
+        let builtins_segments =
+            BTreeMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::ec_op)]);
+
+        BuiltinSegments::pad_relocatble_builtin_segments(
+            &mut relocatable_memory,
+            builtins_segments,
+        );
+
+        assert!(relocatable_memory[0].len() == 32 * BITWISE_MEMORY_CELLS);
+        assert!(relocatable_memory[1].len() == 16 * EC_OP_MEMORY_CELLS);
+        assert!(relocatable_memory[2].len() == 10);
+
+        // Check that the values in the extended segment are identical to the original segment.
+        for (value, expected_value) in relocatable_memory[0].iter().zip(segment0.iter().cycle()) {
+            assert_eq!(value, expected_value);
+        }
+        for (value, expected_value) in relocatable_memory[1].iter().zip(segment1.iter().cycle()) {
+            assert_eq!(value, expected_value);
+        }
     }
 }

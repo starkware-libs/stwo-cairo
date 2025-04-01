@@ -23,7 +23,7 @@ bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "10154c6", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "f0f4db7c", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
@@ -60,3 +60,7 @@ serde_arrays = "0.1.0"
 [profile.bench]
 codegen-units = 1
 lto = true
+
+[profile.witness-opt-1]
+inherits = "dev"
+package = { "stwo_cairo_prover" = { opt-level = 1 }, "stwo-prover" = { opt-level = 1 } }
