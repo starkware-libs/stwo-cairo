@@ -275,7 +275,7 @@ pub mod tests {
         fn test_cairo_constraints() {
             let input =
                 prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
-            assert_cairo_constraints(input, PreProcessedTrace::canonical());
+            assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
         }
 
         #[test]
@@ -289,7 +289,7 @@ pub mod tests {
                     opcode
                 );
             }
-            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                 input,
                 PcsConfig::default(),
@@ -375,22 +375,10 @@ pub mod tests {
             }
 
             #[test]
-            fn test_prove_verify_add_mod_builtin() {
+            fn test_add_mod_builtin_constraints() {
                 let input =
                     prover_input_from_compiled_cairo_program("test_prove_verify_add_mod_builtin");
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
             }
 
             /// Asserts that there is an unused `add` value in the first instance in bitwise
@@ -412,93 +400,44 @@ pub mod tests {
             }
 
             #[test]
-            fn test_prove_verify_bitwise_builtin() {
+            fn test_bitwise_builtin_constraints() {
                 let input =
                     prover_input_from_compiled_cairo_program("test_prove_verify_bitwise_builtin");
                 assert_bitwise_builtin_has_holes(
                     "test_prove_verify_bitwise_builtin",
                     &input.builtins_segments.bitwise,
                 );
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
             #[test]
-            fn test_prove_verify_mul_mod_builtin() {
+            fn test_mul_mod_builtin_constraints() {
                 let input =
                     prover_input_from_compiled_cairo_program("test_prove_verify_mul_mod_builtin");
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
             #[test]
             fn test_poseidon_builtin_constraints() {
                 let input =
                     prover_input_from_compiled_cairo_program("test_prove_verify_poseidon_builtin");
-                let pp_tree = testing_preprocessed_tree(19);
-                assert_cairo_constraints(input, pp_tree);
+                assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
             #[test]
-            fn test_prove_verify_range_check_bits_96_builtin() {
+            fn test_range_check_bits_96_builtin_constraints() {
                 let input = prover_input_from_compiled_cairo_program(
                     "test_prove_verify_range_check_bits_96_builtin",
                 );
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
             #[test]
-            fn test_prove_verify_range_check_bits_128_builtin() {
+            fn test_range_check_bits_128_builtin_constraints() {
                 let input = prover_input_from_compiled_cairo_program(
                     "test_prove_verify_range_check_bits_128_builtin",
                 );
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
         }
     }
