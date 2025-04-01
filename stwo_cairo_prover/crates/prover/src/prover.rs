@@ -1,4 +1,5 @@
 use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::components::witness_trace_cells;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -59,6 +60,11 @@ where
     let span = span!(Level::INFO, "Base trace").entered();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     span.exit();
+    tracing::info!(
+        "Witness trace cells: {:?}",
+        witness_trace_cells(claim.log_sizes(), &preprocessed_trace)
+    );
+
     claim.mix_into(channel);
     tree_builder.commit(channel);
 
