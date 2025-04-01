@@ -51,12 +51,17 @@ pub mod verify_instruction;
 pub(crate) mod prelude;
 
 use itertools::Itertools;
+use prelude::PreProcessedTrace;
 pub use range_check_vector::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
     range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
     range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
-use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
+use stwo_prover::constraint_framework::{
+    FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
+};
+
+use crate::air::CairoClaim;
 pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
@@ -78,4 +83,20 @@ pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkCompon
         .iter()
         .map(|component| indented_component_display(component))
         .join("\n")
+}
+
+/// Returns the number of cells in each trace interaction of the witness.
+/// Preprocess trace is determined by the `pp_trace` parameter (and not by the claim).
+pub fn witness_trace_cells(claim: &CairoClaim, pp_trace: &PreProcessedTrace) -> Vec<u64> {
+    let mut log_sizes = claim.log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = pp_trace.log_sizes();
+
+    log_sizes
+        .iter()
+        .map(|tree| {
+            tree.iter()
+                .map(|col_log_size| 1 << col_log_size)
+                .sum::<u64>()
+        })
+        .collect()
 }
