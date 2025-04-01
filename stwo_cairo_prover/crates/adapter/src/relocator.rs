@@ -42,6 +42,7 @@ impl Relocator {
                 .unwrap_or(false)
         };
 
+        // TODO(Stav): remove this logic from here.
         for (segment_index, segment) in relocatable_mem.iter().enumerate() {
             let segment_size = if !is_builtin_segment(segment_index) {
                 // If it is not a builtin segment, no need to pad.
