@@ -31,8 +31,8 @@ impl ClaimGenerator {
         let packed_inputs = pack_values(&self.inputs);
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            n_rows,
             packed_inputs,
+            n_rows,
             memory_address_to_id_state,
             memory_id_to_big_state,
             verify_instruction_state,
@@ -80,8 +80,8 @@ struct SubComponentInputs {
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
 fn write_trace_simd(
-    n_rows: usize,
     inputs: Vec<PackedInputType>,
+    n_rows: usize,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
@@ -122,7 +122,7 @@ fn write_trace_simd(
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
-    let padding_col = Enabler::new(n_rows);
+    let enabler_col = Enabler::new(n_rows);
 
     (
         trace.par_iter_mut(),
@@ -199,7 +199,17 @@ fn write_trace_simd(
                         & (UInt16_1));
                 let op0_base_fp_col7 = op0_base_fp_tmp_3fa46_6.as_m31();
                 *row[7] = op0_base_fp_col7;
-                let op1_base_fp_tmp_3fa46_7 =
+                let op1_imm_tmp_3fa46_7 =
+                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_3fa46_1.get_m31(5)))
+                        >> (UInt16_3))
+                        + ((PackedUInt16::from_m31(
+                            memory_id_to_big_value_tmp_3fa46_1.get_m31(6),
+                        )) << (UInt16_6)))
+                        >> (UInt16_2))
+                        & (UInt16_1));
+                let op1_imm_col8 = op1_imm_tmp_3fa46_7.as_m31();
+                *row[8] = op1_imm_col8;
+                let op1_base_fp_tmp_3fa46_8 =
                     (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_3fa46_1.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
@@ -207,9 +217,9 @@ fn write_trace_simd(
                         )) << (UInt16_6)))
                         >> (UInt16_3))
                         & (UInt16_1));
-                let op1_base_fp_col8 = op1_base_fp_tmp_3fa46_7.as_m31();
-                *row[8] = op1_base_fp_col8;
-                let ap_update_add_1_tmp_3fa46_8 =
+                let op1_base_fp_col9 = op1_base_fp_tmp_3fa46_8.as_m31();
+                *row[9] = op1_base_fp_col9;
+                let ap_update_add_1_tmp_3fa46_9 =
                     (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_3fa46_1.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
@@ -217,17 +227,18 @@ fn write_trace_simd(
                         )) << (UInt16_6)))
                         >> (UInt16_11))
                         & (UInt16_1));
-                let ap_update_add_1_col9 = ap_update_add_1_tmp_3fa46_8.as_m31();
-                *row[9] = ap_update_add_1_col9;
+                let ap_update_add_1_col10 = ap_update_add_1_tmp_3fa46_9.as_m31();
+                *row[10] = ap_update_add_1_col10;
                 *sub_component_inputs.verify_instruction[0] = (
                     input_pc_col0,
                     [offset0_col3, offset1_col4, offset2_col5],
                     [
-                        ((((((dst_base_fp_col6) * (M31_8)) + ((op0_base_fp_col7) * (M31_16)))
-                            + ((op1_base_fp_col8) * (M31_64)))
-                            + (((M31_1) - (op1_base_fp_col8)) * (M31_128)))
+                        (((((((dst_base_fp_col6) * (M31_8)) + ((op0_base_fp_col7) * (M31_16)))
+                            + ((op1_imm_col8) * (M31_32)))
+                            + ((op1_base_fp_col9) * (M31_64)))
+                            + ((((M31_1) - (op1_imm_col8)) - (op1_base_fp_col9)) * (M31_128)))
                             + (M31_256)),
-                        (((ap_update_add_1_col9) * (M31_32)) + (M31_256)),
+                        (((ap_update_add_1_col10) * (M31_32)) + (M31_256)),
                     ],
                     M31_0,
                 );
@@ -236,349 +247,488 @@ fn write_trace_simd(
                     offset0_col3,
                     offset1_col4,
                     offset2_col5,
-                    ((((((dst_base_fp_col6) * (M31_8)) + ((op0_base_fp_col7) * (M31_16)))
-                        + ((op1_base_fp_col8) * (M31_64)))
-                        + (((M31_1) - (op1_base_fp_col8)) * (M31_128)))
+                    (((((((dst_base_fp_col6) * (M31_8)) + ((op0_base_fp_col7) * (M31_16)))
+                        + ((op1_imm_col8) * (M31_32)))
+                        + ((op1_base_fp_col9) * (M31_64)))
+                        + ((((M31_1) - (op1_imm_col8)) - (op1_base_fp_col9)) * (M31_128)))
                         + (M31_256)),
-                    (((ap_update_add_1_col9) * (M31_32)) + (M31_256)),
+                    (((ap_update_add_1_col10) * (M31_32)) + (M31_256)),
                     M31_0,
                 ];
+                let decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10 = (
+                    [
+                        ((offset0_col3) - (M31_32768)),
+                        ((offset1_col4) - (M31_32768)),
+                        ((offset2_col5) - (M31_32768)),
+                    ],
+                    [
+                        dst_base_fp_col6,
+                        op0_base_fp_col7,
+                        op1_imm_col8,
+                        op1_base_fp_col9,
+                        (((M31_1) - (op1_imm_col8)) - (op1_base_fp_col9)),
+                        M31_1,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        M31_0,
+                        ap_update_add_1_col10,
+                        M31_0,
+                        M31_0,
+                        M31_1,
+                    ],
+                    M31_0,
+                );
 
-                let mem_dst_base_col10 = (((dst_base_fp_col6) * (input_fp_col2))
+                let mem_dst_base_col11 = (((dst_base_fp_col6) * (input_fp_col2))
                     + (((M31_1) - (dst_base_fp_col6)) * (input_ap_col1)));
-                *row[10] = mem_dst_base_col10;
-                let mem0_base_col11 = (((op0_base_fp_col7) * (input_fp_col2))
+                *row[11] = mem_dst_base_col11;
+                let mem0_base_col12 = (((op0_base_fp_col7) * (input_fp_col2))
                     + (((M31_1) - (op0_base_fp_col7)) * (input_ap_col1)));
-                *row[11] = mem0_base_col11;
-                let mem1_base_col12 = (((op1_base_fp_col8) * (input_fp_col2))
-                    + (((M31_1) - (op1_base_fp_col8)) * (input_ap_col1)));
-                *row[12] = mem1_base_col12;
-
-                // Read Positive Num Bits 252.
-
-                let memory_address_to_id_value_tmp_3fa46_9 = memory_address_to_id_state
-                    .deduce_output(((mem_dst_base_col10) + ((offset0_col3) - (M31_32768))));
-                let memory_id_to_big_value_tmp_3fa46_10 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_3fa46_9);
-                let dst_id_col13 = memory_address_to_id_value_tmp_3fa46_9;
-                *row[13] = dst_id_col13;
-                *sub_component_inputs.memory_address_to_id[0] =
-                    ((mem_dst_base_col10) + ((offset0_col3) - (M31_32768)));
-                *lookup_data.memory_address_to_id_0 = [
-                    ((mem_dst_base_col10) + ((offset0_col3) - (M31_32768))),
-                    dst_id_col13,
-                ];
-                let dst_limb_0_col14 = memory_id_to_big_value_tmp_3fa46_10.get_m31(0);
-                *row[14] = dst_limb_0_col14;
-                let dst_limb_1_col15 = memory_id_to_big_value_tmp_3fa46_10.get_m31(1);
-                *row[15] = dst_limb_1_col15;
-                let dst_limb_2_col16 = memory_id_to_big_value_tmp_3fa46_10.get_m31(2);
-                *row[16] = dst_limb_2_col16;
-                let dst_limb_3_col17 = memory_id_to_big_value_tmp_3fa46_10.get_m31(3);
-                *row[17] = dst_limb_3_col17;
-                let dst_limb_4_col18 = memory_id_to_big_value_tmp_3fa46_10.get_m31(4);
-                *row[18] = dst_limb_4_col18;
-                let dst_limb_5_col19 = memory_id_to_big_value_tmp_3fa46_10.get_m31(5);
-                *row[19] = dst_limb_5_col19;
-                let dst_limb_6_col20 = memory_id_to_big_value_tmp_3fa46_10.get_m31(6);
-                *row[20] = dst_limb_6_col20;
-                let dst_limb_7_col21 = memory_id_to_big_value_tmp_3fa46_10.get_m31(7);
-                *row[21] = dst_limb_7_col21;
-                let dst_limb_8_col22 = memory_id_to_big_value_tmp_3fa46_10.get_m31(8);
-                *row[22] = dst_limb_8_col22;
-                let dst_limb_9_col23 = memory_id_to_big_value_tmp_3fa46_10.get_m31(9);
-                *row[23] = dst_limb_9_col23;
-                let dst_limb_10_col24 = memory_id_to_big_value_tmp_3fa46_10.get_m31(10);
-                *row[24] = dst_limb_10_col24;
-                let dst_limb_11_col25 = memory_id_to_big_value_tmp_3fa46_10.get_m31(11);
-                *row[25] = dst_limb_11_col25;
-                let dst_limb_12_col26 = memory_id_to_big_value_tmp_3fa46_10.get_m31(12);
-                *row[26] = dst_limb_12_col26;
-                let dst_limb_13_col27 = memory_id_to_big_value_tmp_3fa46_10.get_m31(13);
-                *row[27] = dst_limb_13_col27;
-                let dst_limb_14_col28 = memory_id_to_big_value_tmp_3fa46_10.get_m31(14);
-                *row[28] = dst_limb_14_col28;
-                let dst_limb_15_col29 = memory_id_to_big_value_tmp_3fa46_10.get_m31(15);
-                *row[29] = dst_limb_15_col29;
-                let dst_limb_16_col30 = memory_id_to_big_value_tmp_3fa46_10.get_m31(16);
-                *row[30] = dst_limb_16_col30;
-                let dst_limb_17_col31 = memory_id_to_big_value_tmp_3fa46_10.get_m31(17);
-                *row[31] = dst_limb_17_col31;
-                let dst_limb_18_col32 = memory_id_to_big_value_tmp_3fa46_10.get_m31(18);
-                *row[32] = dst_limb_18_col32;
-                let dst_limb_19_col33 = memory_id_to_big_value_tmp_3fa46_10.get_m31(19);
-                *row[33] = dst_limb_19_col33;
-                let dst_limb_20_col34 = memory_id_to_big_value_tmp_3fa46_10.get_m31(20);
-                *row[34] = dst_limb_20_col34;
-                let dst_limb_21_col35 = memory_id_to_big_value_tmp_3fa46_10.get_m31(21);
-                *row[35] = dst_limb_21_col35;
-                let dst_limb_22_col36 = memory_id_to_big_value_tmp_3fa46_10.get_m31(22);
-                *row[36] = dst_limb_22_col36;
-                let dst_limb_23_col37 = memory_id_to_big_value_tmp_3fa46_10.get_m31(23);
-                *row[37] = dst_limb_23_col37;
-                let dst_limb_24_col38 = memory_id_to_big_value_tmp_3fa46_10.get_m31(24);
-                *row[38] = dst_limb_24_col38;
-                let dst_limb_25_col39 = memory_id_to_big_value_tmp_3fa46_10.get_m31(25);
-                *row[39] = dst_limb_25_col39;
-                let dst_limb_26_col40 = memory_id_to_big_value_tmp_3fa46_10.get_m31(26);
-                *row[40] = dst_limb_26_col40;
-                let dst_limb_27_col41 = memory_id_to_big_value_tmp_3fa46_10.get_m31(27);
-                *row[41] = dst_limb_27_col41;
-                *sub_component_inputs.memory_id_to_big[0] = dst_id_col13;
-                *lookup_data.memory_id_to_big_0 = [
-                    dst_id_col13,
-                    dst_limb_0_col14,
-                    dst_limb_1_col15,
-                    dst_limb_2_col16,
-                    dst_limb_3_col17,
-                    dst_limb_4_col18,
-                    dst_limb_5_col19,
-                    dst_limb_6_col20,
-                    dst_limb_7_col21,
-                    dst_limb_8_col22,
-                    dst_limb_9_col23,
-                    dst_limb_10_col24,
-                    dst_limb_11_col25,
-                    dst_limb_12_col26,
-                    dst_limb_13_col27,
-                    dst_limb_14_col28,
-                    dst_limb_15_col29,
-                    dst_limb_16_col30,
-                    dst_limb_17_col31,
-                    dst_limb_18_col32,
-                    dst_limb_19_col33,
-                    dst_limb_20_col34,
-                    dst_limb_21_col35,
-                    dst_limb_22_col36,
-                    dst_limb_23_col37,
-                    dst_limb_24_col38,
-                    dst_limb_25_col39,
-                    dst_limb_26_col40,
-                    dst_limb_27_col41,
-                ];
+                *row[12] = mem0_base_col12;
+                let mem1_base_col13 = ((((op1_imm_col8) * (input_pc_col0))
+                    + ((op1_base_fp_col9) * (input_fp_col2)))
+                    + ((decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.1[4])
+                        * (input_ap_col1)));
+                *row[13] = mem1_base_col13;
 
                 // Read Positive Num Bits 252.
 
                 let memory_address_to_id_value_tmp_3fa46_11 = memory_address_to_id_state
-                    .deduce_output(((mem0_base_col11) + ((offset1_col4) - (M31_32768))));
+                    .deduce_output(
+                        ((mem_dst_base_col11)
+                            + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[0])),
+                    );
                 let memory_id_to_big_value_tmp_3fa46_12 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_3fa46_11);
-                let op0_id_col42 = memory_address_to_id_value_tmp_3fa46_11;
-                *row[42] = op0_id_col42;
-                *sub_component_inputs.memory_address_to_id[1] =
-                    ((mem0_base_col11) + ((offset1_col4) - (M31_32768)));
-                *lookup_data.memory_address_to_id_1 = [
-                    ((mem0_base_col11) + ((offset1_col4) - (M31_32768))),
-                    op0_id_col42,
+                let dst_id_col14 = memory_address_to_id_value_tmp_3fa46_11;
+                *row[14] = dst_id_col14;
+                *sub_component_inputs.memory_address_to_id[0] = ((mem_dst_base_col11)
+                    + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[0]));
+                *lookup_data.memory_address_to_id_0 = [
+                    ((mem_dst_base_col11)
+                        + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[0])),
+                    dst_id_col14,
                 ];
-                let op0_limb_0_col43 = memory_id_to_big_value_tmp_3fa46_12.get_m31(0);
-                *row[43] = op0_limb_0_col43;
-                let op0_limb_1_col44 = memory_id_to_big_value_tmp_3fa46_12.get_m31(1);
-                *row[44] = op0_limb_1_col44;
-                let op0_limb_2_col45 = memory_id_to_big_value_tmp_3fa46_12.get_m31(2);
-                *row[45] = op0_limb_2_col45;
-                let op0_limb_3_col46 = memory_id_to_big_value_tmp_3fa46_12.get_m31(3);
-                *row[46] = op0_limb_3_col46;
-                let op0_limb_4_col47 = memory_id_to_big_value_tmp_3fa46_12.get_m31(4);
-                *row[47] = op0_limb_4_col47;
-                let op0_limb_5_col48 = memory_id_to_big_value_tmp_3fa46_12.get_m31(5);
-                *row[48] = op0_limb_5_col48;
-                let op0_limb_6_col49 = memory_id_to_big_value_tmp_3fa46_12.get_m31(6);
-                *row[49] = op0_limb_6_col49;
-                let op0_limb_7_col50 = memory_id_to_big_value_tmp_3fa46_12.get_m31(7);
-                *row[50] = op0_limb_7_col50;
-                let op0_limb_8_col51 = memory_id_to_big_value_tmp_3fa46_12.get_m31(8);
-                *row[51] = op0_limb_8_col51;
-                let op0_limb_9_col52 = memory_id_to_big_value_tmp_3fa46_12.get_m31(9);
-                *row[52] = op0_limb_9_col52;
-                let op0_limb_10_col53 = memory_id_to_big_value_tmp_3fa46_12.get_m31(10);
-                *row[53] = op0_limb_10_col53;
-                let op0_limb_11_col54 = memory_id_to_big_value_tmp_3fa46_12.get_m31(11);
-                *row[54] = op0_limb_11_col54;
-                let op0_limb_12_col55 = memory_id_to_big_value_tmp_3fa46_12.get_m31(12);
-                *row[55] = op0_limb_12_col55;
-                let op0_limb_13_col56 = memory_id_to_big_value_tmp_3fa46_12.get_m31(13);
-                *row[56] = op0_limb_13_col56;
-                let op0_limb_14_col57 = memory_id_to_big_value_tmp_3fa46_12.get_m31(14);
-                *row[57] = op0_limb_14_col57;
-                let op0_limb_15_col58 = memory_id_to_big_value_tmp_3fa46_12.get_m31(15);
-                *row[58] = op0_limb_15_col58;
-                let op0_limb_16_col59 = memory_id_to_big_value_tmp_3fa46_12.get_m31(16);
-                *row[59] = op0_limb_16_col59;
-                let op0_limb_17_col60 = memory_id_to_big_value_tmp_3fa46_12.get_m31(17);
-                *row[60] = op0_limb_17_col60;
-                let op0_limb_18_col61 = memory_id_to_big_value_tmp_3fa46_12.get_m31(18);
-                *row[61] = op0_limb_18_col61;
-                let op0_limb_19_col62 = memory_id_to_big_value_tmp_3fa46_12.get_m31(19);
-                *row[62] = op0_limb_19_col62;
-                let op0_limb_20_col63 = memory_id_to_big_value_tmp_3fa46_12.get_m31(20);
-                *row[63] = op0_limb_20_col63;
-                let op0_limb_21_col64 = memory_id_to_big_value_tmp_3fa46_12.get_m31(21);
-                *row[64] = op0_limb_21_col64;
-                let op0_limb_22_col65 = memory_id_to_big_value_tmp_3fa46_12.get_m31(22);
-                *row[65] = op0_limb_22_col65;
-                let op0_limb_23_col66 = memory_id_to_big_value_tmp_3fa46_12.get_m31(23);
-                *row[66] = op0_limb_23_col66;
-                let op0_limb_24_col67 = memory_id_to_big_value_tmp_3fa46_12.get_m31(24);
-                *row[67] = op0_limb_24_col67;
-                let op0_limb_25_col68 = memory_id_to_big_value_tmp_3fa46_12.get_m31(25);
-                *row[68] = op0_limb_25_col68;
-                let op0_limb_26_col69 = memory_id_to_big_value_tmp_3fa46_12.get_m31(26);
-                *row[69] = op0_limb_26_col69;
-                let op0_limb_27_col70 = memory_id_to_big_value_tmp_3fa46_12.get_m31(27);
-                *row[70] = op0_limb_27_col70;
-                *sub_component_inputs.memory_id_to_big[1] = op0_id_col42;
-                *lookup_data.memory_id_to_big_1 = [
-                    op0_id_col42,
-                    op0_limb_0_col43,
-                    op0_limb_1_col44,
-                    op0_limb_2_col45,
-                    op0_limb_3_col46,
-                    op0_limb_4_col47,
-                    op0_limb_5_col48,
-                    op0_limb_6_col49,
-                    op0_limb_7_col50,
-                    op0_limb_8_col51,
-                    op0_limb_9_col52,
-                    op0_limb_10_col53,
-                    op0_limb_11_col54,
-                    op0_limb_12_col55,
-                    op0_limb_13_col56,
-                    op0_limb_14_col57,
-                    op0_limb_15_col58,
-                    op0_limb_16_col59,
-                    op0_limb_17_col60,
-                    op0_limb_18_col61,
-                    op0_limb_19_col62,
-                    op0_limb_20_col63,
-                    op0_limb_21_col64,
-                    op0_limb_22_col65,
-                    op0_limb_23_col66,
-                    op0_limb_24_col67,
-                    op0_limb_25_col68,
-                    op0_limb_26_col69,
-                    op0_limb_27_col70,
+                let dst_limb_0_col15 = memory_id_to_big_value_tmp_3fa46_12.get_m31(0);
+                *row[15] = dst_limb_0_col15;
+                let dst_limb_1_col16 = memory_id_to_big_value_tmp_3fa46_12.get_m31(1);
+                *row[16] = dst_limb_1_col16;
+                let dst_limb_2_col17 = memory_id_to_big_value_tmp_3fa46_12.get_m31(2);
+                *row[17] = dst_limb_2_col17;
+                let dst_limb_3_col18 = memory_id_to_big_value_tmp_3fa46_12.get_m31(3);
+                *row[18] = dst_limb_3_col18;
+                let dst_limb_4_col19 = memory_id_to_big_value_tmp_3fa46_12.get_m31(4);
+                *row[19] = dst_limb_4_col19;
+                let dst_limb_5_col20 = memory_id_to_big_value_tmp_3fa46_12.get_m31(5);
+                *row[20] = dst_limb_5_col20;
+                let dst_limb_6_col21 = memory_id_to_big_value_tmp_3fa46_12.get_m31(6);
+                *row[21] = dst_limb_6_col21;
+                let dst_limb_7_col22 = memory_id_to_big_value_tmp_3fa46_12.get_m31(7);
+                *row[22] = dst_limb_7_col22;
+                let dst_limb_8_col23 = memory_id_to_big_value_tmp_3fa46_12.get_m31(8);
+                *row[23] = dst_limb_8_col23;
+                let dst_limb_9_col24 = memory_id_to_big_value_tmp_3fa46_12.get_m31(9);
+                *row[24] = dst_limb_9_col24;
+                let dst_limb_10_col25 = memory_id_to_big_value_tmp_3fa46_12.get_m31(10);
+                *row[25] = dst_limb_10_col25;
+                let dst_limb_11_col26 = memory_id_to_big_value_tmp_3fa46_12.get_m31(11);
+                *row[26] = dst_limb_11_col26;
+                let dst_limb_12_col27 = memory_id_to_big_value_tmp_3fa46_12.get_m31(12);
+                *row[27] = dst_limb_12_col27;
+                let dst_limb_13_col28 = memory_id_to_big_value_tmp_3fa46_12.get_m31(13);
+                *row[28] = dst_limb_13_col28;
+                let dst_limb_14_col29 = memory_id_to_big_value_tmp_3fa46_12.get_m31(14);
+                *row[29] = dst_limb_14_col29;
+                let dst_limb_15_col30 = memory_id_to_big_value_tmp_3fa46_12.get_m31(15);
+                *row[30] = dst_limb_15_col30;
+                let dst_limb_16_col31 = memory_id_to_big_value_tmp_3fa46_12.get_m31(16);
+                *row[31] = dst_limb_16_col31;
+                let dst_limb_17_col32 = memory_id_to_big_value_tmp_3fa46_12.get_m31(17);
+                *row[32] = dst_limb_17_col32;
+                let dst_limb_18_col33 = memory_id_to_big_value_tmp_3fa46_12.get_m31(18);
+                *row[33] = dst_limb_18_col33;
+                let dst_limb_19_col34 = memory_id_to_big_value_tmp_3fa46_12.get_m31(19);
+                *row[34] = dst_limb_19_col34;
+                let dst_limb_20_col35 = memory_id_to_big_value_tmp_3fa46_12.get_m31(20);
+                *row[35] = dst_limb_20_col35;
+                let dst_limb_21_col36 = memory_id_to_big_value_tmp_3fa46_12.get_m31(21);
+                *row[36] = dst_limb_21_col36;
+                let dst_limb_22_col37 = memory_id_to_big_value_tmp_3fa46_12.get_m31(22);
+                *row[37] = dst_limb_22_col37;
+                let dst_limb_23_col38 = memory_id_to_big_value_tmp_3fa46_12.get_m31(23);
+                *row[38] = dst_limb_23_col38;
+                let dst_limb_24_col39 = memory_id_to_big_value_tmp_3fa46_12.get_m31(24);
+                *row[39] = dst_limb_24_col39;
+                let dst_limb_25_col40 = memory_id_to_big_value_tmp_3fa46_12.get_m31(25);
+                *row[40] = dst_limb_25_col40;
+                let dst_limb_26_col41 = memory_id_to_big_value_tmp_3fa46_12.get_m31(26);
+                *row[41] = dst_limb_26_col41;
+                let dst_limb_27_col42 = memory_id_to_big_value_tmp_3fa46_12.get_m31(27);
+                *row[42] = dst_limb_27_col42;
+                *sub_component_inputs.memory_id_to_big[0] = dst_id_col14;
+                *lookup_data.memory_id_to_big_0 = [
+                    dst_id_col14,
+                    dst_limb_0_col15,
+                    dst_limb_1_col16,
+                    dst_limb_2_col17,
+                    dst_limb_3_col18,
+                    dst_limb_4_col19,
+                    dst_limb_5_col20,
+                    dst_limb_6_col21,
+                    dst_limb_7_col22,
+                    dst_limb_8_col23,
+                    dst_limb_9_col24,
+                    dst_limb_10_col25,
+                    dst_limb_11_col26,
+                    dst_limb_12_col27,
+                    dst_limb_13_col28,
+                    dst_limb_14_col29,
+                    dst_limb_15_col30,
+                    dst_limb_16_col31,
+                    dst_limb_17_col32,
+                    dst_limb_18_col33,
+                    dst_limb_19_col34,
+                    dst_limb_20_col35,
+                    dst_limb_21_col36,
+                    dst_limb_22_col37,
+                    dst_limb_23_col38,
+                    dst_limb_24_col39,
+                    dst_limb_25_col40,
+                    dst_limb_26_col41,
+                    dst_limb_27_col42,
                 ];
+                let read_positive_num_bits_252_output_tmp_3fa46_13 = (
+                    PackedFelt252::from_limbs([
+                        dst_limb_0_col15,
+                        dst_limb_1_col16,
+                        dst_limb_2_col17,
+                        dst_limb_3_col18,
+                        dst_limb_4_col19,
+                        dst_limb_5_col20,
+                        dst_limb_6_col21,
+                        dst_limb_7_col22,
+                        dst_limb_8_col23,
+                        dst_limb_9_col24,
+                        dst_limb_10_col25,
+                        dst_limb_11_col26,
+                        dst_limb_12_col27,
+                        dst_limb_13_col28,
+                        dst_limb_14_col29,
+                        dst_limb_15_col30,
+                        dst_limb_16_col31,
+                        dst_limb_17_col32,
+                        dst_limb_18_col33,
+                        dst_limb_19_col34,
+                        dst_limb_20_col35,
+                        dst_limb_21_col36,
+                        dst_limb_22_col37,
+                        dst_limb_23_col38,
+                        dst_limb_24_col39,
+                        dst_limb_25_col40,
+                        dst_limb_26_col41,
+                        dst_limb_27_col42,
+                    ]),
+                    dst_id_col14,
+                );
 
                 // Read Positive Num Bits 252.
 
-                let memory_address_to_id_value_tmp_3fa46_13 = memory_address_to_id_state
-                    .deduce_output(((mem1_base_col12) + ((offset2_col5) - (M31_32768))));
-                let memory_id_to_big_value_tmp_3fa46_14 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_3fa46_13);
-                let op1_id_col71 = memory_address_to_id_value_tmp_3fa46_13;
-                *row[71] = op1_id_col71;
-                *sub_component_inputs.memory_address_to_id[2] =
-                    ((mem1_base_col12) + ((offset2_col5) - (M31_32768)));
+                let memory_address_to_id_value_tmp_3fa46_14 = memory_address_to_id_state
+                    .deduce_output(
+                        ((mem0_base_col12)
+                            + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[1])),
+                    );
+                let memory_id_to_big_value_tmp_3fa46_15 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_3fa46_14);
+                let op0_id_col43 = memory_address_to_id_value_tmp_3fa46_14;
+                *row[43] = op0_id_col43;
+                *sub_component_inputs.memory_address_to_id[1] = ((mem0_base_col12)
+                    + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[1]));
+                *lookup_data.memory_address_to_id_1 = [
+                    ((mem0_base_col12)
+                        + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[1])),
+                    op0_id_col43,
+                ];
+                let op0_limb_0_col44 = memory_id_to_big_value_tmp_3fa46_15.get_m31(0);
+                *row[44] = op0_limb_0_col44;
+                let op0_limb_1_col45 = memory_id_to_big_value_tmp_3fa46_15.get_m31(1);
+                *row[45] = op0_limb_1_col45;
+                let op0_limb_2_col46 = memory_id_to_big_value_tmp_3fa46_15.get_m31(2);
+                *row[46] = op0_limb_2_col46;
+                let op0_limb_3_col47 = memory_id_to_big_value_tmp_3fa46_15.get_m31(3);
+                *row[47] = op0_limb_3_col47;
+                let op0_limb_4_col48 = memory_id_to_big_value_tmp_3fa46_15.get_m31(4);
+                *row[48] = op0_limb_4_col48;
+                let op0_limb_5_col49 = memory_id_to_big_value_tmp_3fa46_15.get_m31(5);
+                *row[49] = op0_limb_5_col49;
+                let op0_limb_6_col50 = memory_id_to_big_value_tmp_3fa46_15.get_m31(6);
+                *row[50] = op0_limb_6_col50;
+                let op0_limb_7_col51 = memory_id_to_big_value_tmp_3fa46_15.get_m31(7);
+                *row[51] = op0_limb_7_col51;
+                let op0_limb_8_col52 = memory_id_to_big_value_tmp_3fa46_15.get_m31(8);
+                *row[52] = op0_limb_8_col52;
+                let op0_limb_9_col53 = memory_id_to_big_value_tmp_3fa46_15.get_m31(9);
+                *row[53] = op0_limb_9_col53;
+                let op0_limb_10_col54 = memory_id_to_big_value_tmp_3fa46_15.get_m31(10);
+                *row[54] = op0_limb_10_col54;
+                let op0_limb_11_col55 = memory_id_to_big_value_tmp_3fa46_15.get_m31(11);
+                *row[55] = op0_limb_11_col55;
+                let op0_limb_12_col56 = memory_id_to_big_value_tmp_3fa46_15.get_m31(12);
+                *row[56] = op0_limb_12_col56;
+                let op0_limb_13_col57 = memory_id_to_big_value_tmp_3fa46_15.get_m31(13);
+                *row[57] = op0_limb_13_col57;
+                let op0_limb_14_col58 = memory_id_to_big_value_tmp_3fa46_15.get_m31(14);
+                *row[58] = op0_limb_14_col58;
+                let op0_limb_15_col59 = memory_id_to_big_value_tmp_3fa46_15.get_m31(15);
+                *row[59] = op0_limb_15_col59;
+                let op0_limb_16_col60 = memory_id_to_big_value_tmp_3fa46_15.get_m31(16);
+                *row[60] = op0_limb_16_col60;
+                let op0_limb_17_col61 = memory_id_to_big_value_tmp_3fa46_15.get_m31(17);
+                *row[61] = op0_limb_17_col61;
+                let op0_limb_18_col62 = memory_id_to_big_value_tmp_3fa46_15.get_m31(18);
+                *row[62] = op0_limb_18_col62;
+                let op0_limb_19_col63 = memory_id_to_big_value_tmp_3fa46_15.get_m31(19);
+                *row[63] = op0_limb_19_col63;
+                let op0_limb_20_col64 = memory_id_to_big_value_tmp_3fa46_15.get_m31(20);
+                *row[64] = op0_limb_20_col64;
+                let op0_limb_21_col65 = memory_id_to_big_value_tmp_3fa46_15.get_m31(21);
+                *row[65] = op0_limb_21_col65;
+                let op0_limb_22_col66 = memory_id_to_big_value_tmp_3fa46_15.get_m31(22);
+                *row[66] = op0_limb_22_col66;
+                let op0_limb_23_col67 = memory_id_to_big_value_tmp_3fa46_15.get_m31(23);
+                *row[67] = op0_limb_23_col67;
+                let op0_limb_24_col68 = memory_id_to_big_value_tmp_3fa46_15.get_m31(24);
+                *row[68] = op0_limb_24_col68;
+                let op0_limb_25_col69 = memory_id_to_big_value_tmp_3fa46_15.get_m31(25);
+                *row[69] = op0_limb_25_col69;
+                let op0_limb_26_col70 = memory_id_to_big_value_tmp_3fa46_15.get_m31(26);
+                *row[70] = op0_limb_26_col70;
+                let op0_limb_27_col71 = memory_id_to_big_value_tmp_3fa46_15.get_m31(27);
+                *row[71] = op0_limb_27_col71;
+                *sub_component_inputs.memory_id_to_big[1] = op0_id_col43;
+                *lookup_data.memory_id_to_big_1 = [
+                    op0_id_col43,
+                    op0_limb_0_col44,
+                    op0_limb_1_col45,
+                    op0_limb_2_col46,
+                    op0_limb_3_col47,
+                    op0_limb_4_col48,
+                    op0_limb_5_col49,
+                    op0_limb_6_col50,
+                    op0_limb_7_col51,
+                    op0_limb_8_col52,
+                    op0_limb_9_col53,
+                    op0_limb_10_col54,
+                    op0_limb_11_col55,
+                    op0_limb_12_col56,
+                    op0_limb_13_col57,
+                    op0_limb_14_col58,
+                    op0_limb_15_col59,
+                    op0_limb_16_col60,
+                    op0_limb_17_col61,
+                    op0_limb_18_col62,
+                    op0_limb_19_col63,
+                    op0_limb_20_col64,
+                    op0_limb_21_col65,
+                    op0_limb_22_col66,
+                    op0_limb_23_col67,
+                    op0_limb_24_col68,
+                    op0_limb_25_col69,
+                    op0_limb_26_col70,
+                    op0_limb_27_col71,
+                ];
+                let read_positive_num_bits_252_output_tmp_3fa46_16 = (
+                    PackedFelt252::from_limbs([
+                        op0_limb_0_col44,
+                        op0_limb_1_col45,
+                        op0_limb_2_col46,
+                        op0_limb_3_col47,
+                        op0_limb_4_col48,
+                        op0_limb_5_col49,
+                        op0_limb_6_col50,
+                        op0_limb_7_col51,
+                        op0_limb_8_col52,
+                        op0_limb_9_col53,
+                        op0_limb_10_col54,
+                        op0_limb_11_col55,
+                        op0_limb_12_col56,
+                        op0_limb_13_col57,
+                        op0_limb_14_col58,
+                        op0_limb_15_col59,
+                        op0_limb_16_col60,
+                        op0_limb_17_col61,
+                        op0_limb_18_col62,
+                        op0_limb_19_col63,
+                        op0_limb_20_col64,
+                        op0_limb_21_col65,
+                        op0_limb_22_col66,
+                        op0_limb_23_col67,
+                        op0_limb_24_col68,
+                        op0_limb_25_col69,
+                        op0_limb_26_col70,
+                        op0_limb_27_col71,
+                    ]),
+                    op0_id_col43,
+                );
+
+                // Read Positive Num Bits 252.
+
+                let memory_address_to_id_value_tmp_3fa46_17 = memory_address_to_id_state
+                    .deduce_output(
+                        ((mem1_base_col13)
+                            + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[2])),
+                    );
+                let memory_id_to_big_value_tmp_3fa46_18 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_3fa46_17);
+                let op1_id_col72 = memory_address_to_id_value_tmp_3fa46_17;
+                *row[72] = op1_id_col72;
+                *sub_component_inputs.memory_address_to_id[2] = ((mem1_base_col13)
+                    + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[2]));
                 *lookup_data.memory_address_to_id_2 = [
-                    ((mem1_base_col12) + ((offset2_col5) - (M31_32768))),
-                    op1_id_col71,
+                    ((mem1_base_col13)
+                        + (decode_instruction_5738317e55ddadf7_output_tmp_3fa46_10.0[2])),
+                    op1_id_col72,
                 ];
-                let op1_limb_0_col72 = memory_id_to_big_value_tmp_3fa46_14.get_m31(0);
-                *row[72] = op1_limb_0_col72;
-                let op1_limb_1_col73 = memory_id_to_big_value_tmp_3fa46_14.get_m31(1);
-                *row[73] = op1_limb_1_col73;
-                let op1_limb_2_col74 = memory_id_to_big_value_tmp_3fa46_14.get_m31(2);
-                *row[74] = op1_limb_2_col74;
-                let op1_limb_3_col75 = memory_id_to_big_value_tmp_3fa46_14.get_m31(3);
-                *row[75] = op1_limb_3_col75;
-                let op1_limb_4_col76 = memory_id_to_big_value_tmp_3fa46_14.get_m31(4);
-                *row[76] = op1_limb_4_col76;
-                let op1_limb_5_col77 = memory_id_to_big_value_tmp_3fa46_14.get_m31(5);
-                *row[77] = op1_limb_5_col77;
-                let op1_limb_6_col78 = memory_id_to_big_value_tmp_3fa46_14.get_m31(6);
-                *row[78] = op1_limb_6_col78;
-                let op1_limb_7_col79 = memory_id_to_big_value_tmp_3fa46_14.get_m31(7);
-                *row[79] = op1_limb_7_col79;
-                let op1_limb_8_col80 = memory_id_to_big_value_tmp_3fa46_14.get_m31(8);
-                *row[80] = op1_limb_8_col80;
-                let op1_limb_9_col81 = memory_id_to_big_value_tmp_3fa46_14.get_m31(9);
-                *row[81] = op1_limb_9_col81;
-                let op1_limb_10_col82 = memory_id_to_big_value_tmp_3fa46_14.get_m31(10);
-                *row[82] = op1_limb_10_col82;
-                let op1_limb_11_col83 = memory_id_to_big_value_tmp_3fa46_14.get_m31(11);
-                *row[83] = op1_limb_11_col83;
-                let op1_limb_12_col84 = memory_id_to_big_value_tmp_3fa46_14.get_m31(12);
-                *row[84] = op1_limb_12_col84;
-                let op1_limb_13_col85 = memory_id_to_big_value_tmp_3fa46_14.get_m31(13);
-                *row[85] = op1_limb_13_col85;
-                let op1_limb_14_col86 = memory_id_to_big_value_tmp_3fa46_14.get_m31(14);
-                *row[86] = op1_limb_14_col86;
-                let op1_limb_15_col87 = memory_id_to_big_value_tmp_3fa46_14.get_m31(15);
-                *row[87] = op1_limb_15_col87;
-                let op1_limb_16_col88 = memory_id_to_big_value_tmp_3fa46_14.get_m31(16);
-                *row[88] = op1_limb_16_col88;
-                let op1_limb_17_col89 = memory_id_to_big_value_tmp_3fa46_14.get_m31(17);
-                *row[89] = op1_limb_17_col89;
-                let op1_limb_18_col90 = memory_id_to_big_value_tmp_3fa46_14.get_m31(18);
-                *row[90] = op1_limb_18_col90;
-                let op1_limb_19_col91 = memory_id_to_big_value_tmp_3fa46_14.get_m31(19);
-                *row[91] = op1_limb_19_col91;
-                let op1_limb_20_col92 = memory_id_to_big_value_tmp_3fa46_14.get_m31(20);
-                *row[92] = op1_limb_20_col92;
-                let op1_limb_21_col93 = memory_id_to_big_value_tmp_3fa46_14.get_m31(21);
-                *row[93] = op1_limb_21_col93;
-                let op1_limb_22_col94 = memory_id_to_big_value_tmp_3fa46_14.get_m31(22);
-                *row[94] = op1_limb_22_col94;
-                let op1_limb_23_col95 = memory_id_to_big_value_tmp_3fa46_14.get_m31(23);
-                *row[95] = op1_limb_23_col95;
-                let op1_limb_24_col96 = memory_id_to_big_value_tmp_3fa46_14.get_m31(24);
-                *row[96] = op1_limb_24_col96;
-                let op1_limb_25_col97 = memory_id_to_big_value_tmp_3fa46_14.get_m31(25);
-                *row[97] = op1_limb_25_col97;
-                let op1_limb_26_col98 = memory_id_to_big_value_tmp_3fa46_14.get_m31(26);
-                *row[98] = op1_limb_26_col98;
-                let op1_limb_27_col99 = memory_id_to_big_value_tmp_3fa46_14.get_m31(27);
-                *row[99] = op1_limb_27_col99;
-                *sub_component_inputs.memory_id_to_big[2] = op1_id_col71;
+                let op1_limb_0_col73 = memory_id_to_big_value_tmp_3fa46_18.get_m31(0);
+                *row[73] = op1_limb_0_col73;
+                let op1_limb_1_col74 = memory_id_to_big_value_tmp_3fa46_18.get_m31(1);
+                *row[74] = op1_limb_1_col74;
+                let op1_limb_2_col75 = memory_id_to_big_value_tmp_3fa46_18.get_m31(2);
+                *row[75] = op1_limb_2_col75;
+                let op1_limb_3_col76 = memory_id_to_big_value_tmp_3fa46_18.get_m31(3);
+                *row[76] = op1_limb_3_col76;
+                let op1_limb_4_col77 = memory_id_to_big_value_tmp_3fa46_18.get_m31(4);
+                *row[77] = op1_limb_4_col77;
+                let op1_limb_5_col78 = memory_id_to_big_value_tmp_3fa46_18.get_m31(5);
+                *row[78] = op1_limb_5_col78;
+                let op1_limb_6_col79 = memory_id_to_big_value_tmp_3fa46_18.get_m31(6);
+                *row[79] = op1_limb_6_col79;
+                let op1_limb_7_col80 = memory_id_to_big_value_tmp_3fa46_18.get_m31(7);
+                *row[80] = op1_limb_7_col80;
+                let op1_limb_8_col81 = memory_id_to_big_value_tmp_3fa46_18.get_m31(8);
+                *row[81] = op1_limb_8_col81;
+                let op1_limb_9_col82 = memory_id_to_big_value_tmp_3fa46_18.get_m31(9);
+                *row[82] = op1_limb_9_col82;
+                let op1_limb_10_col83 = memory_id_to_big_value_tmp_3fa46_18.get_m31(10);
+                *row[83] = op1_limb_10_col83;
+                let op1_limb_11_col84 = memory_id_to_big_value_tmp_3fa46_18.get_m31(11);
+                *row[84] = op1_limb_11_col84;
+                let op1_limb_12_col85 = memory_id_to_big_value_tmp_3fa46_18.get_m31(12);
+                *row[85] = op1_limb_12_col85;
+                let op1_limb_13_col86 = memory_id_to_big_value_tmp_3fa46_18.get_m31(13);
+                *row[86] = op1_limb_13_col86;
+                let op1_limb_14_col87 = memory_id_to_big_value_tmp_3fa46_18.get_m31(14);
+                *row[87] = op1_limb_14_col87;
+                let op1_limb_15_col88 = memory_id_to_big_value_tmp_3fa46_18.get_m31(15);
+                *row[88] = op1_limb_15_col88;
+                let op1_limb_16_col89 = memory_id_to_big_value_tmp_3fa46_18.get_m31(16);
+                *row[89] = op1_limb_16_col89;
+                let op1_limb_17_col90 = memory_id_to_big_value_tmp_3fa46_18.get_m31(17);
+                *row[90] = op1_limb_17_col90;
+                let op1_limb_18_col91 = memory_id_to_big_value_tmp_3fa46_18.get_m31(18);
+                *row[91] = op1_limb_18_col91;
+                let op1_limb_19_col92 = memory_id_to_big_value_tmp_3fa46_18.get_m31(19);
+                *row[92] = op1_limb_19_col92;
+                let op1_limb_20_col93 = memory_id_to_big_value_tmp_3fa46_18.get_m31(20);
+                *row[93] = op1_limb_20_col93;
+                let op1_limb_21_col94 = memory_id_to_big_value_tmp_3fa46_18.get_m31(21);
+                *row[94] = op1_limb_21_col94;
+                let op1_limb_22_col95 = memory_id_to_big_value_tmp_3fa46_18.get_m31(22);
+                *row[95] = op1_limb_22_col95;
+                let op1_limb_23_col96 = memory_id_to_big_value_tmp_3fa46_18.get_m31(23);
+                *row[96] = op1_limb_23_col96;
+                let op1_limb_24_col97 = memory_id_to_big_value_tmp_3fa46_18.get_m31(24);
+                *row[97] = op1_limb_24_col97;
+                let op1_limb_25_col98 = memory_id_to_big_value_tmp_3fa46_18.get_m31(25);
+                *row[98] = op1_limb_25_col98;
+                let op1_limb_26_col99 = memory_id_to_big_value_tmp_3fa46_18.get_m31(26);
+                *row[99] = op1_limb_26_col99;
+                let op1_limb_27_col100 = memory_id_to_big_value_tmp_3fa46_18.get_m31(27);
+                *row[100] = op1_limb_27_col100;
+                *sub_component_inputs.memory_id_to_big[2] = op1_id_col72;
                 *lookup_data.memory_id_to_big_2 = [
-                    op1_id_col71,
-                    op1_limb_0_col72,
-                    op1_limb_1_col73,
-                    op1_limb_2_col74,
-                    op1_limb_3_col75,
-                    op1_limb_4_col76,
-                    op1_limb_5_col77,
-                    op1_limb_6_col78,
-                    op1_limb_7_col79,
-                    op1_limb_8_col80,
-                    op1_limb_9_col81,
-                    op1_limb_10_col82,
-                    op1_limb_11_col83,
-                    op1_limb_12_col84,
-                    op1_limb_13_col85,
-                    op1_limb_14_col86,
-                    op1_limb_15_col87,
-                    op1_limb_16_col88,
-                    op1_limb_17_col89,
-                    op1_limb_18_col90,
-                    op1_limb_19_col91,
-                    op1_limb_20_col92,
-                    op1_limb_21_col93,
-                    op1_limb_22_col94,
-                    op1_limb_23_col95,
-                    op1_limb_24_col96,
-                    op1_limb_25_col97,
-                    op1_limb_26_col98,
-                    op1_limb_27_col99,
+                    op1_id_col72,
+                    op1_limb_0_col73,
+                    op1_limb_1_col74,
+                    op1_limb_2_col75,
+                    op1_limb_3_col76,
+                    op1_limb_4_col77,
+                    op1_limb_5_col78,
+                    op1_limb_6_col79,
+                    op1_limb_7_col80,
+                    op1_limb_8_col81,
+                    op1_limb_9_col82,
+                    op1_limb_10_col83,
+                    op1_limb_11_col84,
+                    op1_limb_12_col85,
+                    op1_limb_13_col86,
+                    op1_limb_14_col87,
+                    op1_limb_15_col88,
+                    op1_limb_16_col89,
+                    op1_limb_17_col90,
+                    op1_limb_18_col91,
+                    op1_limb_19_col92,
+                    op1_limb_20_col93,
+                    op1_limb_21_col94,
+                    op1_limb_22_col95,
+                    op1_limb_23_col96,
+                    op1_limb_24_col97,
+                    op1_limb_25_col98,
+                    op1_limb_26_col99,
+                    op1_limb_27_col100,
                 ];
+                let read_positive_num_bits_252_output_tmp_3fa46_19 = (
+                    PackedFelt252::from_limbs([
+                        op1_limb_0_col73,
+                        op1_limb_1_col74,
+                        op1_limb_2_col75,
+                        op1_limb_3_col76,
+                        op1_limb_4_col77,
+                        op1_limb_5_col78,
+                        op1_limb_6_col79,
+                        op1_limb_7_col80,
+                        op1_limb_8_col81,
+                        op1_limb_9_col82,
+                        op1_limb_10_col83,
+                        op1_limb_11_col84,
+                        op1_limb_12_col85,
+                        op1_limb_13_col86,
+                        op1_limb_14_col87,
+                        op1_limb_15_col88,
+                        op1_limb_16_col89,
+                        op1_limb_17_col90,
+                        op1_limb_18_col91,
+                        op1_limb_19_col92,
+                        op1_limb_20_col93,
+                        op1_limb_21_col94,
+                        op1_limb_22_col95,
+                        op1_limb_23_col96,
+                        op1_limb_24_col97,
+                        op1_limb_25_col98,
+                        op1_limb_26_col99,
+                        op1_limb_27_col100,
+                    ]),
+                    op1_id_col72,
+                );
 
                 // Verify Add 252.
 
-                let sub_p_bit_tmp_3fa46_15 = ((UInt16_1)
-                    & (((PackedUInt16::from_m31(op0_limb_0_col43))
-                        ^ (PackedUInt16::from_m31(op1_limb_0_col72)))
-                        ^ (PackedUInt16::from_m31(dst_limb_0_col14))));
-                let sub_p_bit_col100 = sub_p_bit_tmp_3fa46_15.as_m31();
-                *row[100] = sub_p_bit_col100;
+                let sub_p_bit_tmp_3fa46_20 = ((UInt16_1)
+                    & (((PackedUInt16::from_m31(op0_limb_0_col44))
+                        ^ (PackedUInt16::from_m31(op1_limb_0_col73)))
+                        ^ (PackedUInt16::from_m31(dst_limb_0_col15))));
+                let sub_p_bit_col101 = sub_p_bit_tmp_3fa46_20.as_m31();
+                *row[101] = sub_p_bit_col101;
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (M31_1)),
-                    ((input_ap_col1) + (ap_update_add_1_col9)),
+                    (((input_pc_col0) + (M31_1)) + (op1_imm_col8)),
+                    ((input_ap_col1) + (ap_update_add_1_col10)),
                     input_fp_col2,
                 ];
-                *row[101] = padding_col.packed_at(row_index);
+                *row[102] = enabler_col.packed_at(row_index);
             },
         );
 
@@ -612,72 +762,76 @@ impl InteractionClaimGenerator {
         opcodes: &relations::Opcodes,
         verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
-        let padding_col = Enabler::new(self.n_rows);
+        let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.verify_instruction_0,
             &self.lookup_data.memory_address_to_id_0,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = verify_instruction.combine(values0);
-            let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
-        }
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_instruction.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_0,
             &self.lookup_data.memory_address_to_id_1,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-            let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
-        }
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_1,
             &self.lookup_data.memory_address_to_id_2,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-            let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-            col_gen.write_frac(i, denom0 + denom1, denom0 * denom1);
-        }
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        for (i, (values0, values1)) in zip(
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_2,
             &self.lookup_data.opcodes_0,
         )
-        .enumerate()
-        {
-            let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-            let denom1: PackedQM31 = opcodes.combine(values1);
-            col_gen.write_frac(
-                i,
-                denom0 * padding_col.packed_at(i) + denom1,
-                denom0 * denom1,
-            );
-        }
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values0, values1))| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                let denom1: PackedQM31 = opcodes.combine(values1);
+                writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        for (i, values) in self.lookup_data.opcodes_1.iter().enumerate() {
-            let denom = opcodes.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one() * padding_col.packed_at(i), denom);
-        }
+        (col_gen.par_iter_mut(), &self.lookup_data.opcodes_1)
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values))| {
+                let denom = opcodes.combine(values);
+                writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
+            });
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();

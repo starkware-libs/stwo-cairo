@@ -13,6 +13,7 @@ pub mod bitwise_builtin;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
+pub mod constraints_regression_test_values;
 pub mod cube_252;
 pub mod generic_opcode;
 pub mod jnz_opcode;
