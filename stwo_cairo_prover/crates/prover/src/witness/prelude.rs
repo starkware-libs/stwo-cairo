@@ -1,7 +1,8 @@
 pub use std::iter::zip;
 pub use std::simd::Simd;
 
-pub use cairo_air::preprocessed::Seq;
+pub use cairo_air::poseidon::const_columns::PoseidonRoundKeys;
+pub use cairo_air::preprocessed::*;
 pub(crate) use cairo_air::relations;
 pub use num_traits::{One, Zero};
 pub use rayon::prelude::*;

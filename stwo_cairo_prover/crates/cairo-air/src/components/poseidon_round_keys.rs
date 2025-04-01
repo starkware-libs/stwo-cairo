@@ -1,7 +1,6 @@
 use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS;
 
 use crate::components::prelude::*;
-use crate::poseidon::const_columns::PoseidonRoundKeys;
 pub const N_TRACE_COLUMNS: usize = 1;
 
 pub struct Eval {
