@@ -685,6 +685,14 @@ impl Pack for Felt252 {
     }
 }
 
+impl Unpack for PackedFelt252 {
+    type CpuType = Felt252;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        self.to_array()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;
