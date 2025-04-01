@@ -6,13 +6,9 @@ use cairo_vm::vm::trace::trace_entry::TraceEntry;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 
-use crate::builtins::{
-    BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS,
-    EC_OP_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
-    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
-};
 use crate::memory::{MemoryEntry, F252};
 use crate::vm_import::RelocatedTraceEntry;
+use crate::BuiltinSegments;
 
 // Minimal builtins instances per segment, chosen to fit SIMD requirements.
 pub const MIN_SEGMENT_SIZE: usize = N_LANES;
@@ -35,41 +31,8 @@ impl Relocator {
         let address_base = 1;
         let mut relocation_table = vec![address_base];
 
-        let is_builtin_segment = |segment_index: usize| {
-            builtins_segments_indices
-                .get(&segment_index)
-                .map(|name| *name != BuiltinName::segment_arena && *name != BuiltinName::output)
-                .unwrap_or(false)
-        };
-
-        // TODO(Stav): remove this logic from here.
         for (segment_index, segment) in relocatable_mem.iter().enumerate() {
-            let segment_size = if !is_builtin_segment(segment_index) {
-                // If it is not a builtin segment, no need to pad.
-                segment.len()
-            } else {
-                // If it is a builtin segment, pad its size to the next power of two instances.
-                let cells_per_instance = match builtins_segments_indices.get(&segment_index) {
-                    Some(BuiltinName::add_mod) => ADD_MOD_MEMORY_CELLS,
-                    Some(BuiltinName::bitwise) => BITWISE_MEMORY_CELLS,
-                    Some(BuiltinName::ec_op) => EC_OP_MEMORY_CELLS,
-                    Some(BuiltinName::ecdsa) => ECDSA_MEMORY_CELLS,
-                    Some(BuiltinName::keccak) => KECCAK_MEMORY_CELLS,
-                    Some(BuiltinName::mul_mod) => MUL_MOD_MEMORY_CELLS,
-                    Some(BuiltinName::pedersen) => PEDERSEN_MEMORY_CELLS,
-                    Some(BuiltinName::poseidon) => POSEIDON_MEMORY_CELLS,
-                    Some(BuiltinName::range_check96) => RANGE_CHECK_MEMORY_CELLS,
-                    Some(BuiltinName::range_check) => RANGE_CHECK_MEMORY_CELLS,
-                    _ => panic!("Segment index expected to be builtin segment"),
-                };
-
-                segment
-                    .len()
-                    .div_ceil(cells_per_instance)
-                    .next_power_of_two()
-                    .max(MIN_SEGMENT_SIZE)
-                    * cells_per_instance
-            };
+            let segment_size = segment.len();
 
             let addr = relocation_table.last().unwrap() + segment_size as u32;
             assert!(
@@ -212,7 +175,8 @@ pub mod relocator_tests {
             Some(MaybeRelocatable::Int(9.into())),
             Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1))),
         ];
-        let builtin_segment1 = vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1)))];
+        let builtin_segment1 =
+            vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1))); 80];
         let segment2 = vec![
             Some(MaybeRelocatable::Int(1.into())),
             Some(MaybeRelocatable::Int(2.into())),
@@ -279,49 +243,41 @@ pub mod relocator_tests {
     fn cargo_test_relocate_segment() {
         let relocator = create_test_relocator();
         assert_eq!(
-            relocator.get_relocated_segment(1),
-            vec![MemoryEntry {
+            relocator.get_relocated_segment(1)[0],
+            MemoryEntry {
                 address: 4,
                 value: [2, 0, 0, 0, 0, 0, 0, 0]
-            }]
+            }
         );
     }
 
     #[test]
     fn test_relocate_memory() {
         let relocator = create_test_relocator();
+
+        let relocated_memory = relocator.get_relocated_memory();
         assert_eq!(
-            relocator.get_relocated_memory(),
-            vec![
-                MemoryEntry {
-                    address: 1,
-                    value: [1, 0, 0, 0, 0, 0, 0, 0],
-                },
-                MemoryEntry {
-                    address: 2,
-                    value: [9, 0, 0, 0, 0, 0, 0, 0],
-                },
-                MemoryEntry {
-                    address: 3,
-                    value: [85, 0, 0, 0, 0, 0, 0, 0],
-                },
-                MemoryEntry {
-                    address: 4,
-                    value: [2, 0, 0, 0, 0, 0, 0, 0],
-                },
-                MemoryEntry {
-                    address: 84,
-                    value: [1, 0, 0, 0, 0, 0, 0, 0],
-                },
-                MemoryEntry {
-                    address: 85,
-                    value: [2, 0, 0, 0, 0, 0, 0, 0],
-                },
-                MemoryEntry {
-                    address: 86,
-                    value: [3, 0, 0, 0, 0, 0, 0, 0],
-                }
-            ]
+            relocated_memory[2],
+            MemoryEntry {
+                address: 3,
+                value: [85, 0, 0, 0, 0, 0, 0, 0]
+            }
+        );
+
+        assert_eq!(
+            relocated_memory[72],
+            MemoryEntry {
+                address: 73,
+                value: [2, 0, 0, 0, 0, 0, 0, 0],
+            }
+        );
+
+        assert_eq!(
+            relocated_memory[85],
+            MemoryEntry {
+                address: 86,
+                value: [3, 0, 0, 0, 0, 0, 0, 0],
+            }
         );
     }
 
@@ -334,14 +290,22 @@ pub mod relocator_tests {
             Some(MaybeRelocatable::Int(5498.into())),
             Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1478))),
         ];
-        let builtin_segment1 = vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1)))];
+        let segment0 = builtin_segment0
+            .clone()
+            .into_iter()
+            .cycle()
+            .take(16 * 5)
+            .collect::<Vec<_>>();
+
+        let builtin_segment1 =
+            vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1))); 16];
         let segment2 = vec![
             Some(MaybeRelocatable::Int(1.into())),
             Some(MaybeRelocatable::Int(2.into())),
             Some(MaybeRelocatable::Int(3.into())),
         ];
 
-        let relocatble_memory = vec![builtin_segment0, builtin_segment1, segment2];
+        let relocatble_memory = vec![segment0, builtin_segment1, segment2];
         let builtins_segments =
             BTreeMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
 
