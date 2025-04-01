@@ -30,6 +30,13 @@ pub trait PackedM31Type {
 pub struct PackedBool {
     pub(crate) value: Simd<i32, N_LANES>,
 }
+impl PackedBool {
+    pub fn from_m31(value: PackedM31) -> Self {
+        Self {
+            value: value.into_simd().cast().bitand(Simd::splat(1)),
+        }
+    }
+}
 
 impl PackedM31Type for PackedBool {
     fn as_m31(&self) -> PackedM31 {
