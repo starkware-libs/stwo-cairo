@@ -23,7 +23,7 @@ bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "10154c6", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "9fc7999", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
@@ -61,8 +61,8 @@ serde_arrays = "0.1.0"
 codegen-units = 1
 lto = true
 
-# Optimize witness generation and FFTs. This is usually enough to run the tests without stack overflows, 
-# while maintaining a reasonable compile time. 
+# Optimize witness generation and FFTs. This is usually enough to run the tests without stack overflows,
+# while maintaining a reasonable compile time.
 # In the cases where it's not enough, try to manually increase the stack size,
 # See cairo-ci.yaml for an example command.
 [profile.witness-opt-1]
