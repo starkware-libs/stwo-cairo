@@ -65,12 +65,8 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     } = cairo_components;
     let OpcodeComponents {
         add,
-        add_imm,
         add_small,
-        add_small_imm,
         add_ap,
-        add_ap_op_1_base_fp,
-        add_ap_imm,
         assert_eq,
         assert_eq_imm,
         assert_eq_double_deref,
@@ -80,27 +76,19 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         call_rel,
         generic,
         jnz,
-        jnz_dst_base_fp,
         jnz_taken,
-        jnz_taken_dst_base_fp,
         jump,
         jump_double_deref,
         jump_rel,
         jump_rel_imm,
         mul,
-        mul_imm,
         mul_small,
-        mul_small_imm,
         qm31,
         ret,
     } = opcodes;
     assert_many(add, &trace);
-    assert_many(add_imm, &trace);
     assert_many(add_small, &trace);
-    assert_many(add_small_imm, &trace);
     assert_many(add_ap, &trace);
-    assert_many(add_ap_op_1_base_fp, &trace);
-    assert_many(add_ap_imm, &trace);
     assert_many(assert_eq, &trace);
     assert_many(assert_eq_imm, &trace);
     assert_many(assert_eq_double_deref, &trace);
@@ -110,17 +98,13 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_many(call_rel, &trace);
     assert_many(generic, &trace);
     assert_many(jnz, &trace);
-    assert_many(jnz_dst_base_fp, &trace);
     assert_many(jnz_taken, &trace);
-    assert_many(jnz_taken_dst_base_fp, &trace);
     assert_many(jump, &trace);
     assert_many(jump_double_deref, &trace);
     assert_many(jump_rel, &trace);
     assert_many(jump_rel_imm, &trace);
     assert_many(mul, &trace);
-    assert_many(mul_imm, &trace);
     assert_many(mul_small, &trace);
-    assert_many(mul_small_imm, &trace);
     assert_many(qm31, &trace);
     assert_many(ret, &trace);
 
