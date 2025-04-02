@@ -1,5 +1,6 @@
 #![allow(unused_parens)]
 use cairo_air::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use stwo_cairo_adapter::memory::Memory;
 
 use crate::witness::components::{
     blake_g, blake_round_sigma, memory_address_to_id, memory_id_to_big, range_check_7_2_5,
@@ -8,21 +9,27 @@ use crate::witness::prelude::*;
 
 pub type PackedInputType = (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31));
 
-#[derive(Default)]
 pub struct ClaimGenerator {
     pub packed_inputs: Vec<PackedInputType>,
+    state: BlakeRound,
 }
 impl ClaimGenerator {
-    pub fn new() -> Self {
+    pub fn new(memory: Memory) -> Self {
+        let state = BlakeRound::new(memory);
         Self {
             packed_inputs: vec![],
+            state,
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.packed_inputs.is_empty()
     }
 
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        blake_g_state: &blake_g::ClaimGenerator,
+        blake_g_state: &mut blake_g::ClaimGenerator,
         blake_round_sigma_state: &blake_round_sigma::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
@@ -86,6 +93,13 @@ impl ClaimGenerator {
 
     pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
         self.packed_inputs.extend(inputs);
+    }
+
+    pub fn deduce_output(
+        &self,
+        input: (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)),
+    ) -> (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)) {
+        self.state.deduce_output(input.0, input.1, input.2)
     }
 }
 
@@ -218,7 +232,7 @@ fn write_trace_simd(
                 *row[34] = input_limb_34_col34;
                 *sub_component_inputs.blake_round_sigma[0] = [input_limb_1_col1];
                 let blake_round_sigma_output_tmp_92ff8_0 =
-                    PackedBlakeRoundSigma::deduce_output([input_limb_1_col1]);
+                    PackedBlakeRoundSigma::deduce_output(input_limb_1_col1);
                 let blake_round_sigma_output_limb_0_col35 = blake_round_sigma_output_tmp_92ff8_0[0];
                 *row[35] = blake_round_sigma_output_limb_0_col35;
                 let blake_round_sigma_output_limb_1_col36 = blake_round_sigma_output_tmp_92ff8_0[1];

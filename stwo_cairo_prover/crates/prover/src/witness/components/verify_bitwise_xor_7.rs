@@ -1,8 +1,9 @@
 #![allow(unused_parens)]
 #![allow(dead_code)]
-use cairo_air::components::verify_bitwise_xor_7::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::verify_bitwise_xor_7::{
+    Claim, InteractionClaim, LOG_SIZE, N_BITS, N_TRACE_COLUMNS,
+};
 
-use super::component::LOG_SIZE;
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 3];
@@ -31,19 +32,13 @@ impl ClaimGenerator {
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, _input: &InputType) {
-        todo!()
-    }
-
-    pub fn add_inputs(&self, inputs: &[InputType]) {
-        for input in inputs {
-            self.add_input(input);
-        }
+    pub fn add_input(&self, input: &InputType) {
+        self.mults.increase_at((input[0].0 << N_BITS) + input[1].0);
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_par_iter().for_each(|input| {
+            packed_input.unpack().into_iter().for_each(|input| {
                 self.add_input(&input);
             });
         });
