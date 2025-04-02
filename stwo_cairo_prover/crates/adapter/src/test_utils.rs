@@ -19,9 +19,8 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
         Err(e) => panic!("Failed to load program: {:?}", e),
     };
 
-    // TODO(Stav): don't use proof mode after the adpater update.
     let mut cairo_runner =
-        CairoRunner::new(&program, LayoutName::all_cairo, None, true, true, true).expect("Fail");
+        CairoRunner::new(&program, LayoutName::all_cairo, None, false, true, false).expect("Fail");
     let end = cairo_runner
         .initialize(true)
         .expect("Initialization failed");
@@ -29,18 +28,9 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
         .run_until_pc(end, &mut BuiltinHintProcessor::new_empty())
         .expect("Run failed");
 
-    // TODO(Stav): delete these part after the adpater update.
     cairo_runner
         .end_run(true, false, &mut BuiltinHintProcessor::new_empty())
         .expect("fail");
-    cairo_runner
-        .read_return_values(true)
-        .expect("Failed to read return values");
-    cairo_runner
-        .finalize_segments()
-        .expect("Failed to finalize segments");
-    cairo_runner.relocate(true).unwrap();
-
     cairo_runner
 }
 
