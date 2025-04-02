@@ -150,7 +150,6 @@ pub struct Claim {
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let preprocessed_log_sizes = vec![];
         let trace_log_sizes = chain!(
             vec![self.big_log_size; BIG_N_COLUMNS],
             vec![self.small_log_size; SMALL_N_COLUMNS]
@@ -172,11 +171,7 @@ impl Claim {
         )
         .collect();
 
-        TreeVec::new(vec![
-            preprocessed_log_sizes,
-            trace_log_sizes,
-            interaction_log_sizes,
-        ])
+        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -205,5 +200,48 @@ impl CairoSerialize for InteractionClaim {
         } = self;
         CairoSerialize::serialize(big_claimed_sum, output);
         CairoSerialize::serialize(small_claimed_sum, output);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::{
+        BIG_MEMORY_ID_TO_BIG, SMALL_MEMORY_ID_TO_BIG,
+    };
+
+    #[test]
+    fn memory_id_to_big_constraints_regression() {
+        let big_eval = BigEval {
+            log_n_rows: 4,
+            lookup_elements: relations::MemoryIdToBig::dummy(),
+            range9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+        };
+        let small_eval = SmallEval {
+            log_n_rows: 4,
+            lookup_elements: relations::MemoryIdToBig::dummy(),
+            range_check_9_9_relation: relations::RangeCheck_9_9::dummy(),
+        };
+
+        let big_expr_eval = big_eval.evaluate(ExprEvaluator::new());
+        let small_expr_eval = small_eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut big_sum = QM31::zero();
+        let mut small_sum = QM31::zero();
+        for c in big_expr_eval.constraints {
+            big_sum += c.random_eval() * rng.gen::<QM31>();
+        }
+        for c in small_expr_eval.constraints {
+            small_sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(big_sum, BIG_MEMORY_ID_TO_BIG);
+        assert_eq!(small_sum, SMALL_MEMORY_ID_TO_BIG);
     }
 }
