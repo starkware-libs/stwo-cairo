@@ -52,12 +52,12 @@ impl OpcodesClaimGenerator {
     pub fn new(input: StateTransitions) -> Self {
         // TODO(Ohad): decide split sizes for opcode traces.
         let mut add = vec![];
-        let mut add_imm = vec![];
+        let add_imm = vec![];
         let mut add_small = vec![];
-        let mut add_small_imm = vec![];
+        let add_small_imm = vec![];
         let mut add_ap = vec![];
-        let mut add_ap_op_1_base_fp = vec![];
-        let mut add_ap_imm = vec![];
+        let add_ap_op_1_base_fp = vec![];
+        let add_ap_imm = vec![];
         let mut assert_eq = vec![];
         let mut assert_eq_imm = vec![];
         let mut assert_eq_double_deref = vec![];
@@ -67,17 +67,17 @@ impl OpcodesClaimGenerator {
         let mut call_rel = vec![];
         let mut generic = vec![];
         let mut jnz = vec![];
-        let mut jnz_dst_base_fp = vec![];
+        let jnz_dst_base_fp = vec![];
         let mut jnz_taken = vec![];
-        let mut jnz_taken_dst_base_fp = vec![];
+        let jnz_taken_dst_base_fp = vec![];
         let mut jump = vec![];
         let mut jump_double_deref = vec![];
         let mut jump_rel = vec![];
         let mut jump_rel_imm = vec![];
         let mut mul = vec![];
-        let mut mul_imm = vec![];
+        let mul_imm = vec![];
         let mut mul_small = vec![];
-        let mut mul_small_imm = vec![];
+        let mul_small_imm = vec![];
         let mut qm31 = vec![];
         let mut ret = vec![];
         if !input.casm_states_by_opcode.add_opcode.is_empty() {
@@ -85,38 +85,14 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.add_opcode,
             ));
         }
-        if !input.casm_states_by_opcode.add_opcode_imm.is_empty() {
-            add_imm.push(add_opcode_imm::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_opcode_imm,
-            ));
-        }
         if !input.casm_states_by_opcode.add_opcode_small.is_empty() {
             add_small.push(add_opcode_small::ClaimGenerator::new(
                 input.casm_states_by_opcode.add_opcode_small,
             ));
         }
-        if !input.casm_states_by_opcode.add_opcode_small_imm.is_empty() {
-            add_small_imm.push(add_opcode_small_imm::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_opcode_small_imm,
-            ));
-        }
         if !input.casm_states_by_opcode.add_ap_opcode.is_empty() {
             add_ap.push(add_ap_opcode::ClaimGenerator::new(
                 input.casm_states_by_opcode.add_ap_opcode,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .add_ap_opcode_op_1_base_fp
-            .is_empty()
-        {
-            add_ap_op_1_base_fp.push(add_ap_opcode_op_1_base_fp::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_ap_opcode_op_1_base_fp,
-            ));
-        }
-        if !input.casm_states_by_opcode.add_ap_opcode_imm.is_empty() {
-            add_ap_imm.push(add_ap_opcode_imm::ClaimGenerator::new(
-                input.casm_states_by_opcode.add_ap_opcode_imm,
             ));
         }
         if !input.casm_states_by_opcode.assert_eq_opcode.is_empty() {
@@ -172,27 +148,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.jnz_opcode,
             ));
         }
-        if !input
-            .casm_states_by_opcode
-            .jnz_opcode_dst_base_fp
-            .is_empty()
-        {
-            jnz_dst_base_fp.push(jnz_opcode_dst_base_fp::ClaimGenerator::new(
-                input.casm_states_by_opcode.jnz_opcode_dst_base_fp,
-            ));
-        }
         if !input.casm_states_by_opcode.jnz_opcode_taken.is_empty() {
             jnz_taken.push(jnz_opcode_taken::ClaimGenerator::new(
                 input.casm_states_by_opcode.jnz_opcode_taken,
-            ));
-        }
-        if !input
-            .casm_states_by_opcode
-            .jnz_opcode_taken_dst_base_fp
-            .is_empty()
-        {
-            jnz_taken_dst_base_fp.push(jnz_opcode_taken_dst_base_fp::ClaimGenerator::new(
-                input.casm_states_by_opcode.jnz_opcode_taken_dst_base_fp,
             ));
         }
         if !input.casm_states_by_opcode.jump_opcode.is_empty() {
@@ -225,19 +183,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.mul_opcode,
             ));
         }
-        if !input.casm_states_by_opcode.mul_opcode_imm.is_empty() {
-            mul_imm.push(mul_opcode_imm::ClaimGenerator::new(
-                input.casm_states_by_opcode.mul_opcode_imm,
-            ));
-        }
         if !input.casm_states_by_opcode.mul_opcode_small.is_empty() {
             mul_small.push(mul_opcode_small::ClaimGenerator::new(
                 input.casm_states_by_opcode.mul_opcode_small,
-            ));
-        }
-        if !input.casm_states_by_opcode.mul_opcode_small_imm.is_empty() {
-            mul_small_imm.push(mul_opcode_small_imm::ClaimGenerator::new(
-                input.casm_states_by_opcode.mul_opcode_small_imm,
             ));
         }
         if !input.casm_states_by_opcode.qm31_add_mul_opcode.is_empty() {
