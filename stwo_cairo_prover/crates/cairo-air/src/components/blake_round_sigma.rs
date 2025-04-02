@@ -1,9 +1,10 @@
 use crate::components::prelude::*;
 
-pub const BLAKE_SIGMA_LOG_SIZE: u32 = 4;
 pub const N_TRACE_COLUMNS: usize = 1;
+pub const LOG_SIZE: u32 = 0;
 
 pub struct Eval {
+    pub claim: Claim,
     pub blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
 }
 
@@ -11,12 +12,14 @@ pub struct Eval {
 pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![BLAKE_SIGMA_LOG_SIZE; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![BLAKE_SIGMA_LOG_SIZE; SECURE_EXTENSION_DEGREE];
+        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
+        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
-    pub fn mix_into(&self, _channel: &mut impl Channel) {}
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_u64(LOG_SIZE as u64);
+    }
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -33,7 +36,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        BLAKE_SIGMA_LOG_SIZE
+        LOG_SIZE
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -46,6 +49,12 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let blakesigma_0 = eval.get_preprocessed_column((BlakeSigma::new(0)).id());
         let blakesigma_1 = eval.get_preprocessed_column((BlakeSigma::new(1)).id());
+        let blakesigma_10 = eval.get_preprocessed_column((BlakeSigma::new(10)).id());
+        let blakesigma_11 = eval.get_preprocessed_column((BlakeSigma::new(11)).id());
+        let blakesigma_12 = eval.get_preprocessed_column((BlakeSigma::new(12)).id());
+        let blakesigma_13 = eval.get_preprocessed_column((BlakeSigma::new(13)).id());
+        let blakesigma_14 = eval.get_preprocessed_column((BlakeSigma::new(14)).id());
+        let blakesigma_15 = eval.get_preprocessed_column((BlakeSigma::new(15)).id());
         let blakesigma_2 = eval.get_preprocessed_column((BlakeSigma::new(2)).id());
         let blakesigma_3 = eval.get_preprocessed_column((BlakeSigma::new(3)).id());
         let blakesigma_4 = eval.get_preprocessed_column((BlakeSigma::new(4)).id());
@@ -54,18 +63,12 @@ impl FrameworkEval for Eval {
         let blakesigma_7 = eval.get_preprocessed_column((BlakeSigma::new(7)).id());
         let blakesigma_8 = eval.get_preprocessed_column((BlakeSigma::new(8)).id());
         let blakesigma_9 = eval.get_preprocessed_column((BlakeSigma::new(9)).id());
-        let blakesigma_10 = eval.get_preprocessed_column((BlakeSigma::new(10)).id());
-        let blakesigma_11 = eval.get_preprocessed_column((BlakeSigma::new(11)).id());
-        let blakesigma_12 = eval.get_preprocessed_column((BlakeSigma::new(12)).id());
-        let blakesigma_13 = eval.get_preprocessed_column((BlakeSigma::new(13)).id());
-        let blakesigma_14 = eval.get_preprocessed_column((BlakeSigma::new(14)).id());
-        let blakesigma_15 = eval.get_preprocessed_column((BlakeSigma::new(15)).id());
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let mult = eval.next_trace_mask();
+        let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_sigma_lookup_elements,
-            E::EF::from(-mult),
+            -E::EF::from(multiplicity),
             &[
                 seq.clone(),
                 blakesigma_0.clone(),
@@ -89,5 +92,34 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::BLAKE_ROUND_SIGMA;
+
+    #[test]
+    fn blake_round_sigma_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, BLAKE_ROUND_SIGMA);
     }
 }
