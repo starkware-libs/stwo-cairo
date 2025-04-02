@@ -1,7 +1,9 @@
+use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
+
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 0;
+pub const LOG_SIZE: u32 = N_ROUNDS.next_power_of_two().ilog2();
 
 pub struct Eval {
     pub claim: Claim,
@@ -137,7 +139,7 @@ mod tests {
     #[test]
     fn poseidon_round_keys_constraints_regression() {
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            claim: Claim {},
             poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
         };
 

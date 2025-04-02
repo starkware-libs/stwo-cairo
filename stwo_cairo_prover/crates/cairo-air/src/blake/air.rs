@@ -202,6 +202,7 @@ impl Components {
         let blake_sigma_component = blake_round_sigma::Component::new(
             tree_span_provider,
             blake_round_sigma::Eval {
+                claim: claim.claim.as_ref().unwrap().blake_sigma,
                 blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
             },
             interaction_claim.blake_sigma.claimed_sum,
@@ -221,6 +222,7 @@ impl Components {
         let verify_bitwise_xor_12_component = verify_bitwise_xor_12::Component::new(
             tree_span_provider,
             verify_bitwise_xor_12::Eval {
+                claim: claim.claim.as_ref().unwrap().verify_bitwise_xor_12,
                 verify_bitwise_xor_12_lookup_elements: interaction_elements
                     .verify_bitwise_xor_12
                     .clone(),

@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
-pub const LOG_SIZE: u32 = 0;
+const N_LOOKUPS: usize = 5;
 
 pub struct Eval {
     pub claim: Claim,
@@ -13,16 +13,19 @@ pub struct Eval {
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct Claim {}
+pub struct Claim {
+    pub log_size: u32,
+}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * 3];
+        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
+        let interaction_log_sizes =
+            vec![self.log_size; SECURE_EXTENSION_DEGREE * N_LOOKUPS.div_ceil(2)];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(LOG_SIZE as u64);
+        channel.mix_u64(self.log_size as u64);
     }
 }
 
@@ -40,7 +43,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        LOG_SIZE
+        self.claim.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {

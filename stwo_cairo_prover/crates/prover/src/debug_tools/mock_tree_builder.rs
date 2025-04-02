@@ -119,7 +119,7 @@ mod tests {
 
         assert_eq!(trace.len(), 3);
         assert_eq!(trace[0].len(), 0);
-        assert_eq!(trace[1].len(), 20);
+        assert_eq!(trace[1].len(), 21);
         assert_eq!(trace[2].len(), 20);
         assert_eq!(trace[1][0].len(), 16);
         assert_eq!(trace[2][0].len(), 16);
