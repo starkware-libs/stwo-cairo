@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 0;
+pub const LOG_SIZE: u32 = 4;
 
 pub struct Eval {
     pub claim: Claim,
@@ -49,12 +49,6 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let blakesigma_0 = eval.get_preprocessed_column((BlakeSigma::new(0)).id());
         let blakesigma_1 = eval.get_preprocessed_column((BlakeSigma::new(1)).id());
-        let blakesigma_10 = eval.get_preprocessed_column((BlakeSigma::new(10)).id());
-        let blakesigma_11 = eval.get_preprocessed_column((BlakeSigma::new(11)).id());
-        let blakesigma_12 = eval.get_preprocessed_column((BlakeSigma::new(12)).id());
-        let blakesigma_13 = eval.get_preprocessed_column((BlakeSigma::new(13)).id());
-        let blakesigma_14 = eval.get_preprocessed_column((BlakeSigma::new(14)).id());
-        let blakesigma_15 = eval.get_preprocessed_column((BlakeSigma::new(15)).id());
         let blakesigma_2 = eval.get_preprocessed_column((BlakeSigma::new(2)).id());
         let blakesigma_3 = eval.get_preprocessed_column((BlakeSigma::new(3)).id());
         let blakesigma_4 = eval.get_preprocessed_column((BlakeSigma::new(4)).id());
@@ -63,6 +57,12 @@ impl FrameworkEval for Eval {
         let blakesigma_7 = eval.get_preprocessed_column((BlakeSigma::new(7)).id());
         let blakesigma_8 = eval.get_preprocessed_column((BlakeSigma::new(8)).id());
         let blakesigma_9 = eval.get_preprocessed_column((BlakeSigma::new(9)).id());
+        let blakesigma_10 = eval.get_preprocessed_column((BlakeSigma::new(10)).id());
+        let blakesigma_11 = eval.get_preprocessed_column((BlakeSigma::new(11)).id());
+        let blakesigma_12 = eval.get_preprocessed_column((BlakeSigma::new(12)).id());
+        let blakesigma_13 = eval.get_preprocessed_column((BlakeSigma::new(13)).id());
+        let blakesigma_14 = eval.get_preprocessed_column((BlakeSigma::new(14)).id());
+        let blakesigma_15 = eval.get_preprocessed_column((BlakeSigma::new(15)).id());
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let multiplicity = eval.next_trace_mask();
 
@@ -109,7 +109,7 @@ mod tests {
     #[test]
     fn blake_round_sigma_constraints_regression() {
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            claim: Claim {},
             blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
         };
 

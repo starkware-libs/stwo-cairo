@@ -1,7 +1,11 @@
 #![allow(unused_parens)]
-use cairo_air::components::verify_instruction::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use std::sync::atomic::{AtomicU32, Ordering};
 
-use super::component::LOG_SIZE;
+use cairo_air::components::verify_instruction::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use itertools::Itertools;
+use stwo_cairo_adapter::decode::deconstruct_instruction;
+use stwo_cairo_adapter::HashMap;
+
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,
 };
@@ -10,14 +14,23 @@ use crate::witness::prelude::*;
 pub type InputType = (M31, [M31; 3], [M31; 2], M31);
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 2], PackedM31);
 
+#[derive(Default)]
 pub struct ClaimGenerator {
-    pub mults: AtomicMultiplicityColumn,
+    /// pc -> encoded instruction.
+    instructions: HashMap<M31, u128>,
+
+    /// pc -> multiplicity.
+    multiplicities: HashMap<M31, AtomicU32>,
 }
 impl ClaimGenerator {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
+    pub fn new(instructions: HashMap<M31, u128>) -> Self {
+        let keys = instructions.keys().copied();
+        let mut multiplicities = HashMap::with_capacity(keys.len());
+        multiplicities.extend(keys.zip(std::iter::repeat_with(|| AtomicU32::new(0))));
+
         Self {
-            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
+            multiplicities,
+            instructions,
         }
     }
 
@@ -29,10 +42,35 @@ impl ClaimGenerator {
         range_check_4_3_state: &range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        let mults = self.mults.into_simd_vec();
+        // TODO(Ohad): use opcode_extension as it is used in stwo-air-cairo.
+        let (mut inputs, mut mults) = self
+            .multiplicities
+            .into_iter()
+            .sorted_by_key(|(pc, _)| *pc)
+            .map(|(pc, multiplicity)| {
+                let (offsets, flags, opcode_extension) =
+                    deconstruct_instruction(*self.instructions.get(&pc).unwrap());
+                let multiplicity = M31(multiplicity.into_inner());
+                ((pc, offsets, flags, opcode_extension), multiplicity)
+            })
+            .unzip::<_, _, Vec<_>, Vec<_>>();
+        let n_rows = inputs.len();
+        assert_ne!(n_rows, 0);
+        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
+        let log_size = size.ilog2();
+        let need_padding = n_rows != size;
+
+        if need_padding {
+            inputs.resize(size, *inputs.first().unwrap());
+            mults.resize(size, M31::zero());
+        }
+
+        let packed_inputs = pack_values(&inputs);
+        let packed_mults = pack_values(&mults);
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            mults,
+            packed_inputs,
+            packed_mults,
             memory_address_to_id_state,
             memory_id_to_big_state,
             range_check_4_3_state,
@@ -64,17 +102,13 @@ impl ClaimGenerator {
             });
         tree_builder.extend_evals(trace.to_evals());
 
-        (Claim {}, InteractionClaimGenerator { lookup_data })
-    }
-
-    pub fn add_input(&self, _input: &InputType) {
-        todo!()
-    }
-
-    pub fn add_inputs(&self, inputs: &[InputType]) {
-        for input in inputs {
-            self.add_input(input);
-        }
+        (
+            Claim { log_size },
+            InteractionClaimGenerator {
+                log_size,
+                lookup_data,
+            },
+        )
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
@@ -83,6 +117,14 @@ impl ClaimGenerator {
                 self.add_input(&input);
             });
         });
+    }
+
+    // Instruction is determined by PC.
+    pub fn add_input(&self, (pc, ..): &InputType) {
+        self.multiplicities
+            .get(pc)
+            .unwrap()
+            .fetch_add(1, Ordering::Relaxed);
     }
 }
 
@@ -99,6 +141,7 @@ struct SubComponentInputs {
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
 fn write_trace_simd(
+    inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
@@ -109,10 +152,12 @@ fn write_trace_simd(
     LookupData,
     SubComponentInputs,
 ) {
-    let log_n_packed_rows = LOG_SIZE - LOG_N_LANES;
+    let log_n_packed_rows = inputs.len().ilog2();
+    let log_size = log_n_packed_rows + LOG_N_LANES;
+
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
-            ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(LOG_SIZE),
+            ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
             SubComponentInputs::uninitialized(log_n_packed_rows),
         )
@@ -132,13 +177,17 @@ fn write_trace_simd(
 
     (
         trace.par_iter_mut(),
+        inputs,
         lookup_data.par_iter_mut(),
         sub_component_inputs.par_iter_mut(),
     )
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs))| {
+            |(
+                row_index,
+                (mut row, verify_instruction_input, lookup_data, sub_component_inputs),
+            )| {
                 let input_limb_0_col0 = verify_instruction_input.0;
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = verify_instruction_input.1[0];
@@ -273,6 +322,7 @@ struct LookupData {
 }
 
 pub struct InteractionClaimGenerator {
+    log_size: u32,
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -285,7 +335,7 @@ impl InteractionClaimGenerator {
         range_check_7_2_5: &relations::RangeCheck_7_2_5,
         verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
-        let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
+        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
