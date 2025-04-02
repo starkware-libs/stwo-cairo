@@ -6,9 +6,11 @@ use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
 
 use super::memory::{MemoryBuilder, MemoryConfig};
-use super::vm_import::{adapt_to_stwo_input, VmImportError};
+use super::vm_import::VmImportError;
 use super::ProverInput;
-use crate::memory::MemoryEntry;
+use crate::builtins::BuiltinSegments;
+use crate::relocator::Relocator;
+use crate::StateTransitions;
 
 /// Translates a plain casm into a ProverInput by running the program and extracting the memory and
 /// the state transitions.
@@ -78,37 +80,38 @@ fn program_from_casm(
 /// component only.
 pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImportError> {
     let _span = tracing::info_span!("adapt_finished_runner").entered();
-    let memory_iter = runner
-        .relocated_memory
-        .iter()
-        .enumerate()
-        .filter_map(|(i, v)| {
-            v.map(|v| MemoryEntry {
-                address: i as u64,
-                value: bytemuck::cast(v.to_bytes_le()),
-            })
-        });
 
-    let public_input = runner.get_air_public_input()?;
+    let mut prover_input_info = runner
+        .get_prover_input_info()
+        .expect("Unable to get prover input info");
 
-    let trace_iter = match runner.relocated_trace {
-        Some(ref trace) => trace.iter().map(|t| t.clone().into()),
-        None => return Err(VmImportError::TraceNotRelocated),
-    };
+    BuiltinSegments::pad_relocatble_builtin_segments(
+        &mut prover_input_info.relocatable_memory,
+        prover_input_info.builtins_segments.clone(),
+    );
+    let relocator = Relocator::new(
+        prover_input_info.relocatable_memory.clone(),
+        prover_input_info.builtins_segments.clone(),
+    );
+    let mut memory =
+        MemoryBuilder::from_iter(MemoryConfig::default(), relocator.get_relocated_memory());
 
-    let memory_segments = &public_input.memory_segments;
+    let (state_transitions, instruction_by_pc) = StateTransitions::from_iter(
+        relocator
+            .relocate_trace(&prover_input_info.relocatable_trace)
+            .into_iter(),
+        &mut memory,
+    );
 
-    let public_memory_addresses = public_input
-        .public_memory
-        .iter()
-        .map(|s| s.address as u32)
-        .collect_vec();
+    let builtins_segments = relocator.get_builtin_segments();
 
     // TODO(spapini): Add output builtin to public memory.
-    adapt_to_stwo_input(
-        trace_iter,
-        MemoryBuilder::from_iter(MemoryConfig::default(), memory_iter),
-        public_memory_addresses,
-        memory_segments,
-    )
+    Ok(ProverInput {
+        state_transitions,
+        instruction_by_pc,
+        memory: memory.build(),
+        public_memory_addresses: relocator
+            .relocate_public_addresses(prover_input_info.public_memory_offsets),
+        builtins_segments,
+    })
 }

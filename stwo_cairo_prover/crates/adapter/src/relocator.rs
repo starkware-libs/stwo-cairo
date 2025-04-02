@@ -99,7 +99,11 @@ impl Relocator {
         for (segment_index, builtin_name) in self.builtins_segments_indices.iter() {
             let start_addr = self.relocation_table[*segment_index];
             let end_addr = self.relocation_table[*segment_index + 1];
-            let segment = Some((start_addr as usize, end_addr as usize).into());
+            let segment = if start_addr == end_addr {
+                None
+            } else {
+                Some((start_addr as usize, end_addr as usize).into())
+            };
 
             match builtin_name {
                 BuiltinName::range_check => res.range_check_bits_128 = segment,
