@@ -537,6 +537,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_split_output_tmp_d00c6_6_limb_83 = eval.add_intermediate(
+            ((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone()),
+        );
+
         // Read Split.
 
         eval.add_to_relation(RelationEntry::new(
@@ -592,6 +596,10 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let read_split_output_tmp_d00c6_12_limb_83 = eval.add_intermediate(
+            ((ms_limb_high_col58.clone() * M31_32.clone()) + ms_limb_low_col57.clone()),
+        );
+
         // Verify Reduced 252.
 
         // ms_max is bit.
@@ -606,10 +614,7 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_8_lookup_elements,
             E::EF::one(),
-            &[
-                (((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone())
-                    - ms_limb_is_max_col60.clone()),
-            ],
+            &[(read_split_output_tmp_d00c6_6_limb_83.clone() - ms_limb_is_max_col60.clone())],
         ));
 
         // If the MS limb is max, high limbs should be 0.
@@ -692,10 +697,7 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_8_lookup_elements,
             E::EF::one(),
-            &[
-                (((ms_limb_high_col58.clone() * M31_32.clone()) + ms_limb_low_col57.clone())
-                    - ms_limb_is_max_col63.clone()),
-            ],
+            &[(read_split_output_tmp_d00c6_12_limb_83.clone() - ms_limb_is_max_col63.clone())],
         ));
 
         // If the MS limb is max, high limbs should be 0.
@@ -1453,5 +1455,41 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::PEDERSEN_BUILTIN;
+
+    #[test]
+    fn pedersen_builtin_constraints_regression() {
+        let eval = Eval {
+            claim: Claim {
+                log_size: 4,
+                pedersen_builtin_segment_start: 0u32,
+            },
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
+            range_check_5_4_lookup_elements: relations::RangeCheck_5_4::dummy(),
+            range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, PEDERSEN_BUILTIN);
     }
 }
