@@ -182,6 +182,7 @@ pub mod tests {
     use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
     use stwo_cairo_adapter::ProverInput;
+    use test_log::test;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
 
@@ -270,6 +271,7 @@ pub mod tests {
         use itertools::Itertools;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+        use test_log::test;
 
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
@@ -340,6 +342,7 @@ pub mod tests {
             use cairo_vm::air_public_input::MemorySegmentAddresses;
             use stwo_cairo_adapter::memory::MemoryEntryIter;
             use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
+            use test_log::test;
 
             use super::*;
 
