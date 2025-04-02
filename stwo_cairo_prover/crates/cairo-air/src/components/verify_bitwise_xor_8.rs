@@ -1,9 +1,10 @@
 use crate::components::prelude::*;
 
-pub const BITWISE_XOR_8_N_BITS: u32 = 8;
-pub const BITWISE_XOR_8_LOG_SIZE: u32 = BITWISE_XOR_8_N_BITS * 2;
+pub const N_TRACE_COLUMNS: usize = 1;
+pub const LOG_SIZE: u32 = 0;
 
 pub struct Eval {
+    pub claim: Claim,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
 }
 
@@ -11,13 +12,13 @@ pub struct Eval {
 pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![BITWISE_XOR_8_LOG_SIZE; 1];
-        let interaction_log_sizes = vec![BITWISE_XOR_8_LOG_SIZE; SECURE_EXTENSION_DEGREE];
+        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
+        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(BITWISE_XOR_8_LOG_SIZE as u64);
+        channel.mix_u64(LOG_SIZE as u64);
     }
 }
 
@@ -35,26 +36,62 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        BITWISE_XOR_8_LOG_SIZE
+        LOG_SIZE
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
         self.log_size() + 1
     }
 
+    #[allow(unused_parens)]
+    #[allow(clippy::double_parens)]
+    #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let xor_a = eval.get_preprocessed_column(BitwiseXor::new(BITWISE_XOR_8_N_BITS, 0).id());
-        let xor_b = eval.get_preprocessed_column(BitwiseXor::new(BITWISE_XOR_8_N_BITS, 1).id());
-        let xor_c = eval.get_preprocessed_column(BitwiseXor::new(BITWISE_XOR_8_N_BITS, 2).id());
+        let bitwisexor_8_0 = eval.get_preprocessed_column((BitwiseXor::new(8, 0)).id());
+        let bitwisexor_8_1 = eval.get_preprocessed_column((BitwiseXor::new(8, 1)).id());
+        let bitwisexor_8_2 = eval.get_preprocessed_column((BitwiseXor::new(8, 2)).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.verify_bitwise_xor_8_lookup_elements,
             -E::EF::from(multiplicity),
-            &[xor_a, xor_b, xor_c],
+            &[
+                bitwisexor_8_0.clone(),
+                bitwisexor_8_1.clone(),
+                bitwisexor_8_2.clone(),
+            ],
         ));
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::VERIFY_BITWISE_XOR_8;
+
+    #[test]
+    fn verify_bitwise_xor_8_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, VERIFY_BITWISE_XOR_8);
     }
 }

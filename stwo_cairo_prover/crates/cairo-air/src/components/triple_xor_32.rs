@@ -1,6 +1,6 @@
 use crate::components::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 20;
+pub const N_TRACE_COLUMNS: usize = 21;
 
 pub struct Eval {
     pub claim: Claim,
@@ -70,6 +70,45 @@ impl FrameworkEval for Eval {
         let xor_col17 = eval.next_trace_mask();
         let xor_col18 = eval.next_trace_mask();
         let xor_col19 = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
+
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_298db_1_limb_0 = eval.add_intermediate(
+            (input_limb_0_col0.clone() - (ms_8_bits_col6.clone() * M31_256.clone())),
+        );
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_298db_3_limb_0 = eval.add_intermediate(
+            (input_limb_1_col1.clone() - (ms_8_bits_col7.clone() * M31_256.clone())),
+        );
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_298db_5_limb_0 = eval.add_intermediate(
+            (input_limb_2_col2.clone() - (ms_8_bits_col8.clone() * M31_256.clone())),
+        );
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_298db_7_limb_0 = eval.add_intermediate(
+            (input_limb_3_col3.clone() - (ms_8_bits_col9.clone() * M31_256.clone())),
+        );
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_298db_9_limb_0 = eval.add_intermediate(
+            (input_limb_4_col4.clone() - (ms_8_bits_col10.clone() * M31_256.clone())),
+        );
+
+        // Split 16 Low Part Size 8.
+
+        let split_16_low_part_size_8_output_tmp_298db_11_limb_0 = eval.add_intermediate(
+            (input_limb_5_col5.clone() - (ms_8_bits_col11.clone() * M31_256.clone())),
+        );
 
         // Bitwise Xor Num Bits 8.
 
@@ -77,8 +116,8 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_8_lookup_elements,
             E::EF::one(),
             &[
-                (input_limb_0_col0.clone() - (ms_8_bits_col6.clone() * M31_256.clone())),
-                (input_limb_2_col2.clone() - (ms_8_bits_col8.clone() * M31_256.clone())),
+                split_16_low_part_size_8_output_tmp_298db_1_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_298db_5_limb_0.clone(),
                 xor_col12.clone(),
             ],
         ));
@@ -90,7 +129,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 xor_col12.clone(),
-                (input_limb_4_col4.clone() - (ms_8_bits_col10.clone() * M31_256.clone())),
+                split_16_low_part_size_8_output_tmp_298db_9_limb_0.clone(),
                 xor_col13.clone(),
             ],
         ));
@@ -125,8 +164,8 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_8_lookup_elements,
             E::EF::one(),
             &[
-                (input_limb_1_col1.clone() - (ms_8_bits_col7.clone() * M31_256.clone())),
-                (input_limb_3_col3.clone() - (ms_8_bits_col9.clone() * M31_256.clone())),
+                split_16_low_part_size_8_output_tmp_298db_3_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_298db_7_limb_0.clone(),
                 xor_col16.clone(),
             ],
         ));
@@ -138,7 +177,7 @@ impl FrameworkEval for Eval {
             E::EF::one(),
             &[
                 xor_col16.clone(),
-                (input_limb_5_col5.clone() - (ms_8_bits_col11.clone() * M31_256.clone())),
+                split_16_low_part_size_8_output_tmp_298db_11_limb_0.clone(),
                 xor_col17.clone(),
             ],
         ));
@@ -167,13 +206,13 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        let triple_xor32_output_tmp_298db_14_limb_0 =
+        let triple_xor32_output_tmp_298db_28_limb_0 =
             eval.add_intermediate((xor_col13.clone() + (xor_col15.clone() * M31_256.clone())));
-        let triple_xor32_output_tmp_298db_14_limb_1 =
+        let triple_xor32_output_tmp_298db_28_limb_1 =
             eval.add_intermediate((xor_col17.clone() + (xor_col19.clone() * M31_256.clone())));
         eval.add_to_relation(RelationEntry::new(
             &self.triple_xor_32_lookup_elements,
-            -E::EF::one(),
+            -E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
@@ -181,12 +220,42 @@ impl FrameworkEval for Eval {
                 input_limb_3_col3.clone(),
                 input_limb_4_col4.clone(),
                 input_limb_5_col5.clone(),
-                triple_xor32_output_tmp_298db_14_limb_0.clone(),
-                triple_xor32_output_tmp_298db_14_limb_1.clone(),
+                triple_xor32_output_tmp_298db_28_limb_0.clone(),
+                triple_xor32_output_tmp_298db_28_limb_1.clone(),
             ],
         ));
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::TRIPLE_XOR_32;
+
+    #[test]
+    fn triple_xor_32_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
+            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, TRIPLE_XOR_32);
     }
 }
