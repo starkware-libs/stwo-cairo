@@ -60,6 +60,7 @@ pub use range_check_vector::{
     range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
+
 pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;

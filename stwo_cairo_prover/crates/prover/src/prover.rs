@@ -15,6 +15,7 @@ use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
 use crate::witness::cairo::CairoClaimGenerator;
+use crate::witness::utils::witness_trace_cells;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 26;
 
@@ -59,6 +60,7 @@ where
     let span = span!(Level::INFO, "Base trace").entered();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     span.exit();
+
     claim.mix_into(channel);
     tree_builder.commit(channel);
 
@@ -72,6 +74,10 @@ where
     let interaction_claim =
         interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
 
+    tracing::info!(
+        "Witness trace cells: {:?}",
+        witness_trace_cells(&claim, &preprocessed_trace)
+    );
     // Validate lookup argument.
     debug_assert_eq!(
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
