@@ -22,14 +22,18 @@ impl ClaimGenerator {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.packed_inputs.is_empty()
+    }
+
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        cube_252_state: &cube_252::ClaimGenerator,
+        cube_252_state: &mut cube_252::ClaimGenerator,
         poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-        range_check_felt_252_width_27_state: &range_check_felt_252_width_27::ClaimGenerator,
+        range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
