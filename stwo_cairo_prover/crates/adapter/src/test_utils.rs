@@ -19,8 +19,15 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
         Err(e) => panic!("Failed to load program: {:?}", e),
     };
 
-    let mut cairo_runner =
-        CairoRunner::new(&program, LayoutName::all_cairo, None, false, true, false).expect("Fail");
+    let mut cairo_runner = CairoRunner::new(
+        &program,
+        LayoutName::all_cairo_stwo,
+        None,
+        false,
+        true,
+        false,
+    )
+    .expect("Fail");
     let end = cairo_runner
         .initialize(true)
         .expect("Initialization failed");
