@@ -1,26 +1,21 @@
-use std::array;
-use std::simd::u32x16;
+#![allow(unused_parens)]
+#![allow(dead_code)]
+use cairo_air::components::verify_bitwise_xor_12::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use cairo_air::components::verify_bitwise_xor_12::{
-    Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
-};
-use itertools::Itertools;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-
+use super::component::LOG_SIZE;
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
 
 pub struct ClaimGenerator {
-    pub mults: [AtomicMultiplicityColumn; N_MULT_COLUMNS],
+    pub mults: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: array::from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE)),
+            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
         }
     }
 
@@ -28,27 +23,16 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (Claim, InteractionClaimGenerator) {
-        let mults = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
+        let mults = self.mults.into_simd_vec();
 
-        let domain = CanonicCoset::new(LOG_SIZE).circle_domain();
-        let trace = mults
-            .iter()
-            .cloned()
-            .map(BaseColumn::from_simd)
-            .map(|col| CircleEvaluation::new(domain, col))
-            .collect_vec();
-
-        let lookup_data = LookupData { mults };
-        tree_builder.extend_evals(trace);
+        let (trace, lookup_data) = write_trace_simd(mults);
+        tree_builder.extend_evals(trace.to_evals());
 
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, [M31(a), M31(b), ..]: &InputType) {
-        let [[al, ah], [bl, bh]] = [*a, *b].map(|x| [x & ((1 << LIMB_BITS) - 1), x >> LIMB_BITS]);
-        let column_index = (ah << EXPAND_BITS) + bh;
-        let row_index = (al << LIMB_BITS) + bl;
-        self.mults[column_index as usize].increase_at(row_index);
+    pub fn add_input(&self, _input: &InputType) {
+        todo!()
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
@@ -66,9 +50,44 @@ impl ClaimGenerator {
     }
 }
 
+#[allow(clippy::useless_conversion)]
+#[allow(unused_variables)]
+#[allow(clippy::double_parens)]
+#[allow(non_snake_case)]
+fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
+    let log_n_packed_rows = LOG_SIZE - LOG_N_LANES;
+    let (mut trace, mut lookup_data) = unsafe {
+        (
+            ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(LOG_SIZE),
+            LookupData::uninitialized(log_n_packed_rows),
+        )
+    };
+
+    let bitwisexor_12_0 = BitwiseXor::new(12, 0);
+    let bitwisexor_12_1 = BitwiseXor::new(12, 1);
+    let bitwisexor_12_2 = BitwiseXor::new(12, 2);
+
+    (trace.par_iter_mut(), lookup_data.par_iter_mut())
+        .into_par_iter()
+        .enumerate()
+        .for_each(|(row_index, (mut row, lookup_data))| {
+            let bitwisexor_12_0 = bitwisexor_12_0.packed_at(row_index);
+            let bitwisexor_12_1 = bitwisexor_12_1.packed_at(row_index);
+            let bitwisexor_12_2 = bitwisexor_12_2.packed_at(row_index);
+            *lookup_data.verify_bitwise_xor_12_0 =
+                [bitwisexor_12_0, bitwisexor_12_1, bitwisexor_12_2];
+            let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = mult_at_row;
+            *lookup_data.mults = mult_at_row;
+        });
+
+    (trace, lookup_data)
+}
+
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    mults: [Vec<PackedM31>; N_MULT_COLUMNS],
+    verify_bitwise_xor_12_0: Vec<[PackedM31; 3]>,
+    mults: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -82,57 +101,19 @@ impl InteractionClaimGenerator {
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
-        // [0, 1, 2, ..., N_LANES - 1].
-        let zero_to_n_lanes = u32x16::from_array(std::array::from_fn(|i| i as u32));
-
-        const EXPAND_BITS_MASK: u32 = (1 << EXPAND_BITS) - 1;
-
-        // Batch two lookups at a time. `i0` and `i1` are the column indices of the two multiplicity
-        // columns batched together.
-        for ((i0, mults0), (i1, mults1)) in self.lookup_data.mults.into_iter().enumerate().tuples()
-        {
-            let mut col_gen = logup_gen.new_col();
-
-            // Each multiplicity column represents a different combination of `EXPAND_BITS`
-            // MSBs of each enumeration column. For example, if `EXPAND_BITS == 1`, then the
-            // multiplicity columns are: 0b00, 0b01, 0b10, 0b11.
-            // Extract ah, bh from column index, to be used as the high part of a and b.
-            let ah0 = i0 as u32 >> EXPAND_BITS;
-            let bh0 = i0 as u32 & EXPAND_BITS_MASK;
-
-            // Repeat for the second lookup.
-            let ah1 = i1 as u32 >> EXPAND_BITS;
-            let bh1 = i1 as u32 & EXPAND_BITS_MASK;
-
-            // Reconstruct the "expanded" values of a and b, and batch the lookups.
-            for (vec_row, (mult0, mult1)) in zip(mults0, mults1).enumerate() {
-                // vec_row is LIMB_BITS of al and LIMB_BITS - LOG_N_LANES of bl. The low part of
-                // bl is just the consecutive numbers 0 .. N_LANES-1.
-                let al = vec_row as u32 >> (LIMB_BITS - LOG_N_LANES);
-                let blh = vec_row as u32 & ((1 << (LIMB_BITS - LOG_N_LANES)) - 1);
-
-                // Construct the 3 vectors a, b, c.
-                let a0 = u32x16::splat((ah0 << LIMB_BITS) | al);
-                let a1 = u32x16::splat((ah1 << LIMB_BITS) | al);
-                let b0 = u32x16::splat((bh0 << LIMB_BITS) | (blh << LOG_N_LANES)) | zero_to_n_lanes;
-                let b1 = u32x16::splat((bh1 << LIMB_BITS) | (blh << LOG_N_LANES)) | zero_to_n_lanes;
-
-                let c0 = a0 ^ b0;
-                let c1 = a1 ^ b1;
-
-                let (v0, v1) = unsafe {
-                    (
-                        [a0, b0, c0].map(|v| PackedM31::from_simd_unchecked(v)),
-                        [a1, b1, c1].map(|v| PackedM31::from_simd_unchecked(v)),
-                    )
-                };
-
-                let p0: PackedQM31 = verify_bitwise_xor_12.combine(&v0);
-                let p1: PackedQM31 = verify_bitwise_xor_12.combine(&v1);
-                col_gen.write_frac(vec_row, p0 * (-mult1) + p1 * (-mult0), p1 * p0);
-            }
-            col_gen.finalize_col();
-        }
+        // Sum last logup term.
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_bitwise_xor_12_0,
+            self.lookup_data.mults,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values, mults)| {
+                let denom = verify_bitwise_xor_12.combine(values);
+                writer.write_frac(-PackedQM31::one() * mults, denom);
+            });
+        col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
