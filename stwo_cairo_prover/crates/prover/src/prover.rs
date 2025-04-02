@@ -70,9 +70,11 @@ where
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Interaction trace.
+    let span = span!(Level::INFO, "Interaction trace").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
     let interaction_claim =
         interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+    span.exit();
 
     tracing::info!(
         "Witness trace cells: {:?}",
@@ -110,7 +112,9 @@ where
     let components = component_builder.provers();
 
     // Prove stark.
+    let span = span!(Level::INFO, "Prove STARKs").entered();
     let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    span.exit();
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
 
