@@ -1,10 +1,9 @@
-use std::iter::zip;
 use std::simd::Simd;
 
 use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use cairo_air::preprocessed::SIMD_ENUMERATION_0;
 use cairo_air::relations;
-use itertools::{chain, izip, Itertools};
+use itertools::{chain, Itertools};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
@@ -293,13 +292,13 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (limb0, limb1, limb2, lim3) in self.big_values.iter().tuples() {
             let mut col_gen = big_values_logup_gen.new_col();
-            for (vec_row, (limb0, limb1, limb2, limb3)) in
-                izip!(limb0, limb1, limb2, lim3).enumerate()
-            {
-                let denom0: PackedQM31 = range9_9_lookup_elements.combine(&[*limb0, *limb1]);
-                let denom1: PackedQM31 = range9_9_lookup_elements.combine(&[*limb2, *limb3]);
-                col_gen.write_frac(vec_row, denom0 + denom1, denom0 * denom1);
-            }
+            (col_gen.par_iter_mut(), limb0, limb1, limb2, lim3)
+                .into_par_iter()
+                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+                    let denom0: PackedQM31 = range9_9_lookup_elements.combine(&[*limb0, *limb1]);
+                    let denom1: PackedQM31 = range9_9_lookup_elements.combine(&[*limb2, *limb3]);
+                    writer.write_frac(denom0 + denom1, denom0 * denom1);
+                });
             col_gen.finalize_col();
         }
 
@@ -341,14 +340,15 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (l, r) in self.small_values.iter().tuples() {
             let mut col_gen = small_values_logup_gen.new_col();
-            for (vec_row, (l1, l2)) in zip(l, r).enumerate() {
-                // TOOD(alont) Add 2-batching.
-                col_gen.write_frac(
-                    vec_row,
-                    PackedQM31::broadcast(M31(1).into()),
-                    range9_9_lookup_elements.combine(&[*l1, *l2]),
-                );
-            }
+            (col_gen.par_iter_mut(), l, r)
+                .into_par_iter()
+                .for_each(|(writer, l1, l2)| {
+                    // TOOD(alont) Add 2-batching.
+                    writer.write_frac(
+                        PackedQM31::broadcast(M31(1).into()),
+                        range9_9_lookup_elements.combine(&[*l1, *l2]),
+                    );
+                });
             col_gen.finalize_col();
         }
 

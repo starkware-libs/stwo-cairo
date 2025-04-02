@@ -9,7 +9,7 @@ use cairo_air::components::memory_address_to_id::{
 use cairo_air::preprocessed::Seq;
 use cairo_air::relations;
 use itertools::{izip, Itertools};
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use stwo_cairo_adapter::memory::Memory;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
@@ -193,16 +193,17 @@ impl InteractionClaimGenerator {
             izip!(&self.ids, &self.multiplicities).tuples().enumerate()
         {
             let mut col_gen = logup_gen.new_col();
-            for (vec_row, (&id0, &id1, &mult0, &mult1)) in
-                izip!(ids0, ids1, mults0, mults1).enumerate()
-            {
-                let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));
-                let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
-                let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
-                let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);
-                let p1: PackedQM31 = lookup_elements.combine(&[addr1, id1]);
-                col_gen.write_frac(vec_row, p0 * (-mult1) + p1 * (-mult0), p1 * p0);
-            }
+            (col_gen.par_iter_mut(), ids0, ids1, mults0, mults1)
+                .into_par_iter()
+                .enumerate()
+                .for_each(|(vec_row, (writer, &id0, &id1, &mult0, &mult1))| {
+                    let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));
+                    let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
+                    let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
+                    let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);
+                    let p1: PackedQM31 = lookup_elements.combine(&[addr1, id1]);
+                    writer.write_frac(p0 * (-mult1) + p1 * (-mult0), p1 * p0);
+                });
             col_gen.finalize_col();
         }
 
