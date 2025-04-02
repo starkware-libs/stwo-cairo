@@ -1,8 +1,10 @@
 #![allow(unused_parens)]
 #![allow(dead_code)]
-use cairo_air::components::poseidon_round_keys::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::poseidon_round_keys::{
+    Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
+};
+use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
 
-use super::component::LOG_SIZE;
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 1];
@@ -15,7 +17,7 @@ impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
+            mults: AtomicMultiplicityColumn::new(N_ROUNDS),
         }
     }
 
@@ -31,19 +33,13 @@ impl ClaimGenerator {
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, _input: &InputType) {
-        todo!()
-    }
-
-    pub fn add_inputs(&self, inputs: &[InputType]) {
-        for input in inputs {
-            self.add_input(input);
-        }
+    pub fn add_input(&self, input: &InputType) {
+        self.mults.increase_at(input[0].0);
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_par_iter().for_each(|input| {
+            packed_input.unpack().into_iter().for_each(|input| {
                 self.add_input(&input);
             });
         });
@@ -65,6 +61,14 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
 
     let poseidonroundkeys_0 = PoseidonRoundKeys::new(0);
     let poseidonroundkeys_1 = PoseidonRoundKeys::new(1);
+    let poseidonroundkeys_2 = PoseidonRoundKeys::new(2);
+    let poseidonroundkeys_3 = PoseidonRoundKeys::new(3);
+    let poseidonroundkeys_4 = PoseidonRoundKeys::new(4);
+    let poseidonroundkeys_5 = PoseidonRoundKeys::new(5);
+    let poseidonroundkeys_6 = PoseidonRoundKeys::new(6);
+    let poseidonroundkeys_7 = PoseidonRoundKeys::new(7);
+    let poseidonroundkeys_8 = PoseidonRoundKeys::new(8);
+    let poseidonroundkeys_9 = PoseidonRoundKeys::new(9);
     let poseidonroundkeys_10 = PoseidonRoundKeys::new(10);
     let poseidonroundkeys_11 = PoseidonRoundKeys::new(11);
     let poseidonroundkeys_12 = PoseidonRoundKeys::new(12);
@@ -75,7 +79,6 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
     let poseidonroundkeys_17 = PoseidonRoundKeys::new(17);
     let poseidonroundkeys_18 = PoseidonRoundKeys::new(18);
     let poseidonroundkeys_19 = PoseidonRoundKeys::new(19);
-    let poseidonroundkeys_2 = PoseidonRoundKeys::new(2);
     let poseidonroundkeys_20 = PoseidonRoundKeys::new(20);
     let poseidonroundkeys_21 = PoseidonRoundKeys::new(21);
     let poseidonroundkeys_22 = PoseidonRoundKeys::new(22);
@@ -86,13 +89,6 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
     let poseidonroundkeys_27 = PoseidonRoundKeys::new(27);
     let poseidonroundkeys_28 = PoseidonRoundKeys::new(28);
     let poseidonroundkeys_29 = PoseidonRoundKeys::new(29);
-    let poseidonroundkeys_3 = PoseidonRoundKeys::new(3);
-    let poseidonroundkeys_4 = PoseidonRoundKeys::new(4);
-    let poseidonroundkeys_5 = PoseidonRoundKeys::new(5);
-    let poseidonroundkeys_6 = PoseidonRoundKeys::new(6);
-    let poseidonroundkeys_7 = PoseidonRoundKeys::new(7);
-    let poseidonroundkeys_8 = PoseidonRoundKeys::new(8);
-    let poseidonroundkeys_9 = PoseidonRoundKeys::new(9);
     let seq = Seq::new(LOG_SIZE);
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
@@ -101,6 +97,14 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
         .for_each(|(row_index, (mut row, lookup_data))| {
             let poseidonroundkeys_0 = poseidonroundkeys_0.packed_at(row_index);
             let poseidonroundkeys_1 = poseidonroundkeys_1.packed_at(row_index);
+            let poseidonroundkeys_2 = poseidonroundkeys_2.packed_at(row_index);
+            let poseidonroundkeys_3 = poseidonroundkeys_3.packed_at(row_index);
+            let poseidonroundkeys_4 = poseidonroundkeys_4.packed_at(row_index);
+            let poseidonroundkeys_5 = poseidonroundkeys_5.packed_at(row_index);
+            let poseidonroundkeys_6 = poseidonroundkeys_6.packed_at(row_index);
+            let poseidonroundkeys_7 = poseidonroundkeys_7.packed_at(row_index);
+            let poseidonroundkeys_8 = poseidonroundkeys_8.packed_at(row_index);
+            let poseidonroundkeys_9 = poseidonroundkeys_9.packed_at(row_index);
             let poseidonroundkeys_10 = poseidonroundkeys_10.packed_at(row_index);
             let poseidonroundkeys_11 = poseidonroundkeys_11.packed_at(row_index);
             let poseidonroundkeys_12 = poseidonroundkeys_12.packed_at(row_index);
@@ -111,7 +115,6 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
             let poseidonroundkeys_17 = poseidonroundkeys_17.packed_at(row_index);
             let poseidonroundkeys_18 = poseidonroundkeys_18.packed_at(row_index);
             let poseidonroundkeys_19 = poseidonroundkeys_19.packed_at(row_index);
-            let poseidonroundkeys_2 = poseidonroundkeys_2.packed_at(row_index);
             let poseidonroundkeys_20 = poseidonroundkeys_20.packed_at(row_index);
             let poseidonroundkeys_21 = poseidonroundkeys_21.packed_at(row_index);
             let poseidonroundkeys_22 = poseidonroundkeys_22.packed_at(row_index);
@@ -122,13 +125,6 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
             let poseidonroundkeys_27 = poseidonroundkeys_27.packed_at(row_index);
             let poseidonroundkeys_28 = poseidonroundkeys_28.packed_at(row_index);
             let poseidonroundkeys_29 = poseidonroundkeys_29.packed_at(row_index);
-            let poseidonroundkeys_3 = poseidonroundkeys_3.packed_at(row_index);
-            let poseidonroundkeys_4 = poseidonroundkeys_4.packed_at(row_index);
-            let poseidonroundkeys_5 = poseidonroundkeys_5.packed_at(row_index);
-            let poseidonroundkeys_6 = poseidonroundkeys_6.packed_at(row_index);
-            let poseidonroundkeys_7 = poseidonroundkeys_7.packed_at(row_index);
-            let poseidonroundkeys_8 = poseidonroundkeys_8.packed_at(row_index);
-            let poseidonroundkeys_9 = poseidonroundkeys_9.packed_at(row_index);
             let seq = seq.packed_at(row_index);
             *lookup_data.poseidon_round_keys_0 = [
                 seq,

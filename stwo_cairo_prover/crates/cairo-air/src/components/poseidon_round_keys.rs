@@ -1,7 +1,9 @@
+use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
+
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 0;
+pub const LOG_SIZE: u32 = N_ROUNDS.next_power_of_two().ilog2();
 
 pub struct Eval {
     pub claim: Claim,
@@ -49,6 +51,14 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let poseidonroundkeys_0 = eval.get_preprocessed_column((PoseidonRoundKeys::new(0)).id());
         let poseidonroundkeys_1 = eval.get_preprocessed_column((PoseidonRoundKeys::new(1)).id());
+        let poseidonroundkeys_2 = eval.get_preprocessed_column((PoseidonRoundKeys::new(2)).id());
+        let poseidonroundkeys_3 = eval.get_preprocessed_column((PoseidonRoundKeys::new(3)).id());
+        let poseidonroundkeys_4 = eval.get_preprocessed_column((PoseidonRoundKeys::new(4)).id());
+        let poseidonroundkeys_5 = eval.get_preprocessed_column((PoseidonRoundKeys::new(5)).id());
+        let poseidonroundkeys_6 = eval.get_preprocessed_column((PoseidonRoundKeys::new(6)).id());
+        let poseidonroundkeys_7 = eval.get_preprocessed_column((PoseidonRoundKeys::new(7)).id());
+        let poseidonroundkeys_8 = eval.get_preprocessed_column((PoseidonRoundKeys::new(8)).id());
+        let poseidonroundkeys_9 = eval.get_preprocessed_column((PoseidonRoundKeys::new(9)).id());
         let poseidonroundkeys_10 = eval.get_preprocessed_column((PoseidonRoundKeys::new(10)).id());
         let poseidonroundkeys_11 = eval.get_preprocessed_column((PoseidonRoundKeys::new(11)).id());
         let poseidonroundkeys_12 = eval.get_preprocessed_column((PoseidonRoundKeys::new(12)).id());
@@ -59,7 +69,6 @@ impl FrameworkEval for Eval {
         let poseidonroundkeys_17 = eval.get_preprocessed_column((PoseidonRoundKeys::new(17)).id());
         let poseidonroundkeys_18 = eval.get_preprocessed_column((PoseidonRoundKeys::new(18)).id());
         let poseidonroundkeys_19 = eval.get_preprocessed_column((PoseidonRoundKeys::new(19)).id());
-        let poseidonroundkeys_2 = eval.get_preprocessed_column((PoseidonRoundKeys::new(2)).id());
         let poseidonroundkeys_20 = eval.get_preprocessed_column((PoseidonRoundKeys::new(20)).id());
         let poseidonroundkeys_21 = eval.get_preprocessed_column((PoseidonRoundKeys::new(21)).id());
         let poseidonroundkeys_22 = eval.get_preprocessed_column((PoseidonRoundKeys::new(22)).id());
@@ -70,13 +79,6 @@ impl FrameworkEval for Eval {
         let poseidonroundkeys_27 = eval.get_preprocessed_column((PoseidonRoundKeys::new(27)).id());
         let poseidonroundkeys_28 = eval.get_preprocessed_column((PoseidonRoundKeys::new(28)).id());
         let poseidonroundkeys_29 = eval.get_preprocessed_column((PoseidonRoundKeys::new(29)).id());
-        let poseidonroundkeys_3 = eval.get_preprocessed_column((PoseidonRoundKeys::new(3)).id());
-        let poseidonroundkeys_4 = eval.get_preprocessed_column((PoseidonRoundKeys::new(4)).id());
-        let poseidonroundkeys_5 = eval.get_preprocessed_column((PoseidonRoundKeys::new(5)).id());
-        let poseidonroundkeys_6 = eval.get_preprocessed_column((PoseidonRoundKeys::new(6)).id());
-        let poseidonroundkeys_7 = eval.get_preprocessed_column((PoseidonRoundKeys::new(7)).id());
-        let poseidonroundkeys_8 = eval.get_preprocessed_column((PoseidonRoundKeys::new(8)).id());
-        let poseidonroundkeys_9 = eval.get_preprocessed_column((PoseidonRoundKeys::new(9)).id());
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let multiplicity = eval.next_trace_mask();
 
@@ -137,7 +139,7 @@ mod tests {
     #[test]
     fn poseidon_round_keys_constraints_regression() {
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            claim: Claim {},
             poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
         };
 
