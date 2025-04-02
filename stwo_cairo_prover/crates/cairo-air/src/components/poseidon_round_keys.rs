@@ -1,7 +1,7 @@
-use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS;
-
 use crate::components::prelude::*;
+
 pub const N_TRACE_COLUMNS: usize = 1;
+pub const LOG_SIZE: u32 = 0;
 
 pub struct Eval {
     pub claim: Claim,
@@ -9,18 +9,16 @@ pub struct Eval {
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct Claim {
-    pub log_size: u32,
-}
+pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE];
+        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
+        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_size as u64);
+        channel.mix_u64(LOG_SIZE as u64);
     }
 }
 
@@ -38,7 +36,7 @@ pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.log_size
+        LOG_SIZE
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -49,8 +47,36 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let poseidonroundkeys: [_; N_WORDS] =
-            std::array::from_fn(|i| eval.get_preprocessed_column(PoseidonRoundKeys::new(i).id()));
+        let poseidonroundkeys_0 = eval.get_preprocessed_column((PoseidonRoundKeys::new(0)).id());
+        let poseidonroundkeys_1 = eval.get_preprocessed_column((PoseidonRoundKeys::new(1)).id());
+        let poseidonroundkeys_10 = eval.get_preprocessed_column((PoseidonRoundKeys::new(10)).id());
+        let poseidonroundkeys_11 = eval.get_preprocessed_column((PoseidonRoundKeys::new(11)).id());
+        let poseidonroundkeys_12 = eval.get_preprocessed_column((PoseidonRoundKeys::new(12)).id());
+        let poseidonroundkeys_13 = eval.get_preprocessed_column((PoseidonRoundKeys::new(13)).id());
+        let poseidonroundkeys_14 = eval.get_preprocessed_column((PoseidonRoundKeys::new(14)).id());
+        let poseidonroundkeys_15 = eval.get_preprocessed_column((PoseidonRoundKeys::new(15)).id());
+        let poseidonroundkeys_16 = eval.get_preprocessed_column((PoseidonRoundKeys::new(16)).id());
+        let poseidonroundkeys_17 = eval.get_preprocessed_column((PoseidonRoundKeys::new(17)).id());
+        let poseidonroundkeys_18 = eval.get_preprocessed_column((PoseidonRoundKeys::new(18)).id());
+        let poseidonroundkeys_19 = eval.get_preprocessed_column((PoseidonRoundKeys::new(19)).id());
+        let poseidonroundkeys_2 = eval.get_preprocessed_column((PoseidonRoundKeys::new(2)).id());
+        let poseidonroundkeys_20 = eval.get_preprocessed_column((PoseidonRoundKeys::new(20)).id());
+        let poseidonroundkeys_21 = eval.get_preprocessed_column((PoseidonRoundKeys::new(21)).id());
+        let poseidonroundkeys_22 = eval.get_preprocessed_column((PoseidonRoundKeys::new(22)).id());
+        let poseidonroundkeys_23 = eval.get_preprocessed_column((PoseidonRoundKeys::new(23)).id());
+        let poseidonroundkeys_24 = eval.get_preprocessed_column((PoseidonRoundKeys::new(24)).id());
+        let poseidonroundkeys_25 = eval.get_preprocessed_column((PoseidonRoundKeys::new(25)).id());
+        let poseidonroundkeys_26 = eval.get_preprocessed_column((PoseidonRoundKeys::new(26)).id());
+        let poseidonroundkeys_27 = eval.get_preprocessed_column((PoseidonRoundKeys::new(27)).id());
+        let poseidonroundkeys_28 = eval.get_preprocessed_column((PoseidonRoundKeys::new(28)).id());
+        let poseidonroundkeys_29 = eval.get_preprocessed_column((PoseidonRoundKeys::new(29)).id());
+        let poseidonroundkeys_3 = eval.get_preprocessed_column((PoseidonRoundKeys::new(3)).id());
+        let poseidonroundkeys_4 = eval.get_preprocessed_column((PoseidonRoundKeys::new(4)).id());
+        let poseidonroundkeys_5 = eval.get_preprocessed_column((PoseidonRoundKeys::new(5)).id());
+        let poseidonroundkeys_6 = eval.get_preprocessed_column((PoseidonRoundKeys::new(6)).id());
+        let poseidonroundkeys_7 = eval.get_preprocessed_column((PoseidonRoundKeys::new(7)).id());
+        let poseidonroundkeys_8 = eval.get_preprocessed_column((PoseidonRoundKeys::new(8)).id());
+        let poseidonroundkeys_9 = eval.get_preprocessed_column((PoseidonRoundKeys::new(9)).id());
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let multiplicity = eval.next_trace_mask();
 
@@ -59,40 +85,69 @@ impl FrameworkEval for Eval {
             -E::EF::from(multiplicity),
             &[
                 seq.clone(),
-                poseidonroundkeys[0].clone(),
-                poseidonroundkeys[1].clone(),
-                poseidonroundkeys[2].clone(),
-                poseidonroundkeys[3].clone(),
-                poseidonroundkeys[4].clone(),
-                poseidonroundkeys[5].clone(),
-                poseidonroundkeys[6].clone(),
-                poseidonroundkeys[7].clone(),
-                poseidonroundkeys[8].clone(),
-                poseidonroundkeys[9].clone(),
-                poseidonroundkeys[10].clone(),
-                poseidonroundkeys[11].clone(),
-                poseidonroundkeys[12].clone(),
-                poseidonroundkeys[13].clone(),
-                poseidonroundkeys[14].clone(),
-                poseidonroundkeys[15].clone(),
-                poseidonroundkeys[16].clone(),
-                poseidonroundkeys[17].clone(),
-                poseidonroundkeys[18].clone(),
-                poseidonroundkeys[19].clone(),
-                poseidonroundkeys[20].clone(),
-                poseidonroundkeys[21].clone(),
-                poseidonroundkeys[22].clone(),
-                poseidonroundkeys[23].clone(),
-                poseidonroundkeys[24].clone(),
-                poseidonroundkeys[25].clone(),
-                poseidonroundkeys[26].clone(),
-                poseidonroundkeys[27].clone(),
-                poseidonroundkeys[28].clone(),
-                poseidonroundkeys[29].clone(),
+                poseidonroundkeys_0.clone(),
+                poseidonroundkeys_1.clone(),
+                poseidonroundkeys_2.clone(),
+                poseidonroundkeys_3.clone(),
+                poseidonroundkeys_4.clone(),
+                poseidonroundkeys_5.clone(),
+                poseidonroundkeys_6.clone(),
+                poseidonroundkeys_7.clone(),
+                poseidonroundkeys_8.clone(),
+                poseidonroundkeys_9.clone(),
+                poseidonroundkeys_10.clone(),
+                poseidonroundkeys_11.clone(),
+                poseidonroundkeys_12.clone(),
+                poseidonroundkeys_13.clone(),
+                poseidonroundkeys_14.clone(),
+                poseidonroundkeys_15.clone(),
+                poseidonroundkeys_16.clone(),
+                poseidonroundkeys_17.clone(),
+                poseidonroundkeys_18.clone(),
+                poseidonroundkeys_19.clone(),
+                poseidonroundkeys_20.clone(),
+                poseidonroundkeys_21.clone(),
+                poseidonroundkeys_22.clone(),
+                poseidonroundkeys_23.clone(),
+                poseidonroundkeys_24.clone(),
+                poseidonroundkeys_25.clone(),
+                poseidonroundkeys_26.clone(),
+                poseidonroundkeys_27.clone(),
+                poseidonroundkeys_28.clone(),
+                poseidonroundkeys_29.clone(),
             ],
         ));
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::POSEIDON_ROUND_KEYS;
+
+    #[test]
+    fn poseidon_round_keys_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, POSEIDON_ROUND_KEYS);
     }
 }

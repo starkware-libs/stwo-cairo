@@ -1,6 +1,7 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
+
 pub struct Eval {
     pub claim: Claim,
     pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
@@ -70,9 +71,10 @@ impl FrameworkEval for Eval {
         let limb_6_high_part_col16 = eval.next_trace_mask();
         let limb_7_low_part_col17 = eval.next_trace_mask();
         let limb_8_high_part_col18 = eval.next_trace_mask();
-        let padding = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
 
-        eval.add_constraint(padding.clone() * padding.clone() - padding.clone());
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
+
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_9_9_lookup_elements,
             E::EF::one(),
@@ -171,7 +173,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_felt_252_width_27_lookup_elements,
-            -E::EF::from(padding.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
@@ -188,5 +190,37 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::RANGE_CHECK_FELT_252_WIDTH_27;
+
+    #[test]
+    fn range_check_felt_252_width_27_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            range_check_felt_252_width_27_lookup_elements:
+                relations::RangeCheckFelt252Width27::dummy(),
+            range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
+            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, RANGE_CHECK_FELT_252_WIDTH_27);
     }
 }

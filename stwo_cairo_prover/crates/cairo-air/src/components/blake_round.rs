@@ -268,7 +268,9 @@ impl FrameworkEval for Eval {
         let blake_g_output_limb_5_col208 = eval.next_trace_mask();
         let blake_g_output_limb_6_col209 = eval.next_trace_mask();
         let blake_g_output_limb_7_col210 = eval.next_trace_mask();
-        let enabler_col_211 = eval.next_trace_mask();
+        let enabler = eval.next_trace_mask();
+
+        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_sigma_lookup_elements,
@@ -1160,7 +1162,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_lookup_elements,
-            E::EF::from(enabler_col_211.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
@@ -1202,7 +1204,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_lookup_elements,
-            E::EF::from(-enabler_col_211.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
                 (input_limb_1_col1.clone() + M31_1.clone()),
@@ -1244,5 +1246,39 @@ impl FrameworkEval for Eval {
 
         eval.finalize_logup_in_pairs();
         eval
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_traits::Zero;
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_prover::core::fields::qm31::QM31;
+
+    use super::*;
+    use crate::components::constraints_regression_test_values::BLAKE_ROUND;
+
+    #[test]
+    fn blake_round_constraints_regression() {
+        let eval = Eval {
+            claim: Claim { log_size: 4 },
+            blake_g_lookup_elements: relations::BlakeG::dummy(),
+            blake_round_lookup_elements: relations::BlakeRound::dummy(),
+            blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
+            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
+        };
+
+        let expr_eval = eval.evaluate(ExprEvaluator::new());
+        let mut rng = SmallRng::seed_from_u64(0);
+        let mut sum = QM31::zero();
+        for c in expr_eval.constraints {
+            sum += c.random_eval() * rng.gen::<QM31>();
+        }
+
+        assert_eq!(sum, BLAKE_ROUND);
     }
 }
