@@ -46,6 +46,8 @@ impl Relocator {
             let segment_size = if !is_builtin_segment(segment_index) {
                 // If it is not a builtin segment, no need to pad.
                 segment.len()
+            } else if segment.is_empty() {
+                0
             } else {
                 // If it is a builtin segment, pad its size to the next power of two instances.
                 let cells_per_instance = match builtins_segments_indices.get(&segment_index) {
@@ -135,7 +137,11 @@ impl Relocator {
         for (segment_index, builtin_name) in self.builtins_segments_indices.iter() {
             let start_addr = self.relocation_table[*segment_index];
             let end_addr = self.relocation_table[*segment_index + 1];
-            let segment = Some((start_addr as usize, end_addr as usize).into());
+            let segment = if start_addr == end_addr {
+                None
+            } else {
+                Some((start_addr as usize, end_addr as usize).into())
+            };
 
             match builtin_name {
                 BuiltinName::range_check => res.range_check_bits_128 = segment,
