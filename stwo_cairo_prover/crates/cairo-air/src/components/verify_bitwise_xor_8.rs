@@ -1,7 +1,8 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 0;
+pub const N_BITS: u32 = 8;
+pub const LOG_SIZE: u32 = 2 * N_BITS;
 
 pub struct Eval {
     pub claim: Claim,
@@ -81,7 +82,7 @@ mod tests {
     #[test]
     fn verify_bitwise_xor_8_constraints_regression() {
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            claim: Claim {},
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
         };
 
