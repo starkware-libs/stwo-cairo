@@ -48,6 +48,8 @@ jobs:
         env:
           RUST_MIN_STACK: 4194304
           RUSTFLAGS: -C target-cpu=native
+          RUST_LOG_SPAN_EVENTS: enter,close
+          RUST_LOG: info
 
   format:
     runs-on: ubuntu-latest
