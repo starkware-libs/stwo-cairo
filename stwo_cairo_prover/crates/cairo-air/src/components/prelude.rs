@@ -11,6 +11,7 @@ pub use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 pub use stwo_prover::core::pcs::TreeVec;
 
 pub use crate::blake::*;
+pub use crate::pedersen::const_columns::PedersenPoints;
 pub use crate::poseidon::const_columns::PoseidonRoundKeys;
 pub use crate::preprocessed::*;
 pub use crate::relations;

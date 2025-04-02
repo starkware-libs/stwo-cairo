@@ -1,6 +1,7 @@
 pub use std::iter::zip;
 pub use std::simd::Simd;
 
+pub use cairo_air::pedersen::const_columns::PedersenPoints;
 pub use cairo_air::poseidon::const_columns::PoseidonRoundKeys;
 pub use cairo_air::preprocessed::*;
 pub(crate) use cairo_air::relations;
