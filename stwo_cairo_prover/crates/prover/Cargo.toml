@@ -39,4 +39,6 @@ tracing.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
+test-log = { version = "0.2.17", features = ["trace"] }
+tracing-subscriber.workspace = true
 rand.workspace = true
