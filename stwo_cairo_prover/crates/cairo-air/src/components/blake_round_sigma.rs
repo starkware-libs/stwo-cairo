@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 0;
+pub const LOG_SIZE: u32 = 4;
 
 pub struct Eval {
     pub claim: Claim,
@@ -109,7 +109,7 @@ mod tests {
     #[test]
     fn blake_round_sigma_constraints_regression() {
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            claim: Claim {},
             blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
         };
 

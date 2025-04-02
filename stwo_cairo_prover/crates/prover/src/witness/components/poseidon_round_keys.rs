@@ -1,8 +1,10 @@
 #![allow(unused_parens)]
 #![allow(dead_code)]
-use cairo_air::components::poseidon_round_keys::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::poseidon_round_keys::{
+    Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
+};
+use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
 
-use super::component::LOG_SIZE;
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 1];
@@ -15,7 +17,7 @@ impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
+            mults: AtomicMultiplicityColumn::new(N_ROUNDS),
         }
     }
 
@@ -31,8 +33,8 @@ impl ClaimGenerator {
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, _input: &InputType) {
-        todo!()
+    pub fn add_input(&self, input: &InputType) {
+        self.mults.increase_at(input[0].0);
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
