@@ -119,6 +119,34 @@ macro_rules! range_check_eval{
                         eval
                     }
                 }
+
+                #[cfg(test)]
+                mod tests {
+                    use num_traits::Zero;
+                    use rand::rngs::SmallRng;
+                    use rand::{Rng, SeedableRng};
+                    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+                    use stwo_prover::core::fields::qm31::QM31;
+
+                    use super::*;
+                    use $crate::components::constraints_regression_test_values::RANGE_CHECK_VECTOR;
+
+                    #[test]
+                    fn range_check_vector_constraints_regression() {
+                        let eval = Eval {
+                            lookup_elements: relations::[<RangeCheck_$($log_range)_*>]::dummy(),
+                        };
+
+                        let expr_eval = eval.evaluate(ExprEvaluator::new());
+                        let mut rng = SmallRng::seed_from_u64(0);
+                        let mut sum = QM31::zero();
+                        for c in expr_eval.constraints {
+                            sum += c.random_eval() * rng.gen::<QM31>();
+                        }
+
+                        assert_eq!(sum, RANGE_CHECK_VECTOR);
+                    }
+                }
         }
     }
 }
