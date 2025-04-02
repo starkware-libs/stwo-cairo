@@ -1,15 +1,12 @@
-use cairo_air::components::verify_bitwise_xor_4::{
-    Claim, InteractionClaim, BITWISE_XOR_4_LOG_SIZE, BITWISE_XOR_4_N_BITS,
-};
-use cairo_air::preprocessed::BitwiseXor;
+#![allow(unused_parens)]
+#![allow(dead_code)]
+use cairo_air::components::verify_bitwise_xor_4::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
+use super::component::LOG_SIZE;
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
-
-const N_TRACE_COLUMNS: usize = 1;
-const PACKED_LOG_SIZE: u32 = BITWISE_XOR_4_LOG_SIZE - LOG_N_LANES;
 
 pub struct ClaimGenerator {
     pub mults: AtomicMultiplicityColumn,
@@ -18,7 +15,7 @@ impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            mults: AtomicMultiplicityColumn::new(1 << BITWISE_XOR_4_LOG_SIZE),
+            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
         }
     }
 
@@ -27,15 +24,15 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.into_simd_vec();
+
         let (trace, lookup_data) = write_trace_simd(mults);
         tree_builder.extend_evals(trace.to_evals());
 
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, input: &InputType) {
-        self.mults
-            .increase_at((input[0].0 << BITWISE_XOR_4_N_BITS) + input[1].0);
+    pub fn add_input(&self, _input: &InputType) {
+        todo!()
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
@@ -53,30 +50,34 @@ impl ClaimGenerator {
     }
 }
 
+#[allow(clippy::useless_conversion)]
+#[allow(unused_variables)]
+#[allow(clippy::double_parens)]
+#[allow(non_snake_case)]
 fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
-    let xor_a_column = BitwiseXor::new(BITWISE_XOR_4_N_BITS, 0);
-    let xor_b_column = BitwiseXor::new(BITWISE_XOR_4_N_BITS, 1);
-    let xor_c_column = BitwiseXor::new(BITWISE_XOR_4_N_BITS, 2);
+    let log_n_packed_rows = LOG_SIZE - LOG_N_LANES;
     let (mut trace, mut lookup_data) = unsafe {
         (
-            ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(BITWISE_XOR_4_LOG_SIZE),
-            LookupData::uninitialized(PACKED_LOG_SIZE),
+            ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(LOG_SIZE),
+            LookupData::uninitialized(log_n_packed_rows),
         )
     };
 
-    trace
-        .par_iter_mut()
-        .enumerate()
-        .zip(lookup_data.par_iter_mut())
-        .for_each(|((row_index, mut row), lookup_data)| {
-            *row[0] = mults[row_index];
+    let bitwisexor_4_0 = BitwiseXor::new(4, 0);
+    let bitwisexor_4_1 = BitwiseXor::new(4, 1);
+    let bitwisexor_4_2 = BitwiseXor::new(4, 2);
 
-            *lookup_data.bitwise_xor_trios = [
-                xor_a_column.packed_at(row_index),
-                xor_b_column.packed_at(row_index),
-                xor_c_column.packed_at(row_index),
-            ];
-            *lookup_data.mults = mults[row_index];
+    (trace.par_iter_mut(), lookup_data.par_iter_mut())
+        .into_par_iter()
+        .enumerate()
+        .for_each(|(row_index, (mut row, lookup_data))| {
+            let bitwisexor_4_0 = bitwisexor_4_0.packed_at(row_index);
+            let bitwisexor_4_1 = bitwisexor_4_1.packed_at(row_index);
+            let bitwisexor_4_2 = bitwisexor_4_2.packed_at(row_index);
+            *lookup_data.verify_bitwise_xor_4_0 = [bitwisexor_4_0, bitwisexor_4_1, bitwisexor_4_2];
+            let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = mult_at_row;
+            *lookup_data.mults = mult_at_row;
         });
 
     (trace, lookup_data)
@@ -84,7 +85,7 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    bitwise_xor_trios: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_4_0: Vec<[PackedM31; 3]>,
     mults: Vec<PackedM31>,
 }
 
@@ -97,20 +98,20 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_4: &relations::VerifyBitwiseXor_4,
     ) -> InteractionClaim {
-        assert!(self.lookup_data.bitwise_xor_trios.len() == 1 << PACKED_LOG_SIZE);
-        let mut logup_gen = LogupTraceGenerator::new(BITWISE_XOR_4_LOG_SIZE);
+        let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
+        // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        for (i, (values, mults)) in self
-            .lookup_data
-            .bitwise_xor_trios
-            .iter()
-            .zip(self.lookup_data.mults)
-            .enumerate()
-        {
-            let denom = verify_bitwise_xor_4.combine(values);
-            col_gen.write_frac(i, -PackedQM31::one() * mults, denom);
-        }
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_bitwise_xor_4_0,
+            self.lookup_data.mults,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values, mults)| {
+                let denom = verify_bitwise_xor_4.combine(values);
+                writer.write_frac(-PackedQM31::one() * mults, denom);
+            });
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
