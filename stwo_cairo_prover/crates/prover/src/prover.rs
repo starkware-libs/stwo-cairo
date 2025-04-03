@@ -18,6 +18,7 @@ use crate::witness::cairo::CairoClaimGenerator;
 use crate::witness::utils::witness_trace_cells;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 26;
+const RAYON_THREAD_STACK_SIZE: usize = 4194304;
 
 // Stack-overflows induced by the partial_ec_mul write trace function.
 // Decreasing this value may cause a stack-overflow during witness generation.
