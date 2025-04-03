@@ -1525,22 +1525,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48fd7bd8a6377e15ad9d42a8ec25371b94ddc67abe7c8b9127bec79bebaaae18"
 
 [[package]]
-name = "run_and_prove"
-version = "0.1.0"
-dependencies = [
- "cairo-air",
- "clap",
- "log",
- "serde_json",
- "stwo-cairo-adapter",
- "stwo-prover",
- "stwo_cairo_prover",
- "stwo_cairo_utils",
- "thiserror 2.0.11",
- "tracing",
-]
-
-[[package]]
 name = "rust_decimal"
 version = "1.36.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
