@@ -1,7 +1,6 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde::Serialize;
@@ -98,8 +97,6 @@ enum Error {
     Proving(#[from] ProvingError),
     #[error("Serialization failed: {0}")]
     Serde(#[from] serde_json::error::Error),
-    #[error("Verification failed: {0}")]
-    Verification(#[from] CairoVerificationError),
     #[error("VM import failed: {0}")]
     VmImport(#[from] VmImportError),
     #[error("File IO failed: {0}")]
@@ -182,11 +179,6 @@ where
 
             serde_json::to_writer_pretty(proof_file, &hex_strings)?;
         }
-    }
-
-    if verify {
-        verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
-        log::info!("Proof verified successfully");
     }
 
     Ok(())
