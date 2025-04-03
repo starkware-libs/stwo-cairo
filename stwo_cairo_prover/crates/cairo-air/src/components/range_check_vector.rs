@@ -107,10 +107,12 @@ macro_rules! range_check_eval{
                         self.log_size() + 1
                     }
                     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+                        println!("Evaluating range check vector, RANGES: {:?}, N_RANGES: {:?}", RANGES, N_RANGES);
                         let rc_values = (0..N_RANGES)
                             .map(|i| eval.get_preprocessed_column(RangeCheck::new(RANGES, i).id()))
                             .collect::<Vec<_>>();
                         let multiplicity = eval.next_trace_mask();
+                        // println!("RC values: {:?}, multiplicity: {:?}", rc_values, multiplicity);
                         eval.add_to_relation(RelationEntry::new(
                             &self.lookup_elements, E::EF::from(-multiplicity), &rc_values
                         ));
@@ -129,22 +131,24 @@ macro_rules! range_check_eval{
                     use stwo_prover::core::fields::qm31::QM31;
 
                     use super::*;
-                    use $crate::components::constraints_regression_test_values::RANGE_CHECK_VECTOR;
+                    use $crate::components::constraints_regression_test_values::[<RANGE_CHECK_$($log_range)_*>];
 
                     #[test]
                     fn range_check_vector_constraints_regression() {
+                        let mut rng = SmallRng::seed_from_u64(0);
                         let eval = Eval {
                             lookup_elements: relations::[<RangeCheck_$($log_range)_*>]::dummy(),
                         };
 
                         let expr_eval = eval.evaluate(ExprEvaluator::new());
-                        let mut rng = SmallRng::seed_from_u64(0);
+                        let assignment = expr_eval.random_assignment();
+
                         let mut sum = QM31::zero();
                         for c in expr_eval.constraints {
-                            sum += c.random_eval() * rng.gen::<QM31>();
+                            sum += c.assign(&assignment) * rng.gen::<QM31>();
                         }
 
-                        assert_eq!(sum, RANGE_CHECK_VECTOR);
+                        assert_eq!(sum, [<RANGE_CHECK_$($log_range)_*>]);
                     }
                 }
         }

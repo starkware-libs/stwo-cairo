@@ -243,6 +243,7 @@ mod tests {
 
     #[test]
     fn triple_xor_32_constraints_regression() {
+        let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
             triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
@@ -250,10 +251,11 @@ mod tests {
         };
 
         let expr_eval = eval.evaluate(ExprEvaluator::new());
-        let mut rng = SmallRng::seed_from_u64(0);
+        let assignment = expr_eval.random_assignment();
+
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.random_eval() * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
         assert_eq!(sum, TRIPLE_XOR_32);

@@ -218,6 +218,7 @@ mod tests {
 
     #[test]
     fn memory_id_to_big_constraints_regression() {
+        let mut rng = SmallRng::seed_from_u64(0);
         let big_eval = BigEval {
             log_n_rows: 4,
             lookup_elements: relations::MemoryIdToBig::dummy(),
@@ -231,14 +232,16 @@ mod tests {
 
         let big_expr_eval = big_eval.evaluate(ExprEvaluator::new());
         let small_expr_eval = small_eval.evaluate(ExprEvaluator::new());
-        let mut rng = SmallRng::seed_from_u64(0);
+        let big_assignment = big_expr_eval.random_assignment();
+        let small_assignment = small_expr_eval.random_assignment();
+
         let mut big_sum = QM31::zero();
         let mut small_sum = QM31::zero();
         for c in big_expr_eval.constraints {
-            big_sum += c.random_eval() * rng.gen::<QM31>();
+            big_sum += c.assign(&big_assignment) * rng.gen::<QM31>();
         }
         for c in small_expr_eval.constraints {
-            small_sum += c.random_eval() * rng.gen::<QM31>();
+            small_sum += c.assign(&small_assignment) * rng.gen::<QM31>();
         }
 
         assert_eq!(big_sum, BIG_MEMORY_ID_TO_BIG);

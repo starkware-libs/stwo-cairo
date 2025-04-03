@@ -116,16 +116,18 @@ mod tests {
 
     #[test]
     fn memory_address_to_id_constraints_regression() {
+        let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             log_size: 4,
             lookup_elements: relations::MemoryAddressToId::dummy(),
         };
 
         let expr_eval = eval.evaluate(ExprEvaluator::new());
-        let mut rng = SmallRng::seed_from_u64(0);
+        let assignment = expr_eval.random_assignment();
+
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.random_eval() * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
         assert_eq!(sum, MEMORY_ADDRESS_TO_ID);
