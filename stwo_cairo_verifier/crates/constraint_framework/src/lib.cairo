@@ -1,9 +1,10 @@
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
+use core::num::traits::{One, Zero};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::M31;
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
 
 /// Represents the value of the prefix sum column at some index.
 /// Should be used to eliminate padded rows for the logup sum.
@@ -23,7 +24,7 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
         assert!(N != 0);
         let [z, alpha]: [QM31; 2] = (*channel.draw_felts(2).span().try_into().unwrap()).unbox();
 
-        let mut acc = QM31One::one();
+        let mut acc = One::one();
         let mut alpha_powers = array![acc];
 
         for _ in 1..N {
@@ -115,14 +116,14 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
     }
 }
 
-#[derive(Debug, Default, Drop)]
+#[derive(Default, Drop)]
 enum PreprocessedColumnsAllocationMode {
     #[default]
     Dynamic,
     Static,
 }
 
-#[derive(Drop, Debug, Copy, PartialEq)]
+#[derive(Drop, Copy, PartialEq, Debug)]
 pub enum PreprocessedColumn {
     /// Symbolic representation of xor lookup table column of the form: `(n_term_bits, term)`.
     /// Where term is `{ 0 = left operand, 1 = right operand, 2 = xor result }`.
