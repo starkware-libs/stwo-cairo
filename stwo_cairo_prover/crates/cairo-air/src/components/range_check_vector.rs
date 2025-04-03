@@ -129,22 +129,24 @@ macro_rules! range_check_eval{
                     use stwo_prover::core::fields::qm31::QM31;
 
                     use super::*;
-                    use $crate::components::constraints_regression_test_values::RANGE_CHECK_VECTOR;
+                    use $crate::components::constraints_regression_test_values::[<RANGE_CHECK_$($log_range)_*>];
 
                     #[test]
-                    fn range_check_vector_constraints_regression() {
+                    fn [<constraints_regression_range_check_$($log_range)_*>]() {
+                        let mut rng = SmallRng::seed_from_u64(0);
                         let eval = Eval {
                             lookup_elements: relations::[<RangeCheck_$($log_range)_*>]::dummy(),
                         };
 
                         let expr_eval = eval.evaluate(ExprEvaluator::new());
-                        let mut rng = SmallRng::seed_from_u64(0);
+                        let assignment = expr_eval.random_assignment();
+
                         let mut sum = QM31::zero();
                         for c in expr_eval.constraints {
-                            sum += c.random_eval() * rng.gen::<QM31>();
+                            sum += c.assign(&assignment) * rng.gen::<QM31>();
                         }
 
-                        assert_eq!(sum, RANGE_CHECK_VECTOR);
+                        assert_eq!(sum, [<RANGE_CHECK_$($log_range)_*>]);
                     }
                 }
         }
