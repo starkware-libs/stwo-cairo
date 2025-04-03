@@ -18,6 +18,7 @@ use crate::witness::cairo::CairoClaimGenerator;
 use crate::witness::utils::witness_trace_cells;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 26;
+const RAYON_THREAD_STACK_SIZE: usize = 4194304;
 
 /// Logup security is defined by the `QM31` space (~124 bits) +
 /// `INTERACTION_POW_BITS` over total number of relation terms. E.g. assuming a 100-bit
@@ -33,6 +34,11 @@ pub fn prove_cairo<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
+    // TODO(Ohad): remove when un-inlining the witness generation is done.
+    rayon::ThreadPoolBuilder::new()
+        .stack_size(RAYON_THREAD_STACK_SIZE)
+        .build_global()
+        .unwrap();
     let _span = span!(Level::INFO, "prove_cairo").entered();
     // Composition polynomial domain log size is LOG_MAX_ROWS + 1, double it
     // because we compute on a half-coset, and account for blowup factor.
