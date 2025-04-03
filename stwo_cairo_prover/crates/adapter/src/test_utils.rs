@@ -1,8 +1,8 @@
 use std::path::Path;
 
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
+use cairo_vm::serde::deserialize_program::deserialize_and_parse_program;
 use cairo_vm::types::layout_name::LayoutName;
-use cairo_vm::types::program::Program;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 
 use crate::plain::adapt_finished_runner;
@@ -14,7 +14,9 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
         .join(test_name)
         .join("compiled.json");
 
-    let program = match Program::from_file(Path::new(&file_path), Some("main")) {
+    let file_content = std::fs::read(&file_path)
+        .unwrap_or_else(|_| panic!("Failed to read file at {}", file_path.display()));
+    let program = match deserialize_and_parse_program(&file_content, Some("main")) {
         Ok(program) => program,
         Err(e) => panic!("Failed to load program: {:?}", e),
     };
