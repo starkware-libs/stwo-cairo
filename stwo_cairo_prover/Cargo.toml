@@ -46,11 +46,11 @@ stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "8ab5601", features = [
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "aa5d11b", features = [
     "parallel",
 ], default-features = false }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "8ab5601" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "8ab5601" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "aa5d11b" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "aa5d11b" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.10", default-features = false }
 tracing = "0.1.40"
