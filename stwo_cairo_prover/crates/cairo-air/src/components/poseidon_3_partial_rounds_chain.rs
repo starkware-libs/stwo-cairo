@@ -1386,6 +1386,7 @@ mod tests {
 
     #[test]
     fn poseidon_3_partial_rounds_chain_constraints_regression() {
+        let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
             cube_252_lookup_elements: relations::Cube252::dummy(),
@@ -1399,10 +1400,11 @@ mod tests {
         };
 
         let expr_eval = eval.evaluate(ExprEvaluator::new());
-        let mut rng = SmallRng::seed_from_u64(0);
+        let assignment = expr_eval.random_assignment();
+
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.random_eval() * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
         assert_eq!(sum, POSEIDON_3_PARTIAL_ROUNDS_CHAIN);
