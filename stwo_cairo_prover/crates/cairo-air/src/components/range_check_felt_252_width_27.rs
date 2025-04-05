@@ -4,9 +4,9 @@ pub const N_TRACE_COLUMNS: usize = 20;
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
-    pub range_check_18_lookup_elements: relations::RangeCheck_18,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
+    pub range_check_18_lookup_elements: relations::RangeCheck_18,
+    pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -209,12 +209,11 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
+            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+            range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
             range_check_felt_252_width_27_lookup_elements:
                 relations::RangeCheckFelt252Width27::dummy(),
-            range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
-            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

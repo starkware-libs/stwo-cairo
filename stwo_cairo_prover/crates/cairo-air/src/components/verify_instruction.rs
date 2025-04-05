@@ -1,14 +1,16 @@
 use crate::components::prelude::*;
+use crate::components::subroutines::encode_offsets::EncodeOffsets;
+use crate::components::subroutines::mem_verify::MemVerify;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 const N_LOOKUPS: usize = 5;
 
 pub struct Eval {
     pub claim: Claim,
+    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
+    pub range_check_4_3_lookup_elements: relations::RangeCheck_4_3,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub range_check_4_3_lookup_elements: relations::RangeCheck_4_3,
-    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
     pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
@@ -54,13 +56,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_128 = E::F::from(M31::from(128));
-        let M31_16 = E::F::from(M31::from(16));
-        let M31_2048 = E::F::from(M31::from(2048));
-        let M31_32 = E::F::from(M31::from(32));
-        let M31_4 = E::F::from(M31::from(4));
-        let M31_512 = E::F::from(M31::from(512));
-        let M31_8192 = E::F::from(M31::from(8192));
+        let M31_0 = E::F::from(M31::from(0));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -79,61 +75,30 @@ impl FrameworkEval for Eval {
         let instruction_id_col15 = eval.next_trace_mask();
         let multiplicity = eval.next_trace_mask();
 
-        // Encode Offsets.
-
-        // Reconstructed offset0 is correct.
-        eval.add_constraint(
-            ((offset0_low_col7.clone() + (offset0_mid_col8.clone() * M31_512.clone()))
-                - input_limb_1_col1.clone()),
-        );
-        // Reconstructed offset1 is correct.
-        eval.add_constraint(
-            (((offset1_low_col9.clone() + (offset1_mid_col10.clone() * M31_4.clone()))
-                + (offset1_high_col11.clone() * M31_2048.clone()))
-                - input_limb_2_col2.clone()),
-        );
-        // Reconstructed offset2 is correct.
-        eval.add_constraint(
-            (((offset2_low_col12.clone() + (offset2_mid_col13.clone() * M31_16.clone()))
-                + (offset2_high_col14.clone() * M31_8192.clone()))
-                - input_limb_3_col3.clone()),
-        );
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [encode_offsets_output_tmp_16a4f_8_limb_0, encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_2, encode_offsets_output_tmp_16a4f_8_limb_3, encode_offsets_output_tmp_16a4f_8_limb_4, encode_offsets_output_tmp_16a4f_8_limb_5] =
+            EncodeOffsets::evaluate(
+                [
+                    input_limb_1_col1.clone(),
+                    input_limb_2_col2.clone(),
+                    input_limb_3_col3.clone(),
+                ],
+                offset0_low_col7.clone(),
                 offset0_mid_col8.clone(),
                 offset1_low_col9.clone(),
+                offset1_mid_col10.clone(),
                 offset1_high_col11.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_4_3_lookup_elements,
-            E::EF::one(),
-            &[offset2_low_col12.clone(), offset2_high_col14.clone()],
-        ));
-
-        let encode_offsets_output_tmp_16a4f_8_limb_1 = eval.add_intermediate(
-            (offset0_mid_col8.clone() + (offset1_low_col9.clone() * M31_128.clone())),
-        );
-        let encode_offsets_output_tmp_16a4f_8_limb_3 = eval.add_intermediate(
-            (offset1_high_col11.clone() + (offset2_low_col12.clone() * M31_32.clone())),
-        );
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[input_limb_0_col0.clone(), instruction_id_col15.clone()],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                instruction_id_col15.clone(),
+                offset2_low_col12.clone(),
+                offset2_mid_col13.clone(),
+                offset2_high_col14.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.range_check_4_3_lookup_elements,
+            );
+        MemVerify::evaluate(
+            [
+                input_limb_0_col0.clone(),
                 offset0_low_col7.clone(),
                 encode_offsets_output_tmp_16a4f_8_limb_1.clone(),
                 offset1_mid_col10.clone(),
@@ -142,9 +107,32 @@ impl FrameworkEval for Eval {
                 (offset2_high_col14.clone() + input_limb_4_col4.clone()),
                 input_limb_5_col5.clone(),
                 input_limb_6_col6.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
             ],
-        ));
-
+            instruction_id_col15.clone(),
+            &mut eval,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.verify_instruction_lookup_elements,
             -E::EF::from(multiplicity),
@@ -180,13 +168,12 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
+            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
+            range_check_4_3_lookup_elements: relations::RangeCheck_4_3::dummy(),
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            range_check_4_3_lookup_elements: relations::RangeCheck_4_3::dummy(),
-            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
             verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

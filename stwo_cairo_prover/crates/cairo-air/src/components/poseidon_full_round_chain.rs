@@ -1,13 +1,16 @@
 use crate::components::prelude::*;
+use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::LinearCombinationN4Coefs11M21;
+use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::LinearCombinationN4Coefs1M111;
+use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::LinearCombinationN4Coefs3111;
 
 pub const N_TRACE_COLUMNS: usize = 126;
 
 pub struct Eval {
     pub claim: Claim,
     pub cube_252_lookup_elements: relations::Cube252,
-    pub poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain,
     pub poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys,
     pub range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3,
+    pub poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -52,11 +55,6 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
-        let M31_136 = E::F::from(M31::from(136));
-        let M31_16 = E::F::from(M31::from(16));
-        let M31_2 = E::F::from(M31::from(2));
-        let M31_256 = E::F::from(M31::from(256));
-        let M31_3 = E::F::from(M31::from(3));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -305,340 +303,186 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // Linear Combination N 4 Coefs 3 1 1 1.
-
-        let carry_0_tmp_f9fbc_6 = eval.add_intermediate(
-            (((((((M31_3.clone() * cube_252_output_limb_0_col32.clone())
-                + cube_252_output_limb_0_col42.clone())
-                + cube_252_output_limb_0_col52.clone())
-                + poseidon_round_keys_output_limb_0_col62.clone())
-                - combination_limb_0_col92.clone())
-                - p_coef_col102.clone())
-                * M31_16.clone()),
-        );
-        let carry_1_tmp_f9fbc_7 = eval.add_intermediate(
-            ((((((carry_0_tmp_f9fbc_6.clone()
-                + (M31_3.clone() * cube_252_output_limb_1_col33.clone()))
-                + cube_252_output_limb_1_col43.clone())
-                + cube_252_output_limb_1_col53.clone())
-                + poseidon_round_keys_output_limb_1_col63.clone())
-                - combination_limb_1_col93.clone())
-                * M31_16.clone()),
-        );
-        let carry_2_tmp_f9fbc_8 = eval.add_intermediate(
-            ((((((carry_1_tmp_f9fbc_7.clone()
-                + (M31_3.clone() * cube_252_output_limb_2_col34.clone()))
-                + cube_252_output_limb_2_col44.clone())
-                + cube_252_output_limb_2_col54.clone())
-                + poseidon_round_keys_output_limb_2_col64.clone())
-                - combination_limb_2_col94.clone())
-                * M31_16.clone()),
-        );
-        let carry_3_tmp_f9fbc_9 = eval.add_intermediate(
-            ((((((carry_2_tmp_f9fbc_8.clone()
-                + (M31_3.clone() * cube_252_output_limb_3_col35.clone()))
-                + cube_252_output_limb_3_col45.clone())
-                + cube_252_output_limb_3_col55.clone())
-                + poseidon_round_keys_output_limb_3_col65.clone())
-                - combination_limb_3_col95.clone())
-                * M31_16.clone()),
-        );
-        let carry_4_tmp_f9fbc_10 = eval.add_intermediate(
-            ((((((carry_3_tmp_f9fbc_9.clone()
-                + (M31_3.clone() * cube_252_output_limb_4_col36.clone()))
-                + cube_252_output_limb_4_col46.clone())
-                + cube_252_output_limb_4_col56.clone())
-                + poseidon_round_keys_output_limb_4_col66.clone())
-                - combination_limb_4_col96.clone())
-                * M31_16.clone()),
-        );
-        let carry_5_tmp_f9fbc_11 = eval.add_intermediate(
-            ((((((carry_4_tmp_f9fbc_10.clone()
-                + (M31_3.clone() * cube_252_output_limb_5_col37.clone()))
-                + cube_252_output_limb_5_col47.clone())
-                + cube_252_output_limb_5_col57.clone())
-                + poseidon_round_keys_output_limb_5_col67.clone())
-                - combination_limb_5_col97.clone())
-                * M31_16.clone()),
-        );
-        let carry_6_tmp_f9fbc_12 = eval.add_intermediate(
-            ((((((carry_5_tmp_f9fbc_11.clone()
-                + (M31_3.clone() * cube_252_output_limb_6_col38.clone()))
-                + cube_252_output_limb_6_col48.clone())
-                + cube_252_output_limb_6_col58.clone())
-                + poseidon_round_keys_output_limb_6_col68.clone())
-                - combination_limb_6_col98.clone())
-                * M31_16.clone()),
-        );
-        let carry_7_tmp_f9fbc_13 = eval.add_intermediate(
-            (((((((carry_6_tmp_f9fbc_12.clone()
-                + (M31_3.clone() * cube_252_output_limb_7_col39.clone()))
-                + cube_252_output_limb_7_col49.clone())
-                + cube_252_output_limb_7_col59.clone())
-                + poseidon_round_keys_output_limb_7_col69.clone())
-                - combination_limb_7_col99.clone())
-                - (p_coef_col102.clone() * M31_136.clone()))
-                * M31_16.clone()),
-        );
-        let carry_8_tmp_f9fbc_14 = eval.add_intermediate(
-            ((((((carry_7_tmp_f9fbc_13.clone()
-                + (M31_3.clone() * cube_252_output_limb_8_col40.clone()))
-                + cube_252_output_limb_8_col50.clone())
-                + cube_252_output_limb_8_col60.clone())
-                + poseidon_round_keys_output_limb_8_col70.clone())
-                - combination_limb_8_col100.clone())
-                * M31_16.clone()),
-        );
-        // final limb constraint.
-        eval.add_constraint(
-            ((((((carry_8_tmp_f9fbc_14.clone()
-                + (M31_3.clone() * cube_252_output_limb_9_col41.clone()))
-                + cube_252_output_limb_9_col51.clone())
-                + cube_252_output_limb_9_col61.clone())
-                + poseidon_round_keys_output_limb_9_col71.clone())
-                - combination_limb_9_col101.clone())
-                - (p_coef_col102.clone() * M31_256.clone())),
-        );
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_3_3_3_3_3_lookup_elements,
-            E::EF::one(),
-            &[
-                (p_coef_col102.clone() + M31_1.clone()),
-                (carry_0_tmp_f9fbc_6.clone() + M31_1.clone()),
-                (carry_1_tmp_f9fbc_7.clone() + M31_1.clone()),
-                (carry_2_tmp_f9fbc_8.clone() + M31_1.clone()),
-                (carry_3_tmp_f9fbc_9.clone() + M31_1.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_3_3_3_3_3_lookup_elements,
-            E::EF::one(),
-            &[
-                (carry_4_tmp_f9fbc_10.clone() + M31_1.clone()),
-                (carry_5_tmp_f9fbc_11.clone() + M31_1.clone()),
-                (carry_6_tmp_f9fbc_12.clone() + M31_1.clone()),
-                (carry_7_tmp_f9fbc_13.clone() + M31_1.clone()),
-                (carry_8_tmp_f9fbc_14.clone() + M31_1.clone()),
-            ],
-        ));
-
-        // Linear Combination N 4 Coefs 1 M 1 1 1.
-
-        let carry_0_tmp_f9fbc_18 = eval.add_intermediate(
-            ((((((cube_252_output_limb_0_col32.clone() - cube_252_output_limb_0_col42.clone())
-                + cube_252_output_limb_0_col52.clone())
-                + poseidon_round_keys_output_limb_10_col72.clone())
-                - combination_limb_0_col103.clone())
-                - p_coef_col113.clone())
-                * M31_16.clone()),
-        );
-        let carry_1_tmp_f9fbc_19 = eval.add_intermediate(
-            ((((((carry_0_tmp_f9fbc_18.clone() + cube_252_output_limb_1_col33.clone())
-                - cube_252_output_limb_1_col43.clone())
-                + cube_252_output_limb_1_col53.clone())
-                + poseidon_round_keys_output_limb_11_col73.clone())
-                - combination_limb_1_col104.clone())
-                * M31_16.clone()),
-        );
-        let carry_2_tmp_f9fbc_20 = eval.add_intermediate(
-            ((((((carry_1_tmp_f9fbc_19.clone() + cube_252_output_limb_2_col34.clone())
-                - cube_252_output_limb_2_col44.clone())
-                + cube_252_output_limb_2_col54.clone())
-                + poseidon_round_keys_output_limb_12_col74.clone())
-                - combination_limb_2_col105.clone())
-                * M31_16.clone()),
-        );
-        let carry_3_tmp_f9fbc_21 = eval.add_intermediate(
-            ((((((carry_2_tmp_f9fbc_20.clone() + cube_252_output_limb_3_col35.clone())
-                - cube_252_output_limb_3_col45.clone())
-                + cube_252_output_limb_3_col55.clone())
-                + poseidon_round_keys_output_limb_13_col75.clone())
-                - combination_limb_3_col106.clone())
-                * M31_16.clone()),
-        );
-        let carry_4_tmp_f9fbc_22 = eval.add_intermediate(
-            ((((((carry_3_tmp_f9fbc_21.clone() + cube_252_output_limb_4_col36.clone())
-                - cube_252_output_limb_4_col46.clone())
-                + cube_252_output_limb_4_col56.clone())
-                + poseidon_round_keys_output_limb_14_col76.clone())
-                - combination_limb_4_col107.clone())
-                * M31_16.clone()),
-        );
-        let carry_5_tmp_f9fbc_23 = eval.add_intermediate(
-            ((((((carry_4_tmp_f9fbc_22.clone() + cube_252_output_limb_5_col37.clone())
-                - cube_252_output_limb_5_col47.clone())
-                + cube_252_output_limb_5_col57.clone())
-                + poseidon_round_keys_output_limb_15_col77.clone())
-                - combination_limb_5_col108.clone())
-                * M31_16.clone()),
-        );
-        let carry_6_tmp_f9fbc_24 = eval.add_intermediate(
-            ((((((carry_5_tmp_f9fbc_23.clone() + cube_252_output_limb_6_col38.clone())
-                - cube_252_output_limb_6_col48.clone())
-                + cube_252_output_limb_6_col58.clone())
-                + poseidon_round_keys_output_limb_16_col78.clone())
-                - combination_limb_6_col109.clone())
-                * M31_16.clone()),
-        );
-        let carry_7_tmp_f9fbc_25 = eval.add_intermediate(
-            (((((((carry_6_tmp_f9fbc_24.clone() + cube_252_output_limb_7_col39.clone())
-                - cube_252_output_limb_7_col49.clone())
-                + cube_252_output_limb_7_col59.clone())
-                + poseidon_round_keys_output_limb_17_col79.clone())
-                - combination_limb_7_col110.clone())
-                - (p_coef_col113.clone() * M31_136.clone()))
-                * M31_16.clone()),
-        );
-        let carry_8_tmp_f9fbc_26 = eval.add_intermediate(
-            ((((((carry_7_tmp_f9fbc_25.clone() + cube_252_output_limb_8_col40.clone())
-                - cube_252_output_limb_8_col50.clone())
-                + cube_252_output_limb_8_col60.clone())
-                + poseidon_round_keys_output_limb_18_col80.clone())
-                - combination_limb_8_col111.clone())
-                * M31_16.clone()),
-        );
-        // final limb constraint.
-        eval.add_constraint(
-            ((((((carry_8_tmp_f9fbc_26.clone() + cube_252_output_limb_9_col41.clone())
-                - cube_252_output_limb_9_col51.clone())
-                + cube_252_output_limb_9_col61.clone())
-                + poseidon_round_keys_output_limb_19_col81.clone())
-                - combination_limb_9_col112.clone())
-                - (p_coef_col113.clone() * M31_256.clone())),
-        );
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_3_3_3_3_3_lookup_elements,
-            E::EF::one(),
-            &[
-                (p_coef_col113.clone() + M31_2.clone()),
-                (carry_0_tmp_f9fbc_18.clone() + M31_2.clone()),
-                (carry_1_tmp_f9fbc_19.clone() + M31_2.clone()),
-                (carry_2_tmp_f9fbc_20.clone() + M31_2.clone()),
-                (carry_3_tmp_f9fbc_21.clone() + M31_2.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_3_3_3_3_3_lookup_elements,
-            E::EF::one(),
-            &[
-                (carry_4_tmp_f9fbc_22.clone() + M31_2.clone()),
-                (carry_5_tmp_f9fbc_23.clone() + M31_2.clone()),
-                (carry_6_tmp_f9fbc_24.clone() + M31_2.clone()),
-                (carry_7_tmp_f9fbc_25.clone() + M31_2.clone()),
-                (carry_8_tmp_f9fbc_26.clone() + M31_2.clone()),
-            ],
-        ));
-
-        // Linear Combination N 4 Coefs 1 1 M 2 1.
-
-        let carry_0_tmp_f9fbc_30 = eval.add_intermediate(
-            ((((((cube_252_output_limb_0_col32.clone() + cube_252_output_limb_0_col42.clone())
-                - (M31_2.clone() * cube_252_output_limb_0_col52.clone()))
-                + poseidon_round_keys_output_limb_20_col82.clone())
-                - combination_limb_0_col114.clone())
-                - p_coef_col124.clone())
-                * M31_16.clone()),
-        );
-        let carry_1_tmp_f9fbc_31 = eval.add_intermediate(
-            ((((((carry_0_tmp_f9fbc_30.clone() + cube_252_output_limb_1_col33.clone())
-                + cube_252_output_limb_1_col43.clone())
-                - (M31_2.clone() * cube_252_output_limb_1_col53.clone()))
-                + poseidon_round_keys_output_limb_21_col83.clone())
-                - combination_limb_1_col115.clone())
-                * M31_16.clone()),
-        );
-        let carry_2_tmp_f9fbc_32 = eval.add_intermediate(
-            ((((((carry_1_tmp_f9fbc_31.clone() + cube_252_output_limb_2_col34.clone())
-                + cube_252_output_limb_2_col44.clone())
-                - (M31_2.clone() * cube_252_output_limb_2_col54.clone()))
-                + poseidon_round_keys_output_limb_22_col84.clone())
-                - combination_limb_2_col116.clone())
-                * M31_16.clone()),
-        );
-        let carry_3_tmp_f9fbc_33 = eval.add_intermediate(
-            ((((((carry_2_tmp_f9fbc_32.clone() + cube_252_output_limb_3_col35.clone())
-                + cube_252_output_limb_3_col45.clone())
-                - (M31_2.clone() * cube_252_output_limb_3_col55.clone()))
-                + poseidon_round_keys_output_limb_23_col85.clone())
-                - combination_limb_3_col117.clone())
-                * M31_16.clone()),
-        );
-        let carry_4_tmp_f9fbc_34 = eval.add_intermediate(
-            ((((((carry_3_tmp_f9fbc_33.clone() + cube_252_output_limb_4_col36.clone())
-                + cube_252_output_limb_4_col46.clone())
-                - (M31_2.clone() * cube_252_output_limb_4_col56.clone()))
-                + poseidon_round_keys_output_limb_24_col86.clone())
-                - combination_limb_4_col118.clone())
-                * M31_16.clone()),
-        );
-        let carry_5_tmp_f9fbc_35 = eval.add_intermediate(
-            ((((((carry_4_tmp_f9fbc_34.clone() + cube_252_output_limb_5_col37.clone())
-                + cube_252_output_limb_5_col47.clone())
-                - (M31_2.clone() * cube_252_output_limb_5_col57.clone()))
-                + poseidon_round_keys_output_limb_25_col87.clone())
-                - combination_limb_5_col119.clone())
-                * M31_16.clone()),
-        );
-        let carry_6_tmp_f9fbc_36 = eval.add_intermediate(
-            ((((((carry_5_tmp_f9fbc_35.clone() + cube_252_output_limb_6_col38.clone())
-                + cube_252_output_limb_6_col48.clone())
-                - (M31_2.clone() * cube_252_output_limb_6_col58.clone()))
-                + poseidon_round_keys_output_limb_26_col88.clone())
-                - combination_limb_6_col120.clone())
-                * M31_16.clone()),
-        );
-        let carry_7_tmp_f9fbc_37 = eval.add_intermediate(
-            (((((((carry_6_tmp_f9fbc_36.clone() + cube_252_output_limb_7_col39.clone())
-                + cube_252_output_limb_7_col49.clone())
-                - (M31_2.clone() * cube_252_output_limb_7_col59.clone()))
-                + poseidon_round_keys_output_limb_27_col89.clone())
-                - combination_limb_7_col121.clone())
-                - (p_coef_col124.clone() * M31_136.clone()))
-                * M31_16.clone()),
-        );
-        let carry_8_tmp_f9fbc_38 = eval.add_intermediate(
-            ((((((carry_7_tmp_f9fbc_37.clone() + cube_252_output_limb_8_col40.clone())
-                + cube_252_output_limb_8_col50.clone())
-                - (M31_2.clone() * cube_252_output_limb_8_col60.clone()))
-                + poseidon_round_keys_output_limb_28_col90.clone())
-                - combination_limb_8_col122.clone())
-                * M31_16.clone()),
-        );
-        // final limb constraint.
-        eval.add_constraint(
-            ((((((carry_8_tmp_f9fbc_38.clone() + cube_252_output_limb_9_col41.clone())
-                + cube_252_output_limb_9_col51.clone())
-                - (M31_2.clone() * cube_252_output_limb_9_col61.clone()))
-                + poseidon_round_keys_output_limb_29_col91.clone())
-                - combination_limb_9_col123.clone())
-                - (p_coef_col124.clone() * M31_256.clone())),
-        );
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_3_3_3_3_3_lookup_elements,
-            E::EF::one(),
-            &[
-                (p_coef_col124.clone() + M31_3.clone()),
-                (carry_0_tmp_f9fbc_30.clone() + M31_3.clone()),
-                (carry_1_tmp_f9fbc_31.clone() + M31_3.clone()),
-                (carry_2_tmp_f9fbc_32.clone() + M31_3.clone()),
-                (carry_3_tmp_f9fbc_33.clone() + M31_3.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_3_3_3_3_3_lookup_elements,
-            E::EF::one(),
-            &[
-                (carry_4_tmp_f9fbc_34.clone() + M31_3.clone()),
-                (carry_5_tmp_f9fbc_35.clone() + M31_3.clone()),
-                (carry_6_tmp_f9fbc_36.clone() + M31_3.clone()),
-                (carry_7_tmp_f9fbc_37.clone() + M31_3.clone()),
-                (carry_8_tmp_f9fbc_38.clone() + M31_3.clone()),
-            ],
-        ));
-
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_0, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_1, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_2, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_3, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_4, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_5, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_6, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_7, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_8, linear_combination_n_4_coefs_3_1_1_1_output_tmp_f9fbc_15_limb_9] =
+            LinearCombinationN4Coefs3111::evaluate(
+                [
+                    cube_252_output_limb_0_col32.clone(),
+                    cube_252_output_limb_1_col33.clone(),
+                    cube_252_output_limb_2_col34.clone(),
+                    cube_252_output_limb_3_col35.clone(),
+                    cube_252_output_limb_4_col36.clone(),
+                    cube_252_output_limb_5_col37.clone(),
+                    cube_252_output_limb_6_col38.clone(),
+                    cube_252_output_limb_7_col39.clone(),
+                    cube_252_output_limb_8_col40.clone(),
+                    cube_252_output_limb_9_col41.clone(),
+                    cube_252_output_limb_0_col42.clone(),
+                    cube_252_output_limb_1_col43.clone(),
+                    cube_252_output_limb_2_col44.clone(),
+                    cube_252_output_limb_3_col45.clone(),
+                    cube_252_output_limb_4_col46.clone(),
+                    cube_252_output_limb_5_col47.clone(),
+                    cube_252_output_limb_6_col48.clone(),
+                    cube_252_output_limb_7_col49.clone(),
+                    cube_252_output_limb_8_col50.clone(),
+                    cube_252_output_limb_9_col51.clone(),
+                    cube_252_output_limb_0_col52.clone(),
+                    cube_252_output_limb_1_col53.clone(),
+                    cube_252_output_limb_2_col54.clone(),
+                    cube_252_output_limb_3_col55.clone(),
+                    cube_252_output_limb_4_col56.clone(),
+                    cube_252_output_limb_5_col57.clone(),
+                    cube_252_output_limb_6_col58.clone(),
+                    cube_252_output_limb_7_col59.clone(),
+                    cube_252_output_limb_8_col60.clone(),
+                    cube_252_output_limb_9_col61.clone(),
+                    poseidon_round_keys_output_limb_0_col62.clone(),
+                    poseidon_round_keys_output_limb_1_col63.clone(),
+                    poseidon_round_keys_output_limb_2_col64.clone(),
+                    poseidon_round_keys_output_limb_3_col65.clone(),
+                    poseidon_round_keys_output_limb_4_col66.clone(),
+                    poseidon_round_keys_output_limb_5_col67.clone(),
+                    poseidon_round_keys_output_limb_6_col68.clone(),
+                    poseidon_round_keys_output_limb_7_col69.clone(),
+                    poseidon_round_keys_output_limb_8_col70.clone(),
+                    poseidon_round_keys_output_limb_9_col71.clone(),
+                ],
+                combination_limb_0_col92.clone(),
+                combination_limb_1_col93.clone(),
+                combination_limb_2_col94.clone(),
+                combination_limb_3_col95.clone(),
+                combination_limb_4_col96.clone(),
+                combination_limb_5_col97.clone(),
+                combination_limb_6_col98.clone(),
+                combination_limb_7_col99.clone(),
+                combination_limb_8_col100.clone(),
+                combination_limb_9_col101.clone(),
+                p_coef_col102.clone(),
+                &mut eval,
+                &self.range_check_3_3_3_3_3_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_0, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_1, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_2, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_3, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_4, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_5, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_6, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_7, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_8, linear_combination_n_4_coefs_1_m1_1_1_output_tmp_f9fbc_27_limb_9] =
+            LinearCombinationN4Coefs1M111::evaluate(
+                [
+                    cube_252_output_limb_0_col32.clone(),
+                    cube_252_output_limb_1_col33.clone(),
+                    cube_252_output_limb_2_col34.clone(),
+                    cube_252_output_limb_3_col35.clone(),
+                    cube_252_output_limb_4_col36.clone(),
+                    cube_252_output_limb_5_col37.clone(),
+                    cube_252_output_limb_6_col38.clone(),
+                    cube_252_output_limb_7_col39.clone(),
+                    cube_252_output_limb_8_col40.clone(),
+                    cube_252_output_limb_9_col41.clone(),
+                    cube_252_output_limb_0_col42.clone(),
+                    cube_252_output_limb_1_col43.clone(),
+                    cube_252_output_limb_2_col44.clone(),
+                    cube_252_output_limb_3_col45.clone(),
+                    cube_252_output_limb_4_col46.clone(),
+                    cube_252_output_limb_5_col47.clone(),
+                    cube_252_output_limb_6_col48.clone(),
+                    cube_252_output_limb_7_col49.clone(),
+                    cube_252_output_limb_8_col50.clone(),
+                    cube_252_output_limb_9_col51.clone(),
+                    cube_252_output_limb_0_col52.clone(),
+                    cube_252_output_limb_1_col53.clone(),
+                    cube_252_output_limb_2_col54.clone(),
+                    cube_252_output_limb_3_col55.clone(),
+                    cube_252_output_limb_4_col56.clone(),
+                    cube_252_output_limb_5_col57.clone(),
+                    cube_252_output_limb_6_col58.clone(),
+                    cube_252_output_limb_7_col59.clone(),
+                    cube_252_output_limb_8_col60.clone(),
+                    cube_252_output_limb_9_col61.clone(),
+                    poseidon_round_keys_output_limb_10_col72.clone(),
+                    poseidon_round_keys_output_limb_11_col73.clone(),
+                    poseidon_round_keys_output_limb_12_col74.clone(),
+                    poseidon_round_keys_output_limb_13_col75.clone(),
+                    poseidon_round_keys_output_limb_14_col76.clone(),
+                    poseidon_round_keys_output_limb_15_col77.clone(),
+                    poseidon_round_keys_output_limb_16_col78.clone(),
+                    poseidon_round_keys_output_limb_17_col79.clone(),
+                    poseidon_round_keys_output_limb_18_col80.clone(),
+                    poseidon_round_keys_output_limb_19_col81.clone(),
+                ],
+                combination_limb_0_col103.clone(),
+                combination_limb_1_col104.clone(),
+                combination_limb_2_col105.clone(),
+                combination_limb_3_col106.clone(),
+                combination_limb_4_col107.clone(),
+                combination_limb_5_col108.clone(),
+                combination_limb_6_col109.clone(),
+                combination_limb_7_col110.clone(),
+                combination_limb_8_col111.clone(),
+                combination_limb_9_col112.clone(),
+                p_coef_col113.clone(),
+                &mut eval,
+                &self.range_check_3_3_3_3_3_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_0, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_1, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_2, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_3, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_4, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_5, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_6, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_7, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_8, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_f9fbc_39_limb_9] =
+            LinearCombinationN4Coefs11M21::evaluate(
+                [
+                    cube_252_output_limb_0_col32.clone(),
+                    cube_252_output_limb_1_col33.clone(),
+                    cube_252_output_limb_2_col34.clone(),
+                    cube_252_output_limb_3_col35.clone(),
+                    cube_252_output_limb_4_col36.clone(),
+                    cube_252_output_limb_5_col37.clone(),
+                    cube_252_output_limb_6_col38.clone(),
+                    cube_252_output_limb_7_col39.clone(),
+                    cube_252_output_limb_8_col40.clone(),
+                    cube_252_output_limb_9_col41.clone(),
+                    cube_252_output_limb_0_col42.clone(),
+                    cube_252_output_limb_1_col43.clone(),
+                    cube_252_output_limb_2_col44.clone(),
+                    cube_252_output_limb_3_col45.clone(),
+                    cube_252_output_limb_4_col46.clone(),
+                    cube_252_output_limb_5_col47.clone(),
+                    cube_252_output_limb_6_col48.clone(),
+                    cube_252_output_limb_7_col49.clone(),
+                    cube_252_output_limb_8_col50.clone(),
+                    cube_252_output_limb_9_col51.clone(),
+                    cube_252_output_limb_0_col52.clone(),
+                    cube_252_output_limb_1_col53.clone(),
+                    cube_252_output_limb_2_col54.clone(),
+                    cube_252_output_limb_3_col55.clone(),
+                    cube_252_output_limb_4_col56.clone(),
+                    cube_252_output_limb_5_col57.clone(),
+                    cube_252_output_limb_6_col58.clone(),
+                    cube_252_output_limb_7_col59.clone(),
+                    cube_252_output_limb_8_col60.clone(),
+                    cube_252_output_limb_9_col61.clone(),
+                    poseidon_round_keys_output_limb_20_col82.clone(),
+                    poseidon_round_keys_output_limb_21_col83.clone(),
+                    poseidon_round_keys_output_limb_22_col84.clone(),
+                    poseidon_round_keys_output_limb_23_col85.clone(),
+                    poseidon_round_keys_output_limb_24_col86.clone(),
+                    poseidon_round_keys_output_limb_25_col87.clone(),
+                    poseidon_round_keys_output_limb_26_col88.clone(),
+                    poseidon_round_keys_output_limb_27_col89.clone(),
+                    poseidon_round_keys_output_limb_28_col90.clone(),
+                    poseidon_round_keys_output_limb_29_col91.clone(),
+                ],
+                combination_limb_0_col114.clone(),
+                combination_limb_1_col115.clone(),
+                combination_limb_2_col116.clone(),
+                combination_limb_3_col117.clone(),
+                combination_limb_4_col118.clone(),
+                combination_limb_5_col119.clone(),
+                combination_limb_6_col120.clone(),
+                combination_limb_7_col121.clone(),
+                combination_limb_8_col122.clone(),
+                combination_limb_9_col123.clone(),
+                p_coef_col124.clone(),
+                &mut eval,
+                &self.range_check_3_3_3_3_3_lookup_elements,
+            );
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_full_round_chain_lookup_elements,
             E::EF::from(enabler.clone()),
@@ -739,11 +583,10 @@ mod tests {
         let eval = Eval {
             claim: Claim { log_size: 4 },
             cube_252_lookup_elements: relations::Cube252::dummy(),
-            poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain::dummy(),
             poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
             range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3::dummy(),
+            poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

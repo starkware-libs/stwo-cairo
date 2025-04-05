@@ -1,11 +1,13 @@
 use crate::components::prelude::*;
+use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
+use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 
 pub const N_TRACE_COLUMNS: usize = 21;
 
 pub struct Eval {
     pub claim: Claim,
-    pub triple_xor_32_lookup_elements: relations::TripleXor32,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+    pub triple_xor_32_lookup_elements: relations::TripleXor32,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -74,138 +76,130 @@ impl FrameworkEval for Eval {
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
-        // Split 16 Low Part Size 8.
-
-        let split_16_low_part_size_8_output_tmp_298db_1_limb_0 = eval.add_intermediate(
-            (input_limb_0_col0.clone() - (ms_8_bits_col6.clone() * M31_256.clone())),
-        );
-
-        // Split 16 Low Part Size 8.
-
-        let split_16_low_part_size_8_output_tmp_298db_3_limb_0 = eval.add_intermediate(
-            (input_limb_1_col1.clone() - (ms_8_bits_col7.clone() * M31_256.clone())),
-        );
-
-        // Split 16 Low Part Size 8.
-
-        let split_16_low_part_size_8_output_tmp_298db_5_limb_0 = eval.add_intermediate(
-            (input_limb_2_col2.clone() - (ms_8_bits_col8.clone() * M31_256.clone())),
-        );
-
-        // Split 16 Low Part Size 8.
-
-        let split_16_low_part_size_8_output_tmp_298db_7_limb_0 = eval.add_intermediate(
-            (input_limb_3_col3.clone() - (ms_8_bits_col9.clone() * M31_256.clone())),
-        );
-
-        // Split 16 Low Part Size 8.
-
-        let split_16_low_part_size_8_output_tmp_298db_9_limb_0 = eval.add_intermediate(
-            (input_limb_4_col4.clone() - (ms_8_bits_col10.clone() * M31_256.clone())),
-        );
-
-        // Split 16 Low Part Size 8.
-
-        let split_16_low_part_size_8_output_tmp_298db_11_limb_0 = eval.add_intermediate(
-            (input_limb_5_col5.clone() - (ms_8_bits_col11.clone() * M31_256.clone())),
-        );
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_298db_1_limb_0, split_16_low_part_size_8_output_tmp_298db_1_limb_1] =
+            Split16LowPartSize8::evaluate(
+                [input_limb_0_col0.clone()],
+                ms_8_bits_col6.clone(),
+                &mut eval,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_298db_3_limb_0, split_16_low_part_size_8_output_tmp_298db_3_limb_1] =
+            Split16LowPartSize8::evaluate(
+                [input_limb_1_col1.clone()],
+                ms_8_bits_col7.clone(),
+                &mut eval,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_298db_5_limb_0, split_16_low_part_size_8_output_tmp_298db_5_limb_1] =
+            Split16LowPartSize8::evaluate(
+                [input_limb_2_col2.clone()],
+                ms_8_bits_col8.clone(),
+                &mut eval,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_298db_7_limb_0, split_16_low_part_size_8_output_tmp_298db_7_limb_1] =
+            Split16LowPartSize8::evaluate(
+                [input_limb_3_col3.clone()],
+                ms_8_bits_col9.clone(),
+                &mut eval,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_298db_9_limb_0, split_16_low_part_size_8_output_tmp_298db_9_limb_1] =
+            Split16LowPartSize8::evaluate(
+                [input_limb_4_col4.clone()],
+                ms_8_bits_col10.clone(),
+                &mut eval,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_298db_11_limb_0, split_16_low_part_size_8_output_tmp_298db_11_limb_1] =
+            Split16LowPartSize8::evaluate(
+                [input_limb_5_col5.clone()],
+                ms_8_bits_col11.clone(),
+                &mut eval,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_13 = BitwiseXorNumBits8::evaluate(
+            [
                 split_16_low_part_size_8_output_tmp_298db_1_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_298db_5_limb_0.clone(),
-                xor_col12.clone(),
             ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+            xor_col12.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_15 = BitwiseXorNumBits8::evaluate(
+            [
                 xor_col12.clone(),
                 split_16_low_part_size_8_output_tmp_298db_9_limb_0.clone(),
-                xor_col13.clone(),
             ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+            xor_col13.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
-                ms_8_bits_col6.clone(),
-                ms_8_bits_col8.clone(),
-                xor_col14.clone(),
-            ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_17 = BitwiseXorNumBits8::evaluate(
+            [ms_8_bits_col6.clone(), ms_8_bits_col8.clone()],
+            xor_col14.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
-                xor_col14.clone(),
-                ms_8_bits_col10.clone(),
-                xor_col15.clone(),
-            ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_19 = BitwiseXorNumBits8::evaluate(
+            [xor_col14.clone(), ms_8_bits_col10.clone()],
+            xor_col15.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_21 = BitwiseXorNumBits8::evaluate(
+            [
                 split_16_low_part_size_8_output_tmp_298db_3_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_298db_7_limb_0.clone(),
-                xor_col16.clone(),
             ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+            xor_col16.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_23 = BitwiseXorNumBits8::evaluate(
+            [
                 xor_col16.clone(),
                 split_16_low_part_size_8_output_tmp_298db_11_limb_0.clone(),
-                xor_col17.clone(),
             ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+            xor_col17.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
-                ms_8_bits_col7.clone(),
-                ms_8_bits_col9.clone(),
-                xor_col18.clone(),
-            ],
-        ));
-
-        // Bitwise Xor Num Bits 8.
-
-        eval.add_to_relation(RelationEntry::new(
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_25 = BitwiseXorNumBits8::evaluate(
+            [ms_8_bits_col7.clone(), ms_8_bits_col9.clone()],
+            xor_col18.clone(),
+            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
-            E::EF::one(),
-            &[
-                xor_col18.clone(),
-                ms_8_bits_col11.clone(),
-                xor_col19.clone(),
-            ],
-        ));
-
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let bitwise_xor_num_bits_8_output_tmp_298db_27 = BitwiseXorNumBits8::evaluate(
+            [xor_col18.clone(), ms_8_bits_col11.clone()],
+            xor_col19.clone(),
+            &mut eval,
+            &self.verify_bitwise_xor_8_lookup_elements,
+        );
         let triple_xor32_output_tmp_298db_28_limb_0 =
             eval.add_intermediate((xor_col13.clone() + (xor_col15.clone() * M31_256.clone())));
         let triple_xor32_output_tmp_298db_28_limb_1 =
@@ -246,10 +240,9 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 
