@@ -1,15 +1,16 @@
 use crate::components::prelude::*;
+use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 
 pub const N_TRACE_COLUMNS: usize = 212;
 
 pub struct Eval {
     pub claim: Claim,
-    pub blake_g_lookup_elements: relations::BlakeG,
-    pub blake_round_lookup_elements: relations::BlakeRound,
     pub blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
+    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
+    pub blake_g_lookup_elements: relations::BlakeG,
+    pub blake_round_lookup_elements: relations::BlakeRound,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -54,9 +55,6 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
-        let M31_128 = E::F::from(M31::from(128));
-        let M31_4 = E::F::from(M31::from(4));
-        let M31_512 = E::F::from(M31::from(512));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -296,654 +294,262 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col53.clone(),
-                (high_16_bits_col52.clone() - (high_14_ms_bits_col54.clone() * M31_4.clone())),
-                high_5_ms_bits_col55.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_9_limb_0, read_blake_word_output_tmp_92ff8_9_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_0_col35.clone()),
-                message_word_0_id_col56.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_0_id_col56.clone(),
-                (low_16_bits_col51.clone() - (low_7_ms_bits_col53.clone() * M31_512.clone())),
-                (low_7_ms_bits_col53.clone()
-                    + ((high_16_bits_col52.clone()
-                        - (high_14_ms_bits_col54.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col54.clone() - (high_5_ms_bits_col55.clone() * M31_512.clone())),
+                low_16_bits_col51.clone(),
+                high_16_bits_col52.clone(),
+                low_7_ms_bits_col53.clone(),
+                high_14_ms_bits_col54.clone(),
                 high_5_ms_bits_col55.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col59.clone(),
-                (high_16_bits_col58.clone() - (high_14_ms_bits_col60.clone() * M31_4.clone())),
-                high_5_ms_bits_col61.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_0_id_col56.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_18_limb_0, read_blake_word_output_tmp_92ff8_18_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_1_col36.clone()),
-                message_word_1_id_col62.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_1_id_col62.clone(),
-                (low_16_bits_col57.clone() - (low_7_ms_bits_col59.clone() * M31_512.clone())),
-                (low_7_ms_bits_col59.clone()
-                    + ((high_16_bits_col58.clone()
-                        - (high_14_ms_bits_col60.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col60.clone() - (high_5_ms_bits_col61.clone() * M31_512.clone())),
+                low_16_bits_col57.clone(),
+                high_16_bits_col58.clone(),
+                low_7_ms_bits_col59.clone(),
+                high_14_ms_bits_col60.clone(),
                 high_5_ms_bits_col61.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col65.clone(),
-                (high_16_bits_col64.clone() - (high_14_ms_bits_col66.clone() * M31_4.clone())),
-                high_5_ms_bits_col67.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_1_id_col62.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_27_limb_0, read_blake_word_output_tmp_92ff8_27_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_2_col37.clone()),
-                message_word_2_id_col68.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_2_id_col68.clone(),
-                (low_16_bits_col63.clone() - (low_7_ms_bits_col65.clone() * M31_512.clone())),
-                (low_7_ms_bits_col65.clone()
-                    + ((high_16_bits_col64.clone()
-                        - (high_14_ms_bits_col66.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col66.clone() - (high_5_ms_bits_col67.clone() * M31_512.clone())),
+                low_16_bits_col63.clone(),
+                high_16_bits_col64.clone(),
+                low_7_ms_bits_col65.clone(),
+                high_14_ms_bits_col66.clone(),
                 high_5_ms_bits_col67.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col71.clone(),
-                (high_16_bits_col70.clone() - (high_14_ms_bits_col72.clone() * M31_4.clone())),
-                high_5_ms_bits_col73.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_2_id_col68.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_36_limb_0, read_blake_word_output_tmp_92ff8_36_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_3_col38.clone()),
-                message_word_3_id_col74.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_3_id_col74.clone(),
-                (low_16_bits_col69.clone() - (low_7_ms_bits_col71.clone() * M31_512.clone())),
-                (low_7_ms_bits_col71.clone()
-                    + ((high_16_bits_col70.clone()
-                        - (high_14_ms_bits_col72.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col72.clone() - (high_5_ms_bits_col73.clone() * M31_512.clone())),
+                low_16_bits_col69.clone(),
+                high_16_bits_col70.clone(),
+                low_7_ms_bits_col71.clone(),
+                high_14_ms_bits_col72.clone(),
                 high_5_ms_bits_col73.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col77.clone(),
-                (high_16_bits_col76.clone() - (high_14_ms_bits_col78.clone() * M31_4.clone())),
-                high_5_ms_bits_col79.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_3_id_col74.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_45_limb_0, read_blake_word_output_tmp_92ff8_45_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_4_col39.clone()),
-                message_word_4_id_col80.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_4_id_col80.clone(),
-                (low_16_bits_col75.clone() - (low_7_ms_bits_col77.clone() * M31_512.clone())),
-                (low_7_ms_bits_col77.clone()
-                    + ((high_16_bits_col76.clone()
-                        - (high_14_ms_bits_col78.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col78.clone() - (high_5_ms_bits_col79.clone() * M31_512.clone())),
+                low_16_bits_col75.clone(),
+                high_16_bits_col76.clone(),
+                low_7_ms_bits_col77.clone(),
+                high_14_ms_bits_col78.clone(),
                 high_5_ms_bits_col79.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col83.clone(),
-                (high_16_bits_col82.clone() - (high_14_ms_bits_col84.clone() * M31_4.clone())),
-                high_5_ms_bits_col85.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_4_id_col80.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_54_limb_0, read_blake_word_output_tmp_92ff8_54_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_5_col40.clone()),
-                message_word_5_id_col86.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_5_id_col86.clone(),
-                (low_16_bits_col81.clone() - (low_7_ms_bits_col83.clone() * M31_512.clone())),
-                (low_7_ms_bits_col83.clone()
-                    + ((high_16_bits_col82.clone()
-                        - (high_14_ms_bits_col84.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col84.clone() - (high_5_ms_bits_col85.clone() * M31_512.clone())),
+                low_16_bits_col81.clone(),
+                high_16_bits_col82.clone(),
+                low_7_ms_bits_col83.clone(),
+                high_14_ms_bits_col84.clone(),
                 high_5_ms_bits_col85.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col89.clone(),
-                (high_16_bits_col88.clone() - (high_14_ms_bits_col90.clone() * M31_4.clone())),
-                high_5_ms_bits_col91.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_5_id_col86.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_63_limb_0, read_blake_word_output_tmp_92ff8_63_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_6_col41.clone()),
-                message_word_6_id_col92.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_6_id_col92.clone(),
-                (low_16_bits_col87.clone() - (low_7_ms_bits_col89.clone() * M31_512.clone())),
-                (low_7_ms_bits_col89.clone()
-                    + ((high_16_bits_col88.clone()
-                        - (high_14_ms_bits_col90.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col90.clone() - (high_5_ms_bits_col91.clone() * M31_512.clone())),
+                low_16_bits_col87.clone(),
+                high_16_bits_col88.clone(),
+                low_7_ms_bits_col89.clone(),
+                high_14_ms_bits_col90.clone(),
                 high_5_ms_bits_col91.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col95.clone(),
-                (high_16_bits_col94.clone() - (high_14_ms_bits_col96.clone() * M31_4.clone())),
-                high_5_ms_bits_col97.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_6_id_col92.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_72_limb_0, read_blake_word_output_tmp_92ff8_72_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_7_col42.clone()),
-                message_word_7_id_col98.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_7_id_col98.clone(),
-                (low_16_bits_col93.clone() - (low_7_ms_bits_col95.clone() * M31_512.clone())),
-                (low_7_ms_bits_col95.clone()
-                    + ((high_16_bits_col94.clone()
-                        - (high_14_ms_bits_col96.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col96.clone() - (high_5_ms_bits_col97.clone() * M31_512.clone())),
+                low_16_bits_col93.clone(),
+                high_16_bits_col94.clone(),
+                low_7_ms_bits_col95.clone(),
+                high_14_ms_bits_col96.clone(),
                 high_5_ms_bits_col97.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col101.clone(),
-                (high_16_bits_col100.clone() - (high_14_ms_bits_col102.clone() * M31_4.clone())),
-                high_5_ms_bits_col103.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_7_id_col98.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_81_limb_0, read_blake_word_output_tmp_92ff8_81_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_8_col43.clone()),
-                message_word_8_id_col104.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_8_id_col104.clone(),
-                (low_16_bits_col99.clone() - (low_7_ms_bits_col101.clone() * M31_512.clone())),
-                (low_7_ms_bits_col101.clone()
-                    + ((high_16_bits_col100.clone()
-                        - (high_14_ms_bits_col102.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col102.clone()
-                    - (high_5_ms_bits_col103.clone() * M31_512.clone())),
+                low_16_bits_col99.clone(),
+                high_16_bits_col100.clone(),
+                low_7_ms_bits_col101.clone(),
+                high_14_ms_bits_col102.clone(),
                 high_5_ms_bits_col103.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col107.clone(),
-                (high_16_bits_col106.clone() - (high_14_ms_bits_col108.clone() * M31_4.clone())),
-                high_5_ms_bits_col109.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_8_id_col104.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_90_limb_0, read_blake_word_output_tmp_92ff8_90_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_9_col44.clone()),
-                message_word_9_id_col110.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_9_id_col110.clone(),
-                (low_16_bits_col105.clone() - (low_7_ms_bits_col107.clone() * M31_512.clone())),
-                (low_7_ms_bits_col107.clone()
-                    + ((high_16_bits_col106.clone()
-                        - (high_14_ms_bits_col108.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col108.clone()
-                    - (high_5_ms_bits_col109.clone() * M31_512.clone())),
+                low_16_bits_col105.clone(),
+                high_16_bits_col106.clone(),
+                low_7_ms_bits_col107.clone(),
+                high_14_ms_bits_col108.clone(),
                 high_5_ms_bits_col109.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col113.clone(),
-                (high_16_bits_col112.clone() - (high_14_ms_bits_col114.clone() * M31_4.clone())),
-                high_5_ms_bits_col115.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_9_id_col110.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_99_limb_0, read_blake_word_output_tmp_92ff8_99_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_10_col45.clone()),
-                message_word_10_id_col116.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_10_id_col116.clone(),
-                (low_16_bits_col111.clone() - (low_7_ms_bits_col113.clone() * M31_512.clone())),
-                (low_7_ms_bits_col113.clone()
-                    + ((high_16_bits_col112.clone()
-                        - (high_14_ms_bits_col114.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col114.clone()
-                    - (high_5_ms_bits_col115.clone() * M31_512.clone())),
+                low_16_bits_col111.clone(),
+                high_16_bits_col112.clone(),
+                low_7_ms_bits_col113.clone(),
+                high_14_ms_bits_col114.clone(),
                 high_5_ms_bits_col115.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col119.clone(),
-                (high_16_bits_col118.clone() - (high_14_ms_bits_col120.clone() * M31_4.clone())),
-                high_5_ms_bits_col121.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_10_id_col116.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_108_limb_0, read_blake_word_output_tmp_92ff8_108_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_11_col46.clone()),
-                message_word_11_id_col122.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_11_id_col122.clone(),
-                (low_16_bits_col117.clone() - (low_7_ms_bits_col119.clone() * M31_512.clone())),
-                (low_7_ms_bits_col119.clone()
-                    + ((high_16_bits_col118.clone()
-                        - (high_14_ms_bits_col120.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col120.clone()
-                    - (high_5_ms_bits_col121.clone() * M31_512.clone())),
+                low_16_bits_col117.clone(),
+                high_16_bits_col118.clone(),
+                low_7_ms_bits_col119.clone(),
+                high_14_ms_bits_col120.clone(),
                 high_5_ms_bits_col121.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col125.clone(),
-                (high_16_bits_col124.clone() - (high_14_ms_bits_col126.clone() * M31_4.clone())),
-                high_5_ms_bits_col127.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_11_id_col122.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_117_limb_0, read_blake_word_output_tmp_92ff8_117_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_12_col47.clone()),
-                message_word_12_id_col128.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_12_id_col128.clone(),
-                (low_16_bits_col123.clone() - (low_7_ms_bits_col125.clone() * M31_512.clone())),
-                (low_7_ms_bits_col125.clone()
-                    + ((high_16_bits_col124.clone()
-                        - (high_14_ms_bits_col126.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col126.clone()
-                    - (high_5_ms_bits_col127.clone() * M31_512.clone())),
+                low_16_bits_col123.clone(),
+                high_16_bits_col124.clone(),
+                low_7_ms_bits_col125.clone(),
+                high_14_ms_bits_col126.clone(),
                 high_5_ms_bits_col127.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col131.clone(),
-                (high_16_bits_col130.clone() - (high_14_ms_bits_col132.clone() * M31_4.clone())),
-                high_5_ms_bits_col133.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_12_id_col128.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_126_limb_0, read_blake_word_output_tmp_92ff8_126_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_13_col48.clone()),
-                message_word_13_id_col134.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_13_id_col134.clone(),
-                (low_16_bits_col129.clone() - (low_7_ms_bits_col131.clone() * M31_512.clone())),
-                (low_7_ms_bits_col131.clone()
-                    + ((high_16_bits_col130.clone()
-                        - (high_14_ms_bits_col132.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col132.clone()
-                    - (high_5_ms_bits_col133.clone() * M31_512.clone())),
+                low_16_bits_col129.clone(),
+                high_16_bits_col130.clone(),
+                low_7_ms_bits_col131.clone(),
+                high_14_ms_bits_col132.clone(),
                 high_5_ms_bits_col133.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col137.clone(),
-                (high_16_bits_col136.clone() - (high_14_ms_bits_col138.clone() * M31_4.clone())),
-                high_5_ms_bits_col139.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_13_id_col134.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_135_limb_0, read_blake_word_output_tmp_92ff8_135_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_14_col49.clone()),
-                message_word_14_id_col140.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_14_id_col140.clone(),
-                (low_16_bits_col135.clone() - (low_7_ms_bits_col137.clone() * M31_512.clone())),
-                (low_7_ms_bits_col137.clone()
-                    + ((high_16_bits_col136.clone()
-                        - (high_14_ms_bits_col138.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col138.clone()
-                    - (high_5_ms_bits_col139.clone() * M31_512.clone())),
+                low_16_bits_col135.clone(),
+                high_16_bits_col136.clone(),
+                low_7_ms_bits_col137.clone(),
+                high_14_ms_bits_col138.clone(),
                 high_5_ms_bits_col139.clone(),
-            ],
-        ));
-
-        // Read Blake Word.
-
-        // Verify Blake Word.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.range_check_7_2_5_lookup_elements,
-            E::EF::one(),
-            &[
-                low_7_ms_bits_col143.clone(),
-                (high_16_bits_col142.clone() - (high_14_ms_bits_col144.clone() * M31_4.clone())),
-                high_5_ms_bits_col145.clone(),
-            ],
-        ));
-
-        // Mem Verify.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
+                message_word_14_id_col140.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_blake_word_output_tmp_92ff8_144_limb_0, read_blake_word_output_tmp_92ff8_144_limb_1] =
+            ReadBlakeWord::evaluate(
                 (input_limb_34_col34.clone() + blake_round_sigma_output_limb_15_col50.clone()),
-                message_word_15_id_col146.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                message_word_15_id_col146.clone(),
-                (low_16_bits_col141.clone() - (low_7_ms_bits_col143.clone() * M31_512.clone())),
-                (low_7_ms_bits_col143.clone()
-                    + ((high_16_bits_col142.clone()
-                        - (high_14_ms_bits_col144.clone() * M31_4.clone()))
-                        * M31_128.clone())),
-                (high_14_ms_bits_col144.clone()
-                    - (high_5_ms_bits_col145.clone() * M31_512.clone())),
+                low_16_bits_col141.clone(),
+                high_16_bits_col142.clone(),
+                low_7_ms_bits_col143.clone(),
+                high_14_ms_bits_col144.clone(),
                 high_5_ms_bits_col145.clone(),
-            ],
-        ));
-
+                message_word_15_id_col146.clone(),
+                &mut eval,
+                &self.range_check_7_2_5_lookup_elements,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
         eval.add_to_relation(RelationEntry::new(
             &self.blake_g_lookup_elements,
             E::EF::one(),
@@ -1265,14 +871,13 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            blake_g_lookup_elements: relations::BlakeG::dummy(),
-            blake_round_lookup_elements: relations::BlakeRound::dummy(),
             blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
+            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
+            blake_g_lookup_elements: relations::BlakeG::dummy(),
+            blake_round_lookup_elements: relations::BlakeRound::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

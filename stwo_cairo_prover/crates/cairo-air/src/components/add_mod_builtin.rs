@@ -1,4 +1,5 @@
 use crate::components::prelude::*;
+use crate::components::subroutines::mod_utils::ModUtils;
 
 pub const N_TRACE_COLUMNS: usize = 251;
 
@@ -51,20 +52,8 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
-        let M31_134217728 = E::F::from(M31::from(134217728));
-        let M31_136 = E::F::from(M31::from(136));
-        let M31_2 = E::F::from(M31::from(2));
-        let M31_256 = E::F::from(M31::from(256));
-        let M31_262144 = E::F::from(M31::from(262144));
-        let M31_3 = E::F::from(M31::from(3));
-        let M31_4 = E::F::from(M31::from(4));
-        let M31_5 = E::F::from(M31::from(5));
-        let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
-        let M31_6 = E::F::from(M31::from(6));
-        let M31_7 = E::F::from(M31::from(7));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let is_instance_0_col0 = eval.next_trace_mask();
         let p0_id_col1 = eval.next_trace_mask();
@@ -318,35 +307,15 @@ impl FrameworkEval for Eval {
         let carry_12_col249 = eval.next_trace_mask();
         let carry_13_col250 = eval.next_trace_mask();
 
-        // Mod Utils.
-
-        // is_instance_0 is 0 or 1..
-        eval.add_constraint(
-            (is_instance_0_col0.clone() * (is_instance_0_col0.clone() - M31_1.clone())),
-        );
-        // is_instance_0 is 0 when instance_num is not 0..
-        eval.add_constraint((is_instance_0_col0.clone() * seq.clone()));
-        let prev_instance_addr_tmp_c1b19_1 = eval.add_intermediate(
-            (E::F::from(M31::from(self.claim.add_mod_builtin_segment_start))
-                + (M31_7.clone() * ((seq.clone() - M31_1.clone()) + is_instance_0_col0.clone()))),
-        );
-        let instance_addr_tmp_c1b19_2 = eval.add_intermediate(
-            (E::F::from(M31::from(self.claim.add_mod_builtin_segment_start))
-                + (M31_7.clone() * seq.clone())),
-        );
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[instance_addr_tmp_c1b19_2.clone(), p0_id_col1.clone()],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [mod_utils_output_tmp_c1b19_91_limb_0, mod_utils_output_tmp_c1b19_91_limb_1, mod_utils_output_tmp_c1b19_91_limb_2, mod_utils_output_tmp_c1b19_91_limb_3, mod_utils_output_tmp_c1b19_91_limb_4, mod_utils_output_tmp_c1b19_91_limb_5, mod_utils_output_tmp_c1b19_91_limb_6, mod_utils_output_tmp_c1b19_91_limb_7, mod_utils_output_tmp_c1b19_91_limb_8, mod_utils_output_tmp_c1b19_91_limb_9, mod_utils_output_tmp_c1b19_91_limb_10, mod_utils_output_tmp_c1b19_91_limb_11, mod_utils_output_tmp_c1b19_91_limb_12, mod_utils_output_tmp_c1b19_91_limb_13, mod_utils_output_tmp_c1b19_91_limb_14, mod_utils_output_tmp_c1b19_91_limb_15, mod_utils_output_tmp_c1b19_91_limb_16, mod_utils_output_tmp_c1b19_91_limb_17, mod_utils_output_tmp_c1b19_91_limb_18, mod_utils_output_tmp_c1b19_91_limb_19, mod_utils_output_tmp_c1b19_91_limb_20, mod_utils_output_tmp_c1b19_91_limb_21, mod_utils_output_tmp_c1b19_91_limb_22, mod_utils_output_tmp_c1b19_91_limb_23, mod_utils_output_tmp_c1b19_91_limb_24, mod_utils_output_tmp_c1b19_91_limb_25, mod_utils_output_tmp_c1b19_91_limb_26, mod_utils_output_tmp_c1b19_91_limb_27, mod_utils_output_tmp_c1b19_91_limb_28, mod_utils_output_tmp_c1b19_91_limb_29, mod_utils_output_tmp_c1b19_91_limb_30, mod_utils_output_tmp_c1b19_91_limb_31, mod_utils_output_tmp_c1b19_91_limb_32, mod_utils_output_tmp_c1b19_91_limb_33, mod_utils_output_tmp_c1b19_91_limb_34, mod_utils_output_tmp_c1b19_91_limb_35, mod_utils_output_tmp_c1b19_91_limb_36, mod_utils_output_tmp_c1b19_91_limb_37, mod_utils_output_tmp_c1b19_91_limb_38, mod_utils_output_tmp_c1b19_91_limb_39, mod_utils_output_tmp_c1b19_91_limb_40, mod_utils_output_tmp_c1b19_91_limb_41, mod_utils_output_tmp_c1b19_91_limb_42, mod_utils_output_tmp_c1b19_91_limb_43, mod_utils_output_tmp_c1b19_91_limb_44, mod_utils_output_tmp_c1b19_91_limb_45, mod_utils_output_tmp_c1b19_91_limb_46, mod_utils_output_tmp_c1b19_91_limb_47, mod_utils_output_tmp_c1b19_91_limb_48, mod_utils_output_tmp_c1b19_91_limb_49, mod_utils_output_tmp_c1b19_91_limb_50, mod_utils_output_tmp_c1b19_91_limb_51, mod_utils_output_tmp_c1b19_91_limb_52, mod_utils_output_tmp_c1b19_91_limb_53, mod_utils_output_tmp_c1b19_91_limb_54, mod_utils_output_tmp_c1b19_91_limb_55, mod_utils_output_tmp_c1b19_91_limb_56, mod_utils_output_tmp_c1b19_91_limb_57, mod_utils_output_tmp_c1b19_91_limb_58, mod_utils_output_tmp_c1b19_91_limb_59, mod_utils_output_tmp_c1b19_91_limb_60, mod_utils_output_tmp_c1b19_91_limb_61, mod_utils_output_tmp_c1b19_91_limb_62, mod_utils_output_tmp_c1b19_91_limb_63, mod_utils_output_tmp_c1b19_91_limb_64, mod_utils_output_tmp_c1b19_91_limb_65, mod_utils_output_tmp_c1b19_91_limb_66, mod_utils_output_tmp_c1b19_91_limb_67, mod_utils_output_tmp_c1b19_91_limb_68, mod_utils_output_tmp_c1b19_91_limb_69, mod_utils_output_tmp_c1b19_91_limb_70, mod_utils_output_tmp_c1b19_91_limb_71, mod_utils_output_tmp_c1b19_91_limb_72, mod_utils_output_tmp_c1b19_91_limb_73, mod_utils_output_tmp_c1b19_91_limb_74, mod_utils_output_tmp_c1b19_91_limb_75, mod_utils_output_tmp_c1b19_91_limb_76, mod_utils_output_tmp_c1b19_91_limb_77, mod_utils_output_tmp_c1b19_91_limb_78, mod_utils_output_tmp_c1b19_91_limb_79, mod_utils_output_tmp_c1b19_91_limb_80, mod_utils_output_tmp_c1b19_91_limb_81, mod_utils_output_tmp_c1b19_91_limb_82, mod_utils_output_tmp_c1b19_91_limb_83, mod_utils_output_tmp_c1b19_91_limb_84, mod_utils_output_tmp_c1b19_91_limb_85, mod_utils_output_tmp_c1b19_91_limb_86, mod_utils_output_tmp_c1b19_91_limb_87, mod_utils_output_tmp_c1b19_91_limb_88, mod_utils_output_tmp_c1b19_91_limb_89, mod_utils_output_tmp_c1b19_91_limb_90, mod_utils_output_tmp_c1b19_91_limb_91, mod_utils_output_tmp_c1b19_91_limb_92, mod_utils_output_tmp_c1b19_91_limb_93, mod_utils_output_tmp_c1b19_91_limb_94, mod_utils_output_tmp_c1b19_91_limb_95, mod_utils_output_tmp_c1b19_91_limb_96, mod_utils_output_tmp_c1b19_91_limb_97, mod_utils_output_tmp_c1b19_91_limb_98, mod_utils_output_tmp_c1b19_91_limb_99, mod_utils_output_tmp_c1b19_91_limb_100, mod_utils_output_tmp_c1b19_91_limb_101, mod_utils_output_tmp_c1b19_91_limb_102, mod_utils_output_tmp_c1b19_91_limb_103, mod_utils_output_tmp_c1b19_91_limb_104, mod_utils_output_tmp_c1b19_91_limb_105, mod_utils_output_tmp_c1b19_91_limb_106, mod_utils_output_tmp_c1b19_91_limb_107, mod_utils_output_tmp_c1b19_91_limb_108, mod_utils_output_tmp_c1b19_91_limb_109, mod_utils_output_tmp_c1b19_91_limb_110, mod_utils_output_tmp_c1b19_91_limb_111, mod_utils_output_tmp_c1b19_91_limb_112, mod_utils_output_tmp_c1b19_91_limb_113, mod_utils_output_tmp_c1b19_91_limb_114, mod_utils_output_tmp_c1b19_91_limb_115, mod_utils_output_tmp_c1b19_91_limb_116, mod_utils_output_tmp_c1b19_91_limb_117, mod_utils_output_tmp_c1b19_91_limb_118, mod_utils_output_tmp_c1b19_91_limb_119, mod_utils_output_tmp_c1b19_91_limb_120, mod_utils_output_tmp_c1b19_91_limb_121, mod_utils_output_tmp_c1b19_91_limb_122, mod_utils_output_tmp_c1b19_91_limb_123, mod_utils_output_tmp_c1b19_91_limb_124, mod_utils_output_tmp_c1b19_91_limb_125, mod_utils_output_tmp_c1b19_91_limb_126, mod_utils_output_tmp_c1b19_91_limb_127, mod_utils_output_tmp_c1b19_91_limb_128, mod_utils_output_tmp_c1b19_91_limb_129, mod_utils_output_tmp_c1b19_91_limb_130, mod_utils_output_tmp_c1b19_91_limb_131, mod_utils_output_tmp_c1b19_91_limb_132, mod_utils_output_tmp_c1b19_91_limb_133, mod_utils_output_tmp_c1b19_91_limb_134, mod_utils_output_tmp_c1b19_91_limb_135, mod_utils_output_tmp_c1b19_91_limb_136, mod_utils_output_tmp_c1b19_91_limb_137, mod_utils_output_tmp_c1b19_91_limb_138, mod_utils_output_tmp_c1b19_91_limb_139, mod_utils_output_tmp_c1b19_91_limb_140, mod_utils_output_tmp_c1b19_91_limb_141, mod_utils_output_tmp_c1b19_91_limb_142, mod_utils_output_tmp_c1b19_91_limb_143, mod_utils_output_tmp_c1b19_91_limb_144, mod_utils_output_tmp_c1b19_91_limb_145, mod_utils_output_tmp_c1b19_91_limb_146, mod_utils_output_tmp_c1b19_91_limb_147, mod_utils_output_tmp_c1b19_91_limb_148, mod_utils_output_tmp_c1b19_91_limb_149, mod_utils_output_tmp_c1b19_91_limb_150, mod_utils_output_tmp_c1b19_91_limb_151, mod_utils_output_tmp_c1b19_91_limb_152, mod_utils_output_tmp_c1b19_91_limb_153, mod_utils_output_tmp_c1b19_91_limb_154, mod_utils_output_tmp_c1b19_91_limb_155, mod_utils_output_tmp_c1b19_91_limb_156, mod_utils_output_tmp_c1b19_91_limb_157, mod_utils_output_tmp_c1b19_91_limb_158, mod_utils_output_tmp_c1b19_91_limb_159, mod_utils_output_tmp_c1b19_91_limb_160, mod_utils_output_tmp_c1b19_91_limb_161, mod_utils_output_tmp_c1b19_91_limb_162, mod_utils_output_tmp_c1b19_91_limb_163, mod_utils_output_tmp_c1b19_91_limb_164, mod_utils_output_tmp_c1b19_91_limb_165, mod_utils_output_tmp_c1b19_91_limb_166, mod_utils_output_tmp_c1b19_91_limb_167, mod_utils_output_tmp_c1b19_91_limb_168, mod_utils_output_tmp_c1b19_91_limb_169, mod_utils_output_tmp_c1b19_91_limb_170, mod_utils_output_tmp_c1b19_91_limb_171, mod_utils_output_tmp_c1b19_91_limb_172, mod_utils_output_tmp_c1b19_91_limb_173, mod_utils_output_tmp_c1b19_91_limb_174, mod_utils_output_tmp_c1b19_91_limb_175, mod_utils_output_tmp_c1b19_91_limb_176, mod_utils_output_tmp_c1b19_91_limb_177, mod_utils_output_tmp_c1b19_91_limb_178, mod_utils_output_tmp_c1b19_91_limb_179, mod_utils_output_tmp_c1b19_91_limb_180, mod_utils_output_tmp_c1b19_91_limb_181, mod_utils_output_tmp_c1b19_91_limb_182, mod_utils_output_tmp_c1b19_91_limb_183, mod_utils_output_tmp_c1b19_91_limb_184, mod_utils_output_tmp_c1b19_91_limb_185, mod_utils_output_tmp_c1b19_91_limb_186, mod_utils_output_tmp_c1b19_91_limb_187, mod_utils_output_tmp_c1b19_91_limb_188, mod_utils_output_tmp_c1b19_91_limb_189, mod_utils_output_tmp_c1b19_91_limb_190, mod_utils_output_tmp_c1b19_91_limb_191, mod_utils_output_tmp_c1b19_91_limb_192, mod_utils_output_tmp_c1b19_91_limb_193, mod_utils_output_tmp_c1b19_91_limb_194, mod_utils_output_tmp_c1b19_91_limb_195, mod_utils_output_tmp_c1b19_91_limb_196, mod_utils_output_tmp_c1b19_91_limb_197, mod_utils_output_tmp_c1b19_91_limb_198, mod_utils_output_tmp_c1b19_91_limb_199, mod_utils_output_tmp_c1b19_91_limb_200, mod_utils_output_tmp_c1b19_91_limb_201, mod_utils_output_tmp_c1b19_91_limb_202, mod_utils_output_tmp_c1b19_91_limb_203, mod_utils_output_tmp_c1b19_91_limb_204, mod_utils_output_tmp_c1b19_91_limb_205, mod_utils_output_tmp_c1b19_91_limb_206, mod_utils_output_tmp_c1b19_91_limb_207, mod_utils_output_tmp_c1b19_91_limb_208, mod_utils_output_tmp_c1b19_91_limb_209, mod_utils_output_tmp_c1b19_91_limb_210, mod_utils_output_tmp_c1b19_91_limb_211, mod_utils_output_tmp_c1b19_91_limb_212, mod_utils_output_tmp_c1b19_91_limb_213, mod_utils_output_tmp_c1b19_91_limb_214, mod_utils_output_tmp_c1b19_91_limb_215, mod_utils_output_tmp_c1b19_91_limb_216, mod_utils_output_tmp_c1b19_91_limb_217, mod_utils_output_tmp_c1b19_91_limb_218, mod_utils_output_tmp_c1b19_91_limb_219, mod_utils_output_tmp_c1b19_91_limb_220, mod_utils_output_tmp_c1b19_91_limb_221, mod_utils_output_tmp_c1b19_91_limb_222, mod_utils_output_tmp_c1b19_91_limb_223, mod_utils_output_tmp_c1b19_91_limb_224, mod_utils_output_tmp_c1b19_91_limb_225, mod_utils_output_tmp_c1b19_91_limb_226, mod_utils_output_tmp_c1b19_91_limb_227, mod_utils_output_tmp_c1b19_91_limb_228, mod_utils_output_tmp_c1b19_91_limb_229, mod_utils_output_tmp_c1b19_91_limb_230, mod_utils_output_tmp_c1b19_91_limb_231, mod_utils_output_tmp_c1b19_91_limb_232, mod_utils_output_tmp_c1b19_91_limb_233, mod_utils_output_tmp_c1b19_91_limb_234, mod_utils_output_tmp_c1b19_91_limb_235, mod_utils_output_tmp_c1b19_91_limb_236, mod_utils_output_tmp_c1b19_91_limb_237, mod_utils_output_tmp_c1b19_91_limb_238, mod_utils_output_tmp_c1b19_91_limb_239, mod_utils_output_tmp_c1b19_91_limb_240, mod_utils_output_tmp_c1b19_91_limb_241, mod_utils_output_tmp_c1b19_91_limb_242, mod_utils_output_tmp_c1b19_91_limb_243, mod_utils_output_tmp_c1b19_91_limb_244, mod_utils_output_tmp_c1b19_91_limb_245, mod_utils_output_tmp_c1b19_91_limb_246, mod_utils_output_tmp_c1b19_91_limb_247, mod_utils_output_tmp_c1b19_91_limb_248, mod_utils_output_tmp_c1b19_91_limb_249, mod_utils_output_tmp_c1b19_91_limb_250, mod_utils_output_tmp_c1b19_91_limb_251, mod_utils_output_tmp_c1b19_91_limb_252, mod_utils_output_tmp_c1b19_91_limb_253, mod_utils_output_tmp_c1b19_91_limb_254, mod_utils_output_tmp_c1b19_91_limb_255, mod_utils_output_tmp_c1b19_91_limb_256, mod_utils_output_tmp_c1b19_91_limb_257, mod_utils_output_tmp_c1b19_91_limb_258, mod_utils_output_tmp_c1b19_91_limb_259, mod_utils_output_tmp_c1b19_91_limb_260, mod_utils_output_tmp_c1b19_91_limb_261, mod_utils_output_tmp_c1b19_91_limb_262, mod_utils_output_tmp_c1b19_91_limb_263, mod_utils_output_tmp_c1b19_91_limb_264, mod_utils_output_tmp_c1b19_91_limb_265, mod_utils_output_tmp_c1b19_91_limb_266, mod_utils_output_tmp_c1b19_91_limb_267, mod_utils_output_tmp_c1b19_91_limb_268, mod_utils_output_tmp_c1b19_91_limb_269, mod_utils_output_tmp_c1b19_91_limb_270, mod_utils_output_tmp_c1b19_91_limb_271, mod_utils_output_tmp_c1b19_91_limb_272, mod_utils_output_tmp_c1b19_91_limb_273, mod_utils_output_tmp_c1b19_91_limb_274, mod_utils_output_tmp_c1b19_91_limb_275, mod_utils_output_tmp_c1b19_91_limb_276, mod_utils_output_tmp_c1b19_91_limb_277, mod_utils_output_tmp_c1b19_91_limb_278, mod_utils_output_tmp_c1b19_91_limb_279, mod_utils_output_tmp_c1b19_91_limb_280, mod_utils_output_tmp_c1b19_91_limb_281, mod_utils_output_tmp_c1b19_91_limb_282, mod_utils_output_tmp_c1b19_91_limb_283, mod_utils_output_tmp_c1b19_91_limb_284, mod_utils_output_tmp_c1b19_91_limb_285, mod_utils_output_tmp_c1b19_91_limb_286, mod_utils_output_tmp_c1b19_91_limb_287, mod_utils_output_tmp_c1b19_91_limb_288, mod_utils_output_tmp_c1b19_91_limb_289, mod_utils_output_tmp_c1b19_91_limb_290, mod_utils_output_tmp_c1b19_91_limb_291, mod_utils_output_tmp_c1b19_91_limb_292, mod_utils_output_tmp_c1b19_91_limb_293, mod_utils_output_tmp_c1b19_91_limb_294, mod_utils_output_tmp_c1b19_91_limb_295, mod_utils_output_tmp_c1b19_91_limb_296, mod_utils_output_tmp_c1b19_91_limb_297, mod_utils_output_tmp_c1b19_91_limb_298, mod_utils_output_tmp_c1b19_91_limb_299, mod_utils_output_tmp_c1b19_91_limb_300, mod_utils_output_tmp_c1b19_91_limb_301, mod_utils_output_tmp_c1b19_91_limb_302, mod_utils_output_tmp_c1b19_91_limb_303, mod_utils_output_tmp_c1b19_91_limb_304, mod_utils_output_tmp_c1b19_91_limb_305, mod_utils_output_tmp_c1b19_91_limb_306, mod_utils_output_tmp_c1b19_91_limb_307, mod_utils_output_tmp_c1b19_91_limb_308, mod_utils_output_tmp_c1b19_91_limb_309, mod_utils_output_tmp_c1b19_91_limb_310, mod_utils_output_tmp_c1b19_91_limb_311, mod_utils_output_tmp_c1b19_91_limb_312, mod_utils_output_tmp_c1b19_91_limb_313, mod_utils_output_tmp_c1b19_91_limb_314, mod_utils_output_tmp_c1b19_91_limb_315, mod_utils_output_tmp_c1b19_91_limb_316, mod_utils_output_tmp_c1b19_91_limb_317, mod_utils_output_tmp_c1b19_91_limb_318, mod_utils_output_tmp_c1b19_91_limb_319, mod_utils_output_tmp_c1b19_91_limb_320, mod_utils_output_tmp_c1b19_91_limb_321, mod_utils_output_tmp_c1b19_91_limb_322, mod_utils_output_tmp_c1b19_91_limb_323, mod_utils_output_tmp_c1b19_91_limb_324, mod_utils_output_tmp_c1b19_91_limb_325, mod_utils_output_tmp_c1b19_91_limb_326, mod_utils_output_tmp_c1b19_91_limb_327, mod_utils_output_tmp_c1b19_91_limb_328, mod_utils_output_tmp_c1b19_91_limb_329, mod_utils_output_tmp_c1b19_91_limb_330, mod_utils_output_tmp_c1b19_91_limb_331, mod_utils_output_tmp_c1b19_91_limb_332, mod_utils_output_tmp_c1b19_91_limb_333, mod_utils_output_tmp_c1b19_91_limb_334, mod_utils_output_tmp_c1b19_91_limb_335, mod_utils_output_tmp_c1b19_91_limb_336, mod_utils_output_tmp_c1b19_91_limb_337, mod_utils_output_tmp_c1b19_91_limb_338, mod_utils_output_tmp_c1b19_91_limb_339, mod_utils_output_tmp_c1b19_91_limb_340, mod_utils_output_tmp_c1b19_91_limb_341, mod_utils_output_tmp_c1b19_91_limb_342, mod_utils_output_tmp_c1b19_91_limb_343, mod_utils_output_tmp_c1b19_91_limb_344, mod_utils_output_tmp_c1b19_91_limb_345, mod_utils_output_tmp_c1b19_91_limb_346, mod_utils_output_tmp_c1b19_91_limb_347, mod_utils_output_tmp_c1b19_91_limb_348, mod_utils_output_tmp_c1b19_91_limb_349, mod_utils_output_tmp_c1b19_91_limb_350, mod_utils_output_tmp_c1b19_91_limb_351, mod_utils_output_tmp_c1b19_91_limb_352, mod_utils_output_tmp_c1b19_91_limb_353, mod_utils_output_tmp_c1b19_91_limb_354, mod_utils_output_tmp_c1b19_91_limb_355, mod_utils_output_tmp_c1b19_91_limb_356, mod_utils_output_tmp_c1b19_91_limb_357, mod_utils_output_tmp_c1b19_91_limb_358, mod_utils_output_tmp_c1b19_91_limb_359, mod_utils_output_tmp_c1b19_91_limb_360, mod_utils_output_tmp_c1b19_91_limb_361, mod_utils_output_tmp_c1b19_91_limb_362, mod_utils_output_tmp_c1b19_91_limb_363, mod_utils_output_tmp_c1b19_91_limb_364, mod_utils_output_tmp_c1b19_91_limb_365, mod_utils_output_tmp_c1b19_91_limb_366, mod_utils_output_tmp_c1b19_91_limb_367, mod_utils_output_tmp_c1b19_91_limb_368, mod_utils_output_tmp_c1b19_91_limb_369, mod_utils_output_tmp_c1b19_91_limb_370, mod_utils_output_tmp_c1b19_91_limb_371, mod_utils_output_tmp_c1b19_91_limb_372, mod_utils_output_tmp_c1b19_91_limb_373, mod_utils_output_tmp_c1b19_91_limb_374, mod_utils_output_tmp_c1b19_91_limb_375, mod_utils_output_tmp_c1b19_91_limb_376, mod_utils_output_tmp_c1b19_91_limb_377, mod_utils_output_tmp_c1b19_91_limb_378, mod_utils_output_tmp_c1b19_91_limb_379, mod_utils_output_tmp_c1b19_91_limb_380, mod_utils_output_tmp_c1b19_91_limb_381, mod_utils_output_tmp_c1b19_91_limb_382, mod_utils_output_tmp_c1b19_91_limb_383, mod_utils_output_tmp_c1b19_91_limb_384, mod_utils_output_tmp_c1b19_91_limb_385, mod_utils_output_tmp_c1b19_91_limb_386, mod_utils_output_tmp_c1b19_91_limb_387, mod_utils_output_tmp_c1b19_91_limb_388, mod_utils_output_tmp_c1b19_91_limb_389, mod_utils_output_tmp_c1b19_91_limb_390, mod_utils_output_tmp_c1b19_91_limb_391, mod_utils_output_tmp_c1b19_91_limb_392, mod_utils_output_tmp_c1b19_91_limb_393, mod_utils_output_tmp_c1b19_91_limb_394, mod_utils_output_tmp_c1b19_91_limb_395, mod_utils_output_tmp_c1b19_91_limb_396, mod_utils_output_tmp_c1b19_91_limb_397, mod_utils_output_tmp_c1b19_91_limb_398, mod_utils_output_tmp_c1b19_91_limb_399, mod_utils_output_tmp_c1b19_91_limb_400, mod_utils_output_tmp_c1b19_91_limb_401, mod_utils_output_tmp_c1b19_91_limb_402, mod_utils_output_tmp_c1b19_91_limb_403, mod_utils_output_tmp_c1b19_91_limb_404, mod_utils_output_tmp_c1b19_91_limb_405, mod_utils_output_tmp_c1b19_91_limb_406, mod_utils_output_tmp_c1b19_91_limb_407, mod_utils_output_tmp_c1b19_91_limb_408, mod_utils_output_tmp_c1b19_91_limb_409, mod_utils_output_tmp_c1b19_91_limb_410, mod_utils_output_tmp_c1b19_91_limb_411, mod_utils_output_tmp_c1b19_91_limb_412, mod_utils_output_tmp_c1b19_91_limb_413, mod_utils_output_tmp_c1b19_91_limb_414, mod_utils_output_tmp_c1b19_91_limb_415, mod_utils_output_tmp_c1b19_91_limb_416, mod_utils_output_tmp_c1b19_91_limb_417, mod_utils_output_tmp_c1b19_91_limb_418, mod_utils_output_tmp_c1b19_91_limb_419, mod_utils_output_tmp_c1b19_91_limb_420, mod_utils_output_tmp_c1b19_91_limb_421, mod_utils_output_tmp_c1b19_91_limb_422, mod_utils_output_tmp_c1b19_91_limb_423, mod_utils_output_tmp_c1b19_91_limb_424, mod_utils_output_tmp_c1b19_91_limb_425, mod_utils_output_tmp_c1b19_91_limb_426, mod_utils_output_tmp_c1b19_91_limb_427, mod_utils_output_tmp_c1b19_91_limb_428, mod_utils_output_tmp_c1b19_91_limb_429, mod_utils_output_tmp_c1b19_91_limb_430, mod_utils_output_tmp_c1b19_91_limb_431, mod_utils_output_tmp_c1b19_91_limb_432, mod_utils_output_tmp_c1b19_91_limb_433, mod_utils_output_tmp_c1b19_91_limb_434, mod_utils_output_tmp_c1b19_91_limb_435, mod_utils_output_tmp_c1b19_91_limb_436, mod_utils_output_tmp_c1b19_91_limb_437, mod_utils_output_tmp_c1b19_91_limb_438, mod_utils_output_tmp_c1b19_91_limb_439, mod_utils_output_tmp_c1b19_91_limb_440, mod_utils_output_tmp_c1b19_91_limb_441, mod_utils_output_tmp_c1b19_91_limb_442, mod_utils_output_tmp_c1b19_91_limb_443, mod_utils_output_tmp_c1b19_91_limb_444, mod_utils_output_tmp_c1b19_91_limb_445, mod_utils_output_tmp_c1b19_91_limb_446, mod_utils_output_tmp_c1b19_91_limb_447] =
+            ModUtils::evaluate(
+                [
+                    E::F::from(M31::from(self.claim.add_mod_builtin_segment_start)),
+                    seq.clone(),
+                ],
+                is_instance_0_col0.clone(),
                 p0_id_col1.clone(),
                 p0_limb_0_col2.clone(),
                 p0_limb_1_col3.clone(),
@@ -359,24 +328,6 @@ impl FrameworkEval for Eval {
                 p0_limb_8_col10.clone(),
                 p0_limb_9_col11.clone(),
                 p0_limb_10_col12.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (instance_addr_tmp_c1b19_2.clone() + M31_1.clone()),
-                p1_id_col13.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 p1_id_col13.clone(),
                 p1_limb_0_col14.clone(),
                 p1_limb_1_col15.clone(),
@@ -389,24 +340,6 @@ impl FrameworkEval for Eval {
                 p1_limb_8_col22.clone(),
                 p1_limb_9_col23.clone(),
                 p1_limb_10_col24.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (instance_addr_tmp_c1b19_2.clone() + M31_2.clone()),
-                p2_id_col25.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 p2_id_col25.clone(),
                 p2_limb_0_col26.clone(),
                 p2_limb_1_col27.clone(),
@@ -419,24 +352,6 @@ impl FrameworkEval for Eval {
                 p2_limb_8_col34.clone(),
                 p2_limb_9_col35.clone(),
                 p2_limb_10_col36.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (instance_addr_tmp_c1b19_2.clone() + M31_3.clone()),
-                p3_id_col37.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 p3_id_col37.clone(),
                 p3_limb_0_col38.clone(),
                 p3_limb_1_col39.clone(),
@@ -449,459 +364,49 @@ impl FrameworkEval for Eval {
                 p3_limb_8_col46.clone(),
                 p3_limb_9_col47.clone(),
                 p3_limb_10_col48.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 27.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (instance_addr_tmp_c1b19_2.clone() + M31_4.clone()),
-                values_ptr_id_col49.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 values_ptr_id_col49.clone(),
                 values_ptr_limb_0_col50.clone(),
                 values_ptr_limb_1_col51.clone(),
                 values_ptr_limb_2_col52.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 27.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (instance_addr_tmp_c1b19_2.clone() + M31_5.clone()),
-                offsets_ptr_id_col53.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 offsets_ptr_id_col53.clone(),
                 offsets_ptr_limb_0_col54.clone(),
                 offsets_ptr_limb_1_col55.clone(),
                 offsets_ptr_limb_2_col56.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 27.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (prev_instance_addr_tmp_c1b19_1.clone() + M31_5.clone()),
-                offsets_ptr_prev_id_col57.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 offsets_ptr_prev_id_col57.clone(),
                 offsets_ptr_prev_limb_0_col58.clone(),
                 offsets_ptr_prev_limb_1_col59.clone(),
                 offsets_ptr_prev_limb_2_col60.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 27.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (instance_addr_tmp_c1b19_2.clone() + M31_6.clone()),
-                n_id_col61.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 n_id_col61.clone(),
                 n_limb_0_col62.clone(),
                 n_limb_1_col63.clone(),
                 n_limb_2_col64.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 27.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (prev_instance_addr_tmp_c1b19_1.clone() + M31_6.clone()),
-                n_prev_id_col65.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 n_prev_id_col65.clone(),
                 n_prev_limb_0_col66.clone(),
                 n_prev_limb_1_col67.clone(),
                 n_prev_limb_2_col68.clone(),
-            ],
-        ));
-
-        let block_reset_condition_tmp_c1b19_30 = eval.add_intermediate(
-            ((((n_prev_limb_0_col66.clone() + (n_prev_limb_1_col67.clone() * M31_512.clone()))
-                + (n_prev_limb_2_col68.clone() * M31_262144.clone()))
-                - M31_1.clone())
-                * (is_instance_0_col0.clone() - M31_1.clone())),
-        );
-        // Progression of n between instances..
-        eval.add_constraint(
-            (block_reset_condition_tmp_c1b19_30.clone()
-                * ((((n_prev_limb_0_col66.clone()
-                    + (n_prev_limb_1_col67.clone() * M31_512.clone()))
-                    + (n_prev_limb_2_col68.clone() * M31_262144.clone()))
-                    - M31_1.clone())
-                    - ((n_limb_0_col62.clone() + (n_limb_1_col63.clone() * M31_512.clone()))
-                        + (n_limb_2_col64.clone() * M31_262144.clone())))),
-        );
-        // Progression of offsets_ptr between instances..
-        eval.add_constraint(
-            (block_reset_condition_tmp_c1b19_30.clone()
-                * ((((offsets_ptr_limb_0_col54.clone()
-                    + (offsets_ptr_limb_1_col55.clone() * M31_512.clone()))
-                    + (offsets_ptr_limb_2_col56.clone() * M31_262144.clone()))
-                    - M31_3.clone())
-                    - ((offsets_ptr_prev_limb_0_col58.clone()
-                        + (offsets_ptr_prev_limb_1_col59.clone() * M31_512.clone()))
-                        + (offsets_ptr_prev_limb_2_col60.clone() * M31_262144.clone())))),
-        );
-
-        // Mem Cond Verify Equal Known Id.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (prev_instance_addr_tmp_c1b19_1.clone() + M31_4.clone()),
                 values_ptr_prev_id_col69.clone(),
-            ],
-        ));
-
-        // The two ids are equal if the condition is met.
-        eval.add_constraint(
-            ((values_ptr_prev_id_col69.clone() - values_ptr_id_col49.clone())
-                * block_reset_condition_tmp_c1b19_30.clone()),
-        );
-
-        // Mem Cond Verify Equal Known Id.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                prev_instance_addr_tmp_c1b19_1.clone(),
                 p_prev0_id_col70.clone(),
-            ],
-        ));
-
-        // The two ids are equal if the condition is met.
-        eval.add_constraint(
-            ((p_prev0_id_col70.clone() - p0_id_col1.clone())
-                * block_reset_condition_tmp_c1b19_30.clone()),
-        );
-
-        // Mem Cond Verify Equal Known Id.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (prev_instance_addr_tmp_c1b19_1.clone() + M31_1.clone()),
                 p_prev1_id_col71.clone(),
-            ],
-        ));
-
-        // The two ids are equal if the condition is met.
-        eval.add_constraint(
-            ((p_prev1_id_col71.clone() - p1_id_col13.clone())
-                * block_reset_condition_tmp_c1b19_30.clone()),
-        );
-
-        // Mem Cond Verify Equal Known Id.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (prev_instance_addr_tmp_c1b19_1.clone() + M31_2.clone()),
                 p_prev2_id_col72.clone(),
-            ],
-        ));
-
-        // The two ids are equal if the condition is met.
-        eval.add_constraint(
-            ((p_prev2_id_col72.clone() - p2_id_col25.clone())
-                * block_reset_condition_tmp_c1b19_30.clone()),
-        );
-
-        // Mem Cond Verify Equal Known Id.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (prev_instance_addr_tmp_c1b19_1.clone() + M31_3.clone()),
                 p_prev3_id_col73.clone(),
-            ],
-        ));
-
-        // The two ids are equal if the condition is met.
-        eval.add_constraint(
-            ((p_prev3_id_col73.clone() - p3_id_col37.clone())
-                * block_reset_condition_tmp_c1b19_30.clone()),
-        );
-
-        // Read Small.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((offsets_ptr_limb_0_col54.clone()
-                    + (offsets_ptr_limb_1_col55.clone() * M31_512.clone()))
-                    + (offsets_ptr_limb_2_col56.clone() * M31_262144.clone())),
                 offsets_a_id_col74.clone(),
-            ],
-        ));
-
-        // Cond Decode Small Sign.
-
-        // msb is a bit.
-        eval.add_constraint((msb_col75.clone() * (msb_col75.clone() - M31_1.clone())));
-        // mid_limbs_set is a bit.
-        eval.add_constraint(
-            (mid_limbs_set_col76.clone() * (mid_limbs_set_col76.clone() - M31_1.clone())),
-        );
-        // Cannot have msb equals 0 and mid_limbs_set equals 1.
-        eval.add_constraint((mid_limbs_set_col76.clone() * (msb_col75.clone() - M31_1.clone())));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                offsets_a_id_col74.clone(),
+                msb_col75.clone(),
+                mid_limbs_set_col76.clone(),
                 offsets_a_limb_0_col77.clone(),
                 offsets_a_limb_1_col78.clone(),
                 offsets_a_limb_2_col79.clone(),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                (mid_limbs_set_col76.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col75.clone()) - mid_limbs_set_col76.clone()),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                (msb_col75.clone() * M31_256.clone()),
-            ],
-        ));
-
-        let read_small_output_tmp_c1b19_41_limb_0 = eval.add_intermediate(
-            ((((offsets_a_limb_0_col77.clone()
-                + (offsets_a_limb_1_col78.clone() * M31_512.clone()))
-                + (offsets_a_limb_2_col79.clone() * M31_262144.clone()))
-                - msb_col75.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col76.clone())),
-        );
-
-        // Read Small.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (((offsets_ptr_limb_0_col54.clone()
-                    + (offsets_ptr_limb_1_col55.clone() * M31_512.clone()))
-                    + (offsets_ptr_limb_2_col56.clone() * M31_262144.clone()))
-                    + M31_1.clone()),
                 offsets_b_id_col80.clone(),
-            ],
-        ));
-
-        // Cond Decode Small Sign.
-
-        // msb is a bit.
-        eval.add_constraint((msb_col81.clone() * (msb_col81.clone() - M31_1.clone())));
-        // mid_limbs_set is a bit.
-        eval.add_constraint(
-            (mid_limbs_set_col82.clone() * (mid_limbs_set_col82.clone() - M31_1.clone())),
-        );
-        // Cannot have msb equals 0 and mid_limbs_set equals 1.
-        eval.add_constraint((mid_limbs_set_col82.clone() * (msb_col81.clone() - M31_1.clone())));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                offsets_b_id_col80.clone(),
+                msb_col81.clone(),
+                mid_limbs_set_col82.clone(),
                 offsets_b_limb_0_col83.clone(),
                 offsets_b_limb_1_col84.clone(),
                 offsets_b_limb_2_col85.clone(),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                (mid_limbs_set_col82.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col81.clone()) - mid_limbs_set_col82.clone()),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                (msb_col81.clone() * M31_256.clone()),
-            ],
-        ));
-
-        let read_small_output_tmp_c1b19_47_limb_0 = eval.add_intermediate(
-            ((((offsets_b_limb_0_col83.clone()
-                + (offsets_b_limb_1_col84.clone() * M31_512.clone()))
-                + (offsets_b_limb_2_col85.clone() * M31_262144.clone()))
-                - msb_col81.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col82.clone())),
-        );
-
-        // Read Small.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (((offsets_ptr_limb_0_col54.clone()
-                    + (offsets_ptr_limb_1_col55.clone() * M31_512.clone()))
-                    + (offsets_ptr_limb_2_col56.clone() * M31_262144.clone()))
-                    + M31_2.clone()),
                 offsets_c_id_col86.clone(),
-            ],
-        ));
-
-        // Cond Decode Small Sign.
-
-        // msb is a bit.
-        eval.add_constraint((msb_col87.clone() * (msb_col87.clone() - M31_1.clone())));
-        // mid_limbs_set is a bit.
-        eval.add_constraint(
-            (mid_limbs_set_col88.clone() * (mid_limbs_set_col88.clone() - M31_1.clone())),
-        );
-        // Cannot have msb equals 0 and mid_limbs_set equals 1.
-        eval.add_constraint((mid_limbs_set_col88.clone() * (msb_col87.clone() - M31_1.clone())));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                offsets_c_id_col86.clone(),
+                msb_col87.clone(),
+                mid_limbs_set_col88.clone(),
                 offsets_c_limb_0_col89.clone(),
                 offsets_c_limb_1_col90.clone(),
                 offsets_c_limb_2_col91.clone(),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                (mid_limbs_set_col88.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col87.clone()) - mid_limbs_set_col88.clone()),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                (msb_col87.clone() * M31_256.clone()),
-            ],
-        ));
-
-        let read_small_output_tmp_c1b19_53_limb_0 = eval.add_intermediate(
-            ((((offsets_c_limb_0_col89.clone()
-                + (offsets_c_limb_1_col90.clone() * M31_512.clone()))
-                + (offsets_c_limb_2_col91.clone() * M31_262144.clone()))
-                - msb_col87.clone())
-                - (M31_134217728.clone() * mid_limbs_set_col88.clone())),
-        );
-
-        let values_ptr_tmp_c1b19_54 = eval.add_intermediate(
-            ((values_ptr_limb_0_col50.clone()
-                + (values_ptr_limb_1_col51.clone() * M31_512.clone()))
-                + (values_ptr_limb_2_col52.clone() * M31_262144.clone())),
-        );
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone()),
-                a0_id_col92.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 a0_id_col92.clone(),
                 a0_limb_0_col93.clone(),
                 a0_limb_1_col94.clone(),
@@ -914,25 +419,6 @@ impl FrameworkEval for Eval {
                 a0_limb_8_col101.clone(),
                 a0_limb_9_col102.clone(),
                 a0_limb_10_col103.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone())
-                    + M31_1.clone()),
-                a1_id_col104.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 a1_id_col104.clone(),
                 a1_limb_0_col105.clone(),
                 a1_limb_1_col106.clone(),
@@ -945,25 +431,6 @@ impl FrameworkEval for Eval {
                 a1_limb_8_col113.clone(),
                 a1_limb_9_col114.clone(),
                 a1_limb_10_col115.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone())
-                    + M31_2.clone()),
-                a2_id_col116.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 a2_id_col116.clone(),
                 a2_limb_0_col117.clone(),
                 a2_limb_1_col118.clone(),
@@ -976,25 +443,6 @@ impl FrameworkEval for Eval {
                 a2_limb_8_col125.clone(),
                 a2_limb_9_col126.clone(),
                 a2_limb_10_col127.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_41_limb_0.clone())
-                    + M31_3.clone()),
-                a3_id_col128.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 a3_id_col128.clone(),
                 a3_limb_0_col129.clone(),
                 a3_limb_1_col130.clone(),
@@ -1007,24 +455,6 @@ impl FrameworkEval for Eval {
                 a3_limb_8_col137.clone(),
                 a3_limb_9_col138.clone(),
                 a3_limb_10_col139.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone()),
-                b0_id_col140.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 b0_id_col140.clone(),
                 b0_limb_0_col141.clone(),
                 b0_limb_1_col142.clone(),
@@ -1037,25 +467,6 @@ impl FrameworkEval for Eval {
                 b0_limb_8_col149.clone(),
                 b0_limb_9_col150.clone(),
                 b0_limb_10_col151.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone())
-                    + M31_1.clone()),
-                b1_id_col152.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 b1_id_col152.clone(),
                 b1_limb_0_col153.clone(),
                 b1_limb_1_col154.clone(),
@@ -1068,25 +479,6 @@ impl FrameworkEval for Eval {
                 b1_limb_8_col161.clone(),
                 b1_limb_9_col162.clone(),
                 b1_limb_10_col163.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone())
-                    + M31_2.clone()),
-                b2_id_col164.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 b2_id_col164.clone(),
                 b2_limb_0_col165.clone(),
                 b2_limb_1_col166.clone(),
@@ -1099,25 +491,6 @@ impl FrameworkEval for Eval {
                 b2_limb_8_col173.clone(),
                 b2_limb_9_col174.clone(),
                 b2_limb_10_col175.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_47_limb_0.clone())
-                    + M31_3.clone()),
-                b3_id_col176.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 b3_id_col176.clone(),
                 b3_limb_0_col177.clone(),
                 b3_limb_1_col178.clone(),
@@ -1130,24 +503,6 @@ impl FrameworkEval for Eval {
                 b3_limb_8_col185.clone(),
                 b3_limb_9_col186.clone(),
                 b3_limb_10_col187.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                (values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone()),
-                c0_id_col188.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 c0_id_col188.clone(),
                 c0_limb_0_col189.clone(),
                 c0_limb_1_col190.clone(),
@@ -1160,25 +515,6 @@ impl FrameworkEval for Eval {
                 c0_limb_8_col197.clone(),
                 c0_limb_9_col198.clone(),
                 c0_limb_10_col199.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone())
-                    + M31_1.clone()),
-                c1_id_col200.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 c1_id_col200.clone(),
                 c1_limb_0_col201.clone(),
                 c1_limb_1_col202.clone(),
@@ -1191,25 +527,6 @@ impl FrameworkEval for Eval {
                 c1_limb_8_col209.clone(),
                 c1_limb_9_col210.clone(),
                 c1_limb_10_col211.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone())
-                    + M31_2.clone()),
-                c2_id_col212.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 c2_id_col212.clone(),
                 c2_limb_0_col213.clone(),
                 c2_limb_1_col214.clone(),
@@ -1222,25 +539,6 @@ impl FrameworkEval for Eval {
                 c2_limb_8_col221.clone(),
                 c2_limb_9_col222.clone(),
                 c2_limb_10_col223.clone(),
-            ],
-        ));
-
-        // Read Positive Num Bits 99.
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                ((values_ptr_tmp_c1b19_54.clone() + read_small_output_tmp_c1b19_53_limb_0.clone())
-                    + M31_3.clone()),
-                c3_id_col224.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
                 c3_id_col224.clone(),
                 c3_limb_0_col225.clone(),
                 c3_limb_1_col226.clone(),
@@ -1253,9 +551,10 @@ impl FrameworkEval for Eval {
                 c3_limb_8_col233.clone(),
                 c3_limb_9_col234.clone(),
                 c3_limb_10_col235.clone(),
-            ],
-        ));
-
+                &mut eval,
+                &self.memory_address_to_id_lookup_elements,
+                &self.memory_id_to_big_lookup_elements,
+            );
         // make sure sub_p_bit is 0 or 1..
         eval.add_constraint(
             ((sub_p_bit_col236.clone() - M31_1.clone()) * sub_p_bit_col236.clone()),
@@ -1368,7 +667,6 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 
