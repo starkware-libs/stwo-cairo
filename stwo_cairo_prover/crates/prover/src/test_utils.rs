@@ -4,9 +4,8 @@ use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_def
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-
-use crate::plain::adapt_finished_runner;
-use crate::ProverInput;
+use stwo_cairo_adapter::plain::adapt_finished_runner;
+use stwo_cairo_adapter::ProverInput;
 
 pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
     let file_path = Path::new(env!("CARGO_MANIFEST_DIR"))
