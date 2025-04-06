@@ -58,6 +58,7 @@ fn deserialize_inputs<'a>(
 }
 
 /// Adapts the VM's output files to the Cairo input of the prover.
+/// TODO(Stav): delete when 'adapt_prover_input_info_vm_output' is used.
 pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
@@ -125,7 +126,8 @@ pub fn adapt_vm_output(
 
 /// Creates Cairo input for Stwo, utilized by:
 /// - `adapt_vm_output` in the prover.
-/// - `adapt_finished_runner` in the validator.
+/// - `adapt_finished_runner` in the validator. 
+/// TODO(Stav): delete when 'adapt_prover_input_info_vm_output' is used.
 pub fn adapt_to_stwo_input(
     trace_iter: impl Iterator<Item = RelocatedTraceEntry>,
     mut memory: MemoryBuilder,
