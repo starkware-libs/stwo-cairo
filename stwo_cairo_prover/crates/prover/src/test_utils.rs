@@ -18,8 +18,10 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
         Err(e) => panic!("Failed to load program: {:?}", e),
     };
 
+    // TODO(Stav): change to proof_mode = False and dissable trace padding = True after solving the
+    // pa issue.
     let mut cairo_runner =
-        CairoRunner::new(&program, LayoutName::all_cairo, None, false, true, false).expect("Fail");
+        CairoRunner::new(&program, LayoutName::all_cairo, None, true, true, true).expect("Fail");
     let end = cairo_runner
         .initialize(true)
         .expect("Initialization failed");
@@ -30,6 +32,13 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
     cairo_runner
         .end_run(true, false, &mut BuiltinHintProcessor::new_empty())
         .expect("fail");
+    cairo_runner
+        .read_return_values(true)
+        .expect("Failed to read return values");
+    cairo_runner
+        .finalize_segments()
+        .expect("Failed to finalize segments");
+
     cairo_runner
 }
 
