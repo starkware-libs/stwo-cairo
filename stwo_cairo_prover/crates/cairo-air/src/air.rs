@@ -1,4 +1,4 @@
-use itertools::chain;
+use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::cpu::CasmState;
@@ -61,9 +61,6 @@ where
         CairoSerialize::serialize(stark_proof, output);
     }
 }
-
-// (Address, Id, Value)
-pub type PublicMemory = Vec<(u32, u32, [u32; 8])>;
 
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct CairoClaim {
@@ -135,24 +132,29 @@ impl PublicData {
     /// Sums the logup of the public data.
     pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
         let mut values_to_inverse = vec![];
-
         // Use public memory in the memory relations.
-        self.public_memory.iter().for_each(|(addr, id, val)| {
-            values_to_inverse.push(
-                <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
-                    &lookup_elements.memory_address_to_id,
-                    &[M31::from_u32_unchecked(*addr), M31::from_u32_unchecked(*id)],
-                ),
-            );
-            values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
-                &lookup_elements.memory_id_to_value,
-                &[
-                    [M31::from_u32_unchecked(*id)].as_slice(),
-                    split_f252(*val).as_slice(),
-                ]
-                .concat(),
-            ));
-        });
+        self.public_memory
+            .get_entries(
+                self.initial_state.pc.0,
+                self.initial_state.ap.0,
+                self.final_state.ap.0,
+            )
+            .for_each(|(addr, id, val)| {
+                values_to_inverse.push(
+                    <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
+                        &lookup_elements.memory_address_to_id,
+                        &[M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                    ),
+                );
+                values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
+                    &lookup_elements.memory_id_to_value,
+                    &[
+                        [M31::from_u32_unchecked(id)].as_slice(),
+                        split_f252(val).as_slice(),
+                    ]
+                    .concat(),
+                ));
+            });
 
         // Yield initial state and use the final.
         values_to_inverse.push(<relations::Opcodes as Relation<M31, QM31>>::combine(
@@ -168,6 +170,138 @@ impl PublicData {
         inverted_values.iter().sum::<QM31>()
     }
 }
+
+// TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct MemorySmallValue {
+    pub id: u32,
+    pub value: u32,
+}
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+// (id, value)
+pub type PubMemoryValue = (u32, [u32; 8]);
+
+// TODO(alonf): Change this into a struct. Remove Pub prefix.
+// (address, id, value)
+pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct SegmentRange {
+    pub start_ptr: MemorySmallValue,
+    pub stop_ptr: MemorySmallValue,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+pub struct PublicSegmentRanges {
+    pub output: SegmentRange,
+    pub pedersen: SegmentRange,
+    pub range_check_128: SegmentRange,
+    pub ecdsa: SegmentRange,
+    pub bitwise: SegmentRange,
+    pub ec_op: SegmentRange,
+    pub keccak: SegmentRange,
+    pub poseidon: SegmentRange,
+    pub range_check_96: SegmentRange,
+    pub add_mod: SegmentRange,
+    pub mul_mod: SegmentRange,
+}
+
+impl PublicSegmentRanges {
+    pub fn memory_entries(
+        &self,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let PublicSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = *self;
+        let segments = [
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        ]
+        .into_iter()
+        .collect_vec();
+
+        let n_segments = segments.len() as u32;
+        assert_eq!(n_segments, 11);
+
+        segments
+            .into_iter()
+            .enumerate()
+            .flat_map(
+                move |(
+                    i,
+                    SegmentRange {
+                        start_ptr,
+                        stop_ptr,
+                    },
+                )| {
+                    let start_address = initial_ap + i as u32;
+                    let stop_address = final_ap - n_segments + i as u32;
+                    [
+                        (start_address, start_ptr.id, start_ptr.value),
+                        (stop_address, stop_ptr.id, stop_ptr.value),
+                    ]
+                },
+            )
+            .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
+    }
+}
+
+pub type MemorySection = Vec<PubMemoryValue>;
+
+// TODO(alonf): Perform all public data validations.
+#[derive(Serialize, Deserialize, CairoSerialize)]
+pub struct PublicMemory {
+    pub program: MemorySection,
+    pub public_segments: PublicSegmentRanges,
+    pub output: MemorySection,
+    pub safe_call: MemorySection,
+}
+
+impl PublicMemory {
+    /// Returns [`PubMemoryEntry`] for all public memory.
+    pub fn get_entries(
+        &self,
+        initial_pc: u32,
+        initial_ap: u32,
+        final_ap: u32,
+    ) -> impl Iterator<Item = PubMemoryEntry> {
+        let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
+            .map(|section| section.clone().into_iter().enumerate());
+        let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
+        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
+        let safe_call_iter =
+            safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
+        let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
+
+        program_iter
+            .chain(safe_call_iter)
+            .chain(segment_ranges_iter)
+            .chain(output_iter)
+    }
+}
+
 pub struct CairoInteractionElements {
     pub opcodes: relations::Opcodes,
     pub verify_instruction: relations::VerifyInstruction,

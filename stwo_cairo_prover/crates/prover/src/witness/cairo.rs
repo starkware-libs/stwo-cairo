@@ -1,5 +1,9 @@
-use cairo_air::air::{CairoClaim, CairoInteractionClaim, CairoInteractionElements, PublicData};
+use cairo_air::air::{
+    CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
+    PublicMemory, PublicSegmentRanges, SegmentRange,
+};
 use itertools::Itertools;
+use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::M31;
@@ -20,6 +24,73 @@ use crate::witness::components::{
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
+
+fn extract_public_segments(memory: &Memory, initial_ap: u32, final_ap: u32) -> PublicSegmentRanges {
+    let n_public_segments = 11;
+
+    let to_memory_value = |addr: u32| {
+        let id = memory.get_raw_id(addr);
+        let value = memory.get(addr).as_small() as u32;
+        MemorySmallValue { id, value }
+    };
+
+    let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(to_memory_value);
+    let end_ptrs = (final_ap - n_public_segments..final_ap).map(to_memory_value);
+    let ranges: Vec<_> = start_ptrs
+        .zip(end_ptrs)
+        .map(|(start_ptr, stop_ptr)| SegmentRange {
+            start_ptr,
+            stop_ptr,
+        })
+        .collect();
+
+    PublicSegmentRanges {
+        output: ranges[0],
+        pedersen: ranges[1],
+        range_check_128: ranges[2],
+        ecdsa: ranges[3],
+        bitwise: ranges[4],
+        ec_op: ranges[5],
+        keccak: ranges[6],
+        poseidon: ranges[7],
+        range_check_96: ranges[8],
+        add_mod: ranges[9],
+        mul_mod: ranges[10],
+    }
+}
+
+fn extract_sections_from_memory(
+    memory: &Memory,
+    initial_pc: u32,
+    initial_ap: u32,
+    final_ap: u32,
+) -> PublicMemory {
+    let public_segments = extract_public_segments(memory, initial_ap, final_ap);
+    let program_memory_addresses = initial_pc..initial_ap - 2;
+    let safe_call_addresses = initial_ap - 2..initial_ap;
+    let output_memory_addresses =
+        public_segments.output.start_ptr.value..public_segments.output.stop_ptr.value;
+    let [program, safe_call, output] = [
+        program_memory_addresses,
+        safe_call_addresses,
+        output_memory_addresses,
+    ]
+    .map(|range| {
+        range
+            .map(|addr| {
+                let id = memory.get_raw_id(addr);
+                let value = memory.get(addr).as_u256();
+                (id, value)
+            })
+            .collect_vec()
+    });
+    PublicMemory {
+        program,
+        safe_call,
+        public_segments,
+        output,
+    }
+}
 
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
@@ -77,15 +148,12 @@ impl CairoClaimGenerator {
         }
 
         // Public data.
-        let public_memory = input
-            .public_memory_addresses
-            .iter()
-            .copied()
-            .map(|addr| {
-                let id = input.memory.get_raw_id(addr);
-                (addr, id, input.memory.get(addr).as_u256())
-            })
-            .collect_vec();
+        let initial_pc = initial_state.pc.0;
+        let initial_ap = initial_state.ap.0;
+        let final_ap = final_state.ap.0;
+        let public_memory =
+            extract_sections_from_memory(&input.memory, initial_pc, initial_ap, final_ap);
+
         let public_data = PublicData {
             public_memory,
             initial_state,
