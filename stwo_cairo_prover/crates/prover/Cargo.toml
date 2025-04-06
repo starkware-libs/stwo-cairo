@@ -16,8 +16,6 @@ nightly = []
 stwo-air-utils-derive.workspace = true
 stwo-air-utils.workspace = true
 bytemuck.workspace = true
-cairo-lang-casm.workspace = true
-cairo-vm.workspace = true
 hex.workspace = true
 itertools.workspace = true
 num-traits.workspace = true
@@ -39,6 +37,7 @@ tracing.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
+cairo-vm = { workspace = true, default-features = true }
 test-log = { version = "0.2.17", features = ["trace"] }
 tracing-subscriber.workspace = true
 rand.workspace = true
