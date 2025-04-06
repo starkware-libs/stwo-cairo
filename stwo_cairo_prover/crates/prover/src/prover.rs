@@ -193,11 +193,11 @@ pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
     use cairo_lang_casm::casm;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
-    use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
     use stwo_cairo_adapter::ProverInput;
     use test_log::test;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
+    use crate::test_utils::prover_input_from_compiled_cairo_program;
 
     fn test_basic_cairo_air_input() -> ProverInput {
         let u128_max = u128::MAX;
