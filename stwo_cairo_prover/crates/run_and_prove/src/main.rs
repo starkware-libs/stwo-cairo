@@ -15,10 +15,11 @@ use tracing::{span, Level};
 
 // TODO(yuval): unite this and adapted_prover to a single binary, or at least share more code.
 /// Command line arguments for run_and_prove.
+/// (Currently only works for compiled Cairo 0 programs)
 /// Example command line (use absolute paths):
 ///     ```
-///     cargo run -r --bin run_and_prove -- --run_from_cairo_pie
-///     --proof_path path/to/proof --secure_run=true path/to/cairo/pie
+///     cargo run -r --bin run_and_prove --
+///     --proof_path path/to/proof --secure_run=true path/to/cairo/program
 ///     ```
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
