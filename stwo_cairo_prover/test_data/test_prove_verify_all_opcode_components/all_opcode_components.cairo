@@ -451,7 +451,7 @@ func run_blake_test{}(is_last_block: felt) {
 
 
     // Run the blake2s opcode runner on the same inputs and store its output.
-    let vm_output = run_blake2s_opcode(
+    let vm_output = run_blake_compress_opcode(
         is_last_block = is_last_block,
         dst=COUNTER,
         op0=input_state,
@@ -480,7 +480,7 @@ func run_blake_test{}(is_last_block: felt) {
 // An instruction encoding is built from offsets -5, -4, -3 and flags which are all 0 except for
 // those denoting uses of fp as the base for operand addresses and flag_opcode_blake (16th flag).
 // The instruction is then written to [pc] and the runner is forced to execute Blake2s.
-func run_blake2s_opcode(
+func run_blake_compress_opcode(
     is_last_block: felt,
     dst: felt,
     op0: felt*,
@@ -514,9 +514,9 @@ func run_blake2s_opcode(
     let flag_opcode_assert_eq = 0;
 
     let flag_num = flag_dst_base_fp+flag_op0_base_fp*(2**1)+flag_op1_imm*(2**2)+flag_op1_base_fp*(2**3);
-    let blake2s_opcode_extension_num = 1;
+    let blake_compress_opcode_extension_num = 1;
     let blake2s_last_block_opcode_extension_num = 2;
-    let blake2s_instruction_num = offset0 + offset1*(2**16) + offset2*(2**32) + flag_num*(2**48) + blake2s_opcode_extension_num*(2**63);
+    let blake2s_instruction_num = offset0 + offset1*(2**16) + offset2*(2**32) + flag_num*(2**48) + blake_compress_opcode_extension_num*(2**63);
     let blake2s_last_block_instruction_num = offset0 + offset1*(2**16) + offset2*(2**32) + flag_num*(2**48) + blake2s_last_block_opcode_extension_num*(2**63);
     static_assert blake2s_instruction_num==9226608988349300731;
     static_assert blake2s_last_block_instruction_num==18449981025204076539;

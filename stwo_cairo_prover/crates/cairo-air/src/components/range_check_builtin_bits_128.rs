@@ -12,7 +12,7 @@ pub struct Eval {
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Claim {
     pub log_size: u32,
-    pub range_check_builtin_segment_start: u32,
+    pub range_check_builtin_bits_128_segment_start: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -23,7 +23,7 @@ impl Claim {
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
-        channel.mix_u64(self.range_check_builtin_segment_start as u64);
+        channel.mix_u64(self.range_check_builtin_bits_128_segment_start as u64);
     }
 }
 
@@ -75,7 +75,9 @@ impl FrameworkEval for Eval {
         #[allow(unused_variables)]
         let [read_positive_num_bits_128_output_tmp_66b3a_4_limb_0, read_positive_num_bits_128_output_tmp_66b3a_4_limb_1, read_positive_num_bits_128_output_tmp_66b3a_4_limb_2, read_positive_num_bits_128_output_tmp_66b3a_4_limb_3, read_positive_num_bits_128_output_tmp_66b3a_4_limb_4, read_positive_num_bits_128_output_tmp_66b3a_4_limb_5, read_positive_num_bits_128_output_tmp_66b3a_4_limb_6, read_positive_num_bits_128_output_tmp_66b3a_4_limb_7, read_positive_num_bits_128_output_tmp_66b3a_4_limb_8, read_positive_num_bits_128_output_tmp_66b3a_4_limb_9, read_positive_num_bits_128_output_tmp_66b3a_4_limb_10, read_positive_num_bits_128_output_tmp_66b3a_4_limb_11, read_positive_num_bits_128_output_tmp_66b3a_4_limb_12, read_positive_num_bits_128_output_tmp_66b3a_4_limb_13, read_positive_num_bits_128_output_tmp_66b3a_4_limb_14, read_positive_num_bits_128_output_tmp_66b3a_4_limb_15, read_positive_num_bits_128_output_tmp_66b3a_4_limb_16, read_positive_num_bits_128_output_tmp_66b3a_4_limb_17, read_positive_num_bits_128_output_tmp_66b3a_4_limb_18, read_positive_num_bits_128_output_tmp_66b3a_4_limb_19, read_positive_num_bits_128_output_tmp_66b3a_4_limb_20, read_positive_num_bits_128_output_tmp_66b3a_4_limb_21, read_positive_num_bits_128_output_tmp_66b3a_4_limb_22, read_positive_num_bits_128_output_tmp_66b3a_4_limb_23, read_positive_num_bits_128_output_tmp_66b3a_4_limb_24, read_positive_num_bits_128_output_tmp_66b3a_4_limb_25, read_positive_num_bits_128_output_tmp_66b3a_4_limb_26, read_positive_num_bits_128_output_tmp_66b3a_4_limb_27, read_positive_num_bits_128_output_tmp_66b3a_4_limb_28] =
             ReadPositiveNumBits128::evaluate(
-                (E::F::from(M31::from(self.claim.range_check_builtin_segment_start)) + seq.clone()),
+                (E::F::from(M31::from(
+                    self.claim.range_check_builtin_bits_128_segment_start,
+                )) + seq.clone()),
                 value_id_col0.clone(),
                 value_limb_0_col1.clone(),
                 value_limb_1_col2.clone(),
@@ -119,7 +121,7 @@ mod tests {
         let eval = Eval {
             claim: Claim {
                 log_size: 4,
-                range_check_builtin_segment_start: rng.gen::<u32>(),
+                range_check_builtin_bits_128_segment_start: rng.gen::<u32>(),
             },
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
