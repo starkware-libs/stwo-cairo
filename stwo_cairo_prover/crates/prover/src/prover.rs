@@ -344,6 +344,7 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
+            use std::collections::HashSet;
             use std::fs::File;
 
             use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
@@ -356,18 +357,27 @@ pub mod tests {
             /// Asserts that all builtins are present in the input.
             /// Panics if any of the builtins is missing.
             fn assert_all_builtins_in_input(input: &ProverInput) {
-                let empty_builtins = input
+                let empty_builtins: HashSet<_> = input
                     .builtins_segments
                     .get_counts()
                     .iter()
-                    .filter(|(_, &count)| count == 0)
+                    .filter(|&(_, &count)| count == 0)
                     .map(|(name, _)| format!("{:?}", name))
-                    .collect_vec();
-                assert!(
-                    empty_builtins.is_empty(),
-                    "The following builtins are missing: {}",
-                    empty_builtins.join(", ")
-                );
+                    .collect();
+
+                let expected: HashSet<_> = ["keccak", "ecdsa", "ec_op"]
+                    .iter()
+                    .map(|&name| name.to_string())
+                    .collect();
+
+                if empty_builtins != expected {
+                    let missing: Vec<_> = expected.difference(&empty_builtins).cloned().collect();
+                    let extra: Vec<_> = empty_builtins.difference(&expected).cloned().collect();
+                    panic!(
+                        "Mismatch in empty builtins: missing {:?}, extra {:?}",
+                        missing, extra
+                    );
+                }
             }
 
             #[test]

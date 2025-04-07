@@ -192,6 +192,12 @@ pub struct SegmentRange {
     pub stop_ptr: MemorySmallValue,
 }
 
+impl SegmentRange {
+    pub fn is_empty(&self) -> bool {
+        self.start_ptr.value == self.stop_ptr.value
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
