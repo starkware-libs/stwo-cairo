@@ -109,7 +109,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         builtins_claim
             .range_check_128_builtin
             .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check_builtin_segment_start,
+                segment_start: claim.range_check_builtin_bits_128_segment_start,
                 log_size: claim.log_size,
             }),
         segment_ranges.range_check_128,
@@ -120,7 +120,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         builtins_claim
             .range_check_96_builtin
             .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check96_builtin_segment_start,
+                segment_start: claim.range_check_builtin_bits_96_segment_start,
                 log_size: claim.log_size,
             }),
         segment_ranges.range_check_96,
