@@ -96,9 +96,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.assert_eq_opcode_double_deref,
             ));
         }
-        if !input.casm_states_by_opcode.blake2s_opcode.is_empty() {
+        if !input.casm_states_by_opcode.blake_compress_opcode.is_empty() {
             blake.push(blake_compress_opcode::ClaimGenerator::new(
-                input.casm_states_by_opcode.blake2s_opcode,
+                input.casm_states_by_opcode.blake_compress_opcode,
             ));
         }
         if !input.casm_states_by_opcode.call_opcode.is_empty() {
@@ -170,9 +170,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.mul_opcode_small,
             ));
         }
-        if !input.casm_states_by_opcode.qm31_add_mul_opcode.is_empty() {
+        if !input.casm_states_by_opcode.qm_31_add_mul_opcode.is_empty() {
             qm31.push(qm_31_add_mul_opcode::ClaimGenerator::new(
-                input.casm_states_by_opcode.qm31_add_mul_opcode,
+                input.casm_states_by_opcode.qm_31_add_mul_opcode,
             ));
         }
         if !input.casm_states_by_opcode.ret_opcode.is_empty() {

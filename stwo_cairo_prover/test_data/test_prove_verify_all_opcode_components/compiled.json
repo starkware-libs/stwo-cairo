@@ -54727,7 +54727,7 @@
             "1319": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -54735,10 +54735,10 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480
                     }
                 },
                 "hints": [],
@@ -54755,7 +54755,7 @@
             "1321": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -54763,33 +54763,33 @@
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.blake2s_instruction_num": 502,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": 503,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": 501,
-                        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": 500,
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jnz": 493,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump": 491,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": 492,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add": 494,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add_1": 495,
-                        "__main__.run_blake2s_opcode.flag_dst_base_fp": 484,
-                        "__main__.run_blake2s_opcode.flag_num": 499,
-                        "__main__.run_blake2s_opcode.flag_op0_base_fp": 485,
-                        "__main__.run_blake2s_opcode.flag_op1_base_ap": 488,
-                        "__main__.run_blake2s_opcode.flag_op1_base_fp": 487,
-                        "__main__.run_blake2s_opcode.flag_op1_imm": 486,
-                        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": 498,
-                        "__main__.run_blake2s_opcode.flag_opcode_call": 496,
-                        "__main__.run_blake2s_opcode.flag_opcode_ret": 497,
-                        "__main__.run_blake2s_opcode.flag_res_add": 489,
-                        "__main__.run_blake2s_opcode.flag_res_mul": 490,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.offset0": 481,
-                        "__main__.run_blake2s_opcode.offset1": 482,
-                        "__main__.run_blake2s_opcode.offset2": 483,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480
+                        "__main__.run_blake_compress_opcode.blake2s_instruction_num": 502,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": 503,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": 501,
+                        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": 500,
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": 493,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump": 491,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": 492,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add": 494,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": 495,
+                        "__main__.run_blake_compress_opcode.flag_dst_base_fp": 484,
+                        "__main__.run_blake_compress_opcode.flag_num": 499,
+                        "__main__.run_blake_compress_opcode.flag_op0_base_fp": 485,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_ap": 488,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_fp": 487,
+                        "__main__.run_blake_compress_opcode.flag_op1_imm": 486,
+                        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": 498,
+                        "__main__.run_blake_compress_opcode.flag_opcode_call": 496,
+                        "__main__.run_blake_compress_opcode.flag_opcode_ret": 497,
+                        "__main__.run_blake_compress_opcode.flag_res_add": 489,
+                        "__main__.run_blake_compress_opcode.flag_res_mul": 490,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.offset0": 481,
+                        "__main__.run_blake_compress_opcode.offset1": 482,
+                        "__main__.run_blake_compress_opcode.offset2": 483,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480
                     }
                 },
                 "hints": [],
@@ -54806,7 +54806,7 @@
             "1323": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -54814,34 +54814,34 @@
                         "offset": 4
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.blake2s_instruction_num": 502,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": 503,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": 501,
-                        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": 500,
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jnz": 493,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump": 491,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": 492,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add": 494,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add_1": 495,
-                        "__main__.run_blake2s_opcode.flag_dst_base_fp": 484,
-                        "__main__.run_blake2s_opcode.flag_num": 499,
-                        "__main__.run_blake2s_opcode.flag_op0_base_fp": 485,
-                        "__main__.run_blake2s_opcode.flag_op1_base_ap": 488,
-                        "__main__.run_blake2s_opcode.flag_op1_base_fp": 487,
-                        "__main__.run_blake2s_opcode.flag_op1_imm": 486,
-                        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": 498,
-                        "__main__.run_blake2s_opcode.flag_opcode_call": 496,
-                        "__main__.run_blake2s_opcode.flag_opcode_ret": 497,
-                        "__main__.run_blake2s_opcode.flag_res_add": 489,
-                        "__main__.run_blake2s_opcode.flag_res_mul": 490,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.offset0": 481,
-                        "__main__.run_blake2s_opcode.offset1": 482,
-                        "__main__.run_blake2s_opcode.offset2": 483,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480,
-                        "__main__.run_blake2s_opcode.vm_output": 504
+                        "__main__.run_blake_compress_opcode.blake2s_instruction_num": 502,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": 503,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": 501,
+                        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": 500,
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": 493,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump": 491,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": 492,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add": 494,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": 495,
+                        "__main__.run_blake_compress_opcode.flag_dst_base_fp": 484,
+                        "__main__.run_blake_compress_opcode.flag_num": 499,
+                        "__main__.run_blake_compress_opcode.flag_op0_base_fp": 485,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_ap": 488,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_fp": 487,
+                        "__main__.run_blake_compress_opcode.flag_op1_imm": 486,
+                        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": 498,
+                        "__main__.run_blake_compress_opcode.flag_opcode_call": 496,
+                        "__main__.run_blake_compress_opcode.flag_opcode_ret": 497,
+                        "__main__.run_blake_compress_opcode.flag_res_add": 489,
+                        "__main__.run_blake_compress_opcode.flag_res_mul": 490,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.offset0": 481,
+                        "__main__.run_blake_compress_opcode.offset1": 482,
+                        "__main__.run_blake_compress_opcode.offset2": 483,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480,
+                        "__main__.run_blake_compress_opcode.vm_output": 504
                     }
                 },
                 "hints": [],
@@ -54858,7 +54858,7 @@
             "1324": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -54866,34 +54866,34 @@
                         "offset": 4
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.blake2s_instruction_num": 502,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": 503,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": 501,
-                        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": 500,
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jnz": 493,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump": 491,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": 492,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add": 494,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add_1": 495,
-                        "__main__.run_blake2s_opcode.flag_dst_base_fp": 484,
-                        "__main__.run_blake2s_opcode.flag_num": 499,
-                        "__main__.run_blake2s_opcode.flag_op0_base_fp": 485,
-                        "__main__.run_blake2s_opcode.flag_op1_base_ap": 488,
-                        "__main__.run_blake2s_opcode.flag_op1_base_fp": 487,
-                        "__main__.run_blake2s_opcode.flag_op1_imm": 486,
-                        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": 498,
-                        "__main__.run_blake2s_opcode.flag_opcode_call": 496,
-                        "__main__.run_blake2s_opcode.flag_opcode_ret": 497,
-                        "__main__.run_blake2s_opcode.flag_res_add": 489,
-                        "__main__.run_blake2s_opcode.flag_res_mul": 490,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.offset0": 481,
-                        "__main__.run_blake2s_opcode.offset1": 482,
-                        "__main__.run_blake2s_opcode.offset2": 483,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480,
-                        "__main__.run_blake2s_opcode.vm_output": 505
+                        "__main__.run_blake_compress_opcode.blake2s_instruction_num": 502,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": 503,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": 501,
+                        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": 500,
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": 493,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump": 491,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": 492,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add": 494,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": 495,
+                        "__main__.run_blake_compress_opcode.flag_dst_base_fp": 484,
+                        "__main__.run_blake_compress_opcode.flag_num": 499,
+                        "__main__.run_blake_compress_opcode.flag_op0_base_fp": 485,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_ap": 488,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_fp": 487,
+                        "__main__.run_blake_compress_opcode.flag_op1_imm": 486,
+                        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": 498,
+                        "__main__.run_blake_compress_opcode.flag_opcode_call": 496,
+                        "__main__.run_blake_compress_opcode.flag_opcode_ret": 497,
+                        "__main__.run_blake_compress_opcode.flag_res_add": 489,
+                        "__main__.run_blake_compress_opcode.flag_res_mul": 490,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.offset0": 481,
+                        "__main__.run_blake_compress_opcode.offset1": 482,
+                        "__main__.run_blake_compress_opcode.offset2": 483,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480,
+                        "__main__.run_blake_compress_opcode.vm_output": 505
                     }
                 },
                 "hints": [],
@@ -54910,7 +54910,7 @@
             "1325": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -54918,34 +54918,34 @@
                         "offset": 4
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.blake2s_instruction_num": 502,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": 503,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": 501,
-                        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": 500,
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jnz": 493,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump": 491,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": 492,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add": 494,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add_1": 495,
-                        "__main__.run_blake2s_opcode.flag_dst_base_fp": 484,
-                        "__main__.run_blake2s_opcode.flag_num": 499,
-                        "__main__.run_blake2s_opcode.flag_op0_base_fp": 485,
-                        "__main__.run_blake2s_opcode.flag_op1_base_ap": 488,
-                        "__main__.run_blake2s_opcode.flag_op1_base_fp": 487,
-                        "__main__.run_blake2s_opcode.flag_op1_imm": 486,
-                        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": 498,
-                        "__main__.run_blake2s_opcode.flag_opcode_call": 496,
-                        "__main__.run_blake2s_opcode.flag_opcode_ret": 497,
-                        "__main__.run_blake2s_opcode.flag_res_add": 489,
-                        "__main__.run_blake2s_opcode.flag_res_mul": 490,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.offset0": 481,
-                        "__main__.run_blake2s_opcode.offset1": 482,
-                        "__main__.run_blake2s_opcode.offset2": 483,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480,
-                        "__main__.run_blake2s_opcode.vm_output": 505
+                        "__main__.run_blake_compress_opcode.blake2s_instruction_num": 502,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": 503,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": 501,
+                        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": 500,
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": 493,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump": 491,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": 492,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add": 494,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": 495,
+                        "__main__.run_blake_compress_opcode.flag_dst_base_fp": 484,
+                        "__main__.run_blake_compress_opcode.flag_num": 499,
+                        "__main__.run_blake_compress_opcode.flag_op0_base_fp": 485,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_ap": 488,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_fp": 487,
+                        "__main__.run_blake_compress_opcode.flag_op1_imm": 486,
+                        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": 498,
+                        "__main__.run_blake_compress_opcode.flag_opcode_call": 496,
+                        "__main__.run_blake_compress_opcode.flag_opcode_ret": 497,
+                        "__main__.run_blake_compress_opcode.flag_res_add": 489,
+                        "__main__.run_blake_compress_opcode.flag_res_mul": 490,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.offset0": 481,
+                        "__main__.run_blake_compress_opcode.offset1": 482,
+                        "__main__.run_blake_compress_opcode.offset2": 483,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480,
+                        "__main__.run_blake_compress_opcode.vm_output": 505
                     }
                 },
                 "hints": [],
@@ -54962,7 +54962,7 @@
             "1327": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -54970,34 +54970,34 @@
                         "offset": 4
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.blake2s_instruction_num": 502,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": 503,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": 501,
-                        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": 500,
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jnz": 493,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump": 491,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": 492,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add": 494,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add_1": 495,
-                        "__main__.run_blake2s_opcode.flag_dst_base_fp": 484,
-                        "__main__.run_blake2s_opcode.flag_num": 499,
-                        "__main__.run_blake2s_opcode.flag_op0_base_fp": 485,
-                        "__main__.run_blake2s_opcode.flag_op1_base_ap": 488,
-                        "__main__.run_blake2s_opcode.flag_op1_base_fp": 487,
-                        "__main__.run_blake2s_opcode.flag_op1_imm": 486,
-                        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": 498,
-                        "__main__.run_blake2s_opcode.flag_opcode_call": 496,
-                        "__main__.run_blake2s_opcode.flag_opcode_ret": 497,
-                        "__main__.run_blake2s_opcode.flag_res_add": 489,
-                        "__main__.run_blake2s_opcode.flag_res_mul": 490,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.offset0": 481,
-                        "__main__.run_blake2s_opcode.offset1": 482,
-                        "__main__.run_blake2s_opcode.offset2": 483,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480,
-                        "__main__.run_blake2s_opcode.vm_output": 505
+                        "__main__.run_blake_compress_opcode.blake2s_instruction_num": 502,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": 503,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": 501,
+                        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": 500,
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": 493,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump": 491,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": 492,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add": 494,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": 495,
+                        "__main__.run_blake_compress_opcode.flag_dst_base_fp": 484,
+                        "__main__.run_blake_compress_opcode.flag_num": 499,
+                        "__main__.run_blake_compress_opcode.flag_op0_base_fp": 485,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_ap": 488,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_fp": 487,
+                        "__main__.run_blake_compress_opcode.flag_op1_imm": 486,
+                        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": 498,
+                        "__main__.run_blake_compress_opcode.flag_opcode_call": 496,
+                        "__main__.run_blake_compress_opcode.flag_opcode_ret": 497,
+                        "__main__.run_blake_compress_opcode.flag_res_add": 489,
+                        "__main__.run_blake_compress_opcode.flag_res_mul": 490,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.offset0": 481,
+                        "__main__.run_blake_compress_opcode.offset1": 482,
+                        "__main__.run_blake_compress_opcode.offset2": 483,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480,
+                        "__main__.run_blake_compress_opcode.vm_output": 505
                     }
                 },
                 "hints": [],
@@ -55014,7 +55014,7 @@
             "1328": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -55037,7 +55037,7 @@
             "1329": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -55060,7 +55060,7 @@
             "1330": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -55068,34 +55068,34 @@
                         "offset": 4
                     },
                     "reference_ids": {
-                        "__main__.run_blake2s_opcode.blake2s_instruction_num": 502,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": 503,
-                        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": 501,
-                        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": 500,
-                        "__main__.run_blake2s_opcode.dst": 478,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jnz": 493,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump": 491,
-                        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": 492,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add": 494,
-                        "__main__.run_blake2s_opcode.flag_ap_update_add_1": 495,
-                        "__main__.run_blake2s_opcode.flag_dst_base_fp": 484,
-                        "__main__.run_blake2s_opcode.flag_num": 499,
-                        "__main__.run_blake2s_opcode.flag_op0_base_fp": 485,
-                        "__main__.run_blake2s_opcode.flag_op1_base_ap": 488,
-                        "__main__.run_blake2s_opcode.flag_op1_base_fp": 487,
-                        "__main__.run_blake2s_opcode.flag_op1_imm": 486,
-                        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": 498,
-                        "__main__.run_blake2s_opcode.flag_opcode_call": 496,
-                        "__main__.run_blake2s_opcode.flag_opcode_ret": 497,
-                        "__main__.run_blake2s_opcode.flag_res_add": 489,
-                        "__main__.run_blake2s_opcode.flag_res_mul": 490,
-                        "__main__.run_blake2s_opcode.is_last_block": 477,
-                        "__main__.run_blake2s_opcode.offset0": 481,
-                        "__main__.run_blake2s_opcode.offset1": 482,
-                        "__main__.run_blake2s_opcode.offset2": 483,
-                        "__main__.run_blake2s_opcode.op0": 479,
-                        "__main__.run_blake2s_opcode.op1": 480,
-                        "__main__.run_blake2s_opcode.vm_output": 505
+                        "__main__.run_blake_compress_opcode.blake2s_instruction_num": 502,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": 503,
+                        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": 501,
+                        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": 500,
+                        "__main__.run_blake_compress_opcode.dst": 478,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": 493,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump": 491,
+                        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": 492,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add": 494,
+                        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": 495,
+                        "__main__.run_blake_compress_opcode.flag_dst_base_fp": 484,
+                        "__main__.run_blake_compress_opcode.flag_num": 499,
+                        "__main__.run_blake_compress_opcode.flag_op0_base_fp": 485,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_ap": 488,
+                        "__main__.run_blake_compress_opcode.flag_op1_base_fp": 487,
+                        "__main__.run_blake_compress_opcode.flag_op1_imm": 486,
+                        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": 498,
+                        "__main__.run_blake_compress_opcode.flag_opcode_call": 496,
+                        "__main__.run_blake_compress_opcode.flag_opcode_ret": 497,
+                        "__main__.run_blake_compress_opcode.flag_res_add": 489,
+                        "__main__.run_blake_compress_opcode.flag_res_mul": 490,
+                        "__main__.run_blake_compress_opcode.is_last_block": 477,
+                        "__main__.run_blake_compress_opcode.offset0": 481,
+                        "__main__.run_blake_compress_opcode.offset1": 482,
+                        "__main__.run_blake_compress_opcode.offset2": 483,
+                        "__main__.run_blake_compress_opcode.op0": 479,
+                        "__main__.run_blake_compress_opcode.op1": 480,
+                        "__main__.run_blake_compress_opcode.vm_output": 505
                     }
                 },
                 "hints": [],
@@ -55112,7 +55112,7 @@
             "1331": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -55135,7 +55135,7 @@
             "1332": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.run_blake2s_opcode"
+                    "__main__.run_blake_compress_opcode"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -56495,13 +56495,13 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode": {
+        "__main__.run_blake_compress_opcode": {
             "decorators": [],
             "pc": 1319,
             "type": "function"
         },
-        "__main__.run_blake2s_opcode.Args": {
-            "full_name": "__main__.run_blake2s_opcode.Args",
+        "__main__.run_blake_compress_opcode.Args": {
+            "full_name": "__main__.run_blake_compress_opcode.Args",
             "members": {
                 "dst": {
                     "cairo_type": "felt",
@@ -56523,23 +56523,23 @@
             "size": 4,
             "type": "struct"
         },
-        "__main__.run_blake2s_opcode.ImplicitArgs": {
-            "full_name": "__main__.run_blake2s_opcode.ImplicitArgs",
+        "__main__.run_blake_compress_opcode.ImplicitArgs": {
+            "full_name": "__main__.run_blake_compress_opcode.ImplicitArgs",
             "members": {},
             "size": 0,
             "type": "struct"
         },
-        "__main__.run_blake2s_opcode.Return": {
+        "__main__.run_blake_compress_opcode.Return": {
             "cairo_type": "felt*",
             "type": "type_definition"
         },
-        "__main__.run_blake2s_opcode.SIZEOF_LOCALS": {
+        "__main__.run_blake_compress_opcode.SIZEOF_LOCALS": {
             "type": "const",
             "value": 1
         },
-        "__main__.run_blake2s_opcode.blake2s_instruction_num": {
+        "__main__.run_blake_compress_opcode.blake2s_instruction_num": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.blake2s_instruction_num",
+            "full_name": "__main__.run_blake_compress_opcode.blake2s_instruction_num",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56552,9 +56552,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num": {
+        "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.blake2s_last_block_instruction_num",
+            "full_name": "__main__.run_blake_compress_opcode.blake2s_last_block_instruction_num",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56567,9 +56567,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num": {
+        "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.blake2s_last_block_opcode_extension_num",
+            "full_name": "__main__.run_blake_compress_opcode.blake2s_last_block_opcode_extension_num",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56582,9 +56582,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.blake2s_opcode_extension_num": {
+        "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.blake2s_opcode_extension_num",
+            "full_name": "__main__.run_blake_compress_opcode.blake_compress_opcode_extension_num",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56597,9 +56597,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.dst": {
+        "__main__.run_blake_compress_opcode.dst": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.dst",
+            "full_name": "__main__.run_blake_compress_opcode.dst",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56612,9 +56612,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_PC_update_jnz": {
+        "__main__.run_blake_compress_opcode.flag_PC_update_jnz": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_PC_update_jnz",
+            "full_name": "__main__.run_blake_compress_opcode.flag_PC_update_jnz",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56627,9 +56627,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_PC_update_jump": {
+        "__main__.run_blake_compress_opcode.flag_PC_update_jump": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_PC_update_jump",
+            "full_name": "__main__.run_blake_compress_opcode.flag_PC_update_jump",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56642,9 +56642,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_PC_update_jump_rel": {
+        "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_PC_update_jump_rel",
+            "full_name": "__main__.run_blake_compress_opcode.flag_PC_update_jump_rel",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56657,9 +56657,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_ap_update_add": {
+        "__main__.run_blake_compress_opcode.flag_ap_update_add": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_ap_update_add",
+            "full_name": "__main__.run_blake_compress_opcode.flag_ap_update_add",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56672,9 +56672,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_ap_update_add_1": {
+        "__main__.run_blake_compress_opcode.flag_ap_update_add_1": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_ap_update_add_1",
+            "full_name": "__main__.run_blake_compress_opcode.flag_ap_update_add_1",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56687,9 +56687,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_dst_base_fp": {
+        "__main__.run_blake_compress_opcode.flag_dst_base_fp": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_dst_base_fp",
+            "full_name": "__main__.run_blake_compress_opcode.flag_dst_base_fp",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56702,9 +56702,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_num": {
+        "__main__.run_blake_compress_opcode.flag_num": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_num",
+            "full_name": "__main__.run_blake_compress_opcode.flag_num",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56717,9 +56717,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_op0_base_fp": {
+        "__main__.run_blake_compress_opcode.flag_op0_base_fp": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_op0_base_fp",
+            "full_name": "__main__.run_blake_compress_opcode.flag_op0_base_fp",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56732,9 +56732,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_op1_base_ap": {
+        "__main__.run_blake_compress_opcode.flag_op1_base_ap": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_op1_base_ap",
+            "full_name": "__main__.run_blake_compress_opcode.flag_op1_base_ap",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56747,9 +56747,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_op1_base_fp": {
+        "__main__.run_blake_compress_opcode.flag_op1_base_fp": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_op1_base_fp",
+            "full_name": "__main__.run_blake_compress_opcode.flag_op1_base_fp",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56762,9 +56762,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_op1_imm": {
+        "__main__.run_blake_compress_opcode.flag_op1_imm": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_op1_imm",
+            "full_name": "__main__.run_blake_compress_opcode.flag_op1_imm",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56777,9 +56777,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_opcode_assert_eq": {
+        "__main__.run_blake_compress_opcode.flag_opcode_assert_eq": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_opcode_assert_eq",
+            "full_name": "__main__.run_blake_compress_opcode.flag_opcode_assert_eq",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56792,9 +56792,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_opcode_call": {
+        "__main__.run_blake_compress_opcode.flag_opcode_call": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_opcode_call",
+            "full_name": "__main__.run_blake_compress_opcode.flag_opcode_call",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56807,9 +56807,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_opcode_ret": {
+        "__main__.run_blake_compress_opcode.flag_opcode_ret": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_opcode_ret",
+            "full_name": "__main__.run_blake_compress_opcode.flag_opcode_ret",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56822,9 +56822,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_res_add": {
+        "__main__.run_blake_compress_opcode.flag_res_add": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_res_add",
+            "full_name": "__main__.run_blake_compress_opcode.flag_res_add",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56837,9 +56837,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.flag_res_mul": {
+        "__main__.run_blake_compress_opcode.flag_res_mul": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.flag_res_mul",
+            "full_name": "__main__.run_blake_compress_opcode.flag_res_mul",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56852,9 +56852,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.is_last_block": {
+        "__main__.run_blake_compress_opcode.is_last_block": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.is_last_block",
+            "full_name": "__main__.run_blake_compress_opcode.is_last_block",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56867,13 +56867,13 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.last_block": {
+        "__main__.run_blake_compress_opcode.last_block": {
             "pc": 1330,
             "type": "label"
         },
-        "__main__.run_blake2s_opcode.offset0": {
+        "__main__.run_blake_compress_opcode.offset0": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.offset0",
+            "full_name": "__main__.run_blake_compress_opcode.offset0",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56886,9 +56886,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.offset1": {
+        "__main__.run_blake_compress_opcode.offset1": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.offset1",
+            "full_name": "__main__.run_blake_compress_opcode.offset1",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56901,9 +56901,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.offset2": {
+        "__main__.run_blake_compress_opcode.offset2": {
             "cairo_type": "felt",
-            "full_name": "__main__.run_blake2s_opcode.offset2",
+            "full_name": "__main__.run_blake_compress_opcode.offset2",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56916,9 +56916,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.op0": {
+        "__main__.run_blake_compress_opcode.op0": {
             "cairo_type": "felt*",
-            "full_name": "__main__.run_blake2s_opcode.op0",
+            "full_name": "__main__.run_blake_compress_opcode.op0",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56931,9 +56931,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.op1": {
+        "__main__.run_blake_compress_opcode.op1": {
             "cairo_type": "felt*",
-            "full_name": "__main__.run_blake2s_opcode.op1",
+            "full_name": "__main__.run_blake_compress_opcode.op1",
             "references": [
                 {
                     "ap_tracking_data": {
@@ -56946,9 +56946,9 @@
             ],
             "type": "reference"
         },
-        "__main__.run_blake2s_opcode.vm_output": {
+        "__main__.run_blake_compress_opcode.vm_output": {
             "cairo_type": "felt*",
-            "full_name": "__main__.run_blake2s_opcode.vm_output",
+            "full_name": "__main__.run_blake_compress_opcode.vm_output",
             "references": [
                 {
                     "ap_tracking_data": {
