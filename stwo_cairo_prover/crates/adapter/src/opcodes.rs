@@ -40,8 +40,8 @@ pub struct CasmStatesByOpcode {
     pub mul_opcode_small: Vec<CasmState>,
     pub mul_opcode: Vec<CasmState>,
     pub ret_opcode: Vec<CasmState>,
-    pub blake2s_opcode: Vec<CasmState>,
-    pub qm31_add_mul_opcode: Vec<CasmState>,
+    pub blake_compress_opcode: Vec<CasmState>,
+    pub qm_31_add_mul_opcode: Vec<CasmState>,
 }
 
 impl CasmStatesByOpcode {
@@ -81,10 +81,13 @@ impl CasmStatesByOpcode {
             ("mul_opcode_small".to_string(), self.mul_opcode_small.len()),
             ("mul_opcode".to_string(), self.mul_opcode.len()),
             ("ret_opcode".to_string(), self.ret_opcode.len()),
-            ("blake2s_opcode".to_string(), self.blake2s_opcode.len()),
             (
-                "qm31_add_mul_opcode".to_string(),
-                self.qm31_add_mul_opcode.len(),
+                "blake_compress_opcode".to_string(),
+                self.blake_compress_opcode.len(),
+            ),
+            (
+                "qm_31_add_mul_opcode".to_string(),
+                self.qm_31_add_mul_opcode.len(),
             ),
         ]
     }
@@ -539,7 +542,7 @@ impl StateTransitions {
                     op_1_base_fp ^ op_1_base_ap,
                     "Blake opcode requires exactly one of op_1_base_fp and op_1_base_ap to be true"
                 );
-                self.casm_states_by_opcode.blake2s_opcode.push(state);
+                self.casm_states_by_opcode.blake_compress_opcode.push(state);
             }
 
             // QM31 add mul.
@@ -568,17 +571,17 @@ impl StateTransitions {
                 assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
-                    "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                    "qm_31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
                 );
                 assert!(
                     res_add ^ res_mul,
-                    "qm31_add_mul opcode requires exactly one of res_add, res_mul must be true"
+                    "qm_31_add_mul opcode requires exactly one of res_add, res_mul must be true"
                 );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
-                    "qm31_add_mul opcode requires that if op_1_imm is true, offset2 must be 1"
+                    "qm_31_add_mul opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
-                self.casm_states_by_opcode.qm31_add_mul_opcode.push(state);
+                self.casm_states_by_opcode.qm_31_add_mul_opcode.push(state);
             }
 
             // generic opcode.
@@ -992,16 +995,19 @@ mod mappings_tests {
 
         matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
         assert_eq!(
-            state_transitions.casm_states_by_opcode.blake2s_opcode.len(),
+            state_transitions
+                .casm_states_by_opcode
+                .blake_compress_opcode
+                .len(),
             1
         );
     }
 
     #[test]
-    fn test_qm31_add_mul_opcode() {
-        let encoded_qm31_add_mul_inst =
+    fn test_qm_31_add_mul_opcode() {
+        let encoded_qm_31_add_mul_inst =
             0b11100000001001010011111111111110101111111111111001000000000000000;
-        let x = u128_to_4_limbs(encoded_qm31_add_mul_inst);
+        let x = u128_to_4_limbs(encoded_qm_31_add_mul_inst);
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
@@ -1014,7 +1020,7 @@ mod mappings_tests {
         assert_eq!(
             state_transitions
                 .casm_states_by_opcode
-                .qm31_add_mul_opcode
+                .qm_31_add_mul_opcode
                 .len(),
             1
         );
@@ -1023,9 +1029,9 @@ mod mappings_tests {
     #[test]
     fn test_casm_state_from_relocator() {
         let relocator = create_test_relocator();
-        let encoded_qm31_add_mul_inst =
+        let encoded_qm_31_add_mul_inst =
             0b11100000001001010011111111111110101111111111111001000000000000000;
-        let x = u128_to_4_limbs(encoded_qm31_add_mul_inst);
+        let x = u128_to_4_limbs(encoded_qm_31_add_mul_inst);
 
         let memory_value = MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]);
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
@@ -1040,7 +1046,7 @@ mod mappings_tests {
             &mut memory_builder,
         );
         assert_eq!(
-            state_transitions.casm_states_by_opcode.qm31_add_mul_opcode,
+            state_transitions.casm_states_by_opcode.qm_31_add_mul_opcode,
             vec![casm_state!(1, 5, 5), casm_state!(5, 6, 6)]
         );
         assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
