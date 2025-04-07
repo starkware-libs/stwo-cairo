@@ -89,6 +89,18 @@ pub fn split_f252(x: [u32; 8]) -> [M31; memory_id_to_big::N_M31_IN_FELT252] {
     (*m31_segments.span().try_into().unwrap()).unbox()
 }
 
+/// Constructs a `felt252` from 8 u32 limbs.
+/// Doesn't check for overflow, i.e, the result is in fact a u256 modulo p252.
+pub fn reconstitute_f252(x: [u32; 8]) -> felt252 {
+    let x = x.span();
+    let mut res: felt252 = 0;
+    for i in 0..8_usize {
+        let limb: felt252 = (*x[7 - i]).into();
+        res = res * 0x100000000 + limb;
+    }
+    res
+}
+
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
