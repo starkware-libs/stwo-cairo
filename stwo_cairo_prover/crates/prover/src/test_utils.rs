@@ -21,7 +21,7 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
     // TODO(Stav): change to proof_mode = False and dissable trace padding = True after solving the
     // pa issue.
     let mut cairo_runner =
-        CairoRunner::new(&program, LayoutName::all_cairo, None, true, true, true).expect("Fail");
+        CairoRunner::new(&program, LayoutName::all_cairo, None, true, true, false).expect("Fail");
     let end = cairo_runner
         .initialize(true)
         .expect("Initialization failed");

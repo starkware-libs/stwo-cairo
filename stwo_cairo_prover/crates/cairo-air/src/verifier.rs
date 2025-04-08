@@ -177,7 +177,8 @@ fn verify_public_input(claim: &CairoClaim) {
 
     verify_program(program);
 
-    // TODO(alonf): soundness issue, assert hat final_pc is 5 once fixed in adapter.
+    // TODO(alonf): soundness issue, assert that final_pc is 5 once fixed in adapter.
+    assert_eq!(_final_pc.0, 5);
     assert_eq!(initial_pc.0, 1);
     assert!(initial_ap <= final_ap);
 }
