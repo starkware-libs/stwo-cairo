@@ -89,6 +89,21 @@ pub fn split_f252(x: [u32; 8]) -> [M31; memory_id_to_big::N_M31_IN_FELT252] {
     (*m31_segments.span().try_into().unwrap()).unbox()
 }
 
+/// Constructs a `felt252` from 8 u32 little-endian limbs.
+/// Doesn't check for overflow, i.e, the result is in fact a u256 modulo p252.
+pub fn construct_f252(x: Box<[u32; 8]>) -> felt252 {
+    let [l0, l1, l2, l3, l4, l5, l6, l7] = x.unbox();
+    let offset = 0x100000000;
+    let result: felt252 = l7.into();
+    let result = result * offset + l6.into();
+    let result = result * offset + l5.into();
+    let result = result * offset + l4.into();
+    let result = result * offset + l3.into();
+    let result = result * offset + l2.into();
+    let result = result * offset + l1.into();
+    result * offset + l0.into()
+}
+
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
@@ -135,4 +150,18 @@ fn split<
     }
 
     (*SpanTryIntoFixedArray::try_into(res.span()).unwrap()).unbox()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::construct_f252;
+
+    #[test]
+    fn test_construct_felt() {
+        let felt_apart = [1_u32, 2, 3, 4, 5, 6, 7, 8];
+        assert_eq!(
+            construct_f252(BoxTrait::new(felt_apart)),
+            0x800000007000000060000000500000004000000030000000200000001,
+        );
+    }
 }
