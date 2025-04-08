@@ -1,9 +1,13 @@
+use std::fs::read_to_string;
+use std::path::Path;
+
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+use cairo_vm::vm::runners::cairo_runner::{CairoRunner, ProverInputInfo};
 use itertools::Itertools;
+use tracing::{span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::vm_import::VmImportError;
@@ -85,6 +89,12 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         .get_prover_input_info()
         .expect("Unable to get prover input info");
 
+    prover_input_info_to_prover_input(&mut prover_input_info)
+}
+
+pub fn prover_input_info_to_prover_input(
+    prover_input_info: &mut ProverInputInfo,
+) -> Result<ProverInput, VmImportError> {
     BuiltinSegments::pad_relocatble_builtin_segments(
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
@@ -111,7 +121,24 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         instruction_by_pc,
         memory: memory.build(),
         public_memory_addresses: relocator
-            .relocate_public_addresses(prover_input_info.public_memory_offsets),
+            .relocate_public_addresses(prover_input_info.public_memory_offsets.clone()),
         builtins_segments,
     })
+}
+
+pub fn prover_input_from_vm_output(
+    prover_input_info_path: &Path,
+) -> Result<ProverInput, VmImportError> {
+    let _span: span::EnteredSpan =
+        span!(Level::INFO, "adapt_prover_input_info_vm_output").entered();
+    let prover_input_info_json = read_to_string(prover_input_info_path).unwrap_or_else(|_| {
+        panic!(
+            "Unable to read prover input info at path {}",
+            prover_input_info_path.display()
+        )
+    });
+    let mut prover_input_info: ProverInputInfo =
+        serde_json::from_str(&prover_input_info_json).unwrap();
+
+    prover_input_info_to_prover_input(&mut prover_input_info)
 }
