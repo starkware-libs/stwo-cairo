@@ -11,7 +11,6 @@ cairo-air.workspace = true
 clap.workspace = true
 log.workspace = true
 serde.workspace = true
-serde_json.workspace = true
 starknet-ff.workspace = true
 stwo_cairo_prover.workspace = true
 stwo_cairo_utils.workspace = true
@@ -20,3 +19,4 @@ stwo-cairo-serialize.workspace = true
 stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+sonic-rs = { version = "0.3.17" }

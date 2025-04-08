@@ -4,12 +4,6 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-stwo-air-utils-derive.workspace = true
-stwo-air-utils.workspace = true
-bytemuck.workspace = true
-cairo-lang-casm.workspace = true
-cairo-vm.workspace = true
-hex.workspace = true
 itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
@@ -18,14 +12,12 @@ stwo-cairo-common.workspace = true
 stwo-cairo-adapter.workspace = true
 rayon = { version = "1.10.0" }
 serde.workspace = true
-serde_json.workspace = true
 starknet-curve = "0.5.1"
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
 thiserror.workspace = true
-tracing.workspace = true
 
 [dev-dependencies]
 rand.workspace = true

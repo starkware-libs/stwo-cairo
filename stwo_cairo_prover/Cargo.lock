@@ -10,7 +10,7 @@ dependencies = [
  "clap",
  "log",
  "serde",
- "serde_json",
+ "sonic-rs",
  "starknet-ff",
  "stwo-cairo-adapter",
  "stwo-cairo-serialize",
@@ -287,11 +287,12 @@ dependencies = [
 
 [[package]]
 name = "bincode"
-version = "2.0.0-rc.3"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f11ea1a0346b94ef188834a65c068a03aec181c94896d481d7a0a40d85b0ce95"
+checksum = "36eaf5d7b090263e8150820482d5d93cd964a81e4019913c972f4edcc6edb740"
 dependencies = [
  "serde",
+ "unty",
 ]
 
 [[package]]
@@ -391,28 +392,20 @@ checksum = "f61dac84819c6588b558454b194026eb1f09c293b9036ae9b159e74e73ab6cf9"
 name = "cairo-air"
 version = "0.1.1"
 dependencies = [
- "bytemuck",
- "cairo-lang-casm",
- "cairo-vm",
- "hex",
  "itertools 0.12.1",
  "num-traits",
  "paste",
  "rand",
  "rayon",
  "serde",
- "serde_json",
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
- "stwo-air-utils",
- "stwo-air-utils-derive",
  "stwo-cairo-adapter",
  "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-prover",
  "thiserror 2.0.11",
- "tracing",
 ]
 
 [[package]]
@@ -1871,9 +1864,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sonic-rs",
- "starknet-ff",
  "stwo-cairo-common",
- "stwo-cairo-serialize",
  "stwo-prover",
  "test-case",
  "thiserror 2.0.11",
@@ -1886,7 +1877,6 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
- "num-traits",
  "rand",
  "ruint",
  "serde",
@@ -1910,7 +1900,6 @@ dependencies = [
 name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
 dependencies = [
- "proc-macro2",
  "quote",
  "syn 2.0.98",
 ]
@@ -1941,7 +1930,6 @@ dependencies = [
 name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
- "bytemuck",
  "cairo-air",
  "cairo-lang-casm",
  "cairo-vm",
@@ -1963,7 +1951,6 @@ dependencies = [
  "stwo-cairo-serialize",
  "stwo-prover",
  "test-log",
- "thiserror 2.0.11",
  "tracing",
  "tracing-subscriber",
 ]
@@ -2270,6 +2257,12 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
+
+[[package]]
+name = "unty"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d49784317cd0d1ee7ec5c716dd598ec5b4483ea832a2dced265471cc0f690ae"
 
 [[package]]
 name = "utf8parse"
