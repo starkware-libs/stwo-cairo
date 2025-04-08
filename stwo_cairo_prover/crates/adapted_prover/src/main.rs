@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -165,11 +166,13 @@ where
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
     let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
-    let proof_file = create_file(&proof_path)?;
+    let mut proof_file = create_file(&proof_path)?;
 
+    let span = span!(Level::INFO, "Serialize proof").entered();
     match proof_format {
         ProofFormat::Json => {
-            serde_json::to_writer_pretty(proof_file, &proof)?;
+            let proof_str = sonic_rs::to_string_pretty(&proof).unwrap();
+            proof_file.write_all(proof_str.as_bytes()).unwrap();
         }
         ProofFormat::CairoSerde => {
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
@@ -183,7 +186,7 @@ where
             serde_json::to_writer_pretty(proof_file, &hex_strings)?;
         }
     }
-
+    span.exit();
     if verify {
         verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
         log::info!("Proof verified successfully");
