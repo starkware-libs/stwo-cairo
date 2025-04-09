@@ -1970,21 +1970,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "stwo_vm_runner"
-version = "0.1.0"
-dependencies = [
- "clap",
- "log",
- "num-traits",
- "serde_json",
- "stwo-cairo-adapter",
- "stwo_cairo_prover",
- "stwo_cairo_utils",
- "thiserror 2.0.11",
- "tracing",
-]
-
-[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
