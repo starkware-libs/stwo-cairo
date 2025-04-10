@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2025-01-02
+          toolchain: nightly-2025-04-06
       - uses: Swatinem/rust-cache@v2
       - name: Run tests
         run: cargo test --features="nightly"

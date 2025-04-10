@@ -1,4 +1,4 @@
-#![feature(portable_simd, trait_upcasting)]
+#![feature(portable_simd)]
 use serde::{Deserialize, Serialize};
 
 use crate::preprocessed::PreProcessedTrace;
