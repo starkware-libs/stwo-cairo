@@ -18,9 +18,10 @@ const BYTES_PER_HASH: usize = 32;
 
 // TODO: Stone uses a different initial state with the key set to 0.
 // Consider using this initial state instead.
-const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
+pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
     0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
 ];
+
 
 #[derive(Drop)]
 pub struct Blake2sChannel {
