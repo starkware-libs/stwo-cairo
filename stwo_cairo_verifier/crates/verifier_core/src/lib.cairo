@@ -29,3 +29,9 @@ pub type Hash = vcs::blake2s_hasher::Blake2sHash;
 
 #[cfg(feature: "poseidon252_verifier")]
 pub type Hash = felt252;
+
+// TODO: Stone uses a different initial state with the key set to 0.
+// Consider using this initial state instead.
+pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
+    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
+];
