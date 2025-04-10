@@ -1,8 +1,9 @@
 use core::array::ArrayTrait;
-use core::blake::blake2s_compress;
+use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use core::hash::HashStateTrait;
-use crate::fields::m31::{M31, M31Zero};
+use crate::utils::SpanExTrait;
+use crate::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
+use crate::fields::m31::M31Zero;
 use crate::vcs::hasher::MerkleHasher;
 use crate::BaseField;
 
@@ -17,26 +18,52 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
-        let mut state = BoxImpl::new([0, 0, 0, 0, 0, 0, 0, 0]);
-        let mut hash_array: Array<felt252> = Default::default();
+        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+
+        // No column values.
+        if column_values.is_empty() {
+            let (msg, byte_count) = match children_hashes {
+                Some((
+                    x, y,
+                )) => {
+                    let [x0, x1, x2, x3, x4, x5, x6, x7] = x.hash.unbox();
+                    let [y0, y1, y2, y3, y4, y5, y6, y7] = y.hash.unbox();
+                    (
+                        BoxImpl::new(
+                            [x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, y6, y7],
+                        ),
+                        64,
+                    )
+                },
+                None => (BoxImpl::new([0; 16]), 0_u32),
+            };
+            return Blake2sHash { hash: blake2s_finalize(:state, byte_count: byte_count, :msg) };
+        }
+
+        let mut byte_count = 0_u32;
         if let Some((x, y)) = children_hashes {
             let [x0, x1, x2, x3, x4, x5, x6, x7] = x.hash.unbox();
             let [y0, y1, y2, y3, y4, y5, y6, y7] = y.hash.unbox();
             let msg = BoxImpl::new(
                 [x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, y6, y7],
             );
-            state = blake2s_compress(:state, byte_count: 0, :msg);
-
-            // Most often a node has no column values.
-            if column_values.len() == 0 {
-                return Blake2sHash { hash: state };
-            }
-        } else { // TODO(andrew): Consider handling single column case (used lots due to FRI).
+            byte_count = 64;
+            state = blake2s_compress(:state, byte_count: byte_count, :msg);
         }
 
         // This loop doesn't handle padding.
         // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
         // functionality here to do all packing and hashing in a single pass.
+        // TODO(andrew): Consider handling single column case (used lots due to FRI).
+        let rem = column_values.len() % M31_ELEMENETS_IN_MSG;
+        let last_block_length = match rem {
+            0 => M31_ELEMENETS_IN_MSG,
+            _ => rem,
+        };
+
+        let (mut column_values, last_block) = column_values
+            .split_at(column_values.len() - last_block_length);
+
         while let Some(values) = column_values.multi_pop_front::<M31_ELEMENETS_IN_MSG>() {
             let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
                 .unbox();
@@ -47,25 +74,22 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                     v14.into(), v15.into(),
                 ],
             );
-            // TODO: Determine if byte_count=0 and unfinalized hashes for the leaves is ok.
-            state = blake2s_compress(:state, byte_count: 0, :msg);
+            byte_count += 64;
+            state = blake2s_compress(:state, byte_count: byte_count, :msg);
         }
 
         // Padding last column_values with zeros.
-        if !column_values.is_empty() {
-            let mut padded_column_values = array![];
-
-            for v in column_values {
-                padded_column_values.append((*v).into());
-            }
-
-            for _ in column_values.len()..M31_ELEMENETS_IN_MSG {
-                padded_column_values.append(0);
-            }
-
-            let msg = *padded_column_values.span().try_into().unwrap();
-            state = blake2s_compress(:state, byte_count: 0, :msg);
+        let mut padded_column_values = array![];
+        for value in last_block {
+            padded_column_values.append((*value).into());
         }
+        for _ in 0..M31_ELEMENETS_IN_MSG - last_block_length {
+            padded_column_values.append(0);
+        }
+
+        byte_count += last_block_length * 4;
+        let msg = *padded_column_values.span().try_into().unwrap();
+        state = blake2s_finalize(:state, byte_count: byte_count, :msg);
 
         Blake2sHash { hash: state }
     }
@@ -123,8 +147,8 @@ mod tests {
         assert_eq!(
             Blake2sMerkleHasher::hash_node(None, array![m31(0), m31(1)].span()).hash.unbox(),
             [
-                3326510057, 2699391079, 499129371, 1615300198, 152557944, 2105250166, 920231055,
-                3607089427,
+                3950351958, 4278888560, 2450494307, 4106812851, 2998960590, 1139581150, 933467563,
+                4130483740,
             ],
         );
     }
@@ -134,8 +158,8 @@ mod tests {
         let l_node = Blake2sHash {
             hash: BoxImpl::new(
                 [
-                    3326510057, 2699391079, 499129371, 1615300198, 152557944, 2105250166, 920231055,
-                    3607089427,
+                    3950351958, 4278888560, 2450494307, 4106812851, 2998960590, 1139581150,
+                    933467563, 4130483740,
                 ],
             ),
         };
@@ -152,8 +176,8 @@ mod tests {
                 .hash
                 .unbox(),
             [
-                4291656322, 3451476936, 1663868538, 3400868049, 1858355141, 3484943437, 3592219053,
-                2464289423,
+                3432458808, 4283433860, 761879229, 2715090978, 2102167318, 1865479142, 1634176718,
+                817874949,
             ],
         );
     }
@@ -163,8 +187,8 @@ mod tests {
         let l_node = Blake2sHash {
             hash: BoxImpl::new(
                 [
-                    3326510057, 2699391079, 499129371, 1615300198, 152557944, 2105250166, 920231055,
-                    3607089427,
+                    3950351958, 4278888560, 2450494307, 4106812851, 2998960590, 1139581150,
+                    933467563, 4130483740,
                 ],
             ),
         };
@@ -203,8 +227,8 @@ mod tests {
         assert_eq!(
             Blake2sMerkleHasher::hash_node(Some((l_node, r_node)), values.span()).hash.unbox(),
             [
-                1386089130, 164151351, 3113069523, 2362825950, 1134782659, 2525373360, 1754076912,
-                4040834212,
+                1822702744, 914685986, 3195420188, 541197842, 3984139296, 2532724566, 4128774187,
+                3849664352,
             ],
         );
     }
