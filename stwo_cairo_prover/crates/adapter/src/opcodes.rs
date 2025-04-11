@@ -17,7 +17,7 @@ const SMALL_ADD_MIN_VALUE: i32 = -(2_i32.pow(27));
 const SMALL_MUL_MAX_VALUE: u64 = 2_u64.pow(36) - 1;
 const SMALL_MUL_MIN_VALUE: u64 = 0;
 
-// TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
+// TODO (Stav): Ensure it stays synced with that opcode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
 /// and should match the opcode's air used by `stwo-cairo-air`.
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]

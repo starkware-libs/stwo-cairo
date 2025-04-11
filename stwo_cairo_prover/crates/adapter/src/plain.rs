@@ -95,7 +95,7 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
 pub fn prover_input_info_to_prover_input(
     prover_input_info: &mut ProverInputInfo,
 ) -> Result<ProverInput, VmImportError> {
-    BuiltinSegments::pad_relocatble_builtin_segments(
+    BuiltinSegments::pad_relocatable_builtin_segments(
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
     );

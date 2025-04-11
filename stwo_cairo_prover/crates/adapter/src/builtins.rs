@@ -218,14 +218,14 @@ impl BuiltinSegments {
         }
     }
 
-    pub fn pad_relocatble_builtin_segments(
+    pub fn pad_relocatable_builtin_segments(
         relocatable_memory: &mut [Vec<Option<MaybeRelocatable>>],
         builtins_segments: BTreeMap<usize, BuiltinName>,
     ) {
         for (segment_index, builtin_name) in builtins_segments {
-            let current_buitlin_segment = &mut relocatable_memory[segment_index];
+            let current_builtin_segment = &mut relocatable_memory[segment_index];
 
-            let original_segment_len = current_buitlin_segment.len();
+            let original_segment_len = current_builtin_segment.len();
 
             if original_segment_len == 0 {
                 // Do not pad empty segments.
@@ -256,13 +256,13 @@ impl BuiltinSegments {
                 .next_power_of_two()
                 .max(MIN_SEGMENT_SIZE)
                 * cells_per_instance;
-            current_buitlin_segment.resize(new_segment_size, None);
+            current_builtin_segment.resize(new_segment_size, None);
 
             // Fill the segment extension with copies of the last instance.
             let last_instance_start = original_segment_len - cells_per_instance;
             for i in original_segment_len..new_segment_size {
-                current_buitlin_segment[i] =
-                    current_buitlin_segment[last_instance_start + (i % cells_per_instance)].clone();
+                current_builtin_segment[i] =
+                    current_builtin_segment[last_instance_start + (i % cells_per_instance)].clone();
             }
         }
     }
@@ -604,7 +604,7 @@ mod test_builtin_segments {
     }
 
     #[test]
-    fn test_pad_relocatble_builtin_segments() {
+    fn test_pad_relocatable_builtin_segments() {
         let bitwise_instance = [787, 365, 257, 895, 638, 55, 102, 3, 4, 7];
         let segment0 = bitwise_instance
             .iter()
@@ -630,7 +630,7 @@ mod test_builtin_segments {
         let builtins_segments =
             BTreeMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::ec_op)]);
 
-        BuiltinSegments::pad_relocatble_builtin_segments(
+        BuiltinSegments::pad_relocatable_builtin_segments(
             &mut relocatable_memory,
             builtins_segments,
         );

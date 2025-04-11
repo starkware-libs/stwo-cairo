@@ -85,9 +85,8 @@ impl ClaimGenerator {
     }
 
     pub fn deduce_output(&self, input: PackedBaseField) -> PackedBaseField {
-        let indices = input.to_array().map(|i| i.0);
-        let memory_ids = std::array::from_fn(|j| self.get_id(M31(indices[j])));
-        PackedBaseField::from_array(memory_ids)
+        let ids = input.to_array().map(|i| self.get_id(i));
+        PackedBaseField::from_array(ids)
     }
 
     pub fn get_id(&self, input: BaseField) -> M31 {
