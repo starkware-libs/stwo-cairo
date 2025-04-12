@@ -1,6 +1,6 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::m31::{M31, M31Impl, m31};
+use super::m31::{M31, M31Impl, M31InnerT, m31};
 use super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
@@ -86,7 +86,7 @@ pub impl CM31MulAssign of MulAssign<CM31, CM31> {
 
 pub impl CM31Zero of Zero<CM31> {
     fn zero() -> CM31 {
-        cm31(0, 0)
+        cm31_const::<0, 0>()
     }
 
     fn is_zero(self: @CM31) -> bool {
@@ -100,7 +100,7 @@ pub impl CM31Zero of Zero<CM31> {
 
 pub impl CM31One of One<CM31> {
     fn one() -> CM31 {
-        cm31(1, 0)
+        cm31_const::<1, 0>()
     }
     fn is_one(self: @CM31) -> bool {
         (*self).a.is_one() && (*self).b.is_zero()
@@ -137,30 +137,29 @@ impl DisplayCM31 of core::fmt::Display<CM31> {
 }
 
 #[inline]
-pub fn cm31(a: u32, b: u32) -> CM31 {
-    CM31 { a: m31(a), b: m31(b) }
+pub fn cm31_const<const W0: M31InnerT, const W1: M31InnerT>() -> CM31 nopanic {
+    CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } }
 }
-
 
 #[cfg(test)]
 mod tests {
-    use super::cm31;
-    use super::super::m31::{P_U32 as P, m31};
+    use super::cm31_const;
+    use super::super::m31::m31;
 
     #[test]
     fn test_cm31() {
-        let cm0 = cm31(1, 2);
-        let cm1 = cm31(4, 5);
+        let cm0 = cm31_const::<1, 2>();
+        let cm1 = cm31_const::<4, 5>();
         let m = m31(8);
-        let cm = cm31(8, 0);
-        let cm0_x_cm1 = cm31(P - 6, 13);
+        let cm = cm31_const::<8, 0>();
+        let cm0_x_cm1 = cm31_const::<0x7ffffff9, 13>();
 
-        assert_eq!(cm0 + cm1, cm31(5, 7));
+        assert_eq!(cm0 + cm1, cm31_const::<5, 7>());
         assert_eq!(cm1 + m.into(), cm1 + cm);
         assert_eq!(cm0 * cm1, cm0_x_cm1);
         assert_eq!(cm1 * m.into(), cm1 * cm);
-        assert_eq!(-cm0, cm31(P - 1, P - 2));
-        assert_eq!(cm0 - cm1, cm31(P - 3, P - 3));
+        assert_eq!(-cm0, cm31_const::<0x7ffffffe, 0x7ffffffd>());
+        assert_eq!(cm0 - cm1, cm31_const::<0x7ffffffc, 0x7ffffffc>());
         assert_eq!(cm1 - m.into(), cm1 - cm);
     }
 }
