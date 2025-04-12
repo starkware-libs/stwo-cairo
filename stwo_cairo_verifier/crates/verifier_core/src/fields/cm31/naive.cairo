@@ -125,12 +125,6 @@ pub impl CM31Neg of Neg<CM31> {
     }
 }
 
-impl CM31PartialOrd of PartialOrd<CM31> {
-    fn lt(lhs: CM31, rhs: CM31) -> bool {
-        lhs.a < rhs.a || (lhs.a == rhs.a && lhs.b < rhs.b)
-    }
-}
-
 #[inline]
 pub fn cm31_const<const W0: M31InnerT, const W1: M31InnerT>() -> CM31 nopanic {
     CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } }

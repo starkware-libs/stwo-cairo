@@ -2,8 +2,15 @@ use bounded_int::upcast;
 use super::cm31::CM31;
 use super::m31::{M31, M31InnerT, UnreducedM31};
 
+#[cfg(not(feature: "qm31_opcode"))]
 mod naive;
+#[cfg(not(feature: "qm31_opcode"))]
 use naive::*;
+
+#[cfg(feature: "qm31_opcode")]
+mod opcode;
+#[cfg(feature: "qm31_opcode")]
+use opcode::*;
 
 /// Equals `(2^31 - 1)^4`.
 pub const P4: u128 = 0xFFFFFFF800000017FFFFFFE00000001;
@@ -34,6 +41,24 @@ pub trait QM31Trait {
     /// Returns the combined value, given the values of its composing base field polynomials at that
     /// point.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31;
+}
+
+pub impl QM31Serde of Serde<QM31> {
+    fn serialize(self: @QM31, ref output: Array<felt252>) {
+        let [a, b, c, d] = self.to_array();
+        output.append(a.into());
+        output.append(b.into());
+        output.append(c.into());
+        output.append(d.into());
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<QM31> {
+        let a: M31InnerT = Serde::deserialize(ref serialized)?;
+        let b: M31InnerT = Serde::deserialize(ref serialized)?;
+        let c: M31InnerT = Serde::deserialize(ref serialized)?;
+        let d: M31InnerT = Serde::deserialize(ref serialized)?;
+        Some(QM31Trait::from_array([a, b, c, d]))
+    }
 }
 
 trait UnreducedQM31Trait {

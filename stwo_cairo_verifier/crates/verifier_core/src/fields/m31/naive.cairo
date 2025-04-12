@@ -1,14 +1,9 @@
 //! Software only implementation of M31 field (i.e no QM31 opcode).
 use bounded_int::{AddHelper, BoundedInt, SubHelper, upcast};
-use core::num::traits::WideMul;
+use core::num::traits::{WideMul, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::{BatchInvertible, Invertible};
-use super::{ConstValue, M31InnerT, M31Trait, M31_P, M31_SHIFT, P, P_U32};
-
-#[derive(Copy, Drop, Debug, PartialEq, Serde)]
-pub struct M31 {
-    pub inner: M31InnerT,
-}
+use super::{ConstValue, M31, M31InnerT, M31Trait, M31_P, P};
 
 pub impl M31InvertibleImpl of Invertible<M31> {
     fn inverse(self: M31) -> M31 {
@@ -81,88 +76,11 @@ pub impl M31MulAssign of MulAssign<M31, M31> {
     }
 }
 
-pub impl M31Zero of core::num::traits::Zero<M31> {
-    #[inline]
-    fn zero() -> M31 {
-        M31 { inner: 0 }
-    }
-
-    fn is_zero(self: @M31) -> bool {
-        *self.inner == 0
-    }
-
-    fn is_non_zero(self: @M31) -> bool {
-        *self.inner != 0
-    }
-}
-
-pub impl M31One of core::num::traits::One<M31> {
-    #[inline]
-    fn one() -> M31 {
-        M31 { inner: 1 }
-    }
-
-    fn is_one(self: @M31) -> bool {
-        *self.inner == 1
-    }
-
-    fn is_non_one(self: @M31) -> bool {
-        *self.inner != 1
-    }
-}
-
 pub impl M31Neg of Neg<M31> {
     #[inline]
     fn neg(a: M31) -> M31 {
         M31 { inner: 0 } - a
     }
-}
-
-impl M31IntoU32 of Into<M31, u32> {
-    #[inline]
-    fn into(self: M31) -> u32 {
-        upcast(self.inner)
-    }
-}
-
-impl M31IntoFelt252 of Into<M31, felt252> {
-    #[inline]
-    fn into(self: M31) -> felt252 {
-        self.inner.into()
-    }
-}
-
-impl U32TryIntoM31 of TryInto<u32, M31> {
-    #[inline]
-    fn try_into(self: u32) -> Option<M31> {
-        if self >= P_U32 {
-            return None;
-        }
-
-        Some(M31Trait::reduce_u32(self).into())
-    }
-}
-
-pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
-    #[inline]
-    fn into(self: M31InnerT) -> M31 {
-        M31 { inner: self }
-    }
-}
-
-impl M31PartialOrd of PartialOrd<M31> {
-    fn ge(lhs: M31, rhs: M31) -> bool {
-        upcast::<_, u32>(lhs.inner) >= upcast(rhs.inner)
-    }
-
-    fn lt(lhs: M31, rhs: M31) -> bool {
-        upcast::<_, u32>(lhs.inner) < upcast(rhs.inner)
-    }
-}
-
-#[inline]
-pub fn m31(val: u32) -> M31 {
-    M31Trait::reduce_u32(val).into()
 }
 
 #[derive(Copy, Drop, Debug)]
