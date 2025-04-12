@@ -691,7 +691,7 @@ pub enum FriVerificationError {
 mod test {
     use crate::channel::{Channel, ChannelTrait};
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
-    use crate::fields::qm31::qm31;
+    use crate::fields::qm31::qm31_const;
     use crate::poly::circle::CircleEvaluationImpl;
     use crate::poly::line::LineDomainImpl;
     use crate::queries::{Queries, QueriesImpl};
@@ -708,7 +708,7 @@ mod test {
         let column_log_size = column_log_bound + config.log_blowup_factor;
         let column_log_bounds = array![column_log_bound].span();
         let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
-        let query_evals = array![array![qm31(1242514872, 0, 0, 0)].span()];
+        let query_evals = array![array![qm31_const::<1242514872, 0, 0, 0>()].span()];
         let mut proof_data = array![
             1,
             1381744584,
@@ -778,7 +778,7 @@ mod test {
         let column_log_size = column_log_bound + config.log_blowup_factor;
         let column_log_bounds = array![column_log_bound].span();
         let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
-        let query_evals = array![array![qm31(1059056252, 0, 0, 0)].span()];
+        let query_evals = array![array![qm31_const::<1059056252, 0, 0, 0>()].span()];
         let mut proof_data = array![
             1,
             520313910,
@@ -843,9 +843,9 @@ mod test {
             positions: array![7, 70].span(), log_domain_size: max_column_log_size,
         };
         let query_evals_by_column = array![
-            array![qm31(1086480365, 0, 0, 0), qm31(1641851833, 0, 0, 0)].span(),
-            array![qm31(455377974, 0, 0, 0), qm31(734901538, 0, 0, 0)].span(),
-            array![qm31(127986842, 0, 0, 0), qm31(1809783851, 0, 0, 0)].span(),
+            array![qm31_const::<1086480365, 0, 0, 0>(), qm31_const::<1641851833, 0, 0, 0>()].span(),
+            array![qm31_const::<455377974, 0, 0, 0>(), qm31_const::<734901538, 0, 0, 0>()].span(),
+            array![qm31_const::<127986842, 0, 0, 0>(), qm31_const::<1809783851, 0, 0, 0>()].span(),
         ];
         let mut proof_data = array![
             6,
@@ -986,11 +986,23 @@ mod test {
         };
         let column_log_bounds = array![6, 5, 4].span();
         let query_evals_by_column = array![
-            array![qm31(1622179054, 0, 0, 0), qm31(1104239013, 0, 0, 0), qm31(231172335, 0, 0, 0)]
+            array![
+                qm31_const::<1622179054, 0, 0, 0>(),
+                qm31_const::<1104239013, 0, 0, 0>(),
+                qm31_const::<231172335, 0, 0, 0>(),
+            ]
                 .span(),
-            array![qm31(962456622, 0, 0, 0), qm31(205390949, 0, 0, 0), qm31(1061027972, 0, 0, 0)]
+            array![
+                qm31_const::<962456622, 0, 0, 0>(),
+                qm31_const::<205390949, 0, 0, 0>(),
+                qm31_const::<1061027972, 0, 0, 0>(),
+            ]
                 .span(),
-            array![qm31(619773471, 0, 0, 0), qm31(465540164, 0, 0, 0), qm31(1073797249, 0, 0, 0)]
+            array![
+                qm31_const::<619773471, 0, 0, 0>(),
+                qm31_const::<465540164, 0, 0, 0>(),
+                qm31_const::<1073797249, 0, 0, 0>(),
+            ]
                 .span(),
         ];
         let mut proof_data = array![
@@ -1167,7 +1179,7 @@ mod test {
         let column_log_size = column_log_bound + config.log_blowup_factor;
         let column_log_bounds = array![column_log_bound].span();
         let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
-        let query_evals = array![array![qm31(511282811, 0, 0, 0)].span()];
+        let query_evals = array![array![qm31_const::<511282811, 0, 0, 0>()].span()];
         let mut proof_data = array![
             1,
             297706028,
@@ -1573,7 +1585,11 @@ mod test {
             positions: array![1, 7, 8].span(), log_domain_size: column_log_size,
         };
         let query_evals = array![
-            array![qm31(127986842, 0, 0, 0), qm31(1816542136, 0, 0, 0), qm31(18610701, 0, 0, 0)]
+            array![
+                qm31_const::<127986842, 0, 0, 0>(),
+                qm31_const::<1816542136, 0, 0, 0>(),
+                qm31_const::<18610701, 0, 0, 0>(),
+            ]
                 .span(),
         ];
         let mut proof_data = array![
@@ -1670,7 +1686,7 @@ mod test {
         let invalid_queries = Queries {
             positions: array![5].span(), log_domain_size: invalid_column_log_size,
         };
-        let query_evals = array![array![qm31(1059056252, 0, 0, 0)].span()];
+        let query_evals = array![array![qm31_const::<1059056252, 0, 0, 0>()].span()];
         let mut proof_data = array![
             1,
             520313910,

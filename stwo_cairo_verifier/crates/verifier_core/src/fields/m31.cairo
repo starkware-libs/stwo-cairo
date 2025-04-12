@@ -10,8 +10,7 @@ pub const P_U32: u32 = 0x7fffffff;
 /// Equals `2^31`.
 pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 
-
-type M31InnerT = BoundedInt<0, { P - 1 }>;
+pub type M31InnerT = BoundedInt<0, { P - 1 }>;
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct M31 {
