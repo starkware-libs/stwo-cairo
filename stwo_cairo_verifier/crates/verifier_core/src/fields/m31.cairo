@@ -1,7 +1,14 @@
 use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
 
+#[cfg(not(feature: "qm31_opcode"))]
 mod naive;
+#[cfg(not(feature: "qm31_opcode"))]
 use naive::*;
+
+#[cfg(feature: "qm31_opcode")]
+mod opcode;
+#[cfg(feature: "qm31_opcode")]
+use opcode::*;
 
 pub const P: felt252 = 0x7fffffff;
 
@@ -14,9 +21,14 @@ const M31_P: ConstValue<P> = 0x7fffffff;
 /// Equals `2^31`.
 pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 
-pub type M31InnerT = BoundedInt<0, { P - 1 }>;
+pub type M31InnerT = BoundedInt<0, 0x7ffffffe>;
 
 type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
+
+#[derive(Copy, Drop, Debug, PartialEq, Serde)]
+pub struct M31 {
+    pub inner: M31InnerT,
+}
 
 #[generate_trait]
 pub impl M31Impl of M31Trait {
@@ -36,6 +48,79 @@ pub impl M31Impl of M31Trait {
     fn reduce_u128(val: u128) -> M31InnerT {
         let (_, res) = div_rem(val, NZ_M31_P);
         upcast(res)
+    }
+}
+
+impl M31IntoU32 of Into<M31, u32> {
+    #[inline]
+    fn into(self: M31) -> u32 {
+        upcast(self.inner)
+    }
+}
+
+impl M31IntoFelt252 of Into<M31, felt252> {
+    #[inline]
+    fn into(self: M31) -> felt252 {
+        self.inner.into()
+    }
+}
+
+pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
+    #[inline]
+    fn into(self: M31InnerT) -> M31 {
+        M31 { inner: self }
+    }
+}
+
+impl U32TryIntoM31 of TryInto<u32, M31> {
+    /// Returns Some if value is in the range `[0, P)`, else returns None.
+    #[inline]
+    fn try_into(self: u32) -> Option<M31> {
+        if self >= P_U32 {
+            return None;
+        }
+
+        Some(M31Trait::reduce_u32(self).into())
+    }
+}
+
+impl M31PartialOrd of PartialOrd<M31> {
+    fn ge(lhs: M31, rhs: M31) -> bool {
+        upcast::<_, u32>(lhs.inner) >= upcast(rhs.inner)
+    }
+
+    fn lt(lhs: M31, rhs: M31) -> bool {
+        upcast::<_, u32>(lhs.inner) < upcast(rhs.inner)
+    }
+}
+
+pub impl M31Zero of core::num::traits::Zero<M31> {
+    #[inline]
+    fn zero() -> M31 {
+        M31 { inner: 0 }
+    }
+
+    fn is_zero(self: @M31) -> bool {
+        *self.inner == 0
+    }
+
+    fn is_non_zero(self: @M31) -> bool {
+        *self.inner != 0
+    }
+}
+
+pub impl M31One of core::num::traits::One<M31> {
+    #[inline]
+    fn one() -> M31 {
+        M31 { inner: 1 }
+    }
+
+    fn is_one(self: @M31) -> bool {
+        *self.inner == 1
+    }
+
+    fn is_non_one(self: @M31) -> bool {
+        *self.inner != 1
     }
 }
 
@@ -62,6 +147,11 @@ impl DisplayM31 of core::fmt::Display<M31> {
         let v: u32 = (*self).into();
         core::fmt::Display::fmt(@v, ref f)
     }
+}
+
+#[inline]
+pub fn m31(val: u32) -> M31 {
+    M31Trait::reduce_u32(val).into()
 }
 
 #[cfg(test)]
