@@ -3,7 +3,7 @@ use core::iter::{IntoIterator, Iterator};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
-use crate::fields::qm31::{QM31, QM31Impl};
+use crate::fields::qm31::{QM31, QM31Trait};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl};
