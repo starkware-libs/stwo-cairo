@@ -83,7 +83,7 @@ pub impl M31Mul of core::traits::Mul<M31> {
     #[inline]
     fn mul(lhs: M31, rhs: M31) -> M31 {
         let lhs_as_u32: u32 = upcast(lhs.inner);
-        M31Impl::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner)))
+        M31Trait::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner)))
     }
 }
 
@@ -167,7 +167,7 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
             return None;
         }
 
-        Some(M31Impl::reduce_u32(self))
+        Some(M31Trait::reduce_u32(self))
     }
 }
 
@@ -183,7 +183,7 @@ impl M31PartialOrd of PartialOrd<M31> {
 
 #[inline]
 pub fn m31(val: u32) -> M31 {
-    M31Impl::reduce_u32(val)
+    M31Trait::reduce_u32(val)
 }
 
 #[derive(Copy, Drop, Debug)]
