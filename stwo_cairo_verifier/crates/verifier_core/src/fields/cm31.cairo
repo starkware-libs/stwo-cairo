@@ -15,6 +15,15 @@ pub trait CM31Trait {
     fn pack(a: M31, b: M31) -> CM31;
 }
 
+impl DisplayCM31 of core::fmt::Display<CM31> {
+    fn fmt(self: @CM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        let (a, b) = (*self).unpack();
+        let a: u32 = a.into();
+        let b: u32 = b.into();
+        write!(f, "{} + {}i", @a, @b)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::cm31_const;
