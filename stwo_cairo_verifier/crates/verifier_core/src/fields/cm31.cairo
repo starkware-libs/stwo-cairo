@@ -143,8 +143,8 @@ pub fn cm31_const<const W0: M31InnerT, const W1: M31InnerT>() -> CM31 nopanic {
 
 #[cfg(test)]
 mod tests {
-    use super::super::m31::m31;
     use super::cm31_const;
+    use super::super::m31::m31;
 
     #[test]
     fn test_cm31() {

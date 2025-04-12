@@ -5,10 +5,10 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
+use crate::fields::Invertible;
 use crate::fields::cm31::CM31;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{P4, QM31, QM31Trait};
-use crate::fields::Invertible;
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].

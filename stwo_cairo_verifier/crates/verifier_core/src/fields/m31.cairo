@@ -35,21 +35,21 @@ pub impl M31BatchInvertibleImpl of BatchInvertible<M31> {}
 #[generate_trait]
 pub impl M31Impl of M31Trait {
     #[inline]
-    fn reduce_u32(val: u32) -> M31 {
+    fn reduce_u32(val: u32) -> M31InnerT {
         let (_, res) = div_rem(val, NZ_M31_P);
-        M31 { inner: upcast(res) }
+        upcast(res)
     }
 
     #[inline]
-    fn reduce_u64(val: u64) -> M31 {
+    fn reduce_u64(val: u64) -> M31InnerT {
         let (_, res) = div_rem(val, NZ_M31_P);
-        M31 { inner: upcast(res) }
+        upcast(res)
     }
 
     #[inline]
-    fn reduce_u128(val: u128) -> M31 {
+    fn reduce_u128(val: u128) -> M31InnerT {
         let (_, res) = div_rem(val, NZ_M31_P);
-        M31 { inner: upcast(res) }
+        upcast(res)
     }
 }
 
@@ -83,7 +83,7 @@ pub impl M31Mul of core::traits::Mul<M31> {
     #[inline]
     fn mul(lhs: M31, rhs: M31) -> M31 {
         let lhs_as_u32: u32 = upcast(lhs.inner);
-        M31Trait::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner)))
+        M31Trait::reduce_u64(lhs_as_u32.wide_mul(upcast(rhs.inner))).into()
     }
 }
 
@@ -167,7 +167,14 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
             return None;
         }
 
-        Some(M31Trait::reduce_u32(self))
+        Some(M31Trait::reduce_u32(self).into())
+    }
+}
+
+pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
+    #[inline]
+    fn into(self: M31InnerT) -> M31 {
+        M31 { inner: self }
     }
 }
 
@@ -183,7 +190,7 @@ impl M31PartialOrd of PartialOrd<M31> {
 
 #[inline]
 pub fn m31(val: u32) -> M31 {
-    M31Trait::reduce_u32(val)
+    M31Trait::reduce_u32(val).into()
 }
 
 #[derive(Copy, Drop, Debug)]
