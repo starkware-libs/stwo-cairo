@@ -445,15 +445,9 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
     fn log_sizes(self: @RangeChecksClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.rc_6.log_sizes(),
-                self.rc_11.log_sizes(),
-                self.rc_12.log_sizes(),
-                self.rc_18.log_sizes(),
-                self.rc_19.log_sizes(),
-                self.rc_3_6.log_sizes(),
-                self.rc_4_3.log_sizes(),
-                self.rc_9_9.log_sizes(),
-                self.rc_7_2_5.log_sizes(),
+                self.rc_6.log_sizes(), self.rc_11.log_sizes(), self.rc_12.log_sizes(),
+                self.rc_18.log_sizes(), self.rc_19.log_sizes(), self.rc_3_6.log_sizes(),
+                self.rc_4_3.log_sizes(), self.rc_9_9.log_sizes(), self.rc_7_2_5.log_sizes(),
                 self.rc_3_6_6_3.log_sizes(),
             ],
         )
@@ -526,12 +520,9 @@ impl CairoClaimImpl of CairoClaimTrait {
 
         let mut aggregated_log_sizes = utils::tree_array_concat_cols(
             array![
-                self.opcodes.log_sizes(),
-                self.verify_instruction.log_sizes(),
-                self.builtins.log_sizes(),
-                self.memory_address_to_id.log_sizes(),
-                self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(),
+                self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
+                self.builtins.log_sizes(), self.memory_address_to_id.log_sizes(),
+                self.memory_id_to_value.log_sizes(), self.range_checks.log_sizes(),
                 self.verify_bitwise_xor_9.log_sizes(),
             ],
         );

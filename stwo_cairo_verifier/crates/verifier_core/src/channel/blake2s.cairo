@@ -1,11 +1,11 @@
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use core::traits::DivRem;
+use crate::SecureField;
 use crate::fields::m31::{M31, m31};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::gen_bit_mask;
 use crate::vcs::blake2s_hasher::Blake2sHash;
-use crate::SecureField;
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
 /// Equals `2^31`.
@@ -184,38 +184,8 @@ mod tests {
         assert_eq!(
             result,
             array![
-                174,
-                9,
-                219,
-                124,
-                213,
-                79,
-                66,
-                180,
-                144,
-                239,
-                9,
-                182,
-                188,
-                84,
-                26,
-                246,
-                136,
-                228,
-                149,
-                155,
-                184,
-                197,
-                63,
-                53,
-                154,
-                111,
-                86,
-                227,
-                138,
-                180,
-                84,
-                163,
+                174, 9, 219, 124, 213, 79, 66, 180, 144, 239, 9, 182, 188, 84, 26, 246, 136, 228,
+                149, 155, 184, 197, 63, 53, 154, 111, 86, 227, 138, 180, 84, 163,
             ],
         );
     }

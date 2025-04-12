@@ -850,21 +850,9 @@ fn intermediates(
         trace_1_column_9_offset_0,
     );
     array![
-        intermediate0,
-        intermediate1,
-        intermediate2,
-        intermediate3,
-        intermediate4,
-        intermediate5,
-        intermediate6,
-        intermediate7,
-        intermediate8,
-        intermediate9,
-        intermediate10,
-        intermediate11,
-        intermediate12,
-        intermediate13,
-        intermediate14,
+        intermediate0, intermediate1, intermediate2, intermediate3, intermediate4, intermediate5,
+        intermediate6, intermediate7, intermediate8, intermediate9, intermediate10, intermediate11,
+        intermediate12, intermediate13, intermediate14,
     ]
 }
 
