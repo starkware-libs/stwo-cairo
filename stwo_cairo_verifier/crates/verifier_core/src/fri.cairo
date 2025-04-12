@@ -5,7 +5,7 @@ use core::num::traits::{CheckedSub, Zero};
 use crate::channel::{Channel, ChannelImpl};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
-use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
+use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
 use crate::poly::utils::ibutterfly;
