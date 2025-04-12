@@ -12,7 +12,7 @@ use super::{
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq, Serde)]
+#[derive(Copy, Drop, Debug, PartialEq)]
 pub struct QM31 {
     a: CM31,
     b: CM31,
@@ -52,7 +52,6 @@ pub impl QM31Impl of QM31Trait {
         }
     }
 
-    // TODO(andrew): When associated types are supported, support `Mul<QM31, CM31>`.
     #[inline]
     fn mul_cm31(self: QM31, rhs: CM31) -> QM31 {
         QM31 { a: self.a * rhs, b: self.b * rhs }
@@ -62,13 +61,11 @@ pub impl QM31Impl of QM31Trait {
         QM31 { a: self.a, b: -self.b }
     }
 
-    /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
     #[inline]
     fn fms(a: QM31, b: QM31, c: QM31) -> QM31 {
         (Self::mul_unreduced(a, b) - c.into()).reduce()
     }
 
-    /// Returns a fused multiply-add i.e. returns `a * b + c`.
     #[inline]
     fn fma(a: QM31, b: QM31, c: QM31) -> QM31 {
         (Self::mul_unreduced(a, b) + c.into()).reduce()
@@ -138,8 +135,6 @@ pub impl QM31Impl of QM31Trait {
         }
     }
 
-    /// Returns the combined value, given the values of its composing base field polynomials at that
-    /// point.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [e0, e1, e2, e3] = evals;
         e0
