@@ -1,7 +1,8 @@
 use core::iter::{IntoIterator, Iterator};
+use core::num::traits::Zero;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl};
 use crate::fields::m31::{M31, m31};
-use crate::fields::qm31::{QM31, QM31Impl, QM31Zero};
+use crate::fields::qm31::{QM31, QM31Impl};
 use crate::fields::{BaseField, SecureField};
 use crate::poly::utils::{butterfly, fold};
 use crate::utils::pow2;

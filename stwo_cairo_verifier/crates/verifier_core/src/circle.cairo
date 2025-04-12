@@ -1,6 +1,4 @@
-use core::num::traits::one::One;
-use core::num::traits::zero::Zero;
-use core::num::traits::{WrappingAdd, WrappingMul, WrappingSub};
+use core::num::traits::{One, WrappingAdd, WrappingMul, WrappingSub, Zero};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5, M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17,
@@ -9,7 +7,7 @@ use crate::circle_mul_table::{
 };
 use crate::fields::cm31::CM31;
 use crate::fields::m31::{M31, M31Impl};
-use crate::fields::qm31::{P4, QM31, QM31Impl, QM31One, QM31Trait};
+use crate::fields::qm31::{P4, QM31, QM31Impl, QM31Trait};
 use crate::fields::Invertible;
 use super::utils::pow2;
 
@@ -99,8 +97,8 @@ pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
         let t = self.draw_felt();
         let t_squared = t * t;
-        let t_squared_plus_1_inv = (t_squared + QM31One::one()).inverse();
-        let x = (QM31One::one() - t_squared) * t_squared_plus_1_inv;
+        let t_squared_plus_1_inv = (t_squared + One::one()).inverse();
+        let x = (One::one() - t_squared) * t_squared_plus_1_inv;
         let y = (t + t) * t_squared_plus_1_inv;
         CirclePoint { x, y }
     }
@@ -278,7 +276,6 @@ impl CirclePointIndexPartialEx of PartialEq<CirclePointIndex> {
 #[cfg(test)]
 mod tests {
     use crate::fields::m31::m31;
-    use crate::fields::qm31::QM31One;
     use super::{
         CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
         CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,

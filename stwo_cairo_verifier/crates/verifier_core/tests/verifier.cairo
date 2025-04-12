@@ -1,8 +1,9 @@
+use core::num::traits::{One, Zero};
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31One, QM31Zero};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -107,7 +108,7 @@ impl FibAirImpl<const N_COLUMNS: usize> of Air<FibAir<N_COLUMNS>> {
         random_coeff: QM31,
     ) -> QM31 {
         let base_trace_tree = *mask_values[1];
-        let mut constraint_acc = QM31Zero::zero();
+        let mut constraint_acc = Zero::zero();
 
         for i in 2..N_COLUMNS {
             let a_col = *base_trace_tree[i - 2];
