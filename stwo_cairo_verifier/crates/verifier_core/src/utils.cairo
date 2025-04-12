@@ -4,8 +4,8 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::{BitSize, WrappingMul, WrappingSub};
 use core::traits::{DivRem, PanicDestruct};
-use crate::fields::m31::M31_SHIFT;
 use crate::BaseField;
+use crate::fields::m31::M31_SHIFT;
 
 /// Returns `2^n`.
 #[inline(always)]

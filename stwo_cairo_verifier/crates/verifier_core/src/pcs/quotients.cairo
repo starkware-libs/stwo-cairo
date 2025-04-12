@@ -4,10 +4,10 @@ use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
+use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Impl};
 use crate::fields::m31::{M31, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl};
-use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::verifier::VerificationError;
@@ -141,37 +141,14 @@ pub fn fri_answers(
     }?;
 
     let mut columns_per_log_size_rev = array![
-        log_size_30_columns,
-        log_size_29_columns,
-        log_size_28_columns,
-        log_size_27_columns,
-        log_size_26_columns,
-        log_size_25_columns,
-        log_size_24_columns,
-        log_size_23_columns,
-        log_size_22_columns,
-        log_size_21_columns,
-        log_size_20_columns,
-        log_size_19_columns,
-        log_size_18_columns,
-        log_size_17_columns,
-        log_size_16_columns,
-        log_size_15_columns,
-        log_size_14_columns,
-        log_size_13_columns,
-        log_size_12_columns,
-        log_size_11_columns,
-        log_size_10_columns,
-        log_size_09_columns,
-        log_size_08_columns,
-        log_size_07_columns,
-        log_size_06_columns,
-        log_size_05_columns,
-        log_size_04_columns,
-        log_size_03_columns,
-        log_size_02_columns,
-        log_size_01_columns,
-        log_size_00_columns,
+        log_size_30_columns, log_size_29_columns, log_size_28_columns, log_size_27_columns,
+        log_size_26_columns, log_size_25_columns, log_size_24_columns, log_size_23_columns,
+        log_size_22_columns, log_size_21_columns, log_size_20_columns, log_size_19_columns,
+        log_size_18_columns, log_size_17_columns, log_size_16_columns, log_size_15_columns,
+        log_size_14_columns, log_size_13_columns, log_size_12_columns, log_size_11_columns,
+        log_size_10_columns, log_size_09_columns, log_size_08_columns, log_size_07_columns,
+        log_size_06_columns, log_size_05_columns, log_size_04_columns, log_size_03_columns,
+        log_size_02_columns, log_size_01_columns, log_size_00_columns,
     ]
         .into_iter();
 

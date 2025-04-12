@@ -16,4 +16,4 @@ stwo_cairo_air = { path = "../cairo_air" }
 cairo_execute = "2.9.2"
 
 [dev-dependencies]
-cairo_test = "2.9.2"
+cairo_test = "2.11.2"

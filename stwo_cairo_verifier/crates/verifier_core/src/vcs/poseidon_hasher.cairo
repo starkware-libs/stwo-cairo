@@ -1,8 +1,8 @@
 use core::array::ArrayTrait;
 use core::hash::HashStateTrait;
 use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
-use crate::fields::m31::M31_SHIFT;
 use crate::BaseField;
+use crate::fields::m31::M31_SHIFT;
 use super::hasher::MerkleHasher;
 
 /// 8 M31 elements fit in a hash, since 31*8 = 242 < 252.

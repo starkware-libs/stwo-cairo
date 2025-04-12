@@ -9,8 +9,8 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
-use super::super::utils::UsizeImpl;
 use super::super::Invertible;
+use super::super::utils::UsizeImpl;
 
 mod constraints_big;
 mod constraints_small;

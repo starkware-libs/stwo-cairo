@@ -206,8 +206,7 @@ mod tests {
         channel
             .mix_felts(
                 array![
-                    qm31_const::<1, 2, 3, 4>(),
-                    qm31_const::<5, 6, 7, 8>(),
+                    qm31_const::<1, 2, 3, 4>(), qm31_const::<5, 6, 7, 8>(),
                     qm31_const::<9, 10, 11, 12>(),
                 ]
                     .span(),
@@ -222,37 +221,8 @@ mod tests {
         let mut channel = new_channel(initial_digest);
         let result = channel.draw_random_bytes();
         let expected_result = array![
-            197,
-            20,
-            139,
-            143,
-            49,
-            135,
-            207,
-            202,
-            93,
-            167,
-            20,
-            244,
-            184,
-            186,
-            20,
-            136,
-            204,
-            43,
-            46,
-            147,
-            213,
-            253,
-            175,
-            170,
-            13,
-            64,
-            15,
-            168,
-            232,
-            211,
-            147,
+            197, 20, 139, 143, 49, 135, 207, 202, 93, 167, 20, 244, 184, 186, 20, 136, 204, 43, 46,
+            147, 213, 253, 175, 170, 13, 64, 15, 168, 232, 211, 147,
         ];
         assert_eq!(expected_result, result);
     }
@@ -263,37 +233,8 @@ mod tests {
         let mut channel = new_channel(initial_digest);
         let result = channel.draw_random_bytes();
         let expected_result = array![
-            168,
-            175,
-            85,
-            209,
-            218,
-            65,
-            155,
-            212,
-            165,
-            88,
-            130,
-            167,
-            44,
-            242,
-            17,
-            127,
-            75,
-            251,
-            142,
-            180,
-            157,
-            176,
-            27,
-            167,
-            179,
-            247,
-            27,
-            113,
-            149,
-            41,
-            12,
+            168, 175, 85, 209, 218, 65, 155, 212, 165, 88, 130, 167, 44, 242, 17, 127, 75, 251, 142,
+            180, 157, 176, 27, 167, 179, 247, 27, 113, 149, 41, 12,
         ];
         assert_eq!(expected_result, result);
     }
