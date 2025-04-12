@@ -82,8 +82,8 @@ mod tests {
     use core::dict::Felt252DictTrait;
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
-    use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
     use crate::fields::m31::m31;
+    use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
     use super::PoseidonMerkleHasherImpl;
 
 

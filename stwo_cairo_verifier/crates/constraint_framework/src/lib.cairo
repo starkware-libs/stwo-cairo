@@ -130,6 +130,15 @@ pub enum PreprocessedColumn {
     Xor: (u32, usize),
     /// A column with the numbers [0..2^log_size-1].
     Seq: u32,
+    /// Symbolic representation of range check column.
+    /// The column is of the form `(log_ranges, column_index)`.
+    RangeCheck: ([u32; 5], usize),
+    /// Poseidon round keys of the form `(column_index)`.
+    PoseidonRoundKeys: usize,
+    /// Blake2s sigma column.
+    BlakeSigma: usize,
+    /// Pedersen points of the form `(column_index)`.
+    PedersenPoints: usize,
 }
 
 #[generate_trait]
@@ -138,6 +147,12 @@ pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
         match self {
             PreprocessedColumn::Xor((n_term_bits, _)) => *n_term_bits * 2,
             PreprocessedColumn::Seq(log_size) => *log_size,
+            PreprocessedColumn::RangeCheck((
+                [r0, r1, r2, r3, r4], _,
+            )) => { *r0 + *r1 + *r2 + *r3 + *r4 },
+            PreprocessedColumn::PoseidonRoundKeys(_) => 6,
+            PreprocessedColumn::BlakeSigma(_) => 4,
+            PreprocessedColumn::PedersenPoints(_) => 23,
         }
     }
 }
@@ -150,6 +165,10 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
         // TODO: Is there something like Rust's `core::mem::discriminant` in Cairo?
         const XOR_DISCRIMINANT: felt252 = 0;
         const SEQ_TABLE_DISCRIMINANT: felt252 = 1;
+        const RANGE_CHECK_DISCRIMINANT: felt252 = 2;
+        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 3;
+        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 4;
+        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 5;
 
         match key {
             PreprocessedColumn::Xor((
@@ -163,6 +182,33 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
             PreprocessedColumn::Seq(log_size) => {
                 let mut res = (*log_size).into();
                 res = res * FELT252_2_POW_32 + SEQ_TABLE_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::RangeCheck((
+                [r0, r1, r2, r3, r4], column_index,
+            )) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + (*r0).into();
+                res = res * FELT252_2_POW_32 + (*r1).into();
+                res = res * FELT252_2_POW_32 + (*r2).into();
+                res = res * FELT252_2_POW_32 + (*r3).into();
+                res = res * FELT252_2_POW_32 + (*r4).into();
+                res = res * FELT252_2_POW_32 + RANGE_CHECK_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::PoseidonRoundKeys(column_index) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + POSEIDON_ROUND_KEYS_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::BlakeSigma(column_index) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + BLAKE_SIGMA_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::PedersenPoints(column_index) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + PEDERSEN_POINTS_DISCRIMINANT;
                 res
             },
         }

@@ -6,8 +6,7 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
-use stwo_verifier_core::utils::pow2;
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -229,7 +228,7 @@ pub struct ConstraintParams {
     pub VerifyBitwiseXor_9_z: QM31,
     pub claimed_sum: QM31,
     pub seq: QM31,
-    pub bitwise_builtin_segment_start: u32,
+    pub builtin_segment_start: M31,
     pub column_size: M31,
 }
 
@@ -281,7 +280,7 @@ pub fn evaluate_constraints_at_point(
         VerifyBitwiseXor_9_z,
         claimed_sum,
         seq,
-        bitwise_builtin_segment_start,
+        builtin_segment_start,
         column_size,
     } = params;
     let [
@@ -1000,7 +999,7 @@ pub fn evaluate_constraints_at_point(
         trace_1_column_88_offset_0,
         trace_1_column_8_offset_0,
         trace_1_column_9_offset_0,
-        bitwise_builtin_segment_start,
+        builtin_segment_start,
     )
         .span();
     let intermediate0 = *intermediates.pop_front().unwrap();
@@ -1071,7 +1070,7 @@ pub fn evaluate_constraints_at_point(
     let intermediate65 = *intermediates.pop_front().unwrap();
 
     // Constraint 0
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_89_offset_0, trace_2_column_90_offset_0, trace_2_column_91_offset_0,
             trace_2_column_92_offset_0,
@@ -1083,13 +1082,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 1
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_93_offset_0, trace_2_column_94_offset_0, trace_2_column_95_offset_0,
             trace_2_column_96_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_89_offset_0, trace_2_column_90_offset_0, trace_2_column_91_offset_0,
                 trace_2_column_92_offset_0,
@@ -1101,13 +1100,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 2
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_97_offset_0, trace_2_column_98_offset_0, trace_2_column_99_offset_0,
             trace_2_column_100_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_93_offset_0, trace_2_column_94_offset_0, trace_2_column_95_offset_0,
                 trace_2_column_96_offset_0,
@@ -1119,13 +1118,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 3
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_101_offset_0, trace_2_column_102_offset_0, trace_2_column_103_offset_0,
             trace_2_column_104_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_97_offset_0, trace_2_column_98_offset_0, trace_2_column_99_offset_0,
                 trace_2_column_100_offset_0,
@@ -1137,13 +1136,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 4
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_105_offset_0, trace_2_column_106_offset_0, trace_2_column_107_offset_0,
             trace_2_column_108_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_101_offset_0, trace_2_column_102_offset_0,
                 trace_2_column_103_offset_0, trace_2_column_104_offset_0,
@@ -1155,13 +1154,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 5
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_109_offset_0, trace_2_column_110_offset_0, trace_2_column_111_offset_0,
             trace_2_column_112_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_105_offset_0, trace_2_column_106_offset_0,
                 trace_2_column_107_offset_0, trace_2_column_108_offset_0,
@@ -1173,13 +1172,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 6
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_113_offset_0, trace_2_column_114_offset_0, trace_2_column_115_offset_0,
             trace_2_column_116_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_109_offset_0, trace_2_column_110_offset_0,
                 trace_2_column_111_offset_0, trace_2_column_112_offset_0,
@@ -1191,13 +1190,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 7
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_117_offset_0, trace_2_column_118_offset_0, trace_2_column_119_offset_0,
             trace_2_column_120_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_113_offset_0, trace_2_column_114_offset_0,
                 trace_2_column_115_offset_0, trace_2_column_116_offset_0,
@@ -1209,13 +1208,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 8
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_121_offset_0, trace_2_column_122_offset_0, trace_2_column_123_offset_0,
             trace_2_column_124_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_117_offset_0, trace_2_column_118_offset_0,
                 trace_2_column_119_offset_0, trace_2_column_120_offset_0,
@@ -1227,13 +1226,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 9
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_125_offset_0, trace_2_column_126_offset_0, trace_2_column_127_offset_0,
             trace_2_column_128_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_121_offset_0, trace_2_column_122_offset_0,
                 trace_2_column_123_offset_0, trace_2_column_124_offset_0,
@@ -1245,13 +1244,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 10
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_129_offset_0, trace_2_column_130_offset_0, trace_2_column_131_offset_0,
             trace_2_column_132_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_125_offset_0, trace_2_column_126_offset_0,
                 trace_2_column_127_offset_0, trace_2_column_128_offset_0,
@@ -1263,13 +1262,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 11
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_133_offset_0, trace_2_column_134_offset_0, trace_2_column_135_offset_0,
             trace_2_column_136_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_129_offset_0, trace_2_column_130_offset_0,
                 trace_2_column_131_offset_0, trace_2_column_132_offset_0,
@@ -1283,13 +1282,13 @@ pub fn evaluate_constraints_at_point(
     core::internal::revoke_ap_tracking();
 
     // Constraint 12
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_137_offset_0, trace_2_column_138_offset_0, trace_2_column_139_offset_0,
             trace_2_column_140_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_133_offset_0, trace_2_column_134_offset_0,
                 trace_2_column_135_offset_0, trace_2_column_136_offset_0,
@@ -1301,13 +1300,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 13
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_141_offset_0, trace_2_column_142_offset_0, trace_2_column_143_offset_0,
             trace_2_column_144_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_137_offset_0, trace_2_column_138_offset_0,
                 trace_2_column_139_offset_0, trace_2_column_140_offset_0,
@@ -1319,13 +1318,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 14
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_145_offset_0, trace_2_column_146_offset_0, trace_2_column_147_offset_0,
             trace_2_column_148_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_141_offset_0, trace_2_column_142_offset_0,
                 trace_2_column_143_offset_0, trace_2_column_144_offset_0,
@@ -1337,13 +1336,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 15
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_149_offset_0, trace_2_column_150_offset_0, trace_2_column_151_offset_0,
             trace_2_column_152_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_145_offset_0, trace_2_column_146_offset_0,
                 trace_2_column_147_offset_0, trace_2_column_148_offset_0,
@@ -1355,13 +1354,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 16
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_153_offset_0, trace_2_column_154_offset_0, trace_2_column_155_offset_0,
             trace_2_column_156_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_149_offset_0, trace_2_column_150_offset_0,
                 trace_2_column_151_offset_0, trace_2_column_152_offset_0,
@@ -1373,13 +1372,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 17
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_157_offset_0, trace_2_column_158_offset_0, trace_2_column_159_offset_0,
             trace_2_column_160_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_153_offset_0, trace_2_column_154_offset_0,
                 trace_2_column_155_offset_0, trace_2_column_156_offset_0,
@@ -1391,19 +1390,19 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 18
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_161_offset_0, trace_2_column_162_offset_0, trace_2_column_163_offset_0,
             trace_2_column_164_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_161_offset_neg_1, trace_2_column_162_offset_neg_1,
                 trace_2_column_163_offset_neg_1, trace_2_column_164_offset_neg_1,
             ],
         ))
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_157_offset_0, trace_2_column_158_offset_0,
                 trace_2_column_159_offset_0, trace_2_column_160_offset_0,
@@ -1545,7 +1544,7 @@ fn intermediates(
     trace_1_column_88_offset_0: QM31,
     trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
-    bitwise_builtin_segment_start: u32,
+    builtin_segment_start: M31,
 ) -> Array<QM31> {
     let intermediate5 = intermediate5(
         trace_1_column_1_offset_0, trace_1_column_30_offset_0, trace_1_column_58_offset_0,
@@ -1658,13 +1657,74 @@ fn intermediates(
     let intermediate59 = intermediate59(
         trace_1_column_28_offset_0, trace_1_column_57_offset_0, trace_1_column_85_offset_0,
     );
-    let intermediate0 = intermediate0(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_0_offset_0,
-        bitwise_builtin_segment_start,
+    let intermediate46 = intermediate46(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_22_offset_0,
+        trace_1_column_51_offset_0,
+        trace_1_column_79_offset_0,
+    );
+
+    let intermediate12 = intermediate12(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_34_offset_0,
+        trace_1_column_5_offset_0,
+        trace_1_column_62_offset_0,
+    );
+
+    let intermediate24 = intermediate24(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_11_offset_0,
+        trace_1_column_40_offset_0,
+        trace_1_column_68_offset_0,
+    );
+
+    let intermediate14 = intermediate14(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_35_offset_0,
+        trace_1_column_63_offset_0,
+        trace_1_column_6_offset_0,
+    );
+
+    let intermediate36 = intermediate36(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_17_offset_0,
+        trace_1_column_46_offset_0,
+        trace_1_column_74_offset_0,
+    );
+
+    let intermediate58 = intermediate58(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_28_offset_0,
+        trace_1_column_57_offset_0,
+        trace_1_column_85_offset_0,
+    );
+
+    let intermediate6 = intermediate6(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_2_offset_0,
+        trace_1_column_31_offset_0,
+        trace_1_column_59_offset_0,
     );
 
     let intermediate1 = intermediate1(
@@ -1729,14 +1789,55 @@ fn intermediates(
         trace_1_column_9_offset_0,
     );
 
-    let intermediate2 = intermediate2(
+    let intermediate38 = intermediate38(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_18_offset_0,
+        trace_1_column_47_offset_0,
+        trace_1_column_75_offset_0,
+    );
+
+    let intermediate60 = intermediate60(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
         MemoryAddressToId_z,
         seq,
-        trace_1_column_29_offset_0,
-        bitwise_builtin_segment_start,
+        trace_1_column_86_offset_0,
+        builtin_segment_start,
     );
+
+    let intermediate0 = intermediate0(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_0_offset_0,
+        builtin_segment_start,
+    );
+
+    let intermediate8 = intermediate8(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_32_offset_0,
+        trace_1_column_3_offset_0,
+        trace_1_column_60_offset_0,
+    );
+
+    let intermediate50 = intermediate50(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_24_offset_0,
+        trace_1_column_53_offset_0,
+        trace_1_column_81_offset_0,
+    );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate3 = intermediate3(
         MemoryIdToBig_alpha0,
@@ -1800,36 +1901,6 @@ fn intermediates(
         trace_1_column_57_offset_0,
     );
 
-    let intermediate4 = intermediate4(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_1_offset_0,
-        trace_1_column_30_offset_0,
-        trace_1_column_58_offset_0,
-    );
-
-    let intermediate6 = intermediate6(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_2_offset_0,
-        trace_1_column_31_offset_0,
-        trace_1_column_59_offset_0,
-    );
-
-    let intermediate8 = intermediate8(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_32_offset_0,
-        trace_1_column_3_offset_0,
-        trace_1_column_60_offset_0,
-    );
-
     let intermediate10 = intermediate10(
         VerifyBitwiseXor_9_alpha0,
         VerifyBitwiseXor_9_alpha1,
@@ -1838,36 +1909,6 @@ fn intermediates(
         trace_1_column_33_offset_0,
         trace_1_column_4_offset_0,
         trace_1_column_61_offset_0,
-    );
-
-    let intermediate12 = intermediate12(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_34_offset_0,
-        trace_1_column_5_offset_0,
-        trace_1_column_62_offset_0,
-    );
-
-    let intermediate14 = intermediate14(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_35_offset_0,
-        trace_1_column_63_offset_0,
-        trace_1_column_6_offset_0,
-    );
-
-    let intermediate16 = intermediate16(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_36_offset_0,
-        trace_1_column_64_offset_0,
-        trace_1_column_7_offset_0,
     );
 
     let intermediate18 = intermediate18(
@@ -1880,48 +1921,6 @@ fn intermediates(
         trace_1_column_8_offset_0,
     );
 
-    core::internal::revoke_ap_tracking();
-
-    let intermediate20 = intermediate20(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_38_offset_0,
-        trace_1_column_66_offset_0,
-        trace_1_column_9_offset_0,
-    );
-
-    let intermediate22 = intermediate22(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_10_offset_0,
-        trace_1_column_39_offset_0,
-        trace_1_column_67_offset_0,
-    );
-
-    let intermediate24 = intermediate24(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_11_offset_0,
-        trace_1_column_40_offset_0,
-        trace_1_column_68_offset_0,
-    );
-
-    let intermediate26 = intermediate26(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_12_offset_0,
-        trace_1_column_41_offset_0,
-        trace_1_column_69_offset_0,
-    );
-
     let intermediate28 = intermediate28(
         VerifyBitwiseXor_9_alpha0,
         VerifyBitwiseXor_9_alpha1,
@@ -1930,16 +1929,6 @@ fn intermediates(
         trace_1_column_13_offset_0,
         trace_1_column_42_offset_0,
         trace_1_column_70_offset_0,
-    );
-
-    let intermediate30 = intermediate30(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_14_offset_0,
-        trace_1_column_43_offset_0,
-        trace_1_column_71_offset_0,
     );
 
     let intermediate32 = intermediate32(
@@ -1952,6 +1941,89 @@ fn intermediates(
         trace_1_column_72_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
+    let intermediate56 = intermediate56(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_27_offset_0,
+        trace_1_column_56_offset_0,
+        trace_1_column_84_offset_0,
+    );
+
+    let intermediate62 = intermediate62(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_87_offset_0,
+        builtin_segment_start,
+    );
+
+    let intermediate63 = intermediate63(
+        MemoryIdToBig_alpha0,
+        MemoryIdToBig_alpha1,
+        MemoryIdToBig_alpha10,
+        MemoryIdToBig_alpha11,
+        MemoryIdToBig_alpha12,
+        MemoryIdToBig_alpha13,
+        MemoryIdToBig_alpha14,
+        MemoryIdToBig_alpha15,
+        MemoryIdToBig_alpha16,
+        MemoryIdToBig_alpha17,
+        MemoryIdToBig_alpha18,
+        MemoryIdToBig_alpha19,
+        MemoryIdToBig_alpha2,
+        MemoryIdToBig_alpha20,
+        MemoryIdToBig_alpha21,
+        MemoryIdToBig_alpha22,
+        MemoryIdToBig_alpha23,
+        MemoryIdToBig_alpha24,
+        MemoryIdToBig_alpha25,
+        MemoryIdToBig_alpha26,
+        MemoryIdToBig_alpha27,
+        MemoryIdToBig_alpha28,
+        MemoryIdToBig_alpha3,
+        MemoryIdToBig_alpha4,
+        MemoryIdToBig_alpha5,
+        MemoryIdToBig_alpha6,
+        MemoryIdToBig_alpha7,
+        MemoryIdToBig_alpha8,
+        MemoryIdToBig_alpha9,
+        MemoryIdToBig_z,
+        trace_1_column_58_offset_0,
+        trace_1_column_59_offset_0,
+        trace_1_column_60_offset_0,
+        trace_1_column_61_offset_0,
+        trace_1_column_62_offset_0,
+        trace_1_column_63_offset_0,
+        trace_1_column_64_offset_0,
+        trace_1_column_65_offset_0,
+        trace_1_column_66_offset_0,
+        trace_1_column_67_offset_0,
+        trace_1_column_68_offset_0,
+        trace_1_column_69_offset_0,
+        trace_1_column_70_offset_0,
+        trace_1_column_71_offset_0,
+        trace_1_column_72_offset_0,
+        trace_1_column_73_offset_0,
+        trace_1_column_74_offset_0,
+        trace_1_column_75_offset_0,
+        trace_1_column_76_offset_0,
+        trace_1_column_77_offset_0,
+        trace_1_column_78_offset_0,
+        trace_1_column_79_offset_0,
+        trace_1_column_80_offset_0,
+        trace_1_column_81_offset_0,
+        trace_1_column_82_offset_0,
+        trace_1_column_83_offset_0,
+        trace_1_column_84_offset_0,
+        trace_1_column_85_offset_0,
+        trace_1_column_87_offset_0,
+    );
+
     let intermediate34 = intermediate34(
         VerifyBitwiseXor_9_alpha0,
         VerifyBitwiseXor_9_alpha1,
@@ -1962,24 +2034,26 @@ fn intermediates(
         trace_1_column_73_offset_0,
     );
 
-    let intermediate36 = intermediate36(
+    core::internal::revoke_ap_tracking();
+
+    let intermediate16 = intermediate16(
         VerifyBitwiseXor_9_alpha0,
         VerifyBitwiseXor_9_alpha1,
         VerifyBitwiseXor_9_alpha2,
         VerifyBitwiseXor_9_z,
-        trace_1_column_17_offset_0,
-        trace_1_column_46_offset_0,
-        trace_1_column_74_offset_0,
+        trace_1_column_36_offset_0,
+        trace_1_column_64_offset_0,
+        trace_1_column_7_offset_0,
     );
 
-    let intermediate38 = intermediate38(
+    let intermediate26 = intermediate26(
         VerifyBitwiseXor_9_alpha0,
         VerifyBitwiseXor_9_alpha1,
         VerifyBitwiseXor_9_alpha2,
         VerifyBitwiseXor_9_z,
-        trace_1_column_18_offset_0,
-        trace_1_column_47_offset_0,
-        trace_1_column_75_offset_0,
+        trace_1_column_12_offset_0,
+        trace_1_column_41_offset_0,
+        trace_1_column_69_offset_0,
     );
 
     let intermediate40 = intermediate40(
@@ -1992,34 +2066,23 @@ fn intermediates(
         trace_1_column_76_offset_0,
     );
 
-    let intermediate42 = intermediate42(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_20_offset_0,
-        trace_1_column_49_offset_0,
-        trace_1_column_77_offset_0,
+    let intermediate2 = intermediate2(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_29_offset_0,
+        builtin_segment_start,
     );
 
-    let intermediate44 = intermediate44(
+    let intermediate20 = intermediate20(
         VerifyBitwiseXor_9_alpha0,
         VerifyBitwiseXor_9_alpha1,
         VerifyBitwiseXor_9_alpha2,
         VerifyBitwiseXor_9_z,
-        trace_1_column_21_offset_0,
-        trace_1_column_50_offset_0,
-        trace_1_column_78_offset_0,
-    );
-
-    let intermediate46 = intermediate46(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_22_offset_0,
-        trace_1_column_51_offset_0,
-        trace_1_column_79_offset_0,
+        trace_1_column_38_offset_0,
+        trace_1_column_66_offset_0,
+        trace_1_column_9_offset_0,
     );
 
     let intermediate48 = intermediate48(
@@ -2030,65 +2093,6 @@ fn intermediates(
         trace_1_column_23_offset_0,
         trace_1_column_52_offset_0,
         trace_1_column_80_offset_0,
-    );
-
-    let intermediate50 = intermediate50(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_24_offset_0,
-        trace_1_column_53_offset_0,
-        trace_1_column_81_offset_0,
-    );
-
-    let intermediate52 = intermediate52(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_25_offset_0,
-        trace_1_column_54_offset_0,
-        trace_1_column_82_offset_0,
-    );
-
-    let intermediate54 = intermediate54(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_26_offset_0,
-        trace_1_column_55_offset_0,
-        trace_1_column_83_offset_0,
-    );
-
-    let intermediate56 = intermediate56(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_27_offset_0,
-        trace_1_column_56_offset_0,
-        trace_1_column_84_offset_0,
-    );
-
-    let intermediate58 = intermediate58(
-        VerifyBitwiseXor_9_alpha0,
-        VerifyBitwiseXor_9_alpha1,
-        VerifyBitwiseXor_9_alpha2,
-        VerifyBitwiseXor_9_z,
-        trace_1_column_28_offset_0,
-        trace_1_column_57_offset_0,
-        trace_1_column_85_offset_0,
-    );
-
-    let intermediate60 = intermediate60(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_86_offset_0,
-        bitwise_builtin_segment_start,
     );
 
     let intermediate61 = intermediate61(
@@ -2153,78 +2157,7 @@ fn intermediates(
         trace_1_column_86_offset_0,
     );
 
-    let intermediate62 = intermediate62(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_87_offset_0,
-        bitwise_builtin_segment_start,
-    );
-
     core::internal::revoke_ap_tracking();
-
-    let intermediate63 = intermediate63(
-        MemoryIdToBig_alpha0,
-        MemoryIdToBig_alpha1,
-        MemoryIdToBig_alpha10,
-        MemoryIdToBig_alpha11,
-        MemoryIdToBig_alpha12,
-        MemoryIdToBig_alpha13,
-        MemoryIdToBig_alpha14,
-        MemoryIdToBig_alpha15,
-        MemoryIdToBig_alpha16,
-        MemoryIdToBig_alpha17,
-        MemoryIdToBig_alpha18,
-        MemoryIdToBig_alpha19,
-        MemoryIdToBig_alpha2,
-        MemoryIdToBig_alpha20,
-        MemoryIdToBig_alpha21,
-        MemoryIdToBig_alpha22,
-        MemoryIdToBig_alpha23,
-        MemoryIdToBig_alpha24,
-        MemoryIdToBig_alpha25,
-        MemoryIdToBig_alpha26,
-        MemoryIdToBig_alpha27,
-        MemoryIdToBig_alpha28,
-        MemoryIdToBig_alpha3,
-        MemoryIdToBig_alpha4,
-        MemoryIdToBig_alpha5,
-        MemoryIdToBig_alpha6,
-        MemoryIdToBig_alpha7,
-        MemoryIdToBig_alpha8,
-        MemoryIdToBig_alpha9,
-        MemoryIdToBig_z,
-        trace_1_column_58_offset_0,
-        trace_1_column_59_offset_0,
-        trace_1_column_60_offset_0,
-        trace_1_column_61_offset_0,
-        trace_1_column_62_offset_0,
-        trace_1_column_63_offset_0,
-        trace_1_column_64_offset_0,
-        trace_1_column_65_offset_0,
-        trace_1_column_66_offset_0,
-        trace_1_column_67_offset_0,
-        trace_1_column_68_offset_0,
-        trace_1_column_69_offset_0,
-        trace_1_column_70_offset_0,
-        trace_1_column_71_offset_0,
-        trace_1_column_72_offset_0,
-        trace_1_column_73_offset_0,
-        trace_1_column_74_offset_0,
-        trace_1_column_75_offset_0,
-        trace_1_column_76_offset_0,
-        trace_1_column_77_offset_0,
-        trace_1_column_78_offset_0,
-        trace_1_column_79_offset_0,
-        trace_1_column_80_offset_0,
-        trace_1_column_81_offset_0,
-        trace_1_column_82_offset_0,
-        trace_1_column_83_offset_0,
-        trace_1_column_84_offset_0,
-        trace_1_column_85_offset_0,
-        trace_1_column_87_offset_0,
-    );
 
     let intermediate64 = intermediate64(
         MemoryAddressToId_alpha0,
@@ -2232,8 +2165,80 @@ fn intermediates(
         MemoryAddressToId_z,
         seq,
         trace_1_column_88_offset_0,
-        bitwise_builtin_segment_start,
+        builtin_segment_start,
     );
+
+    let intermediate30 = intermediate30(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_14_offset_0,
+        trace_1_column_43_offset_0,
+        trace_1_column_71_offset_0,
+    );
+
+    let intermediate22 = intermediate22(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_10_offset_0,
+        trace_1_column_39_offset_0,
+        trace_1_column_67_offset_0,
+    );
+
+    let intermediate52 = intermediate52(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_25_offset_0,
+        trace_1_column_54_offset_0,
+        trace_1_column_82_offset_0,
+    );
+
+    let intermediate42 = intermediate42(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_20_offset_0,
+        trace_1_column_49_offset_0,
+        trace_1_column_77_offset_0,
+    );
+
+    let intermediate4 = intermediate4(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_1_offset_0,
+        trace_1_column_30_offset_0,
+        trace_1_column_58_offset_0,
+    );
+
+    let intermediate54 = intermediate54(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_26_offset_0,
+        trace_1_column_55_offset_0,
+        trace_1_column_83_offset_0,
+    );
+
+    let intermediate44 = intermediate44(
+        VerifyBitwiseXor_9_alpha0,
+        VerifyBitwiseXor_9_alpha1,
+        VerifyBitwiseXor_9_alpha2,
+        VerifyBitwiseXor_9_z,
+        trace_1_column_21_offset_0,
+        trace_1_column_50_offset_0,
+        trace_1_column_78_offset_0,
+    );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate65 = intermediate65(
         MemoryIdToBig_alpha0,
@@ -2394,67 +2399,40 @@ fn intermediates(
     ]
 }
 
-pub fn intermediate5(
-    trace_1_column_1_offset_0: QM31,
-    trace_1_column_30_offset_0: QM31,
-    trace_1_column_58_offset_0: QM31,
+pub fn intermediate41(
+    trace_1_column_19_offset_0: QM31,
+    trace_1_column_48_offset_0: QM31,
+    trace_1_column_76_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_1_offset_0 + trace_1_column_30_offset_0 - (trace_1_column_58_offset_0))
+        * (trace_1_column_19_offset_0 + trace_1_column_48_offset_0 - (trace_1_column_76_offset_0))
 }
 
-pub fn intermediate7(
-    trace_1_column_2_offset_0: QM31,
-    trace_1_column_31_offset_0: QM31,
-    trace_1_column_59_offset_0: QM31,
+pub fn intermediate33(
+    trace_1_column_15_offset_0: QM31,
+    trace_1_column_44_offset_0: QM31,
+    trace_1_column_72_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_2_offset_0 + trace_1_column_31_offset_0 - (trace_1_column_59_offset_0))
+        * (trace_1_column_15_offset_0 + trace_1_column_44_offset_0 - (trace_1_column_72_offset_0))
 }
 
-pub fn intermediate9(
-    trace_1_column_32_offset_0: QM31,
-    trace_1_column_3_offset_0: QM31,
-    trace_1_column_60_offset_0: QM31,
+pub fn intermediate43(
+    trace_1_column_20_offset_0: QM31,
+    trace_1_column_49_offset_0: QM31,
+    trace_1_column_77_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_3_offset_0 + trace_1_column_32_offset_0 - (trace_1_column_60_offset_0))
+        * (trace_1_column_20_offset_0 + trace_1_column_49_offset_0 - (trace_1_column_77_offset_0))
 }
 
-pub fn intermediate11(
-    trace_1_column_33_offset_0: QM31,
-    trace_1_column_4_offset_0: QM31,
-    trace_1_column_61_offset_0: QM31,
+pub fn intermediate47(
+    trace_1_column_22_offset_0: QM31,
+    trace_1_column_51_offset_0: QM31,
+    trace_1_column_79_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_4_offset_0 + trace_1_column_33_offset_0 - (trace_1_column_61_offset_0))
-}
-
-pub fn intermediate13(
-    trace_1_column_34_offset_0: QM31,
-    trace_1_column_5_offset_0: QM31,
-    trace_1_column_62_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_5_offset_0 + trace_1_column_34_offset_0 - (trace_1_column_62_offset_0))
-}
-
-pub fn intermediate15(
-    trace_1_column_35_offset_0: QM31,
-    trace_1_column_63_offset_0: QM31,
-    trace_1_column_6_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_6_offset_0 + trace_1_column_35_offset_0 - (trace_1_column_63_offset_0))
-}
-
-pub fn intermediate17(
-    trace_1_column_36_offset_0: QM31,
-    trace_1_column_64_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_7_offset_0 + trace_1_column_36_offset_0 - (trace_1_column_64_offset_0))
+        * (trace_1_column_22_offset_0 + trace_1_column_51_offset_0 - (trace_1_column_79_offset_0))
 }
 
 pub fn intermediate19(
@@ -2466,13 +2444,22 @@ pub fn intermediate19(
         * (trace_1_column_8_offset_0 + trace_1_column_37_offset_0 - (trace_1_column_65_offset_0))
 }
 
-pub fn intermediate21(
-    trace_1_column_38_offset_0: QM31,
-    trace_1_column_66_offset_0: QM31,
-    trace_1_column_9_offset_0: QM31,
+pub fn intermediate55(
+    trace_1_column_26_offset_0: QM31,
+    trace_1_column_55_offset_0: QM31,
+    trace_1_column_83_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_9_offset_0 + trace_1_column_38_offset_0 - (trace_1_column_66_offset_0))
+        * (trace_1_column_26_offset_0 + trace_1_column_55_offset_0 - (trace_1_column_83_offset_0))
+}
+
+pub fn intermediate7(
+    trace_1_column_2_offset_0: QM31,
+    trace_1_column_31_offset_0: QM31,
+    trace_1_column_59_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_2_offset_0 + trace_1_column_31_offset_0 - (trace_1_column_59_offset_0))
 }
 
 pub fn intermediate23(
@@ -2493,58 +2480,13 @@ pub fn intermediate25(
         * (trace_1_column_11_offset_0 + trace_1_column_40_offset_0 - (trace_1_column_68_offset_0))
 }
 
-pub fn intermediate27(
-    trace_1_column_12_offset_0: QM31,
-    trace_1_column_41_offset_0: QM31,
-    trace_1_column_69_offset_0: QM31,
+pub fn intermediate5(
+    trace_1_column_1_offset_0: QM31,
+    trace_1_column_30_offset_0: QM31,
+    trace_1_column_58_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_12_offset_0 + trace_1_column_41_offset_0 - (trace_1_column_69_offset_0))
-}
-
-pub fn intermediate29(
-    trace_1_column_13_offset_0: QM31,
-    trace_1_column_42_offset_0: QM31,
-    trace_1_column_70_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_13_offset_0 + trace_1_column_42_offset_0 - (trace_1_column_70_offset_0))
-}
-
-pub fn intermediate31(
-    trace_1_column_14_offset_0: QM31,
-    trace_1_column_43_offset_0: QM31,
-    trace_1_column_71_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_14_offset_0 + trace_1_column_43_offset_0 - (trace_1_column_71_offset_0))
-}
-
-pub fn intermediate33(
-    trace_1_column_15_offset_0: QM31,
-    trace_1_column_44_offset_0: QM31,
-    trace_1_column_72_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_15_offset_0 + trace_1_column_44_offset_0 - (trace_1_column_72_offset_0))
-}
-
-pub fn intermediate35(
-    trace_1_column_16_offset_0: QM31,
-    trace_1_column_45_offset_0: QM31,
-    trace_1_column_73_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_16_offset_0 + trace_1_column_45_offset_0 - (trace_1_column_73_offset_0))
-}
-
-pub fn intermediate37(
-    trace_1_column_17_offset_0: QM31,
-    trace_1_column_46_offset_0: QM31,
-    trace_1_column_74_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_17_offset_0 + trace_1_column_46_offset_0 - (trace_1_column_74_offset_0))
+        * (trace_1_column_1_offset_0 + trace_1_column_30_offset_0 - (trace_1_column_58_offset_0))
 }
 
 pub fn intermediate39(
@@ -2556,49 +2498,22 @@ pub fn intermediate39(
         * (trace_1_column_18_offset_0 + trace_1_column_47_offset_0 - (trace_1_column_75_offset_0))
 }
 
-pub fn intermediate41(
-    trace_1_column_19_offset_0: QM31,
-    trace_1_column_48_offset_0: QM31,
-    trace_1_column_76_offset_0: QM31,
+pub fn intermediate59(
+    trace_1_column_28_offset_0: QM31,
+    trace_1_column_57_offset_0: QM31,
+    trace_1_column_85_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_19_offset_0 + trace_1_column_48_offset_0 - (trace_1_column_76_offset_0))
+        * (trace_1_column_28_offset_0 + trace_1_column_57_offset_0 - (trace_1_column_85_offset_0))
 }
 
-pub fn intermediate43(
-    trace_1_column_20_offset_0: QM31,
-    trace_1_column_49_offset_0: QM31,
-    trace_1_column_77_offset_0: QM31,
+pub fn intermediate15(
+    trace_1_column_35_offset_0: QM31,
+    trace_1_column_63_offset_0: QM31,
+    trace_1_column_6_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_20_offset_0 + trace_1_column_49_offset_0 - (trace_1_column_77_offset_0))
-}
-
-pub fn intermediate45(
-    trace_1_column_21_offset_0: QM31,
-    trace_1_column_50_offset_0: QM31,
-    trace_1_column_78_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_21_offset_0 + trace_1_column_50_offset_0 - (trace_1_column_78_offset_0))
-}
-
-pub fn intermediate47(
-    trace_1_column_22_offset_0: QM31,
-    trace_1_column_51_offset_0: QM31,
-    trace_1_column_79_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_22_offset_0 + trace_1_column_51_offset_0 - (trace_1_column_79_offset_0))
-}
-
-pub fn intermediate49(
-    trace_1_column_23_offset_0: QM31,
-    trace_1_column_52_offset_0: QM31,
-    trace_1_column_80_offset_0: QM31,
-) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_23_offset_0 + trace_1_column_52_offset_0 - (trace_1_column_80_offset_0))
+        * (trace_1_column_6_offset_0 + trace_1_column_35_offset_0 - (trace_1_column_63_offset_0))
 }
 
 pub fn intermediate51(
@@ -2610,22 +2525,67 @@ pub fn intermediate51(
         * (trace_1_column_24_offset_0 + trace_1_column_53_offset_0 - (trace_1_column_81_offset_0))
 }
 
-pub fn intermediate53(
-    trace_1_column_25_offset_0: QM31,
-    trace_1_column_54_offset_0: QM31,
-    trace_1_column_82_offset_0: QM31,
+pub fn intermediate31(
+    trace_1_column_14_offset_0: QM31,
+    trace_1_column_43_offset_0: QM31,
+    trace_1_column_71_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_25_offset_0 + trace_1_column_54_offset_0 - (trace_1_column_82_offset_0))
+        * (trace_1_column_14_offset_0 + trace_1_column_43_offset_0 - (trace_1_column_71_offset_0))
 }
 
-pub fn intermediate55(
-    trace_1_column_26_offset_0: QM31,
-    trace_1_column_55_offset_0: QM31,
-    trace_1_column_83_offset_0: QM31,
+pub fn intermediate13(
+    trace_1_column_34_offset_0: QM31,
+    trace_1_column_5_offset_0: QM31,
+    trace_1_column_62_offset_0: QM31,
 ) -> QM31 {
     (m31(1073741824).into())
-        * (trace_1_column_26_offset_0 + trace_1_column_55_offset_0 - (trace_1_column_83_offset_0))
+        * (trace_1_column_5_offset_0 + trace_1_column_34_offset_0 - (trace_1_column_62_offset_0))
+}
+
+pub fn intermediate11(
+    trace_1_column_33_offset_0: QM31,
+    trace_1_column_4_offset_0: QM31,
+    trace_1_column_61_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_4_offset_0 + trace_1_column_33_offset_0 - (trace_1_column_61_offset_0))
+}
+
+pub fn intermediate29(
+    trace_1_column_13_offset_0: QM31,
+    trace_1_column_42_offset_0: QM31,
+    trace_1_column_70_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_13_offset_0 + trace_1_column_42_offset_0 - (trace_1_column_70_offset_0))
+}
+
+pub fn intermediate45(
+    trace_1_column_21_offset_0: QM31,
+    trace_1_column_50_offset_0: QM31,
+    trace_1_column_78_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_21_offset_0 + trace_1_column_50_offset_0 - (trace_1_column_78_offset_0))
+}
+
+pub fn intermediate37(
+    trace_1_column_17_offset_0: QM31,
+    trace_1_column_46_offset_0: QM31,
+    trace_1_column_74_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_17_offset_0 + trace_1_column_46_offset_0 - (trace_1_column_74_offset_0))
+}
+
+pub fn intermediate21(
+    trace_1_column_38_offset_0: QM31,
+    trace_1_column_66_offset_0: QM31,
+    trace_1_column_9_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_9_offset_0 + trace_1_column_38_offset_0 - (trace_1_column_66_offset_0))
 }
 
 pub fn intermediate57(
@@ -2637,26 +2597,162 @@ pub fn intermediate57(
         * (trace_1_column_27_offset_0 + trace_1_column_56_offset_0 - (trace_1_column_84_offset_0))
 }
 
-pub fn intermediate59(
+pub fn intermediate17(
+    trace_1_column_36_offset_0: QM31,
+    trace_1_column_64_offset_0: QM31,
+    trace_1_column_7_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_7_offset_0 + trace_1_column_36_offset_0 - (trace_1_column_64_offset_0))
+}
+
+pub fn intermediate35(
+    trace_1_column_16_offset_0: QM31,
+    trace_1_column_45_offset_0: QM31,
+    trace_1_column_73_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_16_offset_0 + trace_1_column_45_offset_0 - (trace_1_column_73_offset_0))
+}
+
+pub fn intermediate49(
+    trace_1_column_23_offset_0: QM31,
+    trace_1_column_52_offset_0: QM31,
+    trace_1_column_80_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_23_offset_0 + trace_1_column_52_offset_0 - (trace_1_column_80_offset_0))
+}
+
+pub fn intermediate53(
+    trace_1_column_25_offset_0: QM31,
+    trace_1_column_54_offset_0: QM31,
+    trace_1_column_82_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_25_offset_0 + trace_1_column_54_offset_0 - (trace_1_column_82_offset_0))
+}
+
+pub fn intermediate9(
+    trace_1_column_32_offset_0: QM31,
+    trace_1_column_3_offset_0: QM31,
+    trace_1_column_60_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_3_offset_0 + trace_1_column_32_offset_0 - (trace_1_column_60_offset_0))
+}
+
+pub fn intermediate27(
+    trace_1_column_12_offset_0: QM31,
+    trace_1_column_41_offset_0: QM31,
+    trace_1_column_69_offset_0: QM31,
+) -> QM31 {
+    (m31(1073741824).into())
+        * (trace_1_column_12_offset_0 + trace_1_column_41_offset_0 - (trace_1_column_69_offset_0))
+}
+pub fn intermediate46(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_22_offset_0: QM31,
+    trace_1_column_51_offset_0: QM31,
+    trace_1_column_79_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_22_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_51_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_79_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate12(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_34_offset_0: QM31,
+    trace_1_column_5_offset_0: QM31,
+    trace_1_column_62_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_5_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_34_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_62_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate24(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_11_offset_0: QM31,
+    trace_1_column_40_offset_0: QM31,
+    trace_1_column_68_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_11_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_40_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_68_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate14(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_35_offset_0: QM31,
+    trace_1_column_63_offset_0: QM31,
+    trace_1_column_6_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_6_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_35_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_63_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate36(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_17_offset_0: QM31,
+    trace_1_column_46_offset_0: QM31,
+    trace_1_column_74_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_17_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_46_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_74_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate58(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
     trace_1_column_28_offset_0: QM31,
     trace_1_column_57_offset_0: QM31,
     trace_1_column_85_offset_0: QM31,
 ) -> QM31 {
-    (m31(1073741824).into())
-        * (trace_1_column_28_offset_0 + trace_1_column_57_offset_0 - (trace_1_column_85_offset_0))
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_28_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_57_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_85_offset_0)
+        - (VerifyBitwiseXor_9_z)
 }
-pub fn intermediate0(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_0_offset_0: QM31,
-    bitwise_builtin_segment_start: u32,
+
+pub fn intermediate6(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_2_offset_0: QM31,
+    trace_1_column_31_offset_0: QM31,
+    trace_1_column_59_offset_0: QM31,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0)
-        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()))
-        + (MemoryAddressToId_alpha1) * (trace_1_column_0_offset_0)
-        - (MemoryAddressToId_z)
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_2_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_31_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_59_offset_0)
+        - (VerifyBitwiseXor_9_z)
 }
 
 pub fn intermediate1(
@@ -2752,18 +2848,76 @@ pub fn intermediate1(
         - (MemoryIdToBig_z)
 }
 
-pub fn intermediate2(
+pub fn intermediate38(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_18_offset_0: QM31,
+    trace_1_column_47_offset_0: QM31,
+    trace_1_column_75_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_18_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_47_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_75_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate60(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
     seq: QM31,
-    trace_1_column_29_offset_0: QM31,
-    bitwise_builtin_segment_start: u32,
+    trace_1_column_86_offset_0: QM31,
+    builtin_segment_start: M31,
 ) -> QM31 {
     (MemoryAddressToId_alpha0)
-        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(1).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_29_offset_0)
+        * (builtin_segment_start.into() + (seq) * (m31(5).into()) + m31(2).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_86_offset_0)
         - (MemoryAddressToId_z)
+}
+
+pub fn intermediate0(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_0_offset_0: QM31,
+    builtin_segment_start: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0) * (builtin_segment_start.into() + (seq) * (m31(5).into()))
+        + (MemoryAddressToId_alpha1) * (trace_1_column_0_offset_0)
+        - (MemoryAddressToId_z)
+}
+
+pub fn intermediate8(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_32_offset_0: QM31,
+    trace_1_column_3_offset_0: QM31,
+    trace_1_column_60_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_3_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_32_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_60_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate50(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_24_offset_0: QM31,
+    trace_1_column_53_offset_0: QM31,
+    trace_1_column_81_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_24_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_53_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_81_offset_0)
+        - (VerifyBitwiseXor_9_z)
 }
 
 pub fn intermediate3(
@@ -2859,51 +3013,6 @@ pub fn intermediate3(
         - (MemoryIdToBig_z)
 }
 
-pub fn intermediate4(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_1_offset_0: QM31,
-    trace_1_column_30_offset_0: QM31,
-    trace_1_column_58_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_1_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_30_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_58_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate6(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_2_offset_0: QM31,
-    trace_1_column_31_offset_0: QM31,
-    trace_1_column_59_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_2_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_31_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_59_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate8(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_32_offset_0: QM31,
-    trace_1_column_3_offset_0: QM31,
-    trace_1_column_60_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_3_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_32_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_60_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
 pub fn intermediate10(
     VerifyBitwiseXor_9_alpha0: QM31,
     VerifyBitwiseXor_9_alpha1: QM31,
@@ -2916,51 +3025,6 @@ pub fn intermediate10(
     (VerifyBitwiseXor_9_alpha0) * (trace_1_column_4_offset_0)
         + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_33_offset_0)
         + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_61_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate12(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_34_offset_0: QM31,
-    trace_1_column_5_offset_0: QM31,
-    trace_1_column_62_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_5_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_34_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_62_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate14(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_35_offset_0: QM31,
-    trace_1_column_63_offset_0: QM31,
-    trace_1_column_6_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_6_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_35_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_63_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate16(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_36_offset_0: QM31,
-    trace_1_column_64_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_7_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_36_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_64_offset_0)
         - (VerifyBitwiseXor_9_z)
 }
 
@@ -2979,66 +3043,6 @@ pub fn intermediate18(
         - (VerifyBitwiseXor_9_z)
 }
 
-pub fn intermediate20(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_38_offset_0: QM31,
-    trace_1_column_66_offset_0: QM31,
-    trace_1_column_9_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_9_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_38_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_66_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate22(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_10_offset_0: QM31,
-    trace_1_column_39_offset_0: QM31,
-    trace_1_column_67_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_10_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_39_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_67_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate24(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_11_offset_0: QM31,
-    trace_1_column_40_offset_0: QM31,
-    trace_1_column_68_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_11_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_40_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_68_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate26(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_12_offset_0: QM31,
-    trace_1_column_41_offset_0: QM31,
-    trace_1_column_69_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_12_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_41_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_69_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
 pub fn intermediate28(
     VerifyBitwiseXor_9_alpha0: QM31,
     VerifyBitwiseXor_9_alpha1: QM31,
@@ -3051,21 +3055,6 @@ pub fn intermediate28(
     (VerifyBitwiseXor_9_alpha0) * (trace_1_column_13_offset_0)
         + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_42_offset_0)
         + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_70_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate30(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_14_offset_0: QM31,
-    trace_1_column_43_offset_0: QM31,
-    trace_1_column_71_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_14_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_43_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_71_offset_0)
         - (VerifyBitwiseXor_9_z)
 }
 
@@ -3084,171 +3073,6 @@ pub fn intermediate32(
         - (VerifyBitwiseXor_9_z)
 }
 
-pub fn intermediate34(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_16_offset_0: QM31,
-    trace_1_column_45_offset_0: QM31,
-    trace_1_column_73_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_16_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_45_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_73_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate36(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_17_offset_0: QM31,
-    trace_1_column_46_offset_0: QM31,
-    trace_1_column_74_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_17_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_46_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_74_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate38(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_18_offset_0: QM31,
-    trace_1_column_47_offset_0: QM31,
-    trace_1_column_75_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_18_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_47_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_75_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate40(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_19_offset_0: QM31,
-    trace_1_column_48_offset_0: QM31,
-    trace_1_column_76_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_19_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_48_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_76_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate42(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_20_offset_0: QM31,
-    trace_1_column_49_offset_0: QM31,
-    trace_1_column_77_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_20_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_49_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_77_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate44(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_21_offset_0: QM31,
-    trace_1_column_50_offset_0: QM31,
-    trace_1_column_78_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_21_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_50_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_78_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate46(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_22_offset_0: QM31,
-    trace_1_column_51_offset_0: QM31,
-    trace_1_column_79_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_22_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_51_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_79_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate48(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_23_offset_0: QM31,
-    trace_1_column_52_offset_0: QM31,
-    trace_1_column_80_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_23_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_52_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_80_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate50(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_24_offset_0: QM31,
-    trace_1_column_53_offset_0: QM31,
-    trace_1_column_81_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_24_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_53_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_81_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate52(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_25_offset_0: QM31,
-    trace_1_column_54_offset_0: QM31,
-    trace_1_column_82_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_25_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_54_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_82_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate54(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_26_offset_0: QM31,
-    trace_1_column_55_offset_0: QM31,
-    trace_1_column_83_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_26_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_55_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_83_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
 pub fn intermediate56(
     VerifyBitwiseXor_9_alpha0: QM31,
     VerifyBitwiseXor_9_alpha1: QM31,
@@ -3264,138 +3088,16 @@ pub fn intermediate56(
         - (VerifyBitwiseXor_9_z)
 }
 
-pub fn intermediate58(
-    VerifyBitwiseXor_9_alpha0: QM31,
-    VerifyBitwiseXor_9_alpha1: QM31,
-    VerifyBitwiseXor_9_alpha2: QM31,
-    VerifyBitwiseXor_9_z: QM31,
-    trace_1_column_28_offset_0: QM31,
-    trace_1_column_57_offset_0: QM31,
-    trace_1_column_85_offset_0: QM31,
-) -> QM31 {
-    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_28_offset_0)
-        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_57_offset_0)
-        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_85_offset_0)
-        - (VerifyBitwiseXor_9_z)
-}
-
-pub fn intermediate60(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_86_offset_0: QM31,
-    bitwise_builtin_segment_start: u32,
-) -> QM31 {
-    (MemoryAddressToId_alpha0)
-        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(2).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_86_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate61(
-    MemoryIdToBig_alpha0: QM31,
-    MemoryIdToBig_alpha1: QM31,
-    MemoryIdToBig_alpha10: QM31,
-    MemoryIdToBig_alpha11: QM31,
-    MemoryIdToBig_alpha12: QM31,
-    MemoryIdToBig_alpha13: QM31,
-    MemoryIdToBig_alpha14: QM31,
-    MemoryIdToBig_alpha15: QM31,
-    MemoryIdToBig_alpha16: QM31,
-    MemoryIdToBig_alpha17: QM31,
-    MemoryIdToBig_alpha18: QM31,
-    MemoryIdToBig_alpha19: QM31,
-    MemoryIdToBig_alpha2: QM31,
-    MemoryIdToBig_alpha20: QM31,
-    MemoryIdToBig_alpha21: QM31,
-    MemoryIdToBig_alpha22: QM31,
-    MemoryIdToBig_alpha23: QM31,
-    MemoryIdToBig_alpha24: QM31,
-    MemoryIdToBig_alpha25: QM31,
-    MemoryIdToBig_alpha26: QM31,
-    MemoryIdToBig_alpha27: QM31,
-    MemoryIdToBig_alpha28: QM31,
-    MemoryIdToBig_alpha3: QM31,
-    MemoryIdToBig_alpha4: QM31,
-    MemoryIdToBig_alpha5: QM31,
-    MemoryIdToBig_alpha6: QM31,
-    MemoryIdToBig_alpha7: QM31,
-    MemoryIdToBig_alpha8: QM31,
-    MemoryIdToBig_alpha9: QM31,
-    MemoryIdToBig_z: QM31,
-    intermediate11: QM31,
-    intermediate13: QM31,
-    intermediate15: QM31,
-    intermediate17: QM31,
-    intermediate19: QM31,
-    intermediate21: QM31,
-    intermediate23: QM31,
-    intermediate25: QM31,
-    intermediate27: QM31,
-    intermediate29: QM31,
-    intermediate31: QM31,
-    intermediate33: QM31,
-    intermediate35: QM31,
-    intermediate37: QM31,
-    intermediate39: QM31,
-    intermediate41: QM31,
-    intermediate43: QM31,
-    intermediate45: QM31,
-    intermediate47: QM31,
-    intermediate49: QM31,
-    intermediate5: QM31,
-    intermediate51: QM31,
-    intermediate53: QM31,
-    intermediate55: QM31,
-    intermediate57: QM31,
-    intermediate59: QM31,
-    intermediate7: QM31,
-    intermediate9: QM31,
-    trace_1_column_86_offset_0: QM31,
-) -> QM31 {
-    (MemoryIdToBig_alpha0) * (trace_1_column_86_offset_0)
-        + (MemoryIdToBig_alpha1) * (intermediate5)
-        + (MemoryIdToBig_alpha2) * (intermediate7)
-        + (MemoryIdToBig_alpha3) * (intermediate9)
-        + (MemoryIdToBig_alpha4) * (intermediate11)
-        + (MemoryIdToBig_alpha5) * (intermediate13)
-        + (MemoryIdToBig_alpha6) * (intermediate15)
-        + (MemoryIdToBig_alpha7) * (intermediate17)
-        + (MemoryIdToBig_alpha8) * (intermediate19)
-        + (MemoryIdToBig_alpha9) * (intermediate21)
-        + (MemoryIdToBig_alpha10) * (intermediate23)
-        + (MemoryIdToBig_alpha11) * (intermediate25)
-        + (MemoryIdToBig_alpha12) * (intermediate27)
-        + (MemoryIdToBig_alpha13) * (intermediate29)
-        + (MemoryIdToBig_alpha14) * (intermediate31)
-        + (MemoryIdToBig_alpha15) * (intermediate33)
-        + (MemoryIdToBig_alpha16) * (intermediate35)
-        + (MemoryIdToBig_alpha17) * (intermediate37)
-        + (MemoryIdToBig_alpha18) * (intermediate39)
-        + (MemoryIdToBig_alpha19) * (intermediate41)
-        + (MemoryIdToBig_alpha20) * (intermediate43)
-        + (MemoryIdToBig_alpha21) * (intermediate45)
-        + (MemoryIdToBig_alpha22) * (intermediate47)
-        + (MemoryIdToBig_alpha23) * (intermediate49)
-        + (MemoryIdToBig_alpha24) * (intermediate51)
-        + (MemoryIdToBig_alpha25) * (intermediate53)
-        + (MemoryIdToBig_alpha26) * (intermediate55)
-        + (MemoryIdToBig_alpha27) * (intermediate57)
-        + (MemoryIdToBig_alpha28) * (intermediate59)
-        - (MemoryIdToBig_z)
-}
-
 pub fn intermediate62(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
     seq: QM31,
     trace_1_column_87_offset_0: QM31,
-    bitwise_builtin_segment_start: u32,
+    builtin_segment_start: M31,
 ) -> QM31 {
     (MemoryAddressToId_alpha0)
-        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(3).into())
+        * (builtin_segment_start.into() + (seq) * (m31(5).into()) + m31(3).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_87_offset_0)
         - (MemoryAddressToId_z)
 }
@@ -3493,18 +3195,320 @@ pub fn intermediate63(
         - (MemoryIdToBig_z)
 }
 
+pub fn intermediate34(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_16_offset_0: QM31,
+    trace_1_column_45_offset_0: QM31,
+    trace_1_column_73_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_16_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_45_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_73_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate16(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_36_offset_0: QM31,
+    trace_1_column_64_offset_0: QM31,
+    trace_1_column_7_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_7_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_36_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_64_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate26(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_12_offset_0: QM31,
+    trace_1_column_41_offset_0: QM31,
+    trace_1_column_69_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_12_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_41_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_69_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate40(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_19_offset_0: QM31,
+    trace_1_column_48_offset_0: QM31,
+    trace_1_column_76_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_19_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_48_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_76_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate2(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_29_offset_0: QM31,
+    builtin_segment_start: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0)
+        * (builtin_segment_start.into() + (seq) * (m31(5).into()) + m31(1).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_29_offset_0)
+        - (MemoryAddressToId_z)
+}
+
+pub fn intermediate20(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_38_offset_0: QM31,
+    trace_1_column_66_offset_0: QM31,
+    trace_1_column_9_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_9_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_38_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_66_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate48(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_23_offset_0: QM31,
+    trace_1_column_52_offset_0: QM31,
+    trace_1_column_80_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_23_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_52_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_80_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate61(
+    MemoryIdToBig_alpha0: QM31,
+    MemoryIdToBig_alpha1: QM31,
+    MemoryIdToBig_alpha10: QM31,
+    MemoryIdToBig_alpha11: QM31,
+    MemoryIdToBig_alpha12: QM31,
+    MemoryIdToBig_alpha13: QM31,
+    MemoryIdToBig_alpha14: QM31,
+    MemoryIdToBig_alpha15: QM31,
+    MemoryIdToBig_alpha16: QM31,
+    MemoryIdToBig_alpha17: QM31,
+    MemoryIdToBig_alpha18: QM31,
+    MemoryIdToBig_alpha19: QM31,
+    MemoryIdToBig_alpha2: QM31,
+    MemoryIdToBig_alpha20: QM31,
+    MemoryIdToBig_alpha21: QM31,
+    MemoryIdToBig_alpha22: QM31,
+    MemoryIdToBig_alpha23: QM31,
+    MemoryIdToBig_alpha24: QM31,
+    MemoryIdToBig_alpha25: QM31,
+    MemoryIdToBig_alpha26: QM31,
+    MemoryIdToBig_alpha27: QM31,
+    MemoryIdToBig_alpha28: QM31,
+    MemoryIdToBig_alpha3: QM31,
+    MemoryIdToBig_alpha4: QM31,
+    MemoryIdToBig_alpha5: QM31,
+    MemoryIdToBig_alpha6: QM31,
+    MemoryIdToBig_alpha7: QM31,
+    MemoryIdToBig_alpha8: QM31,
+    MemoryIdToBig_alpha9: QM31,
+    MemoryIdToBig_z: QM31,
+    intermediate11: QM31,
+    intermediate13: QM31,
+    intermediate15: QM31,
+    intermediate17: QM31,
+    intermediate19: QM31,
+    intermediate21: QM31,
+    intermediate23: QM31,
+    intermediate25: QM31,
+    intermediate27: QM31,
+    intermediate29: QM31,
+    intermediate31: QM31,
+    intermediate33: QM31,
+    intermediate35: QM31,
+    intermediate37: QM31,
+    intermediate39: QM31,
+    intermediate41: QM31,
+    intermediate43: QM31,
+    intermediate45: QM31,
+    intermediate47: QM31,
+    intermediate49: QM31,
+    intermediate5: QM31,
+    intermediate51: QM31,
+    intermediate53: QM31,
+    intermediate55: QM31,
+    intermediate57: QM31,
+    intermediate59: QM31,
+    intermediate7: QM31,
+    intermediate9: QM31,
+    trace_1_column_86_offset_0: QM31,
+) -> QM31 {
+    (MemoryIdToBig_alpha0) * (trace_1_column_86_offset_0)
+        + (MemoryIdToBig_alpha1) * (intermediate5)
+        + (MemoryIdToBig_alpha2) * (intermediate7)
+        + (MemoryIdToBig_alpha3) * (intermediate9)
+        + (MemoryIdToBig_alpha4) * (intermediate11)
+        + (MemoryIdToBig_alpha5) * (intermediate13)
+        + (MemoryIdToBig_alpha6) * (intermediate15)
+        + (MemoryIdToBig_alpha7) * (intermediate17)
+        + (MemoryIdToBig_alpha8) * (intermediate19)
+        + (MemoryIdToBig_alpha9) * (intermediate21)
+        + (MemoryIdToBig_alpha10) * (intermediate23)
+        + (MemoryIdToBig_alpha11) * (intermediate25)
+        + (MemoryIdToBig_alpha12) * (intermediate27)
+        + (MemoryIdToBig_alpha13) * (intermediate29)
+        + (MemoryIdToBig_alpha14) * (intermediate31)
+        + (MemoryIdToBig_alpha15) * (intermediate33)
+        + (MemoryIdToBig_alpha16) * (intermediate35)
+        + (MemoryIdToBig_alpha17) * (intermediate37)
+        + (MemoryIdToBig_alpha18) * (intermediate39)
+        + (MemoryIdToBig_alpha19) * (intermediate41)
+        + (MemoryIdToBig_alpha20) * (intermediate43)
+        + (MemoryIdToBig_alpha21) * (intermediate45)
+        + (MemoryIdToBig_alpha22) * (intermediate47)
+        + (MemoryIdToBig_alpha23) * (intermediate49)
+        + (MemoryIdToBig_alpha24) * (intermediate51)
+        + (MemoryIdToBig_alpha25) * (intermediate53)
+        + (MemoryIdToBig_alpha26) * (intermediate55)
+        + (MemoryIdToBig_alpha27) * (intermediate57)
+        + (MemoryIdToBig_alpha28) * (intermediate59)
+        - (MemoryIdToBig_z)
+}
+
 pub fn intermediate64(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,
     MemoryAddressToId_z: QM31,
     seq: QM31,
     trace_1_column_88_offset_0: QM31,
-    bitwise_builtin_segment_start: u32,
+    builtin_segment_start: M31,
 ) -> QM31 {
     (MemoryAddressToId_alpha0)
-        * (m31(bitwise_builtin_segment_start).into() + (seq) * (m31(5).into()) + m31(4).into())
+        * (builtin_segment_start.into() + (seq) * (m31(5).into()) + m31(4).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_88_offset_0)
         - (MemoryAddressToId_z)
+}
+
+pub fn intermediate30(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_14_offset_0: QM31,
+    trace_1_column_43_offset_0: QM31,
+    trace_1_column_71_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_14_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_43_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_71_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate22(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_10_offset_0: QM31,
+    trace_1_column_39_offset_0: QM31,
+    trace_1_column_67_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_10_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_39_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_67_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate52(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_25_offset_0: QM31,
+    trace_1_column_54_offset_0: QM31,
+    trace_1_column_82_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_25_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_54_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_82_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate42(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_20_offset_0: QM31,
+    trace_1_column_49_offset_0: QM31,
+    trace_1_column_77_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_20_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_49_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_77_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate4(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_1_offset_0: QM31,
+    trace_1_column_30_offset_0: QM31,
+    trace_1_column_58_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_1_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_30_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_58_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate54(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_26_offset_0: QM31,
+    trace_1_column_55_offset_0: QM31,
+    trace_1_column_83_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_26_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_55_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_83_offset_0)
+        - (VerifyBitwiseXor_9_z)
+}
+
+pub fn intermediate44(
+    VerifyBitwiseXor_9_alpha0: QM31,
+    VerifyBitwiseXor_9_alpha1: QM31,
+    VerifyBitwiseXor_9_alpha2: QM31,
+    VerifyBitwiseXor_9_z: QM31,
+    trace_1_column_21_offset_0: QM31,
+    trace_1_column_50_offset_0: QM31,
+    trace_1_column_78_offset_0: QM31,
+) -> QM31 {
+    (VerifyBitwiseXor_9_alpha0) * (trace_1_column_21_offset_0)
+        + (VerifyBitwiseXor_9_alpha1) * (trace_1_column_50_offset_0)
+        + (VerifyBitwiseXor_9_alpha2) * (trace_1_column_78_offset_0)
+        - (VerifyBitwiseXor_9_z)
 }
 
 pub fn intermediate65(

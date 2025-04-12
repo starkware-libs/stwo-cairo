@@ -168,6 +168,7 @@ impl MerkleVerifierImpl<
 
                 // If the column values were queried, read them from `queried_value`.
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
+                    // BUG HAPPENS HERE.
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
                     column_witness.pop_front_n(n_columns_in_layer)

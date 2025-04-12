@@ -31,7 +31,7 @@ pub impl ClaimImpl of ClaimTrait {
         const N_LOOKUPS: usize = 5;
         let log_size = self.log_size();
         let preprocesed_trace_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(29, log_size).span();
+        let trace_log_sizes = ArrayImpl::new_repeated(17, log_size).span();
         let interaction_log_sizes = ArrayImpl::new_repeated(
             QM31_EXTENSION_DEGREE * N_LOOKUPS.div_ceil(2), log_size,
         )
@@ -75,7 +75,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
+        let log_size = *self.claim.log_size;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         constraints::mask_points(
             ref preprocessed_column_set,
@@ -88,7 +88,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        self.claim.log_size() + 1
+        *self.claim.log_size + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -119,6 +119,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let id_to_value_alpha_5 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_6 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_7 = *id_to_value_alpha_powers.pop_front().unwrap();
+        let id_to_value_alpha_8 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_z = *self.memoryidtobig_lookup_elements.z;
 
         let mut range_check_4_3_alpha_powers = self
@@ -179,6 +180,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             MemoryIdToBig_alpha5: id_to_value_alpha_5,
             MemoryIdToBig_alpha6: id_to_value_alpha_6,
             MemoryIdToBig_alpha7: id_to_value_alpha_7,
+            MemoryIdToBig_alpha8: id_to_value_alpha_8,
             MemoryIdToBig_z: id_to_value_z,
             RangeCheck_4_3_alpha0: range_check_4_3_alpha_0,
             RangeCheck_4_3_alpha1: range_check_4_3_alpha_1,
@@ -189,23 +191,11 @@ pub impl ComponentImpl of CairoComponent<Component> {
             RangeCheck_7_2_5_z: range_check_7_2_5_z,
             VerifyInstruction_alpha0: verify_instruction_alpha_0,
             VerifyInstruction_alpha1: verify_instruction_alpha_1,
-            VerifyInstruction_alpha10: verify_instruction_alpha_10,
-            VerifyInstruction_alpha11: verify_instruction_alpha_11,
-            VerifyInstruction_alpha12: verify_instruction_alpha_12,
-            VerifyInstruction_alpha13: verify_instruction_alpha_13,
-            VerifyInstruction_alpha14: verify_instruction_alpha_14,
-            VerifyInstruction_alpha15: verify_instruction_alpha_15,
-            VerifyInstruction_alpha16: verify_instruction_alpha_16,
-            VerifyInstruction_alpha17: verify_instruction_alpha_17,
-            VerifyInstruction_alpha18: verify_instruction_alpha_18,
             VerifyInstruction_alpha2: verify_instruction_alpha_2,
             VerifyInstruction_alpha3: verify_instruction_alpha_3,
             VerifyInstruction_alpha4: verify_instruction_alpha_4,
             VerifyInstruction_alpha5: verify_instruction_alpha_5,
             VerifyInstruction_alpha6: verify_instruction_alpha_6,
-            VerifyInstruction_alpha7: verify_instruction_alpha_7,
-            VerifyInstruction_alpha8: verify_instruction_alpha_8,
-            VerifyInstruction_alpha9: verify_instruction_alpha_9,
             VerifyInstruction_z: verify_instruction_z,
             claimed_sum: *self.interaction_claim.claimed_sum,
         };

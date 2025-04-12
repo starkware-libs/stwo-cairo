@@ -190,10 +190,17 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 
 #[cfg(test)]
 pub mod tests {
+    use std::io::Write;
+
     use cairo_air::preprocessed::testing_preprocessed_tree;
+    use cairo_air::verifier::verify_cairo;
+    use cairo_air::CairoProof;
     use cairo_lang_casm::casm;
+    use itertools::Itertools;
     use stwo_cairo_adapter::plain::input_from_plain_casm;
     use stwo_cairo_adapter::ProverInput;
+    use stwo_cairo_serialize::CairoSerialize;
+    use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
     use test_log::test;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
@@ -221,6 +228,13 @@ pub mod tests {
         .instructions;
 
         input_from_plain_casm(instructions)
+    }
+
+    #[test]
+    fn test_basic_cairo_constraints() {
+        let input = test_basic_cairo_air_input();
+        let pp_tree = testing_preprocessed_tree(19);
+        assert_cairo_constraints(input, pp_tree);
     }
 
     #[test]

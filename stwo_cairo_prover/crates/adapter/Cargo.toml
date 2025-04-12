@@ -5,6 +5,7 @@ edition = "2021"
 
 
 [features]
+default = ["std"]
 slow-tests = []
 std = ["dep:sonic-rs"]
 
