@@ -12,7 +12,7 @@ use super::{
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq, Serde)]
+#[derive(Copy, Drop, Debug, PartialEq)]
 pub struct QM31 {
     a: CM31,
     b: CM31,
@@ -239,13 +239,6 @@ pub impl QM31Neg of Neg<QM31> {
     #[inline]
     fn neg(a: QM31) -> QM31 {
         QM31 { a: -a.a, b: -a.b }
-    }
-}
-
-impl QM31PartialOrd of PartialOrd<QM31> {
-    #[inline]
-    fn lt(lhs: QM31, rhs: QM31) -> bool {
-        lhs.a < rhs.a || (lhs.a == rhs.a && lhs.b < rhs.b)
     }
 }
 

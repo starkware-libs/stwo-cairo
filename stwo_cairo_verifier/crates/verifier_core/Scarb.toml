@@ -8,6 +8,7 @@ casm = true
 
 [features]
 poseidon252_verifier = []
+qm31_opcode = []
 
 [tool.fmt]
 sort-module-level-items = true
