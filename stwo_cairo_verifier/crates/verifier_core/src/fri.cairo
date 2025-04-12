@@ -397,10 +397,10 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                 for eval in subset_eval.span() {
                     // Split the QM31 into its M31 coordinate values.
                     let [v0, v1, v2, v3] = (*eval).to_array();
-                    decommitmented_values.append(v0);
-                    decommitmented_values.append(v1);
-                    decommitmented_values.append(v2);
-                    decommitmented_values.append(v3);
+                    decommitmented_values.append(v0.into());
+                    decommitmented_values.append(v1.into());
+                    decommitmented_values.append(v2.into());
+                    decommitmented_values.append(v3.into());
                 };
             }
 
@@ -472,10 +472,10 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             for eval in subset_eval.span() {
                 // Split the QM31 into its M31 coordinate values.
                 let [v0, v1, v2, v3] = (*eval).to_array();
-                decommitmented_values.append(v0);
-                decommitmented_values.append(v1);
-                decommitmented_values.append(v2);
-                decommitmented_values.append(v3);
+                decommitmented_values.append(v0.into());
+                decommitmented_values.append(v1.into());
+                decommitmented_values.append(v2.into());
+                decommitmented_values.append(v3.into());
             };
         }
 
