@@ -1,6 +1,6 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::m31::{M31, M31Impl, M31InnerT, m31};
+use super::m31::{M31, M31InnerT, m31};
 use super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
