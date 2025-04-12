@@ -2,7 +2,7 @@ use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::cm31::{CM31, CM31Trait};
-use super::m31::{M31, M31Impl, M31InnerT, UnreducedM31};
+use super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
 use super::Invertible;
 
 /// Equals `(2^31 - 1)^4`.
@@ -282,12 +282,12 @@ impl UnreducedQM31Impl of UnreducedQM31Trait {
     fn reduce(self: UnreducedQM31) -> QM31 {
         QM31 {
             a: CM31 {
-                a: M31Impl::reduce_u128(self.a.try_into().unwrap()),
-                b: M31Impl::reduce_u128(self.b.try_into().unwrap()),
+                a: M31Trait::reduce_u128(self.a.try_into().unwrap()),
+                b: M31Trait::reduce_u128(self.b.try_into().unwrap()),
             },
             b: CM31 {
-                a: M31Impl::reduce_u128(self.c.try_into().unwrap()),
-                b: M31Impl::reduce_u128(self.d.try_into().unwrap()),
+                a: M31Trait::reduce_u128(self.c.try_into().unwrap()),
+                b: M31Trait::reduce_u128(self.d.try_into().unwrap()),
             },
         }
     }
@@ -342,7 +342,7 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     #[inline]
     fn large_zero() -> PackedUnreducedQM31 {
         PackedUnreducedQM31 {
-            a: PackedUnreducedCM31Impl::large_zero(), b: PackedUnreducedCM31Impl::large_zero(),
+            a: PackedUnreducedCM31Trait::large_zero(), b: PackedUnreducedCM31Trait::large_zero(),
         }
     }
 
@@ -405,7 +405,7 @@ pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     #[inline]
     fn reduce(self: PackedUnreducedCM31) -> CM31 {
         let u256 { low: a, high: b } = self.inner.into();
-        CM31 { a: M31Impl::reduce_u128(a), b: M31Impl::reduce_u128(b) }
+        CM31 { a: M31Trait::reduce_u128(a), b: M31Trait::reduce_u128(b) }
     }
 }
 
