@@ -6,7 +6,7 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -531,7 +531,7 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 13
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_29_offset_0, trace_2_column_30_offset_0, trace_2_column_31_offset_0,
             trace_2_column_32_offset_0,
@@ -543,13 +543,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 14
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_33_offset_0, trace_2_column_34_offset_0, trace_2_column_35_offset_0,
             trace_2_column_36_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_29_offset_0, trace_2_column_30_offset_0, trace_2_column_31_offset_0,
                 trace_2_column_32_offset_0,
@@ -561,13 +561,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 15
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_37_offset_0, trace_2_column_38_offset_0, trace_2_column_39_offset_0,
             trace_2_column_40_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_33_offset_0, trace_2_column_34_offset_0, trace_2_column_35_offset_0,
                 trace_2_column_36_offset_0,
@@ -579,13 +579,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 16
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_41_offset_0, trace_2_column_42_offset_0, trace_2_column_43_offset_0,
             trace_2_column_44_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_37_offset_0, trace_2_column_38_offset_0, trace_2_column_39_offset_0,
                 trace_2_column_40_offset_0,
@@ -597,19 +597,19 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 17
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_45_offset_0, trace_2_column_46_offset_0, trace_2_column_47_offset_0,
             trace_2_column_48_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_45_offset_neg_1, trace_2_column_46_offset_neg_1,
                 trace_2_column_47_offset_neg_1, trace_2_column_48_offset_neg_1,
             ],
         ))
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_41_offset_0, trace_2_column_42_offset_0, trace_2_column_43_offset_0,
                 trace_2_column_44_offset_0,
@@ -867,8 +867,15 @@ fn intermediates(
         trace_1_column_7_offset_0,
     );
     array![
-        intermediate0, intermediate1, intermediate2, intermediate3, intermediate4, intermediate5,
-        intermediate6, intermediate7, intermediate8,
+        intermediate0,
+        intermediate1,
+        intermediate2,
+        intermediate3,
+        intermediate4,
+        intermediate5,
+        intermediate6,
+        intermediate7,
+        intermediate8,
     ]
 }
 

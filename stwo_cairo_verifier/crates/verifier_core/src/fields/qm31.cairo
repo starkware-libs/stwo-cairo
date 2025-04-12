@@ -452,9 +452,7 @@ pub fn qm31_const<
 mod tests {
     use super::super::m31::{P_U32 as P, m31};
     use super::super::Invertible;
-    use super::{
-        PackedUnreducedQM31Impl, QM31, QM31Impl, QM31IntoPackedUnreducedQM31, QM31Trait, qm31_const,
-    };
+    use super::{PackedUnreducedQM31Trait, QM31, QM31IntoPackedUnreducedQM31, QM31Trait, qm31_const};
 
     #[test]
     fn test_QM31() {
@@ -482,7 +480,7 @@ mod tests {
         let b = qm31_const::<2147483464, 75, 2147482726, 2147477523>();
         let c = qm31_const::<2, 2147483646, 2147483646, 2147483639>();
 
-        let res = QM31Impl::fma(a, b, c);
+        let res = QM31Trait::fma(a, b, c);
 
         assert_eq!(res, a * b + c);
     }
@@ -493,7 +491,7 @@ mod tests {
         let b = qm31_const::<2147483464, 75, 2147482726, 2147477523>();
         let c = qm31_const::<2, 2147483646, 2147483646, 2147483639>();
 
-        let res = QM31Impl::fms(a, b, c);
+        let res = QM31Trait::fms(a, b, c);
 
         assert_eq!(res, a * b - c);
     }

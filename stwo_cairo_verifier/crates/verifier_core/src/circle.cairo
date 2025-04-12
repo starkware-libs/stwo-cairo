@@ -5,10 +5,10 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
-use crate::fields::Invertible;
 use crate::fields::cm31::CM31;
 use crate::fields::m31::{M31, M31Impl};
-use crate::fields::qm31::{P4, QM31, QM31Impl, QM31Trait};
+use crate::fields::qm31::{P4, QM31, QM31Trait};
+use crate::fields::Invertible;
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].
@@ -89,7 +89,7 @@ pub impl CirclePointQM31AddCirclePointM31Impl of CirclePointQM31AddCirclePointM3
     }
 }
 
-pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
+pub impl CirclePointQM31Trait of CirclePointTrait<QM31> {}
 
 #[generate_trait]
 pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
@@ -278,7 +278,8 @@ mod tests {
     use crate::fields::m31::m31;
     use super::{
         CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
-        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
+        CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Trait, Coset, CosetImpl,
+        M31_CIRCLE_GEN,
     };
 
 
