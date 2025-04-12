@@ -1,7 +1,7 @@
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
-use crate::fields::m31::M31Trait;
+use crate::fields::m31::{M31InnerT, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
 use crate::{BaseField, SecureField};
@@ -99,7 +99,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 }
 
 // TODO(spapini): Check that this is sound.
-fn draw_base_felts(ref channel: Poseidon252Channel) -> [BaseField; FELTS_PER_HASH] {
+fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31InnerT; FELTS_PER_HASH] {
     let mut cur = draw_felt252(ref channel).into();
     [
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
@@ -114,7 +114,7 @@ fn draw_felt252(ref channel: Poseidon252Channel) -> felt252 {
 }
 
 #[inline]
-fn extract_m31<const N: usize>(ref num: u256) -> BaseField {
+fn extract_m31<const N: usize>(ref num: u256) -> M31InnerT {
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     M31Trait::reduce_u128(r.low)
@@ -122,7 +122,7 @@ fn extract_m31<const N: usize>(ref num: u256) -> BaseField {
 
 #[cfg(test)]
 mod tests {
-    use crate::fields::qm31::qm31;
+    use crate::fields::qm31::qm31_const;
     use super::{ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, gen_bit_mask};
 
     #[test]

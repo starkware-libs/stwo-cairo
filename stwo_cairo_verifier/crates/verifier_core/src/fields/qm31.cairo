@@ -32,14 +32,17 @@ impl QM31InvertibleImpl of Invertible<QM31> {
 #[generate_trait]
 pub impl QM31Impl of QM31Trait {
     #[inline]
-    fn from_array(arr: [M31; 4]) -> QM31 {
+    fn from_array(arr: [M31InnerT; 4]) -> QM31 {
         let [a, b, c, d] = arr;
-        QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
+        QM31 {
+            a: CM31 { a: M31 { inner: a }, b: M31 { inner: b } },
+            b: CM31 { a: M31 { inner: c }, b: M31 { inner: d } },
+        }
     }
 
     #[inline]
-    fn to_array(self: QM31) -> [M31; 4] {
-        [self.a.a, self.a.b, self.b.a, self.b.b]
+    fn to_array(self: QM31) -> [M31InnerT; 4] {
+        [self.a.a.inner, self.a.b.inner, self.b.a.inner, self.b.b.inner]
     }
 
     #[inline]
@@ -282,12 +285,12 @@ impl UnreducedQM31Impl of UnreducedQM31Trait {
     fn reduce(self: UnreducedQM31) -> QM31 {
         QM31 {
             a: CM31 {
-                a: M31Trait::reduce_u128(self.a.try_into().unwrap()),
-                b: M31Trait::reduce_u128(self.b.try_into().unwrap()),
+                a: M31Trait::reduce_u128(self.a.try_into().unwrap()).into(),
+                b: M31Trait::reduce_u128(self.b.try_into().unwrap()).into(),
             },
             b: CM31 {
-                a: M31Trait::reduce_u128(self.c.try_into().unwrap()),
-                b: M31Trait::reduce_u128(self.d.try_into().unwrap()),
+                a: M31Trait::reduce_u128(self.c.try_into().unwrap()).into(),
+                b: M31Trait::reduce_u128(self.d.try_into().unwrap()).into(),
             },
         }
     }
@@ -405,7 +408,7 @@ pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     #[inline]
     fn reduce(self: PackedUnreducedCM31) -> CM31 {
         let u256 { low: a, high: b } = self.inner.into();
-        CM31 { a: M31Trait::reduce_u128(a), b: M31Trait::reduce_u128(b) }
+        CM31 { a: M31Trait::reduce_u128(a).into(), b: M31Trait::reduce_u128(b).into() }
     }
 }
 
