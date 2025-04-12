@@ -4,7 +4,7 @@ use core::num::traits::One;
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::M31;
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
 
 /// Represents the value of the prefix sum column at some index.
 /// Should be used to eliminate padded rows for the logup sum.

@@ -6,7 +6,7 @@ use stwo_verifier_core::circle::{
 };
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, qm31_const};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::utils::pow2;
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
@@ -89,13 +89,13 @@ pub fn evaluate_constraints_at_point(
     let intermediate0 = *intermediates.pop_front().unwrap();
 
     // Constraint 0
-    let constraint_quotient = ((QM31Impl::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_2_offset_0, trace_2_column_3_offset_0, trace_2_column_4_offset_0,
             trace_2_column_5_offset_0,
         ],
     )
-        - (QM31Impl::from_partial_evals(
+        - (QM31Trait::from_partial_evals(
             [
                 trace_2_column_2_offset_neg_1, trace_2_column_3_offset_neg_1,
                 trace_2_column_4_offset_neg_1, trace_2_column_5_offset_neg_1,

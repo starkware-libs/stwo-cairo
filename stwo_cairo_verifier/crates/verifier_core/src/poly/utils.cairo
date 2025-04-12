@@ -1,5 +1,5 @@
 use crate::fields::m31::M31;
-use crate::fields::qm31::{QM31, QM31Impl};
+use crate::fields::qm31::{QM31, QM31Trait};
 use crate::fields::{BaseField, SecureField};
 
 /// Folds values recursively in `O(n)` by a hierarchical application of folding factors.

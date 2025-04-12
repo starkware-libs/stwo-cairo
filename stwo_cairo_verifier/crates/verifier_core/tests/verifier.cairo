@@ -3,7 +3,7 @@ use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
