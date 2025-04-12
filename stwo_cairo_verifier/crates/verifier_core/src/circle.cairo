@@ -107,9 +107,41 @@ pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     }
 }
 
+// TODO: Remove once only "0" and "-1" are allowed as mask offsets. This only exists
+// because currently the rust prover sorts the quotients by the mask point.
 impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
     fn lt(lhs: CirclePoint<QM31>, rhs: CirclePoint<QM31>) -> bool {
-        lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y)
+        let [lxa, lxb, lxc, lxd] = lhs.x.to_array();
+        let lxa: u32 = upcast(lxa);
+        let lxb: u32 = upcast(lxb);
+        let lxc: u32 = upcast(lxc);
+        let lxd: u32 = upcast(lxd);
+
+        let [rxa, rxb, rxc, rxd] = rhs.x.to_array();
+        let rxa: u32 = upcast(rxa);
+        let rxb: u32 = upcast(rxb);
+        let rxc: u32 = upcast(rxc);
+        let rxd: u32 = upcast(rxd);
+
+        let [lya, lyb, lyc, lyd] = lhs.y.to_array();
+        let lya: u32 = upcast(lya);
+        let lyb: u32 = upcast(lyb);
+        let lyc: u32 = upcast(lyc);
+        let lyd: u32 = upcast(lyd);
+
+        let [rya, ryb, ryc, ryd] = rhs.y.to_array();
+        let rya: u32 = upcast(rya);
+        let ryb: u32 = upcast(ryb);
+        let ryc: u32 = upcast(ryc);
+        let ryd: u32 = upcast(ryd);
+
+        lxa < rxa || lxa == rxa
+            && (lxb < rxb || lxb == rxb
+                && (lxc < rxc || lxc == rxc
+                    && (lxd < rxd || lxd == rxd
+                        && (lya < rya || lya == rya
+                            && (lyb < ryb || lyb == ryb
+                                && (lyc < ryc || lyc == ryc && lyd < ryd))))))
     }
 }
 
