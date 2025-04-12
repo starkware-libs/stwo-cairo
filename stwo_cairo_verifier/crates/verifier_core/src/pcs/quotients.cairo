@@ -307,12 +307,12 @@ fn quotient_denominator_inverses(
 
     for sample_batch in sample_batches {
         // Extract Pr, Pi.
-        let (a, b, c, d) = sample_batch.point.x.unpack();
-        let prx = CM31Trait::pack(a, b);
-        let pix = CM31Trait::pack(c, d);
-        let (a, b, c, d) = sample_batch.point.y.unpack();
-        let pry = CM31Trait::pack(a, b);
-        let piy = CM31Trait::pack(c, d);
+        let [a, b, c, d] = sample_batch.point.x.to_array();
+        let prx = CM31Trait::pack(a.into(), b.into());
+        let pix = CM31Trait::pack(c.into(), d.into());
+        let [a, b, c, d] = sample_batch.point.y.to_array();
+        let pry = CM31Trait::pack(a.into(), b.into());
+        let piy = CM31Trait::pack(c.into(), d.into());
         denominators.append(prx.sub_m31(domain_point.x) * piy - pry.sub_m31(domain_point.y) * pix);
     }
 
@@ -459,8 +459,8 @@ impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
 /// Returns `complex_conjugate(v) - v`.
 #[inline]
 pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
-    let (_, _, c, d) = v.unpack();
-    let v = QM31Trait::pack(Zero::zero(), Zero::zero(), c, d);
+    let [_, _, c, d] = v.to_array();
+    let v = QM31Trait::from_array([0, 0, c, d]);
     -(v + v)
 }
 
@@ -474,7 +474,7 @@ pub struct PointSample {
 #[generate_trait]
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
     fn encode(key: @CirclePoint<QM31>) -> felt252 {
-        let (y_identifier, _, _, _) = key.y.unpack();
+        let [y_identifier, _, _, _] = key.y.to_array();
         pack4(y_identifier.into(), (*key.x).to_array())
     }
 }
