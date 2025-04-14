@@ -203,7 +203,15 @@ mod tests {
         let initial_digest = 0;
         let mut channel = new_channel(initial_digest);
 
-        channel.mix_felts(array![qm31(1, 2, 3, 4), qm31(5, 6, 7, 8), qm31(9, 10, 11, 12)].span());
+        channel
+            .mix_felts(
+                array![
+                    qm31_const::<1, 2, 3, 4>(),
+                    qm31_const::<5, 6, 7, 8>(),
+                    qm31_const::<9, 10, 11, 12>(),
+                ]
+                    .span(),
+            );
 
         assert_ne!(initial_digest, channel.digest);
     }

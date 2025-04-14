@@ -135,7 +135,7 @@ use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::M31;
-use stwo_verifier_core::fields::qm31::{QM31, QM31Zero};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Zero, qm31_const};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -3614,7 +3614,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 mod tests {
     use core::num::traits::one::One;
     use stwo_constraint_framework::LookupElements;
-    use stwo_verifier_core::fields::qm31::qm31;
+    use stwo_verifier_core::fields::qm31::qm31_const;
     use stwo_verifier_core::utils::ArrayImpl;
     use super::{
         CairoInteractionElements, PublicData, PublicDataImpl, RangeChecksInteractionElements,
@@ -3653,7 +3653,7 @@ mod tests {
 
         let sum = public_data.logup_sum(@dummy_lookup_elements);
 
-        assert_eq!(sum, qm31(1953467177,1393200374, 79713755, 621084348));
+        assert_eq!(sum, qm31_const::<1953467177, 1393200374, 79713755, 621084348>());
     }
 
     fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
@@ -3684,7 +3684,7 @@ mod tests {
             LookupElements::<
                 N,
             > {
-                z: qm31(1, 2, 3, 4),
+                z: qm31_const::<1, 2, 3, 4>(),
                 alpha: One::one(),
                 alpha_powers: ArrayImpl::new_repeated(N, One::one()),
             }
