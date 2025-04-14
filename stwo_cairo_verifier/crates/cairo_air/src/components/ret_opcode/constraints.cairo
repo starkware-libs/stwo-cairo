@@ -465,12 +465,7 @@ fn intermediates(
         trace_1_column_9_offset_0,
     );
     array![
-        intermediate0,
-        intermediate1,
-        intermediate2,
-        intermediate3,
-        intermediate4,
-        intermediate5,
+        intermediate0, intermediate1, intermediate2, intermediate3, intermediate4, intermediate5,
         intermediate6,
     ]
 }

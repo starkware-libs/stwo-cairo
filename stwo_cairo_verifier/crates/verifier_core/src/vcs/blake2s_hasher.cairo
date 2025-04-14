@@ -1,11 +1,11 @@
 use core::array::ArrayTrait;
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use crate::utils::SpanExTrait;
+use crate::BaseField;
 use crate::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use crate::fields::m31::M31Zero;
+use crate::utils::SpanExTrait;
 use crate::vcs::hasher::MerkleHasher;
-use crate::BaseField;
 
 const M31_ELEMENETS_IN_MSG: usize = 16;
 
@@ -201,28 +201,9 @@ mod tests {
             ),
         };
         let values = array![
-            m31(0),
-            m31(1),
-            m31(2),
-            m31(3),
-            m31(4),
-            m31(5),
-            m31(6),
-            m31(7),
-            m31(8),
-            m31(9),
-            m31(10),
-            m31(11),
-            m31(12),
-            m31(13),
-            m31(14),
-            m31(15),
-            m31(16),
-            m31(17),
-            m31(18),
-            m31(19),
-            m31(20),
-            m31(21),
+            m31(0), m31(1), m31(2), m31(3), m31(4), m31(5), m31(6), m31(7), m31(8), m31(9), m31(10),
+            m31(11), m31(12), m31(13), m31(14), m31(15), m31(16), m31(17), m31(18), m31(19),
+            m31(20), m31(21),
         ];
         assert_eq!(
             Blake2sMerkleHasher::hash_node(Some((l_node, r_node)), values.span()).hash.unbox(),
