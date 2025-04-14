@@ -38,9 +38,9 @@ fn verify_claim(claim: &CairoClaim) {
             },
         final_state:
             CasmState {
-                pc: _final_pc,
+                pc: final_pc,
                 ap: final_ap,
-                fp: _final_fp,
+                fp: final_fp,
             },
     } = &claim.public_data;
 
@@ -55,11 +55,9 @@ fn verify_claim(claim: &CairoClaim) {
         initial_pc.0,
         initial_ap.0 - 2
     );
-    // TODO(alonf): Soundness issue, assert that initial_fp == final_fp once fixed in adapter.
-    // assert_eq!(initial_fp, final_fp);
+    assert_eq!(initial_fp.0, final_fp.0);
     assert_eq!(initial_fp.0, initial_ap.0);
-    // TODO(alonf): Soundness issue, assert that final_pc is 5 once fixed in adapter.
-    // assert_eq!(final_pc.0, 5);
+    assert_eq!(final_pc.0, 5);
     assert!(initial_ap.0 <= final_ap.0);
     // Since initial_pc < initial_ap - 2 < initial_ap < final_ap, enough to check that final_ap
     // is less than 2^31.
