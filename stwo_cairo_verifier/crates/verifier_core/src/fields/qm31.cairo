@@ -2,7 +2,7 @@ use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::Invertible;
-use super::cm31::{CM31, CM31Trait, cm31};
+use super::cm31::{CM31, CM31Trait};
 use super::m31::{M31, M31Impl, M31InnerT, UnreducedM31};
 
 /// Equals `(2^31 - 1)^4`.
