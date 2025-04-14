@@ -7,7 +7,7 @@ use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG
 use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Impl};
 use crate::fields::m31::{M31, UnreducedM31};
-use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Impl, QM31, QM31Impl};
+use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::verifier::VerificationError;
@@ -270,7 +270,7 @@ fn accumulate_row_quotients(
         let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
         let batch_size = sample_batch_columns_and_values.len();
         assert!(batch_size == line_coeffs.len());
-        let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Impl::large_zero();
+        let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
         for sample_i in 0..batch_size {
             let (column_index, _) = sample_batch_columns_and_values[sample_i];
@@ -294,7 +294,7 @@ fn accumulate_row_quotients(
         let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
         let denom_inv = *denominator_inverses[batch_i];
         let quotient = numerator.reduce().mul_cm31(denom_inv);
-        quotient_accumulator = QM31Impl::fma(quotient_accumulator, batch_coeff, quotient);
+        quotient_accumulator = QM31Trait::fma(quotient_accumulator, batch_coeff, quotient);
     }
 
     quotient_accumulator
@@ -444,7 +444,7 @@ impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
     ) -> ComplexConjugateLineCoeffs {
         let alpha_mul_a = alpha * neg_twice_imaginary_part(@sample_value);
         let alpha_mul_c = alpha * neg_twice_imaginary_part(sample_point.y);
-        let alpha_mul_b = QM31Impl::fms(sample_value, alpha_mul_c, alpha_mul_a * *sample_point.y);
+        let alpha_mul_b = QM31Trait::fms(sample_value, alpha_mul_c, alpha_mul_a * *sample_point.y);
 
         // TODO(andrew): These alpha multiplications are expensive.
         // Think they can be saved and done all at once.
@@ -460,7 +460,7 @@ impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
 #[inline]
 pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
     let (_, _, c, d) = v.unpack();
-    let v = QM31Impl::pack(Zero::zero(), Zero::zero(), c, d);
+    let v = QM31Trait::pack(Zero::zero(), Zero::zero(), c, d);
     -(v + v)
 }
 
@@ -486,7 +486,7 @@ mod tests {
     use core::nullable::NullableTrait;
     use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl};
     use crate::fields::m31::m31;
-    use crate::fields::qm31::{PackedUnreducedQM31Impl, QM31, qm31_const};
+    use crate::fields::qm31::{PackedUnreducedQM31Trait, QM31, qm31_const};
     use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
     use crate::utils::DictImpl;
     use super::{
