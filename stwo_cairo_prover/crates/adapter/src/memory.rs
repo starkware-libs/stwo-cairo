@@ -96,10 +96,6 @@ impl Memory {
         self.address_to_id[addr as usize].0
     }
 
-    pub fn get_inst(&self, addr: u32) -> Option<u128> {
-        self.inst_cache.get(&addr).copied()
-    }
-
     pub fn iter_values(&self) -> impl Iterator<Item = MemoryValue> + '_ {
         let mut values = (0..self.address_to_id.len())
             .map(|addr| self.get(addr as u32))
