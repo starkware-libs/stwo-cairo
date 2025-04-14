@@ -1,8 +1,9 @@
+use bounded_int::upcast;
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use core::traits::DivRem;
 use crate::SecureField;
-use crate::fields::m31::{M31, m31};
+use crate::fields::m31::{M31InnerT, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::gen_bit_mask;
 use crate::vcs::blake2s_hasher::Blake2sHash;
@@ -63,10 +64,10 @@ pub impl Blake2sChannelImpl of ChannelTrait {
             }
 
             let [r0, r1, r2, r3] = felt.to_array();
-            buffer.append(r0.into());
-            buffer.append(r1.into());
-            buffer.append(r2.into());
-            buffer.append(r3.into());
+            buffer.append(upcast(r0));
+            buffer.append(upcast(r1));
+            buffer.append(upcast(r2));
+            buffer.append(upcast(r3));
             byte_count += 16;
         }
 
@@ -144,7 +145,7 @@ fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
 }
 
 // TODO: Consider just returning secure felts.
-fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
+fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31InnerT; 8]> {
     loop {
         let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();
 
@@ -152,7 +153,11 @@ fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
         const P2: u32 = 0x7FFFFFFF * 2;
         if w0 < P2 && w1 < P2 && w2 < P2 && w3 < P2 && w4 < P2 && w5 < P2 && w6 < P2 && w7 < P2 {
             break BoxImpl::new(
-                [m31(w0), m31(w1), m31(w2), m31(w3), m31(w4), m31(w5), m31(w6), m31(w7)],
+                [
+                    M31Trait::reduce_u32(w0), M31Trait::reduce_u32(w1), M31Trait::reduce_u32(w2),
+                    M31Trait::reduce_u32(w3), M31Trait::reduce_u32(w4), M31Trait::reduce_u32(w5),
+                    M31Trait::reduce_u32(w6), M31Trait::reduce_u32(w7),
+                ],
             );
         }
     }
