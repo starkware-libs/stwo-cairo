@@ -5,7 +5,7 @@ use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
 use crate::fields::BatchInvertible;
-use crate::fields::cm31::{CM31, CM31Impl};
+use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
@@ -308,11 +308,11 @@ fn quotient_denominator_inverses(
     for sample_batch in sample_batches {
         // Extract Pr, Pi.
         let (a, b, c, d) = sample_batch.point.x.unpack();
-        let prx = CM31Impl::pack(a, b);
-        let pix = CM31Impl::pack(c, d);
+        let prx = CM31Trait::pack(a, b);
+        let pix = CM31Trait::pack(c, d);
         let (a, b, c, d) = sample_batch.point.y.unpack();
-        let pry = CM31Impl::pack(a, b);
-        let piy = CM31Impl::pack(c, d);
+        let pry = CM31Trait::pack(a, b);
+        let piy = CM31Trait::pack(c, d);
         denominators.append(prx.sub_m31(domain_point.x) * piy - pry.sub_m31(domain_point.y) * pix);
     }
 
