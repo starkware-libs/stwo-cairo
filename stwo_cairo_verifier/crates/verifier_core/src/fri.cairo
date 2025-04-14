@@ -1,10 +1,10 @@
 use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
-use core::num::traits::CheckedSub;
+use core::num::traits::{CheckedSub, Zero};
 use crate::circle::CosetImpl;
 use crate::channel::{Channel, ChannelImpl};
-use crate::fields::qm31::{QM31, QM31Trait, QM31Zero, QM31_EXTENSION_DEGREE};
+use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::fields::BatchInvertible;
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
@@ -207,9 +207,7 @@ fn decommit_inner_layers(
 ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
     let mut inner_layers = verifier.inner_layers.span();
     let mut layer_queries = queries;
-    let mut layer_query_evals = ArrayImpl::new_repeated(
-        n: layer_queries.len(), v: QM31Zero::zero(),
-    );
+    let mut layer_query_evals = ArrayImpl::new_repeated(n: layer_queries.len(), v: Zero::zero());
     let mut first_layer_sparse_evals = first_layer_sparse_evals.span();
     let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
     let mut first_layer_column_domains = *verifier.first_layer.column_commitment_domains;
