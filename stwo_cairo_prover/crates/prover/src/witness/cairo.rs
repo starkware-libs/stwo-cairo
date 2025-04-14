@@ -121,7 +121,7 @@ impl CairoClaimGenerator {
         let final_state = input.state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
         let verify_instruction_trace_generator =
-            verify_instruction::ClaimGenerator::new(input.instruction_by_pc);
+            verify_instruction::ClaimGenerator::new(input.inst_cache);
         let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();

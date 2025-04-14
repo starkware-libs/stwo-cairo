@@ -4,7 +4,6 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use memory::Memory;
 use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_common::prover_types::cpu::M31;
 
 pub mod builtins;
 pub mod decode;
@@ -20,8 +19,8 @@ pub const N_REGISTERS: usize = 3;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
-    pub instruction_by_pc: HashMap<M31, u128>,
     pub memory: Memory,
+    pub inst_cache: HashMap<u32, u128>,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
 }
@@ -66,7 +65,7 @@ impl ExecutionResources {
                 id_to_big: input.memory.f252_values.len(),
                 id_to_small: input.memory.small_values.len(),
             },
-            verify_instructions_count: input.instruction_by_pc.len(),
+            verify_instructions_count: input.inst_cache.len(),
         }
     }
 }

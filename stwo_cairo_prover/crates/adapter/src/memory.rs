@@ -76,7 +76,6 @@ impl Default for MemoryConfig {
 pub struct Memory {
     pub config: MemoryConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
-    pub inst_cache: HashMap<u32, u128>,
     pub f252_values: Vec<[u32; 8]>,
     pub small_values: Vec<u128>,
 }
@@ -124,6 +123,7 @@ pub fn value_from_felt252(felt252: F252) -> MemoryValue {
 // TODO(ohadn): derive or impl a default for MemoryBuilder.
 pub struct MemoryBuilder {
     memory: Memory,
+    inst_cache: HashMap<u32, u128>,
     felt252_id_cache: HashMap<[u32; 8], usize>,
     small_values_cache: HashMap<u128, usize>,
 }
@@ -133,10 +133,10 @@ impl MemoryBuilder {
             memory: Memory {
                 config,
                 address_to_id: Vec::new(),
-                inst_cache: HashMap::new(),
                 f252_values: Vec::new(),
                 small_values: Vec::new(),
             },
+            inst_cache: HashMap::new(),
             felt252_id_cache: HashMap::new(),
             small_values_cache: HashMap::new(),
         }
@@ -221,8 +221,8 @@ impl MemoryBuilder {
         }
     }
 
-    pub fn build(self) -> Memory {
-        self.memory
+    pub fn build(self) -> (Memory, HashMap<u32, u128>) {
+        (self.memory, self.inst_cache)
     }
 }
 impl Deref for MemoryBuilder {
@@ -409,7 +409,7 @@ mod tests {
         let expxcted_id_addr_1 = EncodedMemoryValueId::default();
         let expxcted_id_addr_2 = EncodedMemoryValueId::encode(MemoryValueId::Small(0));
 
-        let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
+        let (memory, ..) = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
         let addr_0_id = memory.address_to_id[0];
         let addr_1_id = memory.address_to_id[1];
         let addr_2_id = memory.address_to_id[2];
@@ -443,7 +443,7 @@ mod tests {
                 value: [1, 2, 0, 0, 0, 0, 0, 0],
             },
         ];
-        let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
+        let (memory, ..) = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
 
         memory.get(1);
     }
