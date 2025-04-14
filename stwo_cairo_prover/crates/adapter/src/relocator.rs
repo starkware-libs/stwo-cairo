@@ -77,6 +77,13 @@ impl Relocator {
             let value = if let Some(val) = value {
                 self.relocate_value(val)
             } else {
+                if self.builtins_segments_indices.contains_key(&segment_index) {
+                    panic!(
+                        "Builtins segments '{}' at segment index: {}, contains a hole at offset {}.",
+                        self.builtins_segments_indices[&segment_index], segment_index, offset
+                    );
+                }
+
                 // If this cell is None, fill with zero.
                 [0; 8]
             };
@@ -395,5 +402,20 @@ pub mod relocator_tests {
 
         let expected_relocated_public_addresses = vec![3, 4, 5, 47];
         assert_eq!(relocated_public_addrs, expected_relocated_public_addresses);
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "Builtins segments 'bitwise_builtin' at segment index: 0, contains a hole at offset 62."
+    )]
+    fn test_builtin_segment_contains_hole() {
+        let mut segment0 = vec![Some(MaybeRelocatable::Int(1.into())); 80];
+        segment0[62] = None;
+
+        let relocatble_memory = vec![segment0];
+        let builtins_segments = BTreeMap::from([(0, BuiltinName::bitwise)]);
+
+        let relocator = Relocator::new(relocatble_memory, builtins_segments);
+        relocator.get_relocated_memory();
     }
 }
