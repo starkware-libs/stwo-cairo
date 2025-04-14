@@ -256,7 +256,7 @@ mod tests {
                 ]
             })
             .collect();
-        let memory =
+        let (memory, ..) =
             MemoryBuilder::from_iter(MemoryConfig::default(), memory_entries.iter().cloned())
                 .build();
 

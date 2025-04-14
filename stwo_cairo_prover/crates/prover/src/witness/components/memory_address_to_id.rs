@@ -225,7 +225,7 @@ mod tests {
     #[test]
     fn test_memory_multiplicities() {
         const N_ENTRIES: u32 = 10;
-        let memory = MemoryBuilder::from_iter(
+        let (memory, ..) = MemoryBuilder::from_iter(
             MemoryConfig::default(),
             (0..N_ENTRIES).map(|i| MemoryEntry {
                 address: i as u64,

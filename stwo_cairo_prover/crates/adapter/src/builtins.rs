@@ -524,7 +524,7 @@ mod test_builtin_segments {
         let new_num_instances = segment_length / cells_per_instance;
         assert_eq!(new_num_instances, padded_num_instances);
 
-        let memory = memory_builder.build();
+        let (memory, ..) = memory_builder.build();
         assert_eq!(memory.address_to_id.len(), new_stop_ptr);
 
         let mut instance_to_verify_start = stop_ptr as u32;
@@ -567,7 +567,7 @@ mod test_builtin_segments {
         let expected_xor = std::array::from_fn(|i| op0[i] ^ op1[i]);
         let expected_or = std::array::from_fn(|i| op0[i] | op1[i]);
         builtin_segments.fill_memory_holes(&mut memory);
-        let memory = memory.build();
+        let (memory, ..) = memory.build();
 
         let and_res = memory.get(2).as_u256();
         let xor_res = memory.get(3).as_u256();

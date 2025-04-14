@@ -414,7 +414,7 @@ mod tests {
         for (j, a) in memory_addresses.iter().enumerate() {
             mem.set(*a, value_from_felt252(expected[j]));
         }
-        let mem = mem.build();
+        let (mem, ..) = mem.build();
         let memory_address_to_id = memory_address_to_id::ClaimGenerator::new(&mem);
         let id_to_felt = super::ClaimGenerator::new(&mem);
 

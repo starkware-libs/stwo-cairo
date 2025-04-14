@@ -106,7 +106,7 @@ pub fn prover_input_info_to_prover_input(
     let mut memory =
         MemoryBuilder::from_iter(MemoryConfig::default(), relocator.get_relocated_memory());
 
-    let (state_transitions, instruction_by_pc) = StateTransitions::from_iter(
+    let state_transitions = StateTransitions::from_iter(
         relocator
             .relocate_trace(&prover_input_info.relocatable_trace)
             .into_iter(),
@@ -116,10 +116,11 @@ pub fn prover_input_info_to_prover_input(
     let builtins_segments = relocator.get_builtin_segments();
 
     // TODO(spapini): Add output builtin to public memory.
+    let (memory, inst_cache) = memory.build();
     Ok(ProverInput {
         state_transitions,
-        instruction_by_pc,
-        memory: memory.build(),
+        memory,
+        inst_cache,
         public_memory_addresses: relocator
             .relocate_public_addresses(prover_input_info.public_memory_offsets.clone()),
         builtins_segments,
