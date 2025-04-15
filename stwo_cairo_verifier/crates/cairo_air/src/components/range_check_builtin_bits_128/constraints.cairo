@@ -18,6 +18,7 @@ pub fn mask_points(
     trace_gen: CirclePointIndex,
     log_size: u32,
 ) {
+    preprocessed_column_set.insert(PreprocessedColumn::Seq(log_size));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
@@ -66,8 +67,8 @@ pub struct ConstraintParams {
     pub MemoryIdToBig_z: QM31,
     pub claimed_sum: QM31,
     pub seq: QM31,
+    pub builtin_segment_start: M31,
     pub column_size: M31,
-    pub range_check_builtin_segment_start: u32,
 }
 
 pub fn evaluate_constraints_at_point(
@@ -101,8 +102,8 @@ pub fn evaluate_constraints_at_point(
         MemoryIdToBig_z,
         claimed_sum,
         seq,
+        builtin_segment_start,
         column_size,
-        range_check_builtin_segment_start,
     } = params;
     let [
         trace_1_column_0,
@@ -235,7 +236,7 @@ pub fn evaluate_constraints_at_point(
         trace_1_column_7_offset_0,
         trace_1_column_8_offset_0,
         trace_1_column_9_offset_0,
-        range_check_builtin_segment_start,
+        builtin_segment_start,
     )
         .span();
     let intermediate0 = *intermediates.pop_front().unwrap();
@@ -313,7 +314,7 @@ fn intermediates(
     trace_1_column_7_offset_0: QM31,
     trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
-    range_check_builtin_segment_start: u32,
+    builtin_segment_start: M31,
 ) -> Array<QM31> {
     let intermediate1 = intermediate1(trace_1_column_15_offset_0, trace_1_column_16_offset_0);
     let intermediate0 = intermediate0(
@@ -322,7 +323,7 @@ fn intermediates(
         MemoryAddressToId_z,
         seq,
         trace_1_column_0_offset_0,
-        range_check_builtin_segment_start,
+        builtin_segment_start,
     );
 
     let intermediate2 = intermediate2(
@@ -372,9 +373,9 @@ pub fn intermediate0(
     MemoryAddressToId_z: QM31,
     seq: QM31,
     trace_1_column_0_offset_0: QM31,
-    range_check_builtin_segment_start: u32,
+    builtin_segment_start: M31,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (m31(range_check_builtin_segment_start).into() + seq)
+    (MemoryAddressToId_alpha0) * (builtin_segment_start.into() + seq)
         + (MemoryAddressToId_alpha1) * (trace_1_column_0_offset_0)
         - (MemoryAddressToId_z)
 }
