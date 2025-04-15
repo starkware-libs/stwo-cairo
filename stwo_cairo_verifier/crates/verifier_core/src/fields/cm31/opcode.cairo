@@ -1,11 +1,15 @@
 //! Implementation of CM31 field using the QM31 opcode.
 use core::num::traits::{One, Zero};
-use super::super::qm31::QM31;
+use core::ops::{AddAssign, MulAssign, SubAssign};
+use super::CM31Trait;
+use super::super::m31::{M31, M31InnerT};
+use super::super::qm31::{M31IntoQM31, QM31, QM31Trait, qm31_const};
+use super::super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct CM31 {
     // Represented using QM31, since QM31 has a dedicated opcode.
-    pub inner: super::qm31::QM31,
+    pub inner: super::super::qm31::QM31,
 }
 
 pub impl CM31InvertibleImpl of Invertible<CM31> {
@@ -20,12 +24,12 @@ pub impl CM31BatchInvertibleImpl of BatchInvertible<CM31> {}
 pub impl CM31Impl of CM31Trait {
     #[inline(always)]
     fn mul_m31(self: CM31, rhs: M31) -> CM31 {
-        CM31 { inner: self.inner * rhs.inner.into() }
+        CM31 { inner: self.inner * rhs.into() }
     }
 
     #[inline(always)]
     fn sub_m31(self: CM31, rhs: M31) -> CM31 {
-        CM31 { inner: self.inner - rhs.inner.into() }
+        CM31 { inner: self.inner - rhs.into() }
     }
 
     #[inline(always)]
@@ -36,7 +40,7 @@ pub impl CM31Impl of CM31Trait {
 
     #[inline(always)]
     fn pack(a: M31, b: M31) -> CM31 {
-        CM31 { inner: a.inner + qm31_const::<0, 1, 0, 0>() * b.inner }
+        CM31 { inner: a.into() + qm31_const::<0, 1, 0, 0>() * b.into() }
     }
 }
 
@@ -119,7 +123,7 @@ pub impl CM31One of One<CM31> {
 pub impl M31IntoCM31 of core::traits::Into<M31, CM31> {
     #[inline(always)]
     fn into(self: M31) -> CM31 {
-        CM31 { inner: self.inner.into() }
+        CM31 { inner: self.into() }
     }
 }
 

@@ -1,13 +1,11 @@
 use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
 
-#[cfg(not(feature: "qm31_opcode"))]
-mod naive;
-#[cfg(not(feature: "qm31_opcode"))]
-use naive::*;
+// #[cfg(not(feature: "qm31_opcode"))]
+// mod naive;
+// #[cfg(not(feature: "qm31_opcode"))]
+// use naive::*;
 
-#[cfg(feature: "qm31_opcode")]
 mod opcode;
-#[cfg(feature: "qm31_opcode")]
 use opcode::*;
 
 pub const P: felt252 = 0x7fffffff;
