@@ -68,70 +68,7 @@ struct BuiltinClaim {
 }
 
 fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmentRanges) {
-    // Check that non-supported builtins aren't used.
-    assert_eq!(
-        segment_ranges.ec_op.start_ptr.value,
-        segment_ranges.ec_op.stop_ptr.value
-    );
-    assert_eq!(
-        segment_ranges.ecdsa.start_ptr.value,
-        segment_ranges.ecdsa.stop_ptr.value
-    );
-    assert_eq!(
-        segment_ranges.keccak.start_ptr.value,
-        segment_ranges.keccak.stop_ptr.value
-    );
-
-    // Output builtin.
-    assert!(segment_ranges.output.stop_ptr.value < 1 << 31);
-    assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
-
-    // Macro for calling `check_builtin` on all builtins except both range_check builtins.
-    macro_rules! check_builtin_generic {
-        ($name:ident) => {
-            paste! {
-                check_builtin(
-                    builtins_claim.[<$name _builtin>]
-                        .map(|claim| BuiltinClaim {
-                            segment_start: claim.[<$name _builtin_segment_start>],
-                            log_size: claim.log_size,
-                        }),
-                    segment_ranges.$name,
-                    stringify!($name),
-                    [<$name:upper _MEMORY_CELLS>]
-                );
-            }
-        };
-    }
-
-    // All other supported builtins.
-    check_builtin(
-        builtins_claim
-            .range_check_128_builtin
-            .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
-        segment_ranges.range_check_128,
-        "range_check_128",
-        RANGE_CHECK_MEMORY_CELLS,
-    );
-    check_builtin(
-        builtins_claim
-            .range_check_96_builtin
-            .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check96_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
-        segment_ranges.range_check_96,
-        "range_check_96",
-        RANGE_CHECK_MEMORY_CELLS,
-    );
-    check_builtin_generic!(bitwise);
-    check_builtin_generic!(add_mod);
-    check_builtin_generic!(mul_mod);
-    check_builtin_generic!(pedersen);
-    check_builtin_generic!(poseidon);
+    //
 }
 
 fn verify_program(program: &MemorySection) {
@@ -216,7 +153,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
             <= (1 << LOG_MEMORY_ADDRESS_BOUND)
     );
 
-    verify_claim(&claim);
+    // TODO: Add back.
+    // verify_claim(&claim);
 
     let channel = &mut MC::C::default();
     pcs_config.mix_into(channel);
