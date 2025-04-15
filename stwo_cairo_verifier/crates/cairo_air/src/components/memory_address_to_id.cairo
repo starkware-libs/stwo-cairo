@@ -115,7 +115,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let log_size = *self.claim.log_size;
 
         let params = constraints::ConstraintParams {
-            log_size,
+            column_size: pow2(log_size).try_into().unwrap(),
             MemoryAddressToId_alpha0: addr_to_id_alpha_0,
             MemoryAddressToId_alpha1: addr_to_id_alpha_1,
             MemoryAddressToId_z: addr_to_id_z,
