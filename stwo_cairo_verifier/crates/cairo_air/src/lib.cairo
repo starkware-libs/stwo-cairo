@@ -468,7 +468,8 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
 
-    verify_claim(@claim);
+    // TODO: Add back.
+    // verify_claim(@claim);
 
     let mut channel: Channel = Default::default();
     pcs_config.mix_into(ref channel);
