@@ -17,26 +17,22 @@ mod constraints;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
-    n_rows: u32,
+    log_size: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
-    fn log_size(self: @Claim) -> u32 {
-        core::cmp::max((*self.n_rows).next_power_of_two().ilog2(), 4)
-    }
-
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = self.log_size();
+        let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(11, log_size).span();
+        let trace_log_sizes = ArrayImpl::new_repeated(14, log_size).span();
         let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 3, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_u64((*self.n_rows).into());
+        channel.mix_u64((*self.log_size).into());
     }
 }
 
@@ -70,7 +66,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
+        let log_size = *self.claim.log_size;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         constraints::mask_points(
             ref preprocessed_column_set,
@@ -83,7 +79,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        self.claim.log_size() + 1
+        *self.claim.log_size + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -95,7 +91,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
+        let log_size = *self.claim.log_size;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
 
@@ -110,29 +106,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let VerifyInstruction_alpha3 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let VerifyInstruction_alpha4 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let VerifyInstruction_alpha5 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha6 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha7 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha8 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha9 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha10 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha11 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha12 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha13 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha14 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha15 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha16 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha17 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha18 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha19 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha20 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha21 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha22 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha23 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha24 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha25 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha26 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha27 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha28 = *verify_instruction_alpha_powers.pop_front().unwrap();
 
         let MemoryAddressToId_z = *self.memory_address_to_id_lookup_elements.z;
         let mut memory_address_to_id_alpha_powers = self
@@ -186,7 +159,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
         let params = constraints::ConstraintParams {
-            column_size: m31(pow2(log_size)),
+            column_size: pow2(log_size).try_into().unwrap(),
             VerifyInstruction_z,
             VerifyInstruction_alpha0,
             VerifyInstruction_alpha1,
@@ -194,8 +167,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha3,
             VerifyInstruction_alpha4,
             VerifyInstruction_alpha5,
-            VerifyInstruction_alpha8,
-            VerifyInstruction_alpha14,
             MemoryAddressToId_z,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,

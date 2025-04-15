@@ -7,7 +7,6 @@ use stwo_verifier_core::circle::{
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
-use stwo_verifier_core::utils::pow2;
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
 
@@ -62,7 +61,7 @@ pub struct ConstraintParams {
     pub MemoryAddressToId_z: QM31,
     pub claimed_sum: QM31,
     pub seq: QM31,
-    pub log_size: u32,
+    pub column_size: M31,
 }
 
 pub fn evaluate_constraints_at_point(
@@ -79,7 +78,7 @@ pub fn evaluate_constraints_at_point(
         MemoryAddressToId_z,
         claimed_sum,
         seq,
-        log_size,
+        column_size,
     } = params;
     let [
         trace_1_column_0,
@@ -222,7 +221,7 @@ pub fn evaluate_constraints_at_point(
         trace_1_column_4_offset_0,
         trace_1_column_6_offset_0,
         trace_1_column_8_offset_0,
-        log_size,
+        column_size,
     )
         .span();
     let intermediate0 = *intermediates.pop_front().unwrap();
@@ -304,7 +303,7 @@ pub fn evaluate_constraints_at_point(
                 trace_2_column_27_offset_0,
             ],
         ))
-        + (claimed_sum) * (m31(pow2(log_size)).inverse().into()))
+        + (claimed_sum) * (column_size.inverse().into()))
         * ((intermediate6) * (intermediate7))
         - ((intermediate7) * (-(trace_1_column_13_offset_0))
             + (intermediate6) * (-(trace_1_column_15_offset_0))))
@@ -326,8 +325,53 @@ fn intermediates(
     trace_1_column_4_offset_0: QM31,
     trace_1_column_6_offset_0: QM31,
     trace_1_column_8_offset_0: QM31,
-    log_size: u32,
+    column_size: M31,
 ) -> Array<QM31> {
+    let intermediate7 = intermediate7(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_14_offset_0,
+        column_size,
+    );
+
+    let intermediate4 = intermediate4(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_8_offset_0,
+        column_size,
+    );
+
+    let intermediate2 = intermediate2(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_4_offset_0,
+        column_size,
+    );
+
+    let intermediate6 = intermediate6(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_12_offset_0,
+        column_size,
+    );
+
+    let intermediate3 = intermediate3(
+        MemoryAddressToId_alpha0,
+        MemoryAddressToId_alpha1,
+        MemoryAddressToId_z,
+        seq,
+        trace_1_column_6_offset_0,
+        column_size,
+    );
+
     let intermediate0 = intermediate0(
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
@@ -342,34 +386,7 @@ fn intermediates(
         MemoryAddressToId_z,
         seq,
         trace_1_column_2_offset_0,
-        log_size,
-    );
-
-    let intermediate2 = intermediate2(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_4_offset_0,
-        log_size,
-    );
-
-    let intermediate3 = intermediate3(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_6_offset_0,
-        log_size,
-    );
-
-    let intermediate4 = intermediate4(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_8_offset_0,
-        log_size,
+        column_size,
     );
 
     let intermediate5 = intermediate5(
@@ -378,25 +395,7 @@ fn intermediates(
         MemoryAddressToId_z,
         seq,
         trace_1_column_10_offset_0,
-        log_size,
-    );
-
-    let intermediate6 = intermediate6(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_12_offset_0,
-        log_size,
-    );
-
-    let intermediate7 = intermediate7(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_14_offset_0,
-        log_size,
+        column_size,
     );
     array![
         intermediate0, intermediate1, intermediate2, intermediate3, intermediate4, intermediate5,
@@ -404,6 +403,71 @@ fn intermediates(
     ]
 }
 
+
+pub fn intermediate7(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_14_offset_0: QM31,
+    column_size: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(7)).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_14_offset_0)
+        - (MemoryAddressToId_z)
+}
+
+pub fn intermediate4(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_8_offset_0: QM31,
+    column_size: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(4)).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_8_offset_0)
+        - (MemoryAddressToId_z)
+}
+
+pub fn intermediate2(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_4_offset_0: QM31,
+    column_size: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(2)).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_4_offset_0)
+        - (MemoryAddressToId_z)
+}
+
+pub fn intermediate6(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_12_offset_0: QM31,
+    column_size: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(6)).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_12_offset_0)
+        - (MemoryAddressToId_z)
+}
+
+pub fn intermediate3(
+    MemoryAddressToId_alpha0: QM31,
+    MemoryAddressToId_alpha1: QM31,
+    MemoryAddressToId_z: QM31,
+    seq: QM31,
+    trace_1_column_6_offset_0: QM31,
+    column_size: M31,
+) -> QM31 {
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(3)).into())
+        + (MemoryAddressToId_alpha1) * (trace_1_column_6_offset_0)
+        - (MemoryAddressToId_z)
+}
 
 pub fn intermediate0(
     MemoryAddressToId_alpha0: QM31,
@@ -423,49 +487,10 @@ pub fn intermediate1(
     MemoryAddressToId_z: QM31,
     seq: QM31,
     trace_1_column_2_offset_0: QM31,
-    log_size: u32,
+    column_size: M31,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size)).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + column_size.into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_2_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate2(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_4_offset_0: QM31,
-    log_size: u32,
-) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 2).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_4_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate3(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_6_offset_0: QM31,
-    log_size: u32,
-) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 3).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_6_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate4(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_8_offset_0: QM31,
-    log_size: u32,
-) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 4).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_8_offset_0)
         - (MemoryAddressToId_z)
 }
 
@@ -475,36 +500,10 @@ pub fn intermediate5(
     MemoryAddressToId_z: QM31,
     seq: QM31,
     trace_1_column_10_offset_0: QM31,
-    log_size: u32,
+    column_size: M31,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 5).into())
+    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(5)).into())
         + (MemoryAddressToId_alpha1) * (trace_1_column_10_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate6(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_12_offset_0: QM31,
-    log_size: u32,
-) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 6).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_12_offset_0)
-        - (MemoryAddressToId_z)
-}
-
-pub fn intermediate7(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
-    seq: QM31,
-    trace_1_column_14_offset_0: QM31,
-    log_size: u32,
-) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + m31(pow2(log_size) * 7).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_14_offset_0)
         - (MemoryAddressToId_z)
 }
 
