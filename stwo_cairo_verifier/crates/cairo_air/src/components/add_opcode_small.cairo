@@ -17,17 +17,13 @@ mod constraints;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
-    n_rows: u32,
+    log_size: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
-    fn log_size(self: @Claim) -> u32 {
-        core::cmp::max((*self.n_rows).next_power_of_two().ilog2(), 4)
-    }
-
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = self.log_size();
+        let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = ArrayImpl::new_repeated(33, log_size).span();
         let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 5, log_size)
@@ -36,7 +32,7 @@ pub impl ClaimImpl of ClaimTrait {
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_u64((*self.n_rows).into());
+        channel.mix_u64((*self.log_size).into());
     }
 }
 
@@ -70,7 +66,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
+        let log_size = *self.claim.log_size;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
         constraints::mask_points(
             ref preprocessed_column_set,
@@ -83,7 +79,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        self.claim.log_size() + 1
+        *self.claim.log_size + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -95,7 +91,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = self.claim.log_size();
+        let log_size = *self.claim.log_size;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
 
@@ -194,11 +190,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             VerifyInstruction_alpha3,
             VerifyInstruction_alpha4,
             VerifyInstruction_alpha5,
-            VerifyInstruction_alpha7,
-            VerifyInstruction_alpha8,
-            VerifyInstruction_alpha9,
-            VerifyInstruction_alpha15,
-            VerifyInstruction_alpha18,
             MemoryAddressToId_z,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,
