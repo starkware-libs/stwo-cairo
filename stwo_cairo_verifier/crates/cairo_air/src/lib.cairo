@@ -559,6 +559,7 @@ impl CairoClaimImpl of CairoClaimTrait {
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
+        self.public_data.mix_into(ref channel);
         self.opcodes.mix_into(ref channel);
         self.verify_instruction.mix_into(ref channel);
         self.builtins.mix_into(ref channel);
@@ -985,6 +986,14 @@ pub struct MemorySmallValue {
     pub value: u32,
 }
 
+#[generate_trait]
+impl MemorySmallValueImpl of MemorySmallValueTrait {
+    fn mix_into(self: @MemorySmallValue, ref channel: Channel) {
+        channel.mix_u64((*self.id).into());
+        channel.mix_u64((*self.value).into());
+    }
+}
+
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
 // (id, value)
 pub type PubMemoryValue = (u32, [u32; 8]);
@@ -1004,6 +1013,10 @@ impl SegmentRangeImpl of SegmentRangeTrait {
     fn is_empty(self: @SegmentRange) -> bool {
         self.start_ptr.value == self.stop_ptr.value
     }
+    fn mix_into(self: @SegmentRange, ref channel: Channel) {
+        self.start_ptr.mix_into(ref channel);
+        self.stop_ptr.mix_into(ref channel);
+    }
 }
 
 #[derive(Clone, Debug, Serde, Copy, Drop)]
@@ -1019,6 +1032,36 @@ pub struct PublicSegmentRanges {
     pub range_check_96: SegmentRange,
     pub add_mod: SegmentRange,
     pub mul_mod: SegmentRange,
+}
+
+#[generate_trait]
+impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
+    fn mix_into(self: @PublicSegmentRanges, ref channel: Channel) {
+        let PublicSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = *self;
+        output.mix_into(ref channel);
+        pedersen.mix_into(ref channel);
+        range_check_128.mix_into(ref channel);
+        ecdsa.mix_into(ref channel);
+        bitwise.mix_into(ref channel);
+        ec_op.mix_into(ref channel);
+        keccak.mix_into(ref channel);
+        poseidon.mix_into(ref channel);
+        range_check_96.mix_into(ref channel);
+        add_mod.mix_into(ref channel);
+        mul_mod.mix_into(ref channel);
+    }
 }
 
 /// A contiguous memory section.
@@ -1091,6 +1134,31 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         entries
     }
+    // Mixes the public memory into the channel, except for the program.
+    fn mix_into(self: @PublicMemory, ref channel: Channel) {
+        // Program is the bootloader and doesn't need to be mixed into the channel.
+
+        // Mix public segments.
+        self.public_segments.mix_into(ref channel);
+
+        // Mix output memory section.
+        for (id, value) in self.output.span() {
+            channel.mix_u64((*id).into());
+            // Mix each element of the array individually
+            for val_element in (*value).span() {
+                channel.mix_u64((*val_element).into());
+            }
+        }
+
+        // Mix safe_call memory section.
+        for (id, value) in self.safe_call.span() {
+            channel.mix_u64((*id).into());
+            // Mix each element of the array individually
+            for val_element in (*value).span() {
+                channel.mix_u64((*val_element).into());
+            }
+        }
+    }
 }
 
 
@@ -1143,6 +1211,12 @@ impl PublicDataImpl of PublicDataTrait {
 
         sum
     }
+
+    fn mix_into(self: @PublicData, ref channel: Channel) {
+        self.public_memory.mix_into(ref channel);
+        self.initial_state.mix_into(ref channel);
+        self.final_state.mix_into(ref channel);
+    }
 }
 
 #[derive(Drop, Serde, Copy)]
@@ -1150,6 +1224,18 @@ pub struct CasmState {
     pub pc: M31,
     pub ap: M31,
     pub fp: M31,
+}
+
+#[generate_trait]
+impl CasmStateImpl of CasmStateTrait {
+    fn mix_into(self: @CasmState, ref channel: Channel) {
+        let pc_u32: u32 = (*self.pc).into();
+        let ap_u32: u32 = (*self.ap).into();
+        let fp_u32: u32 = (*self.fp).into();
+        channel.mix_u64(pc_u32.into());
+        channel.mix_u64(ap_u32.into());
+        channel.mix_u64(fp_u32.into());
+    }
 }
 
 #[derive(Drop, Serde)]

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use starknet_types_core::felt::Felt as StarknetTypesFelt;
 use stwo_cairo_serialize::CairoSerialize;
+use stwo_prover::core::channel::Channel;
 
 pub type M31 = stwo_prover::core::fields::m31::M31;
 pub type QM31 = stwo_prover::core::fields::qm31::QM31;
@@ -58,6 +59,11 @@ pub struct CasmState {
 impl CasmState {
     pub fn values(&self) -> [M31; 3] {
         [self.pc, self.ap, self.fp]
+    }
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        for value in self.values() {
+            channel.mix_u64(value.0 as u64);
+        }
     }
 }
 
