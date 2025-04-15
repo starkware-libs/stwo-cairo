@@ -108,7 +108,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             bitwise_xor_9_0: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 0))),
             bitwise_xor_9_1: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 1))),
             bitwise_xor_9_2: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 2))),
-            column_size: m31(pow2(LOG_SIZE)),
+            column_size: pow2(log_size).try_into().unwrap(),
         };
 
         let trace_domain = CanonicCosetImpl::new(LOG_SIZE);
