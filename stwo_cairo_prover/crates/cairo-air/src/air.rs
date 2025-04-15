@@ -83,20 +83,36 @@ pub struct CairoClaim {
 
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        // TODO(spapini): Add common values.
-        self.opcodes.mix_into(channel);
-        self.verify_instruction.mix_into(channel);
-        self.blake_context.mix_into(channel);
-        self.builtins.mix_into(channel);
-        self.pedersen_context.mix_into(channel);
-        self.poseidon_context.mix_into(channel);
-        self.memory_address_to_id.mix_into(channel);
-        self.memory_id_to_value.mix_into(channel);
-        self.range_checks.mix_into(channel);
-        self.verify_bitwise_xor_4.mix_into(channel);
-        self.verify_bitwise_xor_7.mix_into(channel);
-        self.verify_bitwise_xor_8.mix_into(channel);
-        self.verify_bitwise_xor_9.mix_into(channel);
+        let Self {
+            public_data,
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+        public_data.mix_into(channel);
+        opcodes.mix_into(channel);
+        verify_instruction.mix_into(channel);
+        blake_context.mix_into(channel);
+        builtins.mix_into(channel);
+        pedersen_context.mix_into(channel);
+        poseidon_context.mix_into(channel);
+        memory_address_to_id.mix_into(channel);
+        memory_id_to_value.mix_into(channel);
+        range_checks.mix_into(channel);
+        verify_bitwise_xor_4.mix_into(channel);
+        verify_bitwise_xor_7.mix_into(channel);
+        verify_bitwise_xor_8.mix_into(channel);
+        verify_bitwise_xor_9.mix_into(channel);
     }
 
     /// Returns the log sizes of the components.
@@ -169,6 +185,17 @@ impl PublicData {
         let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        let Self {
+            public_memory,
+            initial_state,
+            final_state,
+        } = self;
+        public_memory.mix_into(channel);
+        initial_state.mix_into(channel);
+        final_state.mix_into(channel);
+    }
 }
 
 // TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
@@ -176,6 +203,12 @@ impl PublicData {
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
+}
+impl MemorySmallValue {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_u64(self.id as u64);
+        channel.mix_u64(self.value as u64);
+    }
 }
 
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
@@ -195,6 +228,11 @@ pub struct SegmentRange {
 impl SegmentRange {
     pub fn is_empty(&self) -> bool {
         self.start_ptr.value == self.stop_ptr.value
+    }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.start_ptr.mix_into(channel);
+        self.stop_ptr.mix_into(channel);
     }
 }
 
@@ -272,6 +310,33 @@ impl PublicSegmentRanges {
             )
             .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        let Self {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = *self;
+        output.mix_into(channel);
+        pedersen.mix_into(channel);
+        range_check_128.mix_into(channel);
+        ecdsa.mix_into(channel);
+        bitwise.mix_into(channel);
+        ec_op.mix_into(channel);
+        keccak.mix_into(channel);
+        poseidon.mix_into(channel);
+        range_check_96.mix_into(channel);
+        add_mod.mix_into(channel);
+        mul_mod.mix_into(channel);
+    }
 }
 
 pub type MemorySection = Vec<PubMemoryValue>;
@@ -305,6 +370,30 @@ impl PublicMemory {
             .chain(safe_call_iter)
             .chain(segment_ranges_iter)
             .chain(output_iter)
+    }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        let Self {
+            program: _,
+            public_segments,
+            output: _,
+            safe_call,
+        } = self;
+
+        // Program is the bootloader and doesn't need to be mixed into the channel.
+        // Output is part of the verifier output and doesn't need to be mixed into the channel.
+
+        // Mix public segments.
+        public_segments.mix_into(channel);
+
+        // Mix safe_call memory section.
+        channel.mix_u64(safe_call.len() as u64);
+        for (id, value) in safe_call {
+            channel.mix_u64(*id as u64);
+            for limb in value.iter() {
+                channel.mix_u64(*limb as u64);
+            }
+        }
     }
 }
 
