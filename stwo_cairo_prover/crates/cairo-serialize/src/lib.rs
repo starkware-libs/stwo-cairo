@@ -1,3 +1,4 @@
+#![feature(array_chunks)]
 use starknet_ff::FieldElement;
 // Make derive macro available.
 pub use stwo_cairo_serialize_derive::CairoSerialize;
@@ -212,8 +213,10 @@ impl<T0: CairoSerialize, T1: CairoSerialize, T2: CairoSerialize> CairoSerialize 
 }
 
 impl CairoSerialize for Blake2sHash {
-    fn serialize(&self, _output: &mut Vec<FieldElement>) {
-        // TODO(Ohad)
-        todo!("Implement CairoSerialize for Blake2sHash");
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        for byte_chunk in self.0.array_chunks() {
+            let v = u32::from_le_bytes(*byte_chunk);
+            CairoSerialize::serialize(&v, output);
+        }
     }
 }
