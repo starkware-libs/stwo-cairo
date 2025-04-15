@@ -84,6 +84,7 @@ pub struct CairoClaim {
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         // TODO(spapini): Add common values.
+        self.public_data.mix_into(channel);
         self.opcodes.mix_into(channel);
         self.verify_instruction.mix_into(channel);
         self.blake_context.mix_into(channel);
@@ -169,6 +170,12 @@ impl PublicData {
         let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.public_memory.mix_into(channel);
+        self.initial_state.mix_into(channel);
+        self.final_state.mix_into(channel);
+    }
 }
 
 // TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
@@ -176,6 +183,13 @@ impl PublicData {
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
+}
+
+impl MemorySmallValue {
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_u64(self.id as u64);
+        channel.mix_u64(self.value as u64);
+    }
 }
 
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
@@ -195,6 +209,11 @@ pub struct SegmentRange {
 impl SegmentRange {
     pub fn is_empty(&self) -> bool {
         self.start_ptr.value == self.stop_ptr.value
+    }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.start_ptr.mix_into(channel);
+        self.stop_ptr.mix_into(channel);
     }
 }
 
@@ -272,6 +291,33 @@ impl PublicSegmentRanges {
             )
             .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        let PublicSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = *self;
+        output.mix_into(channel);
+        pedersen.mix_into(channel);
+        range_check_128.mix_into(channel);
+        ecdsa.mix_into(channel);
+        bitwise.mix_into(channel);
+        ec_op.mix_into(channel);
+        keccak.mix_into(channel);
+        poseidon.mix_into(channel);
+        range_check_96.mix_into(channel);
+        add_mod.mix_into(channel);
+        mul_mod.mix_into(channel);
+    }
 }
 
 pub type MemorySection = Vec<PubMemoryValue>;
@@ -305,6 +351,32 @@ impl PublicMemory {
             .chain(safe_call_iter)
             .chain(segment_ranges_iter)
             .chain(output_iter)
+    }
+
+    // Mixes all public data into the channel except for the program.
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        // Program is the bootloader and doesn't need to be mixed into the channel.
+
+        // Mix public segments.
+        self.public_segments.mix_into(channel);
+
+        // Mix output memory section.
+        channel.mix_u64(self.output.len() as u64);
+        for (id, value) in &self.output {
+            channel.mix_u64(*id as u64);
+            for limb in value.iter() {
+                channel.mix_u64(*limb as u64);
+            }
+        }
+
+        // Mix safe_call memory section.
+        channel.mix_u64(self.safe_call.len() as u64);
+        for (id, value) in &self.safe_call {
+            channel.mix_u64(*id as u64);
+            for limb in value.iter() {
+                channel.mix_u64(*limb as u64);
+            }
+        }
     }
 }
 
