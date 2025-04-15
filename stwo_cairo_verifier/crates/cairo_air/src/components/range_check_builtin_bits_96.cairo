@@ -118,23 +118,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let MemoryIdToBig_alpha9 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
         let MemoryIdToBig_alpha10 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
         let MemoryIdToBig_alpha11 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha12 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha13 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha14 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha15 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha16 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha17 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha18 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha19 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha20 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha21 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha22 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha23 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha24 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha25 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha26 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
-        let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
 
         let RangeCheck_6_z = *self.range_check_6_lookup_elements.z;
         let mut range_check_6_alpha_powers = self.range_check_6_lookup_elements.alpha_powers.span();
@@ -144,10 +127,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
-        let range_check_builtin_segment_start = *self.claim.range_check_builtin_segment_start;
+        let range_check_builtin_segment_start = (*self.claim.range_check_builtin_segment_start)
+            .try_into()
+            .unwrap();
 
         let params = constraints::ConstraintParams {
             column_size: m31(pow2(log_size)),
+            builtin_segment_start: range_check_builtin_segment_start,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,
             MemoryAddressToId_z,
@@ -167,7 +153,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             RangeCheck_6_alpha0,
             RangeCheck_6_z,
             claimed_sum,
-            range_check_builtin_segment_start,
             seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size)),
         };
 
