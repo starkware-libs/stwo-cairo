@@ -126,6 +126,7 @@ use components::verify_instruction::{
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
 use core::num::traits::Zero;
+use core::num::traits::one::One;
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
@@ -134,21 +135,32 @@ use stwo_constraint_framework::{
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::M31;
+use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
-use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
+use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 pub mod components;
 pub mod utils;
 
+
 const PREPROCESSED_COLUMNS_LOG_SIZES: [u32; 19] = [
     22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
 ];
+
+pub const ADD_MOD_MEMORY_CELLS: usize = 7;
+pub const BITWISE_MEMORY_CELLS: usize = 5;
+pub const EC_OP_MEMORY_CELLS: usize = 7;
+pub const ECDSA_MEMORY_CELLS: usize = 2;
+pub const KECCAK_MEMORY_CELLS: usize = 16;
+pub const MUL_MOD_MEMORY_CELLS: usize = 7;
+pub const PEDERSEN_MEMORY_CELLS: usize = 3;
+pub const POSEIDON_MEMORY_CELLS: usize = 6;
+pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
 const PREPROCESSED_COLUMNS: [PreprocessedColumn; 22] = [
     PreprocessedColumn::Seq(22), PreprocessedColumn::Seq(21), PreprocessedColumn::Seq(20),
@@ -211,6 +223,9 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
             log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 15,
         },
     };
+
+    verify_claim(@claim);
+
     let mut channel: Channel = Default::default();
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
@@ -554,6 +569,133 @@ impl CairoClaimImpl of CairoClaimTrait {
     }
 }
 
+/// Verifies the claim of the Cairo proof.
+///
+/// # Panics
+///
+/// Panics if the claim is invalid.
+fn verify_claim(claim: @CairoClaim) {
+    let PublicData {
+        public_memory: PublicMemory {
+            program, public_segments, output: _output, safe_call: _safe_call,
+            }, initial_state: CasmState {
+            pc: initial_pc, ap: initial_ap, fp: initial_fp,
+            }, final_state: CasmState {
+            pc: final_pc, ap: final_ap, fp: final_fp,
+        },
+    } = claim.public_data;
+
+    verify_builtins(claim.builtins, public_segments);
+
+    verify_program(program);
+
+    assert!((*initial_pc).is_one());
+    assert!(*initial_pc + m31(2) < *initial_ap);
+    assert!(initial_fp == final_fp);
+    assert!(initial_fp == initial_ap);
+    assert!(*final_pc == m31(5));
+    assert!(initial_ap <= final_ap);
+}
+
+fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
+    // Check that non-supported builtins aren't used.
+    assert!(segment_ranges.ec_op.start_ptr.value == segment_ranges.ec_op.stop_ptr.value);
+    assert!(segment_ranges.ecdsa.start_ptr.value == segment_ranges.ecdsa.stop_ptr.value);
+    assert!(segment_ranges.keccak.start_ptr.value == segment_ranges.keccak.stop_ptr.value);
+
+    // Output builtin.
+    assert!(segment_ranges.output.stop_ptr.value <= @pow2(31));
+    assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
+
+    // All other supported builtins.
+    check_builtin(
+        builtins_claim
+            .range_check_128_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.range_check_builtin_segment_start,
+                    log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.range_check_128,
+        RANGE_CHECK_MEMORY_CELLS,
+    );
+
+    check_builtin(
+        builtins_claim
+            .range_check_96_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.range_check_builtin_segment_start,
+                    log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.range_check_96,
+        RANGE_CHECK_MEMORY_CELLS,
+    );
+    check_builtin(
+        builtins_claim
+            .bitwise_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.bitwise_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.bitwise,
+        BITWISE_MEMORY_CELLS,
+    );
+    // TODO(alonf): Soundness - check all the builtins after they are merged.
+}
+
+fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
+    if segment_range.is_empty() {
+        return;
+    }
+
+    let BuiltinClaim { segment_start, log_size } = builtin_claim.unwrap();
+
+    let segment_end = segment_start + pow2(log_size) * n_cells;
+    let start_ptr = segment_range.start_ptr.value;
+    let stop_ptr = segment_range.stop_ptr.value;
+    assert!((stop_ptr - start_ptr) % n_cells == 0);
+
+    // Check that segment_start == start_ptr <= stop_ptr <= segment_end <= 2**31.
+    assert!(start_ptr == segment_start);
+    assert!(start_ptr <= stop_ptr);
+    assert!(stop_ptr <= segment_end);
+    assert!(segment_end <= pow2(31));
+}
+
+#[derive(Drop)]
+struct BuiltinClaim {
+    segment_start: u32,
+    log_size: u32,
+}
+
+fn verify_program(program: @MemorySection) {
+    let (_, program_value_0) = program[0];
+    let (_, program_value_1) = program[1];
+    let (_, program_value_2) = program[2];
+    let (_, program_value_4) = program[4];
+    let (_, program_value_5) = program[5];
+    assert!(program_value_0 == @[0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += N_BUILTINS.
+    assert!(program_value_1 == @[11, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (N_BUILTINS).
+    assert!(
+        program_value_2 == @[0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0],
+    ); // Instruction: call rel ?
+    assert!(
+        program_value_4 == @[0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0],
+    ); // Instruction: jmp rel 0.
+    assert!(program_value_5 == @[0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
+}
+
+
 #[derive(Drop, Serde)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
@@ -855,6 +997,13 @@ pub type PubMemoryEntry = (u32, u32, [u32; 8]);
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
     pub stop_ptr: MemorySmallValue,
+}
+
+#[generate_trait]
+impl SegmentRangeImpl of SegmentRangeTrait {
+    fn is_empty(self: @SegmentRange) -> bool {
+        self.start_ptr.value == self.stop_ptr.value
+    }
 }
 
 #[derive(Clone, Debug, Serde, Copy, Drop)]
@@ -1264,6 +1413,7 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 #[derive(Drop, Debug)]
 pub enum CairoVerificationError {
     InvalidLogupSum,
+    InvalidClaim,
     Stark: VerificationError,
 }
 

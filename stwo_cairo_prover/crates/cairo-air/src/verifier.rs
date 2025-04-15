@@ -1,4 +1,4 @@
-use num_traits::Zero;
+use num_traits::{One, Zero};
 use paste::paste;
 use stwo_cairo_adapter::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
@@ -8,6 +8,7 @@ use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::channel::{Channel, MerkleChannel};
+use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::{CommitmentSchemeVerifier, PcsConfig};
 use stwo_prover::core::prover::{verify, VerificationError};
@@ -48,24 +49,17 @@ fn verify_claim(claim: &CairoClaim) {
 
     verify_program(program);
 
-    assert_eq!(initial_pc.0, 1);
+    assert_eq!(*initial_pc, BaseField::one());
     assert!(
-        initial_pc.0 < initial_ap.0 - 2,
-        "Initial pc must be less than initial ap - 2, but got initial_pc: {}, initial_ap: {}",
-        initial_pc.0,
-        initial_ap.0 - 2
+        *initial_pc + BaseField::from(2) < *initial_ap,
+        "Initial pc + 2 must be less than initial ap, but got initial_pc: {}, initial_ap: {}",
+        initial_pc,
+        initial_ap
     );
-    assert_eq!(initial_fp.0, final_fp.0);
-    assert_eq!(initial_fp.0, initial_ap.0);
-    assert_eq!(final_pc.0, 5);
-    assert!(initial_ap.0 <= final_ap.0);
-    // Since initial_pc < initial_ap - 2 < initial_ap < final_ap, enough to check that final_ap
-    // is less than 2^31.
-    assert!(
-        final_ap.0 < 1 << 31,
-        "final_ap must be less than 2^31, but got {}",
-        final_ap.0
-    );
+    assert_eq!(initial_fp, final_fp);
+    assert_eq!(initial_fp, initial_ap);
+    assert_eq!(*final_pc, BaseField::from(5));
+    assert!(initial_ap <= final_ap);
 }
 
 struct BuiltinClaim {
@@ -88,11 +82,8 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         segment_ranges.keccak.stop_ptr.value
     );
 
-    // Check that output start and end pointers make sense.
-    assert!(
-        segment_ranges.output.stop_ptr.value <= 1 << 27,
-        "Memory cannot reach beyond 2^27"
-    );
+    // Output builtin.
+    assert!(segment_ranges.output.stop_ptr.value < 1 << 31);
     assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
 
     // Macro for calling `check_builtin` on all builtins except both range_check builtins.
@@ -113,6 +104,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         };
     }
 
+    // All other supported builtins.
     check_builtin(
         builtins_claim
             .range_check_128_builtin
@@ -181,7 +173,7 @@ fn check_builtin(
         stop_ptr
     );
 
-    // Check that segment_start == start_ptr <= stop_ptr <= segment_end <= 2**31.
+    // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**31.
     assert_eq!(
         start_ptr, segment_start,
         "Builtin segment start doesn't match claim"
@@ -195,7 +187,7 @@ fn check_builtin(
         "Builtin stop pointer must be within the builtin segment"
     );
     assert!(
-        segment_end <= 1 << 31,
+        segment_end < 1 << 31,
         "segment_end must be less than 2^31, but got {}",
         segment_end
     );
