@@ -1,4 +1,5 @@
 use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::verifier::INTERACTION_POW_BITS;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -22,12 +23,6 @@ pub(crate) const LOG_MAX_ROWS: u32 = 26;
 // Stack-overflows induced by the partial_ec_mul write trace function.
 // Decreasing this value may cause a stack-overflow during witness generation.
 const RAYON_THREAD_STACK_SIZE: usize = 4194304;
-
-/// Logup security is defined by the `QM31` space (~124 bits) +
-/// `INTERACTION_POW_BITS` over total number of relation terms. E.g. assuming a 100-bit
-/// security target, the witness may contain up to 1 << (24 + INTERACTION_POW_BITS) relation
-/// terms.
-pub const INTERACTION_POW_BITS: u32 = 24;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
