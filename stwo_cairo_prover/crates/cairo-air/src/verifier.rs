@@ -193,6 +193,12 @@ fn check_builtin(
     );
 }
 
+/// Logup security is defined by the `QM31` space (~124 bits) +
+/// `INTERACTION_POW_BITS` over total number of relation terms. E.g. assuming a 100-bit
+/// security target, the witness may contain up to 1 << (24 + INTERACTION_POW_BITS) relation
+/// terms.
+pub const INTERACTION_POW_BITS: u32 = 24;
+
 pub fn verify_cairo<MC: MerkleChannel>(
     CairoProof {
         claim,
@@ -223,7 +229,13 @@ pub fn verify_cairo<MC: MerkleChannel>(
 
     claim.mix_into(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
+
+    // Proof of work.
     channel.mix_u64(interaction_pow);
+    if channel.trailing_zeros() < INTERACTION_POW_BITS {
+        return Err(CairoVerificationError::ProofOfWork);
+    }
+
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Verify lookup argument.
@@ -257,4 +269,6 @@ pub enum CairoVerificationError {
     InvalidLogupSum,
     #[error("Stark verification error: {0}")]
     Stark(#[from] VerificationError),
+    #[error("Proof of work verification failed.")]
+    ProofOfWork,
 }
