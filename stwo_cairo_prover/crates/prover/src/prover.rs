@@ -247,6 +247,7 @@ pub mod tests {
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
+        use serde_json::to_value;
         use stwo_cairo_adapter::plain::prover_input_from_vm_output;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -255,6 +256,7 @@ pub mod tests {
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
+        use crate::test_utils::{get_prover_input_path, read_json, write_json};
 
         pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
             PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -295,6 +297,48 @@ pub mod tests {
                 preprocessed_trace,
             )
             .unwrap();
+        }
+
+        #[test]
+        fn test_compare_prover_input_to_expected_file() {
+            let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
+            let test_names = [
+                "test_prove_verify_all_opcode_components",
+                "test_prove_verify_all_builtins",
+            ];
+
+            let mut failed = false;
+            for test_name in test_names.iter() {
+                let prover_input_a = to_value(prover_input_from_compiled_cairo_program(test_name))
+                    .expect("Unable to covert prover input to value");
+
+                if is_fix_mode {
+                    write_json(&get_prover_input_path(test_name), &prover_input_a);
+                }
+
+                let prover_input_b =
+                    prover_input_from_vm_output(&get_prover_input_info_path(test_name))
+                        .expect("Failed to create prover input from vm output");
+                let expected_prover_input_path = get_prover_input_path(test_name);
+                let expected_prover_input = read_json(&expected_prover_input_path);
+
+                if prover_input_a != expected_prover_input {
+                    println!("Prover input from compiled cairo program: {} doesn't match the expected prover input. To update prover input file, run the test with FIX=1.", test_name);
+                    failed = true;
+                }
+
+                if prover_input_a
+                    != to_value(prover_input_b).expect("Unable to covert prover input to value")
+                {
+                    println!(
+                        "Prover input from vm output: {} doesn't match the expected prover input",
+                        test_name
+                    );
+                    failed = true;
+                }
+            }
+
+            assert!(!failed, "Test compare prover input to expected file failed");
         }
 
         #[test]
