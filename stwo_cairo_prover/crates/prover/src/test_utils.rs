@@ -1,9 +1,12 @@
+use std::fs::{read_to_string, File};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::*;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+use serde_json::{to_string_pretty, Value};
 use stwo_cairo_adapter::plain::adapt_finished_runner;
 use stwo_cairo_adapter::ProverInput;
 
@@ -47,4 +50,24 @@ pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
         .join("../../test_data/")
         .join(test_name)
         .join("prover_input_info.json")
+}
+
+pub fn get_prover_input_path(test_name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../test_data/")
+        .join(test_name)
+        .join("prover_input.json")
+}
+
+pub fn read_json(file_path: &PathBuf) -> Value {
+    let json_file = read_to_string(file_path).unwrap();
+    serde_json::from_str(&json_file).expect("Invalid JSON file")
+}
+
+#[allow(dead_code)]
+// This function is used for updating the JSON files and for debugging purposes.
+pub fn write_json(file_path: &str, value: &Value) {
+    let path = PathBuf::from(file_path);
+    let mut file = File::create(path).unwrap();
+    write!(file, "{}", &to_string_pretty(&value).unwrap()).unwrap();
 }
