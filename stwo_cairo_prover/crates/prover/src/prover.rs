@@ -186,9 +186,31 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 #[cfg(test)]
 pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
+    use cairo_air::verifier::verify_cairo;
+    use cairo_air::CairoProof;
+    use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
+    use test_log::test;
 
+    use super::default_prod_prover_parameters;
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     use crate::test_utils::prover_input_from_compiled_cairo_program;
+
+    #[test]
+    fn test_from_proof() {
+        let proof_file = std::fs::File::open("/Users/andrewmilson/projects/tmp/proof_rust.json")
+            .expect("Failed to open proof file");
+        let cairo_proof: CairoProof<Blake2sMerkleHasher> =
+            serde_json::from_reader(proof_file).expect("Failed to deserialize proof");
+        // let mut out_felts = Vec::new();
+        // CairoSerialize::serialize(&cairo_proof, &mut out_felts);
+        // let out_str = out_felts.iter().map(|f| f.to_string()).join(",");
+        // let mut file = std::fs::File::create("proof_felts.txt").unwrap();
+        // file.write_all(out_str.as_bytes()).unwrap();
+        let pcs_config = default_prod_prover_parameters().pcs_config;
+        let preprocessed_trace = default_prod_prover_parameters().preprocessed_trace;
+        let _ = verify_cairo::<Blake2sMerkleChannel>(cairo_proof, pcs_config, preprocessed_trace)
+            .unwrap();
+    }
 
     #[test]
     fn test_all_cairo_constraints() {
