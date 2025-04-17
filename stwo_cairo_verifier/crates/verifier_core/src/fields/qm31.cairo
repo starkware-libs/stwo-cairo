@@ -2,14 +2,12 @@ use bounded_int::upcast;
 use super::cm31::CM31;
 use super::m31::{M31, M31InnerT, UnreducedM31};
 
-#[cfg(not(feature: "qm31_opcode"))]
-mod naive;
-#[cfg(not(feature: "qm31_opcode"))]
-use naive::*;
+// #[cfg(not(feature: "qm31_opcode"))]
+// mod naive;
+// #[cfg(not(feature: "qm31_opcode"))]
+// use naive::*;
 
-#[cfg(feature: "qm31_opcode")]
 mod opcode;
-#[cfg(feature: "qm31_opcode")]
 use opcode::*;
 
 /// Equals `(2^31 - 1)^4`.

@@ -1,13 +1,19 @@
 //! Implementation of M31 field using the QM31 opcode.
+use core::num::traits::One;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::qm31::m31_ops;
+use super::super::qm31::{QM31, QM31Trait};
 use super::super::{BatchInvertible, Invertible};
 use super::{ConstValue, M31, M31InnerT, M31Trait, M31_P, M31_SHIFT, P, P_U32};
 
 pub impl M31InvertibleImpl of Invertible<M31> {
     #[inline(always)]
     fn inverse(self: M31) -> M31 {
-        M31 { inner: m31_ops::div(1, self.inner.try_into().unwrap()) }
+        // TODO: Change impl when NonZero<M31InnerT> is possible.
+        let denom_qm31: QM31 = self.into();
+        let denom_qm31_inv = One::one() / denom_qm31;
+        let [v, _, _, _] = denom_qm31_inv.to_array();
+        M31 { inner: v }
     }
 }
 
