@@ -1,5 +1,7 @@
 use std::io::Read;
 use std::ops::{Deref, DerefMut};
+use std::simd::prelude::SimdPartialEq;
+use std::simd::u32x8;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::stdlib::collections::HashMap;
@@ -95,9 +97,20 @@ impl Memory {
     }
 }
 
-// TODO(spapini): Optimize. This should be SIMD.
+/// Converts an F252 (represented as [u32; 8]) to a MemoryValue,
+/// using SIMD instructions for the condition check.
 pub fn value_from_felt252(felt252: F252) -> MemoryValue {
-    if felt252[3..8] == [0; 5] && felt252[2] < (1 << 8) {
+    let v = u32x8::from_array(felt252);
+    let zeros = u32x8::splat(0);
+    let eq_zero_mask = v.simd_eq(zeros);
+    let mask_bits = eq_zero_mask.to_bitmask();
+
+    const UPPER_LANES_ZERO_BITS: u64 = 0b11111000;
+    let upper_lanes_are_zero = (mask_bits & UPPER_LANES_ZERO_BITS) == UPPER_LANES_ZERO_BITS;
+
+    let limb2_is_small = felt252[2] < 256; // 1 << 8
+
+    if upper_lanes_are_zero && limb2_is_small {
         MemoryValue::Small(
             felt252[0] as u128
                 + ((felt252[1] as u128) << 32)
@@ -394,18 +407,18 @@ mod tests {
                 value: [1, 2, 0, 0, 0, 0, 0, 0],
             },
         ];
-        let expxcted_id_addr_0 = EncodedMemoryValueId::encode(MemoryValueId::F252(0));
-        let expxcted_id_addr_1 = EncodedMemoryValueId::default();
-        let expxcted_id_addr_2 = EncodedMemoryValueId::encode(MemoryValueId::Small(0));
+        let expected_id_addr_0 = EncodedMemoryValueId::encode(MemoryValueId::F252(0));
+        let expected_id_addr_1 = EncodedMemoryValueId::default();
+        let expected_id_addr_2 = EncodedMemoryValueId::encode(MemoryValueId::Small(0));
 
         let (memory, ..) = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
         let addr_0_id = memory.address_to_id[0];
         let addr_1_id = memory.address_to_id[1];
         let addr_2_id = memory.address_to_id[2];
 
-        assert_eq!(addr_0_id, expxcted_id_addr_0);
-        assert_eq!(addr_1_id, expxcted_id_addr_1);
-        assert_eq!(addr_2_id, expxcted_id_addr_2);
+        assert_eq!(addr_0_id, expected_id_addr_0);
+        assert_eq!(addr_1_id, expected_id_addr_1);
+        assert_eq!(addr_2_id, expected_id_addr_2);
     }
 
     #[test]
@@ -446,5 +459,58 @@ mod tests {
         memory_builder.set(2, MemoryValue::Small(123));
 
         memory_builder.assert_segment_is_empty(0, 4);
+    }
+
+    #[test]
+    fn test_value_from_felt252() {
+        // Case 1: Should be Small (limbs 3-7 zero, limb 2 < 256)
+        let felt_small = [1, 2, 3, 0, 0, 0, 0, 0];
+        let expected_small_val = 1u128 + (2u128 << 32) + (3u128 << 64);
+        assert_eq!(
+            value_from_felt252(felt_small), // Test scalar version
+            MemoryValue::Small(expected_small_val)
+        );
+
+        // Case 2: Should be F252 (limb 3 non-zero)
+        let felt_large_limb3 = [1, 2, 3, 4, 0, 0, 0, 0];
+        assert_eq!(
+            value_from_felt252(felt_large_limb3),
+            MemoryValue::F252(felt_large_limb3)
+        );
+
+        // Case 3: Should be F252 (limb 7 non-zero)
+        let felt_large_limb7 = [1, 2, 3, 0, 0, 0, 0, 10];
+        assert_eq!(
+            value_from_felt252(felt_large_limb7),
+            MemoryValue::F252(felt_large_limb7)
+        );
+
+        // Case 4: Should be F252 (limb 2 >= 256)
+        let felt_large_limb2 = [1, 2, 256, 0, 0, 0, 0, 0];
+        assert_eq!(
+            value_from_felt252(felt_large_limb2),
+            MemoryValue::F252(felt_large_limb2)
+        );
+
+        // Case 5: Boundary - Should be Small (limb 2 == 255)
+        let felt_small_boundary = [1, 2, 255, 0, 0, 0, 0, 0];
+        let expected_small_boundary_val = 1u128 + (2u128 << 32) + (255u128 << 64);
+        assert_eq!(
+            value_from_felt252(felt_small_boundary),
+            MemoryValue::Small(expected_small_boundary_val)
+        );
+
+        // Case 6: Zero value
+        let felt_zero = [0; 8];
+        assert_eq!(value_from_felt252(felt_zero), MemoryValue::Small(0));
+
+        // Case 7: Max small value representation within limits
+        let felt_max_small_limb = [u32::MAX, u32::MAX, 255, 0, 0, 0, 0, 0];
+        let expected_max_small_val =
+            (u32::MAX as u128) + ((u32::MAX as u128) << 32) + (255u128 << 64);
+        assert_eq!(
+            value_from_felt252(felt_max_small_limb),
+            MemoryValue::Small(expected_max_small_val)
+        );
     }
 }

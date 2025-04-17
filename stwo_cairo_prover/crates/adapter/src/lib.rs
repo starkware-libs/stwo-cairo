@@ -1,3 +1,4 @@
+#![feature(portable_simd)]
 use builtins::BuiltinSegments;
 pub use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
