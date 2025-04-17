@@ -91,6 +91,10 @@ impl Relocator {
         for (segment_index, _) in self.relocatable_mem.iter().enumerate() {
             res.extend(self.get_relocated_segment(segment_index));
         }
+        assert!(
+            res.len() <= MEMORY_ADDRESS_BOUND,
+            "Relocated memory size exceeded the maximum address value",
+        );
         res
     }
 
