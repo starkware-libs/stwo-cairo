@@ -149,7 +149,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
-        let bitwise_builtin_segment_start = *self.claim.bitwise_builtin_segment_start;
+        let bitwise_builtin_segment_start = (*self.claim.bitwise_builtin_segment_start)
+            .try_into()
+            .unwrap();
 
         let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size));
 
@@ -193,7 +195,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             VerifyBitwiseXor_9_alpha2,
             VerifyBitwiseXor_9_z,
             claimed_sum,
-            bitwise_builtin_segment_start,
+            builtin_segment_start: bitwise_builtin_segment_start,
             seq,
         };
 
