@@ -7218,10 +7218,16 @@
         }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 8,
+          "offset": 0
+        }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 9,
+          "offset": 0
+        }
       },
       {
         "RelocatableValue": {
@@ -9261,10 +9267,16 @@
         }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 8,
+          "offset": 0
+        }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 9,
+          "offset": 0
+        }
       }
     ],
     [],
@@ -10173,7 +10185,23 @@
         "Int": "0x3241fe256bea8c2e2fa69098127e17e4020dc42158e61fd3e6dc236e0c0cac"
       }
     ],
-    []
+    [],
+    [],
+    [],
+    [
+      {
+        "Int": "0x0"
+      },
+      {
+        "Int": "0x0"
+      },
+      {
+        "Int": "0x0"
+      },
+      {
+        "Int": "0x0"
+      }
+    ]
   ],
   "public_memory_offsets": {
     "0": [
@@ -10267,13 +10295,18 @@
     "4": [],
     "5": [],
     "6": [],
-    "7": []
+    "7": [],
+    "8": [],
+    "9": [],
+    "10": []
   },
   "builtins_segments": {
     "3": "pedersen",
     "4": "range_check",
     "5": "bitwise",
     "6": "poseidon",
-    "7": "range_check96"
+    "7": "range_check96",
+    "8": "add_mod",
+    "9": "mul_mod"
   }
 }
