@@ -30,7 +30,9 @@ pub impl ClaimImpl of ClaimTrait {
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
-    fn mix_into(self: @Claim, ref channel: Channel) {}
+    fn mix_into(self: @Claim, ref channel: Channel) {
+        channel.mix_u64(BLAKE_SIGMA_LOG_SIZE.into());
+    }
 }
 
 #[derive(Drop, Serde, Copy)]
