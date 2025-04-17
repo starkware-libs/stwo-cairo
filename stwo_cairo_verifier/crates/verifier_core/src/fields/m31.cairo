@@ -57,6 +57,13 @@ impl DivRemU128ByP of DivRemHelper<u128, ConstValue<P>> {
     type RemT = M31InnerT;
 }
 
+impl DisplayM31 of core::fmt::Display<M31> {
+    fn fmt(self: @M31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        let v: u32 = (*self).into();
+        core::fmt::Display::fmt(@v, ref f)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::Invertible;

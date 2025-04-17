@@ -131,12 +131,6 @@ impl CM31PartialOrd of PartialOrd<CM31> {
     }
 }
 
-impl DisplayCM31 of core::fmt::Display<CM31> {
-    fn fmt(self: @CM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
-        write!(f, "{} + {}i", self.a, self.b)
-    }
-}
-
 #[inline]
 pub fn cm31_const<const W0: M31InnerT, const W1: M31InnerT>() -> CM31 nopanic {
     CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } }

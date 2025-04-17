@@ -412,12 +412,6 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
     }
 }
 
-impl DisplayQM31 of core::fmt::Display<QM31> {
-    fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
-        write!(f, "({}) + ({})u", self.a, self.b)
-    }
-}
-
 pub fn qm31_const<
     const W0: M31InnerT, const W1: M31InnerT, const W2: M31InnerT, const W3: M31InnerT,
 >() -> QM31 nopanic {

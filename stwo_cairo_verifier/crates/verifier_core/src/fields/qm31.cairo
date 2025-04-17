@@ -1,3 +1,4 @@
+use bounded_int::upcast;
 use super::cm31::CM31;
 use super::m31::{M31, M31InnerT, UnreducedM31};
 
@@ -55,6 +56,17 @@ pub trait PackedUnreducedQM31Trait {
     fn large_zero() -> PackedUnreducedQM31;
 
     fn reduce(self: PackedUnreducedQM31) -> QM31;
+}
+
+impl QM31Dispaly of core::fmt::Display<QM31> {
+    fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        let [a, b, c, d] = (*self).to_array();
+        let a: u32 = upcast(a);
+        let b: u32 = upcast(b);
+        let c: u32 = upcast(c);
+        let d: u32 = upcast(d);
+        write!(f, "({} + {}i) + ({} + {}i)u", a, b, c, d)
+    }
 }
 
 #[cfg(test)]

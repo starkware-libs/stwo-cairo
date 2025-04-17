@@ -226,9 +226,3 @@ pub impl M31SubConstrain0 of bounded_int::ConstrainHelper<BoundedInt<{ -(P - 1) 
     type LowT = BoundedInt<{ -(P - 1) }, { -1 }>;
     type HighT = M31InnerT;
 }
-
-impl DisplayM31 of core::fmt::Display<M31> {
-    fn fmt(self: @M31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
-        self.inner.fmt(ref f)
-    }
-}
