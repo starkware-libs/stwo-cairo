@@ -218,6 +218,9 @@ impl BuiltinSegments {
         }
     }
 
+    // Pads the relocatable builtin segments output by the VM to match the size required by Stwo.
+    // Assumes and verifies that the segments contain no holes and that their length is divisible by
+    // the number of cells per instance.
     pub fn pad_relocatble_builtin_segments(
         relocatable_memory: &mut [Vec<Option<MaybeRelocatable>>],
         builtins_segments: BTreeMap<usize, BuiltinName>,
@@ -247,8 +250,18 @@ impl BuiltinSegments {
             };
             assert!(
                 original_segment_len % cells_per_instance == 0,
-                "expected builtin segment size to be divisible by cells_per_instance"
+                "builtin segment: {} size is {}, which is not divisble by {}",
+                builtin_name,
+                original_segment_len,
+                cells_per_instance
             );
+
+            if !current_buitlin_segment.iter().all(|x| x.is_some()) {
+                panic!(
+                    "Builtins segments '{}' at segment index: {}, contains a hole.",
+                    builtin_name, segment_index
+                );
+            }
 
             // Builtin segment size is extended to the next power of two instances.
             let new_segment_size = original_segment_len
@@ -651,5 +664,38 @@ mod test_builtin_segments {
         for (value, expected_value) in relocatable_memory[1].iter().zip(segment1.iter().cycle()) {
             assert_eq!(value, expected_value);
         }
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "builtin segment: mul_mod_builtin size is 864, which is not divisble by 7"
+    )]
+    fn test_builtin_segment_invalid_size() {
+        let mul_mod_segment =
+            vec![Some(MaybeRelocatable::Int(7.into())); MUL_MOD_MEMORY_CELLS * 123 + 3];
+        let mut relocatable_memory = [mul_mod_segment];
+        let builtins_segments = BTreeMap::from([(0, BuiltinName::mul_mod)]);
+
+        BuiltinSegments::pad_relocatble_builtin_segments(
+            &mut relocatable_memory,
+            builtins_segments,
+        );
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "Builtins segments 'bitwise_builtin' at segment index: 0, contains a hole."
+    )]
+    fn test_builtin_segment_contains_hole() {
+        let mut segment0 = vec![Some(MaybeRelocatable::Int(1.into())); 80];
+        segment0[62] = None;
+
+        let mut relocatable_memory = vec![segment0];
+        let builtins_segments = BTreeMap::from([(0, BuiltinName::bitwise)]);
+
+        BuiltinSegments::pad_relocatble_builtin_segments(
+            &mut relocatable_memory,
+            builtins_segments,
+        );
     }
 }
