@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::*;
@@ -40,11 +40,4 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
 pub fn prover_input_from_compiled_cairo_program(file_name: &str) -> ProverInput {
     let runner = runner_from_compiled_cairo_program(file_name);
     adapt_finished_runner(runner).expect("Unable to create prover input from finished runner")
-}
-
-pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../test_data/")
-        .join(test_name)
-        .join("prover_input_info.json")
 }

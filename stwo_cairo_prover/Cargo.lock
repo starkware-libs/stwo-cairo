@@ -1931,7 +1931,6 @@ name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
  "cairo-air",
- "cairo-lang-casm",
  "cairo-vm",
  "hex",
  "itertools 0.12.1",

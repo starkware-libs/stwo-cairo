@@ -72,7 +72,7 @@ impl Default for MemoryConfig {
 
 // TODO(spapini): Add U26 for addresses and U128 for range checks.
 // TODO(spapini): Use some struct for Felt252 (that is still memory efficient).
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Memory {
     pub config: MemoryConfig,
     pub address_to_id: Vec<EncodedMemoryValueId>,
