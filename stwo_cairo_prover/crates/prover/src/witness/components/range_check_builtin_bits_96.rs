@@ -9,14 +9,14 @@ use crate::witness::prelude::*;
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub log_size: u32,
-    pub range_check96_builtin_segment_start: u32,
+    pub range_check_builtin_bits_96_segment_start: u32,
 }
 impl ClaimGenerator {
-    pub fn new(log_size: u32, range_check96_builtin_segment_start: u32) -> Self {
+    pub fn new(log_size: u32, range_check_builtin_bits_96_segment_start: u32) -> Self {
         assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,
-            range_check96_builtin_segment_start,
+            range_check_builtin_bits_96_segment_start,
         }
     }
 
@@ -31,7 +31,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
-            self.range_check96_builtin_segment_start,
+            self.range_check_builtin_bits_96_segment_start,
             memory_address_to_id_state,
             memory_id_to_big_state,
             range_check_6_state,
@@ -59,7 +59,8 @@ impl ClaimGenerator {
         (
             Claim {
                 log_size,
-                range_check96_builtin_segment_start: self.range_check96_builtin_segment_start,
+                range_check_builtin_bits_96_segment_start: self
+                    .range_check_builtin_bits_96_segment_start,
             },
             InteractionClaimGenerator {
                 log_size,
@@ -82,7 +83,7 @@ struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     log_size: u32,
-    range_check96_builtin_segment_start: u32,
+    range_check_builtin_bits_96_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_6_state: &range_check_6::ClaimGenerator,
@@ -118,18 +119,19 @@ fn write_trace_simd(
 
                 let memory_address_to_id_value_tmp_fd7ee_0 = memory_address_to_id_state
                     .deduce_output(
-                        ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
-                            + (seq)),
+                        ((PackedM31::broadcast(M31::from(
+                            range_check_builtin_bits_96_segment_start,
+                        ))) + (seq)),
                     );
                 let memory_id_to_big_value_tmp_fd7ee_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_fd7ee_0);
                 let value_id_col0 = memory_address_to_id_value_tmp_fd7ee_0;
                 *row[0] = value_id_col0;
                 *sub_component_inputs.memory_address_to_id[0] =
-                    ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
+                    ((PackedM31::broadcast(M31::from(range_check_builtin_bits_96_segment_start)))
                         + (seq));
                 *lookup_data.memory_address_to_id_0 = [
-                    ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
+                    ((PackedM31::broadcast(M31::from(range_check_builtin_bits_96_segment_start)))
                         + (seq)),
                     value_id_col0,
                 ];
