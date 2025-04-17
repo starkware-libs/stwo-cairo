@@ -16,7 +16,7 @@ pub mod vm_import;
 pub const N_REGISTERS: usize = 3;
 
 /// Externally provided inputs for the Stwo prover.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
     pub memory: Memory,

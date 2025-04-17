@@ -34,7 +34,6 @@ stwo-prover.workspace = true
 tracing.workspace = true
 
 [dev-dependencies]
-cairo-lang-casm.workspace = true
 cairo-vm = { workspace = true, default-features = true }
 test-log = { version = "0.2.17", features = ["trace"] }
 tracing-subscriber.workspace = true

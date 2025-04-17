@@ -114,7 +114,7 @@ impl From<RelocatedTraceEntry> for CasmState {
 
 /// Holds the state transitions of a Cairo program, split according to the components responsible
 /// for proving each transition.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct StateTransitions {
     pub initial_state: CasmState,
     pub final_state: CasmState,

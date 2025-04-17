@@ -191,37 +191,9 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 #[cfg(test)]
 pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
-    use cairo_lang_casm::casm;
-    use stwo_cairo_adapter::plain::input_from_plain_casm;
-    use stwo_cairo_adapter::ProverInput;
-    use test_log::test;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     use crate::test_utils::prover_input_from_compiled_cairo_program;
-
-    fn test_basic_cairo_air_input() -> ProverInput {
-        let u128_max = u128::MAX;
-        let instructions = casm! {
-            // TODO(AlonH): Add actual range check segment.
-            // Manually writing range check builtin segment of size 40 to memory.
-            [ap] = u128_max, ap++;
-            [ap + 38] = 1, ap++;
-            ap += 38;
-
-            [ap] = 10, ap++;
-            call rel 4;
-            jmp rel 11;
-
-            jmp rel 4 if [fp-3] != 0;
-            jmp rel 6;
-            [ap] = [fp-3] + (-1), ap++;
-            call rel (-6);
-            ret;
-        }
-        .instructions;
-
-        input_from_plain_casm(instructions)
-    }
 
     #[test]
     fn test_all_cairo_constraints() {
@@ -249,9 +221,11 @@ pub mod tests {
 
         #[test]
         fn generate_and_serialise_proof() {
+            let input =
+                prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
             let preprocessed_trace = PreProcessedTraceVariant::Canonical;
             let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
-                test_basic_cairo_air_input(),
+                input,
                 PcsConfig::default(),
                 preprocessed_trace,
             )
@@ -273,6 +247,8 @@ pub mod tests {
     #[cfg(test)]
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
+        use std::path::PathBuf;
+
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
@@ -283,9 +259,14 @@ pub mod tests {
 
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
-        use crate::prover::tests::test_basic_cairo_air_input;
         use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
-        use crate::test_utils::get_prover_input_info_path;
+
+        pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("../../test_data/")
+                .join(test_name)
+                .join("prover_input_info.json")
+        }
 
         // TODO(Ohad): fine-grained constraints tests.
         #[test]
@@ -354,12 +335,14 @@ pub mod tests {
         #[test]
         fn test_proof_stability() {
             let n_proofs_to_compare = 10;
+            let input =
+                prover_input_from_compiled_cairo_program("test_prove_verify_all_opcode_components");
 
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
                     serde_json::to_string(
                         &prove_cairo::<Blake2sMerkleChannel>(
-                            test_basic_cairo_air_input(),
+                            input.clone(),
                             PcsConfig::default(),
                             PreProcessedTraceVariant::Canonical,
                         )
