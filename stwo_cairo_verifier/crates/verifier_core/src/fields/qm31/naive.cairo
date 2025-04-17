@@ -12,7 +12,7 @@ use super::{
 
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
-#[derive(Copy, Drop, Debug, PartialEq, Serde)]
+#[derive(Copy, Drop, Debug, PartialEq)]
 pub struct QM31 {
     a: CM31,
     b: CM31,
