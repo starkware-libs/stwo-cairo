@@ -3,7 +3,6 @@ use std::ops::{Deref, DerefMut};
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::stdlib::collections::HashMap;
-use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 
@@ -93,16 +92,6 @@ impl Memory {
 
     pub fn get_raw_id(&self, addr: u32) -> u32 {
         self.address_to_id[addr as usize].0
-    }
-
-    pub fn iter_values(&self) -> impl Iterator<Item = MemoryValue> + '_ {
-        let mut values = (0..self.address_to_id.len())
-            .map(|addr| self.get(addr as u32))
-            .collect_vec();
-
-        let size = values.len().next_power_of_two();
-        values.resize(size, MemoryValue::F252([0; 8]));
-        values.into_iter()
     }
 }
 
