@@ -39,5 +39,6 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
 
 pub fn prover_input_from_compiled_cairo_program(file_name: &str) -> ProverInput {
     let runner = runner_from_compiled_cairo_program(file_name);
-    adapt_finished_runner(runner).expect("Unable to create prover input from finished runner")
+    adapt_finished_runner(runner, false)
+        .expect("Unable to create prover input from finished runner")
 }
