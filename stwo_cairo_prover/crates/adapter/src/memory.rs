@@ -5,6 +5,7 @@ use bytemuck::{bytes_of_mut, Pod, Zeroable};
 use cairo_vm::stdlib::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
+use tracing::{span, Level};
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [
@@ -135,6 +136,7 @@ impl MemoryBuilder {
         config: MemoryConfig,
         iter: I,
     ) -> MemoryBuilder {
+        let _span = span!(Level::INFO, "MemoryBuilder::from_iter").entered();
         let memory_entries = iter.into_iter();
         let mut builder = Self::new(config);
         for entry in memory_entries {
