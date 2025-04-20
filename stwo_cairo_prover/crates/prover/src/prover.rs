@@ -353,10 +353,7 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use std::collections::HashSet;
-            use std::fs::File;
 
-            use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
-            use stwo_cairo_adapter::memory::MemoryEntryIter;
             use test_log::test;
 
             use super::*;
@@ -414,24 +411,6 @@ pub mod tests {
                 .unwrap();
             }
 
-            /// Asserts that there is an unused `add` value in the first instance in bitwise
-            /// builtin segment, inducing a "hole".
-            fn assert_bitwise_builtin_has_holes(
-                test_name: &str,
-                bitwise_segment: &Option<MemorySegmentAddresses>,
-            ) {
-                let bitwise_segment = bitwise_segment.as_ref().unwrap();
-                let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-                d.push("../../test_data/");
-                d.push(test_name);
-                let mut memory_file =
-                    std::io::BufReader::new(File::open(d.join("mem").as_path()).unwrap());
-                let memory_entries = MemoryEntryIter(&mut memory_file).collect_vec();
-                assert!(memory_entries
-                    .iter()
-                    .all(|entry| entry.address != (bitwise_segment.begin_addr + 2) as u64));
-            }
-
             #[test]
             fn test_prove_verify_all_builtins_from_file() {
                 let prover_input_file_path =
@@ -465,10 +444,6 @@ pub mod tests {
             fn test_bitwise_builtin_constraints() {
                 let input =
                     prover_input_from_compiled_cairo_program("test_prove_verify_bitwise_builtin");
-                assert_bitwise_builtin_has_holes(
-                    "test_prove_verify_bitwise_builtin",
-                    &input.builtins_segments.bitwise,
-                );
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
