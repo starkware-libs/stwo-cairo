@@ -112,14 +112,14 @@ impl Relocator {
             match builtin_name {
                 BuiltinName::range_check => res.range_check_bits_128 = segment,
                 BuiltinName::pedersen => res.pedersen = segment,
-                BuiltinName::ecdsa => res.ecdsa = segment,
-                BuiltinName::keccak => res.keccak = segment,
                 BuiltinName::bitwise => res.bitwise = segment,
-                BuiltinName::ec_op => res.ec_op = segment,
                 BuiltinName::poseidon => res.poseidon = segment,
                 BuiltinName::range_check96 => res.range_check_bits_96 = segment,
                 BuiltinName::add_mod => res.add_mod = segment,
                 BuiltinName::mul_mod => res.mul_mod = segment,
+                BuiltinName::ecdsa | BuiltinName::keccak | BuiltinName::ec_op => {
+                    panic!("Builtin {} is not supported in Stwo", builtin_name)
+                }
                 // Not builtins.
                 BuiltinName::output | BuiltinName::segment_arena => {}
             };
@@ -369,7 +369,6 @@ pub mod relocator_tests {
                 stop_ptr: 97
             })
         );
-        assert_eq!(builtins_segments.ecdsa, None);
     }
 
     #[test]
