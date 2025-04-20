@@ -3,6 +3,7 @@ use std::fmt::Display;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
+use tracing::{span, Level};
 
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
@@ -133,6 +134,7 @@ impl StateTransitions {
         iter: impl Iterator<Item = RelocatedTraceEntry>,
         memory: &mut MemoryBuilder,
     ) -> Self {
+        let _span = span!(Level::INFO, "StateTransitions::from_iter").entered();
         let mut res = Self::default();
         let mut iter = iter.peekable();
 
