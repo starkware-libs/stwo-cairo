@@ -352,8 +352,6 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-            use std::collections::HashSet;
-
             use test_log::test;
 
             use super::*;
@@ -362,7 +360,7 @@ pub mod tests {
             /// Asserts that all supported builtins are present in the input.
             /// Panics if any of the builtins is missing.
             fn assert_all_builtins_in_input(input: &ProverInput) {
-                let empty_builtins: HashSet<_> = input
+                let empty_builtins: Vec<_> = input
                     .builtins_segments
                     .get_counts()
                     .iter()
@@ -370,24 +368,8 @@ pub mod tests {
                     .map(|(name, _)| format!("{:?}", name))
                     .collect();
 
-                let non_supported_builtins: HashSet<_> = ["keccak", "ecdsa", "ec_op"]
-                    .iter()
-                    .map(|&name| name.to_string())
-                    .collect();
-
-                if empty_builtins != non_supported_builtins {
-                    let missing: Vec<_> = non_supported_builtins
-                        .difference(&empty_builtins)
-                        .cloned()
-                        .collect();
-                    let extra: Vec<_> = empty_builtins
-                        .difference(&non_supported_builtins)
-                        .cloned()
-                        .collect();
-                    panic!(
-                        "Mismatch in empty builtins: missing {:?}, extra {:?}",
-                        missing, extra
-                    );
+                if !empty_builtins.is_empty() {
+                    panic!("Builtins missing in the input: {:?}", empty_builtins);
                 }
             }
 

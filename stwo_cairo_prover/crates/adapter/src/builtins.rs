@@ -44,9 +44,6 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
 pub struct BuiltinSegments {
     pub add_mod: Option<MemorySegmentAddresses>,
     pub bitwise: Option<MemorySegmentAddresses>,
-    pub ec_op: Option<MemorySegmentAddresses>,
-    pub ecdsa: Option<MemorySegmentAddresses>,
-    pub keccak: Option<MemorySegmentAddresses>,
     pub output: Option<MemorySegmentAddresses>,
     pub mul_mod: Option<MemorySegmentAddresses>,
     pub pedersen: Option<MemorySegmentAddresses>,
@@ -77,15 +74,15 @@ impl BuiltinSegments {
                 match builtin_name {
                     BuiltinName::range_check => res.range_check_bits_128 = segment,
                     BuiltinName::pedersen => res.pedersen = segment,
-                    BuiltinName::ecdsa => res.ecdsa = segment,
-                    BuiltinName::keccak => res.keccak = segment,
                     BuiltinName::bitwise => res.bitwise = segment,
-                    BuiltinName::ec_op => res.ec_op = segment,
                     BuiltinName::poseidon => res.poseidon = segment,
                     BuiltinName::range_check96 => res.range_check_bits_96 = segment,
                     BuiltinName::add_mod => res.add_mod = segment,
                     BuiltinName::mul_mod => res.mul_mod = segment,
                     BuiltinName::output => res.output = segment,
+                    BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
+                        assert!(segment.is_none(), "{} builtin is not supported", name);
+                    }
                     // Not builtins.
                     BuiltinName::segment_arena => {}
                 }
@@ -106,9 +103,6 @@ impl BuiltinSegments {
 
         insert_builtin(BuiltinName::add_mod, &self.add_mod, ADD_MOD_MEMORY_CELLS);
         insert_builtin(BuiltinName::bitwise, &self.bitwise, BITWISE_MEMORY_CELLS);
-        insert_builtin(BuiltinName::ec_op, &self.ec_op, EC_OP_MEMORY_CELLS);
-        insert_builtin(BuiltinName::ecdsa, &self.ecdsa, ECDSA_MEMORY_CELLS);
-        insert_builtin(BuiltinName::keccak, &self.keccak, KECCAK_MEMORY_CELLS);
         insert_builtin(BuiltinName::mul_mod, &self.mul_mod, MUL_MOD_MEMORY_CELLS);
         insert_builtin(BuiltinName::pedersen, &self.pedersen, PEDERSEN_MEMORY_CELLS);
         insert_builtin(BuiltinName::poseidon, &self.poseidon, POSEIDON_MEMORY_CELLS);
@@ -150,30 +144,6 @@ impl BuiltinSegments {
                 memory,
                 BITWISE_MEMORY_CELLS as u32,
                 Some("bitwise"),
-            ));
-        }
-        if let Some(segment) = &self.ec_op {
-            self.ec_op = Some(pad_segment(
-                segment,
-                memory,
-                EC_OP_MEMORY_CELLS as u32,
-                Some("ec_op"),
-            ));
-        }
-        if let Some(segment) = &self.ecdsa {
-            self.ecdsa = Some(pad_segment(
-                segment,
-                memory,
-                ECDSA_MEMORY_CELLS as u32,
-                Some("ecdsa"),
-            ));
-        }
-        if let Some(segment) = &self.keccak {
-            self.keccak = Some(pad_segment(
-                segment,
-                memory,
-                KECCAK_MEMORY_CELLS as u32,
-                Some("keccak"),
             ));
         }
         if let Some(segment) = &self.mul_mod {
@@ -301,9 +271,6 @@ impl BuiltinSegments {
         let max_stop_ptr = [
             self.add_mod.as_ref(),
             self.bitwise.as_ref(),
-            self.ec_op.as_ref(),
-            self.ecdsa.as_ref(),
-            self.keccak.as_ref(),
             self.mul_mod.as_ref(),
             self.pedersen.as_ref(),
             self.poseidon.as_ref(),
@@ -466,9 +433,6 @@ mod test_builtin_segments {
                 stop_ptr: 23901
             })
         );
-        assert_eq!(builtin_segments.ec_op, None);
-        assert_eq!(builtin_segments.ecdsa, None);
-        assert_eq!(builtin_segments.keccak, None);
         assert_eq!(builtin_segments.mul_mod, None);
         assert_eq!(builtin_segments.pedersen, None);
         assert_eq!(builtin_segments.poseidon, None);
