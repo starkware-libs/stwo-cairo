@@ -10,3 +10,6 @@ cairo-lang-casm.workspace = true
 stwo-prover.workspace = true
 serde_json.workspace = true
 stwo-cairo-adapter.workspace = true
+
+[dev-dependencies]
+cairo-vm.workspace = true
