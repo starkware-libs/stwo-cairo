@@ -5,6 +5,7 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::trace::trace_entry::TraceEntry;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::simd::N_LANES;
+use tracing::{span, Level};
 
 use crate::builtins::MemorySegmentAddresses;
 use crate::memory::{MemoryEntry, F252};
@@ -29,6 +30,7 @@ impl Relocator {
         relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
         builtins_segments_indices: BTreeMap<usize, BuiltinName>,
     ) -> Self {
+        let _span = span!(Level::INFO, "Relocator::new").entered();
         let address_base = 1;
         let mut relocation_table = vec![address_base];
 
@@ -87,6 +89,7 @@ impl Relocator {
 
     /// Get a list of relocated addresses and values for the memory.
     pub fn get_relocated_memory(&self) -> Vec<MemoryEntry> {
+        let _span = span!(Level::INFO, "get_relocated_memory").entered();
         let mut res = vec![];
         for (segment_index, _) in self.relocatable_mem.iter().enumerate() {
             res.extend(self.get_relocated_segment(segment_index));
@@ -96,6 +99,7 @@ impl Relocator {
 
     // Return the segment info (start_address, exclusive end_address) for each builtin.
     pub fn get_builtin_segments(&self) -> BuiltinSegments {
+        let _span = span!(Level::INFO, "get_builtin_segments").entered();
         let mut res = BuiltinSegments::default();
         for (segment_index, builtin_name) in self.builtins_segments_indices.iter() {
             let start_addr = self.relocation_table[*segment_index];
@@ -128,6 +132,7 @@ impl Relocator {
     }
 
     pub fn relocate_trace(&self, relocatble_trace: &[TraceEntry]) -> Vec<RelocatedTraceEntry> {
+        let _span = span!(Level::INFO, "relocate_trace").entered();
         let mut res = vec![];
         for entry in relocatble_trace {
             res.push(RelocatedTraceEntry {
@@ -146,6 +151,7 @@ impl Relocator {
         &self,
         public_addresses: BTreeMap<usize, Vec<usize>>,
     ) -> Vec<u32> {
+        let _span = span!(Level::INFO, "relocate_public_addresses").entered();
         let mut res = vec![];
         for (segment_index, offsets) in public_addresses {
             let base_addr = self.relocation_table[segment_index];

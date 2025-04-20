@@ -6,6 +6,7 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::simd::N_LANES;
+use tracing::{span, Level};
 
 use super::memory::MemoryBuilder;
 
@@ -195,6 +196,7 @@ impl BuiltinSegments {
         relocatable_memory: &mut [Vec<Option<MaybeRelocatable>>],
         builtins_segments: BTreeMap<usize, BuiltinName>,
     ) {
+        let _span = span!(Level::INFO, "pad_relocatble_builtin_segments").entered();
         for (segment_index, builtin_name) in builtins_segments {
             let current_buitlin_segment = &mut relocatable_memory[segment_index];
 
