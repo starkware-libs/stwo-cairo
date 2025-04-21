@@ -1,23 +1,17 @@
 mod json;
 
-use std::fs::{read_to_string, File};
 use std::io::Read;
-use std::path::Path;
 
 use bytemuck::{bytes_of_mut, Pod, Zeroable};
-use cairo_vm::air_public_input::{PublicInput, PublicInputError};
+use cairo_vm::air_public_input::PublicInputError;
 use cairo_vm::stdlib::collections::HashMap;
-use json::PrivateInput;
-use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror::Error;
-use tracing::{span, Level};
 
 use super::builtins::BuiltinSegments;
-use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
 use crate::builtins::MemorySegmentAddresses;
-use crate::memory::{MemoryBuilder, MemoryEntryIter};
+use crate::memory::MemoryBuilder;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -36,98 +30,6 @@ pub enum VmImportError {
 
     #[error("Cannot get public input from runner: {0}")]
     PublicInput(#[from] PublicInputError),
-}
-
-fn deserialize_inputs<'a>(
-    public_input_string: &'a str,
-    private_input_string: &'a str,
-) -> Result<(PublicInput<'a>, PrivateInput), VmImportError> {
-    #[cfg(feature = "std")]
-    {
-        Ok((
-            sonic_rs::from_str(public_input_string)?,
-            sonic_rs::from_str(private_input_string)?,
-        ))
-    }
-    #[cfg(not(feature = "std"))]
-    {
-        Ok((
-            serde_json::from_str(public_input_string)?,
-            serde_json::from_str(private_input_string)?,
-        ))
-    }
-}
-
-/// Adapts the VM's output files to the Cairo input of the prover.
-/// TODO(Stav): delete when 'adapt_prover_input_info_vm_output' is used.
-pub fn adapt_vm_output(
-    public_input_json: &Path,
-    private_input_json: &Path,
-) -> Result<ProverInput, VmImportError> {
-    let _span = span!(Level::INFO, "adapt_vm_output").entered();
-
-    let (public_input_string, private_input_string) = (
-        read_to_string(public_input_json).unwrap_or_else(|_| {
-            panic!(
-                "Unable to read public input file at path {}",
-                public_input_json.display()
-            )
-        }),
-        read_to_string(private_input_json).unwrap_or_else(|_| {
-            panic!(
-                "Unable to read private input file at path {}",
-                private_input_json.display()
-            )
-        }),
-    );
-    let (public_input, private_input) =
-        deserialize_inputs(&public_input_string, &private_input_string)?;
-
-    let end_addr = public_input
-        .memory_segments
-        .values()
-        .map(|v| v.stop_ptr)
-        .max()
-        .ok_or(VmImportError::NoMemorySegments)?;
-    assert!(end_addr < MEMORY_ADDRESS_BOUND);
-
-    let memory_path = private_input_json
-        .parent()
-        .unwrap()
-        .join(&private_input.memory_path);
-    let trace_path = private_input_json
-        .parent()
-        .unwrap()
-        .join(&private_input.trace_path);
-
-    let mut memory_file =
-        std::io::BufReader::new(File::open(memory_path.as_path()).unwrap_or_else(|_| {
-            panic!(
-                "Unable to open memory file at path {}",
-                memory_path.display()
-            )
-        }));
-    let mut trace_file =
-        std::io::BufReader::new(File::open(trace_path.as_path()).unwrap_or_else(|_| {
-            panic!("Unable to open trace file at path {}", trace_path.display())
-        }));
-
-    let public_memory_addresses = public_input
-        .public_memory
-        .iter()
-        .map(|entry| entry.address as u32)
-        .collect();
-    let res = adapt_to_stwo_input(
-        TraceIter(&mut trace_file),
-        MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
-        public_memory_addresses,
-        &public_input
-            .memory_segments
-            .into_iter()
-            .map(|(k, v)| (k, v.into()))
-            .collect(),
-    );
-    res
 }
 
 /// Creates Cairo input for Stwo, utilized by:
