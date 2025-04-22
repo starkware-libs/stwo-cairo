@@ -1,9 +1,7 @@
 use std::fs::read_to_string;
 use std::path::Path;
 
-use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::stdlib::collections::HashMap;
-use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::{CairoRunner, ProverInputInfo};
 use itertools::Itertools;
@@ -16,45 +14,7 @@ use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::StateTransitions;
 
-/// Translates a plain casm into a ProverInput by running the program and extracting the memory and
-/// the state transitions.
-/// When dev mod is enabled, the opcodes generated from the plain casm will
-/// be mapped to the generic component only.
-pub fn input_from_plain_casm(casm: Vec<cairo_lang_casm::instructions::Instruction>) -> ProverInput {
-    let (program, program_len) = program_from_casm(casm);
-
-    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true, true)
-        .expect("Runner creation failed");
-    runner.initialize(true).expect("Initialization failed");
-    runner
-        .run_until_pc(
-            (runner.program_base.unwrap() + program_len).unwrap(),
-            &mut BuiltinHintProcessor::new_empty(),
-        )
-        .expect("Run failed");
-    runner.relocate(true).unwrap();
-    adapt_finished_runner(runner).expect("Failed to adapt finished runner")
-}
-
-// NOTE: the proof will include `step_limit -1` steps.
-pub fn input_from_plain_casm_with_step_limit(
-    casm: Vec<cairo_lang_casm::instructions::Instruction>,
-    step_limit: usize,
-) -> ProverInput {
-    let (program, _) = program_from_casm(casm);
-
-    let mut runner = CairoRunner::new(&program, LayoutName::plain, None, true, true, true)
-        .expect("Runner creation failed");
-    runner.initialize(true).expect("Initialization failed");
-    runner
-        .run_for_steps(step_limit, &mut BuiltinHintProcessor::new_empty())
-        .expect("Run failed");
-    runner.relocate(true).unwrap();
-
-    adapt_finished_runner(runner).expect("Failed to adapt finished runner")
-}
-
-fn program_from_casm(
+pub fn program_from_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
 ) -> (cairo_vm::types::program::Program, usize) {
     let felt_code = casm

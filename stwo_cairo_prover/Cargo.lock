@@ -1360,6 +1360,7 @@ version = "0.1.0"
 dependencies = [
  "cairo-air",
  "cairo-lang-casm",
+ "cairo-vm",
  "serde_json",
  "stwo-cairo-adapter",
  "stwo-prover",
