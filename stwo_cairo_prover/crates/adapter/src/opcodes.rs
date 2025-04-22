@@ -158,7 +158,6 @@ impl StateTransitions {
         let CasmState { ap, fp, pc } = state;
         let encoded_instruction = memory.get_inst(pc.0);
         let instruction = Instruction::decode(encoded_instruction);
-
         match instruction {
             // ret.
             Instruction {

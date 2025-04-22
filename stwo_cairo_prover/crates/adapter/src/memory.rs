@@ -6,6 +6,8 @@ use cairo_vm::stdlib::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 
+use crate::utils::AtomicBitmap;
+
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [
     0x0000_0000,
@@ -93,6 +95,12 @@ impl Memory {
     pub fn get_raw_id(&self, addr: u32) -> u32 {
         self.address_to_id[addr as usize].0
     }
+
+    fn get_inst(&self, addr: u32) -> u128 {
+        let value = self.get(addr).as_u256();
+        assert_eq!(value[3..8], [0; 5]);
+        value[0] as u128 | ((value[1] as u128) << 32) | ((value[2] as u128) << 64)
+    }
 }
 
 // TODO(spapini): Optimize. This should be SIMD.
@@ -112,7 +120,7 @@ pub fn value_from_felt252(felt252: F252) -> MemoryValue {
 // TODO(ohadn): derive or impl a default for MemoryBuilder.
 pub struct MemoryBuilder {
     memory: Memory,
-    inst_cache: HashMap<u32, u128>,
+    pc_cache: AtomicBitmap,
     felt252_id_cache: HashMap<[u32; 8], usize>,
     small_values_cache: HashMap<u128, usize>,
 }
@@ -125,7 +133,7 @@ impl MemoryBuilder {
                 f252_values: Vec::new(),
                 small_values: Vec::new(),
             },
-            inst_cache: HashMap::new(),
+            pc_cache: AtomicBitmap::new(1 << 27),
             felt252_id_cache: HashMap::new(),
             small_values_cache: HashMap::new(),
         }
@@ -143,17 +151,6 @@ impl MemoryBuilder {
         }
 
         builder
-    }
-
-    pub fn get_inst(&mut self, addr: u32) -> u128 {
-        let mut inst_cache = std::mem::take(&mut self.inst_cache);
-        let res = *inst_cache.entry(addr).or_insert_with(|| {
-            let value = self.memory.get(addr).as_u256();
-            assert_eq!(value[3..8], [0; 5]);
-            value[0] as u128 | ((value[1] as u128) << 32) | ((value[2] as u128) << 64)
-        });
-        self.inst_cache = inst_cache;
-        res
     }
 
     // TODO(ohadn): settle on an address integer type, and use it consistently.
@@ -184,6 +181,11 @@ impl MemoryBuilder {
         self.address_to_id[addr as usize] = res;
     }
 
+    pub fn get_inst(&self, addr: u32) -> u128 {
+        self.pc_cache.set_1(addr);
+        self.memory.get_inst(addr)
+    }
+
     /// Copies a block of memory from one location to another.
     /// The values at addresses src_start_addr to src_start_addr + segment_length - 1 are copied to
     /// the addresses dst_start_addr to dst_start_addr + segment_length - 1.
@@ -211,7 +213,13 @@ impl MemoryBuilder {
     }
 
     pub fn build(self) -> (Memory, HashMap<u32, u128>) {
-        (self.memory, self.inst_cache)
+        let memory = self.memory;
+        let inst_cache = self
+            .pc_cache
+            .u32s()
+            .map(|p| (p, memory.get_inst(p)))
+            .collect();
+        (memory, inst_cache)
     }
 }
 impl Deref for MemoryBuilder {
