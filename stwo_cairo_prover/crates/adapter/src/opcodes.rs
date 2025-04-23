@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use rayon::iter::ParallelIterator;
+use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
@@ -487,6 +489,59 @@ impl CasmStatesByOpcode {
             }
         }
     }
+
+    pub fn merge(
+        &mut self,
+        CasmStatesByOpcode {
+            generic_opcode,
+            add_ap_opcode,
+            add_opcode,
+            add_opcode_small,
+            assert_eq_opcode,
+            assert_eq_opcode_double_deref,
+            assert_eq_opcode_imm,
+            call_opcode,
+            call_opcode_rel,
+            call_opcode_op_1_base_fp,
+            jnz_opcode,
+            jnz_opcode_taken,
+            jump_opcode_rel_imm,
+            jump_opcode_rel,
+            jump_opcode_double_deref,
+            jump_opcode,
+            mul_opcode_small,
+            mul_opcode,
+            ret_opcode,
+            blake_compress_opcode,
+            qm_31_add_mul_opcode,
+        }: &Self,
+    ) {
+        self.generic_opcode.extend(generic_opcode);
+        self.add_ap_opcode.extend(add_ap_opcode);
+        self.add_opcode.extend(add_opcode);
+        self.add_opcode_small.extend(add_opcode_small);
+        self.assert_eq_opcode.extend(assert_eq_opcode);
+        self.assert_eq_opcode_double_deref
+            .extend(assert_eq_opcode_double_deref);
+        self.assert_eq_opcode_imm.extend(assert_eq_opcode_imm);
+        self.call_opcode.extend(call_opcode);
+        self.call_opcode_rel.extend(call_opcode_rel);
+        self.call_opcode_op_1_base_fp
+            .extend(call_opcode_op_1_base_fp);
+        self.jnz_opcode.extend(jnz_opcode);
+        self.jnz_opcode_taken.extend(jnz_opcode_taken);
+        self.jump_opcode_rel_imm.extend(jump_opcode_rel_imm);
+        self.jump_opcode_rel.extend(jump_opcode_rel);
+        self.jump_opcode_double_deref
+            .extend(jump_opcode_double_deref);
+        self.jump_opcode.extend(jump_opcode);
+        self.mul_opcode_small.extend(mul_opcode_small);
+        self.mul_opcode.extend(mul_opcode);
+        self.ret_opcode.extend(ret_opcode);
+        self.blake_compress_opcode.extend(blake_compress_opcode);
+        self.qm_31_add_mul_opcode.extend(qm_31_add_mul_opcode);
+    }
+
     pub fn counts(&self) -> Vec<(String, usize)> {
         vec![
             ("generic_opcode".to_string(), self.generic_opcode.len()),
@@ -574,6 +629,7 @@ impl StateTransitions {
     /// - StateTransitions, used to feed the opcodes' air.
     /// - A map from pc to instruction that is used to feed
     ///   [`crate::cairo_air::components::verify_instruction::ClaimGenerator`].
+    // TODO(Ohad): introduce `parallel` feature or delete this function.
     pub fn from_iter(
         iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
         memory: &MemoryBuilder,
@@ -592,6 +648,31 @@ impl StateTransitions {
             initial_state,
             final_state,
             casm_states_by_opcode: states,
+        }
+    }
+
+    pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
+        let _span = span!(Level::INFO, "StateTransitions::from_slice_parallel").entered();
+        let initial_state = trace.first().copied().unwrap().into();
+
+        // Assuming the last instruction is jrl0, no need to push it.
+        let final_state = trace.last().copied().unwrap().into();
+        let trace = &trace[..trace.len() - 1];
+
+        let n_workers = rayon::current_num_threads();
+        let chunk_size = trace.len().div_ceil(n_workers);
+        let casm_states_by_opcode = trace
+            .par_chunks(chunk_size)
+            .map(|chunk| CasmStatesByOpcode::from_iter(chunk.iter().copied(), memory))
+            .reduce(Default::default, |mut acc, chunk| {
+                acc.merge(&chunk);
+                acc
+            });
+
+        StateTransitions {
+            initial_state,
+            final_state,
+            casm_states_by_opcode,
         }
     }
 }
