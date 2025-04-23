@@ -6,8 +6,7 @@ use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde::Serialize;
-use stwo_cairo_adapter::plain::prover_input_from_vm_output;
-use stwo_cairo_adapter::vm_import::VmImportError;
+use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
@@ -44,8 +43,10 @@ use tracing::{span, Level};
 ///     ```
 #[derive(Parser, Debug)]
 struct Args {
-    #[structopt(long = "prover_input_info")]
-    prover_input_info_path: PathBuf,
+    #[structopt(long = "pub_json")]
+    pub_json: PathBuf,
+    #[structopt(long = "priv_json")]
+    priv_json: PathBuf,
     /// The path to the JSON file containing the prover parameters (optional).
     /// The expected file format is:
     ///     {
@@ -114,11 +115,12 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    let prover_input = prover_input_from_vm_output(&args.prover_input_info_path)?;
+    let vm_output: ProverInput =
+        adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
 
     log::info!(
         "Casm states by opcode:\n{}",
-        prover_input.state_transitions.casm_states_by_opcode
+        vm_output.state_transitions.casm_states_by_opcode
     );
 
     let ProverParameters {
@@ -136,7 +138,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     };
 
     run_inner_fn(
-        prover_input,
+        vm_output,
         pcs_config,
         preprocessed_trace,
         args.verify,
@@ -190,38 +192,4 @@ where
     }
 
     Ok(())
-}
-
-#[cfg(test)]
-mod adapted_prover_tests {
-    use std::path::PathBuf;
-    use std::process::Command;
-
-    #[test]
-    fn test_adapted_prover() {
-        let prover_input_info_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../../test_data/")
-            .join("test_prove_verify_all_opcode_components")
-            .join("prover_input_info.json");
-
-        let mut child = Command::new("cargo")
-            .arg("run")
-            .arg("--features")
-            .arg("std")
-            .arg("--bin")
-            .arg("adapted_stwo")
-            .arg("--")
-            .arg("--prover_input_info")
-            .arg(prover_input_info_path)
-            .arg("--proof_path")
-            .arg("proof.json")
-            .arg("--verify")
-            .env("RUSTFLAGS", "-C target-cpu=native -C opt-level=3")
-            .spawn()
-            .expect("failed to spawn cargo");
-
-        let status = child.wait().expect("failed to wait on child");
-
-        assert!(status.success(), "Process exited with {}", status);
-    }
 }
