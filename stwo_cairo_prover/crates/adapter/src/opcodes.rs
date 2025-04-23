@@ -131,7 +131,7 @@ impl StateTransitions {
     ///   [`crate::cairo_air::components::verify_instruction::ClaimGenerator`].
     pub fn from_iter(
         mut iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
-        memory: &mut MemoryBuilder,
+        memory: &MemoryBuilder,
     ) -> Self {
         let mut res = Self::default();
 
@@ -153,7 +153,7 @@ impl StateTransitions {
     }
 
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, memory: &mut MemoryBuilder, state: CasmState) {
+    fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
         let CasmState { ap, fp, pc } = state;
         let encoded_instruction = memory.get_inst(pc.0);
         let instruction = Instruction::decode(encoded_instruction);
@@ -667,7 +667,7 @@ mod mappings_tests {
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
         let state_transitions =
-            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
+            StateTransitions::from_iter([trace_entry].into_iter(), &memory_builder);
         assert_eq!(
             state_transitions
                 .casm_states_by_opcode
@@ -689,7 +689,7 @@ mod mappings_tests {
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
         let state_transitions =
-            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
+            StateTransitions::from_iter([trace_entry].into_iter(), &memory_builder);
         assert_eq!(
             state_transitions
                 .casm_states_by_opcode
@@ -987,7 +987,7 @@ mod mappings_tests {
         let trace_entry = relocated_trace_entry!(1, 1, 1);
 
         let state_transitions =
-            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
+            StateTransitions::from_iter([trace_entry].into_iter(), &memory_builder);
 
         matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
         assert_eq!(
@@ -1007,7 +1007,7 @@ mod mappings_tests {
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
         let state_transitions =
-            StateTransitions::from_iter([trace_entry].into_iter(), &mut memory_builder);
+            StateTransitions::from_iter([trace_entry].into_iter(), &memory_builder);
 
         matches!(instruction.opcode_extension, OpcodeExtension::QM31Operation);
         assert_eq!(
@@ -1036,7 +1036,7 @@ mod mappings_tests {
             relocator
                 .relocate_trace(&get_test_relocatble_trace())
                 .into_iter(),
-            &mut memory_builder,
+            &memory_builder,
         );
         assert_eq!(
             state_transitions.casm_states_by_opcode.qm31_add_mul_opcode,

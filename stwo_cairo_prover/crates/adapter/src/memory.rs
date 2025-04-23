@@ -2,6 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use bytemuck::{Pod, Zeroable};
 use cairo_vm::stdlib::collections::HashMap;
+use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 
@@ -98,7 +99,7 @@ pub fn value_from_felt252(felt252: F252) -> MemoryValue {
 // TODO(ohadn): derive or impl a default for MemoryBuilder.
 pub struct MemoryBuilder {
     memory: Memory,
-    inst_cache: HashMap<u32, u128>,
+    inst_cache: DashMap<u32, u128>,
     felt252_id_cache: HashMap<[u32; 8], usize>,
     small_values_cache: HashMap<u128, usize>,
 }
@@ -111,7 +112,7 @@ impl MemoryBuilder {
                 f252_values: Vec::new(),
                 small_values: Vec::new(),
             },
-            inst_cache: HashMap::new(),
+            inst_cache: DashMap::new(),
             felt252_id_cache: HashMap::new(),
             small_values_cache: HashMap::new(),
         }
@@ -131,15 +132,12 @@ impl MemoryBuilder {
         builder
     }
 
-    pub fn get_inst(&mut self, addr: u32) -> u128 {
-        let mut inst_cache = std::mem::take(&mut self.inst_cache);
-        let res = *inst_cache.entry(addr).or_insert_with(|| {
+    pub fn get_inst(&self, addr: u32) -> u128 {
+        *self.inst_cache.entry(addr).or_insert_with(|| {
             let value = self.memory.get(addr).as_u256();
-            assert_eq!(value[3..8], [0; 5]);
+            debug_assert_eq!(value[3..8], [0; 5]);
             value[0] as u128 | ((value[1] as u128) << 32) | ((value[2] as u128) << 64)
-        });
-        self.inst_cache = inst_cache;
-        res
+        })
     }
 
     // TODO(ohadn): settle on an address integer type, and use it consistently.
@@ -196,8 +194,8 @@ impl MemoryBuilder {
         }
     }
 
-    pub fn build(self) -> (Memory, HashMap<u32, u128>) {
-        (self.memory, self.inst_cache)
+    pub fn build(self) -> (Memory, Vec<(u32, u128)>) {
+        (self.memory, self.inst_cache.into_iter().collect())
     }
 }
 impl Deref for MemoryBuilder {

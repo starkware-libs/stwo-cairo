@@ -131,7 +131,7 @@ pub fn adapt_to_stwo_input(
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
 ) -> Result<ProverInput, VmImportError> {
-    let state_transitions = StateTransitions::from_iter(trace_iter, &mut memory);
+    let state_transitions = StateTransitions::from_iter(trace_iter, &memory);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtins_segments.fill_memory_holes(&mut memory);
     builtins_segments.pad_builtin_segments(&mut memory);
