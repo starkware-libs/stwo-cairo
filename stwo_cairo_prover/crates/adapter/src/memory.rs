@@ -1,7 +1,6 @@
-use std::io::Read;
 use std::ops::{Deref, DerefMut};
 
-use bytemuck::{bytes_of_mut, Pod, Zeroable};
+use bytemuck::{Pod, Zeroable};
 use cairo_vm::stdlib::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
@@ -36,19 +35,6 @@ pub struct MemoryEntry {
     // TODO(Stav): Change to `u32` after this struct is no longer used to read memory files.
     pub address: u64,
     pub value: [u32; 8],
-}
-
-pub struct MemoryEntryIter<'a, R: Read>(pub &'a mut R);
-impl<R: Read> Iterator for MemoryEntryIter<'_, R> {
-    type Item = MemoryEntry;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut entry = MemoryEntry::default();
-        self.0
-            .read_exact(bytes_of_mut(&mut entry))
-            .ok()
-            .map(|_| entry)
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
