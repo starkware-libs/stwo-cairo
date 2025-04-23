@@ -45,6 +45,17 @@ pub struct CasmStatesByOpcode {
     pub qm31_add_mul_opcode: Vec<CasmState>,
 }
 impl CasmStatesByOpcode {
+    fn from_iter(
+        iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
+        memory: &MemoryBuilder,
+    ) -> Self {
+        let mut res = CasmStatesByOpcode::default();
+        for entry in iter {
+            res.push_instr(memory, entry.into());
+        }
+        res
+    }
+
     /// Pushes the state transition at pc into the appropriate opcode component.
     fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
         let CasmState { ap, fp, pc } = state;
@@ -565,7 +576,6 @@ impl StateTransitions {
         memory: &MemoryBuilder,
     ) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_iter").entered();
-        let mut states = CasmStatesByOpcode::default();
         let mut iter = iter.peekable();
 
         let initial_state = (*iter.peek().expect("Must have an initial state.")).into();
@@ -573,7 +583,7 @@ impl StateTransitions {
         // Assuming the last instruction is jrl0, no need to push it.
         let final_state = iter.next_back().unwrap().into();
 
-        iter.for_each(|entry| states.push_instr(memory, entry.into()));
+        let states = CasmStatesByOpcode::from_iter(iter, memory);
 
         StateTransitions {
             initial_state,
@@ -622,7 +632,7 @@ mod mappings_tests {
 
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
-    use crate::opcodes::StateTransitions;
+    use crate::opcodes::{CasmStatesByOpcode, StateTransitions};
     use crate::plain::{adapt_finished_runner, program_from_casm};
     use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
     use crate::vm_import::RelocatedTraceEntry;
@@ -658,15 +668,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let state_transitions =
-            StateTransitions::from_iter([trace_entry, trace_entry].into_iter(), &memory_builder);
-        assert_eq!(
-            state_transitions
-                .casm_states_by_opcode
-                .jump_opcode_rel
-                .len(),
-            1
-        );
+        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        assert_eq!(states.jump_opcode_rel.len(), 1);
     }
 
     #[test]
@@ -680,15 +683,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let state_transitions =
-            StateTransitions::from_iter([trace_entry, trace_entry].into_iter(), &memory_builder);
-        assert_eq!(
-            state_transitions
-                .casm_states_by_opcode
-                .jump_opcode_double_deref
-                .len(),
-            1
-        );
+        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        assert_eq!(states.jump_opcode_double_deref.len(), 1);
     }
 
     // TODO(Stav): un-ignore when the opcode is in.
@@ -978,14 +974,10 @@ mod mappings_tests {
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
 
-        let state_transitions =
-            StateTransitions::from_iter([trace_entry, trace_entry].into_iter(), &memory_builder);
+        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
 
         matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
-        assert_eq!(
-            state_transitions.casm_states_by_opcode.blake2s_opcode.len(),
-            1
-        );
+        assert_eq!(states.blake2s_opcode.len(), 1);
     }
 
     #[test]
@@ -998,17 +990,10 @@ mod mappings_tests {
 
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let state_transitions =
-            StateTransitions::from_iter([trace_entry, trace_entry].into_iter(), &memory_builder);
+        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
 
         matches!(instruction.opcode_extension, OpcodeExtension::QM31Operation);
-        assert_eq!(
-            state_transitions
-                .casm_states_by_opcode
-                .qm31_add_mul_opcode
-                .len(),
-            1
-        );
+        assert_eq!(states.qm31_add_mul_opcode.len(), 1);
     }
 
     #[test]
