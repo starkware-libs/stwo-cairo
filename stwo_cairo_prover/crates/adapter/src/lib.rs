@@ -20,7 +20,7 @@ pub const N_REGISTERS: usize = 3;
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
     pub memory: Memory,
-    pub inst_cache: HashMap<u32, u128>,
+    pub inst_cache: Vec<(u32, u128)>,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
 }
