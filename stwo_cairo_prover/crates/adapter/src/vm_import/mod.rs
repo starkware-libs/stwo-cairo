@@ -1,10 +1,9 @@
 mod json;
 
 use std::fs::{read_to_string, File};
-use std::io::Read;
 use std::path::Path;
 
-use bytemuck::{bytes_of_mut, cast_slice, Pod, Zeroable};
+use bytemuck::{cast_slice, Pod, Zeroable};
 use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
@@ -187,18 +186,5 @@ impl From<cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry> for RelocatedTr
             fp: entry.fp,
             pc: entry.pc,
         }
-    }
-}
-
-pub struct TraceIter<'a, R: Read>(pub &'a mut R);
-impl<R: Read> Iterator for TraceIter<'_, R> {
-    type Item = RelocatedTraceEntry;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut entry = RelocatedTraceEntry::default();
-        self.0
-            .read_exact(bytes_of_mut(&mut entry))
-            .ok()
-            .map(|_| entry)
     }
 }
