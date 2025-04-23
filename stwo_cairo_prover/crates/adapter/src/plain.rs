@@ -63,15 +63,12 @@ pub fn prover_input_info_to_prover_input(
         prover_input_info.relocatable_memory.clone(),
         prover_input_info.builtins_segments.clone(),
     );
-    let memory =
-        MemoryBuilder::from_iter(MemoryConfig::default(), relocator.get_relocated_memory());
 
-    let state_transitions = StateTransitions::from_iter(
-        relocator
-            .relocate_trace(&prover_input_info.relocatable_trace)
-            .into_iter(),
-        &memory,
-    );
+    let relocated_memory = relocator.get_relocated_memory();
+    let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
+
+    let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
+    let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
 
     let builtins_segments = relocator.get_builtin_segments();
 
