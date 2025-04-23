@@ -1936,6 +1936,7 @@ dependencies = [
  "log",
  "memmap2",
  "rand",
+ "rayon",
  "serde",
  "serde_json",
  "sonic-rs",
