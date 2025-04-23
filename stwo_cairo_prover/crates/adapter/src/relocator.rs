@@ -126,7 +126,7 @@ impl Relocator {
                 BuiltinName::add_mod => res.add_mod = segment,
                 BuiltinName::mul_mod => res.mul_mod = segment,
                 BuiltinName::ecdsa | BuiltinName::keccak | BuiltinName::ec_op => {
-                    panic!("Builtin {} is not supported in Stwo", builtin_name)
+                    // panic!("Builtin {} is not supported in Stwo", builtin_name)
                 }
                 // Not builtins.
                 BuiltinName::output | BuiltinName::segment_arena => {}

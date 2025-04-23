@@ -110,7 +110,7 @@ pub fn adapt_vm_output(
         .collect();
     let res = adapt_to_stwo_input(
         trace.as_slice(),
-        MemoryBuilder::from_iter(MemoryConfig::default(), memory.as_slice().iter().copied()),
+        MemoryBuilder::from_entries(MemoryConfig::default(), memory.as_slice().to_vec()),
         public_memory_addresses,
         &public_input
             .memory_segments
@@ -126,6 +126,27 @@ pub fn adapt_vm_output(
 /// - `adapt_finished_runner` in the validator. TODO(Stav): delete when
 ///   'adapt_prover_input_info_vm_output' is used.
 pub fn adapt_to_stwo_input(
+    trace: &[RelocatedTraceEntry],
+    mut memory: MemoryBuilder,
+    public_memory_addresses: Vec<u32>,
+    memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+) -> Result<ProverInput, VmImportError> {
+    let state_transitions = StateTransitions::from_slice_parallel(trace, &memory);
+    let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
+    builtins_segments.fill_memory_holes(&mut memory);
+    builtins_segments.pad_builtin_segments(&mut memory);
+    let (memory, inst_cache) = memory.build();
+
+    Ok(ProverInput {
+        state_transitions,
+        memory,
+        inst_cache,
+        public_memory_addresses,
+        builtins_segments,
+    })
+}
+
+pub fn adapt_to_stwo_input_parallel(
     trace: &[RelocatedTraceEntry],
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,

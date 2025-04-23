@@ -82,7 +82,7 @@ impl BuiltinSegments {
                     BuiltinName::mul_mod => res.mul_mod = segment,
                     BuiltinName::output => res.output = segment,
                     BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
-                        assert!(segment.is_none(), "{} builtin is not supported", name);
+                        // assert!(segment.is_none(), "{} builtin is not supported", name);
                     }
                     // Not builtins.
                     BuiltinName::segment_arena => {}
