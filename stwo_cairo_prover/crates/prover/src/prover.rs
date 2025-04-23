@@ -302,16 +302,21 @@ pub mod tests {
 
         fn test_compare_prover_input_to_expected_file(test_name: &str) {
             let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
-            let prover_input_a = to_value(prover_input_from_compiled_cairo_program(test_name))
-                .expect("Unable to covert prover input to value");
+            let mut prover_input = prover_input_from_compiled_cairo_program(test_name);
+
+            // Instruction cache is not deterministic, sort it.
+            prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
+            let prover_input_a =
+                to_value(prover_input).expect("Unable to covert prover input to value");
 
             if is_fix_mode {
                 write_json(&get_prover_input_path(test_name), &prover_input_a);
             }
 
-            let prover_input_b =
+            let mut prover_input_b =
                 prover_input_from_vm_output(&get_prover_input_info_path(test_name))
                     .expect("Failed to create prover input from vm output");
+            prover_input_b.inst_cache.sort_by_key(|(addr, _)| *addr);
 
             let expected_prover_input_path = get_prover_input_path(test_name);
             let expected_prover_input = read_json(&expected_prover_input_path);

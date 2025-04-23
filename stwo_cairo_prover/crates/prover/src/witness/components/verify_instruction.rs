@@ -23,7 +23,8 @@ pub struct ClaimGenerator {
     multiplicities: HashMap<u32, AtomicU32>,
 }
 impl ClaimGenerator {
-    pub fn new(instructions: HashMap<u32, u128>) -> Self {
+    pub fn new(instructions: Vec<(u32, u128)>) -> Self {
+        let instructions = HashMap::from_iter(instructions);
         let keys = instructions.keys().copied();
         let mut multiplicities = HashMap::with_capacity(keys.len());
         multiplicities.extend(keys.zip(std::iter::repeat_with(|| AtomicU32::new(0))));
