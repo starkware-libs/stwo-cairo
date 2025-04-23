@@ -4,10 +4,11 @@ use std::fs::{read_to_string, File};
 use std::io::Read;
 use std::path::Path;
 
-use bytemuck::{bytes_of_mut, Pod, Zeroable};
+use bytemuck::{bytes_of_mut, cast_slice, Pod, Zeroable};
 use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
+use memmap2::Mmap;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -17,7 +18,7 @@ use super::memory::MemoryConfig;
 use super::opcodes::StateTransitions;
 use super::ProverInput;
 use crate::builtins::MemorySegmentAddresses;
-use crate::memory::{MemoryBuilder, MemoryEntryIter};
+use crate::memory::{MemoryBuilder, MemoryEntry};
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -100,17 +101,8 @@ pub fn adapt_vm_output(
         .unwrap()
         .join(&private_input.trace_path);
 
-    let mut memory_file =
-        std::io::BufReader::new(File::open(memory_path.as_path()).unwrap_or_else(|_| {
-            panic!(
-                "Unable to open memory file at path {}",
-                memory_path.display()
-            )
-        }));
-    let mut trace_file =
-        std::io::BufReader::new(File::open(trace_path.as_path()).unwrap_or_else(|_| {
-            panic!("Unable to open trace file at path {}", trace_path.display())
-        }));
+    let memory = MmmappedFile::<MemoryEntry>::new(memory_path.as_path());
+    let trace = MmmappedFile::<RelocatedTraceEntry>::new(trace_path.as_path());
 
     let public_memory_addresses = public_input
         .public_memory
@@ -118,8 +110,8 @@ pub fn adapt_vm_output(
         .map(|entry| entry.address as u32)
         .collect();
     let res = adapt_to_stwo_input(
-        TraceIter(&mut trace_file),
-        MemoryBuilder::from_iter(MemoryConfig::default(), MemoryEntryIter(&mut memory_file)),
+        trace.as_slice().iter().copied(),
+        MemoryBuilder::from_iter(MemoryConfig::default(), memory.as_slice().iter().copied()),
         public_memory_addresses,
         &public_input
             .memory_segments
@@ -153,6 +145,30 @@ pub fn adapt_to_stwo_input(
         public_memory_addresses,
         builtins_segments,
     })
+}
+
+struct MmmappedFile<T: Pod> {
+    mmap: Mmap,
+    _marker: std::marker::PhantomData<T>,
+}
+impl<T: Pod> MmmappedFile<T> {
+    fn new(path: &Path) -> Self {
+        let file = File::open(path)
+            .unwrap_or_else(|_| panic!("Unable to open file at path {}", path.display()));
+        let mmap = unsafe { memmap2::Mmap::map(&file).unwrap() };
+        assert!(
+            mmap.len().is_multiple_of(std::mem::size_of::<T>()),
+            "File size is not a multiple of the type size"
+        );
+        Self {
+            mmap,
+            _marker: std::marker::PhantomData,
+        }
+    }
+
+    fn as_slice(&self) -> &[T] {
+        cast_slice(&self.mmap)
+    }
 }
 
 /// A single entry from the trace file.
