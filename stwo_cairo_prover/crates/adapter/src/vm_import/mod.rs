@@ -126,7 +126,7 @@ pub fn adapt_vm_output(
 /// - `adapt_finished_runner` in the validator. TODO(Stav): delete when
 ///   'adapt_prover_input_info_vm_output' is used.
 pub fn adapt_to_stwo_input(
-    trace_iter: impl Iterator<Item = RelocatedTraceEntry>,
+    trace_iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,

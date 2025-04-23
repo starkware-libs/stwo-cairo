@@ -130,11 +130,10 @@ impl StateTransitions {
     /// - A map from pc to instruction that is used to feed
     ///   [`crate::cairo_air::components::verify_instruction::ClaimGenerator`].
     pub fn from_iter(
-        iter: impl Iterator<Item = RelocatedTraceEntry>,
+        mut iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
         memory: &mut MemoryBuilder,
     ) -> Self {
         let mut res = Self::default();
-        let mut iter = iter.peekable();
 
         let Some(first) = iter.next() else {
             return res;
@@ -142,14 +141,14 @@ impl StateTransitions {
         res.initial_state = first.into();
         res.push_instr(memory, first.into());
 
-        while let Some(entry) = iter.next() {
-            // TODO(Stav): Check if the adapter outputs the final state.
-            let Some(_) = iter.peek() else {
-                res.final_state = entry.into();
-                break;
-            };
-            res.push_instr(memory, entry.into());
-        }
+        let Some(last) = iter.next_back() else {
+            return res;
+        };
+        // TODO(Stav): Check if the adapter outputs the final state.
+        res.final_state = last.into();
+
+        iter.for_each(|entry| res.push_instr(memory, entry.into()));
+
         res
     }
 
