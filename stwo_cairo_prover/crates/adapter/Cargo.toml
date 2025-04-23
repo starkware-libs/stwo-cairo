@@ -21,6 +21,7 @@ tracing.workspace = true
 thiserror.workspace = true
 sonic-rs = { version = "0.3.17", optional = true }
 stwo-prover.workspace = true
+memmap2 = "0.9.5"
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true

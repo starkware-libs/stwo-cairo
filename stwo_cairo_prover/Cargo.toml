@@ -66,3 +66,8 @@ lto = true
 [profile.witness-opt-1]
 inherits = "dev"
 package = { "stwo_cairo_prover" = { opt-level = 1 }, "stwo-prover" = { opt-level = 1 } }
+
+[profile.adapter-release]
+inherits = "dev"
+package = { "stwo-cairo-adapter" = { opt-level = 3 } }
+debug-assertions = false
