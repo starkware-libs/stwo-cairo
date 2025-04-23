@@ -3,6 +3,7 @@ use std::ops::{Deref, DerefMut};
 use bytemuck::{Pod, Zeroable};
 use cairo_vm::stdlib::collections::HashMap;
 use dashmap::DashMap;
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 use tracing::{span, Level};
@@ -134,11 +135,85 @@ impl MemoryBuilder {
         builder
     }
 
+    pub fn from_entries(config: MemoryConfig, mut memory: Vec<MemoryEntry>) -> MemoryBuilder {
+        let max_address = memory
+            .par_iter()
+            .map(|MemoryEntry { address, .. }| *address)
+            .max()
+            .unwrap();
+        memory.par_sort_unstable_by(|a, b| {
+            for i in (0..8).rev() {
+                match a.value[i].cmp(&b.value[i]) {
+                    std::cmp::Ordering::Equal => continue,
+                    other => return other,
+                }
+            }
+            std::cmp::Ordering::Equal
+        });
+
+        let split_point = memory
+            .partition_point(|entry| entry.value[3..8] == [0; 5] && entry.value[2] < (1 << 8));
+        let (small_values, f252_values) = memory.split_at(split_point);
+
+        let mut address_to_id = vec![EncodedMemoryValueId::default(); max_address as usize + 1];
+
+        // Small values.
+        let mut id = 0;
+        if let Some(first) = small_values.first() {
+            address_to_id[first.address as usize] = EncodedMemoryValueId(id);
+        }
+        small_values.windows(2).for_each(|pair| {
+            let prev = pair[0];
+            let curr = pair[1];
+            if prev.value != curr.value {
+                id += 1;
+            }
+            address_to_id[curr.address as usize] = EncodedMemoryValueId(id);
+        });
+
+        // F252 values.
+        let mut id = LARGE_MEMORY_VALUE_ID_BASE;
+        if let Some(first) = f252_values.first() {
+            address_to_id[first.address as usize] = EncodedMemoryValueId(id);
+        }
+        f252_values.windows(2).for_each(|pair| {
+            let prev = pair[0];
+            let curr = pair[1];
+            if prev.value != curr.value {
+                id += 1;
+            }
+            address_to_id[curr.address as usize] = EncodedMemoryValueId(id);
+        });
+
+        // TODO(Ohad): reduce copies.
+        let f252_values = f252_values.iter().map(|v| v.value).collect();
+        let small_values = small_values
+            .iter()
+            .map(|v| v.value)
+            .map(|v| v[0] as u128 | ((v[1] as u128) << 32) | ((v[2] as u128) << 64))
+            .collect();
+        MemoryBuilder {
+            memory: Memory {
+                config,
+                address_to_id,
+                f252_values,
+                small_values,
+            },
+            inst_cache: DashMap::new(),
+            felt252_id_cache: HashMap::new(),
+            small_values_cache: HashMap::new(),
+        }
+    }
+
     pub fn get_inst(&self, addr: u32) -> u128 {
         *self.inst_cache.entry(addr).or_insert_with(|| {
-            let value = self.memory.get(addr).as_u256();
-            assert_eq!(value[3..8], [0; 5]);
-            value[0] as u128 | ((value[1] as u128) << 32) | ((value[2] as u128) << 64)
+            let value = self.memory.get(addr);
+            match value {
+                MemoryValue::Small(val) => val,
+                MemoryValue::F252(_) => {
+                    panic!("F252 value in get_inst");
+                }
+            }
         })
     }
 
