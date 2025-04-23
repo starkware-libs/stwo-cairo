@@ -201,7 +201,7 @@ mod adapted_prover_tests {
     fn test_adapted_prover() {
         let prover_input_info_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../test_data/")
-            .join("test_prove_verify_all_opcode_components")
+            .join("test_big_program")
             .join("prover_input_info.json");
 
         let mut child = Command::new("cargo")

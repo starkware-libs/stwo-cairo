@@ -1,6 +1,7 @@
 use std::fs::read_to_string;
 use std::path::Path;
 
+use cairo_vm::air_private_input::PrivateInputPair;
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::{CairoRunner, ProverInputInfo};
@@ -87,8 +88,47 @@ pub fn prover_input_info_to_prover_input(
     })
 }
 
+use cairo_vm::vm::trace::trace_entry::TraceEntry;
+use cairo_vm::types::relocatable::Relocatable;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Read;
+
 fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
     let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
+
+    let file = File::open(prover_input_info_path).expect("Unable to open file");
+    let mut reader = BufReader::new(file); 
+
+    let mut buffer = [0u8; 8];
+    let mut entries = vec![];
+
+    while reader.read_exact(&mut buffer).is_ok() {
+        reader.read_exact(&mut buffer).expect("");
+        let ap = u64::from_le_bytes(buffer) as usize;
+
+        reader.read_exact(&mut buffer).expect("");
+        let fp = u64::from_le_bytes(buffer) as usize;
+
+        reader.read_exact(&mut buffer).expect("");
+        let segment_index = u64::from_le_bytes(buffer) as isize;
+
+        reader.read_exact(&mut buffer).expect("");
+        let offset = u64::from_le_bytes(buffer) as usize;
+
+        entries.push(TraceEntry {
+            ap,
+            fp,
+            pc: Relocatable {
+                segment_index,
+                offset,
+            },
+        });
+    }
+
+    let mut res = ProverInputInfo::Default();
+
+    res.trace
 
     let prover_input_info_json = read_to_string(prover_input_info_path).unwrap_or_else(|_| {
         panic!(
