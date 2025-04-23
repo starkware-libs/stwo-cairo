@@ -10,7 +10,7 @@ paste.workspace = true
 # TODO(Ohad): Add parallel config.
 stwo-cairo-common.workspace = true
 stwo-cairo-adapter.workspace = true
-rayon = { version = "1.10.0" }
+rayon.workspace = true
 serde.workspace = true
 starknet-curve = "0.5.1"
 starknet-ff.workspace = true
