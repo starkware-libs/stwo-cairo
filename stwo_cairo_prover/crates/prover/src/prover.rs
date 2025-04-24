@@ -48,6 +48,7 @@ where
 
     // Setup protocol.
     let channel = &mut MC::C::default();
+    pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
 
