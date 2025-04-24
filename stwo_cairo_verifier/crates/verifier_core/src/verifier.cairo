@@ -2,6 +2,7 @@ use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
 use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::fri::FriVerificationError;
+use crate::pcs::PcsConfigTrait;
 use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
@@ -40,9 +41,16 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     ref channel: Channel,
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
+    security_bits: u32,
 ) -> Result<(), VerificationError> {
     let random_coeff = channel.draw_felt();
     let StarkProof { commitment_scheme_proof } = proof;
+
+    // Check that the security bits are sufficient.
+    let config_security_bits = commitment_scheme_proof.config.security_bits();
+    if security_bits < config_security_bits {
+        return Err(VerificationError::SecurityBitsTooLow);
+    }
 
     // Read composition polynomial commitment.
     commitment_scheme
@@ -117,6 +125,8 @@ pub enum VerificationError {
     Fri: FriVerificationError,
     /// Invalid OODS eval.
     OodsNotMatching,
+    /// Security bits are too low.
+    SecurityBitsTooLow,
 }
 
 pub impl FriVerificationErrorIntoVerificationError of Into<
