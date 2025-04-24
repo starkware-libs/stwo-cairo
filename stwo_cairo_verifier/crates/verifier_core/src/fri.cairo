@@ -41,6 +41,10 @@ pub impl FriConfigImpl of FriConfigTrait {
         channel.mix_u64((*log_last_layer_degree_bound).into());
         channel.mix_u64((*n_queries).into());
     }
+    fn security_bits(self: @FriConfig) -> u32 {
+        let FriConfig { log_blowup_factor, log_last_layer_degree_bound: _, n_queries } = self;
+        *log_blowup_factor * *n_queries
+    }
 }
 
 #[derive(Drop)]
