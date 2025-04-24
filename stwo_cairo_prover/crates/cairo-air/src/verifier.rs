@@ -219,6 +219,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     verify_claim(&claim);
 
     let channel = &mut MC::C::default();
+    pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
     let mut log_sizes = claim.log_sizes();
