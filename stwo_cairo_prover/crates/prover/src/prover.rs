@@ -1,4 +1,4 @@
-use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::air::{lookup_sum, mix_pcs_config, CairoComponents, CairoInteractionElements};
 use cairo_air::verifier::INTERACTION_POW_BITS;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
@@ -48,6 +48,7 @@ where
 
     // Setup protocol.
     let channel = &mut MC::C::default();
+    mix_pcs_config(&pcs_config, channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
 
