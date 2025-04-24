@@ -147,6 +147,7 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 pub mod components;
 pub mod utils;
 
+const SECURITY_BITS: u32 = 96;
 
 const PREPROCESSED_COLUMNS_LOG_SIZES: [u32; 19] = [
     22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
@@ -251,7 +252,8 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
         );
 
     let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
-    if let Result::Err(err) = verify(cairo_air, ref channel, stark_proof, commitment_scheme) {
+    if let Result::Err(err) =
+        verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS) {
         return Result::Err(CairoVerificationError::Stark(err));
     }
 
