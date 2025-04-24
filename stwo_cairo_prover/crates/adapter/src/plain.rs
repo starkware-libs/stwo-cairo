@@ -87,19 +87,22 @@ pub fn prover_input_info_to_prover_input(
     })
 }
 
-pub fn prover_input_from_vm_output(
-    prover_input_info_path: &Path,
-) -> Result<ProverInput, VmImportError> {
-    let _span: span::EnteredSpan =
-        span!(Level::INFO, "adapt_prover_input_info_vm_output").entered();
+fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
+    let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
+
     let prover_input_info_json = read_to_string(prover_input_info_path).unwrap_or_else(|_| {
         panic!(
             "Unable to read prover input info at path {}",
             prover_input_info_path.display()
         )
     });
-    let mut prover_input_info: ProverInputInfo =
-        serde_json::from_str(&prover_input_info_json).unwrap();
 
-    prover_input_info_to_prover_input(&mut prover_input_info)
+    serde_json::from_str(&prover_input_info_json).unwrap()
+}
+pub fn prover_input_from_vm_output(
+    prover_input_info_path: &Path,
+) -> Result<ProverInput, VmImportError> {
+    let _span: span::EnteredSpan = span!(Level::INFO, "adapter").entered();
+
+    prover_input_info_to_prover_input(&mut read_prover_input_info_file(prover_input_info_path))
 }
