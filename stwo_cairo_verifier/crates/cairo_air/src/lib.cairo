@@ -217,17 +217,12 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     let CairoProof { claim, interaction_claim, stark_proof } = proof;
 
     // Verify.
-    let config = PcsConfig {
-        pow_bits: 0,
-        fri_config: FriConfig {
-            log_blowup_factor: 1, log_last_layer_degree_bound: 2, n_queries: 15,
-        },
-    };
+    let pcs_config = stark_proof.commitment_scheme_proof.config;
 
     verify_claim(@claim);
 
     let mut channel: Channel = Default::default();
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(pcs_config);
 
     let log_sizes = claim.log_sizes();
 
@@ -1098,19 +1093,30 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         }
 
         // Safe call.
-        i = 0;
-        for (id, value) in self.safe_call.span() {
-            entries.append((initial_ap - 2 + i, *id, *value));
-            i += 1;
-        }
+        let (id, value) = self.safe_call[0];
+        entries.append((initial_ap - 2, *id, *value));
+        let (id, value) = self.safe_call[1];
+        entries.append((initial_ap - 1, *id, *value));
 
         // Segment ranges.
-        let pub_segs = self.public_segments;
+        let PublicSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = self.public_segments;
+
         i = 0;
         for segment in [
-            pub_segs.output, pub_segs.pedersen, pub_segs.range_check_128, pub_segs.ecdsa,
-            pub_segs.bitwise, pub_segs.ec_op, pub_segs.keccak, pub_segs.poseidon,
-            pub_segs.range_check_96, pub_segs.add_mod, pub_segs.mul_mod,
+            output, pedersen, range_check_128, ecdsa, bitwise, ec_op, keccak, poseidon,
+            range_check_96, add_mod, mul_mod,
         ]
             .span() {
             entries
