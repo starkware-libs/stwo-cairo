@@ -1832,7 +1832,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=045963c#045963c3814e605e18d3edafadc79f52de8f21bb"
+source = "git+https://github.com/starkware-libs/stwo?rev=754088c#754088ca3634142cb3fe38d716f75b50440e1f76"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -1844,7 +1844,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=045963c#045963c3814e605e18d3edafadc79f52de8f21bb"
+source = "git+https://github.com/starkware-libs/stwo?rev=754088c#754088ca3634142cb3fe38d716f75b50440e1f76"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -1908,7 +1908,7 @@ dependencies = [
 [[package]]
 name = "stwo-prover"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=045963c#045963c3814e605e18d3edafadc79f52de8f21bb"
+source = "git+https://github.com/starkware-libs/stwo?rev=754088c#754088ca3634142cb3fe38d716f75b50440e1f76"
 dependencies = [
  "blake2",
  "blake3",
