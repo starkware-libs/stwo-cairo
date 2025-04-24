@@ -15,8 +15,8 @@ use stwo_prover::core::prover::{verify, VerificationError};
 use thiserror::Error;
 
 use crate::air::{
-    lookup_sum, CairoClaim, CairoComponents, CairoInteractionElements, MemorySection, PublicData,
-    PublicMemory, PublicSegmentRanges, SegmentRange,
+    lookup_sum, mix_pcs_config, CairoClaim, CairoComponents, CairoInteractionElements,
+    MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
 };
 use crate::builtins_air::BuiltinsClaim;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
@@ -219,6 +219,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     verify_claim(&claim);
 
     let channel = &mut MC::C::default();
+    mix_pcs_config(&pcs_config, channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
     let mut log_sizes = claim.log_sizes();

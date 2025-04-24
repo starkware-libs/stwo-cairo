@@ -12,7 +12,8 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::FieldExpOps;
-use stwo_prover::core::pcs::TreeVec;
+use stwo_prover::core::fri::FriConfig;
+use stwo_prover::core::pcs::{PcsConfig, TreeVec};
 use stwo_prover::core::prover::StarkProof;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
@@ -776,4 +777,20 @@ impl std::fmt::Display for CairoComponents {
         )?;
         Ok(())
     }
+}
+
+pub fn mix_pcs_config(pcs_config: &PcsConfig, channel: &mut impl Channel) {
+    let PcsConfig {
+        pow_bits,
+        fri_config:
+            FriConfig {
+                log_blowup_factor,
+                log_last_layer_degree_bound,
+                n_queries,
+            },
+    } = pcs_config;
+    channel.mix_u64(*pow_bits as u64);
+    channel.mix_u64(*log_blowup_factor as u64);
+    channel.mix_u64(*log_last_layer_degree_bound as u64);
+    channel.mix_u64(*n_queries as u64);
 }
