@@ -33,6 +33,15 @@ pub struct FriConfig {
     pub log_last_layer_degree_bound: u32,
     pub n_queries: usize,
 }
+#[generate_trait]
+pub impl FriConfigImpl of FriConfigTrait {
+    fn mix_into(self: @FriConfig, ref channel: Channel) {
+        let FriConfig { log_blowup_factor, log_last_layer_degree_bound, n_queries } = self;
+        channel.mix_u64((*log_blowup_factor).into());
+        channel.mix_u64((*log_last_layer_degree_bound).into());
+        channel.mix_u64((*n_queries).into());
+    }
+}
 
 #[derive(Drop)]
 pub struct FriVerifier {
