@@ -588,11 +588,18 @@ fn verify_claim(claim: @CairoClaim) {
 
     verify_program(program);
 
-    assert!((*initial_pc).is_one());
-    assert!(*initial_pc + m31(2) < *initial_ap);
+    let initial_pc: u32 = (*initial_pc).into();
+    let initial_ap: u32 = (*initial_ap).into();
+    let initial_fp: u32 = (*initial_fp).into();
+    let final_pc: u32 = (*final_pc).into();
+    let final_ap: u32 = (*final_ap).into();
+    let final_fp: u32 = (*final_fp).into();
+
+    assert!(initial_pc.is_one());
+    assert!(initial_pc + 2 < initial_ap);
     assert!(initial_fp == final_fp);
     assert!(initial_fp == initial_ap);
-    assert!(*final_pc == m31(5));
+    assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
 }
 
