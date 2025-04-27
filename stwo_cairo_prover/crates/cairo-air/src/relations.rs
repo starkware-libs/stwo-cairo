@@ -3,7 +3,7 @@ use stwo_prover::relation;
 
 relation!(BlakeG, 20);
 relation!(BlakeRound, 35);
-relation!(BlakeRoundSigma, 17);
+relation!(BlakeRoundSigma, 99);
 relation!(Cube252, 20);
 relation!(MemoryAddressToId, 2);
 relation!(MemoryIdToBig, 29);
@@ -29,7 +29,7 @@ relation!(RangeCheck_7_2_5, 3);
 relation!(RangeCheck_8, 1);
 relation!(RangeCheck_9_9, 2);
 relation!(RangeCheckFelt252Width27, 10);
-relation!(TripleXor32, 8);
+relation!(TripleXor32, 3);
 relation!(VerifyBitwiseXor_12, 3);
 relation!(VerifyBitwiseXor_4, 3);
 relation!(VerifyBitwiseXor_7, 3);
