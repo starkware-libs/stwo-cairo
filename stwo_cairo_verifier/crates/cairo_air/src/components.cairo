@@ -44,6 +44,7 @@ pub mod range_check_builtin_bits_96;
 pub mod range_check_felt_252_width_27;
 pub mod range_check_vector;
 pub mod ret_opcode;
+pub mod subroutines;
 pub mod triple_xor_32;
 pub mod verify_bitwise_xor_12;
 pub mod verify_bitwise_xor_4;
@@ -52,6 +53,7 @@ pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
+// TODO(AnatG): Move this next to the PreprocessedColumn enum.
 pub const VERIFY_BITWISE_XOR_12_LOG_SIZE: u32 = 20;
 pub const VERIFY_BITWISE_XOR_9_LOG_SIZE: u32 = 18;
 pub const VERIFY_BITWISE_XOR_8_LOG_SIZE: u32 = 16;
@@ -60,6 +62,7 @@ pub const VERIFY_BITWISE_XOR_4_LOG_SIZE: u32 = 8;
 
 pub const RANGE_CHECK_3_3_3_3_3_LOG_SIZE: u32 = 15;
 pub const RANGE_CHECK_3_6_6_3_LOG_SIZE: u32 = 18;
+pub const RANGE_CHECK_3_6_LOG_SIZE: u32 = 9;
 pub const RANGE_CHECK_4_3_LOG_SIZE: u32 = 7;
 pub const RANGE_CHECK_4_4_4_4_LOG_SIZE: u32 = 16;
 pub const RANGE_CHECK_4_4_LOG_SIZE: u32 = 8;
@@ -76,8 +79,6 @@ pub const RANGE_CHECK_19_LOG_SIZE: u32 = 19;
 pub const POSEIDON_ROUND_KEYS_LOG_SIZE: u32 = 6;
 pub const PEDERSEN_POINTS_TABLE_LOG_SIZE: u32 = 23;
 pub const BLAKE_ROUND_SIGMA_LOG_SIZE: u32 = 4;
-
-pub const OPCODES_RELATION_SIZE: u32 = 3;
 
 /// A component is a set of trace columns of the same sizes along with a set of constraints on them.
 pub trait CairoComponent<T> {
