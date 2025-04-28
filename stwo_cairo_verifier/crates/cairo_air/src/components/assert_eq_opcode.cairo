@@ -1,38 +1,55 @@
+// Constraints version: 9c495569
+
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
-    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl, PreprocessedMaskValues,
+    PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::CirclePoint;
+use stwo_verifier_core::circle::{
+    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
+};
 use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::m31;
-use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
+use stwo_verifier_core::fields::m31::{M31, m31};
+use stwo_verifier_core::fields::qm31::{
+    QM31, QM31Impl, QM31Serde, QM31Zero, QM31_EXTENSION_DEGREE, qm31_const,
+};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::components::CairoComponent;
+use crate::components::memory_address_to_id::{
+    MEMORY_ADDRESS_TO_ID_RELATION_SIZE, memory_address_to_id_sum,
+};
+use crate::components::subroutines::decode_instruction_fe864::decode_instruction_fe864_evaluate;
+use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
+use crate::components::verify_instruction::{
+    VERIFY_INSTRUCTION_RELATION_SIZE, verify_instruction_sum,
+};
+use crate::components::{CairoComponent, OPCODES_RELATION_SIZE, opcodes_sum};
 use crate::utils::U32Impl;
 
-mod constraints;
+
+pub const N_TRACE_COLUMNS: usize = 12;
+
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
-    log_size: u32,
+    pub log_size: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = *self.log_size;
+        let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(12, log_size).span();
+        let trace_log_sizes = ArrayImpl::new_repeated(N_TRACE_COLUMNS, log_size).span();
         let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 3, log_size)
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_u64((*self.log_size).into());
+        channel.mix_u64((*(self.log_size)).into());
     }
 }
 
@@ -48,13 +65,14 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
     }
 }
 
+
 #[derive(Drop)]
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub opcodes_lookup_elements: crate::OpcodeElements,
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
+    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
+    pub opcodes_lookup_elements: crate::OpcodesElements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
@@ -65,20 +83,38 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = *self.claim.log_size;
+        let log_size = *(self.claim.log_size);
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
-        constraints::mask_points(
-            ref preprocessed_column_set,
-            ref trace_mask_points,
-            ref interaction_trace_mask_points,
-            point,
-            trace_gen,
-            log_size,
-        );
+        let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
+
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        *self.claim.log_size + 1
+        *(self.claim.log_size) + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -90,87 +126,225 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = *self.claim.log_size;
+        let log_size = *(self.claim.log_size);
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
-
-        let VerifyInstruction_z = *self.verify_instruction_lookup_elements.z;
-        let mut verify_instruction_alpha_powers = self
-            .verify_instruction_lookup_elements
-            .alpha_powers
-            .span();
-        let VerifyInstruction_alpha0 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha1 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha2 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha3 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha4 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha5 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha6 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha7 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha8 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha9 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha10 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha11 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha12 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha13 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha14 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha15 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha16 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha17 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha18 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha19 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha20 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha21 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha22 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha23 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha24 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha25 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha26 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha27 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let VerifyInstruction_alpha28 = *verify_instruction_alpha_powers.pop_front().unwrap();
-
-        let MemoryAddressToId_z = *self.memory_address_to_id_lookup_elements.z;
-        let mut memory_address_to_id_alpha_powers = self
+        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let column_size = m31(pow2(log_size));
+        let mut verify_instruction_sum_0: QM31 = Zero::zero();
+        let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
+        let mut memory_address_to_id_sum_2: QM31 = Zero::zero();
+        let mut opcodes_sum_3: QM31 = Zero::zero();
+        let mut opcodes_sum_4: QM31 = Zero::zero();
+        let verify_instruction_alphas = self.verify_instruction_lookup_elements.alpha_powers.span();
+        let verify_instruction_z = *self.verify_instruction_lookup_elements.z;
+        let memory_address_to_id_alphas = self
             .memory_address_to_id_lookup_elements
             .alpha_powers
             .span();
-        let MemoryAddressToId_alpha0 = *memory_address_to_id_alpha_powers.pop_front().unwrap();
-        let MemoryAddressToId_alpha1 = *memory_address_to_id_alpha_powers.pop_front().unwrap();
+        let memory_address_to_id_z = *self.memory_address_to_id_lookup_elements.z;
+        let opcodes_alphas = self.opcodes_lookup_elements.alpha_powers.span();
+        let opcodes_z = *self.opcodes_lookup_elements.z;
 
-        let Opcodes_z = *self.opcodes_lookup_elements.z;
-        let mut opcodes_alpha_powers = self.opcodes_lookup_elements.alpha_powers.span();
-        let Opcodes_alpha0 = *opcodes_alpha_powers.pop_front().unwrap();
-        let Opcodes_alpha1 = *opcodes_alpha_powers.pop_front().unwrap();
-        let Opcodes_alpha2 = *opcodes_alpha_powers.pop_front().unwrap();
+        let [
+            input_pc_col0,
+            input_ap_col1,
+            input_fp_col2,
+            offset0_col3,
+            offset2_col4,
+            dst_base_fp_col5,
+            op1_base_fp_col6,
+            ap_update_add_1_col7,
+            mem_dst_base_col8,
+            mem1_base_col9,
+            dst_id_col10,
+            enabler,
+        ]: [Span<QM31>; 12] =
+            (*trace_mask_values
+            .multi_pop_front()
+            .unwrap())
+            .unbox();
 
-        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();
+        let [input_ap_col1]: [QM31; 1] = (*input_ap_col1.try_into().unwrap()).unbox();
+        let [input_fp_col2]: [QM31; 1] = (*input_fp_col2.try_into().unwrap()).unbox();
+        let [offset0_col3]: [QM31; 1] = (*offset0_col3.try_into().unwrap()).unbox();
+        let [offset2_col4]: [QM31; 1] = (*offset2_col4.try_into().unwrap()).unbox();
+        let [dst_base_fp_col5]: [QM31; 1] = (*dst_base_fp_col5.try_into().unwrap()).unbox();
+        let [op1_base_fp_col6]: [QM31; 1] = (*op1_base_fp_col6.try_into().unwrap()).unbox();
+        let [ap_update_add_1_col7]: [QM31; 1] = (*ap_update_add_1_col7.try_into().unwrap()).unbox();
+        let [mem_dst_base_col8]: [QM31; 1] = (*mem_dst_base_col8.try_into().unwrap()).unbox();
+        let [mem1_base_col9]: [QM31; 1] = (*mem1_base_col9.try_into().unwrap()).unbox();
+        let [dst_id_col10]: [QM31; 1] = (*dst_id_col10.try_into().unwrap()).unbox();
+        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
-        let params = constraints::ConstraintParams {
-            column_size: pow2(log_size).try_into().unwrap(),
-            VerifyInstruction_z,
-            VerifyInstruction_alpha0,
-            VerifyInstruction_alpha1,
-            VerifyInstruction_alpha2,
-            VerifyInstruction_alpha3,
-            VerifyInstruction_alpha4,
-            VerifyInstruction_alpha5,
-            MemoryAddressToId_z,
-            MemoryAddressToId_alpha0,
-            MemoryAddressToId_alpha1,
-            Opcodes_z,
-            Opcodes_alpha0,
-            Opcodes_alpha1,
-            Opcodes_alpha2,
-            claimed_sum,
-        };
+        core::internal::revoke_ap_tracking();
 
-        constraints::evaluate_constraints_at_point(
+        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        let output: [QM31; 3] = decode_instruction_fe864_evaluate(
+            [input_pc_col0],
+            offset0_col3,
+            offset2_col4,
+            dst_base_fp_col5,
+            op1_base_fp_col6,
+            ap_update_add_1_col7,
+            verify_instruction_alphas,
+            verify_instruction_z,
+            ref verify_instruction_sum_0,
             ref sum,
-            ref trace_mask_values,
-            ref interaction_trace_mask_values,
-            params,
-            random_coeff,
             domain_vanishing_eval_inv,
-        )
+            random_coeff,
+        );
+        let [
+            decode_instruction_fe864_output_tmp_d6f03_7_offset0,
+            decode_instruction_fe864_output_tmp_d6f03_7_offset2,
+            decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap,
+        ] =
+            output;
+
+        // Constraint - mem_dst_base
+        let constraint_quotient = ((mem_dst_base_col8
+            - ((dst_base_fp_col5 * input_fp_col2)
+                + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col5) * input_ap_col1))))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - mem1_base
+        let constraint_quotient = ((mem1_base_col9
+            - ((op1_base_fp_col6 * input_fp_col2)
+                + (decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap * input_ap_col1))))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        mem_verify_equal_evaluate(
+            [
+                (mem_dst_base_col8 + decode_instruction_fe864_output_tmp_d6f03_7_offset0),
+                (mem1_base_col9 + decode_instruction_fe864_output_tmp_d6f03_7_offset2),
+            ],
+            dst_id_col10,
+            memory_address_to_id_alphas,
+            memory_address_to_id_z,
+            ref memory_address_to_id_sum_1,
+            ref memory_address_to_id_sum_2,
+            ref sum,
+            domain_vanishing_eval_inv,
+            random_coeff,
+        );
+
+        opcodes_sum_3 =
+            opcodes_sum(opcodes_alphas, opcodes_z, [input_pc_col0, input_ap_col1, input_fp_col2]);
+
+        opcodes_sum_4 =
+            opcodes_sum(
+                opcodes_alphas,
+                opcodes_z,
+                [
+                    (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
+                    (input_ap_col1 + ap_update_add_1_col7), input_fp_col2,
+                ],
+            );
+
+        lookup_constraints(
+            ref sum,
+            domain_vanishing_eval_inv,
+            random_coeff,
+            claimed_sum,
+            enabler,
+            column_size,
+            ref interaction_trace_mask_values,
+            verify_instruction_sum_0,
+            memory_address_to_id_sum_1,
+            memory_address_to_id_sum_2,
+            opcodes_sum_3,
+            opcodes_sum_4,
+        );
     }
+}
+
+
+fn lookup_constraints(
+    ref sum: QM31,
+    domain_vanishing_eval_inv: QM31,
+    random_coeff: QM31,
+    claimed_sum: QM31,
+    enabler: QM31,
+    column_size: M31,
+    ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+    verify_instruction_sum_0: QM31,
+    memory_address_to_id_sum_1: QM31,
+    memory_address_to_id_sum_2: QM31,
+    opcodes_sum_3: QM31,
+    opcodes_sum_4: QM31,
+) {
+    let [
+        trace_2_col0,
+        trace_2_col1,
+        trace_2_col2,
+        trace_2_col3,
+        trace_2_col4,
+        trace_2_col5,
+        trace_2_col6,
+        trace_2_col7,
+        trace_2_col8,
+        trace_2_col9,
+        trace_2_col10,
+        trace_2_col11,
+    ]: [Span<QM31>; 12] =
+        (*interaction_trace_mask_values
+        .multi_pop_front()
+        .unwrap())
+        .unbox();
+
+    let [trace_2_col0]: [QM31; 1] = (*trace_2_col0.try_into().unwrap()).unbox();
+    let [trace_2_col1]: [QM31; 1] = (*trace_2_col1.try_into().unwrap()).unbox();
+    let [trace_2_col2]: [QM31; 1] = (*trace_2_col2.try_into().unwrap()).unbox();
+    let [trace_2_col3]: [QM31; 1] = (*trace_2_col3.try_into().unwrap()).unbox();
+    let [trace_2_col4]: [QM31; 1] = (*trace_2_col4.try_into().unwrap()).unbox();
+    let [trace_2_col5]: [QM31; 1] = (*trace_2_col5.try_into().unwrap()).unbox();
+    let [trace_2_col6]: [QM31; 1] = (*trace_2_col6.try_into().unwrap()).unbox();
+    let [trace_2_col7]: [QM31; 1] = (*trace_2_col7.try_into().unwrap()).unbox();
+    let [trace_2_col8_neg1, trace_2_col8]: [QM31; 2] = (*trace_2_col8.try_into().unwrap()).unbox();
+    let [trace_2_col9_neg1, trace_2_col9]: [QM31; 2] = (*trace_2_col9.try_into().unwrap()).unbox();
+    let [trace_2_col10_neg1, trace_2_col10]: [QM31; 2] = (*trace_2_col10.try_into().unwrap())
+        .unbox();
+    let [trace_2_col11_neg1, trace_2_col11]: [QM31; 2] = (*trace_2_col11.try_into().unwrap())
+        .unbox();
+
+    core::internal::revoke_ap_tracking();
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
+    ))
+        * verify_instruction_sum_0
+        * memory_address_to_id_sum_1)
+        - verify_instruction_sum_0
+        - memory_address_to_id_sum_1)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
+        * memory_address_to_id_sum_2
+        * opcodes_sum_3)
+        - (memory_address_to_id_sum_2 * enabler)
+        - opcodes_sum_3)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7])
+        - QM31Impl::from_partial_evals(
+            [trace_2_col8_neg1, trace_2_col9_neg1, trace_2_col10_neg1, trace_2_col11_neg1],
+        )
+        + (claimed_sum * (column_size.inverse().into())))
+        * opcodes_sum_4)
+        + enabler)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
 }
