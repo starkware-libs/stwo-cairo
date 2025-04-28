@@ -22,8 +22,8 @@ impl ModWordsTo12BitArray {
         limb5b_1_col7: E::F,
         limb6b_1_col8: E::F,
         limb9b_1_col9: E::F,
-        eval: &mut E,
         range_check_3_6_6_3_lookup_elements: &relations::RangeCheck_3_6_6_3,
+        eval: &mut E,
     ) -> [E::F; 16] {
         let M31_512 = E::F::from(M31::from(512));
         let M31_64 = E::F::from(M31::from(64));

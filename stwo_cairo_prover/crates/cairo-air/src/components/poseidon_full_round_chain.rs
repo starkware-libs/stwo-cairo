@@ -360,8 +360,8 @@ impl FrameworkEval for Eval {
                 combination_limb_8_col100.clone(),
                 combination_limb_9_col101.clone(),
                 p_coef_col102.clone(),
-                &mut eval,
                 &self.range_check_3_3_3_3_3_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -420,8 +420,8 @@ impl FrameworkEval for Eval {
                 combination_limb_8_col111.clone(),
                 combination_limb_9_col112.clone(),
                 p_coef_col113.clone(),
-                &mut eval,
                 &self.range_check_3_3_3_3_3_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -480,8 +480,8 @@ impl FrameworkEval for Eval {
                 combination_limb_8_col122.clone(),
                 combination_limb_9_col123.clone(),
                 p_coef_col124.clone(),
-                &mut eval,
                 &self.range_check_3_3_3_3_3_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_full_round_chain_lookup_elements,

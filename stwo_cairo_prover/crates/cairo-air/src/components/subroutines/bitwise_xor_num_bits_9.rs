@@ -13,8 +13,8 @@ impl BitwiseXorNumBits9 {
     pub fn evaluate<E: EvalAtRow>(
         [bitwise_xor_num_bits_9_input_limb_0, bitwise_xor_num_bits_9_input_limb_1]: [E::F; 2],
         xor_col0: E::F,
-        eval: &mut E,
         verify_bitwise_xor_9_lookup_elements: &relations::VerifyBitwiseXor_9,
+        eval: &mut E,
     ) -> E::F {
         eval.add_to_relation(RelationEntry::new(
             verify_bitwise_xor_9_lookup_elements,

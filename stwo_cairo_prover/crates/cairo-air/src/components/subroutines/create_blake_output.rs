@@ -28,8 +28,8 @@ impl CreateBlakeOutput {
         triple_xor_32_output_limb_1_col13: E::F,
         triple_xor_32_output_limb_0_col14: E::F,
         triple_xor_32_output_limb_1_col15: E::F,
-        eval: &mut E,
         triple_xor_32_lookup_elements: &relations::TripleXor32,
+        eval: &mut E,
     ) -> [E::F; 16] {
         eval.add_to_relation(RelationEntry::new(
             triple_xor_32_lookup_elements,

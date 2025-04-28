@@ -73,26 +73,26 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_d2a10_output_tmp_c921e_5_limb_0, decode_instruction_d2a10_output_tmp_c921e_5_limb_1, decode_instruction_d2a10_output_tmp_c921e_5_limb_2, decode_instruction_d2a10_output_tmp_c921e_5_limb_3, decode_instruction_d2a10_output_tmp_c921e_5_limb_4, decode_instruction_d2a10_output_tmp_c921e_5_limb_5, decode_instruction_d2a10_output_tmp_c921e_5_limb_6, decode_instruction_d2a10_output_tmp_c921e_5_limb_7, decode_instruction_d2a10_output_tmp_c921e_5_limb_8, decode_instruction_d2a10_output_tmp_c921e_5_limb_9, decode_instruction_d2a10_output_tmp_c921e_5_limb_10, decode_instruction_d2a10_output_tmp_c921e_5_limb_11, decode_instruction_d2a10_output_tmp_c921e_5_limb_12, decode_instruction_d2a10_output_tmp_c921e_5_limb_13, decode_instruction_d2a10_output_tmp_c921e_5_limb_14, decode_instruction_d2a10_output_tmp_c921e_5_limb_15, decode_instruction_d2a10_output_tmp_c921e_5_limb_16, decode_instruction_d2a10_output_tmp_c921e_5_limb_17, decode_instruction_d2a10_output_tmp_c921e_5_limb_18] =
+        let [decode_instruction_d2a10_output_tmp_c921e_5_offset0, decode_instruction_d2a10_output_tmp_c921e_5_offset1, decode_instruction_d2a10_output_tmp_c921e_5_offset2, decode_instruction_d2a10_output_tmp_c921e_5_dst_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op0_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op1_imm, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap, decode_instruction_d2a10_output_tmp_c921e_5_res_add, decode_instruction_d2a10_output_tmp_c921e_5_res_mul, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jump, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jump_rel, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jnz, decode_instruction_d2a10_output_tmp_c921e_5_ap_update_add, decode_instruction_d2a10_output_tmp_c921e_5_ap_update_add_1, decode_instruction_d2a10_output_tmp_c921e_5_opcode_call, decode_instruction_d2a10_output_tmp_c921e_5_opcode_ret, decode_instruction_d2a10_output_tmp_c921e_5_opcode_assert_eq, decode_instruction_d2a10_output_tmp_c921e_5_opcode_extension] =
             DecodeInstructionD2A10::evaluate(
                 input_pc_col0.clone(),
                 offset2_col3.clone(),
                 op1_imm_col4.clone(),
                 op1_base_fp_col5.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         // if imm then offset2 is 1.
         eval.add_constraint(
             (op1_imm_col4.clone()
-                * (M31_1.clone() - decode_instruction_d2a10_output_tmp_c921e_5_limb_2.clone())),
+                * (M31_1.clone() - decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone())),
         );
         // mem1_base.
         eval.add_constraint(
             (mem1_base_col6.clone()
                 - (((op1_imm_col4.clone() * input_pc_col0.clone())
                     + (op1_base_fp_col5.clone() * input_fp_col2.clone()))
-                    + (decode_instruction_d2a10_output_tmp_c921e_5_limb_7.clone()
+                    + (decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap.clone()
                         * input_ap_col1.clone()))),
         );
         #[allow(clippy::unused_unit)]
@@ -100,16 +100,16 @@ impl FrameworkEval for Eval {
         let [read_small_output_tmp_c921e_11_limb_0, read_small_output_tmp_c921e_11_limb_1] =
             ReadSmall::evaluate(
                 (mem1_base_col6.clone()
-                    + decode_instruction_d2a10_output_tmp_c921e_5_limb_2.clone()),
+                    + decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone()),
                 op1_id_col7.clone(),
                 msb_col8.clone(),
                 mid_limbs_set_col9.clone(),
                 op1_limb_0_col10.clone(),
                 op1_limb_1_col11.clone(),
                 op1_limb_2_col12.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

@@ -132,8 +132,8 @@ impl FrameworkEval for Eval {
                 split_16_low_part_size_8_output_tmp_298db_5_limb_0.clone(),
             ],
             xor_col12.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -143,24 +143,24 @@ impl FrameworkEval for Eval {
                 split_16_low_part_size_8_output_tmp_298db_9_limb_0.clone(),
             ],
             xor_col13.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let bitwise_xor_num_bits_8_output_tmp_298db_17 = BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col6.clone(), ms_8_bits_col8.clone()],
             xor_col14.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let bitwise_xor_num_bits_8_output_tmp_298db_19 = BitwiseXorNumBits8::evaluate(
             [xor_col14.clone(), ms_8_bits_col10.clone()],
             xor_col15.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -170,8 +170,8 @@ impl FrameworkEval for Eval {
                 split_16_low_part_size_8_output_tmp_298db_7_limb_0.clone(),
             ],
             xor_col16.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -181,24 +181,24 @@ impl FrameworkEval for Eval {
                 split_16_low_part_size_8_output_tmp_298db_11_limb_0.clone(),
             ],
             xor_col17.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let bitwise_xor_num_bits_8_output_tmp_298db_25 = BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col7.clone(), ms_8_bits_col9.clone()],
             xor_col18.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let bitwise_xor_num_bits_8_output_tmp_298db_27 = BitwiseXorNumBits8::evaluate(
             [xor_col18.clone(), ms_8_bits_col11.clone()],
             xor_col19.clone(),
-            &mut eval,
             &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
         );
         let triple_xor32_output_tmp_298db_28_limb_0 =
             eval.add_intermediate((xor_col13.clone() + (xor_col15.clone() * M31_256.clone())));

@@ -11,9 +11,9 @@ impl DecodeInstruction15A61 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        decode_instruction_15a61c6002c544ec_input: E::F,
-        eval: &mut E,
+        decode_instruction_15a61_input: E::F,
         verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        eval: &mut E,
     ) -> [E::F; 19] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
@@ -28,7 +28,7 @@ impl DecodeInstruction15A61 {
             verify_instruction_lookup_elements,
             E::EF::one(),
             &[
-                decode_instruction_15a61c6002c544ec_input.clone(),
+                decode_instruction_15a61_input.clone(),
                 M31_32766.clone(),
                 M31_32767.clone(),
                 M31_32767.clone(),

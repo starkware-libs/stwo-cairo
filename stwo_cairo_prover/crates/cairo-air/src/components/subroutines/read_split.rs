@@ -43,10 +43,10 @@ impl ReadSplit {
         ms_limb_low_col27: E::F,
         ms_limb_high_col28: E::F,
         id_col29: E::F,
-        eval: &mut E,
         range_check_5_4_lookup_elements: &relations::RangeCheck_5_4,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        eval: &mut E,
     ) -> [E::F; 84] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_32 = E::F::from(M31::from(32));
@@ -90,9 +90,9 @@ impl ReadSplit {
                 ((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone()),
             ],
             id_col29.clone(),
-            eval,
             memory_address_to_id_lookup_elements,
             memory_id_to_big_lookup_elements,
+            eval,
         );
         [
             value_limb_0_col0.clone(),

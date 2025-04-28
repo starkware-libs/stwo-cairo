@@ -15,8 +15,8 @@ impl VerifyReduced252 {
         ms_limb_is_max_col0: E::F,
         ms_and_mid_limbs_are_max_col1: E::F,
         rc_input_col2: E::F,
-        eval: &mut E,
         range_check_8_lookup_elements: &relations::RangeCheck_8,
+        eval: &mut E,
     ) -> () {
         let M31_1 = E::F::from(M31::from(1));
         let M31_120 = E::F::from(M31::from(120));

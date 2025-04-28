@@ -454,9 +454,9 @@ impl FrameworkEval for Eval {
                 input_state_0_limb_25_col26.clone(),
                 input_state_0_limb_26_col27.clone(),
                 input_state_0_limb_27_col28.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         let packed_input_state_0_tmp_51986_3_limb_0 = eval.add_intermediate(
             ((input_state_0_limb_0_col1.clone()
@@ -539,9 +539,9 @@ impl FrameworkEval for Eval {
                 input_state_1_limb_25_col55.clone(),
                 input_state_1_limb_26_col56.clone(),
                 input_state_1_limb_27_col57.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         let packed_input_state_1_tmp_51986_7_limb_0 = eval.add_intermediate(
             ((input_state_1_limb_0_col30.clone()
@@ -624,9 +624,9 @@ impl FrameworkEval for Eval {
                 input_state_2_limb_25_col84.clone(),
                 input_state_2_limb_26_col85.clone(),
                 input_state_2_limb_27_col86.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         let packed_input_state_2_tmp_51986_11_limb_0 = eval.add_intermediate(
             ((input_state_2_limb_0_col59.clone()
@@ -912,7 +912,6 @@ impl FrameworkEval for Eval {
                 poseidon_full_round_chain_output_limb_29_col287.clone(),
                 poseidon_full_round_chain_output_limb_30_col288.clone(),
                 poseidon_full_round_chain_output_limb_31_col289.clone(),
-                &mut eval,
                 &self.poseidon_full_round_chain_lookup_elements,
                 &self.range_check_felt_252_width_27_lookup_elements,
                 &self.cube_252_lookup_elements,
@@ -921,6 +920,7 @@ impl FrameworkEval for Eval {
                 &self.range_check_4_4_lookup_elements,
                 &self.poseidon_3_partial_rounds_chain_lookup_elements,
                 seq.clone(),
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -993,9 +993,9 @@ impl FrameworkEval for Eval {
                 poseidon_full_round_chain_output_limb_11_col269.clone(),
             ],
             output_state_0_id_col308.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -1068,9 +1068,9 @@ impl FrameworkEval for Eval {
                 poseidon_full_round_chain_output_limb_21_col279.clone(),
             ],
             output_state_1_id_col327.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -1143,9 +1143,9 @@ impl FrameworkEval for Eval {
                 poseidon_full_round_chain_output_limb_31_col289.clone(),
             ],
             output_state_2_id_col346.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
         eval.finalize_logup_in_pairs();
         eval

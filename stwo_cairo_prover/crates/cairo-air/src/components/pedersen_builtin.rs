@@ -517,10 +517,10 @@ impl FrameworkEval for Eval {
                 ms_limb_low_col27.clone(),
                 ms_limb_high_col28.clone(),
                 pedersen_a_id_col29.clone(),
-                &mut eval,
                 &self.range_check_5_4_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -557,10 +557,10 @@ impl FrameworkEval for Eval {
                 ms_limb_low_col57.clone(),
                 ms_limb_high_col58.clone(),
                 pedersen_b_id_col59.clone(),
-                &mut eval,
                 &self.range_check_5_4_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         VerifyReduced252::evaluate(
             [
@@ -596,8 +596,8 @@ impl FrameworkEval for Eval {
             ms_limb_is_max_col60.clone(),
             ms_and_mid_limbs_are_max_col61.clone(),
             rc_input_col62.clone(),
-            &mut eval,
             &self.range_check_8_lookup_elements,
+            &mut eval,
         );
         VerifyReduced252::evaluate(
             [
@@ -633,8 +633,8 @@ impl FrameworkEval for Eval {
             ms_limb_is_max_col63.clone(),
             ms_and_mid_limbs_are_max_col64.clone(),
             rc_input_col65.clone(),
-            &mut eval,
             &self.range_check_8_lookup_elements,
+            &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
@@ -1309,9 +1309,9 @@ impl FrameworkEval for Eval {
                 partial_ec_mul_output_limb_44_col329.clone(),
             ],
             pedersen_result_id_col358.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
         eval.finalize_logup_in_pairs();
         eval

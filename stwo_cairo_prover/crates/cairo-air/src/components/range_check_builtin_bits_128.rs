@@ -93,9 +93,9 @@ impl FrameworkEval for Eval {
                 value_limb_13_col14.clone(),
                 value_limb_14_col15.clone(),
                 msb_col16.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         eval.finalize_logup_in_pairs();
         eval

@@ -319,8 +319,8 @@ impl FrameworkEval for Eval {
                 opcode_call_col18.clone(),
                 opcode_ret_col19.clone(),
                 opcode_assert_eq_col20.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -557,11 +557,11 @@ impl FrameworkEval for Eval {
                 res_limb_25_col221.clone(),
                 res_limb_26_col222.clone(),
                 res_limb_27_col223.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
                 &self.range_check_9_9_lookup_elements,
                 &self.range_check_19_lookup_elements,
+                &mut eval,
             );
         HandleOpcodes::evaluate(
             [

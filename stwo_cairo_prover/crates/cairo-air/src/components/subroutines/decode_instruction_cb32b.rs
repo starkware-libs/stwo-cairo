@@ -11,15 +11,15 @@ impl DecodeInstructionCb32B {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        decode_instruction_cb32bef316ee78d5_input: E::F,
+        decode_instruction_cb32b_input: E::F,
         offset0_col0: E::F,
         offset1_col1: E::F,
         offset2_col2: E::F,
         dst_base_fp_col3: E::F,
         op0_base_fp_col4: E::F,
         ap_update_add_1_col5: E::F,
-        eval: &mut E,
         verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        eval: &mut E,
     ) -> [E::F; 19] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
@@ -45,7 +45,7 @@ impl DecodeInstructionCb32B {
             verify_instruction_lookup_elements,
             E::EF::one(),
             &[
-                decode_instruction_cb32bef316ee78d5_input.clone(),
+                decode_instruction_cb32b_input.clone(),
                 offset0_col0.clone(),
                 offset1_col1.clone(),
                 offset2_col2.clone(),

@@ -23,9 +23,9 @@ impl LinearCombinationN6Coefs4231M11 {
         combination_limb_8_col8: E::F,
         combination_limb_9_col9: E::F,
         p_coef_col10: E::F,
-        eval: &mut E,
         range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
         range_check_4_4_lookup_elements: &relations::RangeCheck_4_4,
+        eval: &mut E,
     ) -> [E::F; 10] {
         let M31_136 = E::F::from(M31::from(136));
         let M31_16 = E::F::from(M31::from(16));

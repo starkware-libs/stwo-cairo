@@ -97,14 +97,14 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_de75a_output_tmp_e1597_5_limb_0, decode_instruction_de75a_output_tmp_e1597_5_limb_1, decode_instruction_de75a_output_tmp_e1597_5_limb_2, decode_instruction_de75a_output_tmp_e1597_5_limb_3, decode_instruction_de75a_output_tmp_e1597_5_limb_4, decode_instruction_de75a_output_tmp_e1597_5_limb_5, decode_instruction_de75a_output_tmp_e1597_5_limb_6, decode_instruction_de75a_output_tmp_e1597_5_limb_7, decode_instruction_de75a_output_tmp_e1597_5_limb_8, decode_instruction_de75a_output_tmp_e1597_5_limb_9, decode_instruction_de75a_output_tmp_e1597_5_limb_10, decode_instruction_de75a_output_tmp_e1597_5_limb_11, decode_instruction_de75a_output_tmp_e1597_5_limb_12, decode_instruction_de75a_output_tmp_e1597_5_limb_13, decode_instruction_de75a_output_tmp_e1597_5_limb_14, decode_instruction_de75a_output_tmp_e1597_5_limb_15, decode_instruction_de75a_output_tmp_e1597_5_limb_16, decode_instruction_de75a_output_tmp_e1597_5_limb_17, decode_instruction_de75a_output_tmp_e1597_5_limb_18] =
+        let [decode_instruction_de75a_output_tmp_e1597_5_offset0, decode_instruction_de75a_output_tmp_e1597_5_offset1, decode_instruction_de75a_output_tmp_e1597_5_offset2, decode_instruction_de75a_output_tmp_e1597_5_dst_base_fp, decode_instruction_de75a_output_tmp_e1597_5_op0_base_fp, decode_instruction_de75a_output_tmp_e1597_5_op1_imm, decode_instruction_de75a_output_tmp_e1597_5_op1_base_fp, decode_instruction_de75a_output_tmp_e1597_5_op1_base_ap, decode_instruction_de75a_output_tmp_e1597_5_res_add, decode_instruction_de75a_output_tmp_e1597_5_res_mul, decode_instruction_de75a_output_tmp_e1597_5_pc_update_jump, decode_instruction_de75a_output_tmp_e1597_5_pc_update_jump_rel, decode_instruction_de75a_output_tmp_e1597_5_pc_update_jnz, decode_instruction_de75a_output_tmp_e1597_5_ap_update_add, decode_instruction_de75a_output_tmp_e1597_5_ap_update_add_1, decode_instruction_de75a_output_tmp_e1597_5_opcode_call, decode_instruction_de75a_output_tmp_e1597_5_opcode_ret, decode_instruction_de75a_output_tmp_e1597_5_opcode_assert_eq, decode_instruction_de75a_output_tmp_e1597_5_opcode_extension] =
             DecodeInstructionDe75A::evaluate(
                 input_pc_col0.clone(),
                 offset0_col3.clone(),
                 dst_base_fp_col4.clone(),
                 ap_update_add_1_col5.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         // mem_dst_base.
         eval.add_constraint(
@@ -117,7 +117,7 @@ impl FrameworkEval for Eval {
         let [read_positive_num_bits_252_output_tmp_e1597_8_limb_0, read_positive_num_bits_252_output_tmp_e1597_8_limb_1, read_positive_num_bits_252_output_tmp_e1597_8_limb_2, read_positive_num_bits_252_output_tmp_e1597_8_limb_3, read_positive_num_bits_252_output_tmp_e1597_8_limb_4, read_positive_num_bits_252_output_tmp_e1597_8_limb_5, read_positive_num_bits_252_output_tmp_e1597_8_limb_6, read_positive_num_bits_252_output_tmp_e1597_8_limb_7, read_positive_num_bits_252_output_tmp_e1597_8_limb_8, read_positive_num_bits_252_output_tmp_e1597_8_limb_9, read_positive_num_bits_252_output_tmp_e1597_8_limb_10, read_positive_num_bits_252_output_tmp_e1597_8_limb_11, read_positive_num_bits_252_output_tmp_e1597_8_limb_12, read_positive_num_bits_252_output_tmp_e1597_8_limb_13, read_positive_num_bits_252_output_tmp_e1597_8_limb_14, read_positive_num_bits_252_output_tmp_e1597_8_limb_15, read_positive_num_bits_252_output_tmp_e1597_8_limb_16, read_positive_num_bits_252_output_tmp_e1597_8_limb_17, read_positive_num_bits_252_output_tmp_e1597_8_limb_18, read_positive_num_bits_252_output_tmp_e1597_8_limb_19, read_positive_num_bits_252_output_tmp_e1597_8_limb_20, read_positive_num_bits_252_output_tmp_e1597_8_limb_21, read_positive_num_bits_252_output_tmp_e1597_8_limb_22, read_positive_num_bits_252_output_tmp_e1597_8_limb_23, read_positive_num_bits_252_output_tmp_e1597_8_limb_24, read_positive_num_bits_252_output_tmp_e1597_8_limb_25, read_positive_num_bits_252_output_tmp_e1597_8_limb_26, read_positive_num_bits_252_output_tmp_e1597_8_limb_27, read_positive_num_bits_252_output_tmp_e1597_8_limb_28] =
             ReadPositiveNumBits252::evaluate(
                 (mem_dst_base_col6.clone()
-                    + decode_instruction_de75a_output_tmp_e1597_5_limb_0.clone()),
+                    + decode_instruction_de75a_output_tmp_e1597_5_offset0.clone()),
                 dst_id_col7.clone(),
                 dst_limb_0_col8.clone(),
                 dst_limb_1_col9.clone(),
@@ -147,9 +147,9 @@ impl FrameworkEval for Eval {
                 dst_limb_25_col33.clone(),
                 dst_limb_26_col34.clone(),
                 dst_limb_27_col35.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         // dst equals 0.
         eval.add_constraint(

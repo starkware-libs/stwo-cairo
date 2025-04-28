@@ -31,8 +31,8 @@ impl Felt252UnpackFrom27RangeCheckOutput {
         unpacked_limb_22_col15: E::F,
         unpacked_limb_24_col16: E::F,
         unpacked_limb_25_col17: E::F,
-        eval: &mut E,
         range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
+        eval: &mut E,
     ) -> [E::F; 28] {
         let M31_512 = E::F::from(M31::from(512));
         let M31_8192 = E::F::from(M31::from(8192));
@@ -124,8 +124,8 @@ impl Felt252UnpackFrom27RangeCheckOutput {
                 unpacked_tmp_4f7f8_1_limb_26.clone(),
                 unpacked_tmp_4f7f8_1_limb_27.clone(),
             ],
-            eval,
             range_check_9_9_lookup_elements,
+            eval,
         );
         [
             unpacked_limb_0_col0.clone(),

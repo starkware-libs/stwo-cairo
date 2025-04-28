@@ -70,12 +70,12 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_7ebc4_output_tmp_81a39_3_limb_0, decode_instruction_7ebc4_output_tmp_81a39_3_limb_1, decode_instruction_7ebc4_output_tmp_81a39_3_limb_2, decode_instruction_7ebc4_output_tmp_81a39_3_limb_3, decode_instruction_7ebc4_output_tmp_81a39_3_limb_4, decode_instruction_7ebc4_output_tmp_81a39_3_limb_5, decode_instruction_7ebc4_output_tmp_81a39_3_limb_6, decode_instruction_7ebc4_output_tmp_81a39_3_limb_7, decode_instruction_7ebc4_output_tmp_81a39_3_limb_8, decode_instruction_7ebc4_output_tmp_81a39_3_limb_9, decode_instruction_7ebc4_output_tmp_81a39_3_limb_10, decode_instruction_7ebc4_output_tmp_81a39_3_limb_11, decode_instruction_7ebc4_output_tmp_81a39_3_limb_12, decode_instruction_7ebc4_output_tmp_81a39_3_limb_13, decode_instruction_7ebc4_output_tmp_81a39_3_limb_14, decode_instruction_7ebc4_output_tmp_81a39_3_limb_15, decode_instruction_7ebc4_output_tmp_81a39_3_limb_16, decode_instruction_7ebc4_output_tmp_81a39_3_limb_17, decode_instruction_7ebc4_output_tmp_81a39_3_limb_18] =
+        let [decode_instruction_7ebc4_output_tmp_81a39_3_offset0, decode_instruction_7ebc4_output_tmp_81a39_3_offset1, decode_instruction_7ebc4_output_tmp_81a39_3_offset2, decode_instruction_7ebc4_output_tmp_81a39_3_dst_base_fp, decode_instruction_7ebc4_output_tmp_81a39_3_op0_base_fp, decode_instruction_7ebc4_output_tmp_81a39_3_op1_imm, decode_instruction_7ebc4_output_tmp_81a39_3_op1_base_fp, decode_instruction_7ebc4_output_tmp_81a39_3_op1_base_ap, decode_instruction_7ebc4_output_tmp_81a39_3_res_add, decode_instruction_7ebc4_output_tmp_81a39_3_res_mul, decode_instruction_7ebc4_output_tmp_81a39_3_pc_update_jump, decode_instruction_7ebc4_output_tmp_81a39_3_pc_update_jump_rel, decode_instruction_7ebc4_output_tmp_81a39_3_pc_update_jnz, decode_instruction_7ebc4_output_tmp_81a39_3_ap_update_add, decode_instruction_7ebc4_output_tmp_81a39_3_ap_update_add_1, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_call, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_ret, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_assert_eq, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_extension] =
             DecodeInstruction7Ebc4::evaluate(
                 input_pc_col0.clone(),
                 ap_update_add_1_col3.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -88,9 +88,9 @@ impl FrameworkEval for Eval {
                 next_pc_limb_0_col7.clone(),
                 next_pc_limb_1_col8.clone(),
                 next_pc_limb_2_col9.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

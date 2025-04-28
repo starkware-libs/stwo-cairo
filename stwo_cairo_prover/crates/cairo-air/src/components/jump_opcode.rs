@@ -74,15 +74,15 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_43e1c_output_tmp_39ce3_6_limb_0, decode_instruction_43e1c_output_tmp_39ce3_6_limb_1, decode_instruction_43e1c_output_tmp_39ce3_6_limb_2, decode_instruction_43e1c_output_tmp_39ce3_6_limb_3, decode_instruction_43e1c_output_tmp_39ce3_6_limb_4, decode_instruction_43e1c_output_tmp_39ce3_6_limb_5, decode_instruction_43e1c_output_tmp_39ce3_6_limb_6, decode_instruction_43e1c_output_tmp_39ce3_6_limb_7, decode_instruction_43e1c_output_tmp_39ce3_6_limb_8, decode_instruction_43e1c_output_tmp_39ce3_6_limb_9, decode_instruction_43e1c_output_tmp_39ce3_6_limb_10, decode_instruction_43e1c_output_tmp_39ce3_6_limb_11, decode_instruction_43e1c_output_tmp_39ce3_6_limb_12, decode_instruction_43e1c_output_tmp_39ce3_6_limb_13, decode_instruction_43e1c_output_tmp_39ce3_6_limb_14, decode_instruction_43e1c_output_tmp_39ce3_6_limb_15, decode_instruction_43e1c_output_tmp_39ce3_6_limb_16, decode_instruction_43e1c_output_tmp_39ce3_6_limb_17, decode_instruction_43e1c_output_tmp_39ce3_6_limb_18] =
+        let [decode_instruction_43e1c_output_tmp_39ce3_6_offset0, decode_instruction_43e1c_output_tmp_39ce3_6_offset1, decode_instruction_43e1c_output_tmp_39ce3_6_offset2, decode_instruction_43e1c_output_tmp_39ce3_6_dst_base_fp, decode_instruction_43e1c_output_tmp_39ce3_6_op0_base_fp, decode_instruction_43e1c_output_tmp_39ce3_6_op1_imm, decode_instruction_43e1c_output_tmp_39ce3_6_op1_base_fp, decode_instruction_43e1c_output_tmp_39ce3_6_op1_base_ap, decode_instruction_43e1c_output_tmp_39ce3_6_res_add, decode_instruction_43e1c_output_tmp_39ce3_6_res_mul, decode_instruction_43e1c_output_tmp_39ce3_6_pc_update_jump, decode_instruction_43e1c_output_tmp_39ce3_6_pc_update_jump_rel, decode_instruction_43e1c_output_tmp_39ce3_6_pc_update_jnz, decode_instruction_43e1c_output_tmp_39ce3_6_ap_update_add, decode_instruction_43e1c_output_tmp_39ce3_6_ap_update_add_1, decode_instruction_43e1c_output_tmp_39ce3_6_opcode_call, decode_instruction_43e1c_output_tmp_39ce3_6_opcode_ret, decode_instruction_43e1c_output_tmp_39ce3_6_opcode_assert_eq, decode_instruction_43e1c_output_tmp_39ce3_6_opcode_extension] =
             DecodeInstruction43E1C::evaluate(
                 input_pc_col0.clone(),
                 offset2_col3.clone(),
                 op1_base_fp_col4.clone(),
                 op1_base_ap_col5.clone(),
                 ap_update_add_1_col6.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         // Either flag op1_base_fp is on or flag op1_base_ap is on.
         eval.add_constraint(
@@ -99,14 +99,14 @@ impl FrameworkEval for Eval {
         let [read_positive_num_bits_27_output_tmp_39ce3_9_limb_0, read_positive_num_bits_27_output_tmp_39ce3_9_limb_1, read_positive_num_bits_27_output_tmp_39ce3_9_limb_2, read_positive_num_bits_27_output_tmp_39ce3_9_limb_3, read_positive_num_bits_27_output_tmp_39ce3_9_limb_4, read_positive_num_bits_27_output_tmp_39ce3_9_limb_5, read_positive_num_bits_27_output_tmp_39ce3_9_limb_6, read_positive_num_bits_27_output_tmp_39ce3_9_limb_7, read_positive_num_bits_27_output_tmp_39ce3_9_limb_8, read_positive_num_bits_27_output_tmp_39ce3_9_limb_9, read_positive_num_bits_27_output_tmp_39ce3_9_limb_10, read_positive_num_bits_27_output_tmp_39ce3_9_limb_11, read_positive_num_bits_27_output_tmp_39ce3_9_limb_12, read_positive_num_bits_27_output_tmp_39ce3_9_limb_13, read_positive_num_bits_27_output_tmp_39ce3_9_limb_14, read_positive_num_bits_27_output_tmp_39ce3_9_limb_15, read_positive_num_bits_27_output_tmp_39ce3_9_limb_16, read_positive_num_bits_27_output_tmp_39ce3_9_limb_17, read_positive_num_bits_27_output_tmp_39ce3_9_limb_18, read_positive_num_bits_27_output_tmp_39ce3_9_limb_19, read_positive_num_bits_27_output_tmp_39ce3_9_limb_20, read_positive_num_bits_27_output_tmp_39ce3_9_limb_21, read_positive_num_bits_27_output_tmp_39ce3_9_limb_22, read_positive_num_bits_27_output_tmp_39ce3_9_limb_23, read_positive_num_bits_27_output_tmp_39ce3_9_limb_24, read_positive_num_bits_27_output_tmp_39ce3_9_limb_25, read_positive_num_bits_27_output_tmp_39ce3_9_limb_26, read_positive_num_bits_27_output_tmp_39ce3_9_limb_27, read_positive_num_bits_27_output_tmp_39ce3_9_limb_28] =
             ReadPositiveNumBits27::evaluate(
                 (mem1_base_col7.clone()
-                    + decode_instruction_43e1c_output_tmp_39ce3_6_limb_2.clone()),
+                    + decode_instruction_43e1c_output_tmp_39ce3_6_offset2.clone()),
                 next_pc_id_col8.clone(),
                 next_pc_limb_0_col9.clone(),
                 next_pc_limb_1_col10.clone(),
                 next_pc_limb_2_col11.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
