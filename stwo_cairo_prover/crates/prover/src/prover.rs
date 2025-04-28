@@ -261,7 +261,7 @@ pub mod tests {
             PathBuf::from(env!("CARGO_MANIFEST_DIR"))
                 .join("../../test_data/")
                 .join(test_name)
-                .join("prover_input_info.json")
+                .join("prover_input_info")
         }
 
         // TODO(Ohad): fine-grained constraints tests.

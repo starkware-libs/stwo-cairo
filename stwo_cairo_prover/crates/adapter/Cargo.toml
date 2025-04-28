@@ -22,6 +22,9 @@ thiserror.workspace = true
 sonic-rs = { version = "0.3.17", optional = true }
 stwo-prover.workspace = true
 memmap2 = "0.9.5"
+bincode = { version = "2.0.0-rc.3", features = [
+    "serde",
+] }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
