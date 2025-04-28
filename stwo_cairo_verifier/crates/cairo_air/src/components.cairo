@@ -14,7 +14,7 @@ pub mod bitwise_builtin;
 pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
-pub mod blake_sigma;
+pub mod blake_round_sigma;
 pub mod call_opcode;
 pub mod call_opcode_op_1_base_fp;
 pub mod call_opcode_rel;
@@ -38,12 +38,28 @@ pub mod poseidon_3_partial_rounds_chain;
 pub mod poseidon_builtin;
 pub mod poseidon_full_round_chain;
 pub mod poseidon_round_keys;
-pub mod qm31_add_mul_opcode;
+pub mod qm_31_add_mul_opcode;
+pub mod range_check_11;
+pub mod range_check_12;
+pub mod range_check_18;
+pub mod range_check_19;
+
+pub mod range_check_3_3_3_3_3;
+pub mod range_check_3_6_6_3;
+pub mod range_check_4_3;
+pub mod range_check_4_4;
+pub mod range_check_4_4_4_4;
+pub mod range_check_5_4;
+pub mod range_check_6;
+pub mod range_check_7_2_5;
+pub mod range_check_8;
+pub mod range_check_9_9;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
 pub mod range_check_felt_252_width_27;
 pub mod range_check_vector;
 pub mod ret_opcode;
+pub mod subroutines;
 pub mod triple_xor_32;
 pub mod verify_bitwise_xor_12;
 pub mod verify_bitwise_xor_4;
@@ -51,6 +67,33 @@ pub mod verify_bitwise_xor_7;
 pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
+
+pub const VERIFY_BITWISE_XOR_12_LOG_SIZE: u32 = 20;
+pub const VERIFY_BITWISE_XOR_9_LOG_SIZE: u32 = 18;
+pub const VERIFY_BITWISE_XOR_8_LOG_SIZE: u32 = 16;
+pub const VERIFY_BITWISE_XOR_7_LOG_SIZE: u32 = 14;
+pub const VERIFY_BITWISE_XOR_4_LOG_SIZE: u32 = 8;
+
+pub const RANGE_CHECK_3_3_3_3_3_LOG_SIZE: u32 = 15;
+pub const RANGE_CHECK_3_6_6_3_LOG_SIZE: u32 = 18;
+pub const RANGE_CHECK_4_3_LOG_SIZE: u32 = 7;
+pub const RANGE_CHECK_4_4_4_4_LOG_SIZE: u32 = 16;
+pub const RANGE_CHECK_4_4_LOG_SIZE: u32 = 8;
+pub const RANGE_CHECK_5_4_LOG_SIZE: u32 = 9;
+pub const RANGE_CHECK_6_LOG_SIZE: u32 = 6;
+pub const RANGE_CHECK_7_2_5_LOG_SIZE: u32 = 14;
+pub const RANGE_CHECK_8_LOG_SIZE: u32 = 8;
+pub const RANGE_CHECK_9_9_LOG_SIZE: u32 = 18;
+pub const RANGE_CHECK_11_LOG_SIZE: u32 = 11;
+pub const RANGE_CHECK_12_LOG_SIZE: u32 = 12;
+pub const RANGE_CHECK_18_LOG_SIZE: u32 = 18;
+pub const RANGE_CHECK_19_LOG_SIZE: u32 = 19;
+
+pub const POSEIDON_ROUND_KEYS_LOG_SIZE: u32 = 6;
+pub const PEDERSEN_POINTS_TABLE_LOG_SIZE: u32 = 23;
+pub const BLAKE_ROUND_SIGMA_LOG_SIZE: u32 = 4;
+
+pub const OPCODES_RELATION_SIZE: u32 = 3;
 
 /// A component is a set of trace columns of the same sizes along with a set of constraints on them.
 pub trait CairoComponent<T> {
@@ -78,4 +121,11 @@ pub trait CairoComponent<T> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     );
+}
+
+pub fn opcodes_sum(mut alphas: Span<QM31>, z: QM31, values: [QM31; 3]) -> QM31 {
+    let [alpha0, alpha1, alpha2] = (*alphas.multi_pop_front().unwrap()).unbox();
+    let [val0, val1, val2] = values;
+
+    alpha0 * val0 + alpha1 * val1 + alpha2 * val2 - z
 }

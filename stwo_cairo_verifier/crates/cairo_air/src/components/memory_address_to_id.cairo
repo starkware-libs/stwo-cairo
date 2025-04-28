@@ -32,6 +32,15 @@ pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
+pub const MEMORY_ADDRESS_TO_ID_RELATION_SIZE: usize = 2;
+
+pub fn memory_address_to_id_sum(mut alphas: Span<QM31>, z: QM31, values: [QM31; 2]) -> QM31 {
+    let [alpha0, alpha1] = (*alphas.multi_pop_front().unwrap()).unbox();
+    let [val0, val1] = values;
+
+    alpha0 * val0 + alpha1 * val1 - z
+}
+
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub log_size: u32,

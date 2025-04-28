@@ -1,0 +1,191 @@
+use core::num::traits::Zero;
+use stwo_constraint_framework::{
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl, PreprocessedMaskValues,
+    PreprocessedMaskValuesImpl,
+};
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
+use stwo_verifier_core::circle::{
+    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
+};
+use stwo_verifier_core::fields::Invertible;
+use stwo_verifier_core::fields::m31::{M31, m31};
+use stwo_verifier_core::fields::qm31::{
+    QM31, QM31Impl, QM31Serde, QM31Zero, QM31_EXTENSION_DEGREE, qm31_const,
+};
+use stwo_verifier_core::poly::circle::CanonicCosetImpl;
+use stwo_verifier_core::utils::{ArrayImpl, pow2};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::components::range_check_3_6_6_3::{
+    RANGE_CHECK_3_6_6_3_RELATION_SIZE, range_check_3_6_6_3_sum,
+};
+use crate::components::{CairoComponent, OPCODES_RELATION_SIZE, opcodes_sum};
+use crate::utils::U32Impl;
+
+
+pub const N_TRACE_COLUMNS: usize = 10;
+
+
+pub fn mod_words_to_12_bit_array_evaluate(
+    input: [QM31; 56],
+    limb1b_0_col0: QM31,
+    limb2b_0_col1: QM31,
+    limb5b_0_col2: QM31,
+    limb6b_0_col3: QM31,
+    limb9b_0_col4: QM31,
+    limb1b_1_col5: QM31,
+    limb2b_1_col6: QM31,
+    limb5b_1_col7: QM31,
+    limb6b_1_col8: QM31,
+    limb9b_1_col9: QM31,
+    range_check_3_6_6_3_alphas: Span<QM31>,
+    range_check_3_6_6_3_z: QM31,
+    ref range_check_3_6_6_3_sum_0: QM31,
+    ref range_check_3_6_6_3_sum_1: QM31,
+    ref range_check_3_6_6_3_sum_2: QM31,
+    ref range_check_3_6_6_3_sum_3: QM31,
+    ref range_check_3_6_6_3_sum_4: QM31,
+    ref sum: QM31,
+    domain_vanishing_eval_inv: QM31,
+    random_coeff: QM31,
+) -> [QM31; 16] {
+    let [
+        mod_words_to_12_bit_array_input_limb_0,
+        mod_words_to_12_bit_array_input_limb_1,
+        mod_words_to_12_bit_array_input_limb_2,
+        mod_words_to_12_bit_array_input_limb_3,
+        mod_words_to_12_bit_array_input_limb_4,
+        mod_words_to_12_bit_array_input_limb_5,
+        mod_words_to_12_bit_array_input_limb_6,
+        mod_words_to_12_bit_array_input_limb_7,
+        mod_words_to_12_bit_array_input_limb_8,
+        mod_words_to_12_bit_array_input_limb_9,
+        mod_words_to_12_bit_array_input_limb_10,
+        mod_words_to_12_bit_array_input_limb_11,
+        mod_words_to_12_bit_array_input_limb_12,
+        mod_words_to_12_bit_array_input_limb_13,
+        mod_words_to_12_bit_array_input_limb_14,
+        mod_words_to_12_bit_array_input_limb_15,
+        mod_words_to_12_bit_array_input_limb_16,
+        mod_words_to_12_bit_array_input_limb_17,
+        mod_words_to_12_bit_array_input_limb_18,
+        mod_words_to_12_bit_array_input_limb_19,
+        mod_words_to_12_bit_array_input_limb_20,
+        mod_words_to_12_bit_array_input_limb_21,
+        mod_words_to_12_bit_array_input_limb_22,
+        mod_words_to_12_bit_array_input_limb_23,
+        mod_words_to_12_bit_array_input_limb_24,
+        mod_words_to_12_bit_array_input_limb_25,
+        mod_words_to_12_bit_array_input_limb_26,
+        mod_words_to_12_bit_array_input_limb_27,
+        mod_words_to_12_bit_array_input_limb_28,
+        mod_words_to_12_bit_array_input_limb_29,
+        mod_words_to_12_bit_array_input_limb_30,
+        mod_words_to_12_bit_array_input_limb_31,
+        mod_words_to_12_bit_array_input_limb_32,
+        mod_words_to_12_bit_array_input_limb_33,
+        mod_words_to_12_bit_array_input_limb_34,
+        mod_words_to_12_bit_array_input_limb_35,
+        mod_words_to_12_bit_array_input_limb_36,
+        mod_words_to_12_bit_array_input_limb_37,
+        mod_words_to_12_bit_array_input_limb_38,
+        mod_words_to_12_bit_array_input_limb_39,
+        mod_words_to_12_bit_array_input_limb_40,
+        mod_words_to_12_bit_array_input_limb_41,
+        mod_words_to_12_bit_array_input_limb_42,
+        mod_words_to_12_bit_array_input_limb_43,
+        mod_words_to_12_bit_array_input_limb_44,
+        mod_words_to_12_bit_array_input_limb_45,
+        mod_words_to_12_bit_array_input_limb_46,
+        mod_words_to_12_bit_array_input_limb_47,
+        mod_words_to_12_bit_array_input_limb_48,
+        mod_words_to_12_bit_array_input_limb_49,
+        mod_words_to_12_bit_array_input_limb_50,
+        mod_words_to_12_bit_array_input_limb_51,
+        mod_words_to_12_bit_array_input_limb_52,
+        mod_words_to_12_bit_array_input_limb_53,
+        mod_words_to_12_bit_array_input_limb_54,
+        mod_words_to_12_bit_array_input_limb_55,
+    ] =
+        input;
+
+    let limb1a_0_tmp_f4497_1: QM31 = (mod_words_to_12_bit_array_input_limb_1
+        - (limb1b_0_col0 * qm31_const::<8, 0, 0, 0>()));
+    let limb2a_0_tmp_f4497_3: QM31 = (mod_words_to_12_bit_array_input_limb_2
+        - (limb2b_0_col1 * qm31_const::<64, 0, 0, 0>()));
+
+    range_check_3_6_6_3_sum_0 =
+        range_check_3_6_6_3_sum(
+            range_check_3_6_6_3_alphas,
+            range_check_3_6_6_3_z,
+            [limb1a_0_tmp_f4497_1, limb1b_0_col0, limb2a_0_tmp_f4497_3, limb2b_0_col1],
+        );
+    let limb5a_0_tmp_f4497_5: QM31 = (mod_words_to_12_bit_array_input_limb_5
+        - (limb5b_0_col2 * qm31_const::<8, 0, 0, 0>()));
+    let limb6a_0_tmp_f4497_7: QM31 = (mod_words_to_12_bit_array_input_limb_6
+        - (limb6b_0_col3 * qm31_const::<64, 0, 0, 0>()));
+
+    range_check_3_6_6_3_sum_1 =
+        range_check_3_6_6_3_sum(
+            range_check_3_6_6_3_alphas,
+            range_check_3_6_6_3_z,
+            [limb5a_0_tmp_f4497_5, limb5b_0_col2, limb6a_0_tmp_f4497_7, limb6b_0_col3],
+        );
+    let limb9a_0_tmp_f4497_9: QM31 = (mod_words_to_12_bit_array_input_limb_9
+        - (limb9b_0_col4 * qm31_const::<8, 0, 0, 0>()));
+    let limb1a_1_tmp_f4497_11: QM31 = (mod_words_to_12_bit_array_input_limb_29
+        - (limb1b_1_col5 * qm31_const::<8, 0, 0, 0>()));
+    let limb2a_1_tmp_f4497_13: QM31 = (mod_words_to_12_bit_array_input_limb_30
+        - (limb2b_1_col6 * qm31_const::<64, 0, 0, 0>()));
+
+    range_check_3_6_6_3_sum_2 =
+        range_check_3_6_6_3_sum(
+            range_check_3_6_6_3_alphas,
+            range_check_3_6_6_3_z,
+            [limb1a_1_tmp_f4497_11, limb1b_1_col5, limb2a_1_tmp_f4497_13, limb2b_1_col6],
+        );
+    let limb5a_1_tmp_f4497_15: QM31 = (mod_words_to_12_bit_array_input_limb_33
+        - (limb5b_1_col7 * qm31_const::<8, 0, 0, 0>()));
+    let limb6a_1_tmp_f4497_17: QM31 = (mod_words_to_12_bit_array_input_limb_34
+        - (limb6b_1_col8 * qm31_const::<64, 0, 0, 0>()));
+
+    range_check_3_6_6_3_sum_3 =
+        range_check_3_6_6_3_sum(
+            range_check_3_6_6_3_alphas,
+            range_check_3_6_6_3_z,
+            [limb5a_1_tmp_f4497_15, limb5b_1_col7, limb6a_1_tmp_f4497_17, limb6b_1_col8],
+        );
+    let limb9a_1_tmp_f4497_19: QM31 = (mod_words_to_12_bit_array_input_limb_37
+        - (limb9b_1_col9 * qm31_const::<8, 0, 0, 0>()));
+
+    range_check_3_6_6_3_sum_4 =
+        range_check_3_6_6_3_sum(
+            range_check_3_6_6_3_alphas,
+            range_check_3_6_6_3_z,
+            [limb9a_0_tmp_f4497_9, limb9b_0_col4, limb9b_1_col9, limb9a_1_tmp_f4497_19],
+        );
+
+    [
+        (mod_words_to_12_bit_array_input_limb_0
+            + (qm31_const::<512, 0, 0, 0>() * limb1a_0_tmp_f4497_1)),
+        (limb1b_0_col0 + (qm31_const::<64, 0, 0, 0>() * limb2a_0_tmp_f4497_3)),
+        (limb2b_0_col1 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_3)),
+        (mod_words_to_12_bit_array_input_limb_4
+            + (qm31_const::<512, 0, 0, 0>() * limb5a_0_tmp_f4497_5)),
+        (limb5b_0_col2 + (qm31_const::<64, 0, 0, 0>() * limb6a_0_tmp_f4497_7)),
+        (limb6b_0_col3 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_7)),
+        (mod_words_to_12_bit_array_input_limb_8
+            + (qm31_const::<512, 0, 0, 0>() * limb9a_0_tmp_f4497_9)),
+        (limb9b_0_col4 + (qm31_const::<64, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_10)),
+        (mod_words_to_12_bit_array_input_limb_28
+            + (qm31_const::<512, 0, 0, 0>() * limb1a_1_tmp_f4497_11)),
+        (limb1b_1_col5 + (qm31_const::<64, 0, 0, 0>() * limb2a_1_tmp_f4497_13)),
+        (limb2b_1_col6 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_31)),
+        (mod_words_to_12_bit_array_input_limb_32
+            + (qm31_const::<512, 0, 0, 0>() * limb5a_1_tmp_f4497_15)),
+        (limb5b_1_col7 + (qm31_const::<64, 0, 0, 0>() * limb6a_1_tmp_f4497_17)),
+        (limb6b_1_col8 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_35)),
+        (mod_words_to_12_bit_array_input_limb_36
+            + (qm31_const::<512, 0, 0, 0>() * limb9a_1_tmp_f4497_19)),
+        (limb9b_1_col9 + (qm31_const::<64, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_38)),
+    ]
+}
