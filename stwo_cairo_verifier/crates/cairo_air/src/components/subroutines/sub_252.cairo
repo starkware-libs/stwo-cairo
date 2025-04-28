@@ -1,0 +1,117 @@
+// Constraints version: cab09e9c
+
+use core::num::traits::Zero;
+use stwo_constraint_framework::{
+    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumnSetImpl, LookupElementsImpl,
+};
+use stwo_verifier_core::circle::CirclePointQM31AddCirclePointM31Trait;
+use stwo_verifier_core::circle::CirclePointIndexTrait;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
+use stwo_verifier_core::circle::CirclePoint;
+use stwo_verifier_core::fields::Invertible;
+use stwo_verifier_core::fields::m31::{m31, M31};
+use stwo_verifier_core::fields::qm31::{qm31_const, QM31, QM31Impl, QM31Serde, QM31Zero};
+use stwo_verifier_core::poly::circle::CanonicCosetImpl;
+use stwo_verifier_core::utils::{ArrayImpl, pow2};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::components::{CairoComponent, OPCODES_RELATION_SIZE};
+use crate::utils::U32Impl;
+use crate::components::range_check_9_9::RANGE_CHECK_9_9_RELATION_SIZE;
+use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
+use crate::components::subroutines::verify_add_252::verify_add_252_evaluate;
+
+
+pub const N_TRACE_COLUMNS: usize = 29;
+
+
+
+pub fn sub_252_evaluate(
+    input: [QM31; 56],
+    sub_res_limb_0_col0: QM31,
+sub_res_limb_1_col1: QM31,
+sub_res_limb_2_col2: QM31,
+sub_res_limb_3_col3: QM31,
+sub_res_limb_4_col4: QM31,
+sub_res_limb_5_col5: QM31,
+sub_res_limb_6_col6: QM31,
+sub_res_limb_7_col7: QM31,
+sub_res_limb_8_col8: QM31,
+sub_res_limb_9_col9: QM31,
+sub_res_limb_10_col10: QM31,
+sub_res_limb_11_col11: QM31,
+sub_res_limb_12_col12: QM31,
+sub_res_limb_13_col13: QM31,
+sub_res_limb_14_col14: QM31,
+sub_res_limb_15_col15: QM31,
+sub_res_limb_16_col16: QM31,
+sub_res_limb_17_col17: QM31,
+sub_res_limb_18_col18: QM31,
+sub_res_limb_19_col19: QM31,
+sub_res_limb_20_col20: QM31,
+sub_res_limb_21_col21: QM31,
+sub_res_limb_22_col22: QM31,
+sub_res_limb_23_col23: QM31,
+sub_res_limb_24_col24: QM31,
+sub_res_limb_25_col25: QM31,
+sub_res_limb_26_col26: QM31,
+sub_res_limb_27_col27: QM31,
+sub_p_bit_col28: QM31,
+range_check_9_9_lookup_elements: @crate::RangeCheck_9_9Elements,
+ref range_check_9_9_sum_0: QM31,
+ref range_check_9_9_sum_1: QM31,
+ref range_check_9_9_sum_2: QM31,
+ref range_check_9_9_sum_3: QM31,
+ref range_check_9_9_sum_4: QM31,
+ref range_check_9_9_sum_5: QM31,
+ref range_check_9_9_sum_6: QM31,
+ref range_check_9_9_sum_7: QM31,
+ref range_check_9_9_sum_8: QM31,
+ref range_check_9_9_sum_9: QM31,
+ref range_check_9_9_sum_10: QM31,
+ref range_check_9_9_sum_11: QM31,
+ref range_check_9_9_sum_12: QM31,
+ref range_check_9_9_sum_13: QM31,
+
+    ref sum: QM31,
+    domain_vanishing_eval_inv: QM31,
+    random_coeff: QM31,
+) -> [QM31; 0] {
+    let [sub_252_input_c_limb_0, sub_252_input_c_limb_1, sub_252_input_c_limb_2, sub_252_input_c_limb_3, sub_252_input_c_limb_4, sub_252_input_c_limb_5, sub_252_input_c_limb_6, sub_252_input_c_limb_7, sub_252_input_c_limb_8, sub_252_input_c_limb_9, sub_252_input_c_limb_10, sub_252_input_c_limb_11, sub_252_input_c_limb_12, sub_252_input_c_limb_13, sub_252_input_c_limb_14, sub_252_input_c_limb_15, sub_252_input_c_limb_16, sub_252_input_c_limb_17, sub_252_input_c_limb_18, sub_252_input_c_limb_19, sub_252_input_c_limb_20, sub_252_input_c_limb_21, sub_252_input_c_limb_22, sub_252_input_c_limb_23, sub_252_input_c_limb_24, sub_252_input_c_limb_25, sub_252_input_c_limb_26, sub_252_input_c_limb_27, sub_252_input_a_limb_0, sub_252_input_a_limb_1, sub_252_input_a_limb_2, sub_252_input_a_limb_3, sub_252_input_a_limb_4, sub_252_input_a_limb_5, sub_252_input_a_limb_6, sub_252_input_a_limb_7, sub_252_input_a_limb_8, sub_252_input_a_limb_9, sub_252_input_a_limb_10, sub_252_input_a_limb_11, sub_252_input_a_limb_12, sub_252_input_a_limb_13, sub_252_input_a_limb_14, sub_252_input_a_limb_15, sub_252_input_a_limb_16, sub_252_input_a_limb_17, sub_252_input_a_limb_18, sub_252_input_a_limb_19, sub_252_input_a_limb_20, sub_252_input_a_limb_21, sub_252_input_a_limb_22, sub_252_input_a_limb_23, sub_252_input_a_limb_24, sub_252_input_a_limb_25, sub_252_input_a_limb_26, sub_252_input_a_limb_27] = input;
+
+    
+
+    range_check_mem_value_n_28_evaluate(
+            [sub_res_limb_0_col0, sub_res_limb_1_col1, sub_res_limb_2_col2, sub_res_limb_3_col3, sub_res_limb_4_col4, sub_res_limb_5_col5, sub_res_limb_6_col6, sub_res_limb_7_col7, sub_res_limb_8_col8, sub_res_limb_9_col9, sub_res_limb_10_col10, sub_res_limb_11_col11, sub_res_limb_12_col12, sub_res_limb_13_col13, sub_res_limb_14_col14, sub_res_limb_15_col15, sub_res_limb_16_col16, sub_res_limb_17_col17, sub_res_limb_18_col18, sub_res_limb_19_col19, sub_res_limb_20_col20, sub_res_limb_21_col21, sub_res_limb_22_col22, sub_res_limb_23_col23, sub_res_limb_24_col24, sub_res_limb_25_col25, sub_res_limb_26_col26, sub_res_limb_27_col27],
+range_check_9_9_lookup_elements,
+ref range_check_9_9_sum_0,
+ref range_check_9_9_sum_1,
+ref range_check_9_9_sum_2,
+ref range_check_9_9_sum_3,
+ref range_check_9_9_sum_4,
+ref range_check_9_9_sum_5,
+ref range_check_9_9_sum_6,
+ref range_check_9_9_sum_7,
+ref range_check_9_9_sum_8,
+ref range_check_9_9_sum_9,
+ref range_check_9_9_sum_10,
+ref range_check_9_9_sum_11,
+ref range_check_9_9_sum_12,
+ref range_check_9_9_sum_13,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );
+
+
+    verify_add_252_evaluate(
+            [sub_252_input_a_limb_0, sub_252_input_a_limb_1, sub_252_input_a_limb_2, sub_252_input_a_limb_3, sub_252_input_a_limb_4, sub_252_input_a_limb_5, sub_252_input_a_limb_6, sub_252_input_a_limb_7, sub_252_input_a_limb_8, sub_252_input_a_limb_9, sub_252_input_a_limb_10, sub_252_input_a_limb_11, sub_252_input_a_limb_12, sub_252_input_a_limb_13, sub_252_input_a_limb_14, sub_252_input_a_limb_15, sub_252_input_a_limb_16, sub_252_input_a_limb_17, sub_252_input_a_limb_18, sub_252_input_a_limb_19, sub_252_input_a_limb_20, sub_252_input_a_limb_21, sub_252_input_a_limb_22, sub_252_input_a_limb_23, sub_252_input_a_limb_24, sub_252_input_a_limb_25, sub_252_input_a_limb_26, sub_252_input_a_limb_27, sub_res_limb_0_col0, sub_res_limb_1_col1, sub_res_limb_2_col2, sub_res_limb_3_col3, sub_res_limb_4_col4, sub_res_limb_5_col5, sub_res_limb_6_col6, sub_res_limb_7_col7, sub_res_limb_8_col8, sub_res_limb_9_col9, sub_res_limb_10_col10, sub_res_limb_11_col11, sub_res_limb_12_col12, sub_res_limb_13_col13, sub_res_limb_14_col14, sub_res_limb_15_col15, sub_res_limb_16_col16, sub_res_limb_17_col17, sub_res_limb_18_col18, sub_res_limb_19_col19, sub_res_limb_20_col20, sub_res_limb_21_col21, sub_res_limb_22_col22, sub_res_limb_23_col23, sub_res_limb_24_col24, sub_res_limb_25_col25, sub_res_limb_26_col26, sub_res_limb_27_col27, sub_252_input_c_limb_0, sub_252_input_c_limb_1, sub_252_input_c_limb_2, sub_252_input_c_limb_3, sub_252_input_c_limb_4, sub_252_input_c_limb_5, sub_252_input_c_limb_6, sub_252_input_c_limb_7, sub_252_input_c_limb_8, sub_252_input_c_limb_9, sub_252_input_c_limb_10, sub_252_input_c_limb_11, sub_252_input_c_limb_12, sub_252_input_c_limb_13, sub_252_input_c_limb_14, sub_252_input_c_limb_15, sub_252_input_c_limb_16, sub_252_input_c_limb_17, sub_252_input_c_limb_18, sub_252_input_c_limb_19, sub_252_input_c_limb_20, sub_252_input_c_limb_21, sub_252_input_c_limb_22, sub_252_input_c_limb_23, sub_252_input_c_limb_24, sub_252_input_c_limb_25, sub_252_input_c_limb_26, sub_252_input_c_limb_27],
+sub_p_bit_col28,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );
+
+
+    []
+}
