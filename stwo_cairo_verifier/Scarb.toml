@@ -6,3 +6,6 @@ members = [
     "crates/constraint_framework",
     "crates/verifier_core",
 ]
+
+[cairo]
+enable-gas = false
