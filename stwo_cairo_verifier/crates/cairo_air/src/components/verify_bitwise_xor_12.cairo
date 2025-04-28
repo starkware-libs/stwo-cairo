@@ -22,6 +22,14 @@ pub const EXPAND_BITS: u32 = 2;
 pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS;
 
 pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
+pub const VERIFY_BITWISE_XOR_12_RELATION_SIZE: usize = 3;
+
+pub fn verify_bitwise_xor_12_sum(mut alphas: Span<QM31>, z: QM31, values: [QM31; 3]) -> QM31 {
+    let [alpha0, alpha1, alpha2] = (*alphas.multi_pop_front().unwrap()).unbox();
+    let [val0, val1, val2] = values;
+
+    alpha0 * val0 + alpha1 * val1 + alpha2 * val2 - z
+}
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
@@ -37,7 +45,7 @@ pub impl ClaimImpl of ClaimTrait {
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_u64(LOG_SIZE.into());
+        channel.mix_u64((LOG_SIZE).into());
     }
 }
 
