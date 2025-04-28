@@ -127,7 +127,7 @@ enum PreprocessedColumnsAllocationMode {
 pub enum PreprocessedColumn {
     /// Symbolic representation of xor lookup table column of the form: `(n_term_bits, term)`.
     /// Where term is `{ 0 = left operand, 1 = right operand, 2 = xor result }`.
-    Xor: (u32, usize),
+    BitwiseXor: (u32, usize),
     /// A column with the numbers [0..2^log_size-1].
     Seq: u32,
     /// Symbolic representation of range check column.
@@ -145,7 +145,7 @@ pub enum PreprocessedColumn {
 pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
     fn log_size(self: @PreprocessedColumn) -> u32 {
         match self {
-            PreprocessedColumn::Xor((n_term_bits, _)) => *n_term_bits * 2,
+            PreprocessedColumn::BitwiseXor((n_term_bits, _)) => *n_term_bits * 2,
             PreprocessedColumn::Seq(log_size) => *log_size,
             PreprocessedColumn::RangeCheck((
                 [r0, r1, r2, r3, r4], _,
@@ -171,7 +171,7 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
         const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 5;
 
         match key {
-            PreprocessedColumn::Xor((
+            PreprocessedColumn::BitwiseXor((
                 n_term_bits, term,
             )) => {
                 let mut res = (*term).into();

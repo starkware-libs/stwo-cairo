@@ -38,8 +38,9 @@ use components::blake_g::{
 use components::blake_round::{
     ClaimImpl as BlakeRoundClaimImpl, InteractionClaimImpl as BlakeRoundInteractionClaimImpl,
 };
-use components::blake_sigma::{
-    ClaimImpl as BlakeSigmaClaimImpl, InteractionClaimImpl as BlakeSigmaInteractionClaimImpl,
+use components::blake_round_sigma::{
+    ClaimImpl as BlakeRoundSigmaClaimImpl,
+    InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl,
 };
 use components::call_opcode::{
     ClaimImpl as CallOpcodeClaimImpl, InteractionClaimImpl as CallOpcodeInteractionClaimImpl,
@@ -122,7 +123,7 @@ use components::poseidon_round_keys::{
     ClaimImpl as PoseidonRoundKeysClaimImpl,
     InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl,
 };
-use components::qm31_add_mul_opcode::{
+use components::qm_31_add_mul_opcode::{
     ClaimImpl as Qm31AddMulOpcodeClaimImpl,
     InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl,
 };
@@ -144,8 +145,8 @@ use components::range_check_vector::{
 use components::ret_opcode::{
     ClaimImpl as RetOpcodeClaimImpl, InteractionClaimImpl as RetOpcodeInteractionClaimImpl,
 };
-use components::tripple_xor_32::{
-    ClaimImpl as TrippleXor32ClaimImpl, InteractionClaimImpl as TrippleXor32InteractionClaimImpl,
+use components::triple_xor_32::{
+    ClaimImpl as TripleXor32ClaimImpl, InteractionClaimImpl as TripleXor32InteractionClaimImpl,
 };
 use components::verify_bitwise_xor_12::{
     ClaimImpl as VerifyBitwiseXor12ClaimImpl,
@@ -268,15 +269,15 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
     PreprocessedColumn::Seq(22), //
     PreprocessedColumn::Seq(21), //
     PreprocessedColumn::Seq(20), //
-    PreprocessedColumn::Xor((10, 0)), //
-    PreprocessedColumn::Xor((10, 1)), //
-    PreprocessedColumn::Xor((10, 2)), //
+    PreprocessedColumn::BitwiseXor((10, 0)), //
+    PreprocessedColumn::BitwiseXor((10, 1)), //
+    PreprocessedColumn::BitwiseXor((10, 2)), //
     PreprocessedColumn::Seq(19), //
     PreprocessedColumn::RangeCheck(([19, 0, 0, 0, 0], 0)), //
     PreprocessedColumn::Seq(18), //
-    PreprocessedColumn::Xor((9, 0)), //
-    PreprocessedColumn::Xor((9, 1)), //
-    PreprocessedColumn::Xor((9, 2)), //
+    PreprocessedColumn::BitwiseXor((9, 0)), //
+    PreprocessedColumn::BitwiseXor((9, 1)), //
+    PreprocessedColumn::BitwiseXor((9, 2)), //
     PreprocessedColumn::RangeCheck(([18, 0, 0, 0, 0], 0)), //
     PreprocessedColumn::RangeCheck(([9, 9, 0, 0, 0], 0)), //
     PreprocessedColumn::RangeCheck(([9, 9, 0, 0, 0], 1)), //
@@ -286,9 +287,9 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
     PreprocessedColumn::RangeCheck(([3, 6, 6, 3, 0], 3)), //
     PreprocessedColumn::Seq(17), //
     PreprocessedColumn::Seq(16), //
-    PreprocessedColumn::Xor((8, 0)), //
-    PreprocessedColumn::Xor((8, 1)), //
-    PreprocessedColumn::Xor((8, 2)), //
+    PreprocessedColumn::BitwiseXor((8, 0)), //
+    PreprocessedColumn::BitwiseXor((8, 1)), //
+    PreprocessedColumn::BitwiseXor((8, 2)), //
     PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 0)), //
     PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 1)), //
     PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 2)), //
@@ -300,9 +301,9 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
     PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 3)), //
     PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 4)), //
     PreprocessedColumn::Seq(14), //
-    PreprocessedColumn::Xor((7, 0)), //
-    PreprocessedColumn::Xor((7, 1)), //
-    PreprocessedColumn::Xor((7, 2)), //
+    PreprocessedColumn::BitwiseXor((7, 0)), //
+    PreprocessedColumn::BitwiseXor((7, 1)), //
+    PreprocessedColumn::BitwiseXor((7, 2)), //
     PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 0)), //
     PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 1)), //
     PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 2)), //
@@ -318,9 +319,9 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
     PreprocessedColumn::RangeCheck(([5, 4, 0, 0, 0], 0)), //
     PreprocessedColumn::RangeCheck(([5, 4, 0, 0, 0], 1)), //
     PreprocessedColumn::Seq(8), //
-    PreprocessedColumn::Xor((4, 0)), //
-    PreprocessedColumn::Xor((4, 1)), //
-    PreprocessedColumn::Xor((4, 2)), //
+    PreprocessedColumn::BitwiseXor((4, 0)), //
+    PreprocessedColumn::BitwiseXor((4, 1)), //
+    PreprocessedColumn::BitwiseXor((4, 2)), //
     PreprocessedColumn::RangeCheck(([8, 0, 0, 0, 0], 0)), //
     PreprocessedColumn::RangeCheck(([4, 4, 0, 0, 0], 0)), //
     PreprocessedColumn::RangeCheck(([4, 4, 0, 0, 0], 1)), //
@@ -385,7 +386,7 @@ type MemoryAddressToIdElements = LookupElements<2>;
 
 type MemoryIdToBigElements = LookupElements<29>;
 
-type OpcodeElements = LookupElements<3>;
+type OpcodesElements = LookupElements<3>;
 
 type PartialEcMulElements = LookupElements<73>;
 
@@ -401,53 +402,53 @@ type BlakeGElements = LookupElements<20>;
 
 type BlakeRoundElements = LookupElements<35>;
 
-type BlakeRoundSigmaElements = LookupElements<99>;
+type BlakeRoundSigmaElements = LookupElements<17>;
 
-type TripleXor32Elements = LookupElements<3>;
+type TripleXor32Elements = LookupElements<8>;
 
-type RangeCheck3BitElements = LookupElements<1>;
+type RangeCheck_6Elements = LookupElements<1>;
 
-type RangeCheck6BitElements = LookupElements<1>;
+type RangeCheck_8Elements = LookupElements<1>;
 
-type RangeCheck8BitElements = LookupElements<1>;
+type RangeCheck_3_6Elements = LookupElements<2>;
 
-type RangeCheck3Bit6BitElements = LookupElements<2>;
+type RangeCheck_11Elements = LookupElements<1>;
 
-type RangeCheck11BitElements = LookupElements<1>;
+type RangeCheck_12Elements = LookupElements<1>;
 
-type RangeCheck12BitElements = LookupElements<1>;
+type RangeCheck_18Elements = LookupElements<1>;
 
-type RangeCheck18BitElements = LookupElements<1>;
+type RangeCheck_19Elements = LookupElements<1>;
 
-type RangeCheck19BitElements = LookupElements<1>;
+type RangeCheck_9_9Elements = LookupElements<2>;
 
-type RangeCheck9Bit9BitElements = LookupElements<2>;
+type RangeCheck_4_3Elements = LookupElements<2>;
 
-type RangeCheck4Bit3BitElements = LookupElements<2>;
+type RangeCheck_4_4Elements = LookupElements<2>;
 
-type RangeCheck4Bit4BitElements = LookupElements<2>;
+type RangeCheck_5_4Elements = LookupElements<2>;
 
-type RangeCheck5Bit4BitElements = LookupElements<2>;
+type RangeCheck_7_2_5Elements = LookupElements<3>;
 
-type RangeCheck7Bit2Bit5BitElements = LookupElements<3>;
+type RangeCheck_3_6_6_3Elements = LookupElements<4>;
 
-type RangeCheck3Bit6Bit6Bit3BitElements = LookupElements<4>;
+type RangeCheck_4_4_4_4Elements = LookupElements<4>;
 
-type RangeCheck4Bit4Bit4Bit4BitElements = LookupElements<4>;
+type RangeCheck_3_3_3_3_3Elements = LookupElements<5>;
 
-type RangeCheck3Bit3Bit3Bit3Bit3BitElements = LookupElements<5>;
-
-type RangeCheckFelt252Width27Elements = LookupElements<27>;
+type RangeCheckFelt252Width27Elements = LookupElements<10>;
 
 type VerifyInstructionElements = LookupElements<29>;
 
-type VerifyBitwiseXor4BitElements = LookupElements<3>;
+type VerifyBitwiseXor_4Elements = LookupElements<3>;
 
-type VerifyBitwiseXor7BitElements = LookupElements<3>;
+type VerifyBitwiseXor_7Elements = LookupElements<3>;
 
-type VerifyBitwiseXor8BitElements = LookupElements<3>;
+type VerifyBitwiseXor_8Elements = LookupElements<3>;
 
-type VerifyBitwiseXor9BitElements = LookupElements<3>;
+type VerifyBitwiseXor_9Elements = LookupElements<3>;
+
+type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
 type VerifyBitwiseXor12BitElements = LookupElements<3>;
 
@@ -464,13 +465,17 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     let CairoProof { claim, interaction_pow, interaction_claim, stark_proof } = proof;
 
     // Verify.
-    let pcs_config = stark_proof.commitment_scheme_proof.config;
+    let config = PcsConfig {
+        pow_bits: 26,
+        fri_config: FriConfig {
+            log_blowup_factor: 1, log_last_layer_degree_bound: 0, n_queries: 70,
+        },
+    };
 
     verify_claim(@claim);
 
     let mut channel: Channel = Default::default();
-    pcs_config.mix_into(ref channel);
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(pcs_config);
+    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
     let log_sizes = claim.log_sizes();
 
@@ -538,21 +543,21 @@ pub fn lookup_sum(
 
 #[derive(Drop)]
 struct RangeChecksInteractionElements {
-    pub rc_6: RangeCheck6BitElements,
-    pub rc_8: RangeCheck8BitElements,
-    pub rc_11: RangeCheck11BitElements,
-    pub rc_12: RangeCheck12BitElements,
-    pub rc_18: RangeCheck18BitElements,
-    pub rc_19: RangeCheck19BitElements,
-    pub rc_3_6: RangeCheck3Bit6BitElements,
-    pub rc_4_3: RangeCheck4Bit3BitElements,
-    pub rc_4_4: RangeCheck4Bit4BitElements,
-    pub rc_5_4: RangeCheck5Bit4BitElements,
-    pub rc_9_9: RangeCheck9Bit9BitElements,
-    pub rc_7_2_5: RangeCheck7Bit2Bit5BitElements,
-    pub rc_3_6_6_3: RangeCheck3Bit6Bit6Bit3BitElements,
-    pub rc_4_4_4_4: RangeCheck4Bit4Bit4Bit4BitElements,
-    pub rc_3_3_3_3_3: RangeCheck3Bit3Bit3Bit3Bit3BitElements,
+    pub rc_6: RangeCheck_6Elements,
+    pub rc_8: RangeCheck_8Elements,
+    pub rc_11: RangeCheck_11Elements,
+    pub rc_12: RangeCheck_12Elements,
+    pub rc_18: RangeCheck_18Elements,
+    pub rc_19: RangeCheck_19Elements,
+    pub rc_3_6: RangeCheck_3_6Elements,
+    pub rc_4_3: RangeCheck_4_3Elements,
+    pub rc_4_4: RangeCheck_4_4Elements,
+    pub rc_5_4: RangeCheck_5_4Elements,
+    pub rc_9_9: RangeCheck_9_9Elements,
+    pub rc_7_2_5: RangeCheck_7_2_5Elements,
+    pub rc_3_6_6_3: RangeCheck_3_6_6_3Elements,
+    pub rc_4_4_4_4: RangeCheck_4_4_4_4Elements,
+    pub rc_3_3_3_3_3: RangeCheck_3_3_3_3_3Elements,
 }
 
 #[generate_trait]
@@ -580,12 +585,12 @@ impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTrait {
 
 #[derive(Drop)]
 struct CairoInteractionElements {
-    pub opcodes: OpcodeElements,
+    pub opcodes: OpcodesElements,
     pub verify_instruction: VerifyInstructionElements,
     pub blake_round: BlakeRoundElements,
     pub blake_g: BlakeGElements,
-    pub blake_sigma: BlakeRoundSigmaElements,
-    pub tripple_xor_32: TripleXor32Elements,
+    pub blake_round_sigma: BlakeRoundSigmaElements,
+    pub triple_xor_32: TripleXor32Elements,
     pub partial_ec_mul: PartialEcMulElements,
     pub pedersen_points_table: PedersenPointsTableElements,
     pub poseidon_full_round_chain: PoseidonFullRoundChainElements,
@@ -596,11 +601,11 @@ struct CairoInteractionElements {
     pub memory_address_to_id: MemoryAddressToIdElements,
     pub memory_id_to_value: MemoryIdToBigElements,
     pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: VerifyBitwiseXor4BitElements,
-    pub verify_bitwise_xor_7: VerifyBitwiseXor7BitElements,
-    pub verify_bitwise_xor_8: VerifyBitwiseXor8BitElements,
-    pub verify_bitwise_xor_9: VerifyBitwiseXor9BitElements,
-    pub verify_bitwise_xor_12: VerifyBitwiseXor12BitElements,
+    pub verify_bitwise_xor_4: VerifyBitwiseXor_4Elements,
+    pub verify_bitwise_xor_7: VerifyBitwiseXor_7Elements,
+    pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
+    pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
+    pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
 }
 
 #[generate_trait]
@@ -611,8 +616,8 @@ impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             verify_instruction: LookupElementsImpl::draw(ref channel),
             blake_round: LookupElementsImpl::draw(ref channel),
             blake_g: LookupElementsImpl::draw(ref channel),
-            blake_sigma: LookupElementsImpl::draw(ref channel),
-            tripple_xor_32: LookupElementsImpl::draw(ref channel),
+            blake_round_sigma: LookupElementsImpl::draw(ref channel),
+            triple_xor_32: LookupElementsImpl::draw(ref channel),
             poseidon_3_partial_rounds_chain: LookupElementsImpl::draw(ref channel),
             poseidon_full_round_chain: LookupElementsImpl::draw(ref channel),
             cube_252: LookupElementsImpl::draw(ref channel),
@@ -1090,8 +1095,8 @@ impl PoseidonContextInteractionClaimImpl of PoseidonContextInteractionClaimTrait
 struct BlakeClaim {
     pub blake_round: components::blake_round::Claim,
     pub blake_g: components::blake_g::Claim,
-    pub blake_sigma: components::blake_sigma::Claim,
-    pub tripple_xor_32: components::tripple_xor_32::Claim,
+    pub blake_round_sigma: components::blake_round_sigma::Claim,
+    pub triple_xor_32: components::triple_xor_32::Claim,
     pub verify_bitwise_xor_12: components::verify_bitwise_xor_12::Claim,
 }
 
@@ -1100,8 +1105,8 @@ impl BlakeClaimImpl of BlakeClaimTrait {
     fn mix_into(self: @BlakeClaim, ref channel: Channel) {
         self.blake_round.mix_into(ref channel);
         self.blake_g.mix_into(ref channel);
-        self.blake_sigma.mix_into(ref channel);
-        self.tripple_xor_32.mix_into(ref channel);
+        self.blake_round_sigma.mix_into(ref channel);
+        self.triple_xor_32.mix_into(ref channel);
         self.verify_bitwise_xor_12.mix_into(ref channel);
     }
 
@@ -1109,7 +1114,7 @@ impl BlakeClaimImpl of BlakeClaimTrait {
         utils::tree_array_concat_cols(
             array![
                 self.blake_round.log_sizes(), self.blake_g.log_sizes(),
-                self.blake_sigma.log_sizes(), self.tripple_xor_32.log_sizes(),
+                self.blake_round_sigma.log_sizes(), self.triple_xor_32.log_sizes(),
                 self.verify_bitwise_xor_12.log_sizes(),
             ],
         )
@@ -1120,8 +1125,8 @@ impl BlakeClaimImpl of BlakeClaimTrait {
 struct BlakeInteractionClaim {
     pub blake_round: components::blake_round::InteractionClaim,
     pub blake_g: components::blake_g::InteractionClaim,
-    pub blake_sigma: components::blake_sigma::InteractionClaim,
-    pub tripple_xor_32: components::tripple_xor_32::InteractionClaim,
+    pub blake_round_sigma: components::blake_round_sigma::InteractionClaim,
+    pub triple_xor_32: components::triple_xor_32::InteractionClaim,
     pub verify_bitwise_xor_12: components::verify_bitwise_xor_12::InteractionClaim,
 }
 
@@ -1130,8 +1135,8 @@ impl BlakeInteractionClaimImpl of BlakeInteractionClaimTrait {
     fn mix_into(self: @BlakeInteractionClaim, ref channel: Channel) {
         self.blake_round.mix_into(ref channel);
         self.blake_g.mix_into(ref channel);
-        self.blake_sigma.mix_into(ref channel);
-        self.tripple_xor_32.mix_into(ref channel);
+        self.blake_round_sigma.mix_into(ref channel);
+        self.triple_xor_32.mix_into(ref channel);
         self.verify_bitwise_xor_12.mix_into(ref channel);
     }
 
@@ -1139,8 +1144,8 @@ impl BlakeInteractionClaimImpl of BlakeInteractionClaimTrait {
         let mut sum = Zero::zero();
         sum += *self.blake_round.claimed_sum;
         sum += *self.blake_g.claimed_sum;
-        sum += *self.blake_sigma.claimed_sum;
-        sum += *self.tripple_xor_32.claimed_sum;
+        sum += *self.blake_round_sigma.claimed_sum;
+        sum += *self.triple_xor_32.claimed_sum;
         sum += *self.verify_bitwise_xor_12.claimed_sum;
         sum
     }
@@ -1297,7 +1302,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                 |
                     claim,
                 | BuiltinClaim {
-                    segment_start: claim.range_check_builtin_segment_start,
+                    segment_start: claim.range_check96_builtin_segment_start,
                     log_size: claim.log_size,
                 },
             ),
@@ -1442,7 +1447,7 @@ pub struct OpcodeInteractionClaim {
     jump_rel_imm: Array<components::jump_opcode_rel_imm::InteractionClaim>,
     mul: Array<components::mul_opcode::InteractionClaim>,
     mul_small: Array<components::mul_opcode_small::InteractionClaim>,
-    qm31: Array<components::qm31_add_mul_opcode::InteractionClaim>,
+    qm31: Array<components::qm_31_add_mul_opcode::InteractionClaim>,
     ret: Array<components::ret_opcode::InteractionClaim>,
 }
 
@@ -1744,30 +1749,19 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         }
 
         // Safe call.
-        let (id, value) = self.safe_call[0];
-        entries.append((initial_ap - 2, *id, *value));
-        let (id, value) = self.safe_call[1];
-        entries.append((initial_ap - 1, *id, *value));
+        i = 0;
+        for (id, value) in self.safe_call.span() {
+            entries.append((initial_ap - 2 + i, *id, *value));
+            i += 1;
+        }
 
         // Segment ranges.
-        let PublicSegmentRanges {
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = self.public_segments;
-
+        let pub_segs = self.public_segments;
         i = 0;
         for segment in [
-            output, pedersen, range_check_128, ecdsa, bitwise, ec_op, keccak, poseidon,
-            range_check_96, add_mod, mul_mod,
+            pub_segs.output, pub_segs.pedersen, pub_segs.range_check_128, pub_segs.ecdsa,
+            pub_segs.bitwise, pub_segs.ec_op, pub_segs.keccak, pub_segs.poseidon,
+            pub_segs.range_check_96, pub_segs.add_mod, pub_segs.mul_mod,
         ]
             .span() {
             entries
@@ -1920,7 +1914,7 @@ pub struct OpcodeClaim {
     pub jump_rel_imm: Array<components::jump_opcode_rel_imm::Claim>,
     pub mul: Array<components::mul_opcode::Claim>,
     pub mul_small: Array<components::mul_opcode_small::Claim>,
-    pub qm31: Array<components::qm31_add_mul_opcode::Claim>,
+    pub qm31: Array<components::qm_31_add_mul_opcode::Claim>,
     pub ret: Array<components::ret_opcode::Claim>,
 }
 
@@ -2180,11 +2174,11 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         let verifyinstruction_component = components::verify_instruction::Component {
             claim: *cairo_claim.verify_instruction,
             interaction_claim: *interaction_claim.verify_instruction,
-            memoryaddresstoid_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memoryidtobig_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            rangecheck_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
             range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-            verifyinstruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
         };
 
         let memory_address_to_id_component = components::memory_address_to_id::Component {
@@ -3318,9 +3312,6 @@ impl PoseidonComponentsImpl of PoseidonComponentsTrait {
             claim: *claim.cube_252,
             interaction_claim: *interaction_claim.cube_252,
             cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            range_check_6_lookup_elements: interaction_elements.range_checks.rc_6.clone(),
             range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
             range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
         };
@@ -3335,11 +3326,8 @@ impl PoseidonComponentsImpl of PoseidonComponentsTrait {
             components::range_check_felt_252_width_27::Component {
             claim: *claim.range_check_felt_252_width_27,
             interaction_claim: *interaction_claim.range_check_felt_252_width_27,
-            range_check_18_bit_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
-            range_check_9_bit_9_bit_lookup_elements: interaction_elements
-                .range_checks
-                .rc_9_9
-                .clone(),
+            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
             range_check_felt_252_width_27_lookup_elements: interaction_elements
                 .range_check_felt_252_width_27
                 .clone(),
@@ -3565,8 +3553,8 @@ impl BlakeContextComponentsImpl of BlakeContextComponentsTrait {
 struct BlakeComponents {
     pub blake_round: components::blake_round::Component,
     pub blake_g: components::blake_g::Component,
-    pub blake_sigma: components::blake_sigma::Component,
-    pub tripple_xor_32: components::tripple_xor_32::Component,
+    pub blake_round_sigma: components::blake_round_sigma::Component,
+    pub triple_xor_32: components::triple_xor_32::Component,
     pub verify_bitwise_xor_12: components::verify_bitwise_xor_12::Component,
 }
 
@@ -3582,7 +3570,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
             interaction_claim: *interaction_claim.blake_round,
             blake_round_lookup_elements: interaction_elements.blake_round.clone(),
             blake_g_lookup_elements: interaction_elements.blake_g.clone(),
-            blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
+            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
             memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
             memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
             range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
@@ -3601,16 +3589,17 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
             verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
         };
 
-        let blake_sigma_component = components::blake_sigma::Component {
-            interaction_claim: *interaction_claim.blake_sigma,
-            blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
+        let blake_round_sigma_component = components::blake_round_sigma::Component {
+            claim: *claim.blake_round_sigma,
+            interaction_claim: *interaction_claim.blake_round_sigma,
+            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
         };
 
-        let tripple_xor_32_component = components::tripple_xor_32::Component {
-            claim: *claim.tripple_xor_32,
-            interaction_claim: *interaction_claim.tripple_xor_32,
+        let triple_xor_32_component = components::triple_xor_32::Component {
+            claim: *claim.triple_xor_32,
+            interaction_claim: *interaction_claim.triple_xor_32,
             verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-            triple_xor_32_lookup_elements: interaction_elements.tripple_xor_32.clone(),
+            triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
         };
 
         let verify_bitwise_xor_12_component = components::verify_bitwise_xor_12::Component {
@@ -3624,8 +3613,8 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
         BlakeComponents {
             blake_round: blake_round_component,
             blake_g: blake_g_component,
-            blake_sigma: blake_sigma_component,
-            tripple_xor_32: tripple_xor_32_component,
+            blake_round_sigma: blake_round_sigma_component,
+            triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
         }
     }
@@ -3654,7 +3643,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
                 point,
             );
         self
-            .blake_sigma
+            .blake_round_sigma
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -3662,7 +3651,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
                 point,
             );
         self
-            .tripple_xor_32
+            .triple_xor_32
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -3709,7 +3698,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
                 point,
             );
         self
-            .blake_sigma
+            .blake_round_sigma
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -3719,7 +3708,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
                 point,
             );
         self
-            .tripple_xor_32
+            .triple_xor_32
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -3744,9 +3733,10 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
         let mut max_degree = 0;
         max_degree = core::cmp::max(max_degree, self.blake_round.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.blake_g.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.blake_sigma.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.tripple_xor_32.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, self.blake_round_sigma.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.triple_xor_32.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(
                 max_degree, self.verify_bitwise_xor_12.max_constraint_log_degree_bound(),
@@ -4132,7 +4122,7 @@ pub struct OpcodeComponents {
     jump_rel_imm: Array<components::jump_opcode_rel_imm::Component>,
     mul: Array<components::mul_opcode::Component>,
     mul_small: Array<components::mul_opcode_small::Component>,
-    qm31: Array<components::qm31_add_mul_opcode::Component>,
+    qm31: Array<components::qm_31_add_mul_opcode::Component>,
     ret: Array<components::ret_opcode::Component>,
 }
 
@@ -4328,7 +4318,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                             .range_checks
                             .rc_7_2_5
                             .clone(),
-                        triple_xor32_lookup_elements: interaction_elements.tripple_xor_32.clone(),
+                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
                         verify_bitwise_xor_8_lookup_elements: interaction_elements
                             .verify_bitwise_xor_8
                             .clone(),
@@ -4693,7 +4683,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (qm31_claims.pop_front(), qm31_interaction_claims.pop_front()) {
             qm31_components
                 .append(
-                    components::qm31_add_mul_opcode::Component {
+                    components::qm_31_add_mul_opcode::Component {
                         claim: *claim,
                         interaction_claim: *interaction_claim,
                         memory_address_to_id_lookup_elements: interaction_elements
