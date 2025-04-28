@@ -16019,10 +16019,16 @@
         }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 8,
+          "offset": 0
+        }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 9,
+          "offset": 0
+        }
       },
       {
         "RelocatableValue": {
@@ -16065,19 +16071,19 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 8,
+          "segment_index": 11,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 9,
+          "segment_index": 12,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 10,
+          "segment_index": 13,
           "offset": 0
         }
       },
@@ -16095,7 +16101,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 8,
+          "segment_index": 11,
           "offset": 0
         }
       },
@@ -16161,7 +16167,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 9,
+          "segment_index": 12,
           "offset": 0
         }
       },
@@ -16251,7 +16257,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 10,
+          "segment_index": 13,
           "offset": 0
         }
       },
@@ -16263,13 +16269,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 9,
+          "segment_index": 12,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 8,
+          "segment_index": 11,
           "offset": 0
         }
       },
@@ -16287,7 +16293,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 11,
+          "segment_index": 14,
           "offset": 0
         }
       },
@@ -16305,13 +16311,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 11,
+          "segment_index": 14,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 11,
+          "segment_index": 14,
           "offset": 0
         }
       },
@@ -16356,19 +16362,19 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 12,
+          "segment_index": 15,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 13,
+          "segment_index": 16,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 14,
+          "segment_index": 17,
           "offset": 0
         }
       },
@@ -16386,7 +16392,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 12,
+          "segment_index": 15,
           "offset": 0
         }
       },
@@ -16452,7 +16458,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 13,
+          "segment_index": 16,
           "offset": 0
         }
       },
@@ -16542,7 +16548,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 14,
+          "segment_index": 17,
           "offset": 0
         }
       },
@@ -16554,13 +16560,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 13,
+          "segment_index": 16,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 12,
+          "segment_index": 15,
           "offset": 0
         }
       },
@@ -16578,7 +16584,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 15,
+          "segment_index": 18,
           "offset": 0
         }
       },
@@ -16596,13 +16602,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 15,
+          "segment_index": 18,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 15,
+          "segment_index": 18,
           "offset": 0
         }
       },
@@ -17178,13 +17184,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 16,
+          "segment_index": 19,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 17,
+          "segment_index": 20,
           "offset": 0
         }
       },
@@ -17202,7 +17208,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 16,
+          "segment_index": 19,
           "offset": 0
         }
       },
@@ -17220,13 +17226,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 17,
+          "segment_index": 20,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 16,
+          "segment_index": 19,
           "offset": 0
         }
       },
@@ -17457,13 +17463,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 18,
+          "segment_index": 21,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 19,
+          "segment_index": 22,
           "offset": 0
         }
       },
@@ -17481,7 +17487,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 18,
+          "segment_index": 21,
           "offset": 0
         }
       },
@@ -17499,13 +17505,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 19,
+          "segment_index": 22,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 18,
+          "segment_index": 21,
           "offset": 0
         }
       },
@@ -17736,13 +17742,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 20,
+          "segment_index": 23,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 21,
+          "segment_index": 24,
           "offset": 0
         }
       },
@@ -17760,7 +17766,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 20,
+          "segment_index": 23,
           "offset": 0
         }
       },
@@ -17778,13 +17784,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 21,
+          "segment_index": 24,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 20,
+          "segment_index": 23,
           "offset": 1
         }
       },
@@ -18018,13 +18024,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 22,
+          "segment_index": 25,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 23,
+          "segment_index": 26,
           "offset": 0
         }
       },
@@ -18042,7 +18048,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 22,
+          "segment_index": 25,
           "offset": 0
         }
       },
@@ -18060,13 +18066,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 23,
+          "segment_index": 26,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 22,
+          "segment_index": 25,
           "offset": 1
         }
       },
@@ -18300,13 +18306,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 24,
+          "segment_index": 27,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 25,
+          "segment_index": 28,
           "offset": 0
         }
       },
@@ -18324,7 +18330,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 24,
+          "segment_index": 27,
           "offset": 0
         }
       },
@@ -18342,13 +18348,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 25,
+          "segment_index": 28,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 24,
+          "segment_index": 27,
           "offset": 2
         }
       },
@@ -18576,13 +18582,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 26,
+          "segment_index": 29,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 27,
+          "segment_index": 30,
           "offset": 0
         }
       },
@@ -18600,7 +18606,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 26,
+          "segment_index": 29,
           "offset": 0
         }
       },
@@ -18618,13 +18624,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 27,
+          "segment_index": 30,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 26,
+          "segment_index": 29,
           "offset": 2
         }
       },
@@ -18852,13 +18858,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 28,
+          "segment_index": 31,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 29,
+          "segment_index": 32,
           "offset": 0
         }
       },
@@ -18876,7 +18882,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 28,
+          "segment_index": 31,
           "offset": 0
         }
       },
@@ -18894,13 +18900,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 29,
+          "segment_index": 32,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 28,
+          "segment_index": 31,
           "offset": 0
         }
       },
@@ -19131,13 +19137,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 30,
+          "segment_index": 33,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 31,
+          "segment_index": 34,
           "offset": 0
         }
       },
@@ -19155,7 +19161,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 30,
+          "segment_index": 33,
           "offset": 0
         }
       },
@@ -19173,13 +19179,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 31,
+          "segment_index": 34,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 30,
+          "segment_index": 33,
           "offset": 0
         }
       },
@@ -19410,13 +19416,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 32,
+          "segment_index": 35,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 33,
+          "segment_index": 36,
           "offset": 0
         }
       },
@@ -19434,7 +19440,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 32,
+          "segment_index": 35,
           "offset": 0
         }
       },
@@ -19452,13 +19458,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 33,
+          "segment_index": 36,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 32,
+          "segment_index": 35,
           "offset": 1
         }
       },
@@ -19692,13 +19698,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 34,
+          "segment_index": 37,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 35,
+          "segment_index": 38,
           "offset": 0
         }
       },
@@ -19716,7 +19722,7 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 34,
+          "segment_index": 37,
           "offset": 0
         }
       },
@@ -19734,13 +19740,13 @@
       },
       {
         "RelocatableValue": {
-          "segment_index": 35,
+          "segment_index": 38,
           "offset": 0
         }
       },
       {
         "RelocatableValue": {
-          "segment_index": 34,
+          "segment_index": 37,
           "offset": 1
         }
       },
@@ -20157,10 +20163,16 @@
         }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 8,
+          "offset": 0
+        }
       },
       {
-        "Int": "0x0"
+        "RelocatableValue": {
+          "segment_index": 9,
+          "offset": 0
+        }
       }
     ],
     [],
@@ -20169,6 +20181,22 @@
     [],
     [],
     [],
+    [],
+    [],
+    [
+      {
+        "Int": "0x0"
+      },
+      {
+        "Int": "0x0"
+      },
+      {
+        "Int": "0x0"
+      },
+      {
+        "Int": "0x0"
+      }
+    ],
     [
       {
         "Int": "0x377ce926"
@@ -22323,13 +22351,18 @@
     "4": [],
     "5": [],
     "6": [],
-    "7": []
+    "7": [],
+    "8": [],
+    "9": [],
+    "10": []
   },
   "builtins_segments": {
     "3": "pedersen",
     "4": "range_check",
     "5": "bitwise",
     "6": "poseidon",
-    "7": "range_check96"
+    "7": "range_check96",
+    "8": "add_mod",
+    "9": "mul_mod"
   }
 }
