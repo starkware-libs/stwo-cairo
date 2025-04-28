@@ -33,6 +33,109 @@ pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_SMALL_FELT252;
 
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
+pub const MEMORY_ID_TO_BIG_RELATION_SIZE: usize = 29;
+
+pub fn memory_id_to_big_sum(mut alphas: Span<QM31>, z: QM31, values: [QM31; 29]) -> QM31 {
+    let [
+        alpha0,
+        alpha1,
+        alpha2,
+        alpha3,
+        alpha4,
+        alpha5,
+        alpha6,
+        alpha7,
+        alpha8,
+        alpha9,
+        alpha10,
+        alpha11,
+        alpha12,
+        alpha13,
+        alpha14,
+        alpha15,
+        alpha16,
+        alpha17,
+        alpha18,
+        alpha19,
+        alpha20,
+        alpha21,
+        alpha22,
+        alpha23,
+        alpha24,
+        alpha25,
+        alpha26,
+        alpha27,
+        alpha28,
+    ] =
+        (*alphas
+        .multi_pop_front()
+        .unwrap())
+        .unbox();
+    let [
+        val0,
+        val1,
+        val2,
+        val3,
+        val4,
+        val5,
+        val6,
+        val7,
+        val8,
+        val9,
+        val10,
+        val11,
+        val12,
+        val13,
+        val14,
+        val15,
+        val16,
+        val17,
+        val18,
+        val19,
+        val20,
+        val21,
+        val22,
+        val23,
+        val24,
+        val25,
+        val26,
+        val27,
+        val28,
+    ] =
+        values;
+
+    alpha0 * val0
+        + alpha1 * val1
+        + alpha2 * val2
+        + alpha3 * val3
+        + alpha4 * val4
+        + alpha5 * val5
+        + alpha6 * val6
+        + alpha7 * val7
+        + alpha8 * val8
+        + alpha9 * val9
+        + alpha10 * val10
+        + alpha11 * val11
+        + alpha12 * val12
+        + alpha13 * val13
+        + alpha14 * val14
+        + alpha15 * val15
+        + alpha16 * val16
+        + alpha17 * val17
+        + alpha18 * val18
+        + alpha19 * val19
+        + alpha20 * val20
+        + alpha21 * val21
+        + alpha22 * val22
+        + alpha23 * val23
+        + alpha24 * val24
+        + alpha25 * val25
+        + alpha26 * val26
+        + alpha27 * val27
+        + alpha28 * val28
+        - z
+}
+
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub big_log_size: u32,
@@ -95,7 +198,7 @@ pub struct BigComponent {
     pub log_n_rows: u32,
     pub interaction_claim: InteractionClaim,
     pub lookup_elements: super::super::MemoryIdToBigElements,
-    pub range_9_9_lookup_elements: super::super::RangeCheck9Bit9BitElements,
+    pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
 }
 
 pub impl BigComponentImpl of CairoComponent<BigComponent> {
@@ -224,7 +327,7 @@ pub struct SmallComponent {
     pub log_n_rows: u32,
     pub interaction_claim: InteractionClaim,
     pub lookup_elements: super::super::MemoryIdToBigElements,
-    pub range_9_9_lookup_elements: super::super::RangeCheck9Bit9BitElements,
+    pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
 }
 
 pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
