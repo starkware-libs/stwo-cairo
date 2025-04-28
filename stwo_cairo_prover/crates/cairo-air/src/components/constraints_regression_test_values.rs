@@ -6,6 +6,7 @@ macro_rules! qm31 {
     }};
 }
 
+/// Regression test values for Cairo AIR constraints.
 pub const ADD_AP_OPCODE: QM31 = qm31!(1096779990, 1411819815, 847641440, 420756126);
 pub const ADD_MOD_BUILTIN: QM31 = qm31!(773114771, 797897532, 1650589103, 881619574);
 pub const ADD_OPCODE_SMALL: QM31 = qm31!(130040159, 1033432801, 2053675381, 635322057);
