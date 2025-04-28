@@ -25,25 +25,36 @@ often, so use it at your own risk. 🚧
 # Using Stwo to Prove Cairo Programs
 
 After executing a Cairo program one should be in the possession of four files:
-* air_public_inputs.json
-* air_private_inputs.json
-* trace.bin
-* memory.bin
+* prover_input_info
 
-With the *absolute* paths to the trace and memory files appearing in `air_private_inputs`. After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a Stwo proof (run the command below from the `stwo_cairo_prover` folder):
+After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a Stwo proof (run the command below from the `stwo_cairo_prover` folder):
 
 ```
 cargo run --bin adapted_stwo --release \
---pub_json <path_to_air_public_input> \
---priv_json <path_to_air_private_input> \
---proof_path <path for proof output>
+--prover_input_info <path_to_prover_input_info> \
 ```
 
 For best performance, run with `RUSTFLAGS="-C target-cpu=native -C opt-level=3" --features="std"`
 
 In the next section we'll see how to generate the inputs to adapted stwo from a Cairo program.
 
-# Creating a Cairo Executable
+# Creating a prover input info file
+
+Clone 'https://github.com/lambdaclass/cairo-vm/tree/starkware-development' and follow readme to activate the vm.
+
+Then compile the program:
+``` 
+cairo-compile [path_to_the_.cairo_file] --proof_mode --output [desired_path_of_the_compiled_.json_file]
+```
+
+Then run the program:
+``` 
+target/release/cairo-vm-cli [path_of_the_compiled_.json_file] --proof_mode --layout all_cairo_stwo --prover_input_info [desired_path_of_prover_input_info]
+```
+
+now you can 'adapted-stwo' to obtain a proof.
+
+# Creating a Cairo Executable using scarb
 
 ## Prerequisites
 
