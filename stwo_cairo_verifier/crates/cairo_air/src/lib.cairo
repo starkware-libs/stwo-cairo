@@ -3691,6 +3691,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
         };
 
         let blake_round_sigma_component = components::blake_round_sigma::Component {
+            claim: *claim.blake_round_sigma,
             interaction_claim: *interaction_claim.blake_round_sigma,
             blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
         };
