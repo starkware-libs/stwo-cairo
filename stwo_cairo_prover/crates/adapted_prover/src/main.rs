@@ -6,7 +6,8 @@ use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde::Serialize;
-use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
+use stwo_cairo_adapter::plain::prover_input_from_vm_output;
+use stwo_cairo_adapter::vm_import::VmImportError;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
@@ -43,10 +44,8 @@ use tracing::{span, Level};
 ///     ```
 #[derive(Parser, Debug)]
 struct Args {
-    #[structopt(long = "pub_json")]
-    pub_json: PathBuf,
-    #[structopt(long = "priv_json")]
-    priv_json: PathBuf,
+    #[structopt(long = "prover_input_info")]
+    prover_input_info_path: PathBuf,
     /// The path to the JSON file containing the prover parameters (optional).
     /// The expected file format is:
     ///     {
@@ -115,12 +114,12 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    let vm_output: ProverInput =
-        adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
+    // TODO(Stav): change to use binary file after merfed in the VM.
+    let prover_input = prover_input_from_vm_output(&args.prover_input_info_path)?;
 
     log::info!(
         "Casm states by opcode:\n{}",
-        vm_output.state_transitions.casm_states_by_opcode
+        prover_input.state_transitions.casm_states_by_opcode
     );
 
     let ProverParameters {
@@ -138,7 +137,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     };
 
     run_inner_fn(
-        vm_output,
+        prover_input,
         pcs_config,
         preprocessed_trace,
         args.verify,
