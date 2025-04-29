@@ -22,8 +22,7 @@ use crate::{ColumnSpan, TreeArray, TreeSpan};
 /// * `samples_per_column`: OOD samples (i.e. point and eval) for each column.
 /// * `random_coeff`: Verifier randomness for folding multiple columns quotients together.
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
-/// * `query_evals_by_column`: Evals of each column at the columns corresponding query positions.
-// TODO(andrew): Change all `_per_` to `_by_`.
+/// * `queried_values`: Evals of each column at the columns corresponding query positions.
 pub fn fri_answers(
     mut log_size_per_column: TreeSpan<@Array<u32>>,
     samples_per_column: ColumnSpan<Array<PointSample>>,
@@ -657,7 +656,7 @@ mod tests {
     // Test used to benchmark step counts.
     #[test]
     fn test_fri_answers_with_1000_columns() {
-        // TODO(andrew): Note Forge fails if these are declated `const ...`.
+        // NOTE: Forge fails if these are declated `const ...`.
         let log_size: u32 = 16;
         let n_queries: usize = 20;
         let n_columns: usize = 1000;

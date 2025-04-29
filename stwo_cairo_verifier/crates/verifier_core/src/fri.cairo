@@ -549,7 +549,6 @@ fn compute_decommitment_positions_and_rebuild_evals(
         let mut subset_eval = array![];
 
         // Extract the subset eval and decommitment positions.
-        // TODO(andrew): Handle the error.
         let loop_res = loop {
             let decommitment_position = match subset_decommitment_positions.next() {
                 Some(position) => position,
@@ -575,8 +574,6 @@ fn compute_decommitment_positions_and_rebuild_evals(
                 );
         };
 
-        // TODO(andrew): Is there an easier way to break if an inner loop returns an error i.e. like
-        // `loop { .. }?;` but for breaking a loop?.
         if let Err(error) = loop_res {
             break Err(error);
         }
@@ -1016,7 +1013,6 @@ mod test {
 
         let verification_result = verifier.decommit_on_queries(queries, query_evals);
 
-        // TODO(andrew): Something like Rust's `assert_matches!()` would be nice.
         match verification_result {
             Err(error) => match error {
                 FriVerificationError::InnerLayerEvaluationsInvalid => {},
@@ -1178,8 +1174,6 @@ mod test {
         let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
         match verifier {
-            // TODO(andrew): Support `Err(FriVerificationError::LastLayerDegreeInvalid)`
-            // to be consistent with Rust.
             Err(err) => match err {
                 FriVerificationError::LastLayerDegreeInvalid => {},
                 _ => panic!("wrong error"),

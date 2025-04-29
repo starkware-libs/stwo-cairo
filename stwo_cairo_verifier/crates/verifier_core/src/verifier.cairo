@@ -103,8 +103,6 @@ fn extract_composition_eval(
 #[derive(Clone, Copy, Debug, Drop)]
 pub struct InvalidOodsSampleStructure {}
 
-// TODO(andrew): Consider removing this type and Serde.
-// Instead just read from a proof buffer like the STARK verifier on Ethereum.
 #[derive(Drop, Serde)]
 pub struct StarkProof {
     pub commitment_scheme_proof: CommitmentSchemeProof,
