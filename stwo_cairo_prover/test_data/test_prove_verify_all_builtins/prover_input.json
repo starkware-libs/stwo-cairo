@@ -43283,7 +43283,7 @@
           "pc": 469
         }
       ],
-      "blake2s_opcode": [],
+      "blake_compress_opcode": [],
       "call_opcode": [],
       "call_opcode_op_1_base_fp": [],
       "call_opcode_rel": [
@@ -48914,7 +48914,7 @@
       "jump_opcode_rel_imm": [],
       "mul_opcode": [],
       "mul_opcode_small": [],
-      "qm31_add_mul_opcode": [],
+      "qm_31_add_mul_opcode": [],
       "ret_opcode": [
         {
           "ap": 776,

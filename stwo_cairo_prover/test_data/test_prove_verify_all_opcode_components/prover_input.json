@@ -11130,7 +11130,7 @@
           "pc": 418
         }
       ],
-      "blake2s_opcode": [
+      "blake_compress_opcode": [
         {
           "ap": 1409,
           "fp": 1405,
@@ -12596,7 +12596,7 @@
           "pc": 389
         }
       ],
-      "qm31_add_mul_opcode": [
+      "qm_31_add_mul_opcode": [
         {
           "ap": 1726,
           "fp": 1652,
