@@ -1,3 +1,7 @@
+//! Complex extension field of M31.
+//! Equivalent to M31\[x\] over (x^2 + 1) as the irreducible polynomial.
+//! Represented as (a, b) of a + bi.
+
 use super::m31::M31;
 
 // TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
