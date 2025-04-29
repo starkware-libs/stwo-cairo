@@ -8,7 +8,8 @@ mod tests {
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
     use cairo_vm::types::layout_name::LayoutName;
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-    use stwo_cairo_adapter::plain::{adapt_finished_runner, program_from_casm};
+    use stwo_cairo_adapter::adapter::adapt_finished_runner;
+    use stwo_cairo_adapter::test_utils::program_from_casm;
     use stwo_cairo_adapter::ProverInput;
     use stwo_cairo_prover::prover::prove_cairo;
     use stwo_prover::core::pcs::PcsConfig;
