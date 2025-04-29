@@ -96,6 +96,16 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         let u256 { low, .. } = (*self.digest).into();
         low & gen_bit_mask(n_bits) == 0
     }
+
+    fn mix_and_check_pow_nonce(ref self: Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
+        self.mix_u64(nonce);
+        check_proof_of_work(self.digest, n_bits)
+    }
+}
+
+fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
+    let u256 { low, .. } = (*digest).into();
+    low & gen_bit_mask(n_bits) == 0
 }
 
 // TODO(spapini): Check that this is sound.
@@ -123,7 +133,9 @@ fn extract_m31<const N: usize>(ref num: u256) -> M31InnerT {
 #[cfg(test)]
 mod tests {
     use crate::fields::qm31::qm31_const;
-    use super::{ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, gen_bit_mask};
+    use super::{
+        ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work, gen_bit_mask,
+    };
 
     #[test]
     fn test_initialize_channel() {
@@ -250,18 +262,18 @@ mod tests {
 
     #[test]
     fn test_check_proof_of_work() {
-        let channel = new_channel(0b1000);
+        let digest = 0b1000;
 
-        let res = channel.check_proof_of_work(3);
+        let res = check_proof_of_work(digest, 3);
 
         assert!(res);
     }
 
     #[test]
     fn test_check_proof_of_work_with_invalid_n_bits() {
-        let channel = new_channel(0b1000);
+        let digest = 0b1000;
 
-        let res = channel.check_proof_of_work(4);
+        let res = check_proof_of_work(digest, 4);
 
         assert!(!res);
     }

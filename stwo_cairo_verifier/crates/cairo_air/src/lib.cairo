@@ -195,6 +195,8 @@ pub mod utils;
 
 const SECURITY_BITS: u32 = 96;
 
+pub const INTERACTION_POW_BITS: u32 = 24;
+
 pub const ADD_MOD_MEMORY_CELLS: usize = 7;
 pub const BITWISE_MEMORY_CELLS: usize = 5;
 pub const EC_OP_MEMORY_CELLS: usize = 7;
@@ -487,8 +489,11 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
         .commit(
             stark_proof.commitment_scheme_proof.commitments[1].clone(), *log_sizes[1], ref channel,
         );
-    channel.mix_u64(interaction_pow);
-    // TODO(Andrew): Check PoW.
+
+    if !channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow) {
+        return Err(CairoVerificationError::InteractionProofOfWork);
+    }
+
     let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
 
     if lookup_sum(@claim, @interaction_elements, @interaction_claim).is_non_zero() {
@@ -2135,6 +2140,7 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
 #[derive(Drop, Debug)]
 pub enum CairoVerificationError {
+    InteractionProofOfWork,
     InvalidLogupSum,
     InvalidClaim,
     Stark: VerificationError,
