@@ -1,4 +1,4 @@
-use std::fs::read_to_string;
+use std::fs;
 use std::path::Path;
 
 use cairo_vm::stdlib::collections::HashMap;
@@ -90,14 +90,17 @@ pub fn prover_input_info_to_prover_input(
 fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
     let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
 
-    let prover_input_info_json = read_to_string(prover_input_info_path).unwrap_or_else(|_| {
+    let bytes = fs::read(prover_input_info_path).unwrap_or_else(|_| {
         panic!(
             "Unable to read prover input info at path {}",
             prover_input_info_path.display()
         )
     });
+    let (prover_input_info, _): (ProverInputInfo, usize) =
+        bincode::serde::decode_from_slice(&bytes, bincode::config::standard())
+            .expect("Unable to decode prover input info");
 
-    serde_json::from_str(&prover_input_info_json).unwrap()
+    prover_input_info
 }
 pub fn prover_input_from_vm_output(
     prover_input_info_path: &Path,
