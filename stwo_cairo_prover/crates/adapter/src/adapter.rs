@@ -75,16 +75,18 @@ mod tests {
 
     use crate::adapter::prover_input_from_vm_output;
     use crate::test_utils::{
-        get_prover_input_info_path, get_prover_input_path,
+        get_compiled_cairo_program, get_prover_input_info_path, get_prover_input_path,
         prover_input_from_compiled_cairo_program, read_json, write_json,
     };
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
-        let mut prover_input = prover_input_from_compiled_cairo_program(test_name);
 
+        let compiled_program = get_compiled_cairo_program(test_name);
+        let mut prover_input = prover_input_from_compiled_cairo_program(&compiled_program);
         // Instruction cache is not deterministic, sort it.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
+
         let prover_input_a =
             to_value(prover_input).expect("Unable to covert prover input to value");
 
