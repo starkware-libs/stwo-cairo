@@ -22,12 +22,10 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         .get_prover_input_info()
         .expect("Unable to get prover input info");
 
-    prover_input_info_to_prover_input(&mut prover_input_info)
+    adapter(&mut prover_input_info)
 }
 
-pub fn prover_input_info_to_prover_input(
-    prover_input_info: &mut ProverInputInfo,
-) -> Result<ProverInput, VmImportError> {
+pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
     BuiltinSegments::pad_relocatble_builtin_segments(
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
@@ -60,12 +58,12 @@ pub fn prover_input_info_to_prover_input(
     })
 }
 
-pub fn prover_input_from_vm_output(
+pub fn read_and_adapt_prover_input_info_file(
     prover_input_info_path: &PathBuf,
 ) -> Result<ProverInput, VmImportError> {
     let _span: span::EnteredSpan = span!(Level::INFO, "adapter").entered();
 
-    prover_input_info_to_prover_input(&mut read_prover_input_info_file(prover_input_info_path))
+    adapter(&mut read_prover_input_info_file(prover_input_info_path))
 }
 
 #[cfg(test)]
@@ -73,7 +71,7 @@ pub fn prover_input_from_vm_output(
 mod adapter_tests {
     use serde_json::to_value;
 
-    use crate::adapter::prover_input_from_vm_output;
+    use crate::adapter::read_and_adapt_prover_input_info_file;
     use crate::test_utils::{
         get_compiled_cairo_program_path, get_prover_input_info_path, get_prover_input_path,
         prover_input_from_compiled_cairo_program, read_json, write_json,
@@ -92,8 +90,9 @@ mod adapter_tests {
             write_json(&get_prover_input_path(test_name), &prover_input_a);
         }
 
-        let prover_input_b = prover_input_from_vm_output(&get_prover_input_info_path(test_name))
-            .expect("Failed to create prover input from vm output");
+        let prover_input_b =
+            read_and_adapt_prover_input_info_file(&get_prover_input_info_path(test_name))
+                .expect("Failed to create prover input from vm output");
 
         let expected_prover_input_path = get_prover_input_path(test_name);
         let expected_prover_input = read_json(&expected_prover_input_path);

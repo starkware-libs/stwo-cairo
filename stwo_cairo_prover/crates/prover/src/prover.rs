@@ -250,7 +250,7 @@ pub mod tests {
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
-        use stwo_cairo_adapter::adapter::prover_input_from_vm_output;
+        use stwo_cairo_adapter::adapter::read_and_adapt_prover_input_info_file;
         use stwo_cairo_adapter::test_utils::get_prover_input_info_path;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -300,7 +300,7 @@ pub mod tests {
         fn test_prove_verify_all_opcode_components_from_file() {
             let prover_input_file_path =
                 get_prover_input_info_path("test_prove_verify_all_opcode_components");
-            let input = prover_input_from_vm_output(&prover_input_file_path)
+            let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
                 .expect("Failed to create prover input from vm output");
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 assert!(
@@ -331,7 +331,7 @@ pub mod tests {
             let n_proofs_to_compare = 10;
             let prover_input_file_path =
                 get_prover_input_info_path("test_prove_verify_all_opcode_components");
-            let input = prover_input_from_vm_output(&prover_input_file_path)
+            let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
                 .expect("Failed to create prover input from vm output");
 
             let proofs = (0..n_proofs_to_compare)
@@ -399,7 +399,7 @@ pub mod tests {
             fn test_prove_verify_all_builtins_from_file() {
                 let prover_input_file_path =
                     get_prover_input_info_path("test_prove_verify_all_builtins");
-                let input = prover_input_from_vm_output(&prover_input_file_path)
+                let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
                     .expect("Failed to create prover input from vm output");
                 assert_all_builtins_in_input(&input);
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
@@ -461,7 +461,7 @@ pub mod tests {
             fn test_poseidon_builtin_constraints_from_file() {
                 let prover_input_file_path =
                     get_prover_input_info_path("test_prove_verify_poseidon_builtin");
-                let input = prover_input_from_vm_output(&prover_input_file_path)
+                let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
                     .expect("Failed to create prover input from vm output");
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
