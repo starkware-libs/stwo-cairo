@@ -187,9 +187,9 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 #[cfg(test)]
 pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
+    use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
-    use crate::test_utils::prover_input_from_compiled_cairo_program;
 
     #[test]
     fn test_all_cairo_constraints() {
@@ -243,13 +243,12 @@ pub mod tests {
     #[cfg(test)]
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
-        use std::path::PathBuf;
 
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
-        use serde_json::to_value;
         use stwo_cairo_adapter::plain::prover_input_from_vm_output;
+        use stwo_cairo_adapter::test_utils::get_prover_input_info_path;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
         use test_log::test;
@@ -257,14 +256,6 @@ pub mod tests {
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
-        use crate::test_utils::{get_prover_input_path, read_json, write_json};
-
-        pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
-            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                .join("../../test_data/")
-                .join(test_name)
-                .join("prover_input_info")
-        }
 
         // TODO(Ohad): fine-grained constraints tests.
         #[test]
@@ -298,47 +289,6 @@ pub mod tests {
                 preprocessed_trace,
             )
             .unwrap();
-        }
-
-        fn test_compare_prover_input_to_expected_file(test_name: &str) {
-            let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
-            let prover_input_a = to_value(prover_input_from_compiled_cairo_program(test_name))
-                .expect("Unable to covert prover input to value");
-
-            if is_fix_mode {
-                write_json(&get_prover_input_path(test_name), &prover_input_a);
-            }
-
-            let prover_input_b =
-                prover_input_from_vm_output(&get_prover_input_info_path(test_name))
-                    .expect("Failed to create prover input from vm output");
-
-            let expected_prover_input_path = get_prover_input_path(test_name);
-            let expected_prover_input = read_json(&expected_prover_input_path);
-
-            assert_eq!(
-                prover_input_a,
-                expected_prover_input,
-                "Prover input from compiled cairo program: {} doesn't match the expected prover input. To update prover input file, run the test with FIX=1.",
-                test_name
-            );
-
-            assert_eq!(
-                prover_input_a,
-                to_value(prover_input_b).expect("Unable to covert prover input to value"),
-                "Prover input from vm output: {} doesn't match the expected prover inpu",
-                test_name,
-            );
-        }
-
-        #[test]
-        fn test_compare_prover_input_to_expected_file_all_opcodes() {
-            test_compare_prover_input_to_expected_file("test_prove_verify_all_opcode_components");
-        }
-
-        #[test]
-        fn test_compare_prover_input_to_expected_file_all_builtins() {
-            test_compare_prover_input_to_expected_file("test_prove_verify_all_builtins");
         }
 
         #[test]
@@ -396,10 +346,10 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
+            use stwo_cairo_adapter::test_utils::prover_input_from_compiled_cairo_program;
             use test_log::test;
 
             use super::*;
-            use crate::test_utils::prover_input_from_compiled_cairo_program;
 
             /// Asserts that all supported builtins are present in the input.
             /// Panics if any of the builtins is missing.

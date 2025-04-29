@@ -109,3 +109,55 @@ pub fn prover_input_from_vm_output(
 
     prover_input_info_to_prover_input(&mut read_prover_input_info_file(prover_input_info_path))
 }
+
+#[cfg(test)]
+#[cfg(feature = "slow-tests")]
+mod adapter_tests {
+    use serde_json::to_value;
+
+    use crate::plain::prover_input_from_vm_output;
+    use crate::test_utils::{
+        get_prover_input_info_path, get_prover_input_path,
+        prover_input_from_compiled_cairo_program, read_json, write_json,
+    };
+
+    fn test_compare_prover_input_to_expected_file(test_name: &str) {
+        let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
+        let prover_input_a = to_value(prover_input_from_compiled_cairo_program(test_name))
+            .expect("Unable to covert prover input to value");
+
+        if is_fix_mode {
+            write_json(&get_prover_input_path(test_name), &prover_input_a);
+        }
+
+        let prover_input_b = prover_input_from_vm_output(&get_prover_input_info_path(test_name))
+            .expect("Failed to create prover input from vm output");
+
+        let expected_prover_input_path = get_prover_input_path(test_name);
+        let expected_prover_input = read_json(&expected_prover_input_path);
+
+        assert_eq!(
+            prover_input_a,
+            expected_prover_input,
+            "Prover input from compiled cairo program: {} doesn't match the expected prover input. To update prover input file, run the test with FIX=1.",
+            test_name
+        );
+
+        assert_eq!(
+            prover_input_a,
+            to_value(prover_input_b).expect("Unable to covert prover input to value"),
+            "Prover input from vm output: {} doesn't match the expected prover inpu",
+            test_name,
+        );
+    }
+
+    #[test]
+    fn test_compare_prover_input_to_expected_file_all_opcodes() {
+        test_compare_prover_input_to_expected_file("test_prove_verify_all_opcode_components");
+    }
+
+    #[test]
+    fn test_compare_prover_input_to_expected_file_all_builtins() {
+        test_compare_prover_input_to_expected_file("test_prove_verify_all_builtins");
+    }
+}

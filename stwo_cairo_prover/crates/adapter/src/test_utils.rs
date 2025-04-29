@@ -7,8 +7,9 @@ use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_def
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use serde_json::{to_string_pretty, Value};
-use stwo_cairo_adapter::plain::adapt_finished_runner;
-use stwo_cairo_adapter::ProverInput;
+
+use crate::plain::adapt_finished_runner;
+use crate::ProverInput;
 
 pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
     let file_path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -50,6 +51,13 @@ pub fn get_prover_input_path(test_name: &str) -> PathBuf {
         .join("../../test_data/")
         .join(test_name)
         .join("prover_input.json")
+}
+
+pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../test_data/")
+        .join(test_name)
+        .join("prover_input_info")
 }
 
 pub fn read_json(file_path: &PathBuf) -> Value {
