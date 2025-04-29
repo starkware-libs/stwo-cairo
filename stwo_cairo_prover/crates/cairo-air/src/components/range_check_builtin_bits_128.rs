@@ -2,6 +2,16 @@ use crate::components::prelude::*;
 use crate::components::subroutines::read_positive_num_bits_128::ReadPositiveNumBits128;
 
 pub const N_TRACE_COLUMNS: usize = 17;
+pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
+    RelationUse {
+        relation_id: "MemoryAddressToId",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "MemoryIdToBig",
+        uses: 1,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,
@@ -24,6 +34,14 @@ impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.range_check_builtin_segment_start as u64);
+    }
+
+    pub fn get_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        let component_size = 1 << self.log_size;
+        for relation_use in RELATION_USES_PER_ROW {
+            *relation_counts.entry(relation_use.relation_id).or_insert(0) +=
+                relation_use.uses * component_size;
+        }
     }
 }
 
