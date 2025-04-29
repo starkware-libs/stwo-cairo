@@ -47,6 +47,15 @@ pub trait ChannelTrait {
 
     fn mix_root(ref self: Channel, root: Hash);
 
-    // TODO: Consider adding nonce to this function so channel could use different hash function.
-    fn check_proof_of_work(self: @Channel, n_bits: u32) -> bool;
+    /// Mixes a nonce into the channel and checks a proof-of-work (PoW) on it.
+    /// Returns false if the nonce fails to meet the PoW requirement.
+    ///
+    /// `n_bits` is the number of leading zero bits that must be in the target
+    /// PoW hash. `nonce` is the value used to generate the target PoW hash
+    /// and is also mixed into the channel.
+    ///
+    /// This interface allows the channel to use different hash function for the
+    /// PoW than the one used by the channel.
+    #[allow(clippy::doc_markdown)]
+    fn mix_and_check_pow_nonce(ref self: Channel, n_bits: u32, nonce: u64) -> bool;
 }

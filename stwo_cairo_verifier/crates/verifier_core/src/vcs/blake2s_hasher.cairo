@@ -95,7 +95,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
     }
 }
 
-#[derive(Drop, Clone, Debug)]
+#[derive(Drop, Copy, Debug)]
 pub struct Blake2sHash {
     pub hash: Blake2sState,
 }

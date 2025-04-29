@@ -112,10 +112,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         };
 
         // Verify proof of work.
-        channel.mix_u64(proof_of_work_nonce);
-
-        if !channel.check_proof_of_work(self.config.pow_bits) {
-            return Err(VerificationError::ProofOfWork);
+        if !channel.mix_and_check_pow_nonce(self.config.pow_bits, proof_of_work_nonce) {
+            return Err(VerificationError::QueriesProofOfWork);
         }
 
         // Get FRI query positions.

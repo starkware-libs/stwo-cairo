@@ -119,7 +119,7 @@ pub enum VerificationError {
     /// Merkle proof invalid.
     Merkle: MerkleVerificationError,
     /// Proof of work verification failed.
-    ProofOfWork,
+    QueriesProofOfWork,
     /// FRI proof is invalid.
     Fri: FriVerificationError,
     /// Invalid OODS eval.
