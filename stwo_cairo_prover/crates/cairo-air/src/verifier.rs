@@ -62,6 +62,12 @@ fn verify_claim(claim: &CairoClaim) {
     assert!(initial_ap <= final_ap);
 }
 
+#[derive(Clone)]
+pub struct RelationUse {
+    pub relation_id: &'static str,
+    pub uses: u32,
+}
+
 struct BuiltinClaim {
     segment_start: u32,
     log_size: u32,

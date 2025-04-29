@@ -1,3 +1,5 @@
+pub use std::collections::HashMap;
+
 pub use num_traits::One;
 pub use serde::{Deserialize, Serialize};
 pub use stwo_cairo_serialize::CairoSerialize;
@@ -15,3 +17,4 @@ pub use crate::pedersen::const_columns::PedersenPoints;
 pub use crate::poseidon::const_columns::PoseidonRoundKeys;
 pub use crate::preprocessed::*;
 pub use crate::relations;
+pub use crate::verifier::RelationUse;
