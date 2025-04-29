@@ -53,3 +53,17 @@ fn test_canonical_preprocessed_root_regression() {
 
     assert_eq!(root, expected);
 }
+
+#[test]
+fn test_canonical_preprocessed_root_regression() {
+    use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+
+    let mut poseidon_roots = Vec::new();
+    for i in 1..=5 {
+        let root = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(i);
+        println!("Root for poseidon log_blowup_factor {}: {:?}", i, root);
+        poseidon_roots.push(root);
+    }
+    println!("poseidon_roots: {:?}", poseidon_roots);
+
+}
