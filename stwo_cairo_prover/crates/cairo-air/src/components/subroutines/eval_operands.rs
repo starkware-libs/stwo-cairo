@@ -219,11 +219,11 @@ impl EvalOperands {
         res_limb_25_col200: E::F,
         res_limb_26_col201: E::F,
         res_limb_27_col202: E::F,
-        eval: &mut E,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
         range_check_19_lookup_elements: &relations::RangeCheck_19,
+        eval: &mut E,
     ) -> [E::F; 112] {
         let M31_1 = E::F::from(M31::from(1));
 
@@ -266,9 +266,9 @@ impl EvalOperands {
                 dst_limb_25_col27.clone(),
                 dst_limb_26_col28.clone(),
                 dst_limb_27_col29.clone(),
-                eval,
                 memory_address_to_id_lookup_elements,
                 memory_id_to_big_lookup_elements,
+                eval,
             );
         // op0_src.
         eval.add_constraint(
@@ -309,9 +309,9 @@ impl EvalOperands {
                 op0_limb_25_col57.clone(),
                 op0_limb_26_col58.clone(),
                 op0_limb_27_col59.clone(),
-                eval,
                 memory_address_to_id_lookup_elements,
                 memory_id_to_big_lookup_elements,
+                eval,
             );
         let cond_felt_252_as_addr_output_tmp_3172c_6 = CondFelt252AsAddr::evaluate(
             [
@@ -388,11 +388,11 @@ impl EvalOperands {
                 op1_limb_25_col87.clone(),
                 op1_limb_26_col88.clone(),
                 op1_limb_27_col89.clone(),
-                eval,
                 memory_address_to_id_lookup_elements,
                 memory_id_to_big_lookup_elements,
+                eval,
             );
-        let [add_252_output_tmp_3172c_39_limb_0, add_252_output_tmp_3172c_39_limb_1, add_252_output_tmp_3172c_39_limb_2, add_252_output_tmp_3172c_39_limb_3, add_252_output_tmp_3172c_39_limb_4, add_252_output_tmp_3172c_39_limb_5, add_252_output_tmp_3172c_39_limb_6, add_252_output_tmp_3172c_39_limb_7, add_252_output_tmp_3172c_39_limb_8, add_252_output_tmp_3172c_39_limb_9, add_252_output_tmp_3172c_39_limb_10, add_252_output_tmp_3172c_39_limb_11, add_252_output_tmp_3172c_39_limb_12, add_252_output_tmp_3172c_39_limb_13, add_252_output_tmp_3172c_39_limb_14, add_252_output_tmp_3172c_39_limb_15, add_252_output_tmp_3172c_39_limb_16, add_252_output_tmp_3172c_39_limb_17, add_252_output_tmp_3172c_39_limb_18, add_252_output_tmp_3172c_39_limb_19, add_252_output_tmp_3172c_39_limb_20, add_252_output_tmp_3172c_39_limb_21, add_252_output_tmp_3172c_39_limb_22, add_252_output_tmp_3172c_39_limb_23, add_252_output_tmp_3172c_39_limb_24, add_252_output_tmp_3172c_39_limb_25, add_252_output_tmp_3172c_39_limb_26, add_252_output_tmp_3172c_39_limb_27] =
+        let [add_252_output_tmp_3172c_39_add_res_limb_0, add_252_output_tmp_3172c_39_add_res_limb_1, add_252_output_tmp_3172c_39_add_res_limb_2, add_252_output_tmp_3172c_39_add_res_limb_3, add_252_output_tmp_3172c_39_add_res_limb_4, add_252_output_tmp_3172c_39_add_res_limb_5, add_252_output_tmp_3172c_39_add_res_limb_6, add_252_output_tmp_3172c_39_add_res_limb_7, add_252_output_tmp_3172c_39_add_res_limb_8, add_252_output_tmp_3172c_39_add_res_limb_9, add_252_output_tmp_3172c_39_add_res_limb_10, add_252_output_tmp_3172c_39_add_res_limb_11, add_252_output_tmp_3172c_39_add_res_limb_12, add_252_output_tmp_3172c_39_add_res_limb_13, add_252_output_tmp_3172c_39_add_res_limb_14, add_252_output_tmp_3172c_39_add_res_limb_15, add_252_output_tmp_3172c_39_add_res_limb_16, add_252_output_tmp_3172c_39_add_res_limb_17, add_252_output_tmp_3172c_39_add_res_limb_18, add_252_output_tmp_3172c_39_add_res_limb_19, add_252_output_tmp_3172c_39_add_res_limb_20, add_252_output_tmp_3172c_39_add_res_limb_21, add_252_output_tmp_3172c_39_add_res_limb_22, add_252_output_tmp_3172c_39_add_res_limb_23, add_252_output_tmp_3172c_39_add_res_limb_24, add_252_output_tmp_3172c_39_add_res_limb_25, add_252_output_tmp_3172c_39_add_res_limb_26, add_252_output_tmp_3172c_39_add_res_limb_27] =
             Add252::evaluate(
                 [
                     op0_limb_0_col32.clone(),
@@ -481,10 +481,10 @@ impl EvalOperands {
                 add_res_limb_26_col116.clone(),
                 add_res_limb_27_col117.clone(),
                 sub_p_bit_col118.clone(),
-                eval,
                 range_check_9_9_lookup_elements,
+                eval,
             );
-        let [mul_252_output_tmp_3172c_62_limb_0, mul_252_output_tmp_3172c_62_limb_1, mul_252_output_tmp_3172c_62_limb_2, mul_252_output_tmp_3172c_62_limb_3, mul_252_output_tmp_3172c_62_limb_4, mul_252_output_tmp_3172c_62_limb_5, mul_252_output_tmp_3172c_62_limb_6, mul_252_output_tmp_3172c_62_limb_7, mul_252_output_tmp_3172c_62_limb_8, mul_252_output_tmp_3172c_62_limb_9, mul_252_output_tmp_3172c_62_limb_10, mul_252_output_tmp_3172c_62_limb_11, mul_252_output_tmp_3172c_62_limb_12, mul_252_output_tmp_3172c_62_limb_13, mul_252_output_tmp_3172c_62_limb_14, mul_252_output_tmp_3172c_62_limb_15, mul_252_output_tmp_3172c_62_limb_16, mul_252_output_tmp_3172c_62_limb_17, mul_252_output_tmp_3172c_62_limb_18, mul_252_output_tmp_3172c_62_limb_19, mul_252_output_tmp_3172c_62_limb_20, mul_252_output_tmp_3172c_62_limb_21, mul_252_output_tmp_3172c_62_limb_22, mul_252_output_tmp_3172c_62_limb_23, mul_252_output_tmp_3172c_62_limb_24, mul_252_output_tmp_3172c_62_limb_25, mul_252_output_tmp_3172c_62_limb_26, mul_252_output_tmp_3172c_62_limb_27] =
+        let [mul_252_output_tmp_3172c_62_mul_res_limb_0, mul_252_output_tmp_3172c_62_mul_res_limb_1, mul_252_output_tmp_3172c_62_mul_res_limb_2, mul_252_output_tmp_3172c_62_mul_res_limb_3, mul_252_output_tmp_3172c_62_mul_res_limb_4, mul_252_output_tmp_3172c_62_mul_res_limb_5, mul_252_output_tmp_3172c_62_mul_res_limb_6, mul_252_output_tmp_3172c_62_mul_res_limb_7, mul_252_output_tmp_3172c_62_mul_res_limb_8, mul_252_output_tmp_3172c_62_mul_res_limb_9, mul_252_output_tmp_3172c_62_mul_res_limb_10, mul_252_output_tmp_3172c_62_mul_res_limb_11, mul_252_output_tmp_3172c_62_mul_res_limb_12, mul_252_output_tmp_3172c_62_mul_res_limb_13, mul_252_output_tmp_3172c_62_mul_res_limb_14, mul_252_output_tmp_3172c_62_mul_res_limb_15, mul_252_output_tmp_3172c_62_mul_res_limb_16, mul_252_output_tmp_3172c_62_mul_res_limb_17, mul_252_output_tmp_3172c_62_mul_res_limb_18, mul_252_output_tmp_3172c_62_mul_res_limb_19, mul_252_output_tmp_3172c_62_mul_res_limb_20, mul_252_output_tmp_3172c_62_mul_res_limb_21, mul_252_output_tmp_3172c_62_mul_res_limb_22, mul_252_output_tmp_3172c_62_mul_res_limb_23, mul_252_output_tmp_3172c_62_mul_res_limb_24, mul_252_output_tmp_3172c_62_mul_res_limb_25, mul_252_output_tmp_3172c_62_mul_res_limb_26, mul_252_output_tmp_3172c_62_mul_res_limb_27] =
             Mul252::evaluate(
                 [
                     op0_limb_0_col32.clone(),
@@ -600,9 +600,9 @@ impl EvalOperands {
                 carry_24_col172.clone(),
                 carry_25_col173.clone(),
                 carry_26_col174.clone(),
-                eval,
                 range_check_9_9_lookup_elements,
                 range_check_19_lookup_elements,
+                eval,
             );
         let res_constrained_tmp_3172c_64 =
             eval.add_intermediate((M31_1.clone() - eval_operands_input_limb_12.clone()));

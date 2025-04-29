@@ -12,8 +12,8 @@ impl RangeCheckLastLimbBitsInMsLimb6 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         range_check_last_limb_bits_in_ms_limb_6_input: E::F,
-        eval: &mut E,
         range_check_6_lookup_elements: &relations::RangeCheck_6,
+        eval: &mut E,
     ) -> () {
         eval.add_to_relation(RelationEntry::new(
             range_check_6_lookup_elements,

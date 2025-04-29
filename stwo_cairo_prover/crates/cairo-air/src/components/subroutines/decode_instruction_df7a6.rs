@@ -11,7 +11,7 @@ impl DecodeInstructionDf7A6 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        decode_instruction_df7a69b85cbf80d5_input: E::F,
+        decode_instruction_df7a6_input: E::F,
         offset0_col0: E::F,
         offset1_col1: E::F,
         offset2_col2: E::F,
@@ -30,8 +30,8 @@ impl DecodeInstructionDf7A6 {
         opcode_call_col15: E::F,
         opcode_ret_col16: E::F,
         opcode_assert_eq_col17: E::F,
-        eval: &mut E,
         verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        eval: &mut E,
     ) -> [E::F; 19] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
@@ -103,7 +103,7 @@ impl DecodeInstructionDf7A6 {
             verify_instruction_lookup_elements,
             E::EF::one(),
             &[
-                decode_instruction_df7a69b85cbf80d5_input.clone(),
+                decode_instruction_df7a6_input.clone(),
                 offset0_col0.clone(),
                 offset1_col1.clone(),
                 offset2_col2.clone(),

@@ -70,7 +70,7 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_fe864_output_tmp_d6f03_7_limb_0, decode_instruction_fe864_output_tmp_d6f03_7_limb_1, decode_instruction_fe864_output_tmp_d6f03_7_limb_2, decode_instruction_fe864_output_tmp_d6f03_7_limb_3, decode_instruction_fe864_output_tmp_d6f03_7_limb_4, decode_instruction_fe864_output_tmp_d6f03_7_limb_5, decode_instruction_fe864_output_tmp_d6f03_7_limb_6, decode_instruction_fe864_output_tmp_d6f03_7_limb_7, decode_instruction_fe864_output_tmp_d6f03_7_limb_8, decode_instruction_fe864_output_tmp_d6f03_7_limb_9, decode_instruction_fe864_output_tmp_d6f03_7_limb_10, decode_instruction_fe864_output_tmp_d6f03_7_limb_11, decode_instruction_fe864_output_tmp_d6f03_7_limb_12, decode_instruction_fe864_output_tmp_d6f03_7_limb_13, decode_instruction_fe864_output_tmp_d6f03_7_limb_14, decode_instruction_fe864_output_tmp_d6f03_7_limb_15, decode_instruction_fe864_output_tmp_d6f03_7_limb_16, decode_instruction_fe864_output_tmp_d6f03_7_limb_17, decode_instruction_fe864_output_tmp_d6f03_7_limb_18] =
+        let [decode_instruction_fe864_output_tmp_d6f03_7_offset0, decode_instruction_fe864_output_tmp_d6f03_7_offset1, decode_instruction_fe864_output_tmp_d6f03_7_offset2, decode_instruction_fe864_output_tmp_d6f03_7_dst_base_fp, decode_instruction_fe864_output_tmp_d6f03_7_op0_base_fp, decode_instruction_fe864_output_tmp_d6f03_7_op1_imm, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_fp, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap, decode_instruction_fe864_output_tmp_d6f03_7_res_add, decode_instruction_fe864_output_tmp_d6f03_7_res_mul, decode_instruction_fe864_output_tmp_d6f03_7_pc_update_jump, decode_instruction_fe864_output_tmp_d6f03_7_pc_update_jump_rel, decode_instruction_fe864_output_tmp_d6f03_7_pc_update_jnz, decode_instruction_fe864_output_tmp_d6f03_7_ap_update_add, decode_instruction_fe864_output_tmp_d6f03_7_ap_update_add_1, decode_instruction_fe864_output_tmp_d6f03_7_opcode_call, decode_instruction_fe864_output_tmp_d6f03_7_opcode_ret, decode_instruction_fe864_output_tmp_d6f03_7_opcode_assert_eq, decode_instruction_fe864_output_tmp_d6f03_7_opcode_extension] =
             DecodeInstructionFe864::evaluate(
                 input_pc_col0.clone(),
                 offset0_col3.clone(),
@@ -78,8 +78,8 @@ impl FrameworkEval for Eval {
                 dst_base_fp_col5.clone(),
                 op1_base_fp_col6.clone(),
                 ap_update_add_1_col7.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         // mem_dst_base.
         eval.add_constraint(
@@ -91,19 +91,19 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             (mem1_base_col9.clone()
                 - ((op1_base_fp_col6.clone() * input_fp_col2.clone())
-                    + (decode_instruction_fe864_output_tmp_d6f03_7_limb_7.clone()
+                    + (decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap.clone()
                         * input_ap_col1.clone()))),
         );
         MemVerifyEqual::evaluate(
             [
                 (mem_dst_base_col8.clone()
-                    + decode_instruction_fe864_output_tmp_d6f03_7_limb_0.clone()),
+                    + decode_instruction_fe864_output_tmp_d6f03_7_offset0.clone()),
                 (mem1_base_col9.clone()
-                    + decode_instruction_fe864_output_tmp_d6f03_7_limb_2.clone()),
+                    + decode_instruction_fe864_output_tmp_d6f03_7_offset2.clone()),
             ],
             dst_id_col10.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
+            &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

@@ -551,9 +551,9 @@ impl FrameworkEval for Eval {
                 c3_limb_8_col233.clone(),
                 c3_limb_9_col234.clone(),
                 c3_limb_10_col235.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         // make sure sub_p_bit is 0 or 1..
         eval.add_constraint(

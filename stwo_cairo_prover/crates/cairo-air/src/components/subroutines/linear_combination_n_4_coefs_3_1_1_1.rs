@@ -23,8 +23,8 @@ impl LinearCombinationN4Coefs3111 {
         combination_limb_8_col8: E::F,
         combination_limb_9_col9: E::F,
         p_coef_col10: E::F,
-        eval: &mut E,
         range_check_3_3_3_3_3_lookup_elements: &relations::RangeCheck_3_3_3_3_3,
+        eval: &mut E,
     ) -> [E::F; 10] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));

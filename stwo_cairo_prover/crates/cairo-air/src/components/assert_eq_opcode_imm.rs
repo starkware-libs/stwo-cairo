@@ -68,14 +68,14 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_161c9_output_tmp_bb09e_5_limb_0, decode_instruction_161c9_output_tmp_bb09e_5_limb_1, decode_instruction_161c9_output_tmp_bb09e_5_limb_2, decode_instruction_161c9_output_tmp_bb09e_5_limb_3, decode_instruction_161c9_output_tmp_bb09e_5_limb_4, decode_instruction_161c9_output_tmp_bb09e_5_limb_5, decode_instruction_161c9_output_tmp_bb09e_5_limb_6, decode_instruction_161c9_output_tmp_bb09e_5_limb_7, decode_instruction_161c9_output_tmp_bb09e_5_limb_8, decode_instruction_161c9_output_tmp_bb09e_5_limb_9, decode_instruction_161c9_output_tmp_bb09e_5_limb_10, decode_instruction_161c9_output_tmp_bb09e_5_limb_11, decode_instruction_161c9_output_tmp_bb09e_5_limb_12, decode_instruction_161c9_output_tmp_bb09e_5_limb_13, decode_instruction_161c9_output_tmp_bb09e_5_limb_14, decode_instruction_161c9_output_tmp_bb09e_5_limb_15, decode_instruction_161c9_output_tmp_bb09e_5_limb_16, decode_instruction_161c9_output_tmp_bb09e_5_limb_17, decode_instruction_161c9_output_tmp_bb09e_5_limb_18] =
+        let [decode_instruction_161c9_output_tmp_bb09e_5_offset0, decode_instruction_161c9_output_tmp_bb09e_5_offset1, decode_instruction_161c9_output_tmp_bb09e_5_offset2, decode_instruction_161c9_output_tmp_bb09e_5_dst_base_fp, decode_instruction_161c9_output_tmp_bb09e_5_op0_base_fp, decode_instruction_161c9_output_tmp_bb09e_5_op1_imm, decode_instruction_161c9_output_tmp_bb09e_5_op1_base_fp, decode_instruction_161c9_output_tmp_bb09e_5_op1_base_ap, decode_instruction_161c9_output_tmp_bb09e_5_res_add, decode_instruction_161c9_output_tmp_bb09e_5_res_mul, decode_instruction_161c9_output_tmp_bb09e_5_pc_update_jump, decode_instruction_161c9_output_tmp_bb09e_5_pc_update_jump_rel, decode_instruction_161c9_output_tmp_bb09e_5_pc_update_jnz, decode_instruction_161c9_output_tmp_bb09e_5_ap_update_add, decode_instruction_161c9_output_tmp_bb09e_5_ap_update_add_1, decode_instruction_161c9_output_tmp_bb09e_5_opcode_call, decode_instruction_161c9_output_tmp_bb09e_5_opcode_ret, decode_instruction_161c9_output_tmp_bb09e_5_opcode_assert_eq, decode_instruction_161c9_output_tmp_bb09e_5_opcode_extension] =
             DecodeInstruction161C9::evaluate(
                 input_pc_col0.clone(),
                 offset0_col3.clone(),
                 dst_base_fp_col4.clone(),
                 ap_update_add_1_col5.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         // mem_dst_base.
         eval.add_constraint(
@@ -86,12 +86,12 @@ impl FrameworkEval for Eval {
         MemVerifyEqual::evaluate(
             [
                 (mem_dst_base_col6.clone()
-                    + decode_instruction_161c9_output_tmp_bb09e_5_limb_0.clone()),
+                    + decode_instruction_161c9_output_tmp_bb09e_5_offset0.clone()),
                 (input_pc_col0.clone() + M31_1.clone()),
             ],
             dst_id_col7.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
+            &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

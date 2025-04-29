@@ -79,12 +79,12 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_fdb6e_output_tmp_32b66_3_limb_0, decode_instruction_fdb6e_output_tmp_32b66_3_limb_1, decode_instruction_fdb6e_output_tmp_32b66_3_limb_2, decode_instruction_fdb6e_output_tmp_32b66_3_limb_3, decode_instruction_fdb6e_output_tmp_32b66_3_limb_4, decode_instruction_fdb6e_output_tmp_32b66_3_limb_5, decode_instruction_fdb6e_output_tmp_32b66_3_limb_6, decode_instruction_fdb6e_output_tmp_32b66_3_limb_7, decode_instruction_fdb6e_output_tmp_32b66_3_limb_8, decode_instruction_fdb6e_output_tmp_32b66_3_limb_9, decode_instruction_fdb6e_output_tmp_32b66_3_limb_10, decode_instruction_fdb6e_output_tmp_32b66_3_limb_11, decode_instruction_fdb6e_output_tmp_32b66_3_limb_12, decode_instruction_fdb6e_output_tmp_32b66_3_limb_13, decode_instruction_fdb6e_output_tmp_32b66_3_limb_14, decode_instruction_fdb6e_output_tmp_32b66_3_limb_15, decode_instruction_fdb6e_output_tmp_32b66_3_limb_16, decode_instruction_fdb6e_output_tmp_32b66_3_limb_17, decode_instruction_fdb6e_output_tmp_32b66_3_limb_18] =
+        let [decode_instruction_fdb6e_output_tmp_32b66_3_offset0, decode_instruction_fdb6e_output_tmp_32b66_3_offset1, decode_instruction_fdb6e_output_tmp_32b66_3_offset2, decode_instruction_fdb6e_output_tmp_32b66_3_dst_base_fp, decode_instruction_fdb6e_output_tmp_32b66_3_op0_base_fp, decode_instruction_fdb6e_output_tmp_32b66_3_op1_imm, decode_instruction_fdb6e_output_tmp_32b66_3_op1_base_fp, decode_instruction_fdb6e_output_tmp_32b66_3_op1_base_ap, decode_instruction_fdb6e_output_tmp_32b66_3_res_add, decode_instruction_fdb6e_output_tmp_32b66_3_res_mul, decode_instruction_fdb6e_output_tmp_32b66_3_pc_update_jump, decode_instruction_fdb6e_output_tmp_32b66_3_pc_update_jump_rel, decode_instruction_fdb6e_output_tmp_32b66_3_pc_update_jnz, decode_instruction_fdb6e_output_tmp_32b66_3_ap_update_add, decode_instruction_fdb6e_output_tmp_32b66_3_ap_update_add_1, decode_instruction_fdb6e_output_tmp_32b66_3_opcode_call, decode_instruction_fdb6e_output_tmp_32b66_3_opcode_ret, decode_instruction_fdb6e_output_tmp_32b66_3_opcode_assert_eq, decode_instruction_fdb6e_output_tmp_32b66_3_opcode_extension] =
             DecodeInstructionFdb6E::evaluate(
                 input_pc_col0.clone(),
                 offset2_col3.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -95,9 +95,9 @@ impl FrameworkEval for Eval {
                 stored_fp_limb_0_col5.clone(),
                 stored_fp_limb_1_col6.clone(),
                 stored_fp_limb_2_col7.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         //[ap] = fp.
         eval.add_constraint(
@@ -114,9 +114,9 @@ impl FrameworkEval for Eval {
                 stored_ret_pc_limb_0_col9.clone(),
                 stored_ret_pc_limb_1_col10.clone(),
                 stored_ret_pc_limb_2_col11.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         //[ap+1] = return_pc.
         eval.add_constraint(
@@ -130,14 +130,14 @@ impl FrameworkEval for Eval {
         let [read_positive_num_bits_27_output_tmp_32b66_12_limb_0, read_positive_num_bits_27_output_tmp_32b66_12_limb_1, read_positive_num_bits_27_output_tmp_32b66_12_limb_2, read_positive_num_bits_27_output_tmp_32b66_12_limb_3, read_positive_num_bits_27_output_tmp_32b66_12_limb_4, read_positive_num_bits_27_output_tmp_32b66_12_limb_5, read_positive_num_bits_27_output_tmp_32b66_12_limb_6, read_positive_num_bits_27_output_tmp_32b66_12_limb_7, read_positive_num_bits_27_output_tmp_32b66_12_limb_8, read_positive_num_bits_27_output_tmp_32b66_12_limb_9, read_positive_num_bits_27_output_tmp_32b66_12_limb_10, read_positive_num_bits_27_output_tmp_32b66_12_limb_11, read_positive_num_bits_27_output_tmp_32b66_12_limb_12, read_positive_num_bits_27_output_tmp_32b66_12_limb_13, read_positive_num_bits_27_output_tmp_32b66_12_limb_14, read_positive_num_bits_27_output_tmp_32b66_12_limb_15, read_positive_num_bits_27_output_tmp_32b66_12_limb_16, read_positive_num_bits_27_output_tmp_32b66_12_limb_17, read_positive_num_bits_27_output_tmp_32b66_12_limb_18, read_positive_num_bits_27_output_tmp_32b66_12_limb_19, read_positive_num_bits_27_output_tmp_32b66_12_limb_20, read_positive_num_bits_27_output_tmp_32b66_12_limb_21, read_positive_num_bits_27_output_tmp_32b66_12_limb_22, read_positive_num_bits_27_output_tmp_32b66_12_limb_23, read_positive_num_bits_27_output_tmp_32b66_12_limb_24, read_positive_num_bits_27_output_tmp_32b66_12_limb_25, read_positive_num_bits_27_output_tmp_32b66_12_limb_26, read_positive_num_bits_27_output_tmp_32b66_12_limb_27, read_positive_num_bits_27_output_tmp_32b66_12_limb_28] =
             ReadPositiveNumBits27::evaluate(
                 (input_ap_col1.clone()
-                    + decode_instruction_fdb6e_output_tmp_32b66_3_limb_2.clone()),
+                    + decode_instruction_fdb6e_output_tmp_32b66_3_offset2.clone()),
                 next_pc_id_col12.clone(),
                 next_pc_limb_0_col13.clone(),
                 next_pc_limb_1_col14.clone(),
                 next_pc_limb_2_col15.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

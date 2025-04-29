@@ -32,10 +32,10 @@ impl Qm31ReadReduced {
         value_limb_15_col16: E::F,
         delta_ab_inv_col17: E::F,
         delta_cd_inv_col18: E::F,
-        eval: &mut E,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
+        eval: &mut E,
     ) -> [E::F; 5] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
@@ -63,9 +63,9 @@ impl Qm31ReadReduced {
                 value_limb_13_col14.clone(),
                 value_limb_14_col15.clone(),
                 value_limb_15_col16.clone(),
-                eval,
                 memory_address_to_id_lookup_elements,
                 memory_id_to_big_lookup_elements,
+                eval,
             );
         eval.add_to_relation(RelationEntry::new(
             range_check_4_4_4_4_lookup_elements,

@@ -46,11 +46,11 @@ impl PoseidonPartialRound {
         combination_limb_8_col29: E::F,
         combination_limb_9_col30: E::F,
         p_coef_col31: E::F,
-        eval: &mut E,
         cube_252_lookup_elements: &relations::Cube252,
         range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
         range_check_4_4_lookup_elements: &relations::RangeCheck_4_4,
         range_check_felt_252_width_27_lookup_elements: &relations::RangeCheckFelt252Width27,
+        eval: &mut E,
     ) -> [E::F; 40] {
         eval.add_to_relation(RelationEntry::new(
             cube_252_lookup_elements,
@@ -154,9 +154,9 @@ impl PoseidonPartialRound {
                 combination_limb_8_col18.clone(),
                 combination_limb_9_col19.clone(),
                 p_coef_col20.clone(),
-                eval,
                 range_check_4_4_4_4_lookup_elements,
                 range_check_4_4_lookup_elements,
+                eval,
             );
         eval.add_to_relation(RelationEntry::new(
             range_check_felt_252_width_27_lookup_elements,

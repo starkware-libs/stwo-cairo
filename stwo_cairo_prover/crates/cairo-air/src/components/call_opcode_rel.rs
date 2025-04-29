@@ -81,11 +81,11 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_2a7a2_output_tmp_7ab23_2_limb_0, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_1, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_2, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_3, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_4, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_5, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_6, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_7, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_8, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_9, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_10, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_11, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_12, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_13, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_14, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_15, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_16, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_17, decode_instruction_2a7a2_output_tmp_7ab23_2_limb_18] =
+        let [decode_instruction_2a7a2_output_tmp_7ab23_2_offset0, decode_instruction_2a7a2_output_tmp_7ab23_2_offset1, decode_instruction_2a7a2_output_tmp_7ab23_2_offset2, decode_instruction_2a7a2_output_tmp_7ab23_2_dst_base_fp, decode_instruction_2a7a2_output_tmp_7ab23_2_op0_base_fp, decode_instruction_2a7a2_output_tmp_7ab23_2_op1_imm, decode_instruction_2a7a2_output_tmp_7ab23_2_op1_base_fp, decode_instruction_2a7a2_output_tmp_7ab23_2_op1_base_ap, decode_instruction_2a7a2_output_tmp_7ab23_2_res_add, decode_instruction_2a7a2_output_tmp_7ab23_2_res_mul, decode_instruction_2a7a2_output_tmp_7ab23_2_pc_update_jump, decode_instruction_2a7a2_output_tmp_7ab23_2_pc_update_jump_rel, decode_instruction_2a7a2_output_tmp_7ab23_2_pc_update_jnz, decode_instruction_2a7a2_output_tmp_7ab23_2_ap_update_add, decode_instruction_2a7a2_output_tmp_7ab23_2_ap_update_add_1, decode_instruction_2a7a2_output_tmp_7ab23_2_opcode_call, decode_instruction_2a7a2_output_tmp_7ab23_2_opcode_ret, decode_instruction_2a7a2_output_tmp_7ab23_2_opcode_assert_eq, decode_instruction_2a7a2_output_tmp_7ab23_2_opcode_extension] =
             DecodeInstruction2A7A2::evaluate(
                 input_pc_col0.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -96,9 +96,9 @@ impl FrameworkEval for Eval {
                 stored_fp_limb_0_col4.clone(),
                 stored_fp_limb_1_col5.clone(),
                 stored_fp_limb_2_col6.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         //[ap] = fp.
         eval.add_constraint(
@@ -115,9 +115,9 @@ impl FrameworkEval for Eval {
                 stored_ret_pc_limb_0_col8.clone(),
                 stored_ret_pc_limb_1_col9.clone(),
                 stored_ret_pc_limb_2_col10.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         //[ap+1] = return_pc.
         eval.add_constraint(
@@ -137,9 +137,9 @@ impl FrameworkEval for Eval {
                 distance_to_next_pc_limb_0_col14.clone(),
                 distance_to_next_pc_limb_1_col15.clone(),
                 distance_to_next_pc_limb_2_col16.clone(),
-                &mut eval,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

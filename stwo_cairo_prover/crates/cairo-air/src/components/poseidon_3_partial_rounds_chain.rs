@@ -353,11 +353,11 @@ impl FrameworkEval for Eval {
                 combination_limb_8_col101.clone(),
                 combination_limb_9_col102.clone(),
                 p_coef_col103.clone(),
-                &mut eval,
                 &self.cube_252_lookup_elements,
                 &self.range_check_4_4_4_4_lookup_elements,
                 &self.range_check_4_4_lookup_elements,
                 &self.range_check_felt_252_width_27_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -447,11 +447,11 @@ impl FrameworkEval for Eval {
                 combination_limb_8_col133.clone(),
                 combination_limb_9_col134.clone(),
                 p_coef_col135.clone(),
-                &mut eval,
                 &self.cube_252_lookup_elements,
                 &self.range_check_4_4_4_4_lookup_elements,
                 &self.range_check_4_4_lookup_elements,
                 &self.range_check_felt_252_width_27_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -541,11 +541,11 @@ impl FrameworkEval for Eval {
                 combination_limb_8_col165.clone(),
                 combination_limb_9_col166.clone(),
                 p_coef_col167.clone(),
-                &mut eval,
                 &self.cube_252_lookup_elements,
                 &self.range_check_4_4_4_4_lookup_elements,
                 &self.range_check_4_4_lookup_elements,
                 &self.range_check_felt_252_width_27_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_3_partial_rounds_chain_lookup_elements,

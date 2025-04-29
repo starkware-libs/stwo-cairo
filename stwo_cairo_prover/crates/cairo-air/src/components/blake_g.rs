@@ -149,8 +149,8 @@ impl FrameworkEval for Eval {
                 xor_col19.clone(),
                 xor_col20.clone(),
                 xor_col21.clone(),
-                &mut eval,
                 &self.verify_bitwise_xor_8_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -186,9 +186,9 @@ impl FrameworkEval for Eval {
                 xor_col29.clone(),
                 xor_col30.clone(),
                 xor_col31.clone(),
-                &mut eval,
                 &self.verify_bitwise_xor_12_lookup_elements,
                 &self.verify_bitwise_xor_4_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -224,8 +224,8 @@ impl FrameworkEval for Eval {
                 xor_col39.clone(),
                 xor_col40.clone(),
                 xor_col41.clone(),
-                &mut eval,
                 &self.verify_bitwise_xor_8_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -261,9 +261,9 @@ impl FrameworkEval for Eval {
                 xor_col49.clone(),
                 xor_col50.clone(),
                 xor_col51.clone(),
-                &mut eval,
                 &self.verify_bitwise_xor_7_lookup_elements,
                 &self.verify_bitwise_xor_9_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.blake_g_lookup_elements,

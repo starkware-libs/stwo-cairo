@@ -11,10 +11,10 @@ impl DecodeInstruction7Ebc4 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        decode_instruction_7ebc4fb565f52942_input: E::F,
+        decode_instruction_7ebc4_input: E::F,
         ap_update_add_1_col0: E::F,
-        eval: &mut E,
         verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        eval: &mut E,
     ) -> [E::F; 19] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
@@ -33,7 +33,7 @@ impl DecodeInstruction7Ebc4 {
             verify_instruction_lookup_elements,
             E::EF::one(),
             &[
-                decode_instruction_7ebc4fb565f52942_input.clone(),
+                decode_instruction_7ebc4_input.clone(),
                 M31_32767.clone(),
                 M31_32767.clone(),
                 M31_32769.clone(),

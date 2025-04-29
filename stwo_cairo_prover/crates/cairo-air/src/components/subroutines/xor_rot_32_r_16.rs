@@ -22,8 +22,8 @@ impl XorRot32R16 {
         xor_col5: E::F,
         xor_col6: E::F,
         xor_col7: E::F,
-        eval: &mut E,
         verify_bitwise_xor_8_lookup_elements: &relations::VerifyBitwiseXor_8,
+        eval: &mut E,
     ) -> [E::F; 2] {
         let M31_256 = E::F::from(M31::from(256));
 
@@ -57,14 +57,14 @@ impl XorRot32R16 {
                 split_16_low_part_size_8_output_tmp_813a9_5_limb_0.clone(),
             ],
             xor_col4.clone(),
-            eval,
             verify_bitwise_xor_8_lookup_elements,
+            eval,
         );
         let bitwise_xor_num_bits_8_output_tmp_813a9_11 = BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col0.clone(), ms_8_bits_col2.clone()],
             xor_col5.clone(),
-            eval,
             verify_bitwise_xor_8_lookup_elements,
+            eval,
         );
         let bitwise_xor_num_bits_8_output_tmp_813a9_13 = BitwiseXorNumBits8::evaluate(
             [
@@ -72,14 +72,14 @@ impl XorRot32R16 {
                 split_16_low_part_size_8_output_tmp_813a9_7_limb_0.clone(),
             ],
             xor_col6.clone(),
-            eval,
             verify_bitwise_xor_8_lookup_elements,
+            eval,
         );
         let bitwise_xor_num_bits_8_output_tmp_813a9_15 = BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col1.clone(), ms_8_bits_col3.clone()],
             xor_col7.clone(),
-            eval,
             verify_bitwise_xor_8_lookup_elements,
+            eval,
         );
         let xor_rot_16_output_tmp_813a9_16_limb_0 =
             eval.add_intermediate((xor_col6.clone() + (xor_col7.clone() * M31_256.clone())));

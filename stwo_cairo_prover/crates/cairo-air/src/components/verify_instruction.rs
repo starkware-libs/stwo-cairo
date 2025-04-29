@@ -92,9 +92,9 @@ impl FrameworkEval for Eval {
                 offset2_low_col12.clone(),
                 offset2_mid_col13.clone(),
                 offset2_high_col14.clone(),
-                &mut eval,
                 &self.range_check_7_2_5_lookup_elements,
                 &self.range_check_4_3_lookup_elements,
+                &mut eval,
             );
         MemVerify::evaluate(
             [
@@ -129,9 +129,9 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
             ],
             instruction_id_col15.clone(),
-            &mut eval,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
             &self.verify_instruction_lookup_elements,

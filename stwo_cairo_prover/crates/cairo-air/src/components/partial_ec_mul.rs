@@ -1055,9 +1055,9 @@ impl FrameworkEval for Eval {
                 sub_res_limb_26_col468.clone(),
                 sub_res_limb_27_col469.clone(),
                 sub_p_bit_col470.clone(),
-                &mut eval,
                 &self.range_check_9_9_lookup_elements,
                 &self.range_check_19_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,

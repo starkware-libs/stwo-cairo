@@ -293,11 +293,11 @@ impl FrameworkEval for Eval {
                 high_14_ms_bits_col30.clone(),
                 high_5_ms_bits_col31.clone(),
                 dst_id_col32.clone(),
-                &mut eval,
                 &self.verify_instruction_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
                 &self.range_check_7_2_5_lookup_elements,
+                &mut eval,
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -363,11 +363,11 @@ impl FrameworkEval for Eval {
                 xor_col84.clone(),
                 xor_col85.clone(),
                 xor_col86.clone(),
-                &mut eval,
                 &self.range_check_7_2_5_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
                 &self.verify_bitwise_xor_8_lookup_elements,
+                &mut eval,
             );
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_lookup_elements,
@@ -523,12 +523,10 @@ impl FrameworkEval for Eval {
                 triple_xor_32_output_limb_1_col135.clone(),
                 triple_xor_32_output_limb_0_col136.clone(),
                 triple_xor_32_output_limb_1_col137.clone(),
-                &mut eval,
                 &self.triple_xor_32_lookup_elements,
+                &mut eval,
             );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 decode_blake_opcode_output_tmp_53f39_29_limb_2.clone(),
                 triple_xor_32_output_limb_0_col122.clone(),
@@ -538,14 +536,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col139.clone(),
             high_5_ms_bits_col140.clone(),
             new_state_0_id_col141.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_1.clone()),
                 triple_xor_32_output_limb_0_col124.clone(),
@@ -555,14 +551,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col143.clone(),
             high_5_ms_bits_col144.clone(),
             new_state_1_id_col145.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_2.clone()),
                 triple_xor_32_output_limb_0_col126.clone(),
@@ -572,14 +566,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col147.clone(),
             high_5_ms_bits_col148.clone(),
             new_state_2_id_col149.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_3.clone()),
                 triple_xor_32_output_limb_0_col128.clone(),
@@ -589,14 +581,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col151.clone(),
             high_5_ms_bits_col152.clone(),
             new_state_3_id_col153.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_4.clone()),
                 triple_xor_32_output_limb_0_col130.clone(),
@@ -606,14 +596,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col155.clone(),
             high_5_ms_bits_col156.clone(),
             new_state_4_id_col157.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_5.clone()),
                 triple_xor_32_output_limb_0_col132.clone(),
@@ -623,14 +611,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col159.clone(),
             high_5_ms_bits_col160.clone(),
             new_state_5_id_col161.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_6.clone()),
                 triple_xor_32_output_limb_0_col134.clone(),
@@ -640,14 +626,12 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col163.clone(),
             high_5_ms_bits_col164.clone(),
             new_state_6_id_col165.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let () = VerifyBlakeWord::evaluate(
+        VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_7.clone()),
                 triple_xor_32_output_limb_0_col136.clone(),
@@ -657,10 +641,10 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col167.clone(),
             high_5_ms_bits_col168.clone(),
             new_state_7_id_col169.clone(),
-            &mut eval,
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
+            &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

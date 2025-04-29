@@ -29,9 +29,9 @@ impl ReadPositiveNumBits144 {
         value_limb_13_col14: E::F,
         value_limb_14_col15: E::F,
         value_limb_15_col16: E::F,
-        eval: &mut E,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        eval: &mut E,
     ) -> [E::F; 29] {
         let M31_0 = E::F::from(M31::from(0));
 
