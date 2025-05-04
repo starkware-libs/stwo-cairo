@@ -40,13 +40,21 @@ impl ClaimGenerator {
         self.packed_inputs
             .resize(packed_size, *self.packed_inputs.first().unwrap());
 
-        let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            self.packed_inputs,
-            n_rows,
-            pedersen_points_table_state,
-            range_check_19_state,
-            range_check_9_9_state,
-        );
+        // Decreasing this value may cause a stack-overflow during witness generation.
+        const RAYON_THREAD_STACK_SIZE: usize = 1024 * 1024 * 8;
+        let pool = rayon::ThreadPoolBuilder::new()
+            .stack_size(RAYON_THREAD_STACK_SIZE)
+            .build()
+            .unwrap();
+        let (trace, lookup_data, sub_component_inputs) = pool.install(|| {
+            write_trace_simd(
+                self.packed_inputs,
+                n_rows,
+                pedersen_points_table_state,
+                range_check_19_state,
+                range_check_9_9_state,
+            )
+        });
         sub_component_inputs
             .pedersen_points_table
             .iter()
