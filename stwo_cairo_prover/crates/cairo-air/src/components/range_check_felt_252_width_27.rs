@@ -1,6 +1,16 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
+pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
+    RelationUse {
+        relation_id: "RangeCheck_18",
+        uses: 9,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9",
+        uses: 5,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,
