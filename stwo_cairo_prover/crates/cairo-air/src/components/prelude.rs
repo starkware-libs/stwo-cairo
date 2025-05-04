@@ -1,5 +1,3 @@
-pub use std::collections::HashMap;
-
 pub use num_traits::One;
 pub use serde::{Deserialize, Serialize};
 pub use stwo_cairo_serialize::CairoSerialize;
