@@ -5,7 +5,7 @@ use crate::components::subroutines::qm_31_read_reduced::Qm31ReadReduced;
 pub const N_TRACE_COLUMNS: usize = 73;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     RelationUse {
-        relation_id: "RangeCheck_4_4_4_4",
+        relation_id: "MemoryAddressToId",
         uses: 3,
     },
     RelationUse {
@@ -17,7 +17,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
         uses: 1,
     },
     RelationUse {
-        relation_id: "MemoryAddressToId",
+        relation_id: "RangeCheck_4_4_4_4",
         uses: 3,
     },
     RelationUse {
@@ -48,14 +48,6 @@ impl Claim {
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
-    }
-
-    pub fn get_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
-        let component_size = 1 << self.log_size;
-        for relation_use in RELATION_USES_PER_ROW {
-            *relation_counts.entry(relation_use.relation_id).or_insert(0) +=
-                relation_use.uses * component_size;
-        }
     }
 }
 

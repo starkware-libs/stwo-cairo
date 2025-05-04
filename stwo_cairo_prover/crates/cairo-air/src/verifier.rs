@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use num_traits::{One, Zero};
 use paste::paste;
 use stwo_cairo_adapter::builtins::{
@@ -60,6 +62,12 @@ fn verify_claim(claim: &CairoClaim) {
     assert_eq!(initial_fp, initial_ap);
     assert_eq!(*final_pc, BaseField::from(5));
     assert!(initial_ap <= final_ap);
+    // Check that the relation uses are less than 2^30.
+    let mut relation_uses = HashMap::<&'static str, u32>::new();
+    claim.get_relation_uses(&mut relation_uses);
+    for (_, uses) in relation_uses {
+        assert!(uses < (1 << 30));
+    }
 }
 
 #[derive(Clone)]

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -11,6 +13,7 @@ use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
 use super::components::display_components;
+use crate::air::get_relation_uses;
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,
@@ -100,6 +103,62 @@ impl OpcodeClaim {
             self.qm31.iter().map(|c| c.log_sizes()),
             self.ret.iter().map(|c| c.log_sizes()),
         ))
+    }
+
+    pub fn get_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        let Self {
+            add,
+            add_small,
+            add_ap,
+            assert_eq,
+            assert_eq_imm,
+            assert_eq_double_deref,
+            blake,
+            call,
+            call_op_1_base_fp,
+            call_rel,
+            generic,
+            jnz,
+            jnz_taken,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
+            mul,
+            mul_small,
+            qm31,
+            ret,
+        } = self;
+
+        // TODO(alonf): canonicalize the name of field and module.
+        macro_rules! relation_uses {
+            ($field:ident, $module:ident) => {
+                $field.iter().for_each(|c| {
+                    get_relation_uses(relation_counts, $module::RELATION_USES_PER_ROW, c.log_size)
+                });
+            };
+        }
+        relation_uses!(add, add_opcode);
+        relation_uses!(add_small, add_opcode_small);
+        relation_uses!(add_ap, add_ap_opcode);
+        relation_uses!(assert_eq, assert_eq_opcode);
+        relation_uses!(assert_eq_imm, assert_eq_opcode_imm);
+        relation_uses!(assert_eq_double_deref, assert_eq_opcode_double_deref);
+        relation_uses!(blake, blake_compress_opcode);
+        relation_uses!(call, call_opcode);
+        relation_uses!(call_op_1_base_fp, call_opcode_op_1_base_fp);
+        relation_uses!(call_rel, call_opcode_rel);
+        relation_uses!(generic, generic_opcode);
+        relation_uses!(jnz, jnz_opcode);
+        relation_uses!(jnz_taken, jnz_opcode_taken);
+        relation_uses!(jump, jump_opcode);
+        relation_uses!(jump_double_deref, jump_opcode_double_deref);
+        relation_uses!(jump_rel, jump_opcode_rel);
+        relation_uses!(jump_rel_imm, jump_opcode_rel_imm);
+        relation_uses!(mul, mul_opcode);
+        relation_uses!(mul_small, mul_opcode_small);
+        relation_uses!(qm31, qm_31_add_mul_opcode);
+        relation_uses!(ret, ret_opcode);
     }
 }
 
