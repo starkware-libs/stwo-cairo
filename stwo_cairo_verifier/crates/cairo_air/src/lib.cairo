@@ -171,6 +171,7 @@ use components::verify_instruction::{
     ClaimImpl as VerifyInstructionClaimImpl,
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
+use core::blake::{blake2s_compress, blake2s_finalize};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use stwo_constraint_framework::{
@@ -178,6 +179,7 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
+use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -1721,6 +1723,34 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 
 /// A contiguous memory section.
 pub type MemorySection = Array<PubMemoryValue>;
+
+/// Returns the hash of the memory section.
+/// Note: this function ignores the ids and therefore assumes that the section is sorted.
+pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
+    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
+    let mut byte_count = 0;
+    let mut buffer = array![];
+    for entry in section {
+        // Compress whenever the buffer reaches capacity.
+        if let Some(msg) = buffer.span().try_into() {
+            state = blake2s_compress(state, byte_count, *msg);
+            buffer = array![];
+        }
+
+        // Append current value to the buffer without its id.
+        let (_, val) = *entry;
+        buffer.append_span(val.span());
+        byte_count += 32;
+    }
+
+    // Pad buffer to blake hash message size.
+    for _ in buffer.len()..16 {
+        buffer.append(0);
+    }
+
+    // Finalize hash.
+    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+}
 
 // TODO(alonf): Perform all public data validations.
 #[derive(Serde, Drop)]
@@ -5410,6 +5440,7 @@ mod tests {
     use stwo_verifier_core::utils::ArrayImpl;
     use super::{
         CairoInteractionElements, PublicData, PublicDataImpl, RangeChecksInteractionElements,
+        hash_memory_section,
     };
     #[test]
     #[cairofmt::skip]
@@ -5488,6 +5519,22 @@ mod tests {
             verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
             verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
         }
+    }
+
+    #[test]
+    fn test_hash_memory_section() {
+        let section = array![
+            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
+            (0, [3, 4, 5, 6, 7, 8, 9, 10]),
+        ];
+
+        assert_eq!(
+            hash_memory_section(@section).unbox(),
+            [
+                3098114871, 843612567, 2372208999, 1823639248, 1136624132, 2551058277, 1389013608,
+                1207876589,
+            ],
+        );
     }
 
     #[generate_trait]
