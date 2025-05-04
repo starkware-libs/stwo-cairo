@@ -156,7 +156,7 @@ impl CairoClaim {
         let Self {
             public_data: _,
             opcodes,
-            verify_instruction: _,
+            verify_instruction,
             blake_context,
             builtins,
             pedersen_context,
@@ -179,9 +179,12 @@ impl CairoClaim {
         blake_context.accumulate_relation_uses(relation_counts);
         pedersen_context.accumulate_relation_uses(relation_counts);
         poseidon_context.accumulate_relation_uses(relation_counts);
-
+        accumulate_relation_uses(
+            relation_counts,
+            verify_instruction::RELATION_USES_PER_ROW,
+            verify_instruction.log_size,
+        );
         // TODO(alonf): Still missing:
-        // - verify_instruction
         // - memory_id_to_value
     }
 }
