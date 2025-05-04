@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
@@ -8,7 +10,7 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::air::CairoInteractionElements;
+use crate::air::{accumulate_relation_uses, CairoInteractionElements};
 use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
@@ -29,6 +31,12 @@ impl BlakeContextClaim {
             .as_ref()
             .map(|claim| claim.log_sizes())
             .unwrap_or_default()
+    }
+
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        if let Some(claim) = &self.claim {
+            claim.accumulate_relation_uses(relation_counts);
+        }
     }
 }
 
@@ -60,6 +68,24 @@ impl Claim {
         .into_iter();
 
         TreeVec::concat_cols(log_sizes)
+    }
+
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        let Self {
+            blake_round,
+            blake_g,
+            blake_sigma: _,
+            triple_xor_32,
+            verify_bitwise_xor_12: _,
+        } = self;
+
+        // NOTE: The following components do not USE relations:
+        // - blake_sigma
+        // - verify_bitwise_xor_12
+
+        accumulate_relation_uses(relation_counts, blake_round::RELATION_USES_PER_ROW, blake_round.log_size);
+        accumulate_relation_uses(relation_counts, blake_g::RELATION_USES_PER_ROW, blake_g.log_size);
+        accumulate_relation_uses(relation_counts, triple_xor_32::RELATION_USES_PER_ROW, triple_xor_32.log_size);
     }
 }
 
