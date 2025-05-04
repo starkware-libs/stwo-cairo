@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -35,6 +37,7 @@ use crate::components::{
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::relations;
+use crate::verifier::RelationUse;
 
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
@@ -59,6 +62,20 @@ where
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
+    }
+}
+
+/// Accumulates the number of uses of each relation in a map.
+pub fn accumulate_relation_uses<const N: usize>(
+    relation_counts: &mut HashMap<&'static str, u32>,
+    relation_uses_per_row: [RelationUse; N],
+    log_size: u32,
+) {
+    let component_size = 1 << log_size;
+    for relation_use in relation_uses_per_row {
+        let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
+        let prev = relation_counts.entry(relation_use.relation_id).or_insert(0);
+        *prev = prev.checked_add(relation_uses_in_component).unwrap();
     }
 }
 
@@ -135,6 +152,29 @@ impl CairoClaim {
         ];
 
         TreeVec::concat_cols(log_sizes_list.into_iter())
+    }
+
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        let Self {
+            public_data: _,
+            opcodes,
+            verify_instruction: _,
+            blake_context: _,
+            builtins,
+            pedersen_context: _,
+            poseidon_context: _,
+            memory_address_to_id: _,
+            memory_id_to_value: _,
+            range_checks: _,
+            verify_bitwise_xor_4: _,
+            verify_bitwise_xor_7: _,
+            verify_bitwise_xor_8: _,
+            verify_bitwise_xor_9: _,
+        } = self;
+
+        opcodes.accumulate_relation_uses(relation_counts);
+        builtins.accumulate_relation_uses(relation_counts);
+        // TODO(alonf): Add other components.
     }
 }
 
@@ -775,5 +815,46 @@ impl std::fmt::Display for CairoComponents {
             indented_component_display(&self.verify_bitwise_xor_9)
         )?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_accumulate_relation_uses() {
+        let mut relation_counts = HashMap::new();
+        let comp_1_log_size = 1;
+        let comp_1_rel_uses_per_row = [RelationUse {
+            relation_id: "relation_1",
+            uses: 1,
+        }];
+        let comp_2_log_size = 2;
+        let comp_2_rel_uses_per_row = [
+            RelationUse {
+                relation_id: "relation_1",
+                uses: 2,
+            },
+            RelationUse {
+                relation_id: "relation_2",
+                uses: 4,
+            },
+        ];
+
+        accumulate_relation_uses(
+            &mut relation_counts,
+            comp_1_rel_uses_per_row,
+            comp_1_log_size,
+        );
+        accumulate_relation_uses(
+            &mut relation_counts,
+            comp_2_rel_uses_per_row,
+            comp_2_log_size,
+        );
+
+        assert_eq!(relation_counts.len(), 2);
+        assert_eq!(relation_counts.get("relation_1"), Some(&10));
+        assert_eq!(relation_counts.get("relation_2"), Some(&16));
     }
 }
