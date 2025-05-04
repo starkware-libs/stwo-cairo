@@ -20,10 +20,6 @@ use crate::witness::utils::witness_trace_cells;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 26;
 
-// Stack-overflows induced by the partial_ec_mul write trace function.
-// Decreasing this value may cause a stack-overflow during witness generation.
-const RAYON_THREAD_STACK_SIZE: usize = 4194304;
-
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     pcs_config: PcsConfig,
@@ -32,11 +28,6 @@ pub fn prove_cairo<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    // TODO(Ohad): remove when un-inlining the witness generation is done.
-    rayon::ThreadPoolBuilder::new()
-        .stack_size(RAYON_THREAD_STACK_SIZE)
-        .build_global()
-        .unwrap();
     let _span = span!(Level::INFO, "prove_cairo").entered();
     // Composition polynomial domain log size is LOG_MAX_ROWS + 1, double it
     // because we compute on a half-coset, and account for blowup factor.
