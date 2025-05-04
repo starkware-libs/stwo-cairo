@@ -159,10 +159,10 @@ impl CairoClaim {
             public_data: _,
             opcodes,
             verify_instruction: _,
-            blake_context: _,
+            blake_context,
             builtins,
-            pedersen_context: _,
-            poseidon_context: _,
+            pedersen_context,
+            poseidon_context,
             memory_address_to_id: _,
             memory_id_to_value: _,
             range_checks: _,
@@ -171,10 +171,20 @@ impl CairoClaim {
             verify_bitwise_xor_8: _,
             verify_bitwise_xor_9: _,
         } = self;
+        // NOTE: The following components do not USE relations:
+        // - range_checks
+        // - verify_bitwise_xor_*
+        // - memory_address_to_id
 
         opcodes.accumulate_relation_uses(relation_counts);
         builtins.accumulate_relation_uses(relation_counts);
-        // TODO(alonf): Add other components.
+        blake_context.accumulate_relation_uses(relation_counts);
+        pedersen_context.accumulate_relation_uses(relation_counts);
+        poseidon_context.accumulate_relation_uses(relation_counts);
+
+        // TODO(alonf): Still missing:
+        // - verify_instruction
+        // - memory_id_to_value
     }
 }
 
