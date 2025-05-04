@@ -633,11 +633,12 @@ mod mappings_tests {
     use stwo_cairo_common::prover_types::cpu::CasmState;
     use stwo_prover::core::fields::m31::M31;
 
+    use crate::adapter::adapt_finished_runner;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
     use crate::opcodes::{CasmStatesByOpcode, StateTransitions};
-    use crate::plain::{adapt_finished_runner, program_from_casm};
     use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
+    use crate::test_utils::program_from_casm;
     use crate::vm_import::RelocatedTraceEntry;
     use crate::{casm_state, relocated_trace_entry, ProverInput};
 
