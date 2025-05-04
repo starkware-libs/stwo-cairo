@@ -3,6 +3,16 @@ use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::
 use crate::components::subroutines::mul_252::Mul252;
 
 pub const N_TRACE_COLUMNS: usize = 141;
+pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
+    RelationUse {
+        relation_id: "RangeCheck_19",
+        uses: 56,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9",
+        uses: 42,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,

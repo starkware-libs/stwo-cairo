@@ -2,6 +2,24 @@ use crate::components::prelude::*;
 use crate::components::subroutines::ec_add::EcAdd;
 
 pub const N_TRACE_COLUMNS: usize = 472;
+pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
+    RelationUse {
+        relation_id: "PartialEcMul",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "PedersenPointsTable",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19",
+        uses: 84,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9",
+        uses: 126,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,

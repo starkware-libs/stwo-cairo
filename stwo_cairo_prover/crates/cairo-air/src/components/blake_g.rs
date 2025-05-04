@@ -6,6 +6,28 @@ use crate::components::subroutines::xor_rot_32_r_7::XorRot32R7;
 use crate::components::subroutines::xor_rot_32_r_8::XorRot32R8;
 
 pub const N_TRACE_COLUMNS: usize = 53;
+pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_12",
+        uses: 2,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_4",
+        uses: 2,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_7",
+        uses: 2,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_8",
+        uses: 8,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_9",
+        uses: 2,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,
