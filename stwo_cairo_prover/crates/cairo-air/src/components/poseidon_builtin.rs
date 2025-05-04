@@ -7,28 +7,24 @@ use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumB
 pub const N_TRACE_COLUMNS: usize = 347;
 pub const RELATION_USES_PER_ROW: [RelationUse; 9] = [
     RelationUse {
-        relation_id: "PoseidonFullRoundChain",
+        relation_id: "Cube252",
         uses: 2,
+    },
+    RelationUse {
+        relation_id: "MemoryAddressToId",
+        uses: 6,
     },
     RelationUse {
         relation_id: "MemoryIdToBig",
         uses: 6,
     },
     RelationUse {
-        relation_id: "RangeCheck_4_4_4_4",
-        uses: 6,
+        relation_id: "Poseidon3PartialRoundsChain",
+        uses: 1,
     },
     RelationUse {
-        relation_id: "Cube252",
+        relation_id: "PoseidonFullRoundChain",
         uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_4_4",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 6,
     },
     RelationUse {
         relation_id: "RangeCheckFelt252Width27",
@@ -39,8 +35,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 9] = [
         uses: 2,
     },
     RelationUse {
-        relation_id: "Poseidon3PartialRoundsChain",
-        uses: 1,
+        relation_id: "RangeCheck_4_4",
+        uses: 3,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_4_4_4_4",
+        uses: 6,
     },
 ];
 
@@ -72,14 +72,6 @@ impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.poseidon_builtin_segment_start as u64);
-    }
-
-    pub fn get_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
-        let component_size = 1 << self.log_size;
-        for relation_use in RELATION_USES_PER_ROW {
-            *relation_counts.entry(relation_use.relation_id).or_insert(0) +=
-                relation_use.uses * component_size;
-        }
     }
 }
 
