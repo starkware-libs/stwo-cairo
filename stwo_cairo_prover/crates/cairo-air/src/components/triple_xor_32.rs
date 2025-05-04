@@ -3,6 +3,10 @@ use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 
 pub const N_TRACE_COLUMNS: usize = 21;
+pub const RELATION_USES_PER_ROW: [RelationUse; 1] = [RelationUse {
+    relation_id: "VerifyBitwiseXor_8",
+    uses: 8,
+}];
 
 pub struct Eval {
     pub claim: Claim,
