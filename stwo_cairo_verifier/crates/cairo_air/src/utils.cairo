@@ -1,8 +1,10 @@
 use core::array::ToSpanTrait;
+use core::blake::{blake2s_compress, blake2s_finalize};
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::WrappingMul;
 use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
+use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::utils::pow2;
 use super::components::memory_id_to_big;
@@ -150,6 +152,28 @@ fn split<
     }
 
     (*SpanTryIntoFixedArray::try_into(res.span()).unwrap()).unbox()
+}
+
+pub fn blake_segment(span: @Array<(u32, [u32; 8])>) -> Box<[u32; 8]> {
+    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
+    let mut byte_count = 32;
+    let mut buffer = array![];
+    for entry in span {
+        // Compress whenever the buffer reaches capacity.
+        if let Some(msg) = buffer.span().try_into() {
+            state = blake2s_compress(state, byte_count, *msg);
+            buffer = array![];
+        }
+        let (_, val) = *entry;
+        buffer.append_span(val.span());
+        byte_count += 32;
+    }
+
+    for _ in buffer.len()..16 {
+        buffer.append(0);
+    }
+
+    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
 }
 
 #[cfg(test)]
