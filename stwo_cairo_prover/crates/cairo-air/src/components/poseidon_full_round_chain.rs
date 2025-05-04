@@ -4,6 +4,24 @@ use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::Linea
 use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::LinearCombinationN4Coefs3111;
 
 pub const N_TRACE_COLUMNS: usize = 126;
+pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
+    RelationUse {
+        relation_id: "Cube252",
+        uses: 3,
+    },
+    RelationUse {
+        relation_id: "PoseidonFullRoundChain",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "PoseidonRoundKeys",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_3_3_3_3_3",
+        uses: 6,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,
