@@ -1298,7 +1298,6 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         *segment_ranges.range_check_128,
         RANGE_CHECK_MEMORY_CELLS,
     );
-
     check_builtin(
         builtins_claim
             .range_check_96_builtin
@@ -1326,7 +1325,63 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         *segment_ranges.bitwise,
         BITWISE_MEMORY_CELLS,
     );
-    // TODO(alonf): Soundness - check all the builtins after they are merged.
+    check_builtin(
+        builtins_claim
+            .add_mod_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.add_mod_builtin_segment_start,
+                    log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.add_mod,
+        ADD_MOD_MEMORY_CELLS,
+    );
+    check_builtin(
+        builtins_claim
+            .mul_mod_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.mul_mod_builtin_segment_start,
+                    log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.mul_mod,
+        MUL_MOD_MEMORY_CELLS,
+    );
+    check_builtin(
+        builtins_claim
+            .pedersen_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.pedersen_builtin_segment_start,
+                    log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.pedersen,
+        PEDERSEN_MEMORY_CELLS,
+    );
+    check_builtin(
+        builtins_claim
+            .poseidon_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.poseidon_builtin_segment_start,
+                    log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.poseidon,
+        POSEIDON_MEMORY_CELLS,
+    );
+
 }
 
 fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
