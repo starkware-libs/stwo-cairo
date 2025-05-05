@@ -15,6 +15,7 @@ use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::relation;
 
+use super::prelude::RelationUse;
 use crate::preprocessed::{PreProcessedColumn, Seq};
 use crate::relations;
 
@@ -28,6 +29,16 @@ pub type BigComponent = FrameworkComponent<BigEval>;
 pub type SmallComponent = FrameworkComponent<SmallEval>;
 
 const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
+
+pub const RELATION_USES_PER_ROW_BIG: [RelationUse; 1] = [RelationUse {
+    relation_id: "RangeCheck_9_9",
+    uses: 14,
+}];
+
+pub const RELATION_USES_PER_ROW_SMALL: [RelationUse; 1] = [RelationUse {
+    relation_id: "RangeCheck_9_9",
+    uses: 4,
+}];
 
 relation!(RelationElements, N_LOGUP_POWERS);
 
