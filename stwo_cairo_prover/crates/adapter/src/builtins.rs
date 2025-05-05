@@ -382,7 +382,6 @@ mod builtin_padding {
     }
 }
 
-// TODO(Stav): move read json to a test function.
 #[cfg(test)]
 mod test_builtin_segments {
     use std::path::PathBuf;
