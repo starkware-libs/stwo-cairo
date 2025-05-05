@@ -1,14 +1,59 @@
-use std::fs::{read_to_string, File};
+use std::collections::HashMap;
+use std::fs::{read, read_to_string, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::*;
 use cairo_vm::types::layout_name::LayoutName;
-use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+use cairo_vm::types::relocatable::MaybeRelocatable;
+use cairo_vm::vm::runners::cairo_runner::{CairoRunner, ProverInputInfo};
+use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
-use stwo_cairo_adapter::plain::adapt_finished_runner;
-use stwo_cairo_adapter::ProverInput;
+use tracing::{span, Level};
+
+use crate::adapter::adapt_finished_runner;
+use crate::ProverInput;
+
+pub fn program_from_casm(
+    casm: Vec<cairo_lang_casm::instructions::Instruction>,
+) -> (cairo_vm::types::program::Program, usize) {
+    let felt_code = casm
+        .into_iter()
+        .flat_map(|instruction| instruction.assemble().encode())
+        .map(|felt| MaybeRelocatable::Int(felt.into()))
+        .collect_vec();
+    let program_len = felt_code.len();
+    let program = cairo_vm::types::program::Program::new_for_proof(
+        vec![],
+        felt_code,
+        0,
+        1,
+        HashMap::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .expect("Program creation failed");
+    (program, program_len)
+}
+
+pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
+    let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
+
+    let bytes = read(prover_input_info_path).unwrap_or_else(|_| {
+        panic!(
+            "Unable to read prover input info at path {}",
+            prover_input_info_path.display()
+        )
+    });
+    let (prover_input_info, _): (ProverInputInfo, usize) =
+        bincode::serde::decode_from_slice(&bytes, bincode::config::standard())
+            .expect("Unable to decode prover input info");
+
+    prover_input_info
+}
 
 pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
     let file_path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -50,6 +95,13 @@ pub fn get_prover_input_path(test_name: &str) -> PathBuf {
         .join("../../test_data/")
         .join(test_name)
         .join("prover_input.json")
+}
+
+pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../test_data/")
+        .join(test_name)
+        .join("prover_input_info")
 }
 
 pub fn read_json(file_path: &PathBuf) -> Value {
