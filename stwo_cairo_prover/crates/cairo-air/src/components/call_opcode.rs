@@ -5,16 +5,16 @@ use crate::components::subroutines::read_positive_num_bits_27::ReadPositiveNumBi
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
-        relation_id: "Opcodes",
-        uses: 1,
-    },
-    RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
     },
     RelationUse {
         relation_id: "MemoryIdToBig",
         uses: 3,
+    },
+    RelationUse {
+        relation_id: "Opcodes",
+        uses: 1,
     },
     RelationUse {
         relation_id: "VerifyInstruction",
@@ -43,14 +43,6 @@ impl Claim {
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
-    }
-
-    pub fn get_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
-        let component_size = 1 << self.log_size;
-        for relation_use in RELATION_USES_PER_ROW {
-            *relation_counts.entry(relation_use.relation_id).or_insert(0) +=
-                relation_use.uses * component_size;
-        }
     }
 }
 
