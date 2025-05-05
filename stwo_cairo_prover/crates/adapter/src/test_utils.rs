@@ -55,12 +55,7 @@ pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInput
     prover_input_info
 }
 
-pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
-    let file_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../test_data/")
-        .join(test_name)
-        .join("compiled.json");
-
+pub fn runner_from_compiled_cairo_program(program: &[u8]) -> CairoRunner {
     let cairo_run_config = CairoRunConfig {
         entrypoint: "main",
         trace_enabled: true,
@@ -73,21 +68,28 @@ pub fn runner_from_compiled_cairo_program(test_name: &str) -> CairoRunner {
         disable_trace_padding: true,
     };
 
-    let program = match std::fs::read(file_path) {
-        Ok(program) => program,
-        Err(e) => panic!("Failed to read program: {:?}", e),
-    };
     cairo_run(
-        &program,
+        program,
         &cairo_run_config,
         &mut BuiltinHintProcessor::new_empty(),
     )
     .expect("Failed to run cairo program")
 }
 
-pub fn prover_input_from_compiled_cairo_program(file_name: &str) -> ProverInput {
-    let runner = runner_from_compiled_cairo_program(file_name);
+pub fn prover_input_from_compiled_cairo_program(compiled_program: &[u8]) -> ProverInput {
+    let runner = runner_from_compiled_cairo_program(compiled_program);
     adapt_finished_runner(runner).expect("Unable to create prover input from finished runner")
+}
+
+pub fn get_compiled_cairo_program(test_name: &str) -> Vec<u8> {
+    let program_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../test_data/")
+        .join(test_name)
+        .join("compiled.json");
+    match std::fs::read(program_path) {
+        Ok(program) => program,
+        Err(e) => panic!("Failed to read program: {:?}", e),
+    }
 }
 
 pub fn get_prover_input_path(test_name: &str) -> PathBuf {
