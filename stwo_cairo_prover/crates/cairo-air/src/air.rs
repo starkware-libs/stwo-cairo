@@ -164,7 +164,7 @@ impl CairoClaim {
             pedersen_context,
             poseidon_context,
             memory_address_to_id: _,
-            memory_id_to_value: _,
+            memory_id_to_value,
             range_checks: _,
             verify_bitwise_xor_4: _,
             verify_bitwise_xor_7: _,
@@ -186,8 +186,18 @@ impl CairoClaim {
             verify_instruction::RELATION_USES_PER_ROW,
             verify_instruction.log_size,
         );
-        // TODO(alonf): Still missing:
-        // - memory_id_to_value
+
+        // memory_id_to_value has a big value component and a small value component.
+        accumulate_relation_uses(
+            relation_counts,
+            memory_id_to_big::RELATION_USES_PER_ROW_BIG,
+            memory_id_to_value.big_log_size,
+        );
+        accumulate_relation_uses(
+            relation_counts,
+            memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
+            memory_id_to_value.small_log_size,
+        );
     }
 }
 
