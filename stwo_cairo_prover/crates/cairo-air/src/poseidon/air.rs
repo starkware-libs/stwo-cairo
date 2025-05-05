@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
 use num_traits::Zero;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::qm31::QM31;
 
-use crate::air::CairoInteractionElements;
+use crate::air::{accumulate_relation_uses, CairoInteractionElements};
 use crate::components::prelude::*;
 use crate::components::{
     cube_252, indented_component_display, poseidon_3_partial_rounds_chain,
@@ -27,6 +29,12 @@ impl PoseidonContextClaim {
             .as_ref()
             .map(|claim| claim.log_sizes())
             .unwrap_or_default()
+    }
+
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        if let Some(claim) = &self.claim {
+            claim.accumulate_relation_uses(relation_counts);
+        }
     }
 }
 
@@ -58,6 +66,40 @@ impl Claim {
         .into_iter();
 
         TreeVec::concat_cols(log_sizes)
+    }
+
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        let Self {
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys: _,
+            range_check_felt_252_width_27,
+        } = self;
+
+        // NOTE: The following components do not USE relations:
+        // - poseidon_round_keys
+
+        accumulate_relation_uses(
+            relation_counts,
+            poseidon_3_partial_rounds_chain::RELATION_USES_PER_ROW,
+            poseidon_3_partial_rounds_chain.log_size,
+        );
+        accumulate_relation_uses(
+            relation_counts,
+            poseidon_full_round_chain::RELATION_USES_PER_ROW,
+            poseidon_full_round_chain.log_size,
+        );
+        accumulate_relation_uses(
+            relation_counts,
+            cube_252::RELATION_USES_PER_ROW,
+            cube_252.log_size,
+        );
+        accumulate_relation_uses(
+            relation_counts,
+            range_check_felt_252_width_27::RELATION_USES_PER_ROW,
+            range_check_felt_252_width_27.log_size,
+        );
     }
 }
 
