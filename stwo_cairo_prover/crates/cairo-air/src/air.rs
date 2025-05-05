@@ -405,7 +405,6 @@ impl PublicSegmentRanges {
 
 pub type MemorySection = Vec<PubMemoryValue>;
 
-// TODO(alonf): Perform all public data validations.
 #[derive(Serialize, Deserialize, CairoSerialize)]
 pub struct PublicMemory {
     pub program: MemorySection,

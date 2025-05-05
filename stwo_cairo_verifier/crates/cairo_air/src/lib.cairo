@@ -1284,9 +1284,17 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
 
     // All other supported builtins.
+    let BuiltinsClaim {
+        range_check_128_builtin,
+        range_check_96_builtin,
+        bitwise_builtin,
+        add_mod_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+    } = builtins_claim;
     check_builtin(
-        builtins_claim
-            .range_check_128_builtin
+        range_check_128_builtin
             .map(
                 |
                     claim,
@@ -1298,10 +1306,8 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         *segment_ranges.range_check_128,
         RANGE_CHECK_MEMORY_CELLS,
     );
-
     check_builtin(
-        builtins_claim
-            .range_check_96_builtin
+        range_check_96_builtin
             .map(
                 |
                     claim,
@@ -1314,8 +1320,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
-        builtins_claim
-            .bitwise_builtin
+        bitwise_builtin
             .map(
                 |
                     claim,
@@ -1326,7 +1331,54 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         *segment_ranges.bitwise,
         BITWISE_MEMORY_CELLS,
     );
-    // TODO(alonf): Soundness - check all the builtins after they are merged.
+    check_builtin(
+        add_mod_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.add_mod_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.add_mod,
+        ADD_MOD_MEMORY_CELLS,
+    );
+    check_builtin(
+        mul_mod_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.mul_mod_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.mul_mod,
+        MUL_MOD_MEMORY_CELLS,
+    );
+    check_builtin(
+        pedersen_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.pedersen_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.pedersen,
+        PEDERSEN_MEMORY_CELLS,
+    );
+    check_builtin(
+        poseidon_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.poseidon_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *segment_ranges.poseidon,
+        POSEIDON_MEMORY_CELLS,
+    );
 }
 
 fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
@@ -1722,7 +1774,6 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 /// A contiguous memory section.
 pub type MemorySection = Array<PubMemoryValue>;
 
-// TODO(alonf): Perform all public data validations.
 #[derive(Serde, Drop)]
 pub struct PublicMemory {
     pub program: MemorySection,
