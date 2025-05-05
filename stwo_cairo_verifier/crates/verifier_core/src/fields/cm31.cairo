@@ -14,8 +14,8 @@ use super::m31::M31;
 // #[cfg(feature: "qm31_opcode")]
 // use opcode::*;
 
-mod opcode;
-use opcode::*;
+mod naive;
+use naive::*;
 
 pub trait CM31Trait {
     // TODO(andrew): When associated types are supported, support `Mul<CM31, M31>`.

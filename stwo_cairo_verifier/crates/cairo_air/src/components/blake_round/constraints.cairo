@@ -2381,6 +2381,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 13
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -2632,6 +2634,8 @@ pub fn evaluate_constraints_at_point(
         - (intermediate51 + intermediate50))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 27
     let constraint_quotient = ((QM31Trait::from_partial_evals(
@@ -3265,6 +3269,8 @@ fn intermediates(
         trace_1_column_82_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate56 = intermediate56(
         BlakeG_alpha0,
         BlakeG_alpha1,
@@ -3420,6 +3426,8 @@ fn intermediates(
         trace_1_column_108_offset_0,
         trace_1_column_109_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate0 = intermediate0(
         BlakeRoundSigma_alpha0,
@@ -3666,6 +3674,8 @@ fn intermediates(
         trace_1_column_57_offset_0,
         trace_1_column_58_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate33 = intermediate33(
         MemoryIdToBig_alpha0,
@@ -3938,6 +3948,8 @@ fn intermediates(
         trace_1_column_55_offset_0,
         trace_1_column_56_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate27 = intermediate27(
         MemoryIdToBig_alpha0,

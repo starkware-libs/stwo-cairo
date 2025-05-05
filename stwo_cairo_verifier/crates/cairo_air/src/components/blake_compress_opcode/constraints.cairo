@@ -2262,6 +2262,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 20
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -2460,6 +2462,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 31
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -2603,6 +2607,8 @@ pub fn evaluate_constraints_at_point(
         - (intermediate55 + intermediate54))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 39
     let constraint_quotient = ((QM31Trait::from_partial_evals(
@@ -3191,6 +3197,8 @@ fn intermediates(
         trace_1_column_76_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate56 = intermediate56(
         MemoryIdToBig_alpha0,
         MemoryIdToBig_alpha1,
@@ -3388,6 +3396,8 @@ fn intermediates(
         trace_1_column_24_offset_0,
         trace_1_column_25_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate41 = intermediate41(
         TripleXor32_alpha0,
@@ -3593,6 +3603,8 @@ fn intermediates(
         trace_1_column_24_offset_0,
         trace_1_column_25_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate43 = intermediate43(
         TripleXor32_alpha0,
@@ -3846,6 +3858,8 @@ fn intermediates(
         trace_1_column_38_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate19 = intermediate19(
         RangeCheck_7_2_5_alpha0,
         RangeCheck_7_2_5_alpha1,
@@ -4061,6 +4075,8 @@ fn intermediates(
         trace_1_column_79_offset_0,
         trace_1_column_80_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate69 = intermediate69(
         RangeCheck_7_2_5_alpha0,

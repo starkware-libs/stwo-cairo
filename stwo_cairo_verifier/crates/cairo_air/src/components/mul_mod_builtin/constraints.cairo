@@ -5698,6 +5698,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 32
     let constraint_quotient = (trace_1_column_362_offset_0
         - ((trace_1_column_361_offset_0 - (intermediate307) + intermediate617 - (intermediate943))
@@ -5844,6 +5846,8 @@ pub fn evaluate_constraints_at_point(
             * (m31(524288).into())))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 53
     let constraint_quotient = (trace_1_column_383_offset_0
@@ -6086,6 +6090,8 @@ pub fn evaluate_constraints_at_point(
         - (intermediate7 + intermediate6))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 84
     let constraint_quotient = ((QM31Trait::from_partial_evals(
@@ -6339,6 +6345,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 98
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -6501,6 +6509,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 107
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -6627,6 +6637,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 114
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -6735,6 +6747,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 120
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -6824,6 +6838,8 @@ pub fn evaluate_constraints_at_point(
         - (intermediate101 + intermediate97))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 125
     let constraint_quotient = ((QM31Trait::from_partial_evals(
@@ -6950,6 +6966,8 @@ pub fn evaluate_constraints_at_point(
         - (intermediate190 + intermediate187))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 132
     let constraint_quotient = ((QM31Trait::from_partial_evals(
@@ -7275,6 +7293,8 @@ pub fn evaluate_constraints_at_point(
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint 150
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
@@ -7508,6 +7528,8 @@ pub fn evaluate_constraints_at_point(
         - (intermediate1030 + intermediate1029))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint 163
     let constraint_quotient = ((QM31Trait::from_partial_evals(
@@ -8438,6 +8460,8 @@ fn intermediates(
 
     let intermediate219 = intermediate219(trace_1_column_146_offset_0, trace_1_column_310_offset_0);
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate220 = intermediate220(trace_1_column_147_offset_0, trace_1_column_311_offset_0);
 
     let intermediate222 = intermediate222(trace_1_column_150_offset_0, trace_1_column_312_offset_0);
@@ -8678,6 +8702,8 @@ fn intermediates(
         intermediate234,
         intermediate235,
     );
+    core::internal::revoke_ap_tracking();
+
 
     let intermediate345 = intermediate345(
         intermediate169,
@@ -8891,6 +8917,8 @@ fn intermediates(
         intermediate246,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate363 = intermediate363(
         intermediate178,
         intermediate179,
@@ -8967,6 +8995,8 @@ fn intermediates(
     let intermediate371 = intermediate371(intermediate170, intermediate178);
 
     let intermediate372 = intermediate372(intermediate171, intermediate179);
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate373 = intermediate373(intermediate172, intermediate180);
 
@@ -9163,6 +9193,8 @@ fn intermediates(
         intermediate385,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate404 = intermediate404(
         intermediate350,
         intermediate357,
@@ -9249,6 +9281,8 @@ fn intermediates(
         intermediate263,
         intermediate264,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate420 = intermediate420(
         intermediate200,
@@ -9422,6 +9456,8 @@ fn intermediates(
         intermediate273,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate436 = intermediate436(
         intermediate208,
         intermediate209,
@@ -9466,6 +9502,8 @@ fn intermediates(
         intermediate275,
         intermediate276,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate439 = intermediate439(
         intermediate208,
@@ -9660,6 +9698,8 @@ fn intermediates(
         intermediate458,
         intermediate459,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate476 = intermediate476(
         intermediate422,
@@ -9872,6 +9912,8 @@ fn intermediates(
 
     let intermediate514 = intermediate514(intermediate235, intermediate266);
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate515 = intermediate515(intermediate236, intermediate267);
 
     let intermediate516 = intermediate516(intermediate237, intermediate268);
@@ -10061,6 +10103,8 @@ fn intermediates(
         intermediate502, intermediate503, intermediate518, intermediate519,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate543 = intermediate543(
         intermediate502,
         intermediate503,
@@ -10215,6 +10259,7 @@ fn intermediates(
     );
 
     let intermediate555 = intermediate555(intermediate509, intermediate525);
+    core::internal::revoke_ap_tracking();
 
     let intermediate556 = intermediate556(intermediate494, intermediate502);
 
@@ -10433,6 +10478,8 @@ fn intermediates(
         intermediate571,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate591 = intermediate591(
         intermediate537,
         intermediate544,
@@ -10544,6 +10591,8 @@ fn intermediates(
     let intermediate624 = intermediate624(
         intermediate391, intermediate407, intermediate468, intermediate577,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate625 = intermediate625(
         intermediate392, intermediate408, intermediate469, intermediate578,
@@ -10861,6 +10910,8 @@ fn intermediates(
         trace_1_column_246_offset_0,
         trace_1_column_247_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate685 = intermediate685(
         intermediate115,
@@ -11270,6 +11321,8 @@ fn intermediates(
 
     let intermediate742 = intermediate742(intermediate695);
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate743 = intermediate743(intermediate138, trace_1_column_252_offset_0);
 
     let intermediate744 = intermediate744(
@@ -11565,6 +11618,8 @@ fn intermediates(
         trace_1_column_266_offset_0,
         trace_1_column_267_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate769 = intermediate769(
         intermediate150,
@@ -11917,6 +11972,8 @@ fn intermediates(
 
     let intermediate845 = intermediate845(intermediate116, intermediate147);
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate846 = intermediate846(intermediate117, intermediate148);
 
     let intermediate847 = intermediate847(intermediate118, intermediate149);
@@ -12235,6 +12292,8 @@ fn intermediates(
         intermediate850,
         intermediate851,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate879 = intermediate879(
         intermediate833,
@@ -12654,6 +12713,8 @@ fn intermediates(
         intermediate736, intermediate797, intermediate813, intermediate922,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate970 = intermediate970(
         intermediate737, intermediate798, intermediate814, intermediate923,
     );
@@ -12928,6 +12989,8 @@ fn intermediates(
         RangeCheck_18_alpha0, RangeCheck_18_z, trace_1_column_366_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate90 = intermediate90(
         RangeCheck_12_alpha0, RangeCheck_12_z, trace_1_column_266_offset_0,
     );
@@ -13166,6 +13229,8 @@ fn intermediates(
     let intermediate1021 = intermediate1021(
         RangeCheck_18_alpha0, RangeCheck_18_z, trace_1_column_377_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate70 = intermediate70(
         RangeCheck_12_alpha0, RangeCheck_12_z, trace_1_column_246_offset_0,
@@ -13419,6 +13484,8 @@ fn intermediates(
         trace_1_column_287_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate49 = intermediate49(
         MemoryIdToBig_alpha0,
         MemoryIdToBig_alpha1,
@@ -13612,6 +13679,8 @@ fn intermediates(
     let intermediate89 = intermediate89(
         RangeCheck_12_alpha0, RangeCheck_12_z, trace_1_column_265_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate6 = intermediate6(
         MemoryAddressToId_alpha0,
@@ -13959,6 +14028,8 @@ fn intermediates(
         trace_1_column_235_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate41 = intermediate41(
         MemoryIdToBig_alpha0,
         MemoryIdToBig_alpha1,
@@ -14036,6 +14107,8 @@ fn intermediates(
         trace_1_column_275_offset_0,
         trace_1_column_276_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate287 = intermediate287(
         RangeCheck_3_6_6_3_alpha0,
@@ -14245,6 +14318,8 @@ fn intermediates(
         trace_1_column_281_offset_0,
     );
 
+    core::internal::revoke_ap_tracking();
+
     let intermediate1042 = intermediate1042(
         RangeCheck_18_alpha0, RangeCheck_18_z, trace_1_column_398_offset_0,
     );
@@ -14360,6 +14435,8 @@ fn intermediates(
         trace_1_column_55_offset_0,
         trace_1_column_56_offset_0,
     );
+
+    core::internal::revoke_ap_tracking();
 
     let intermediate318 = intermediate318(
         RangeCheck_3_6_6_3_alpha0,
