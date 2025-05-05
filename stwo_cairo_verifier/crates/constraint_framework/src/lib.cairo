@@ -132,7 +132,10 @@ pub enum PreprocessedColumn {
     Seq: u32,
     /// Symbolic representation of range check column.
     /// The column is of the form `(log_ranges, column_index)`.
-    RangeCheck: ([u32; 5], usize),
+    RangeCheck5: ([u32; 5], usize),
+    RangeCheck4: ([u32; 4], usize),
+    RangeCheck3: ([u32; 3], usize),
+    RangeCheck2: ([u32; 2], usize),
     /// Poseidon round keys of the form `(column_index)`.
     PoseidonRoundKeys: usize,
     /// Blake2s sigma column.
@@ -147,9 +150,12 @@ pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
         match self {
             PreprocessedColumn::BitwiseXor((n_term_bits, _)) => *n_term_bits * 2,
             PreprocessedColumn::Seq(log_size) => *log_size,
-            PreprocessedColumn::RangeCheck((
+            PreprocessedColumn::RangeCheck5((
                 [r0, r1, r2, r3, r4], _,
             )) => { *r0 + *r1 + *r2 + *r3 + *r4 },
+            PreprocessedColumn::RangeCheck4(([r0, r1, r2, r3], _)) => { *r0 + *r1 + *r2 + *r3 },
+            PreprocessedColumn::RangeCheck3(([r0, r1, r2], _)) => { *r0 + *r1 + *r2 },
+            PreprocessedColumn::RangeCheck2(([r0, r1], _)) => { *r0 + *r1 },
             PreprocessedColumn::PoseidonRoundKeys(_) => 6,
             PreprocessedColumn::BlakeSigma(_) => 4,
             PreprocessedColumn::PedersenPoints(_) => 23,
@@ -165,10 +171,13 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
         // TODO: Is there something like Rust's `core::mem::discriminant` in Cairo?
         const XOR_DISCRIMINANT: felt252 = 0;
         const SEQ_TABLE_DISCRIMINANT: felt252 = 1;
-        const RANGE_CHECK_DISCRIMINANT: felt252 = 2;
-        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 3;
-        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 4;
-        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 5;
+        const RANGE_CHECK_2_DISCRIMINANT: felt252 = 2;
+        const RANGE_CHECK_3_DISCRIMINANT: felt252 = 3;
+        const RANGE_CHECK_4_DISCRIMINANT: felt252 = 4;
+        const RANGE_CHECK_5_DISCRIMINANT: felt252 = 5;
+        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 6;
+        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 7;
+        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 8;
 
         match key {
             PreprocessedColumn::BitwiseXor((
@@ -184,7 +193,7 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
                 res = res * FELT252_2_POW_32 + SEQ_TABLE_DISCRIMINANT;
                 res
             },
-            PreprocessedColumn::RangeCheck((
+            PreprocessedColumn::RangeCheck5((
                 [r0, r1, r2, r3, r4], column_index,
             )) => {
                 let mut res = (*column_index).into();
@@ -193,7 +202,43 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
                 res = res * FELT252_2_POW_32 + (*r2).into();
                 res = res * FELT252_2_POW_32 + (*r3).into();
                 res = res * FELT252_2_POW_32 + (*r4).into();
-                res = res * FELT252_2_POW_32 + RANGE_CHECK_DISCRIMINANT;
+                res = res * FELT252_2_POW_32 + RANGE_CHECK_5_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::RangeCheck4((
+                [r0, r1, r2, r3], column_index,
+            )) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + (*r0).into();
+                res = res * FELT252_2_POW_32 + (*r1).into();
+                res = res * FELT252_2_POW_32 + (*r2).into();
+                res = res * FELT252_2_POW_32 + (*r3).into();
+                res = res * FELT252_2_POW_32;
+                res = res * FELT252_2_POW_32 + RANGE_CHECK_4_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::RangeCheck3((
+                [r0, r1, r2], column_index,
+            )) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + (*r0).into();
+                res = res * FELT252_2_POW_32 + (*r1).into();
+                res = res * FELT252_2_POW_32 + (*r2).into();
+                res = res * FELT252_2_POW_32;
+                res = res * FELT252_2_POW_32;
+                res = res * FELT252_2_POW_32 + RANGE_CHECK_3_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::RangeCheck2((
+                [r0, r1], column_index,
+            )) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + (*r0).into();
+                res = res * FELT252_2_POW_32 + (*r1).into();
+                res = res * FELT252_2_POW_32;
+                res = res * FELT252_2_POW_32;
+                res = res * FELT252_2_POW_32;
+                res = res * FELT252_2_POW_32 + RANGE_CHECK_2_DISCRIMINANT;
                 res
             },
             PreprocessedColumn::PoseidonRoundKeys(column_index) => {

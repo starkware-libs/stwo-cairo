@@ -43,7 +43,6 @@ pub mod range_check_11;
 pub mod range_check_12;
 pub mod range_check_18;
 pub mod range_check_19;
-
 pub mod range_check_3_3_3_3_3;
 pub mod range_check_3_6_6_3;
 pub mod range_check_4_3;
