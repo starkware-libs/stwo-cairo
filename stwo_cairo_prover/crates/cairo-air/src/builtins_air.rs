@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -10,6 +12,7 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
+use crate::air::accumulate_relation_uses;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
@@ -74,6 +77,37 @@ impl BuiltinsClaim {
                 .map(|range_check_128_builtin| range_check_128_builtin.log_sizes())
                 .into_iter(),
         ))
+    }
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+        let Self {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
+
+        // TODO(alonf): canonicalize the name of field and module.
+        macro_rules! relation_uses {
+            ($field:ident, $module:ident) => {
+                if let Some(field) = $field {
+                    accumulate_relation_uses(
+                        relation_counts,
+                        $module::RELATION_USES_PER_ROW,
+                        field.log_size,
+                    );
+                };
+            };
+        }
+        relation_uses!(add_mod_builtin, add_mod_builtin);
+        relation_uses!(bitwise_builtin, bitwise_builtin);
+        relation_uses!(mul_mod_builtin, mul_mod_builtin);
+        relation_uses!(pedersen_builtin, pedersen_builtin);
+        relation_uses!(poseidon_builtin, poseidon_builtin);
+        relation_uses!(range_check_96_builtin, range_check_builtin_bits_96);
+        relation_uses!(range_check_128_builtin, range_check_builtin_bits_128);
     }
 }
 

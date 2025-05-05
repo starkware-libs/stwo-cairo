@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use num_traits::{One, Zero};
 use paste::paste;
 use stwo_cairo_adapter::builtins::{
@@ -5,7 +7,7 @@ use stwo_cairo_adapter::builtins::{
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
-use stwo_cairo_common::prover_types::cpu::CasmState;
+use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::m31::BaseField;
@@ -60,6 +62,13 @@ fn verify_claim(claim: &CairoClaim) {
     assert_eq!(initial_fp, initial_ap);
     assert_eq!(*final_pc, BaseField::from(5));
     assert!(initial_ap <= final_ap);
+
+    // Assert that each relation has strictly less than P uses.
+    let mut relation_uses = HashMap::<&'static str, u32>::new();
+    claim.accumulate_relation_uses(&mut relation_uses);
+    for (_, uses) in relation_uses {
+        assert!(uses < PRIME);
+    }
 }
 
 #[derive(Clone)]
