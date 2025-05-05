@@ -19,6 +19,22 @@ pub fn mask_points(
     log_size: u32,
 ) {
     preprocessed_column_set.insert(PreprocessedColumn::Seq(log_size));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(0));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(1));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(2));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(3));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(4));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(5));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(6));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(7));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(8));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(9));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(10));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(11));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(12));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(13));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(14));
+    preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma(15));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
     trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
