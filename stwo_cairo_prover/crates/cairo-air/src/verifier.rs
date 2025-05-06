@@ -1,11 +1,10 @@
-use std::collections::HashMap;
-
 use num_traits::{One, Zero};
 use paste::paste;
 use stwo_cairo_adapter::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
+use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
