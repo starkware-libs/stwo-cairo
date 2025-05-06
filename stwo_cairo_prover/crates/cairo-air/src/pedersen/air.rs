@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use num_traits::Zero;
+use stwo_cairo_adapter::HashMap;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;

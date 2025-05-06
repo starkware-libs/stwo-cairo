@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_adapter::HashMap;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
