@@ -55,9 +55,9 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub cube_252_lookup_elements: crate::Cube252Elements,
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
-    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck4Bit4Bit4Bit4BitElements,
+    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck_4_4_4_4Elements,
     pub poseidon_round_keys_lookup_elements: crate::PoseidonRoundKeysElements,
-    pub range_check_4_4_lookup_elements: crate::RangeCheck4Bit4BitElements,
+    pub range_check_4_4_lookup_elements: crate::RangeCheck_4_4Elements,
     pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
 }
 

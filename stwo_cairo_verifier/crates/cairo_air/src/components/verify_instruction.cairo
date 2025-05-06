@@ -60,11 +60,11 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memoryaddresstoid_lookup_elements: super::super::MemoryAddressToIdElements,
-    pub memoryidtobig_lookup_elements: super::super::MemoryIdToBigElements,
-    pub rangecheck_4_3_lookup_elements: super::super::RangeCheck4Bit3BitElements,
-    pub range_check_7_2_5_lookup_elements: super::super::RangeCheck7Bit2Bit5BitElements,
-    pub verifyinstruction_lookup_elements: super::super::VerifyInstructionElements,
+    pub memory_address_to_id_lookup_elements: super::super::MemoryAddressToIdElements,
+    pub memory_id_to_big_lookup_elements: super::super::MemoryIdToBigElements,
+    pub range_check_4_3_lookup_elements: super::super::RangeCheck_4_3Elements,
+    pub range_check_7_2_5_lookup_elements: super::super::RangeCheck_7_2_5Elements,
+    pub verify_instruction_lookup_elements: super::super::VerifyInstructionElements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
@@ -101,16 +101,19 @@ pub impl ComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let mut addr_to_id_alpha_powers = self
-            .memoryaddresstoid_lookup_elements
+            .memory_address_to_id_lookup_elements
             .alpha_powers
             .span();
 
         let addr_to_id_alpha_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
 
         let addr_to_id_alpha_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_z = *self.memoryaddresstoid_lookup_elements.z;
+        let addr_to_id_z = *self.memory_address_to_id_lookup_elements.z;
 
-        let mut id_to_value_alpha_powers = self.memoryidtobig_lookup_elements.alpha_powers.span();
+        let mut id_to_value_alpha_powers = self
+            .memory_id_to_big_lookup_elements
+            .alpha_powers
+            .span();
         let id_to_value_alpha_0 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_1 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_2 = *id_to_value_alpha_powers.pop_front().unwrap();
@@ -120,15 +123,15 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let id_to_value_alpha_6 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_7 = *id_to_value_alpha_powers.pop_front().unwrap();
         let id_to_value_alpha_8 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_z = *self.memoryidtobig_lookup_elements.z;
+        let id_to_value_z = *self.memory_id_to_big_lookup_elements.z;
 
         let mut range_check_4_3_alpha_powers = self
-            .rangecheck_4_3_lookup_elements
+            .range_check_4_3_lookup_elements
             .alpha_powers
             .span();
         let range_check_4_3_alpha_0 = *range_check_4_3_alpha_powers.pop_front().unwrap();
         let range_check_4_3_alpha_1 = *range_check_4_3_alpha_powers.pop_front().unwrap();
-        let range_check_4_3_z = *self.rangecheck_4_3_lookup_elements.z;
+        let range_check_4_3_z = *self.range_check_4_3_lookup_elements.z;
 
         let mut range_check_7_2_5_alpha_powers = self
             .range_check_7_2_5_lookup_elements
@@ -140,7 +143,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let range_check_7_2_5_z = *self.range_check_7_2_5_lookup_elements.z;
 
         let mut verify_instruction_alpha_powers = self
-            .verifyinstruction_lookup_elements
+            .verify_instruction_lookup_elements
             .alpha_powers
             .span();
 
@@ -163,7 +166,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let verify_instruction_alpha_16 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_17 = *verify_instruction_alpha_powers.pop_front().unwrap();
         let verify_instruction_alpha_18 = *verify_instruction_alpha_powers.pop_front().unwrap();
-        let verify_instruction_z = *self.verifyinstruction_lookup_elements.z;
+        let verify_instruction_z = *self.verify_instruction_lookup_elements.z;
 
         let log_size = self.claim.log_size();
 

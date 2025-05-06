@@ -75,7 +75,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 
 #[derive(Drop)]
 pub struct Rc6BitComponent {
-    pub lookup_elements: crate::RangeCheck6BitElements,
+    pub lookup_elements: crate::RangeCheck_6Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -120,7 +120,7 @@ pub impl Rc6BitComponentImpl of CairoComponent<Rc6BitComponent> {
             RangeCheck_6_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_6_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([6, 0, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([6, 0, 0, 0, 0], 0))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -138,7 +138,7 @@ pub impl Rc6BitComponentImpl of CairoComponent<Rc6BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc8BitComponent {
-    pub lookup_elements: crate::RangeCheck8BitElements,
+    pub lookup_elements: crate::RangeCheck_8Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -183,7 +183,7 @@ pub impl Rc8BitComponentImpl of CairoComponent<Rc8BitComponent> {
             RangeCheck_8_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_8_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([8, 0, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([8, 0, 0, 0, 0], 0))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -201,7 +201,7 @@ pub impl Rc8BitComponentImpl of CairoComponent<Rc8BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc11BitComponent {
-    pub lookup_elements: crate::RangeCheck11BitElements,
+    pub lookup_elements: crate::RangeCheck_11Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -246,7 +246,7 @@ pub impl Rc11BitComponentImpl of CairoComponent<Rc11BitComponent> {
             RangeCheck_11_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_11_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([11, 0, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([11, 0, 0, 0, 0], 0))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -264,7 +264,7 @@ pub impl Rc11BitComponentImpl of CairoComponent<Rc11BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc12BitComponent {
-    pub lookup_elements: crate::RangeCheck12BitElements,
+    pub lookup_elements: crate::RangeCheck_12Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -309,7 +309,7 @@ pub impl Rc12ComponentImpl of CairoComponent<Rc12BitComponent> {
             RangeCheck_12_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_12_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([12, 0, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([12, 0, 0, 0, 0], 0))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -327,7 +327,7 @@ pub impl Rc12ComponentImpl of CairoComponent<Rc12BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc18BitComponent {
-    pub lookup_elements: crate::RangeCheck18BitElements,
+    pub lookup_elements: crate::RangeCheck_18Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -372,7 +372,7 @@ pub impl Rc18BitComponentImpl of CairoComponent<Rc18BitComponent> {
             RangeCheck_18_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_18_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([18, 0, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([18, 0, 0, 0, 0], 0))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -390,7 +390,7 @@ pub impl Rc18BitComponentImpl of CairoComponent<Rc18BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc19BitComponent {
-    pub lookup_elements: crate::RangeCheck19BitElements,
+    pub lookup_elements: crate::RangeCheck_19Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -435,7 +435,7 @@ pub impl Rc19BitComponentImpl of CairoComponent<Rc19BitComponent> {
             RangeCheck_19_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_19_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([19, 0, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([19, 0, 0, 0, 0], 0))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -454,7 +454,7 @@ pub impl Rc19BitComponentImpl of CairoComponent<Rc19BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc9Bit9BitComponent {
-    pub lookup_elements: crate::RangeCheck9Bit9BitElements,
+    pub lookup_elements: crate::RangeCheck_9_9Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -501,9 +501,9 @@ pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
             RangeCheck_9_9_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_9_9_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([9, 9, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck2(([9, 9], 0))),
             range_check_9_9_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([9, 9, 0, 0, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck2(([9, 9], 1))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -521,7 +521,7 @@ pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc3Bit6BitComponent {
-    pub lookup_elements: crate::RangeCheck3Bit6BitElements,
+    pub lookup_elements: crate::RangeCheck_3_6Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -568,9 +568,9 @@ pub impl Rc3Bit6BitComponentImpl of CairoComponent<Rc3Bit6BitComponent> {
             RangeCheck_3_6_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_3_6_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 6, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck2(([3, 6], 0))),
             range_check_3_6_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 6, 0, 0, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck2(([3, 6], 1))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -588,7 +588,7 @@ pub impl Rc3Bit6BitComponentImpl of CairoComponent<Rc3Bit6BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc4Bit3BitComponent {
-    pub lookup_elements: crate::RangeCheck4Bit3BitElements,
+    pub lookup_elements: crate::RangeCheck_4_3Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -635,9 +635,9 @@ pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
             RangeCheck_4_3_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_4_3_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 3, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck2(([4, 3], 0))),
             range_check_4_3_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 3, 0, 0, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck2(([4, 3], 1))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -655,7 +655,7 @@ pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc4Bit4BitComponent {
-    pub lookup_elements: crate::RangeCheck4Bit4BitElements,
+    pub lookup_elements: crate::RangeCheck_4_4Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -702,9 +702,9 @@ pub impl Rc4Bit4BitComponentImpl of CairoComponent<Rc4Bit4BitComponent> {
             RangeCheck_4_4_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_4_4_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 4, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck2(([4, 4], 0))),
             range_check_4_4_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 4, 0, 0, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck2(([4, 4], 1))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -722,7 +722,7 @@ pub impl Rc4Bit4BitComponentImpl of CairoComponent<Rc4Bit4BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc5Bit4BitComponent {
-    pub lookup_elements: crate::RangeCheck5Bit4BitElements,
+    pub lookup_elements: crate::RangeCheck_5_4Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -769,9 +769,9 @@ pub impl Rc5Bit4BitComponentImpl of CairoComponent<Rc5Bit4BitComponent> {
             RangeCheck_5_4_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_5_4_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([5, 4, 0, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck2(([5, 4], 0))),
             range_check_5_4_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([5, 4, 0, 0, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck2(([5, 4], 1))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -789,7 +789,7 @@ pub impl Rc5Bit4BitComponentImpl of CairoComponent<Rc5Bit4BitComponent> {
 
 #[derive(Drop)]
 pub struct Rc7Bit2Bit5BitComponent {
-    pub lookup_elements: crate::RangeCheck7Bit2Bit5BitElements,
+    pub lookup_elements: crate::RangeCheck_7_2_5Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -838,11 +838,11 @@ pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> 
             RangeCheck_7_2_5_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_7_2_5_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck3(([7, 2, 5], 0))),
             range_check_7_2_5_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck3(([7, 2, 5], 1))),
             range_check_7_2_5_column_2: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 2))),
+                .get(PreprocessedColumn::RangeCheck3(([7, 2, 5], 2))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -860,7 +860,7 @@ pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> 
 
 #[derive(Drop)]
 pub struct Rc3Bit6Bit6Bit3BitComponent {
-    pub lookup_elements: crate::RangeCheck3Bit6Bit6Bit3BitElements,
+    pub lookup_elements: crate::RangeCheck_3_6_6_3Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -911,13 +911,13 @@ pub impl Rc3Bit6Bit6Bit3BitComponentImpl of CairoComponent<Rc3Bit6Bit6Bit3BitCom
             RangeCheck_3_6_6_3_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_3_6_6_3_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 6, 6, 3, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 0))),
             range_check_3_6_6_3_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 6, 6, 3, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 1))),
             range_check_3_6_6_3_column_2: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 6, 6, 3, 0], 2))),
+                .get(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 2))),
             range_check_3_6_6_3_column_3: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 6, 6, 3, 0], 3))),
+                .get(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -935,7 +935,7 @@ pub impl Rc3Bit6Bit6Bit3BitComponentImpl of CairoComponent<Rc3Bit6Bit6Bit3BitCom
 
 #[derive(Drop)]
 pub struct Rc4Bit4Bit4Bit4BitComponent {
-    pub lookup_elements: crate::RangeCheck4Bit4Bit4Bit4BitElements,
+    pub lookup_elements: crate::RangeCheck_4_4_4_4Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -986,13 +986,13 @@ pub impl Rc4Bit4Bit4Bit4BitComponentImpl of CairoComponent<Rc4Bit4Bit4Bit4BitCom
             RangeCheck_4_4_4_4_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_4_4_4_4_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 0))),
+                .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0))),
             range_check_4_4_4_4_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 1))),
+                .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1))),
             range_check_4_4_4_4_column_2: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 2))),
+                .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2))),
             range_check_4_4_4_4_column_3: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([4, 4, 4, 4, 0], 3))),
+                .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
@@ -1010,7 +1010,7 @@ pub impl Rc4Bit4Bit4Bit4BitComponentImpl of CairoComponent<Rc4Bit4Bit4Bit4BitCom
 
 #[derive(Drop)]
 pub struct Rc3Bit3Bit3Bit3Bit3BitComponent {
-    pub lookup_elements: crate::RangeCheck3Bit3Bit3Bit3Bit3BitElements,
+    pub lookup_elements: crate::RangeCheck_3_3_3_3_3Elements,
     pub interaction_claim: InteractionClaim,
 }
 
@@ -1063,15 +1063,15 @@ pub impl Rc3Bit3Bit3Bit3Bit3BitComponentImpl of CairoComponent<Rc3Bit3Bit3Bit3Bi
             RangeCheck_3_3_3_3_3_z: *self.lookup_elements.z,
             claimed_sum: *self.interaction_claim.claimed_sum,
             range_check_3_3_3_3_3_column_0: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 0))),
+                .get(PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0))),
             range_check_3_3_3_3_3_column_1: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 1))),
+                .get(PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1))),
             range_check_3_3_3_3_3_column_2: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 2))),
+                .get(PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 2))),
             range_check_3_3_3_3_3_column_3: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 3))),
+                .get(PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 3))),
             range_check_3_3_3_3_3_column_4: preprocessed_mask_values
-                .get(PreprocessedColumn::RangeCheck(([3, 3, 3, 3, 3], 4))),
+                .get(PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 4))),
             column_size: pow2(log_size).try_into().unwrap(),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
