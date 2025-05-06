@@ -53,7 +53,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub verify_bitwise_xor_4_lookup_elements: crate::VerifyBitwiseXor4BitElements,
+    pub verify_bitwise_xor_4_lookup_elements: crate::VerifyBitwiseXor_4Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
@@ -105,9 +105,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             VerifyBitwiseXor_4_alpha2,
             VerifyBitwiseXor_4_z,
             claimed_sum,
-            bitwise_xor_4_0: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 0))),
-            bitwise_xor_4_1: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 1))),
-            bitwise_xor_4_2: preprocessed_mask_values.get(PreprocessedColumn::Xor((N_BITS, 2))),
+            bitwise_xor_4_0: preprocessed_mask_values
+                .get(PreprocessedColumn::BitwiseXor((N_BITS, 0))),
+            bitwise_xor_4_1: preprocessed_mask_values
+                .get(PreprocessedColumn::BitwiseXor((N_BITS, 1))),
+            bitwise_xor_4_2: preprocessed_mask_values
+                .get(PreprocessedColumn::BitwiseXor((N_BITS, 2))),
             column_size: pow2(LOG_SIZE).try_into().unwrap(),
         };
 

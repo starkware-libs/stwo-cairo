@@ -57,10 +57,9 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor9BitElements,
-    pub range_check_12_bit_lookup_elements: crate::RangeCheck12BitElements,
-    pub range_check_18_bit_lookup_elements: crate::RangeCheck18BitElements,
-    pub range_check_3_6_6_3_lookup_elements: crate::RangeCheck3Bit6Bit6Bit3BitElements,
+    pub range_check_12_lookup_elements: crate::RangeCheck_12Elements,
+    pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
+    pub range_check_3_6_6_3_lookup_elements: crate::RangeCheck_3_6_6_3Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
@@ -139,25 +138,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let MemoryIdToBig_alpha27 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
         let MemoryIdToBig_alpha28 = *memory_id_to_big_alpha_powers.pop_front().unwrap();
 
-        let VerifyBitwiseXor_9_z = *self.verify_bitwise_xor_9_lookup_elements.z;
-        let mut verify_bitwise_xor_9_alpha_powers = self
-            .verify_bitwise_xor_9_lookup_elements
-            .alpha_powers
-            .span();
-        let VerifyBitwiseXor_9_alpha0 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
-        let VerifyBitwiseXor_9_alpha1 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
-        let VerifyBitwiseXor_9_alpha2 = *verify_bitwise_xor_9_alpha_powers.pop_front().unwrap();
-
-        let RangeCheck_12_z = *self.range_check_12_bit_lookup_elements.z;
+        let RangeCheck_12_z = *self.range_check_12_lookup_elements.z;
         let mut range_check_12_bit_alpha_powers = self
-            .range_check_12_bit_lookup_elements
+            .range_check_12_lookup_elements
             .alpha_powers
             .span();
         let RangeCheck_12_alpha0 = *range_check_12_bit_alpha_powers.pop_front().unwrap();
 
-        let RangeCheck_18_z = *self.range_check_18_bit_lookup_elements.z;
+        let RangeCheck_18_z = *self.range_check_18_lookup_elements.z;
         let mut range_check_18_bit_alpha_powers = self
-            .range_check_18_bit_lookup_elements
+            .range_check_18_lookup_elements
             .alpha_powers
             .span();
         let RangeCheck_18_alpha0 = *range_check_18_bit_alpha_powers.pop_front().unwrap();

@@ -55,8 +55,8 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
     pub pedersen_points_table_lookup_elements: crate::PedersenPointsTableElements,
-    pub range_check_19_lookup_elements: crate::RangeCheck19BitElements,
-    pub range_check_9_9_lookup_elements: crate::RangeCheck9Bit9BitElements,
+    pub range_check_19_lookup_elements: crate::RangeCheck_19Elements,
+    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {

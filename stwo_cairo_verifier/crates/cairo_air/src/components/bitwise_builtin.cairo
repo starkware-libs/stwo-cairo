@@ -57,7 +57,7 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor9BitElements,
+    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor_9Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {

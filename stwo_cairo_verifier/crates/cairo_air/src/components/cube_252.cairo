@@ -53,12 +53,9 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_6_lookup_elements: crate::RangeCheck6BitElements,
     pub cube_252_lookup_elements: crate::Cube252Elements,
-    pub range_check_19_lookup_elements: crate::RangeCheck19BitElements,
-    pub range_check_9_9_lookup_elements: crate::RangeCheck9Bit9BitElements,
+    pub range_check_19_lookup_elements: crate::RangeCheck_19Elements,
+    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {

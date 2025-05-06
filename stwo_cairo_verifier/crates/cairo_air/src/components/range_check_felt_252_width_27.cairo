@@ -54,8 +54,8 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
-    pub range_check_9_bit_9_bit_lookup_elements: crate::RangeCheck9Bit9BitElements,
-    pub range_check_18_bit_lookup_elements: crate::RangeCheck18BitElements,
+    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
+    pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
@@ -127,17 +127,17 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .pop_front()
             .unwrap();
 
-        let RangeCheck_9_9_z = *self.range_check_9_bit_9_bit_lookup_elements.z;
+        let RangeCheck_9_9_z = *self.range_check_9_9_lookup_elements.z;
         let mut range_check_9_bit_9_bit_alpha_powers = self
-            .range_check_9_bit_9_bit_lookup_elements
+            .range_check_9_9_lookup_elements
             .alpha_powers
             .span();
         let RangeCheck_9_9_alpha0 = *range_check_9_bit_9_bit_alpha_powers.pop_front().unwrap();
         let RangeCheck_9_9_alpha1 = *range_check_9_bit_9_bit_alpha_powers.pop_front().unwrap();
 
-        let RangeCheck_18_z = *self.range_check_18_bit_lookup_elements.z;
+        let RangeCheck_18_z = *self.range_check_18_lookup_elements.z;
         let mut range_check_18_bit_alpha_powers = self
-            .range_check_18_bit_lookup_elements
+            .range_check_18_lookup_elements
             .alpha_powers
             .span();
         let RangeCheck_18_alpha0 = *range_check_18_bit_alpha_powers.pop_front().unwrap();

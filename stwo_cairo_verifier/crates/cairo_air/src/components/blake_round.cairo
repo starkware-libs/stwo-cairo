@@ -57,7 +57,7 @@ pub struct Component {
     pub blake_round_sigma_lookup_elements: crate::BlakeRoundSigmaElements,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_7_2_5_lookup_elements: crate::RangeCheck7Bit2Bit5BitElements,
+    pub range_check_7_2_5_lookup_elements: crate::RangeCheck_7_2_5Elements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {

@@ -54,7 +54,7 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub opcodes_lookup_elements: crate::OpcodeElements,
+    pub opcodes_lookup_elements: crate::OpcodesElements,
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
 }
 
