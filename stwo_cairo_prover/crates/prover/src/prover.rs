@@ -315,19 +315,13 @@ pub mod tests {
             .unwrap();
         }
 
-        // TODO(Ohad): remove ignore.
-        #[ignore = "POW is not deterministic"]
-        #[test]
-        fn test_proof_stability() {
-            let n_proofs_to_compare = 10;
-            let prover_input_file_path =
-                get_prover_input_info_path("test_prove_verify_all_opcode_components");
-            let input = prover_input_from_vm_output(&prover_input_file_path)
-                .expect("Failed to create prover input from vm output");
+        fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
+            let prover_input_file_path = get_prover_input_info_path(path);
+            let input = prover_input_from_vm_output(&prover_input_file_path).unwrap();
 
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
-                    serde_json::to_string(
+                    sonic_rs::to_string(
                         &prove_cairo::<Blake2sMerkleChannel>(
                             input.clone(),
                             PcsConfig::default(),
@@ -340,6 +334,16 @@ pub mod tests {
                 .collect_vec();
 
             assert!(proofs.iter().all_equal());
+        }
+
+        #[test]
+        fn test_opcodes_proof_stability() {
+            test_proof_stability("test_prove_verify_all_opcode_components", 2);
+        }
+
+        #[test]
+        fn test_builtins_proof_stability() {
+            test_proof_stability("test_prove_verify_all_builtins", 2);
         }
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
