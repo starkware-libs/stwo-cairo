@@ -18,9 +18,9 @@ pub fn mask_points(
     trace_gen: CirclePointIndex,
     log_size: u32,
 ) {
-    preprocessed_column_set.insert(PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 0)));
-    preprocessed_column_set.insert(PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 1)));
-    preprocessed_column_set.insert(PreprocessedColumn::RangeCheck(([7, 2, 5, 0, 0], 2)));
+    preprocessed_column_set.insert(PreprocessedColumn::RangeCheck3(([7, 2, 5], 0)));
+    preprocessed_column_set.insert(PreprocessedColumn::RangeCheck3(([7, 2, 5], 1)));
+    preprocessed_column_set.insert(PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
     trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);

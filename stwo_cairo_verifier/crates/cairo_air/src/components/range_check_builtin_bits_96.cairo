@@ -18,7 +18,7 @@ mod constraints;
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub log_size: u32,
-    pub range_check_builtin_segment_start: u32,
+    pub range_check96_builtin_segment_start: u32,
 }
 
 #[generate_trait]
@@ -34,7 +34,7 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*self.log_size).into());
-        channel.mix_u64((*self.range_check_builtin_segment_start).into());
+        channel.mix_u64((*self.range_check96_builtin_segment_start).into());
     }
 }
 
@@ -57,7 +57,7 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_6_lookup_elements: crate::RangeCheck6BitElements,
+    pub range_check_6_lookup_elements: crate::RangeCheck_6Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
@@ -127,13 +127,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
-        let range_check_builtin_segment_start = (*self.claim.range_check_builtin_segment_start)
+        let range_check96_builtin_segment_start = (*self.claim.range_check96_builtin_segment_start)
             .try_into()
             .unwrap();
 
         let params = constraints::ConstraintParams {
             column_size: pow2(log_size).try_into().unwrap(),
-            builtin_segment_start: range_check_builtin_segment_start,
+            builtin_segment_start: range_check96_builtin_segment_start,
             MemoryAddressToId_alpha0,
             MemoryAddressToId_alpha1,
             MemoryAddressToId_z,

@@ -52,12 +52,12 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub opcodes_lookup_elements: crate::OpcodeElements,
+    pub opcodes_lookup_elements: crate::OpcodesElements,
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_7_2_5_lookup_elements: crate::RangeCheck7Bit2Bit5BitElements,
-    pub triple_xor32_lookup_elements: crate::TripleXor32Elements,
-    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor8BitElements,
+    pub range_check_7_2_5_lookup_elements: crate::RangeCheck_7_2_5Elements,
+    pub triple_xor_32_lookup_elements: crate::TripleXor32Elements,
+    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
     pub blake_round_lookup_elements: crate::BlakeRoundElements,
 }
 
@@ -183,8 +183,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let RangeCheck_7_2_5_alpha1 = *range_check_7_2_5_alpha_powers.pop_front().unwrap();
         let RangeCheck_7_2_5_alpha2 = *range_check_7_2_5_alpha_powers.pop_front().unwrap();
 
-        let TripleXor32_z = *self.triple_xor32_lookup_elements.z;
-        let mut triple_xor32_alpha_powers = self.triple_xor32_lookup_elements.alpha_powers.span();
+        let TripleXor32_z = *self.triple_xor_32_lookup_elements.z;
+        let mut triple_xor32_alpha_powers = self.triple_xor_32_lookup_elements.alpha_powers.span();
         let TripleXor32_alpha0 = *triple_xor32_alpha_powers.pop_front().unwrap();
         let TripleXor32_alpha1 = *triple_xor32_alpha_powers.pop_front().unwrap();
         let TripleXor32_alpha2 = *triple_xor32_alpha_powers.pop_front().unwrap();

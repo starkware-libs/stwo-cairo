@@ -53,10 +53,10 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub opcodes_lookup_elements: crate::OpcodeElements,
+    pub opcodes_lookup_elements: crate::OpcodesElements,
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck4Bit4Bit4Bit4BitElements,
+    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck_4_4_4_4Elements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
