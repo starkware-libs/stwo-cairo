@@ -123,7 +123,11 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (Claim, InteractionClaimGenerator) {
         let size = std::cmp::max(
-            (self.address_to_raw_id.len() / MEMORY_ADDRESS_TO_ID_SPLIT).next_power_of_two(),
+            (self
+                .address_to_raw_id
+                .len()
+                .div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT))
+            .next_power_of_two(),
             N_LANES,
         );
         let n_packed_rows = size.div_ceil(N_LANES);
