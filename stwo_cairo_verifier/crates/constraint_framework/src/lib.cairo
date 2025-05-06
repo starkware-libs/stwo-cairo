@@ -162,7 +162,7 @@ pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
 pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
     fn encode(key: @PreprocessedColumn) -> felt252 {
         const FELT252_2_POW_32: felt252 = 0x100000000;
-        // TODO: Is there something like Rust's `core::mem::discriminant` in Cairo?
+
         const XOR_DISCRIMINANT: felt252 = 0;
         const SEQ_TABLE_DISCRIMINANT: felt252 = 1;
         const RANGE_CHECK_DISCRIMINANT: felt252 = 2;

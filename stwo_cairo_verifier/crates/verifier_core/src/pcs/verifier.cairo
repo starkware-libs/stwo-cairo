@@ -13,7 +13,6 @@ use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationErr
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
 
-// TODO(andrew): Change all `Array` types to `Span`.
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
     pub config: PcsConfig,
@@ -29,7 +28,6 @@ pub struct CommitmentSchemeProof {
 
 
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
-// TODO(andrew): Make generic on MerkleChannel.
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
     pub trees: Array<MerkleVerifier<MerkleHasher>>,
@@ -52,8 +50,6 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     }
 
     /// Reads a commitment from the prover.
-    // TODO(andrew): Make commitment MerkleHasher hash type.
-    // TODO(andrew): Make channel MerkleChannel generic channel.
     fn commit(
         ref self: CommitmentSchemeVerifier,
         commitment: Hash,
@@ -134,14 +130,11 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             let decommitment = decommitments.next().unwrap();
             let queried_values = *queried_values[tree_i];
 
-            // TODO(andrew): Unfortunately the current merkle implementation pops values from the
-            // query position dict so it has to be duplicated.
-            if let Err(err) = tree
-                .verify(
-                    query_positions_by_log_size.clone_subset(unique_column_log_sizes),
-                    queried_values,
-                    decommitment,
-                ) {
+            // The merkle implementation pops values from the query position dict so it has to be
+            // duplicated.
+            let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
+
+            if let Err(err) = tree.verify(query_positions, queried_values, decommitment) {
                 break Err(VerificationError::Merkle(err));
             }
 
