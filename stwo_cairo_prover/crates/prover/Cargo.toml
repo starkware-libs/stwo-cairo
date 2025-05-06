@@ -38,3 +38,4 @@ cairo-vm = { workspace = true, default-features = true }
 test-log = { version = "0.2.17", features = ["trace"] }
 tracing-subscriber.workspace = true
 rand.workspace = true
+sonic-rs = { version = "0.3.17" }
