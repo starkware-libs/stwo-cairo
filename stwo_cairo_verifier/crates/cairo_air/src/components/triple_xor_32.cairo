@@ -54,7 +54,7 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub triple_xor_32_lookup_elements: crate::TripleXor32Elements,
-    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor8BitElements,
+    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {

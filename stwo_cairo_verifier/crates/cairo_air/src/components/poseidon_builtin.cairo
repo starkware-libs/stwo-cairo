@@ -59,9 +59,9 @@ pub struct Component {
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
     pub cube_252_lookup_elements: crate::Cube252Elements,
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
-    pub range_check_3_3_3_3_3_lookup_elements: crate::RangeCheck3Bit3Bit3Bit3Bit3BitElements,
-    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck4Bit4Bit4Bit4BitElements,
-    pub range_check_4_4_lookup_elements: crate::RangeCheck4Bit4BitElements,
+    pub range_check_3_3_3_3_3_lookup_elements: crate::RangeCheck_3_3_3_3_3Elements,
+    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck_4_4_4_4Elements,
+    pub range_check_4_4_lookup_elements: crate::RangeCheck_4_4Elements,
     pub poseidon_full_round_chain_lookup_elements: crate::PoseidonFullRoundChainElements,
     pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
 }

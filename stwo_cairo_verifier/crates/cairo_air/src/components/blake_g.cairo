@@ -53,11 +53,11 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub blake_g_lookup_elements: crate::BlakeGElements,
-    pub verify_bitwise_xor_12_lookup_elements: crate::VerifyBitwiseXor12BitElements,
-    pub verify_bitwise_xor_4_lookup_elements: crate::VerifyBitwiseXor4BitElements,
-    pub verify_bitwise_xor_7_lookup_elements: crate::VerifyBitwiseXor7BitElements,
-    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor8BitElements,
-    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor9BitElements,
+    pub verify_bitwise_xor_12_lookup_elements: crate::VerifyBitwiseXor_12Elements,
+    pub verify_bitwise_xor_4_lookup_elements: crate::VerifyBitwiseXor_4Elements,
+    pub verify_bitwise_xor_7_lookup_elements: crate::VerifyBitwiseXor_7Elements,
+    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
+    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor_9Elements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
