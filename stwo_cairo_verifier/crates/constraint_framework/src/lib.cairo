@@ -48,6 +48,20 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
 
         sum
     }
+
+    fn combine_qm31<impl IntoSpan: ToSpanTrait<[QM31; N], QM31>>(
+        self: @LookupElements<N>, values: [QM31; N],
+    ) -> QM31 {
+        let mut alpha_powers = self.alpha_powers.span();
+        let mut values_span = IntoSpan::span(@values);
+        let mut sum = -*self.z;
+
+        while let (Some(alpha), Some(value)) = (alpha_powers.pop_front(), values_span.pop_front()) {
+            sum += (*alpha) * (*value);
+        }
+
+        sum
+    }
 }
 
 
@@ -127,12 +141,15 @@ enum PreprocessedColumnsAllocationMode {
 pub enum PreprocessedColumn {
     /// Symbolic representation of xor lookup table column of the form: `(n_term_bits, term)`.
     /// Where term is `{ 0 = left operand, 1 = right operand, 2 = xor result }`.
-    Xor: (u32, usize),
+    BitwiseXor: (u32, usize),
     /// A column with the numbers [0..2^log_size-1].
     Seq: u32,
     /// Symbolic representation of range check column.
     /// The column is of the form `(log_ranges, column_index)`.
-    RangeCheck: ([u32; 5], usize),
+    RangeCheck5: ([u32; 5], usize),
+    RangeCheck4: ([u32; 4], usize),
+    RangeCheck3: ([u32; 3], usize),
+    RangeCheck2: ([u32; 2], usize),
     /// Poseidon round keys of the form `(column_index)`.
     PoseidonRoundKeys: usize,
     /// Blake2s sigma column.
@@ -145,16 +162,27 @@ pub enum PreprocessedColumn {
 pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
     fn log_size(self: @PreprocessedColumn) -> u32 {
         match self {
-            PreprocessedColumn::Xor((n_term_bits, _)) => *n_term_bits * 2,
+            PreprocessedColumn::BitwiseXor((n_term_bits, _)) => *n_term_bits * 2,
             PreprocessedColumn::Seq(log_size) => *log_size,
-            PreprocessedColumn::RangeCheck((
-                [r0, r1, r2, r3, r4], _,
-            )) => { *r0 + *r1 + *r2 + *r3 + *r4 },
+            PreprocessedColumn::RangeCheck5((values, _)) => range_check_size(values),
+            PreprocessedColumn::RangeCheck4((values, _)) => range_check_size(values),
+            PreprocessedColumn::RangeCheck3((values, _)) => range_check_size(values),
+            PreprocessedColumn::RangeCheck2((values, _)) => range_check_size(values),
             PreprocessedColumn::PoseidonRoundKeys(_) => 6,
             PreprocessedColumn::BlakeSigma(_) => 4,
             PreprocessedColumn::PedersenPoints(_) => 23,
         }
     }
+}
+
+pub fn range_check_size<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u32>>(
+    bits: @[u32; N],
+) -> u32 {
+    let mut total: u32 = 0;
+    for bit in IntoSpan::span(bits) {
+        total = total + *bit;
+    }
+    total
 }
 
 /// An encoding of a [`PreprocessedColumn`] to index into [`Felt252Dict`].
@@ -165,13 +193,16 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
         // TODO: Is there something like Rust's `core::mem::discriminant` in Cairo?
         const XOR_DISCRIMINANT: felt252 = 0;
         const SEQ_TABLE_DISCRIMINANT: felt252 = 1;
-        const RANGE_CHECK_DISCRIMINANT: felt252 = 2;
-        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 3;
-        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 4;
-        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 5;
+        const RANGE_CHECK_2_DISCRIMINANT: felt252 = 2;
+        const RANGE_CHECK_3_DISCRIMINANT: felt252 = 3;
+        const RANGE_CHECK_4_DISCRIMINANT: felt252 = 4;
+        const RANGE_CHECK_5_DISCRIMINANT: felt252 = 5;
+        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 6;
+        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 7;
+        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 8;
 
         match key {
-            PreprocessedColumn::Xor((
+            PreprocessedColumn::BitwiseXor((
                 n_term_bits, term,
             )) => {
                 let mut res = (*term).into();
@@ -184,18 +215,18 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
                 res = res * FELT252_2_POW_32 + SEQ_TABLE_DISCRIMINANT;
                 res
             },
-            PreprocessedColumn::RangeCheck((
-                [r0, r1, r2, r3, r4], column_index,
-            )) => {
-                let mut res = (*column_index).into();
-                res = res * FELT252_2_POW_32 + (*r0).into();
-                res = res * FELT252_2_POW_32 + (*r1).into();
-                res = res * FELT252_2_POW_32 + (*r2).into();
-                res = res * FELT252_2_POW_32 + (*r3).into();
-                res = res * FELT252_2_POW_32 + (*r4).into();
-                res = res * FELT252_2_POW_32 + RANGE_CHECK_DISCRIMINANT;
-                res
-            },
+            PreprocessedColumn::RangeCheck5((
+                values, column_index,
+            )) => range_check_encode(values, *column_index, RANGE_CHECK_5_DISCRIMINANT),
+            PreprocessedColumn::RangeCheck4((
+                values, column_index,
+            )) => range_check_encode(values, *column_index, RANGE_CHECK_4_DISCRIMINANT),
+            PreprocessedColumn::RangeCheck3((
+                values, column_index,
+            )) => range_check_encode(values, *column_index, RANGE_CHECK_3_DISCRIMINANT),
+            PreprocessedColumn::RangeCheck2((
+                values, column_index,
+            )) => range_check_encode(values, *column_index, RANGE_CHECK_2_DISCRIMINANT),
             PreprocessedColumn::PoseidonRoundKeys(column_index) => {
                 let mut res = (*column_index).into();
                 res = res * FELT252_2_POW_32 + POSEIDON_ROUND_KEYS_DISCRIMINANT;
@@ -213,6 +244,19 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
             },
         }
     }
+}
+
+pub fn range_check_encode<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u32>>(
+    bits: @[u32; N], column_index: usize, discriminant: felt252,
+) -> felt252 {
+    const FELT252_2_POW_32: felt252 = 0x100000000;
+
+    let mut total: felt252 = column_index.into();
+    for bit in IntoSpan::span(bits) {
+        total = total * FELT252_2_POW_32 + (*bit).into();
+    }
+    total = total * FELT252_2_POW_32 + discriminant;
+    total
 }
 
 #[cfg(test)]
