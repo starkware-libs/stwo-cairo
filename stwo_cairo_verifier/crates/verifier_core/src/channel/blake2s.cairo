@@ -128,15 +128,20 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         bytes
     }
 
-    fn check_proof_of_work(self: @Blake2sChannel, n_bits: u32) -> bool {
-        const U128_2_POW_32: u128 = 0x100000000;
-        let [d0, d1, d2, d3, _, _, _, _] = self.digest.hash.unbox();
-        let v = d3.into();
-        let v = v * U128_2_POW_32 + d2.into();
-        let v = v * U128_2_POW_32 + d1.into();
-        let v = v * U128_2_POW_32 + d0.into();
-        v & gen_bit_mask(n_bits) == 0
+    fn mix_and_check_pow_nonce(ref self: Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
+        self.mix_u64(nonce);
+        check_proof_of_work(self.digest, n_bits)
     }
+}
+
+fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
+    const U128_2_POW_32: u128 = 0x100000000;
+    let [d0, d1, d2, d3, _, _, _, _] = digest.hash.unbox();
+    let v = d3.into();
+    let v = v * U128_2_POW_32 + d2.into();
+    let v = v * U128_2_POW_32 + d1.into();
+    let v = v * U128_2_POW_32 + d0.into();
+    v & gen_bit_mask(n_bits) == 0
 }
 
 fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
@@ -176,7 +181,7 @@ mod tests {
     use core::box::BoxImpl;
     use crate::fields::qm31::qm31_const;
     use crate::vcs::blake2s_hasher::Blake2sHash;
-    use super::{Blake2sChannel, ChannelTrait, new_channel};
+    use super::{Blake2sChannel, ChannelTrait, check_proof_of_work, new_channel};
 
     #[test]
     fn test_blake_bytes() {
@@ -355,22 +360,18 @@ mod tests {
 
     #[test]
     fn test_check_proof_of_work() {
-        let channel = new_channel(
-            Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) },
-        );
+        let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
-        let res = channel.check_proof_of_work(3);
+        let res = check_proof_of_work(digest, 3);
 
         assert!(res);
     }
 
     #[test]
     fn test_check_proof_of_work_with_invalid_n_bits() {
-        let channel = new_channel(
-            Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) },
-        );
+        let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
-        let res = channel.check_proof_of_work(4);
+        let res = check_proof_of_work(digest, 4);
 
         assert!(!res);
     }
