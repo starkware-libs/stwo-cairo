@@ -2,8 +2,8 @@ use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_d2a10::DecodeInstructionD2A10;
 use crate::components::subroutines::read_small::ReadSmall;
 
-pub const N_TRACE_COLUMNS: usize = 14;
-pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
+pub const N_TRACE_COLUMNS: usize = 15;
+pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 1,
@@ -17,6 +17,14 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
         uses: 1,
     },
     RelationUse {
+        relation_id: "RangeCheck_19",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_8",
+        uses: 1,
+    },
+    RelationUse {
         relation_id: "VerifyInstruction",
         uses: 1,
     },
@@ -27,6 +35,8 @@ pub struct Eval {
     pub verify_instruction_lookup_elements: relations::VerifyInstruction,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+    pub range_check_19_lookup_elements: relations::RangeCheck_19,
+    pub range_check_8_lookup_elements: relations::RangeCheck_8,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -37,7 +47,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 4];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -72,6 +82,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_8388608 = E::F::from(M31::from(8388608));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -85,15 +96,16 @@ impl FrameworkEval for Eval {
         let op1_limb_0_col10 = eval.next_trace_mask();
         let op1_limb_1_col11 = eval.next_trace_mask();
         let op1_limb_2_col12 = eval.next_trace_mask();
+        let next_ap_bot8bits_col13 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_d2a10_output_tmp_c921e_5_offset0, decode_instruction_d2a10_output_tmp_c921e_5_offset1, decode_instruction_d2a10_output_tmp_c921e_5_offset2, decode_instruction_d2a10_output_tmp_c921e_5_dst_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op0_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op1_imm, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap, decode_instruction_d2a10_output_tmp_c921e_5_res_add, decode_instruction_d2a10_output_tmp_c921e_5_res_mul, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jump, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jump_rel, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jnz, decode_instruction_d2a10_output_tmp_c921e_5_ap_update_add, decode_instruction_d2a10_output_tmp_c921e_5_ap_update_add_1, decode_instruction_d2a10_output_tmp_c921e_5_opcode_call, decode_instruction_d2a10_output_tmp_c921e_5_opcode_ret, decode_instruction_d2a10_output_tmp_c921e_5_opcode_assert_eq, decode_instruction_d2a10_output_tmp_c921e_5_opcode_extension] =
+        let [decode_instruction_d2a10_output_tmp_c921e_5_offset2, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap] =
             DecodeInstructionD2A10::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset2_col3.clone(),
                 op1_imm_col4.clone(),
                 op1_base_fp_col5.clone(),
@@ -115,20 +127,37 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_c921e_11_limb_0, read_small_output_tmp_c921e_11_limb_1] =
-            ReadSmall::evaluate(
-                (mem1_base_col6.clone()
-                    + decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone()),
-                op1_id_col7.clone(),
-                msb_col8.clone(),
-                mid_limbs_set_col9.clone(),
-                op1_limb_0_col10.clone(),
-                op1_limb_1_col11.clone(),
-                op1_limb_2_col12.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_small_output_tmp_c921e_11_limb_0] = ReadSmall::evaluate(
+            [(mem1_base_col6.clone()
+                + decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone())],
+            op1_id_col7.clone(),
+            msb_col8.clone(),
+            mid_limbs_set_col9.clone(),
+            op1_limb_0_col10.clone(),
+            op1_limb_1_col11.clone(),
+            op1_limb_2_col12.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        let next_ap_tmp_c921e_12 = eval.add_intermediate(
+            (input_ap_col1.clone() + read_small_output_tmp_c921e_11_limb_0.clone()),
+        );
+        eval.add_to_relation(RelationEntry::new(
+            &self.range_check_19_lookup_elements,
+            E::EF::one(),
+            &[
+                ((next_ap_tmp_c921e_12.clone() - next_ap_bot8bits_col13.clone())
+                    * M31_8388608.clone()),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.range_check_8_lookup_elements,
+            E::EF::one(),
+            &[next_ap_bot8bits_col13.clone()],
+        ));
+
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::from(enabler.clone()),
@@ -144,7 +173,7 @@ impl FrameworkEval for Eval {
             -E::EF::from(enabler.clone()),
             &[
                 (input_pc_col0.clone() + (M31_1.clone() + op1_imm_col4.clone())),
-                (input_ap_col1.clone() + read_small_output_tmp_c921e_11_limb_0.clone()),
+                next_ap_tmp_c921e_12.clone(),
                 input_fp_col2.clone(),
             ],
         ));
@@ -173,6 +202,8 @@ mod tests {
             verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+            range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
