@@ -57,9 +57,9 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_5_4_lookup_elements: crate::RangeCheck5Bit4BitElements,
+    pub range_check_5_4_lookup_elements: crate::RangeCheck_5_4Elements,
     pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
-    pub range_check_8_lookup_elements: crate::RangeCheck8BitElements,
+    pub range_check_8_lookup_elements: crate::RangeCheck_8Elements,
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
