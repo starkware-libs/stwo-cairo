@@ -386,6 +386,14 @@ impl OpcodeComponents {
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
                             .clone(),
+                        range_check_19_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19
+                            .clone(),
+                        range_check_8_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_8
+                            .clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
