@@ -24,8 +24,7 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn to_array(self: QM31) -> [M31InnerT; 4] {
-        let [a, b, c, d] = core::qm31::QM31Trait::unpack(self.inner);
-        [a, b, c, d]
+        core::qm31::QM31Trait::unpack(self.inner)
     }
 
     #[inline]
@@ -41,6 +40,7 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn complex_conjugate(self: QM31) -> QM31 {
         let [a, b, c, d] = self.to_array();
+        // Try Into::<_, M31>::into(c)
         let neg_c = (-M31InnerTIntoM31::into(c)).inner;
         let neg_d = (-M31InnerTIntoM31::into(d)).inner;
         Self::from_array([a, b, neg_c, neg_d])
@@ -94,7 +94,7 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
 pub impl QM31Div of core::traits::Div<QM31> {
     #[inline(always)]
     fn div(lhs: QM31, rhs: QM31) -> QM31 {
-        QM31 { inner: lhs.inner / rhs.inner.try_into().unwrap() }
+        QM31 { inner: lhs.inner / rhs.inner }
     }
 }
 
@@ -140,7 +140,7 @@ pub impl QM31Zero of Zero<QM31> {
 
     #[inline]
     fn is_non_zero(self: @QM31) -> bool {
-        (*self).inner.is_non_zero()
+        self.inner.is_non_zero()
     }
 }
 
@@ -265,6 +265,7 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
     }
 }
 
+// why in this file?
 #[derive(Copy, Drop, Debug)]
 pub struct PackedUnreducedCM31 {
     // Using CM31 directly is efficient thanks to the QM31 opcode.

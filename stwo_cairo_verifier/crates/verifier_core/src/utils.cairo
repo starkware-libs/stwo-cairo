@@ -11,7 +11,7 @@ use crate::fields::m31::{M31InnerT, M31_SHIFT};
 pub fn pow2(n: u32) -> u32 {
     /// Look up table where index `i` stores value `2^i`.
     const POW_2: [u32; 32] = [
-        0b1, // 
+        0b1, //
         0b10, //
         0b100, //
         0b1000, //
@@ -228,6 +228,7 @@ pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
 }
 
 /// Generates a bit mask with the least significant `n_bits` set to 1.
+// can be done with lookup table?
 pub fn gen_bit_mask(n_bits: u32) -> u128 {
     assert!(n_bits <= 128);
     let mut mask = 1;

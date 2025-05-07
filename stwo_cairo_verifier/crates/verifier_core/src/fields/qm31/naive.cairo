@@ -10,17 +10,19 @@ use super::{
     UnreducedQM31Trait,
 };
 
+// Document R = 2+i = u^2
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
 #[derive(Copy, Drop, Debug, PartialEq)]
+// Represents a+u*b
 pub struct QM31 {
+    // rename to (ab, cd) or (x, y)
     a: CM31,
     b: CM31,
 }
 
 impl QM31InvertibleImpl of Invertible<QM31> {
     fn inverse(self: QM31) -> QM31 {
-        assert!(self.is_non_zero());
         let b2 = self.b * self.b;
         let ib2 = CM31 { a: -b2.b, b: b2.a };
         let denom = self.a * self.a - (b2 + b2 + ib2);
@@ -47,7 +49,7 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
         QM31 {
-            a: CM31 { a: self.a.a * rhs, b: self.a.b * rhs },
+            a: self.a.mul_m31(rhs), // same below
             b: CM31 { a: self.b.a * rhs, b: self.b.b * rhs },
         }
     }
@@ -57,24 +59,30 @@ pub impl QM31Impl of QM31Trait {
         QM31 { a: self.a * rhs, b: self.b * rhs }
     }
 
-    fn complex_conjugate(self: QM31) -> QM31 {
+    // alternative names: conjugate_over_cm31, order2_conjugate
+    fn conjugate(self: QM31) -> QM31 {
         QM31 { a: self.a, b: -self.b }
     }
 
     #[inline]
+    // rename
     fn fms(a: QM31, b: QM31, c: QM31) -> QM31 {
         (Self::mul_unreduced(a, b) - c.into()).reduce()
     }
 
     #[inline]
+    // same
     fn fma(a: QM31, b: QM31, c: QM31) -> QM31 {
         (Self::mul_unreduced(a, b) + c.into()).reduce()
     }
 
+    // is this todo done?
     // TODO(andrew): May be net worse performance doing unreduced arithmetic due to all felt252
     // multiplications (which are expensive for the M31 prover to simulate). Measure overall
     // prove+verify performance differences with unreduced felt252 vs reduced u32. If prover
     // performance is an issue consider Karatsuba.
+
+    // document ranges of output (like in secp)
     #[inline]
     fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
         /// Equals `P * P * 16`.
@@ -95,6 +103,9 @@ pub impl QM31Impl of QM31Trait {
         // `rhs` 2nd CM31 coordinate.
         let rhs_ba: felt252 = rhs.b.a.into();
         let rhs_bb: felt252 = rhs.b.b.into();
+
+        // can this be refactored in a more readable way using CM31::unreduced_mul?
+        // this code was not audited, please refactor
 
         // lhs.a * rhs.a
         let (aa_t_ba_a, aa_t_ba_b) = {
@@ -132,7 +143,9 @@ pub impl QM31Impl of QM31Trait {
         }
     }
 
+    // document, including why it's needed and why it gets QM31
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
+        // implement directly by coordinates
         let [e0, e1, e2, e3] = evals;
         e0
             + e1 * qm31_const::<0, 1, 0, 0>()
@@ -159,6 +172,7 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
     #[inline(never)]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
+        // consider implementing mul_by_r for efficiency
         QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
@@ -202,6 +216,7 @@ pub impl QM31Zero of Zero<QM31> {
     }
 
     fn is_non_zero(self: @QM31) -> bool {
+        // not self.is_zero()
         (*self).a.is_non_zero() || (*self).b.is_non_zero()
     }
 }
@@ -217,6 +232,7 @@ pub impl QM31One of One<QM31> {
     }
 
     fn is_non_one(self: @QM31) -> bool {
+        // same
         (*self).a.is_non_one() || (*self).b.is_non_zero()
     }
 }
@@ -237,6 +253,7 @@ pub impl CM31IntoQM31 of core::traits::Into<CM31, QM31> {
 
 pub impl QM31Neg of Neg<QM31> {
     #[inline]
+    // don't call the argument a
     fn neg(a: QM31) -> QM31 {
         QM31 { a: -a.a, b: -a.b }
     }
@@ -253,6 +270,8 @@ pub struct UnreducedQM31 {
 
 pub impl UnreducedQM31Impl of UnreducedQM31Trait {
     #[inline]
+    // document ranges of input (like in secp)
+    // should be private?
     fn reduce(self: UnreducedQM31) -> QM31 {
         QM31 {
             a: CM31 {
@@ -297,6 +316,7 @@ impl QM31IntoUnreducedQM31 of Into<QM31, UnreducedQM31> {
 ///
 /// Is more efficient than [`UnreducedQM31`] since only requires two felt252 operations per addition
 /// or M31 multiplication vs 4.
+// do the todo
 // TODO: Determine if performance difference between UnreducedQM31 and PackedUnreducedQM31 is worth
 // keeping around both types.
 #[derive(Copy, Drop, Debug)]

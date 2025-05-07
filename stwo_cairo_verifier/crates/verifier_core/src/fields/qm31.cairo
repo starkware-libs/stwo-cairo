@@ -25,8 +25,12 @@ pub const P4: u128 = 0xFFFFFFF800000017FFFFFFE00000001;
 pub const QM31_EXTENSION_DEGREE: usize = 4;
 
 pub trait QM31Trait {
+    // 1. why not using M31 type?
+    // 2. change name to something else (array means non-fixed-size-array)
+    // 3. why 4 and not QM31_EXTENSION_DEGREE?
     fn from_array(arr: [M31InnerT; 4]) -> QM31;
 
+    // same
     fn to_array(self: QM31) -> [M31InnerT; 4];
 
     fn mul_m31(self: QM31, rhs: M31) -> QM31;
@@ -37,14 +41,18 @@ pub trait QM31Trait {
     fn complex_conjugate(self: QM31) -> QM31;
 
     /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
+    /// use full names
     fn fms(a: QM31, b: QM31, c: QM31) -> QM31;
 
     /// Returns a fused multiply-add i.e. returns `a * b + c`.
+    // use full names
     fn fma(a: QM31, b: QM31, c: QM31) -> QM31;
 
     /// Returns `lhs * rhs` in unreduced form.
     fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31;
 
+    // 1. confusing documentation
+    // 2. why not [M31; QM31_EXTENSION_DEGREE]?
     /// Returns the combined value, given the values of its composing base field polynomials at that
     /// point.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31;
@@ -59,6 +67,7 @@ pub impl QM31Serde of Serde<QM31> {
         output.append(d.into());
     }
 
+    // why M31InnerT and not M31?
     fn deserialize(ref serialized: Span<felt252>) -> Option<QM31> {
         let a: M31InnerT = Serde::deserialize(ref serialized)?;
         let b: M31InnerT = Serde::deserialize(ref serialized)?;
@@ -72,6 +81,7 @@ trait UnreducedQM31Trait {
     fn reduce(self: UnreducedQM31) -> QM31;
 }
 
+// why in this file?
 trait PackedUnreducedCM31Trait {
     fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31;
 
@@ -81,6 +91,7 @@ trait PackedUnreducedCM31Trait {
     fn reduce(self: PackedUnreducedCM31) -> CM31;
 }
 
+// could be generic in the field
 pub trait PackedUnreducedQM31Trait {
     fn mul_m31(self: PackedUnreducedQM31, rhs: UnreducedM31) -> PackedUnreducedQM31;
 

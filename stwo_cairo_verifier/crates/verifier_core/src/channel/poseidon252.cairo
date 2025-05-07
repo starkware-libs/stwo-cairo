@@ -31,7 +31,10 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
         let mut res = array![self.digest];
         loop {
-            match (felts.pop_front(), felts.pop_front()) {
+            // consider using multipop and then if fails pop_front.
+            let x_opt = felts.pop_front();
+            let y_opt = felts.pop_front();
+            match (x_opt, y_opt) {
                 (None, _) => { break; },
                 (Some(x), None) => {
                     res.append(pack4(0, (*x).to_array()));
@@ -40,6 +43,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
                 (
                     Some(x), Some(y),
                 ) => {
+                    // there is collision:
+                    // [x], [0, x]
                     let cur = pack4(0, (*x).to_array());
                     res.append(pack4(cur, (*y).to_array()));
                 },
@@ -53,16 +58,20 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
+        // for poseidon add mix_felt252 and use it in both mix_u64 and mix_root.
         self.mix_root(nonce.into())
     }
 
     fn draw_felt(ref self: Poseidon252Channel) -> SecureField {
+        // consider implementing draw_base_felts4, also in draw_felts
         let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self);
         QM31Trait::from_array([r0, r1, r2, r3])
     }
 
     fn draw_felts(ref self: Poseidon252Channel, mut n_felts: usize) -> Array<SecureField> {
         let mut res: Array = Default::default();
+
+        // be consistent (in blake it is a while loop), consider sharing this code
         loop {
             if n_felts == 0 {
                 break;
@@ -70,6 +79,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_base_felts(ref self);
             res.append(QM31Trait::from_array([r0, r1, r2, r3]));
             if n_felts == 1 {
+                // use draw_base_felts4
                 break;
             }
             res.append(QM31Trait::from_array([r4, r5, r6, r7]));
@@ -81,10 +91,12 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
     /// `self.draw_felt252()` in little endian.
     /// TODO: check that this distribution is good enough, as it is only close to uniform.
+    /// is this distribution good enough?
     fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
         let mut cur: u256 = draw_felt252(ref self).into();
         let mut bytes = array![];
         for _ in 0_usize..BYTES_PER_HASH {
+            // div_rem is very slow
             let (q, r) = DivRem::div_rem(cur, 0x100);
             bytes.append(r.try_into().unwrap());
             cur = q;
@@ -93,6 +105,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     fn check_proof_of_work(self: @Poseidon252Channel, n_bits: u32) -> bool {
+        // the implementation in stone is different, why did you change it?
         let u256 { low, .. } = (*self.digest).into();
         low & gen_bit_mask(n_bits) == 0
     }
@@ -100,7 +113,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
 // TODO(spapini): Check that this is sound.
 fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31InnerT; FELTS_PER_HASH] {
-    let mut cur = draw_felt252(ref channel).into();
+    let mut cur: u256 = draw_felt252(ref channel).into();
+    // should disable tail bits?
     [
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
@@ -108,13 +122,17 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31InnerT; FELTS_PER_HAS
 }
 
 fn draw_felt252(ref channel: Poseidon252Channel) -> felt252 {
-    let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 2);
+    // use 3 for domain separation from mix
+    let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 3);
     channel.channel_time.inc_sent();
     res
 }
 
 #[inline]
+// N is unused
 fn extract_m31<const N: usize>(ref num: u256) -> M31InnerT {
+    // 1. should divide by (2^31-1)
+    // 2. this is very slow
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     M31Trait::reduce_u128(r.low)

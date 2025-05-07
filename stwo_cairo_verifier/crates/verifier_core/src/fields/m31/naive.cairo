@@ -9,9 +9,9 @@ pub impl M31InvertibleImpl of Invertible<M31> {
     fn inverse(self: M31) -> M31 {
         assert!(self.is_non_zero());
         let t0 = sqn(self, 2) * self;
-        let t1 = sqn(t0, 1) * t0;
+        let t1 = t0 * t0 * t0;
         let t2 = sqn(t1, 3) * t0;
-        let t3 = sqn(t2, 1) * t0;
+        let t3 = t2 * t2 * t0;
         let t4 = sqn(t3, 8) * t3;
         let t5 = sqn(t4, 8) * t3;
         sqn(t5, 7) * t2
@@ -85,6 +85,7 @@ pub impl M31Neg of Neg<M31> {
 
 #[derive(Copy, Drop, Debug)]
 pub struct UnreducedM31 {
+    // Document the range of inner
     pub inner: felt252,
 }
 
@@ -110,6 +111,7 @@ impl M31IntoUnreducedM31 of Into<M31, UnreducedM31> {
 }
 
 /// Returns `v^(2^n)`.
+/// rename to something readable (e.g. square_n_times)
 fn sqn(v: M31, n: usize) -> M31 {
     if n == 0 {
         return v;

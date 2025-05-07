@@ -408,6 +408,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
             column += 1;
         }
 
+        // do the todo
         // TODO(andrew): Remove. Only sorting since rust verifier sorts groups by point.
         let sorted_points = point_set.sort_ascending();
         let mut groups = array![];
