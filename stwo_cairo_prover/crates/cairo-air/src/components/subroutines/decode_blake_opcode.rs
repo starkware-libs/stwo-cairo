@@ -50,15 +50,15 @@ impl DecodeBlakeOpcode {
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
         eval: &mut E,
-    ) -> [E::F; 7] {
+    ) -> [E::F; 4] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
 
-        let [decode_instruction_64420_output_tmp_47e62_10_offset0, decode_instruction_64420_output_tmp_47e62_10_offset1, decode_instruction_64420_output_tmp_47e62_10_offset2, decode_instruction_64420_output_tmp_47e62_10_dst_base_fp, decode_instruction_64420_output_tmp_47e62_10_op0_base_fp, decode_instruction_64420_output_tmp_47e62_10_op1_imm, decode_instruction_64420_output_tmp_47e62_10_op1_base_fp, decode_instruction_64420_output_tmp_47e62_10_op1_base_ap, decode_instruction_64420_output_tmp_47e62_10_res_add, decode_instruction_64420_output_tmp_47e62_10_res_mul, decode_instruction_64420_output_tmp_47e62_10_pc_update_jump, decode_instruction_64420_output_tmp_47e62_10_pc_update_jump_rel, decode_instruction_64420_output_tmp_47e62_10_pc_update_jnz, decode_instruction_64420_output_tmp_47e62_10_ap_update_add, decode_instruction_64420_output_tmp_47e62_10_ap_update_add_1, decode_instruction_64420_output_tmp_47e62_10_opcode_call, decode_instruction_64420_output_tmp_47e62_10_opcode_ret, decode_instruction_64420_output_tmp_47e62_10_opcode_assert_eq, decode_instruction_64420_output_tmp_47e62_10_opcode_extension] =
+        let [decode_instruction_64420_output_tmp_47e62_10_offset0, decode_instruction_64420_output_tmp_47e62_10_offset1, decode_instruction_64420_output_tmp_47e62_10_offset2] =
             DecodeInstruction64420::evaluate(
-                decode_blake_opcode_input_pc.clone(),
+                [decode_blake_opcode_input_pc.clone()],
                 offset0_col0.clone(),
                 offset1_col1.clone(),
                 offset2_col2.clone(),
@@ -87,47 +87,44 @@ impl DecodeBlakeOpcode {
                     + ((M31_1.clone() - op0_base_fp_col4.clone())
                         * decode_blake_opcode_input_ap.clone()))),
         );
-        let [read_positive_num_bits_27_output_tmp_47e62_13_limb_0, read_positive_num_bits_27_output_tmp_47e62_13_limb_1, read_positive_num_bits_27_output_tmp_47e62_13_limb_2, read_positive_num_bits_27_output_tmp_47e62_13_limb_3, read_positive_num_bits_27_output_tmp_47e62_13_limb_4, read_positive_num_bits_27_output_tmp_47e62_13_limb_5, read_positive_num_bits_27_output_tmp_47e62_13_limb_6, read_positive_num_bits_27_output_tmp_47e62_13_limb_7, read_positive_num_bits_27_output_tmp_47e62_13_limb_8, read_positive_num_bits_27_output_tmp_47e62_13_limb_9, read_positive_num_bits_27_output_tmp_47e62_13_limb_10, read_positive_num_bits_27_output_tmp_47e62_13_limb_11, read_positive_num_bits_27_output_tmp_47e62_13_limb_12, read_positive_num_bits_27_output_tmp_47e62_13_limb_13, read_positive_num_bits_27_output_tmp_47e62_13_limb_14, read_positive_num_bits_27_output_tmp_47e62_13_limb_15, read_positive_num_bits_27_output_tmp_47e62_13_limb_16, read_positive_num_bits_27_output_tmp_47e62_13_limb_17, read_positive_num_bits_27_output_tmp_47e62_13_limb_18, read_positive_num_bits_27_output_tmp_47e62_13_limb_19, read_positive_num_bits_27_output_tmp_47e62_13_limb_20, read_positive_num_bits_27_output_tmp_47e62_13_limb_21, read_positive_num_bits_27_output_tmp_47e62_13_limb_22, read_positive_num_bits_27_output_tmp_47e62_13_limb_23, read_positive_num_bits_27_output_tmp_47e62_13_limb_24, read_positive_num_bits_27_output_tmp_47e62_13_limb_25, read_positive_num_bits_27_output_tmp_47e62_13_limb_26, read_positive_num_bits_27_output_tmp_47e62_13_limb_27, read_positive_num_bits_27_output_tmp_47e62_13_limb_28] =
-            ReadPositiveNumBits27::evaluate(
-                (mem0_base_col9.clone()
-                    + decode_instruction_64420_output_tmp_47e62_10_offset1.clone()),
-                op0_id_col10.clone(),
-                op0_limb_0_col11.clone(),
-                op0_limb_1_col12.clone(),
-                op0_limb_2_col13.clone(),
-                memory_address_to_id_lookup_elements,
-                memory_id_to_big_lookup_elements,
-                eval,
-            );
+        ReadPositiveNumBits27::evaluate(
+            [(mem0_base_col9.clone()
+                + decode_instruction_64420_output_tmp_47e62_10_offset1.clone())],
+            op0_id_col10.clone(),
+            op0_limb_0_col11.clone(),
+            op0_limb_1_col12.clone(),
+            op0_limb_2_col13.clone(),
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            eval,
+        );
         // mem1_base.
         eval.add_constraint(
             (mem1_base_col14.clone()
                 - ((op1_base_fp_col5.clone() * decode_blake_opcode_input_fp.clone())
                     + (op1_base_ap_col6.clone() * decode_blake_opcode_input_ap.clone()))),
         );
-        let [read_positive_num_bits_27_output_tmp_47e62_16_limb_0, read_positive_num_bits_27_output_tmp_47e62_16_limb_1, read_positive_num_bits_27_output_tmp_47e62_16_limb_2, read_positive_num_bits_27_output_tmp_47e62_16_limb_3, read_positive_num_bits_27_output_tmp_47e62_16_limb_4, read_positive_num_bits_27_output_tmp_47e62_16_limb_5, read_positive_num_bits_27_output_tmp_47e62_16_limb_6, read_positive_num_bits_27_output_tmp_47e62_16_limb_7, read_positive_num_bits_27_output_tmp_47e62_16_limb_8, read_positive_num_bits_27_output_tmp_47e62_16_limb_9, read_positive_num_bits_27_output_tmp_47e62_16_limb_10, read_positive_num_bits_27_output_tmp_47e62_16_limb_11, read_positive_num_bits_27_output_tmp_47e62_16_limb_12, read_positive_num_bits_27_output_tmp_47e62_16_limb_13, read_positive_num_bits_27_output_tmp_47e62_16_limb_14, read_positive_num_bits_27_output_tmp_47e62_16_limb_15, read_positive_num_bits_27_output_tmp_47e62_16_limb_16, read_positive_num_bits_27_output_tmp_47e62_16_limb_17, read_positive_num_bits_27_output_tmp_47e62_16_limb_18, read_positive_num_bits_27_output_tmp_47e62_16_limb_19, read_positive_num_bits_27_output_tmp_47e62_16_limb_20, read_positive_num_bits_27_output_tmp_47e62_16_limb_21, read_positive_num_bits_27_output_tmp_47e62_16_limb_22, read_positive_num_bits_27_output_tmp_47e62_16_limb_23, read_positive_num_bits_27_output_tmp_47e62_16_limb_24, read_positive_num_bits_27_output_tmp_47e62_16_limb_25, read_positive_num_bits_27_output_tmp_47e62_16_limb_26, read_positive_num_bits_27_output_tmp_47e62_16_limb_27, read_positive_num_bits_27_output_tmp_47e62_16_limb_28] =
-            ReadPositiveNumBits27::evaluate(
-                (mem1_base_col14.clone()
-                    + decode_instruction_64420_output_tmp_47e62_10_offset2.clone()),
-                op1_id_col15.clone(),
-                op1_limb_0_col16.clone(),
-                op1_limb_1_col17.clone(),
-                op1_limb_2_col18.clone(),
-                memory_address_to_id_lookup_elements,
-                memory_id_to_big_lookup_elements,
-                eval,
-            );
-        let [read_positive_num_bits_27_output_tmp_47e62_19_limb_0, read_positive_num_bits_27_output_tmp_47e62_19_limb_1, read_positive_num_bits_27_output_tmp_47e62_19_limb_2, read_positive_num_bits_27_output_tmp_47e62_19_limb_3, read_positive_num_bits_27_output_tmp_47e62_19_limb_4, read_positive_num_bits_27_output_tmp_47e62_19_limb_5, read_positive_num_bits_27_output_tmp_47e62_19_limb_6, read_positive_num_bits_27_output_tmp_47e62_19_limb_7, read_positive_num_bits_27_output_tmp_47e62_19_limb_8, read_positive_num_bits_27_output_tmp_47e62_19_limb_9, read_positive_num_bits_27_output_tmp_47e62_19_limb_10, read_positive_num_bits_27_output_tmp_47e62_19_limb_11, read_positive_num_bits_27_output_tmp_47e62_19_limb_12, read_positive_num_bits_27_output_tmp_47e62_19_limb_13, read_positive_num_bits_27_output_tmp_47e62_19_limb_14, read_positive_num_bits_27_output_tmp_47e62_19_limb_15, read_positive_num_bits_27_output_tmp_47e62_19_limb_16, read_positive_num_bits_27_output_tmp_47e62_19_limb_17, read_positive_num_bits_27_output_tmp_47e62_19_limb_18, read_positive_num_bits_27_output_tmp_47e62_19_limb_19, read_positive_num_bits_27_output_tmp_47e62_19_limb_20, read_positive_num_bits_27_output_tmp_47e62_19_limb_21, read_positive_num_bits_27_output_tmp_47e62_19_limb_22, read_positive_num_bits_27_output_tmp_47e62_19_limb_23, read_positive_num_bits_27_output_tmp_47e62_19_limb_24, read_positive_num_bits_27_output_tmp_47e62_19_limb_25, read_positive_num_bits_27_output_tmp_47e62_19_limb_26, read_positive_num_bits_27_output_tmp_47e62_19_limb_27, read_positive_num_bits_27_output_tmp_47e62_19_limb_28] =
-            ReadPositiveNumBits27::evaluate(
-                decode_blake_opcode_input_ap.clone(),
-                ap_id_col19.clone(),
-                ap_limb_0_col20.clone(),
-                ap_limb_1_col21.clone(),
-                ap_limb_2_col22.clone(),
-                memory_address_to_id_lookup_elements,
-                memory_id_to_big_lookup_elements,
-                eval,
-            );
+        ReadPositiveNumBits27::evaluate(
+            [(mem1_base_col14.clone()
+                + decode_instruction_64420_output_tmp_47e62_10_offset2.clone())],
+            op1_id_col15.clone(),
+            op1_limb_0_col16.clone(),
+            op1_limb_1_col17.clone(),
+            op1_limb_2_col18.clone(),
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            eval,
+        );
+        ReadPositiveNumBits27::evaluate(
+            [decode_blake_opcode_input_ap.clone()],
+            ap_id_col19.clone(),
+            ap_limb_0_col20.clone(),
+            ap_limb_1_col21.clone(),
+            ap_limb_2_col22.clone(),
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            eval,
+        );
         // mem_dst_base.
         eval.add_constraint(
             (mem_dst_base_col23.clone()
@@ -135,21 +132,20 @@ impl DecodeBlakeOpcode {
                     + ((M31_1.clone() - dst_base_fp_col3.clone())
                         * decode_blake_opcode_input_ap.clone()))),
         );
-        let [read_blake_word_output_tmp_47e62_28_limb_0, read_blake_word_output_tmp_47e62_28_limb_1] =
-            ReadBlakeWord::evaluate(
-                (mem_dst_base_col23.clone()
-                    + decode_instruction_64420_output_tmp_47e62_10_offset0.clone()),
-                low_16_bits_col24.clone(),
-                high_16_bits_col25.clone(),
-                low_7_ms_bits_col26.clone(),
-                high_14_ms_bits_col27.clone(),
-                high_5_ms_bits_col28.clone(),
-                dst_id_col29.clone(),
-                range_check_7_2_5_lookup_elements,
-                memory_address_to_id_lookup_elements,
-                memory_id_to_big_lookup_elements,
-                eval,
-            );
+        ReadBlakeWord::evaluate(
+            [(mem_dst_base_col23.clone()
+                + decode_instruction_64420_output_tmp_47e62_10_offset0.clone())],
+            low_16_bits_col24.clone(),
+            high_16_bits_col25.clone(),
+            low_7_ms_bits_col26.clone(),
+            high_14_ms_bits_col27.clone(),
+            high_5_ms_bits_col28.clone(),
+            dst_id_col29.clone(),
+            range_check_7_2_5_lookup_elements,
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            eval,
+        );
         [
             ((op0_limb_0_col11.clone() + (op0_limb_1_col12.clone() * M31_512.clone()))
                 + (op0_limb_2_col13.clone() * M31_262144.clone())),
@@ -157,9 +153,6 @@ impl DecodeBlakeOpcode {
                 + (op1_limb_2_col18.clone() * M31_262144.clone())),
             ((ap_limb_0_col20.clone() + (ap_limb_1_col21.clone() * M31_512.clone()))
                 + (ap_limb_2_col22.clone() * M31_262144.clone())),
-            low_16_bits_col24.clone(),
-            high_16_bits_col25.clone(),
-            ap_update_add_1_col7.clone(),
             (opcode_extension_col8.clone() - M31_1.clone()),
         ]
     }

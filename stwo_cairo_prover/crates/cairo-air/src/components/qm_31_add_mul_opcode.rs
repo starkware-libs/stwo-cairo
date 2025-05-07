@@ -156,9 +156,9 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_3802d_output_tmp_fa85a_11_offset0, decode_instruction_3802d_output_tmp_fa85a_11_offset1, decode_instruction_3802d_output_tmp_fa85a_11_offset2, decode_instruction_3802d_output_tmp_fa85a_11_dst_base_fp, decode_instruction_3802d_output_tmp_fa85a_11_op0_base_fp, decode_instruction_3802d_output_tmp_fa85a_11_op1_imm, decode_instruction_3802d_output_tmp_fa85a_11_op1_base_fp, decode_instruction_3802d_output_tmp_fa85a_11_op1_base_ap, decode_instruction_3802d_output_tmp_fa85a_11_res_add, decode_instruction_3802d_output_tmp_fa85a_11_res_mul, decode_instruction_3802d_output_tmp_fa85a_11_pc_update_jump, decode_instruction_3802d_output_tmp_fa85a_11_pc_update_jump_rel, decode_instruction_3802d_output_tmp_fa85a_11_pc_update_jnz, decode_instruction_3802d_output_tmp_fa85a_11_ap_update_add, decode_instruction_3802d_output_tmp_fa85a_11_ap_update_add_1, decode_instruction_3802d_output_tmp_fa85a_11_opcode_call, decode_instruction_3802d_output_tmp_fa85a_11_opcode_ret, decode_instruction_3802d_output_tmp_fa85a_11_opcode_assert_eq, decode_instruction_3802d_output_tmp_fa85a_11_opcode_extension] =
+        let [decode_instruction_3802d_output_tmp_fa85a_11_offset0, decode_instruction_3802d_output_tmp_fa85a_11_offset1, decode_instruction_3802d_output_tmp_fa85a_11_offset2, decode_instruction_3802d_output_tmp_fa85a_11_op1_base_ap, decode_instruction_3802d_output_tmp_fa85a_11_res_mul] =
             DecodeInstruction3802D::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 offset1_col4.clone(),
                 offset2_col5.clone(),
@@ -198,10 +198,10 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [qm_31_read_reduced_output_tmp_fa85a_15_limb_0, qm_31_read_reduced_output_tmp_fa85a_15_limb_1, qm_31_read_reduced_output_tmp_fa85a_15_limb_2, qm_31_read_reduced_output_tmp_fa85a_15_limb_3, qm_31_read_reduced_output_tmp_fa85a_15_limb_4] =
+        let [qm_31_read_reduced_output_tmp_fa85a_15_limb_0, qm_31_read_reduced_output_tmp_fa85a_15_limb_1, qm_31_read_reduced_output_tmp_fa85a_15_limb_2, qm_31_read_reduced_output_tmp_fa85a_15_limb_3] =
             Qm31ReadReduced::evaluate(
-                (mem_dst_base_col12.clone()
-                    + decode_instruction_3802d_output_tmp_fa85a_11_offset0.clone()),
+                [(mem_dst_base_col12.clone()
+                    + decode_instruction_3802d_output_tmp_fa85a_11_offset0.clone())],
                 dst_id_col15.clone(),
                 dst_limb_0_col16.clone(),
                 dst_limb_1_col17.clone(),
@@ -228,10 +228,10 @@ impl FrameworkEval for Eval {
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [qm_31_read_reduced_output_tmp_fa85a_19_limb_0, qm_31_read_reduced_output_tmp_fa85a_19_limb_1, qm_31_read_reduced_output_tmp_fa85a_19_limb_2, qm_31_read_reduced_output_tmp_fa85a_19_limb_3, qm_31_read_reduced_output_tmp_fa85a_19_limb_4] =
+        let [qm_31_read_reduced_output_tmp_fa85a_19_limb_0, qm_31_read_reduced_output_tmp_fa85a_19_limb_1, qm_31_read_reduced_output_tmp_fa85a_19_limb_2, qm_31_read_reduced_output_tmp_fa85a_19_limb_3] =
             Qm31ReadReduced::evaluate(
-                (mem0_base_col13.clone()
-                    + decode_instruction_3802d_output_tmp_fa85a_11_offset1.clone()),
+                [(mem0_base_col13.clone()
+                    + decode_instruction_3802d_output_tmp_fa85a_11_offset1.clone())],
                 op0_id_col34.clone(),
                 op0_limb_0_col35.clone(),
                 op0_limb_1_col36.clone(),
@@ -258,10 +258,10 @@ impl FrameworkEval for Eval {
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [qm_31_read_reduced_output_tmp_fa85a_23_limb_0, qm_31_read_reduced_output_tmp_fa85a_23_limb_1, qm_31_read_reduced_output_tmp_fa85a_23_limb_2, qm_31_read_reduced_output_tmp_fa85a_23_limb_3, qm_31_read_reduced_output_tmp_fa85a_23_limb_4] =
+        let [qm_31_read_reduced_output_tmp_fa85a_23_limb_0, qm_31_read_reduced_output_tmp_fa85a_23_limb_1, qm_31_read_reduced_output_tmp_fa85a_23_limb_2, qm_31_read_reduced_output_tmp_fa85a_23_limb_3] =
             Qm31ReadReduced::evaluate(
-                (mem1_base_col14.clone()
-                    + decode_instruction_3802d_output_tmp_fa85a_11_offset2.clone()),
+                [(mem1_base_col14.clone()
+                    + decode_instruction_3802d_output_tmp_fa85a_11_offset2.clone())],
                 op1_id_col53.clone(),
                 op1_limb_0_col54.clone(),
                 op1_limb_1_col55.clone(),

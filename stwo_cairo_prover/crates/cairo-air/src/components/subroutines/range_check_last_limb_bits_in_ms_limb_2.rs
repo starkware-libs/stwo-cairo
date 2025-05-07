@@ -11,10 +11,10 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        range_check_last_limb_bits_in_ms_limb_2_input: E::F,
+        [range_check_last_limb_bits_in_ms_limb_2_input]: [E::F; 1],
         msb_col0: E::F,
         eval: &mut E,
-    ) -> () {
+    ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
 
@@ -29,6 +29,6 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
             (bit_before_msb_tmp_f851f_1.clone()
                 * (M31_1.clone() - bit_before_msb_tmp_f851f_1.clone())),
         );
-        ()
+        []
     }
 }

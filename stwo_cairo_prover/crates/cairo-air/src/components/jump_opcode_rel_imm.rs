@@ -86,30 +86,26 @@ impl FrameworkEval for Eval {
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
+        DecodeInstruction7Ebc4::evaluate(
+            [input_pc_col0.clone()],
+            ap_update_add_1_col3.clone(),
+            &self.verify_instruction_lookup_elements,
+            &mut eval,
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_7ebc4_output_tmp_81a39_3_offset0, decode_instruction_7ebc4_output_tmp_81a39_3_offset1, decode_instruction_7ebc4_output_tmp_81a39_3_offset2, decode_instruction_7ebc4_output_tmp_81a39_3_dst_base_fp, decode_instruction_7ebc4_output_tmp_81a39_3_op0_base_fp, decode_instruction_7ebc4_output_tmp_81a39_3_op1_imm, decode_instruction_7ebc4_output_tmp_81a39_3_op1_base_fp, decode_instruction_7ebc4_output_tmp_81a39_3_op1_base_ap, decode_instruction_7ebc4_output_tmp_81a39_3_res_add, decode_instruction_7ebc4_output_tmp_81a39_3_res_mul, decode_instruction_7ebc4_output_tmp_81a39_3_pc_update_jump, decode_instruction_7ebc4_output_tmp_81a39_3_pc_update_jump_rel, decode_instruction_7ebc4_output_tmp_81a39_3_pc_update_jnz, decode_instruction_7ebc4_output_tmp_81a39_3_ap_update_add, decode_instruction_7ebc4_output_tmp_81a39_3_ap_update_add_1, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_call, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_ret, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_assert_eq, decode_instruction_7ebc4_output_tmp_81a39_3_opcode_extension] =
-            DecodeInstruction7Ebc4::evaluate(
-                input_pc_col0.clone(),
-                ap_update_add_1_col3.clone(),
-                &self.verify_instruction_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_small_output_tmp_81a39_9_limb_0, read_small_output_tmp_81a39_9_limb_1] =
-            ReadSmall::evaluate(
-                (input_pc_col0.clone() + M31_1.clone()),
-                next_pc_id_col4.clone(),
-                msb_col5.clone(),
-                mid_limbs_set_col6.clone(),
-                next_pc_limb_0_col7.clone(),
-                next_pc_limb_1_col8.clone(),
-                next_pc_limb_2_col9.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_small_output_tmp_81a39_9_limb_0] = ReadSmall::evaluate(
+            [(input_pc_col0.clone() + M31_1.clone())],
+            next_pc_id_col4.clone(),
+            msb_col5.clone(),
+            mid_limbs_set_col6.clone(),
+            next_pc_limb_0_col7.clone(),
+            next_pc_limb_1_col8.clone(),
+            next_pc_limb_2_col9.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::from(enabler.clone()),

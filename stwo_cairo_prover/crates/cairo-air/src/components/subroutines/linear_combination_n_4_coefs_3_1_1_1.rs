@@ -25,7 +25,7 @@ impl LinearCombinationN4Coefs3111 {
         p_coef_col10: E::F,
         range_check_3_3_3_3_3_lookup_elements: &relations::RangeCheck_3_3_3_3_3,
         eval: &mut E,
-    ) -> [E::F; 10] {
+    ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));
         let M31_16 = E::F::from(M31::from(16));
@@ -149,17 +149,6 @@ impl LinearCombinationN4Coefs3111 {
             ],
         ));
 
-        [
-            combination_limb_0_col0.clone(),
-            combination_limb_1_col1.clone(),
-            combination_limb_2_col2.clone(),
-            combination_limb_3_col3.clone(),
-            combination_limb_4_col4.clone(),
-            combination_limb_5_col5.clone(),
-            combination_limb_6_col6.clone(),
-            combination_limb_7_col7.clone(),
-            combination_limb_8_col8.clone(),
-            combination_limb_9_col9.clone(),
-        ]
+        []
     }
 }

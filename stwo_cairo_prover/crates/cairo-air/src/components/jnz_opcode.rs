@@ -115,9 +115,9 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_de75a_output_tmp_e1597_5_offset0, decode_instruction_de75a_output_tmp_e1597_5_offset1, decode_instruction_de75a_output_tmp_e1597_5_offset2, decode_instruction_de75a_output_tmp_e1597_5_dst_base_fp, decode_instruction_de75a_output_tmp_e1597_5_op0_base_fp, decode_instruction_de75a_output_tmp_e1597_5_op1_imm, decode_instruction_de75a_output_tmp_e1597_5_op1_base_fp, decode_instruction_de75a_output_tmp_e1597_5_op1_base_ap, decode_instruction_de75a_output_tmp_e1597_5_res_add, decode_instruction_de75a_output_tmp_e1597_5_res_mul, decode_instruction_de75a_output_tmp_e1597_5_pc_update_jump, decode_instruction_de75a_output_tmp_e1597_5_pc_update_jump_rel, decode_instruction_de75a_output_tmp_e1597_5_pc_update_jnz, decode_instruction_de75a_output_tmp_e1597_5_ap_update_add, decode_instruction_de75a_output_tmp_e1597_5_ap_update_add_1, decode_instruction_de75a_output_tmp_e1597_5_opcode_call, decode_instruction_de75a_output_tmp_e1597_5_opcode_ret, decode_instruction_de75a_output_tmp_e1597_5_opcode_assert_eq, decode_instruction_de75a_output_tmp_e1597_5_opcode_extension] =
+        let [decode_instruction_de75a_output_tmp_e1597_5_offset0] =
             DecodeInstructionDe75A::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 dst_base_fp_col4.clone(),
                 ap_update_add_1_col5.clone(),
@@ -130,45 +130,42 @@ impl FrameworkEval for Eval {
                 - ((dst_base_fp_col4.clone() * input_fp_col2.clone())
                     + ((M31_1.clone() - dst_base_fp_col4.clone()) * input_ap_col1.clone()))),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_252_output_tmp_e1597_8_limb_0, read_positive_num_bits_252_output_tmp_e1597_8_limb_1, read_positive_num_bits_252_output_tmp_e1597_8_limb_2, read_positive_num_bits_252_output_tmp_e1597_8_limb_3, read_positive_num_bits_252_output_tmp_e1597_8_limb_4, read_positive_num_bits_252_output_tmp_e1597_8_limb_5, read_positive_num_bits_252_output_tmp_e1597_8_limb_6, read_positive_num_bits_252_output_tmp_e1597_8_limb_7, read_positive_num_bits_252_output_tmp_e1597_8_limb_8, read_positive_num_bits_252_output_tmp_e1597_8_limb_9, read_positive_num_bits_252_output_tmp_e1597_8_limb_10, read_positive_num_bits_252_output_tmp_e1597_8_limb_11, read_positive_num_bits_252_output_tmp_e1597_8_limb_12, read_positive_num_bits_252_output_tmp_e1597_8_limb_13, read_positive_num_bits_252_output_tmp_e1597_8_limb_14, read_positive_num_bits_252_output_tmp_e1597_8_limb_15, read_positive_num_bits_252_output_tmp_e1597_8_limb_16, read_positive_num_bits_252_output_tmp_e1597_8_limb_17, read_positive_num_bits_252_output_tmp_e1597_8_limb_18, read_positive_num_bits_252_output_tmp_e1597_8_limb_19, read_positive_num_bits_252_output_tmp_e1597_8_limb_20, read_positive_num_bits_252_output_tmp_e1597_8_limb_21, read_positive_num_bits_252_output_tmp_e1597_8_limb_22, read_positive_num_bits_252_output_tmp_e1597_8_limb_23, read_positive_num_bits_252_output_tmp_e1597_8_limb_24, read_positive_num_bits_252_output_tmp_e1597_8_limb_25, read_positive_num_bits_252_output_tmp_e1597_8_limb_26, read_positive_num_bits_252_output_tmp_e1597_8_limb_27, read_positive_num_bits_252_output_tmp_e1597_8_limb_28] =
-            ReadPositiveNumBits252::evaluate(
-                (mem_dst_base_col6.clone()
-                    + decode_instruction_de75a_output_tmp_e1597_5_offset0.clone()),
-                dst_id_col7.clone(),
-                dst_limb_0_col8.clone(),
-                dst_limb_1_col9.clone(),
-                dst_limb_2_col10.clone(),
-                dst_limb_3_col11.clone(),
-                dst_limb_4_col12.clone(),
-                dst_limb_5_col13.clone(),
-                dst_limb_6_col14.clone(),
-                dst_limb_7_col15.clone(),
-                dst_limb_8_col16.clone(),
-                dst_limb_9_col17.clone(),
-                dst_limb_10_col18.clone(),
-                dst_limb_11_col19.clone(),
-                dst_limb_12_col20.clone(),
-                dst_limb_13_col21.clone(),
-                dst_limb_14_col22.clone(),
-                dst_limb_15_col23.clone(),
-                dst_limb_16_col24.clone(),
-                dst_limb_17_col25.clone(),
-                dst_limb_18_col26.clone(),
-                dst_limb_19_col27.clone(),
-                dst_limb_20_col28.clone(),
-                dst_limb_21_col29.clone(),
-                dst_limb_22_col30.clone(),
-                dst_limb_23_col31.clone(),
-                dst_limb_24_col32.clone(),
-                dst_limb_25_col33.clone(),
-                dst_limb_26_col34.clone(),
-                dst_limb_27_col35.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        ReadPositiveNumBits252::evaluate(
+            [(mem_dst_base_col6.clone()
+                + decode_instruction_de75a_output_tmp_e1597_5_offset0.clone())],
+            dst_id_col7.clone(),
+            dst_limb_0_col8.clone(),
+            dst_limb_1_col9.clone(),
+            dst_limb_2_col10.clone(),
+            dst_limb_3_col11.clone(),
+            dst_limb_4_col12.clone(),
+            dst_limb_5_col13.clone(),
+            dst_limb_6_col14.clone(),
+            dst_limb_7_col15.clone(),
+            dst_limb_8_col16.clone(),
+            dst_limb_9_col17.clone(),
+            dst_limb_10_col18.clone(),
+            dst_limb_11_col19.clone(),
+            dst_limb_12_col20.clone(),
+            dst_limb_13_col21.clone(),
+            dst_limb_14_col22.clone(),
+            dst_limb_15_col23.clone(),
+            dst_limb_16_col24.clone(),
+            dst_limb_17_col25.clone(),
+            dst_limb_18_col26.clone(),
+            dst_limb_19_col27.clone(),
+            dst_limb_20_col28.clone(),
+            dst_limb_21_col29.clone(),
+            dst_limb_22_col30.clone(),
+            dst_limb_23_col31.clone(),
+            dst_limb_24_col32.clone(),
+            dst_limb_25_col33.clone(),
+            dst_limb_26_col34.clone(),
+            dst_limb_27_col35.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         // dst equals 0.
         eval.add_constraint(
             (((((((((((((((((((((((((((dst_limb_0_col8.clone()

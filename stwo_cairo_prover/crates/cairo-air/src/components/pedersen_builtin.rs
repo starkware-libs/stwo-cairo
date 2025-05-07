@@ -499,84 +499,82 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_split_output_tmp_d00c6_6_high_limb_0, read_split_output_tmp_d00c6_6_high_limb_1, read_split_output_tmp_d00c6_6_high_limb_2, read_split_output_tmp_d00c6_6_high_limb_3, read_split_output_tmp_d00c6_6_high_limb_4, read_split_output_tmp_d00c6_6_high_limb_5, read_split_output_tmp_d00c6_6_high_limb_6, read_split_output_tmp_d00c6_6_high_limb_7, read_split_output_tmp_d00c6_6_high_limb_8, read_split_output_tmp_d00c6_6_high_limb_9, read_split_output_tmp_d00c6_6_high_limb_10, read_split_output_tmp_d00c6_6_high_limb_11, read_split_output_tmp_d00c6_6_high_limb_12, read_split_output_tmp_d00c6_6_high_limb_13, read_split_output_tmp_d00c6_6_high_limb_14, read_split_output_tmp_d00c6_6_high_limb_15, read_split_output_tmp_d00c6_6_high_limb_16, read_split_output_tmp_d00c6_6_high_limb_17, read_split_output_tmp_d00c6_6_high_limb_18, read_split_output_tmp_d00c6_6_high_limb_19, read_split_output_tmp_d00c6_6_high_limb_20, read_split_output_tmp_d00c6_6_high_limb_21, read_split_output_tmp_d00c6_6_high_limb_22, read_split_output_tmp_d00c6_6_high_limb_23, read_split_output_tmp_d00c6_6_high_limb_24, read_split_output_tmp_d00c6_6_high_limb_25, read_split_output_tmp_d00c6_6_high_limb_26, read_split_output_tmp_d00c6_6_high_limb_27, read_split_output_tmp_d00c6_6_low_limb_0, read_split_output_tmp_d00c6_6_low_limb_1, read_split_output_tmp_d00c6_6_low_limb_2, read_split_output_tmp_d00c6_6_low_limb_3, read_split_output_tmp_d00c6_6_low_limb_4, read_split_output_tmp_d00c6_6_low_limb_5, read_split_output_tmp_d00c6_6_low_limb_6, read_split_output_tmp_d00c6_6_low_limb_7, read_split_output_tmp_d00c6_6_low_limb_8, read_split_output_tmp_d00c6_6_low_limb_9, read_split_output_tmp_d00c6_6_low_limb_10, read_split_output_tmp_d00c6_6_low_limb_11, read_split_output_tmp_d00c6_6_low_limb_12, read_split_output_tmp_d00c6_6_low_limb_13, read_split_output_tmp_d00c6_6_low_limb_14, read_split_output_tmp_d00c6_6_low_limb_15, read_split_output_tmp_d00c6_6_low_limb_16, read_split_output_tmp_d00c6_6_low_limb_17, read_split_output_tmp_d00c6_6_low_limb_18, read_split_output_tmp_d00c6_6_low_limb_19, read_split_output_tmp_d00c6_6_low_limb_20, read_split_output_tmp_d00c6_6_low_limb_21, read_split_output_tmp_d00c6_6_low_limb_22, read_split_output_tmp_d00c6_6_low_limb_23, read_split_output_tmp_d00c6_6_low_limb_24, read_split_output_tmp_d00c6_6_low_limb_25, read_split_output_tmp_d00c6_6_low_limb_26, read_split_output_tmp_d00c6_6_low_limb_27, read_split_output_tmp_d00c6_6_original_limb_0, read_split_output_tmp_d00c6_6_original_limb_1, read_split_output_tmp_d00c6_6_original_limb_2, read_split_output_tmp_d00c6_6_original_limb_3, read_split_output_tmp_d00c6_6_original_limb_4, read_split_output_tmp_d00c6_6_original_limb_5, read_split_output_tmp_d00c6_6_original_limb_6, read_split_output_tmp_d00c6_6_original_limb_7, read_split_output_tmp_d00c6_6_original_limb_8, read_split_output_tmp_d00c6_6_original_limb_9, read_split_output_tmp_d00c6_6_original_limb_10, read_split_output_tmp_d00c6_6_original_limb_11, read_split_output_tmp_d00c6_6_original_limb_12, read_split_output_tmp_d00c6_6_original_limb_13, read_split_output_tmp_d00c6_6_original_limb_14, read_split_output_tmp_d00c6_6_original_limb_15, read_split_output_tmp_d00c6_6_original_limb_16, read_split_output_tmp_d00c6_6_original_limb_17, read_split_output_tmp_d00c6_6_original_limb_18, read_split_output_tmp_d00c6_6_original_limb_19, read_split_output_tmp_d00c6_6_original_limb_20, read_split_output_tmp_d00c6_6_original_limb_21, read_split_output_tmp_d00c6_6_original_limb_22, read_split_output_tmp_d00c6_6_original_limb_23, read_split_output_tmp_d00c6_6_original_limb_24, read_split_output_tmp_d00c6_6_original_limb_25, read_split_output_tmp_d00c6_6_original_limb_26, read_split_output_tmp_d00c6_6_original_limb_27] =
-            ReadSplit::evaluate(
-                instance_addr_tmp_d00c6_0.clone(),
-                value_limb_0_col0.clone(),
-                value_limb_1_col1.clone(),
-                value_limb_2_col2.clone(),
-                value_limb_3_col3.clone(),
-                value_limb_4_col4.clone(),
-                value_limb_5_col5.clone(),
-                value_limb_6_col6.clone(),
-                value_limb_7_col7.clone(),
-                value_limb_8_col8.clone(),
-                value_limb_9_col9.clone(),
-                value_limb_10_col10.clone(),
-                value_limb_11_col11.clone(),
-                value_limb_12_col12.clone(),
-                value_limb_13_col13.clone(),
-                value_limb_14_col14.clone(),
-                value_limb_15_col15.clone(),
-                value_limb_16_col16.clone(),
-                value_limb_17_col17.clone(),
-                value_limb_18_col18.clone(),
-                value_limb_19_col19.clone(),
-                value_limb_20_col20.clone(),
-                value_limb_21_col21.clone(),
-                value_limb_22_col22.clone(),
-                value_limb_23_col23.clone(),
-                value_limb_24_col24.clone(),
-                value_limb_25_col25.clone(),
-                value_limb_26_col26.clone(),
-                ms_limb_low_col27.clone(),
-                ms_limb_high_col28.clone(),
-                pedersen_a_id_col29.clone(),
-                &self.range_check_5_4_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_split_output_tmp_d00c6_6_original_limb_27] = ReadSplit::evaluate(
+            [instance_addr_tmp_d00c6_0.clone()],
+            value_limb_0_col0.clone(),
+            value_limb_1_col1.clone(),
+            value_limb_2_col2.clone(),
+            value_limb_3_col3.clone(),
+            value_limb_4_col4.clone(),
+            value_limb_5_col5.clone(),
+            value_limb_6_col6.clone(),
+            value_limb_7_col7.clone(),
+            value_limb_8_col8.clone(),
+            value_limb_9_col9.clone(),
+            value_limb_10_col10.clone(),
+            value_limb_11_col11.clone(),
+            value_limb_12_col12.clone(),
+            value_limb_13_col13.clone(),
+            value_limb_14_col14.clone(),
+            value_limb_15_col15.clone(),
+            value_limb_16_col16.clone(),
+            value_limb_17_col17.clone(),
+            value_limb_18_col18.clone(),
+            value_limb_19_col19.clone(),
+            value_limb_20_col20.clone(),
+            value_limb_21_col21.clone(),
+            value_limb_22_col22.clone(),
+            value_limb_23_col23.clone(),
+            value_limb_24_col24.clone(),
+            value_limb_25_col25.clone(),
+            value_limb_26_col26.clone(),
+            ms_limb_low_col27.clone(),
+            ms_limb_high_col28.clone(),
+            pedersen_a_id_col29.clone(),
+            &self.range_check_5_4_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_split_output_tmp_d00c6_12_high_limb_0, read_split_output_tmp_d00c6_12_high_limb_1, read_split_output_tmp_d00c6_12_high_limb_2, read_split_output_tmp_d00c6_12_high_limb_3, read_split_output_tmp_d00c6_12_high_limb_4, read_split_output_tmp_d00c6_12_high_limb_5, read_split_output_tmp_d00c6_12_high_limb_6, read_split_output_tmp_d00c6_12_high_limb_7, read_split_output_tmp_d00c6_12_high_limb_8, read_split_output_tmp_d00c6_12_high_limb_9, read_split_output_tmp_d00c6_12_high_limb_10, read_split_output_tmp_d00c6_12_high_limb_11, read_split_output_tmp_d00c6_12_high_limb_12, read_split_output_tmp_d00c6_12_high_limb_13, read_split_output_tmp_d00c6_12_high_limb_14, read_split_output_tmp_d00c6_12_high_limb_15, read_split_output_tmp_d00c6_12_high_limb_16, read_split_output_tmp_d00c6_12_high_limb_17, read_split_output_tmp_d00c6_12_high_limb_18, read_split_output_tmp_d00c6_12_high_limb_19, read_split_output_tmp_d00c6_12_high_limb_20, read_split_output_tmp_d00c6_12_high_limb_21, read_split_output_tmp_d00c6_12_high_limb_22, read_split_output_tmp_d00c6_12_high_limb_23, read_split_output_tmp_d00c6_12_high_limb_24, read_split_output_tmp_d00c6_12_high_limb_25, read_split_output_tmp_d00c6_12_high_limb_26, read_split_output_tmp_d00c6_12_high_limb_27, read_split_output_tmp_d00c6_12_low_limb_0, read_split_output_tmp_d00c6_12_low_limb_1, read_split_output_tmp_d00c6_12_low_limb_2, read_split_output_tmp_d00c6_12_low_limb_3, read_split_output_tmp_d00c6_12_low_limb_4, read_split_output_tmp_d00c6_12_low_limb_5, read_split_output_tmp_d00c6_12_low_limb_6, read_split_output_tmp_d00c6_12_low_limb_7, read_split_output_tmp_d00c6_12_low_limb_8, read_split_output_tmp_d00c6_12_low_limb_9, read_split_output_tmp_d00c6_12_low_limb_10, read_split_output_tmp_d00c6_12_low_limb_11, read_split_output_tmp_d00c6_12_low_limb_12, read_split_output_tmp_d00c6_12_low_limb_13, read_split_output_tmp_d00c6_12_low_limb_14, read_split_output_tmp_d00c6_12_low_limb_15, read_split_output_tmp_d00c6_12_low_limb_16, read_split_output_tmp_d00c6_12_low_limb_17, read_split_output_tmp_d00c6_12_low_limb_18, read_split_output_tmp_d00c6_12_low_limb_19, read_split_output_tmp_d00c6_12_low_limb_20, read_split_output_tmp_d00c6_12_low_limb_21, read_split_output_tmp_d00c6_12_low_limb_22, read_split_output_tmp_d00c6_12_low_limb_23, read_split_output_tmp_d00c6_12_low_limb_24, read_split_output_tmp_d00c6_12_low_limb_25, read_split_output_tmp_d00c6_12_low_limb_26, read_split_output_tmp_d00c6_12_low_limb_27, read_split_output_tmp_d00c6_12_original_limb_0, read_split_output_tmp_d00c6_12_original_limb_1, read_split_output_tmp_d00c6_12_original_limb_2, read_split_output_tmp_d00c6_12_original_limb_3, read_split_output_tmp_d00c6_12_original_limb_4, read_split_output_tmp_d00c6_12_original_limb_5, read_split_output_tmp_d00c6_12_original_limb_6, read_split_output_tmp_d00c6_12_original_limb_7, read_split_output_tmp_d00c6_12_original_limb_8, read_split_output_tmp_d00c6_12_original_limb_9, read_split_output_tmp_d00c6_12_original_limb_10, read_split_output_tmp_d00c6_12_original_limb_11, read_split_output_tmp_d00c6_12_original_limb_12, read_split_output_tmp_d00c6_12_original_limb_13, read_split_output_tmp_d00c6_12_original_limb_14, read_split_output_tmp_d00c6_12_original_limb_15, read_split_output_tmp_d00c6_12_original_limb_16, read_split_output_tmp_d00c6_12_original_limb_17, read_split_output_tmp_d00c6_12_original_limb_18, read_split_output_tmp_d00c6_12_original_limb_19, read_split_output_tmp_d00c6_12_original_limb_20, read_split_output_tmp_d00c6_12_original_limb_21, read_split_output_tmp_d00c6_12_original_limb_22, read_split_output_tmp_d00c6_12_original_limb_23, read_split_output_tmp_d00c6_12_original_limb_24, read_split_output_tmp_d00c6_12_original_limb_25, read_split_output_tmp_d00c6_12_original_limb_26, read_split_output_tmp_d00c6_12_original_limb_27] =
-            ReadSplit::evaluate(
-                (instance_addr_tmp_d00c6_0.clone() + M31_1.clone()),
-                value_limb_0_col30.clone(),
-                value_limb_1_col31.clone(),
-                value_limb_2_col32.clone(),
-                value_limb_3_col33.clone(),
-                value_limb_4_col34.clone(),
-                value_limb_5_col35.clone(),
-                value_limb_6_col36.clone(),
-                value_limb_7_col37.clone(),
-                value_limb_8_col38.clone(),
-                value_limb_9_col39.clone(),
-                value_limb_10_col40.clone(),
-                value_limb_11_col41.clone(),
-                value_limb_12_col42.clone(),
-                value_limb_13_col43.clone(),
-                value_limb_14_col44.clone(),
-                value_limb_15_col45.clone(),
-                value_limb_16_col46.clone(),
-                value_limb_17_col47.clone(),
-                value_limb_18_col48.clone(),
-                value_limb_19_col49.clone(),
-                value_limb_20_col50.clone(),
-                value_limb_21_col51.clone(),
-                value_limb_22_col52.clone(),
-                value_limb_23_col53.clone(),
-                value_limb_24_col54.clone(),
-                value_limb_25_col55.clone(),
-                value_limb_26_col56.clone(),
-                ms_limb_low_col57.clone(),
-                ms_limb_high_col58.clone(),
-                pedersen_b_id_col59.clone(),
-                &self.range_check_5_4_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_split_output_tmp_d00c6_12_original_limb_27] = ReadSplit::evaluate(
+            [(instance_addr_tmp_d00c6_0.clone() + M31_1.clone())],
+            value_limb_0_col30.clone(),
+            value_limb_1_col31.clone(),
+            value_limb_2_col32.clone(),
+            value_limb_3_col33.clone(),
+            value_limb_4_col34.clone(),
+            value_limb_5_col35.clone(),
+            value_limb_6_col36.clone(),
+            value_limb_7_col37.clone(),
+            value_limb_8_col38.clone(),
+            value_limb_9_col39.clone(),
+            value_limb_10_col40.clone(),
+            value_limb_11_col41.clone(),
+            value_limb_12_col42.clone(),
+            value_limb_13_col43.clone(),
+            value_limb_14_col44.clone(),
+            value_limb_15_col45.clone(),
+            value_limb_16_col46.clone(),
+            value_limb_17_col47.clone(),
+            value_limb_18_col48.clone(),
+            value_limb_19_col49.clone(),
+            value_limb_20_col50.clone(),
+            value_limb_21_col51.clone(),
+            value_limb_22_col52.clone(),
+            value_limb_23_col53.clone(),
+            value_limb_24_col54.clone(),
+            value_limb_25_col55.clone(),
+            value_limb_26_col56.clone(),
+            ms_limb_low_col57.clone(),
+            ms_limb_high_col58.clone(),
+            pedersen_b_id_col59.clone(),
+            &self.range_check_5_4_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         VerifyReduced252::evaluate(
             [
                 value_limb_0_col0.clone(),
@@ -651,11 +649,13 @@ impl FrameworkEval for Eval {
             &self.range_check_8_lookup_elements,
             &mut eval,
         );
+        let partial_ec_mul_chain_tmp_tmp_d00c6_17 =
+            eval.add_intermediate((seq.clone() * M31_4.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
             &[
-                (seq.clone() * M31_4.clone()),
+                partial_ec_mul_chain_tmp_tmp_d00c6_17.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 (value_limb_0_col0.clone() + (value_limb_1_col1.clone() * M31_512.clone())),
@@ -735,7 +735,7 @@ impl FrameworkEval for Eval {
             &self.partial_ec_mul_lookup_elements,
             E::EF::one(),
             &[
-                (seq.clone() * M31_4.clone()),
+                partial_ec_mul_chain_tmp_tmp_d00c6_17.clone(),
                 M31_14.clone(),
                 partial_ec_mul_output_limb_0_col66.clone(),
                 partial_ec_mul_output_limb_1_col67.clone(),
@@ -811,11 +811,13 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let partial_ec_mul_chain_id_tmp_d00c6_32 =
+            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_17.clone() + M31_1.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
             &[
-                ((seq.clone() * M31_4.clone()) + M31_1.clone()),
+                partial_ec_mul_chain_id_tmp_d00c6_32.clone(),
                 M31_0.clone(),
                 M31_3670016.clone(),
                 ms_limb_high_col28.clone(),
@@ -895,7 +897,7 @@ impl FrameworkEval for Eval {
             &self.partial_ec_mul_lookup_elements,
             E::EF::one(),
             &[
-                ((seq.clone() * M31_4.clone()) + M31_1.clone()),
+                partial_ec_mul_chain_id_tmp_d00c6_32.clone(),
                 M31_1.clone(),
                 partial_ec_mul_output_limb_0_col137.clone(),
                 partial_ec_mul_output_limb_1_col138.clone(),
@@ -971,11 +973,13 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let partial_ec_mul_chain_id_tmp_d00c6_34 =
+            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_17.clone() + M31_2.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
             &[
-                ((seq.clone() * M31_4.clone()) + M31_2.clone()),
+                partial_ec_mul_chain_id_tmp_d00c6_34.clone(),
                 M31_0.clone(),
                 M31_3670032.clone(),
                 (value_limb_0_col30.clone() + (value_limb_1_col31.clone() * M31_512.clone())),
@@ -1055,7 +1059,7 @@ impl FrameworkEval for Eval {
             &self.partial_ec_mul_lookup_elements,
             E::EF::one(),
             &[
-                ((seq.clone() * M31_4.clone()) + M31_2.clone()),
+                partial_ec_mul_chain_id_tmp_d00c6_34.clone(),
                 M31_14.clone(),
                 partial_ec_mul_output_limb_0_col208.clone(),
                 partial_ec_mul_output_limb_1_col209.clone(),
@@ -1131,11 +1135,13 @@ impl FrameworkEval for Eval {
             ],
         ));
 
+        let partial_ec_mul_chain_id_tmp_d00c6_49 =
+            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_17.clone() + M31_3.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
             &[
-                ((seq.clone() * M31_4.clone()) + M31_3.clone()),
+                partial_ec_mul_chain_id_tmp_d00c6_49.clone(),
                 M31_0.clone(),
                 M31_7340048.clone(),
                 ms_limb_high_col58.clone(),
@@ -1215,7 +1221,7 @@ impl FrameworkEval for Eval {
             &self.partial_ec_mul_lookup_elements,
             E::EF::one(),
             &[
-                ((seq.clone() * M31_4.clone()) + M31_3.clone()),
+                partial_ec_mul_chain_id_tmp_d00c6_49.clone(),
                 M31_1.clone(),
                 partial_ec_mul_output_limb_0_col279.clone(),
                 partial_ec_mul_output_limb_1_col280.clone(),

@@ -21,7 +21,7 @@ impl VerifyBlakeWord {
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
-    ) -> () {
+    ) -> [E::F; 0] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_128 = E::F::from(M31::from(128));
         let M31_4 = E::F::from(M31::from(4));
@@ -79,6 +79,6 @@ impl VerifyBlakeWord {
             memory_id_to_big_lookup_elements,
             eval,
         );
-        ()
+        []
     }
 }

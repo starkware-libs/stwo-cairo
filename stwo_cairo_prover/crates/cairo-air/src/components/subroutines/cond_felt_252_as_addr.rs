@@ -13,7 +13,7 @@ impl CondFelt252AsAddr {
     pub fn evaluate<E: EvalAtRow>(
         [cond_felt_252_as_addr_input_limb_0, cond_felt_252_as_addr_input_limb_1, cond_felt_252_as_addr_input_limb_2, cond_felt_252_as_addr_input_limb_3, cond_felt_252_as_addr_input_limb_4, cond_felt_252_as_addr_input_limb_5, cond_felt_252_as_addr_input_limb_6, cond_felt_252_as_addr_input_limb_7, cond_felt_252_as_addr_input_limb_8, cond_felt_252_as_addr_input_limb_9, cond_felt_252_as_addr_input_limb_10, cond_felt_252_as_addr_input_limb_11, cond_felt_252_as_addr_input_limb_12, cond_felt_252_as_addr_input_limb_13, cond_felt_252_as_addr_input_limb_14, cond_felt_252_as_addr_input_limb_15, cond_felt_252_as_addr_input_limb_16, cond_felt_252_as_addr_input_limb_17, cond_felt_252_as_addr_input_limb_18, cond_felt_252_as_addr_input_limb_19, cond_felt_252_as_addr_input_limb_20, cond_felt_252_as_addr_input_limb_21, cond_felt_252_as_addr_input_limb_22, cond_felt_252_as_addr_input_limb_23, cond_felt_252_as_addr_input_limb_24, cond_felt_252_as_addr_input_limb_25, cond_felt_252_as_addr_input_limb_26, cond_felt_252_as_addr_input_limb_27, cond_felt_252_as_addr_input_limb_28]: [E::F; 29],
         eval: &mut E,
-    ) -> E::F {
+    ) -> [E::F; 1] {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
 
@@ -142,8 +142,8 @@ impl CondFelt252AsAddr {
             (cond_felt_252_as_addr_input_limb_28.clone()
                 * cond_felt_252_as_addr_input_limb_27.clone()),
         );
-        ((cond_felt_252_as_addr_input_limb_0.clone()
+        [((cond_felt_252_as_addr_input_limb_0.clone()
             + (cond_felt_252_as_addr_input_limb_1.clone() * M31_512.clone()))
-            + (cond_felt_252_as_addr_input_limb_2.clone() * M31_262144.clone()))
+            + (cond_felt_252_as_addr_input_limb_2.clone() * M31_262144.clone()))]
     }
 }
