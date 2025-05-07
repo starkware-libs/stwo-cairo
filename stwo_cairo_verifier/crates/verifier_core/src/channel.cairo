@@ -37,6 +37,8 @@ pub trait ChannelTrait {
 
     fn mix_u64(ref self: Channel, nonce: u64);
 
+    fn mix_u32s(ref self: Channel, data: Span<u32>);
+
     fn draw_felt(ref self: Channel) -> SecureField;
 
     /// Generates a uniform random vector of SecureField elements.

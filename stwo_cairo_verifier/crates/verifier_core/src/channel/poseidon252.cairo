@@ -15,6 +15,19 @@ pub const FELTS_PER_HASH: usize = 8;
 
 pub const BYTES_PER_HASH: usize = 31;
 
+/// Constructs a `felt252` from 7 u32 big-endian limbs.
+pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
+    let [l0, l1, l2, l3, l4, l5, l6] = x.unbox();
+    let offset = 0x100000000;
+    let result: felt252 = l0.into();
+    let result = result * offset + l1.into();
+    let result = result * offset + l2.into();
+    let result = result * offset + l3.into();
+    let result = result * offset + l4.into();
+    let result = result * offset + l5.into();
+    result * offset + l6.into()
+}
+
 #[derive(Drop, Default)]
 pub struct Poseidon252Channel {
     digest: felt252,
@@ -54,6 +67,40 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
         self.mix_root(nonce.into())
+    }
+
+    fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
+        let mut res = array![self.digest];
+
+        let mut data = data;
+
+        while let Some(chunk) = data.multi_pop_front::<7>() {
+            res
+                .append(
+                    construct_f252_be(
+                        *chunk
+                    ),
+                );
+        }
+
+        if !data.is_empty() {
+            let mut chunk: Array<u32> = array![];
+            chunk.append_span(data);
+            for _ in data.len()..7 {
+                chunk.append(0);
+            }
+            res
+                .append(
+                    construct_f252_be(
+                        *chunk.span().try_into().unwrap()
+                    ),
+                );
+        }
+
+        self.digest = poseidon_hash_span(res.span());
+
+        // TODO(spapini): do we need length padding?
+        self.channel_time.inc_challenges();
     }
 
     fn draw_felt(ref self: Poseidon252Channel) -> SecureField {
@@ -226,6 +273,19 @@ mod tests {
             );
 
         assert_ne!(initial_digest, channel.digest);
+    }
+
+    #[test]
+    pub fn test_mix_u32s() {
+        let initial_digest = 0;
+        let mut channel = new_channel(initial_digest);
+
+        channel
+            .mix_u32s(
+                array![1,2,3,4,5,6,7,8,9].span(),
+            );
+
+        assert_eq!(channel.digest, 0x061c7d60ecd584c68a98d358931edb02ba0eac8a8e559f7b40b3b065c76d2f70);
     }
 
     #[test]
