@@ -14,7 +14,7 @@ impl VerifyAdd252 {
         [verify_add_252_input_a_limb_0, verify_add_252_input_a_limb_1, verify_add_252_input_a_limb_2, verify_add_252_input_a_limb_3, verify_add_252_input_a_limb_4, verify_add_252_input_a_limb_5, verify_add_252_input_a_limb_6, verify_add_252_input_a_limb_7, verify_add_252_input_a_limb_8, verify_add_252_input_a_limb_9, verify_add_252_input_a_limb_10, verify_add_252_input_a_limb_11, verify_add_252_input_a_limb_12, verify_add_252_input_a_limb_13, verify_add_252_input_a_limb_14, verify_add_252_input_a_limb_15, verify_add_252_input_a_limb_16, verify_add_252_input_a_limb_17, verify_add_252_input_a_limb_18, verify_add_252_input_a_limb_19, verify_add_252_input_a_limb_20, verify_add_252_input_a_limb_21, verify_add_252_input_a_limb_22, verify_add_252_input_a_limb_23, verify_add_252_input_a_limb_24, verify_add_252_input_a_limb_25, verify_add_252_input_a_limb_26, verify_add_252_input_a_limb_27, verify_add_252_input_b_limb_0, verify_add_252_input_b_limb_1, verify_add_252_input_b_limb_2, verify_add_252_input_b_limb_3, verify_add_252_input_b_limb_4, verify_add_252_input_b_limb_5, verify_add_252_input_b_limb_6, verify_add_252_input_b_limb_7, verify_add_252_input_b_limb_8, verify_add_252_input_b_limb_9, verify_add_252_input_b_limb_10, verify_add_252_input_b_limb_11, verify_add_252_input_b_limb_12, verify_add_252_input_b_limb_13, verify_add_252_input_b_limb_14, verify_add_252_input_b_limb_15, verify_add_252_input_b_limb_16, verify_add_252_input_b_limb_17, verify_add_252_input_b_limb_18, verify_add_252_input_b_limb_19, verify_add_252_input_b_limb_20, verify_add_252_input_b_limb_21, verify_add_252_input_b_limb_22, verify_add_252_input_b_limb_23, verify_add_252_input_b_limb_24, verify_add_252_input_b_limb_25, verify_add_252_input_b_limb_26, verify_add_252_input_b_limb_27, verify_add_252_input_c_limb_0, verify_add_252_input_c_limb_1, verify_add_252_input_c_limb_2, verify_add_252_input_c_limb_3, verify_add_252_input_c_limb_4, verify_add_252_input_c_limb_5, verify_add_252_input_c_limb_6, verify_add_252_input_c_limb_7, verify_add_252_input_c_limb_8, verify_add_252_input_c_limb_9, verify_add_252_input_c_limb_10, verify_add_252_input_c_limb_11, verify_add_252_input_c_limb_12, verify_add_252_input_c_limb_13, verify_add_252_input_c_limb_14, verify_add_252_input_c_limb_15, verify_add_252_input_c_limb_16, verify_add_252_input_c_limb_17, verify_add_252_input_c_limb_18, verify_add_252_input_c_limb_19, verify_add_252_input_c_limb_20, verify_add_252_input_c_limb_21, verify_add_252_input_c_limb_22, verify_add_252_input_c_limb_23, verify_add_252_input_c_limb_24, verify_add_252_input_c_limb_25, verify_add_252_input_c_limb_26, verify_add_252_input_c_limb_27]: [E::F; 84],
         sub_p_bit_col0: E::F,
         eval: &mut E,
-    ) -> () {
+    ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));
         let M31_256 = E::F::from(M31::from(256));
@@ -300,6 +300,6 @@ impl VerifyAdd252 {
                 - verify_add_252_input_c_limb_27.clone())
                 - (M31_256.clone() * sub_p_bit_col0.clone())),
         );
-        ()
+        []
     }
 }

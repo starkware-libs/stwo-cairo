@@ -17,7 +17,7 @@ impl VerifyReduced252 {
         rc_input_col2: E::F,
         range_check_8_lookup_elements: &relations::RangeCheck_8,
         eval: &mut E,
-    ) -> () {
+    ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_120 = E::F::from(M31::from(120));
 
@@ -153,6 +153,6 @@ impl VerifyReduced252 {
         eval.add_constraint(
             (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_20.clone()),
         );
-        ()
+        []
     }
 }

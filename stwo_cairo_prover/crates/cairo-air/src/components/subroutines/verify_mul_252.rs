@@ -43,7 +43,7 @@ impl VerifyMul252 {
         carry_26_col27: E::F,
         range_check_19_lookup_elements: &relations::RangeCheck_19,
         eval: &mut E,
-    ) -> () {
+    ) -> [E::F; 0] {
         let M31_131072 = E::F::from(M31::from(131072));
         let M31_136 = E::F::from(M31::from(136));
         let M31_2 = E::F::from(M31::from(2));
@@ -756,6 +756,6 @@ impl VerifyMul252 {
             ((conv_mod_tmp_9a554_19_limb_27.clone() - (M31_256.clone() * k_col0.clone()))
                 + carry_26_col27.clone()),
         );
-        ()
+        []
     }
 }

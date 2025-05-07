@@ -23,7 +23,7 @@ impl EncodeOffsets {
         range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
         range_check_4_3_lookup_elements: &relations::RangeCheck_4_3,
         eval: &mut E,
-    ) -> [E::F; 6] {
+    ) -> [E::F; 2] {
         let M31_128 = E::F::from(M31::from(128));
         let M31_16 = E::F::from(M31::from(16));
         let M31_2048 = E::F::from(M31::from(2048));
@@ -66,12 +66,8 @@ impl EncodeOffsets {
         ));
 
         [
-            offset0_low_col0.clone(),
             (offset0_mid_col1.clone() + (offset1_low_col2.clone() * M31_128.clone())),
-            offset1_mid_col3.clone(),
             (offset1_high_col4.clone() + (offset2_low_col5.clone() * M31_32.clone())),
-            offset2_mid_col6.clone(),
-            offset2_high_col7.clone(),
         ]
     }
 }

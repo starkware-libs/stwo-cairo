@@ -90,40 +90,31 @@ impl FrameworkEval for Eval {
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [decode_instruction_15a61_output_tmp_e23a5_2_offset0, decode_instruction_15a61_output_tmp_e23a5_2_offset1, decode_instruction_15a61_output_tmp_e23a5_2_offset2, decode_instruction_15a61_output_tmp_e23a5_2_dst_base_fp, decode_instruction_15a61_output_tmp_e23a5_2_op0_base_fp, decode_instruction_15a61_output_tmp_e23a5_2_op1_imm, decode_instruction_15a61_output_tmp_e23a5_2_op1_base_fp, decode_instruction_15a61_output_tmp_e23a5_2_op1_base_ap, decode_instruction_15a61_output_tmp_e23a5_2_res_add, decode_instruction_15a61_output_tmp_e23a5_2_res_mul, decode_instruction_15a61_output_tmp_e23a5_2_pc_update_jump, decode_instruction_15a61_output_tmp_e23a5_2_pc_update_jump_rel, decode_instruction_15a61_output_tmp_e23a5_2_pc_update_jnz, decode_instruction_15a61_output_tmp_e23a5_2_ap_update_add, decode_instruction_15a61_output_tmp_e23a5_2_ap_update_add_1, decode_instruction_15a61_output_tmp_e23a5_2_opcode_call, decode_instruction_15a61_output_tmp_e23a5_2_opcode_ret, decode_instruction_15a61_output_tmp_e23a5_2_opcode_assert_eq, decode_instruction_15a61_output_tmp_e23a5_2_opcode_extension] =
-            DecodeInstruction15A61::evaluate(
-                input_pc_col0.clone(),
-                &self.verify_instruction_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_27_output_tmp_e23a5_5_limb_0, read_positive_num_bits_27_output_tmp_e23a5_5_limb_1, read_positive_num_bits_27_output_tmp_e23a5_5_limb_2, read_positive_num_bits_27_output_tmp_e23a5_5_limb_3, read_positive_num_bits_27_output_tmp_e23a5_5_limb_4, read_positive_num_bits_27_output_tmp_e23a5_5_limb_5, read_positive_num_bits_27_output_tmp_e23a5_5_limb_6, read_positive_num_bits_27_output_tmp_e23a5_5_limb_7, read_positive_num_bits_27_output_tmp_e23a5_5_limb_8, read_positive_num_bits_27_output_tmp_e23a5_5_limb_9, read_positive_num_bits_27_output_tmp_e23a5_5_limb_10, read_positive_num_bits_27_output_tmp_e23a5_5_limb_11, read_positive_num_bits_27_output_tmp_e23a5_5_limb_12, read_positive_num_bits_27_output_tmp_e23a5_5_limb_13, read_positive_num_bits_27_output_tmp_e23a5_5_limb_14, read_positive_num_bits_27_output_tmp_e23a5_5_limb_15, read_positive_num_bits_27_output_tmp_e23a5_5_limb_16, read_positive_num_bits_27_output_tmp_e23a5_5_limb_17, read_positive_num_bits_27_output_tmp_e23a5_5_limb_18, read_positive_num_bits_27_output_tmp_e23a5_5_limb_19, read_positive_num_bits_27_output_tmp_e23a5_5_limb_20, read_positive_num_bits_27_output_tmp_e23a5_5_limb_21, read_positive_num_bits_27_output_tmp_e23a5_5_limb_22, read_positive_num_bits_27_output_tmp_e23a5_5_limb_23, read_positive_num_bits_27_output_tmp_e23a5_5_limb_24, read_positive_num_bits_27_output_tmp_e23a5_5_limb_25, read_positive_num_bits_27_output_tmp_e23a5_5_limb_26, read_positive_num_bits_27_output_tmp_e23a5_5_limb_27, read_positive_num_bits_27_output_tmp_e23a5_5_limb_28] =
-            ReadPositiveNumBits27::evaluate(
-                (input_fp_col2.clone() - M31_1.clone()),
-                next_pc_id_col3.clone(),
-                next_pc_limb_0_col4.clone(),
-                next_pc_limb_1_col5.clone(),
-                next_pc_limb_2_col6.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_27_output_tmp_e23a5_8_limb_0, read_positive_num_bits_27_output_tmp_e23a5_8_limb_1, read_positive_num_bits_27_output_tmp_e23a5_8_limb_2, read_positive_num_bits_27_output_tmp_e23a5_8_limb_3, read_positive_num_bits_27_output_tmp_e23a5_8_limb_4, read_positive_num_bits_27_output_tmp_e23a5_8_limb_5, read_positive_num_bits_27_output_tmp_e23a5_8_limb_6, read_positive_num_bits_27_output_tmp_e23a5_8_limb_7, read_positive_num_bits_27_output_tmp_e23a5_8_limb_8, read_positive_num_bits_27_output_tmp_e23a5_8_limb_9, read_positive_num_bits_27_output_tmp_e23a5_8_limb_10, read_positive_num_bits_27_output_tmp_e23a5_8_limb_11, read_positive_num_bits_27_output_tmp_e23a5_8_limb_12, read_positive_num_bits_27_output_tmp_e23a5_8_limb_13, read_positive_num_bits_27_output_tmp_e23a5_8_limb_14, read_positive_num_bits_27_output_tmp_e23a5_8_limb_15, read_positive_num_bits_27_output_tmp_e23a5_8_limb_16, read_positive_num_bits_27_output_tmp_e23a5_8_limb_17, read_positive_num_bits_27_output_tmp_e23a5_8_limb_18, read_positive_num_bits_27_output_tmp_e23a5_8_limb_19, read_positive_num_bits_27_output_tmp_e23a5_8_limb_20, read_positive_num_bits_27_output_tmp_e23a5_8_limb_21, read_positive_num_bits_27_output_tmp_e23a5_8_limb_22, read_positive_num_bits_27_output_tmp_e23a5_8_limb_23, read_positive_num_bits_27_output_tmp_e23a5_8_limb_24, read_positive_num_bits_27_output_tmp_e23a5_8_limb_25, read_positive_num_bits_27_output_tmp_e23a5_8_limb_26, read_positive_num_bits_27_output_tmp_e23a5_8_limb_27, read_positive_num_bits_27_output_tmp_e23a5_8_limb_28] =
-            ReadPositiveNumBits27::evaluate(
-                (input_fp_col2.clone() - M31_2.clone()),
-                next_fp_id_col7.clone(),
-                next_fp_limb_0_col8.clone(),
-                next_fp_limb_1_col9.clone(),
-                next_fp_limb_2_col10.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        DecodeInstruction15A61::evaluate(
+            [input_pc_col0.clone()],
+            &self.verify_instruction_lookup_elements,
+            &mut eval,
+        );
+        ReadPositiveNumBits27::evaluate(
+            [(input_fp_col2.clone() - M31_1.clone())],
+            next_pc_id_col3.clone(),
+            next_pc_limb_0_col4.clone(),
+            next_pc_limb_1_col5.clone(),
+            next_pc_limb_2_col6.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadPositiveNumBits27::evaluate(
+            [(input_fp_col2.clone() - M31_2.clone())],
+            next_fp_id_col7.clone(),
+            next_fp_limb_0_col8.clone(),
+            next_fp_limb_1_col9.clone(),
+            next_fp_limb_2_col10.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::from(enabler.clone()),

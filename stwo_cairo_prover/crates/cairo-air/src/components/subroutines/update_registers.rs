@@ -13,7 +13,7 @@ impl UpdateRegisters {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [update_registers_input_limb_0, update_registers_input_limb_1, update_registers_input_limb_2, update_registers_input_limb_3, update_registers_input_limb_4, update_registers_input_limb_5, update_registers_input_limb_6, update_registers_input_limb_7, update_registers_input_limb_8, update_registers_input_limb_9, update_registers_input_limb_10, update_registers_input_limb_11, update_registers_input_limb_12, update_registers_input_limb_13, update_registers_input_limb_14, update_registers_input_limb_15, update_registers_input_limb_16, update_registers_input_limb_17, update_registers_input_limb_18, update_registers_input_limb_19, update_registers_input_limb_20, update_registers_input_limb_21, update_registers_input_limb_22, update_registers_input_limb_23, update_registers_input_limb_24, update_registers_input_limb_25, update_registers_input_limb_26, update_registers_input_limb_27, update_registers_input_limb_28, update_registers_input_limb_29, update_registers_input_limb_30, update_registers_input_limb_31, update_registers_input_limb_32, update_registers_input_limb_33, update_registers_input_limb_34, update_registers_input_limb_35, update_registers_input_limb_36, update_registers_input_limb_37, update_registers_input_limb_38, update_registers_input_limb_39, update_registers_input_limb_40, update_registers_input_limb_41, update_registers_input_limb_42, update_registers_input_limb_43, update_registers_input_limb_44, update_registers_input_limb_45, update_registers_input_limb_46, update_registers_input_limb_47, update_registers_input_limb_48, update_registers_input_limb_49, update_registers_input_limb_50, update_registers_input_limb_51, update_registers_input_limb_52, update_registers_input_limb_53, update_registers_input_limb_54, update_registers_input_limb_55, update_registers_input_limb_56, update_registers_input_limb_57, update_registers_input_limb_58, update_registers_input_limb_59, update_registers_input_limb_60, update_registers_input_limb_61, update_registers_input_limb_62, update_registers_input_limb_63, update_registers_input_limb_64, update_registers_input_limb_65, update_registers_input_limb_66, update_registers_input_limb_67, update_registers_input_limb_68, update_registers_input_limb_69, update_registers_input_limb_70, update_registers_input_limb_71, update_registers_input_limb_72, update_registers_input_limb_73, update_registers_input_limb_74, update_registers_input_limb_75, update_registers_input_limb_76, update_registers_input_limb_77, update_registers_input_limb_78, update_registers_input_limb_79, update_registers_input_limb_80, update_registers_input_limb_81, update_registers_input_limb_82, update_registers_input_limb_83, update_registers_input_limb_84, update_registers_input_limb_85, update_registers_input_limb_86, update_registers_input_limb_87, update_registers_input_limb_88, update_registers_input_limb_89, update_registers_input_limb_90, update_registers_input_limb_91, update_registers_input_limb_92, update_registers_input_limb_93, update_registers_input_limb_94, update_registers_input_limb_95, update_registers_input_limb_96, update_registers_input_limb_97, update_registers_input_limb_98, update_registers_input_limb_99, update_registers_input_limb_100, update_registers_input_limb_101, update_registers_input_limb_102, update_registers_input_limb_103, update_registers_input_limb_104, update_registers_input_limb_105, update_registers_input_limb_106]: [E::F; 107],
+        [update_registers_input_limb_0, update_registers_input_limb_1, update_registers_input_limb_2, update_registers_input_limb_10, update_registers_input_limb_11, update_registers_input_limb_12, update_registers_input_limb_13, update_registers_input_limb_14, update_registers_input_limb_15, update_registers_input_limb_16, update_registers_input_limb_20, update_registers_input_limb_21, update_registers_input_limb_22, update_registers_input_limb_23, update_registers_input_limb_24, update_registers_input_limb_25, update_registers_input_limb_26, update_registers_input_limb_27, update_registers_input_limb_28, update_registers_input_limb_29, update_registers_input_limb_30, update_registers_input_limb_31, update_registers_input_limb_32, update_registers_input_limb_33, update_registers_input_limb_34, update_registers_input_limb_35, update_registers_input_limb_36, update_registers_input_limb_37, update_registers_input_limb_38, update_registers_input_limb_39, update_registers_input_limb_40, update_registers_input_limb_41, update_registers_input_limb_42, update_registers_input_limb_43, update_registers_input_limb_44, update_registers_input_limb_45, update_registers_input_limb_46, update_registers_input_limb_47, update_registers_input_limb_48, update_registers_input_limb_49, update_registers_input_limb_50, update_registers_input_limb_51, update_registers_input_limb_52, update_registers_input_limb_53, update_registers_input_limb_54, update_registers_input_limb_55, update_registers_input_limb_56, update_registers_input_limb_57, update_registers_input_limb_58, update_registers_input_limb_59, update_registers_input_limb_60, update_registers_input_limb_61, update_registers_input_limb_62, update_registers_input_limb_63, update_registers_input_limb_64, update_registers_input_limb_65, update_registers_input_limb_66, update_registers_input_limb_67, update_registers_input_limb_68, update_registers_input_limb_69, update_registers_input_limb_70, update_registers_input_limb_71, update_registers_input_limb_72, update_registers_input_limb_73, update_registers_input_limb_74, update_registers_input_limb_75, update_registers_input_limb_76, update_registers_input_limb_77, update_registers_input_limb_78, update_registers_input_limb_79, update_registers_input_limb_80, update_registers_input_limb_81, update_registers_input_limb_82, update_registers_input_limb_83, update_registers_input_limb_84, update_registers_input_limb_85, update_registers_input_limb_86, update_registers_input_limb_87, update_registers_input_limb_88, update_registers_input_limb_89, update_registers_input_limb_90, update_registers_input_limb_91, update_registers_input_limb_92, update_registers_input_limb_93, update_registers_input_limb_94, update_registers_input_limb_95, update_registers_input_limb_96, update_registers_input_limb_97, update_registers_input_limb_98, update_registers_input_limb_99, update_registers_input_limb_100, update_registers_input_limb_101, update_registers_input_limb_102, update_registers_input_limb_103, update_registers_input_limb_104, update_registers_input_limb_105, update_registers_input_limb_106]: [E::F; 97],
         msb_col0: E::F,
         mid_limbs_set_col1: E::F,
         dst_sum_squares_inv_col2: E::F,
@@ -26,13 +26,13 @@ impl UpdateRegisters {
         next_ap_col9: E::F,
         next_fp_col10: E::F,
         eval: &mut E,
-    ) -> [E::F; 3] {
+    ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));
         let M31_2 = E::F::from(M31::from(2));
         let M31_256 = E::F::from(M31::from(256));
 
-        let cond_felt_252_as_addr_output_tmp_783d5_0 = CondFelt252AsAddr::evaluate(
+        let [cond_felt_252_as_addr_output_tmp_783d5_0] = CondFelt252AsAddr::evaluate(
             [
                 update_registers_input_limb_79.clone(),
                 update_registers_input_limb_80.clone(),
@@ -66,7 +66,7 @@ impl UpdateRegisters {
             ],
             eval,
         );
-        let cond_felt_252_as_addr_output_tmp_783d5_1 = CondFelt252AsAddr::evaluate(
+        let [cond_felt_252_as_addr_output_tmp_783d5_1] = CondFelt252AsAddr::evaluate(
             [
                 update_registers_input_limb_23.clone(),
                 update_registers_input_limb_24.clone(),
@@ -100,7 +100,7 @@ impl UpdateRegisters {
             ],
             eval,
         );
-        let cond_felt_252_as_rel_imm_output_tmp_783d5_5 = CondFelt252AsRelImm::evaluate(
+        let [cond_felt_252_as_rel_imm_output_tmp_783d5_5] = CondFelt252AsRelImm::evaluate(
             [
                 update_registers_input_limb_79.clone(),
                 update_registers_input_limb_80.clone(),
@@ -213,7 +213,7 @@ impl UpdateRegisters {
             (op1_as_rel_imm_cond_col4.clone()
                 - (update_registers_input_limb_12.clone() * dst_sum_tmp_783d5_9.clone())),
         );
-        let cond_felt_252_as_rel_imm_output_tmp_783d5_14 = CondFelt252AsRelImm::evaluate(
+        let [cond_felt_252_as_rel_imm_output_tmp_783d5_14] = CondFelt252AsRelImm::evaluate(
             [
                 update_registers_input_limb_51.clone(),
                 update_registers_input_limb_52.clone(),
@@ -295,10 +295,6 @@ impl UpdateRegisters {
                     + (update_registers_input_limb_15.clone()
                         * (update_registers_input_limb_1.clone() + M31_2.clone())))),
         );
-        [
-            next_pc_col8.clone(),
-            next_ap_col9.clone(),
-            next_fp_col10.clone(),
-        ]
+        []
     }
 }

@@ -110,9 +110,9 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_bc3cd_output_tmp_756b7_10_offset0, decode_instruction_bc3cd_output_tmp_756b7_10_offset1, decode_instruction_bc3cd_output_tmp_756b7_10_offset2, decode_instruction_bc3cd_output_tmp_756b7_10_dst_base_fp, decode_instruction_bc3cd_output_tmp_756b7_10_op0_base_fp, decode_instruction_bc3cd_output_tmp_756b7_10_op1_imm, decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_fp, decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap, decode_instruction_bc3cd_output_tmp_756b7_10_res_add, decode_instruction_bc3cd_output_tmp_756b7_10_res_mul, decode_instruction_bc3cd_output_tmp_756b7_10_pc_update_jump, decode_instruction_bc3cd_output_tmp_756b7_10_pc_update_jump_rel, decode_instruction_bc3cd_output_tmp_756b7_10_pc_update_jnz, decode_instruction_bc3cd_output_tmp_756b7_10_ap_update_add, decode_instruction_bc3cd_output_tmp_756b7_10_ap_update_add_1, decode_instruction_bc3cd_output_tmp_756b7_10_opcode_call, decode_instruction_bc3cd_output_tmp_756b7_10_opcode_ret, decode_instruction_bc3cd_output_tmp_756b7_10_opcode_assert_eq, decode_instruction_bc3cd_output_tmp_756b7_10_opcode_extension] =
+        let [decode_instruction_bc3cd_output_tmp_756b7_10_offset0, decode_instruction_bc3cd_output_tmp_756b7_10_offset1, decode_instruction_bc3cd_output_tmp_756b7_10_offset2, decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap] =
             DecodeInstructionBc3Cd::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 offset1_col4.clone(),
                 offset2_col5.clone(),
@@ -151,52 +151,49 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_756b7_16_limb_0, read_small_output_tmp_756b7_16_limb_1] =
-            ReadSmall::evaluate(
-                (mem_dst_base_col11.clone()
-                    + decode_instruction_bc3cd_output_tmp_756b7_10_offset0.clone()),
-                dst_id_col14.clone(),
-                msb_col15.clone(),
-                mid_limbs_set_col16.clone(),
-                dst_limb_0_col17.clone(),
-                dst_limb_1_col18.clone(),
-                dst_limb_2_col19.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_small_output_tmp_756b7_16_limb_0] = ReadSmall::evaluate(
+            [(mem_dst_base_col11.clone()
+                + decode_instruction_bc3cd_output_tmp_756b7_10_offset0.clone())],
+            dst_id_col14.clone(),
+            msb_col15.clone(),
+            mid_limbs_set_col16.clone(),
+            dst_limb_0_col17.clone(),
+            dst_limb_1_col18.clone(),
+            dst_limb_2_col19.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_756b7_22_limb_0, read_small_output_tmp_756b7_22_limb_1] =
-            ReadSmall::evaluate(
-                (mem0_base_col12.clone()
-                    + decode_instruction_bc3cd_output_tmp_756b7_10_offset1.clone()),
-                op0_id_col20.clone(),
-                msb_col21.clone(),
-                mid_limbs_set_col22.clone(),
-                op0_limb_0_col23.clone(),
-                op0_limb_1_col24.clone(),
-                op0_limb_2_col25.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_small_output_tmp_756b7_22_limb_0] = ReadSmall::evaluate(
+            [(mem0_base_col12.clone()
+                + decode_instruction_bc3cd_output_tmp_756b7_10_offset1.clone())],
+            op0_id_col20.clone(),
+            msb_col21.clone(),
+            mid_limbs_set_col22.clone(),
+            op0_limb_0_col23.clone(),
+            op0_limb_1_col24.clone(),
+            op0_limb_2_col25.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_756b7_28_limb_0, read_small_output_tmp_756b7_28_limb_1] =
-            ReadSmall::evaluate(
-                (mem1_base_col13.clone()
-                    + decode_instruction_bc3cd_output_tmp_756b7_10_offset2.clone()),
-                op1_id_col26.clone(),
-                msb_col27.clone(),
-                mid_limbs_set_col28.clone(),
-                op1_limb_0_col29.clone(),
-                op1_limb_1_col30.clone(),
-                op1_limb_2_col31.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_small_output_tmp_756b7_28_limb_0] = ReadSmall::evaluate(
+            [(mem1_base_col13.clone()
+                + decode_instruction_bc3cd_output_tmp_756b7_10_offset2.clone())],
+            op1_id_col26.clone(),
+            msb_col27.clone(),
+            mid_limbs_set_col28.clone(),
+            op1_limb_0_col29.clone(),
+            op1_limb_1_col30.clone(),
+            op1_limb_2_col31.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         // dst equals op0 + op1.
         eval.add_constraint(
             (read_small_output_tmp_756b7_16_limb_0.clone()

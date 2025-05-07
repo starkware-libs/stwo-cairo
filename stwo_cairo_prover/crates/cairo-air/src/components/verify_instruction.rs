@@ -75,13 +75,13 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
-        let input_limb_0_col0 = eval.next_trace_mask();
-        let input_limb_1_col1 = eval.next_trace_mask();
-        let input_limb_2_col2 = eval.next_trace_mask();
-        let input_limb_3_col3 = eval.next_trace_mask();
-        let input_limb_4_col4 = eval.next_trace_mask();
-        let input_limb_5_col5 = eval.next_trace_mask();
-        let input_limb_6_col6 = eval.next_trace_mask();
+        let input_pc_col0 = eval.next_trace_mask();
+        let input_offset0_col1 = eval.next_trace_mask();
+        let input_offset1_col2 = eval.next_trace_mask();
+        let input_offset2_col3 = eval.next_trace_mask();
+        let input_inst_felt5_high_col4 = eval.next_trace_mask();
+        let input_inst_felt6_col5 = eval.next_trace_mask();
+        let input_opcode_extension_col6 = eval.next_trace_mask();
         let offset0_low_col7 = eval.next_trace_mask();
         let offset0_mid_col8 = eval.next_trace_mask();
         let offset1_low_col9 = eval.next_trace_mask();
@@ -95,12 +95,12 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [encode_offsets_output_tmp_16a4f_8_limb_0, encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_2, encode_offsets_output_tmp_16a4f_8_limb_3, encode_offsets_output_tmp_16a4f_8_limb_4, encode_offsets_output_tmp_16a4f_8_limb_5] =
+        let [encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_3] =
             EncodeOffsets::evaluate(
                 [
-                    input_limb_1_col1.clone(),
-                    input_limb_2_col2.clone(),
-                    input_limb_3_col3.clone(),
+                    input_offset0_col1.clone(),
+                    input_offset1_col2.clone(),
+                    input_offset2_col3.clone(),
                 ],
                 offset0_low_col7.clone(),
                 offset0_mid_col8.clone(),
@@ -116,15 +116,15 @@ impl FrameworkEval for Eval {
             );
         MemVerify::evaluate(
             [
-                input_limb_0_col0.clone(),
+                input_pc_col0.clone(),
                 offset0_low_col7.clone(),
                 encode_offsets_output_tmp_16a4f_8_limb_1.clone(),
                 offset1_mid_col10.clone(),
                 encode_offsets_output_tmp_16a4f_8_limb_3.clone(),
                 offset2_mid_col13.clone(),
-                (offset2_high_col14.clone() + input_limb_4_col4.clone()),
-                input_limb_5_col5.clone(),
-                input_limb_6_col6.clone(),
+                (offset2_high_col14.clone() + input_inst_felt5_high_col4.clone()),
+                input_inst_felt6_col5.clone(),
+                input_opcode_extension_col6.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
@@ -155,13 +155,13 @@ impl FrameworkEval for Eval {
             &self.verify_instruction_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                input_limb_0_col0.clone(),
-                input_limb_1_col1.clone(),
-                input_limb_2_col2.clone(),
-                input_limb_3_col3.clone(),
-                input_limb_4_col4.clone(),
-                input_limb_5_col5.clone(),
-                input_limb_6_col6.clone(),
+                input_pc_col0.clone(),
+                input_offset0_col1.clone(),
+                input_offset1_col2.clone(),
+                input_offset2_col3.clone(),
+                input_inst_felt5_high_col4.clone(),
+                input_inst_felt6_col5.clone(),
+                input_opcode_extension_col6.clone(),
             ],
         ));
 

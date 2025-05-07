@@ -12,7 +12,7 @@ impl ReadSmall {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        read_small_input: E::F,
+        [read_small_input]: [E::F; 1],
         id_col0: E::F,
         msb_col1: E::F,
         mid_limbs_set_col2: E::F,
@@ -22,7 +22,7 @@ impl ReadSmall {
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
-    ) -> [E::F; 2] {
+    ) -> [E::F; 1] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
@@ -38,43 +38,12 @@ impl ReadSmall {
             &[read_small_input.clone(), id_col0.clone()],
         ));
 
-        let [cond_decode_small_sign_output_tmp_ceaaf_4_limb_0, cond_decode_small_sign_output_tmp_ceaaf_4_limb_1] =
-            CondDecodeSmallSign::evaluate(
-                [
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_0.clone(),
-                    M31_1.clone(),
-                ],
-                msb_col1.clone(),
-                mid_limbs_set_col2.clone(),
-                eval,
-            );
+        CondDecodeSmallSign::evaluate(
+            [M31_1.clone()],
+            msb_col1.clone(),
+            mid_limbs_set_col2.clone(),
+            eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             memory_id_to_big_lookup_elements,
             E::EF::one(),
@@ -116,7 +85,6 @@ impl ReadSmall {
                 + (value_limb_2_col5.clone() * M31_262144.clone()))
                 - msb_col1.clone())
                 - (M31_134217728.clone() * mid_limbs_set_col2.clone())),
-            id_col0.clone(),
         ]
     }
 }
