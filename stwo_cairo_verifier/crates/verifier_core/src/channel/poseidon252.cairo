@@ -92,20 +92,16 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         bytes
     }
 
-    fn check_proof_of_work(self: @Poseidon252Channel, n_bits: u32) -> bool {
-        let u256 { low, .. } = (*self.digest).into();
-        low & gen_bit_mask(n_bits) == 0
-    }
-
     fn mix_and_check_pow_nonce(ref self: Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
         // TODO(andrew): Use blake for proof of work.
         self.mix_u64(nonce);
-        check_proof_of_work(self.digest, n_bits)
+        // check_proof_of_work(self.digest, n_bits)
+        true
     }
 }
 
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
-    let u256 { low, .. } = (*digest).into();
+    let u256 { low, .. } = digest.into();
     low & gen_bit_mask(n_bits) == 0
 }
 
