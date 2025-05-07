@@ -127,6 +127,56 @@ use components::qm_31_add_mul_opcode::{
     ClaimImpl as Qm31AddMulOpcodeClaimImpl,
     InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl,
 };
+use components::range_check_11::{
+    ClaimImpl as RangeCheck_11ClaimImpl, InteractionClaimImpl as RangeCheck_11InteractionClaimImpl,
+};
+use components::range_check_12::{
+    ClaimImpl as RangeCheck_12ClaimImpl, InteractionClaimImpl as RangeCheck_12InteractionClaimImpl,
+};
+use components::range_check_18::{
+    ClaimImpl as RangeCheck_18ClaimImpl, InteractionClaimImpl as RangeCheck_18InteractionClaimImpl,
+};
+use components::range_check_19::{
+    ClaimImpl as RangeCheck_19ClaimImpl, InteractionClaimImpl as RangeCheck_19InteractionClaimImpl,
+};
+use components::range_check_3_3_3_3_3::{
+    ClaimImpl as RangeCheck_3_3_3_3_3ClaimImpl,
+    InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl,
+};
+use components::range_check_3_6_6_3::{
+    ClaimImpl as RangeCheck_3_6_6_3ClaimImpl,
+    InteractionClaimImpl as RangeCheck_3_6_6_3InteractionClaimImpl,
+};
+use components::range_check_4_3::{
+    ClaimImpl as RangeCheck_4_3ClaimImpl,
+    InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl,
+};
+use components::range_check_4_4::{
+    ClaimImpl as RangeCheck_4_4ClaimImpl,
+    InteractionClaimImpl as RangeCheck_4_4InteractionClaimImpl,
+};
+use components::range_check_4_4_4_4::{
+    ClaimImpl as RangeCheck_4_4_4_4ClaimImpl,
+    InteractionClaimImpl as RangeCheck_4_4_4_4InteractionClaimImpl,
+};
+use components::range_check_5_4::{
+    ClaimImpl as RangeCheck_5_4ClaimImpl,
+    InteractionClaimImpl as RangeCheck_5_4InteractionClaimImpl,
+};
+use components::range_check_6::{
+    ClaimImpl as RangeCheck_6ClaimImpl, InteractionClaimImpl as RangeCheck_6InteractionClaimImpl,
+};
+use components::range_check_7_2_5::{
+    ClaimImpl as RangeCheck_7_2_5ClaimImpl,
+    InteractionClaimImpl as RangeCheck_7_2_5InteractionClaimImpl,
+};
+use components::range_check_8::{
+    ClaimImpl as RangeCheck_8ClaimImpl, InteractionClaimImpl as RangeCheck_8InteractionClaimImpl,
+};
+use components::range_check_9_9::{
+    ClaimImpl as RangeCheck_9_9ClaimImpl,
+    InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl,
+};
 use components::range_check_builtin_bits_128::{
     ClaimImpl as RangeCheckBuiltinBits128ClaimImpl,
     InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl,
@@ -138,9 +188,6 @@ use components::range_check_builtin_bits_96::{
 use components::range_check_felt_252_width_27::{
     ClaimImpl as RangeCheckFelt252Width27ClaimImpl,
     InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl,
-};
-use components::range_check_vector::{
-    ClaimImpl as RangeCheckClaimImpl, InteractionClaimImpl as RangeCheckInteractionClaimImpl,
 };
 use components::ret_opcode::{
     ClaimImpl as RetOpcodeClaimImpl, InteractionClaimImpl as RetOpcodeInteractionClaimImpl,
@@ -789,20 +836,20 @@ impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
 
 #[derive(Drop, Serde, Clone)]
 pub struct RangeChecksClaim {
-    pub rc_6: components::range_check_vector::Claim,
-    pub rc_8: components::range_check_vector::Claim,
-    pub rc_11: components::range_check_vector::Claim,
-    pub rc_12: components::range_check_vector::Claim,
-    pub rc_18: components::range_check_vector::Claim,
-    pub rc_19: components::range_check_vector::Claim,
-    pub rc_4_3: components::range_check_vector::Claim,
-    pub rc_4_4: components::range_check_vector::Claim,
-    pub rc_5_4: components::range_check_vector::Claim,
-    pub rc_9_9: components::range_check_vector::Claim,
-    pub rc_7_2_5: components::range_check_vector::Claim,
-    pub rc_3_6_6_3: components::range_check_vector::Claim,
-    pub rc_4_4_4_4: components::range_check_vector::Claim,
-    pub rc_3_3_3_3_3: components::range_check_vector::Claim,
+    pub rc_6: components::range_check_6::Claim,
+    pub rc_8: components::range_check_8::Claim,
+    pub rc_11: components::range_check_11::Claim,
+    pub rc_12: components::range_check_12::Claim,
+    pub rc_18: components::range_check_18::Claim,
+    pub rc_19: components::range_check_19::Claim,
+    pub rc_4_3: components::range_check_4_3::Claim,
+    pub rc_4_4: components::range_check_4_4::Claim,
+    pub rc_5_4: components::range_check_5_4::Claim,
+    pub rc_9_9: components::range_check_9_9::Claim,
+    pub rc_7_2_5: components::range_check_7_2_5::Claim,
+    pub rc_3_6_6_3: components::range_check_3_6_6_3::Claim,
+    pub rc_4_4_4_4: components::range_check_4_4_4_4::Claim,
+    pub rc_3_3_3_3_3: components::range_check_3_3_3_3_3::Claim,
 }
 
 #[generate_trait]
@@ -840,20 +887,20 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
 
 #[derive(Drop, Serde, Clone)]
 pub struct RangeChecksInteractionClaim {
-    pub rc_6: components::range_check_vector::InteractionClaim,
-    pub rc_8: components::range_check_vector::InteractionClaim,
-    pub rc_11: components::range_check_vector::InteractionClaim,
-    pub rc_12: components::range_check_vector::InteractionClaim,
-    pub rc_18: components::range_check_vector::InteractionClaim,
-    pub rc_19: components::range_check_vector::InteractionClaim,
-    pub rc_4_3: components::range_check_vector::InteractionClaim,
-    pub rc_4_4: components::range_check_vector::InteractionClaim,
-    pub rc_5_4: components::range_check_vector::InteractionClaim,
-    pub rc_9_9: components::range_check_vector::InteractionClaim,
-    pub rc_7_2_5: components::range_check_vector::InteractionClaim,
-    pub rc_3_6_6_3: components::range_check_vector::InteractionClaim,
-    pub rc_4_4_4_4: components::range_check_vector::InteractionClaim,
-    pub rc_3_3_3_3_3: components::range_check_vector::InteractionClaim,
+    pub rc_6: components::range_check_6::InteractionClaim,
+    pub rc_8: components::range_check_8::InteractionClaim,
+    pub rc_11: components::range_check_11::InteractionClaim,
+    pub rc_12: components::range_check_12::InteractionClaim,
+    pub rc_18: components::range_check_18::InteractionClaim,
+    pub rc_19: components::range_check_19::InteractionClaim,
+    pub rc_4_3: components::range_check_4_3::InteractionClaim,
+    pub rc_4_4: components::range_check_4_4::InteractionClaim,
+    pub rc_5_4: components::range_check_5_4::InteractionClaim,
+    pub rc_9_9: components::range_check_9_9::InteractionClaim,
+    pub rc_7_2_5: components::range_check_7_2_5::InteractionClaim,
+    pub rc_3_6_6_3: components::range_check_3_6_6_3::InteractionClaim,
+    pub rc_4_4_4_4: components::range_check_4_4_4_4::InteractionClaim,
+    pub rc_3_3_3_3_3: components::range_check_3_3_3_3_3::InteractionClaim,
 }
 
 #[generate_trait]
@@ -2729,20 +2776,20 @@ fn preprocessed_trace_mask_points(
 
 #[derive(Drop)]
 pub struct RangeChecksComponents {
-    rc_6: components::range_check_vector::Rc6BitComponent,
-    rc_8: components::range_check_vector::Rc8BitComponent,
-    rc_11: components::range_check_vector::Rc11BitComponent,
-    rc_12: components::range_check_vector::Rc12BitComponent,
-    rc_18: components::range_check_vector::Rc18BitComponent,
-    rc_19: components::range_check_vector::Rc19BitComponent,
-    rc_4_3: components::range_check_vector::Rc4Bit3BitComponent,
-    rc_4_4: components::range_check_vector::Rc4Bit4BitComponent,
-    rc_5_4: components::range_check_vector::Rc5Bit4BitComponent,
-    rc_9_9: components::range_check_vector::Rc9Bit9BitComponent,
-    rc_7_2_5: components::range_check_vector::Rc7Bit2Bit5BitComponent,
-    rc_3_6_6_3: components::range_check_vector::Rc3Bit6Bit6Bit3BitComponent,
-    rc_4_4_4_4: components::range_check_vector::Rc4Bit4Bit4Bit4BitComponent,
-    rc_3_3_3_3_3: components::range_check_vector::Rc3Bit3Bit3Bit3Bit3BitComponent,
+    rc_6: components::range_check_6::Component,
+    rc_8: components::range_check_8::Component,
+    rc_11: components::range_check_11::Component,
+    rc_12: components::range_check_12::Component,
+    rc_18: components::range_check_18::Component,
+    rc_19: components::range_check_19::Component,
+    rc_4_3: components::range_check_4_3::Component,
+    rc_4_4: components::range_check_4_4::Component,
+    rc_5_4: components::range_check_5_4::Component,
+    rc_9_9: components::range_check_9_9::Component,
+    rc_7_2_5: components::range_check_7_2_5::Component,
+    rc_3_6_6_3: components::range_check_3_6_6_3::Component,
+    rc_4_4_4_4: components::range_check_4_4_4_4::Component,
+    rc_3_3_3_3_3: components::range_check_3_3_3_3_3::Component,
 }
 
 #[generate_trait]
@@ -2753,61 +2800,87 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         interaction_claim: @RangeChecksInteractionClaim,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
-            rc_6: components::range_check_vector::Rc6BitComponent {
+            rc_6: components::range_check_6::Component {
+                claim: *claim.rc_6,
                 interaction_claim: *interaction_claim.rc_6,
-                lookup_elements: interaction_elements.range_checks.rc_6.clone(),
+                range_check_6_lookup_elements: interaction_elements.range_checks.rc_6.clone(),
             },
-            rc_8: components::range_check_vector::Rc8BitComponent {
+            rc_8: components::range_check_8::Component {
+                claim: *claim.rc_8,
                 interaction_claim: *interaction_claim.rc_8,
-                lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+                range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
             },
-            rc_11: components::range_check_vector::Rc11BitComponent {
+            rc_11: components::range_check_11::Component {
+                claim: *claim.rc_11,
                 interaction_claim: *interaction_claim.rc_11,
-                lookup_elements: interaction_elements.range_checks.rc_11.clone(),
+                range_check_11_lookup_elements: interaction_elements.range_checks.rc_11.clone(),
             },
-            rc_12: components::range_check_vector::Rc12BitComponent {
+            rc_12: components::range_check_12::Component {
+                claim: *claim.rc_12,
                 interaction_claim: *interaction_claim.rc_12,
-                lookup_elements: interaction_elements.range_checks.rc_12.clone(),
+                range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
             },
-            rc_18: components::range_check_vector::Rc18BitComponent {
+            rc_18: components::range_check_18::Component {
+                claim: *claim.rc_18,
                 interaction_claim: *interaction_claim.rc_18,
-                lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+                range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
             },
-            rc_19: components::range_check_vector::Rc19BitComponent {
+            rc_19: components::range_check_19::Component {
+                claim: *claim.rc_19,
                 interaction_claim: *interaction_claim.rc_19,
-                lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+                range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
             },
-            rc_4_3: components::range_check_vector::Rc4Bit3BitComponent {
+            rc_4_3: components::range_check_4_3::Component {
+                claim: *claim.rc_4_3,
                 interaction_claim: *interaction_claim.rc_4_3,
-                lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
+                range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
             },
-            rc_4_4: components::range_check_vector::Rc4Bit4BitComponent {
+            rc_4_4: components::range_check_4_4::Component {
+                claim: *claim.rc_4_4,
                 interaction_claim: *interaction_claim.rc_4_4,
-                lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
+                range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
             },
-            rc_5_4: components::range_check_vector::Rc5Bit4BitComponent {
+            rc_5_4: components::range_check_5_4::Component {
+                claim: *claim.rc_5_4,
                 interaction_claim: *interaction_claim.rc_5_4,
-                lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
+                range_check_5_4_lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
             },
-            rc_9_9: components::range_check_vector::Rc9Bit9BitComponent {
+            rc_9_9: components::range_check_9_9::Component {
+                claim: *claim.rc_9_9,
                 interaction_claim: *interaction_claim.rc_9_9,
-                lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+                range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
             },
-            rc_7_2_5: components::range_check_vector::Rc7Bit2Bit5BitComponent {
+            rc_7_2_5: components::range_check_7_2_5::Component {
+                claim: *claim.rc_7_2_5,
                 interaction_claim: *interaction_claim.rc_7_2_5,
-                lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
+                range_check_7_2_5_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_7_2_5
+                    .clone(),
             },
-            rc_3_6_6_3: components::range_check_vector::Rc3Bit6Bit6Bit3BitComponent {
+            rc_3_6_6_3: components::range_check_3_6_6_3::Component {
+                claim: *claim.rc_3_6_6_3,
                 interaction_claim: *interaction_claim.rc_3_6_6_3,
-                lookup_elements: interaction_elements.range_checks.rc_3_6_6_3.clone(),
+                range_check_3_6_6_3_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_3_6_6_3
+                    .clone(),
             },
-            rc_4_4_4_4: components::range_check_vector::Rc4Bit4Bit4Bit4BitComponent {
+            rc_4_4_4_4: components::range_check_4_4_4_4::Component {
+                claim: *claim.rc_4_4_4_4,
                 interaction_claim: *interaction_claim.rc_4_4_4_4,
-                lookup_elements: interaction_elements.range_checks.rc_4_4_4_4.clone(),
+                range_check_4_4_4_4_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_4_4_4_4
+                    .clone(),
             },
-            rc_3_3_3_3_3: components::range_check_vector::Rc3Bit3Bit3Bit3Bit3BitComponent {
+            rc_3_3_3_3_3: components::range_check_3_3_3_3_3::Component {
+                claim: *claim.rc_3_3_3_3_3,
                 interaction_claim: *interaction_claim.rc_3_3_3_3_3,
-                lookup_elements: interaction_elements.range_checks.rc_3_3_3_3_3.clone(),
+                range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_3_3_3_3_3
+                    .clone(),
             },
         }
     }
