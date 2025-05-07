@@ -91,9 +91,9 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_d2a10_output_tmp_c921e_5_offset0, decode_instruction_d2a10_output_tmp_c921e_5_offset1, decode_instruction_d2a10_output_tmp_c921e_5_offset2, decode_instruction_d2a10_output_tmp_c921e_5_dst_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op0_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op1_imm, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_fp, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap, decode_instruction_d2a10_output_tmp_c921e_5_res_add, decode_instruction_d2a10_output_tmp_c921e_5_res_mul, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jump, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jump_rel, decode_instruction_d2a10_output_tmp_c921e_5_pc_update_jnz, decode_instruction_d2a10_output_tmp_c921e_5_ap_update_add, decode_instruction_d2a10_output_tmp_c921e_5_ap_update_add_1, decode_instruction_d2a10_output_tmp_c921e_5_opcode_call, decode_instruction_d2a10_output_tmp_c921e_5_opcode_ret, decode_instruction_d2a10_output_tmp_c921e_5_opcode_assert_eq, decode_instruction_d2a10_output_tmp_c921e_5_opcode_extension] =
+        let [decode_instruction_d2a10_output_tmp_c921e_5_offset2, decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap] =
             DecodeInstructionD2A10::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset2_col3.clone(),
                 op1_imm_col4.clone(),
                 op1_base_fp_col5.clone(),
@@ -115,20 +115,19 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_c921e_11_limb_0, read_small_output_tmp_c921e_11_limb_1] =
-            ReadSmall::evaluate(
-                (mem1_base_col6.clone()
-                    + decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone()),
-                op1_id_col7.clone(),
-                msb_col8.clone(),
-                mid_limbs_set_col9.clone(),
-                op1_limb_0_col10.clone(),
-                op1_limb_1_col11.clone(),
-                op1_limb_2_col12.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        let [read_small_output_tmp_c921e_11_limb_0] = ReadSmall::evaluate(
+            [(mem1_base_col6.clone()
+                + decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone())],
+            op1_id_col7.clone(),
+            msb_col8.clone(),
+            mid_limbs_set_col9.clone(),
+            op1_limb_0_col10.clone(),
+            op1_limb_1_col11.clone(),
+            op1_limb_2_col12.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::from(enabler.clone()),

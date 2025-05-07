@@ -1,105 +1,65 @@
-use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
-};
-use stwo_prover::core::channel::Channel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
-use stwo_prover::core::pcs::TreeVec;
+use crate::components::prelude::*;
 
-use crate::preprocessed::{PreProcessedColumn, Seq};
-use crate::relations;
+pub const N_TRACE_COLUMNS: usize = 2;
+pub const LOG_SIZE: u32 = 4;
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
-/// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
-/// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
-///
-/// 1. The ID and Multiplicity vectors are split to 'MEMORY_ADDRESS_TO_ID_SPLIT' chunks of size
-///    `ids.len()`/`MEMORY_ADDRESS_TO_ID_SPLIT`.
-/// 2. The chunks are padded with 0s to the next power of 2.
-///
-/// #  Example
-/// ID = [id0..id10], MEMORY_ADDRESS_TO_ID_SPLIT = 4:
-/// ID0 = [id0, id1, id2, 0]
-/// ID1 = [id3, id4, id5, 0]
-/// ID2 = [id6, id7, id8, 0]
-/// ID3 = [id9, id10, 0, 0]
-pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
-pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
-pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
-
-pub type Component = FrameworkComponent<Eval>;
-
-#[derive(Clone)]
 pub struct Eval {
-    // The log size of the component after split.
-    pub log_size: u32,
-    pub lookup_elements: relations::MemoryAddressToId,
-}
-impl Eval {
-    pub fn new(claim: Claim, lookup_elements: relations::MemoryAddressToId) -> Self {
-        Self {
-            log_size: claim.log_size,
-            lookup_elements,
-        }
-    }
+    pub claim: Claim,
+    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
 }
 
-impl FrameworkEval for Eval {
-    fn log_size(&self) -> u32 {
-        self.log_size
-    }
-
-    fn max_constraint_log_degree_bound(&self) -> u32 {
-        self.log_size() + 1
-    }
-
-    fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        // Addresses are offseted by 1, as 0 address is reserved.
-        let seq_plus_one =
-            eval.get_preprocessed_column(Seq::new(self.log_size()).id()) + E::F::from(M31(1));
-        for i in 0..MEMORY_ADDRESS_TO_ID_SPLIT {
-            let id = eval.next_trace_mask();
-            let multiplicity = eval.next_trace_mask();
-            let address =
-                seq_plus_one.clone() + E::F::from(M31((i * (1 << self.log_size())) as u32));
-            eval.add_to_relation(RelationEntry::new(
-                &self.lookup_elements,
-                E::EF::from(-multiplicity),
-                &[address, id],
-            ));
-        }
-
-        eval.finalize_logup_in_pairs();
-        eval
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct Claim {
-    pub log_size: u32,
-}
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes =
-            vec![self.log_size; SECURE_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2)];
+        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
+        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_size as u64);
+        channel.mix_u64(LOG_SIZE as u64);
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.claimed_sum]);
+    }
+}
+
+pub type Component = FrameworkComponent<Eval>;
+
+impl FrameworkEval for Eval {
+    fn log_size(&self) -> u32 {
+        LOG_SIZE
+    }
+
+    fn max_constraint_log_degree_bound(&self) -> u32 {
+        self.log_size() + 1
+    }
+
+    #[allow(unused_parens)]
+    #[allow(clippy::double_parens)]
+    #[allow(non_snake_case)]
+    fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        let memory_address_to_id_output_col0 = eval.next_trace_mask();
+        let multiplicity = eval.next_trace_mask();
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.memory_address_to_id_lookup_elements,
+            -E::EF::from(multiplicity),
+            &[seq.clone(), memory_address_to_id_output_col0.clone()],
+        ));
+
+        eval.finalize_logup_in_pairs();
+        eval
     }
 }
 
@@ -118,10 +78,9 @@ mod tests {
     fn memory_address_to_id_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            log_size: 4,
-            lookup_elements: relations::MemoryAddressToId::dummy(),
+            claim: Claim {},
+            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

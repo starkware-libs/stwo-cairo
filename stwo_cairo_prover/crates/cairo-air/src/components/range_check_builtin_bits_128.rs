@@ -81,32 +81,29 @@ impl FrameworkEval for Eval {
         let value_limb_14_col15 = eval.next_trace_mask();
         let msb_col16 = eval.next_trace_mask();
 
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_128_output_tmp_66b3a_4_limb_0, read_positive_num_bits_128_output_tmp_66b3a_4_limb_1, read_positive_num_bits_128_output_tmp_66b3a_4_limb_2, read_positive_num_bits_128_output_tmp_66b3a_4_limb_3, read_positive_num_bits_128_output_tmp_66b3a_4_limb_4, read_positive_num_bits_128_output_tmp_66b3a_4_limb_5, read_positive_num_bits_128_output_tmp_66b3a_4_limb_6, read_positive_num_bits_128_output_tmp_66b3a_4_limb_7, read_positive_num_bits_128_output_tmp_66b3a_4_limb_8, read_positive_num_bits_128_output_tmp_66b3a_4_limb_9, read_positive_num_bits_128_output_tmp_66b3a_4_limb_10, read_positive_num_bits_128_output_tmp_66b3a_4_limb_11, read_positive_num_bits_128_output_tmp_66b3a_4_limb_12, read_positive_num_bits_128_output_tmp_66b3a_4_limb_13, read_positive_num_bits_128_output_tmp_66b3a_4_limb_14, read_positive_num_bits_128_output_tmp_66b3a_4_limb_15, read_positive_num_bits_128_output_tmp_66b3a_4_limb_16, read_positive_num_bits_128_output_tmp_66b3a_4_limb_17, read_positive_num_bits_128_output_tmp_66b3a_4_limb_18, read_positive_num_bits_128_output_tmp_66b3a_4_limb_19, read_positive_num_bits_128_output_tmp_66b3a_4_limb_20, read_positive_num_bits_128_output_tmp_66b3a_4_limb_21, read_positive_num_bits_128_output_tmp_66b3a_4_limb_22, read_positive_num_bits_128_output_tmp_66b3a_4_limb_23, read_positive_num_bits_128_output_tmp_66b3a_4_limb_24, read_positive_num_bits_128_output_tmp_66b3a_4_limb_25, read_positive_num_bits_128_output_tmp_66b3a_4_limb_26, read_positive_num_bits_128_output_tmp_66b3a_4_limb_27, read_positive_num_bits_128_output_tmp_66b3a_4_limb_28] =
-            ReadPositiveNumBits128::evaluate(
-                (E::F::from(M31::from(self.claim.range_check_builtin_segment_start)) + seq.clone()),
-                value_id_col0.clone(),
-                value_limb_0_col1.clone(),
-                value_limb_1_col2.clone(),
-                value_limb_2_col3.clone(),
-                value_limb_3_col4.clone(),
-                value_limb_4_col5.clone(),
-                value_limb_5_col6.clone(),
-                value_limb_6_col7.clone(),
-                value_limb_7_col8.clone(),
-                value_limb_8_col9.clone(),
-                value_limb_9_col10.clone(),
-                value_limb_10_col11.clone(),
-                value_limb_11_col12.clone(),
-                value_limb_12_col13.clone(),
-                value_limb_13_col14.clone(),
-                value_limb_14_col15.clone(),
-                msb_col16.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        ReadPositiveNumBits128::evaluate(
+            [(E::F::from(M31::from(self.claim.range_check_builtin_segment_start)) + seq.clone())],
+            value_id_col0.clone(),
+            value_limb_0_col1.clone(),
+            value_limb_1_col2.clone(),
+            value_limb_2_col3.clone(),
+            value_limb_3_col4.clone(),
+            value_limb_4_col5.clone(),
+            value_limb_5_col6.clone(),
+            value_limb_6_col7.clone(),
+            value_limb_7_col8.clone(),
+            value_limb_8_col9.clone(),
+            value_limb_9_col10.clone(),
+            value_limb_10_col11.clone(),
+            value_limb_11_col12.clone(),
+            value_limb_12_col13.clone(),
+            value_limb_13_col14.clone(),
+            value_limb_14_col15.clone(),
+            msb_col16.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         eval.finalize_logup_in_pairs();
         eval
     }
