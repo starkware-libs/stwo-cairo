@@ -89,6 +89,43 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
+    fn mix_u32s(ref self: Blake2sChannel, data: Span<u32>) {
+        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
+        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+        let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
+
+        let mut data = data;
+        let mut byte_count = 32;
+
+        while let Some(head) = data.multi_pop_front::<8>() {
+            // Compress whenever the buffer reaches capacity.
+            if let Some(msg) = buffer.span().try_into() {
+                state = blake2s_compress(state, byte_count, *msg);
+                buffer = array![];
+            }
+
+            buffer.append_span(head.unbox().span());
+            byte_count += 32;
+        }
+
+        // Compress again if buffer is full but there is more data for finalize.
+        if !data.is_empty() {
+            if let Some(msg) = buffer.span().try_into() {
+                state = blake2s_compress(state, byte_count, *msg);
+                buffer = array![];
+            }
+        }
+
+        byte_count += data.len() * 4;
+        buffer.append_span(data);
+        for _ in buffer.len()..16 {
+            buffer.append(0);
+        }
+
+        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+        update_digest(ref self, Blake2sHash { hash: res });
+    }
+
     fn draw_felt(ref self: Blake2sChannel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
         QM31Trait::from_array([r0, r1, r2, r3])
@@ -354,6 +391,23 @@ mod tests {
             [
                 743523477, 161816109, 3300966720, 3503887744, 929103465, 2486638855, 1826907926,
                 3137305201,
+            ],
+        );
+    }
+
+    #[test]
+    pub fn test_mix_u32s() {
+        let mut channel: Blake2sChannel = Default::default();
+
+        channel.mix_u32s(array![1, 2, 3, 4, 5, 6, 7, 8, 9].span());
+
+        // Tested against values produced from Rust code.
+        // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
+        assert_eq!(
+            channel.digest.hash.unbox(),
+            [
+                0x83769170, 0xb31bbb57, 0xb6da6f34, 0xfad757b3, 0xe3fbb846, 0x24432e2c, 0x94c2ffa0,
+                0xc7a1f9cb,
             ],
         );
     }
