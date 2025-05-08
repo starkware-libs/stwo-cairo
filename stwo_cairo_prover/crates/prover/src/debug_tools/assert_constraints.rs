@@ -115,7 +115,6 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(&range_checks.rc_12, &trace);
     assert_component(&range_checks.rc_18, &trace);
     assert_component(&range_checks.rc_19, &trace);
-    assert_component(&range_checks.rc_3_6, &trace);
     assert_component(&range_checks.rc_4_3, &trace);
     assert_component(&range_checks.rc_4_4, &trace);
     assert_component(&range_checks.rc_5_4, &trace);

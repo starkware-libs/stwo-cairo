@@ -10,7 +10,7 @@ use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_19,
-    range_check_3_3_3_3_3, range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
+    range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
     range_check_4_4_4_4, range_check_5_4, range_check_6, range_check_7_2_5, range_check_8,
     range_check_9_9,
 };
@@ -24,7 +24,6 @@ pub struct RangeChecksClaim {
     pub rc_12: range_check_12::Claim,
     pub rc_18: range_check_18::Claim,
     pub rc_19: range_check_19::Claim,
-    pub rc_3_6: range_check_3_6::Claim,
     pub rc_4_3: range_check_4_3::Claim,
     pub rc_4_4: range_check_4_4::Claim,
     pub rc_5_4: range_check_5_4::Claim,
@@ -42,7 +41,6 @@ impl RangeChecksClaim {
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
         self.rc_19.mix_into(channel);
-        self.rc_3_6.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
         self.rc_5_4.mix_into(channel);
@@ -62,7 +60,6 @@ impl RangeChecksClaim {
                 self.rc_12.log_sizes(),
                 self.rc_18.log_sizes(),
                 self.rc_19.log_sizes(),
-                self.rc_3_6.log_sizes(),
                 self.rc_4_3.log_sizes(),
                 self.rc_4_4.log_sizes(),
                 self.rc_5_4.log_sizes(),
@@ -85,7 +82,6 @@ pub struct RangeChecksInteractionClaim {
     pub rc_12: range_check_12::InteractionClaim,
     pub rc_18: range_check_18::InteractionClaim,
     pub rc_19: range_check_19::InteractionClaim,
-    pub rc_3_6: range_check_3_6::InteractionClaim,
     pub rc_4_3: range_check_4_3::InteractionClaim,
     pub rc_4_4: range_check_4_4::InteractionClaim,
     pub rc_5_4: range_check_5_4::InteractionClaim,
@@ -103,7 +99,6 @@ impl RangeChecksInteractionClaim {
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
         self.rc_19.mix_into(channel);
-        self.rc_3_6.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
         self.rc_5_4.mix_into(channel);
@@ -122,7 +117,6 @@ impl RangeChecksInteractionClaim {
         sum += self.rc_12.claimed_sum;
         sum += self.rc_18.claimed_sum;
         sum += self.rc_19.claimed_sum;
-        sum += self.rc_3_6.claimed_sum;
         sum += self.rc_4_3.claimed_sum;
         sum += self.rc_4_4.claimed_sum;
         sum += self.rc_5_4.claimed_sum;
@@ -142,7 +136,6 @@ pub struct RangeChecksInteractionElements {
     pub rc_12: relations::RangeCheck_12,
     pub rc_18: relations::RangeCheck_18,
     pub rc_19: relations::RangeCheck_19,
-    pub rc_3_6: relations::RangeCheck_3_6,
     pub rc_4_3: relations::RangeCheck_4_3,
     pub rc_4_4: relations::RangeCheck_4_4,
     pub rc_5_4: relations::RangeCheck_5_4,
@@ -162,7 +155,6 @@ impl RangeChecksInteractionElements {
             rc_12: relations::RangeCheck_12::draw(channel),
             rc_18: relations::RangeCheck_18::draw(channel),
             rc_19: relations::RangeCheck_19::draw(channel),
-            rc_3_6: relations::RangeCheck_3_6::draw(channel),
             rc_4_3: relations::RangeCheck_4_3::draw(channel),
             rc_4_4: relations::RangeCheck_4_4::draw(channel),
             rc_5_4: relations::RangeCheck_5_4::draw(channel),
@@ -182,7 +174,6 @@ pub struct RangeChecksComponents {
     pub rc_12: range_check_12::Component,
     pub rc_18: range_check_18::Component,
     pub rc_19: range_check_19::Component,
-    pub rc_3_6: range_check_3_6::Component,
     pub rc_4_3: range_check_4_3::Component,
     pub rc_4_4: range_check_4_4::Component,
     pub rc_5_4: range_check_5_4::Component,
@@ -227,11 +218,6 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_19::Eval::new(interaction_elements.rc_19.clone()),
             interaction_claim.rc_19.claimed_sum,
-        );
-        let rc_3_6_component = range_check_3_6::Component::new(
-            tree_span_provider,
-            range_check_3_6::Eval::new(interaction_elements.rc_3_6.clone()),
-            interaction_claim.rc_3_6.claimed_sum,
         );
         let rc_4_3_component = range_check_4_3::Component::new(
             tree_span_provider,
@@ -280,7 +266,6 @@ impl RangeChecksComponents {
             rc_12: rc_12_component,
             rc_18: rc_18_component,
             rc_19: rc_19_component,
-            rc_3_6: rc_3_6_component,
             rc_4_3: rc_4_3_component,
             rc_4_4: rc_4_4_component,
             rc_5_4: rc_5_4_component,
@@ -300,7 +285,6 @@ impl RangeChecksComponents {
             &self.rc_12 as &dyn ComponentProver<SimdBackend>,
             &self.rc_18 as &dyn ComponentProver<SimdBackend>,
             &self.rc_19 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_3_6 as &dyn ComponentProver<SimdBackend>,
             &self.rc_4_3 as &dyn ComponentProver<SimdBackend>,
             &self.rc_4_4 as &dyn ComponentProver<SimdBackend>,
             &self.rc_5_4 as &dyn ComponentProver<SimdBackend>,
@@ -336,11 +320,6 @@ impl std::fmt::Display for RangeChecksComponents {
             f,
             "RangeCheck19: {}",
             indented_component_display(&self.rc_19)
-        )?;
-        writeln!(
-            f,
-            "RangeCheck3_6: {}",
-            indented_component_display(&self.rc_3_6)
         )?;
         writeln!(
             f,
