@@ -54,11 +54,7 @@ pub impl ClaimImpl of ClaimTrait {
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
-    fn mix_into(self: @Claim, ref channel: Channel) {
-        for log_range in self.log_ranges.span() {
-            channel.mix_u64((*log_range).into());
-        };
-    }
+    fn mix_into(self: @Claim, ref channel: Channel) {}
 }
 
 #[derive(Drop, Serde, Copy)]
