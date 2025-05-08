@@ -21,7 +21,6 @@ generate_range_check_constraints!([11]);
 generate_range_check_constraints!([12]);
 generate_range_check_constraints!([18]);
 generate_range_check_constraints!([19]);
-generate_range_check_constraints!([3, 6]);
 generate_range_check_constraints!([4, 3]);
 generate_range_check_constraints!([4, 4]);
 generate_range_check_constraints!([5, 4]);

@@ -103,9 +103,6 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     let range_check_18 = RangeCheck::new([18], 0);
     // RangeCheck_19.
     let range_check_19 = RangeCheck::new([19], 0);
-    // RangeCheck_3_6.
-    let range_check_3_6_col_0 = RangeCheck::new([3, 6], 0);
-    let range_check_3_6_col_1 = RangeCheck::new([3, 6], 1);
     // RangeCheck_4_3.
     let range_check_4_3_col_0 = RangeCheck::new([4, 3], 0);
     let range_check_4_3_col_1 = RangeCheck::new([4, 3], 1);
@@ -146,8 +143,6 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
         Box::new(range_check_12),
         Box::new(range_check_18),
         Box::new(range_check_19),
-        Box::new(range_check_3_6_col_0),
-        Box::new(range_check_3_6_col_1),
         Box::new(range_check_4_3_col_0),
         Box::new(range_check_4_3_col_1),
         Box::new(range_check_4_4_col_0),

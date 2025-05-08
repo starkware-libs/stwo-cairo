@@ -161,7 +161,6 @@ fn cairo_relation_entries(
         add_to_relation_entries(&range_checks.rc_12, trace),
         add_to_relation_entries(&range_checks.rc_18, trace),
         add_to_relation_entries(&range_checks.rc_19, trace),
-        add_to_relation_entries(&range_checks.rc_3_6, trace),
         add_to_relation_entries(&range_checks.rc_4_3, trace),
         add_to_relation_entries(&range_checks.rc_4_4, trace),
         add_to_relation_entries(&range_checks.rc_5_4, trace),
