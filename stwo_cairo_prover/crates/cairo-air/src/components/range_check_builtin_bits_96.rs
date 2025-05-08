@@ -81,29 +81,28 @@ impl FrameworkEval for Eval {
         let value_limb_9_col10 = eval.next_trace_mask();
         let value_limb_10_col11 = eval.next_trace_mask();
 
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_96_output_tmp_6e07e_2_limb_0, read_positive_num_bits_96_output_tmp_6e07e_2_limb_1, read_positive_num_bits_96_output_tmp_6e07e_2_limb_2, read_positive_num_bits_96_output_tmp_6e07e_2_limb_3, read_positive_num_bits_96_output_tmp_6e07e_2_limb_4, read_positive_num_bits_96_output_tmp_6e07e_2_limb_5, read_positive_num_bits_96_output_tmp_6e07e_2_limb_6, read_positive_num_bits_96_output_tmp_6e07e_2_limb_7, read_positive_num_bits_96_output_tmp_6e07e_2_limb_8, read_positive_num_bits_96_output_tmp_6e07e_2_limb_9, read_positive_num_bits_96_output_tmp_6e07e_2_limb_10, read_positive_num_bits_96_output_tmp_6e07e_2_limb_11, read_positive_num_bits_96_output_tmp_6e07e_2_limb_12, read_positive_num_bits_96_output_tmp_6e07e_2_limb_13, read_positive_num_bits_96_output_tmp_6e07e_2_limb_14, read_positive_num_bits_96_output_tmp_6e07e_2_limb_15, read_positive_num_bits_96_output_tmp_6e07e_2_limb_16, read_positive_num_bits_96_output_tmp_6e07e_2_limb_17, read_positive_num_bits_96_output_tmp_6e07e_2_limb_18, read_positive_num_bits_96_output_tmp_6e07e_2_limb_19, read_positive_num_bits_96_output_tmp_6e07e_2_limb_20, read_positive_num_bits_96_output_tmp_6e07e_2_limb_21, read_positive_num_bits_96_output_tmp_6e07e_2_limb_22, read_positive_num_bits_96_output_tmp_6e07e_2_limb_23, read_positive_num_bits_96_output_tmp_6e07e_2_limb_24, read_positive_num_bits_96_output_tmp_6e07e_2_limb_25, read_positive_num_bits_96_output_tmp_6e07e_2_limb_26, read_positive_num_bits_96_output_tmp_6e07e_2_limb_27, read_positive_num_bits_96_output_tmp_6e07e_2_limb_28] =
-            ReadPositiveNumBits96::evaluate(
+        ReadPositiveNumBits96::evaluate(
+            [
                 (E::F::from(M31::from(self.claim.range_check96_builtin_segment_start))
                     + seq.clone()),
-                value_id_col0.clone(),
-                value_limb_0_col1.clone(),
-                value_limb_1_col2.clone(),
-                value_limb_2_col3.clone(),
-                value_limb_3_col4.clone(),
-                value_limb_4_col5.clone(),
-                value_limb_5_col6.clone(),
-                value_limb_6_col7.clone(),
-                value_limb_7_col8.clone(),
-                value_limb_8_col9.clone(),
-                value_limb_9_col10.clone(),
-                value_limb_10_col11.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.range_check_6_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+            ],
+            value_id_col0.clone(),
+            value_limb_0_col1.clone(),
+            value_limb_1_col2.clone(),
+            value_limb_2_col3.clone(),
+            value_limb_3_col4.clone(),
+            value_limb_4_col5.clone(),
+            value_limb_5_col6.clone(),
+            value_limb_6_col7.clone(),
+            value_limb_7_col8.clone(),
+            value_limb_8_col9.clone(),
+            value_limb_9_col10.clone(),
+            value_limb_10_col11.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.range_check_6_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         eval.finalize_logup_in_pairs();
         eval
     }

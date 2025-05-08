@@ -45,7 +45,7 @@ impl Sub252 {
         sub_p_bit_col28: E::F,
         range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
         eval: &mut E,
-    ) -> [E::F; 28] {
+    ) -> [E::F; 0] {
         RangeCheckMemValueN28::evaluate(
             [
                 sub_res_limb_0_col0.clone(),
@@ -170,35 +170,6 @@ impl Sub252 {
             sub_p_bit_col28.clone(),
             eval,
         );
-        [
-            sub_res_limb_0_col0.clone(),
-            sub_res_limb_1_col1.clone(),
-            sub_res_limb_2_col2.clone(),
-            sub_res_limb_3_col3.clone(),
-            sub_res_limb_4_col4.clone(),
-            sub_res_limb_5_col5.clone(),
-            sub_res_limb_6_col6.clone(),
-            sub_res_limb_7_col7.clone(),
-            sub_res_limb_8_col8.clone(),
-            sub_res_limb_9_col9.clone(),
-            sub_res_limb_10_col10.clone(),
-            sub_res_limb_11_col11.clone(),
-            sub_res_limb_12_col12.clone(),
-            sub_res_limb_13_col13.clone(),
-            sub_res_limb_14_col14.clone(),
-            sub_res_limb_15_col15.clone(),
-            sub_res_limb_16_col16.clone(),
-            sub_res_limb_17_col17.clone(),
-            sub_res_limb_18_col18.clone(),
-            sub_res_limb_19_col19.clone(),
-            sub_res_limb_20_col20.clone(),
-            sub_res_limb_21_col21.clone(),
-            sub_res_limb_22_col22.clone(),
-            sub_res_limb_23_col23.clone(),
-            sub_res_limb_24_col24.clone(),
-            sub_res_limb_25_col25.clone(),
-            sub_res_limb_26_col26.clone(),
-            sub_res_limb_27_col27.clone(),
-        ]
+        []
     }
 }

@@ -16,7 +16,7 @@ impl CondFelt252AsRelImm {
         msb_col0: E::F,
         mid_limbs_set_col1: E::F,
         eval: &mut E,
-    ) -> E::F {
+    ) -> [E::F; 1] {
         let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_136 = E::F::from(M31::from(136));
         let M31_256 = E::F::from(M31::from(256));
@@ -24,43 +24,12 @@ impl CondFelt252AsRelImm {
         let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
 
-        let [cond_decode_small_sign_output_tmp_1e9bf_2_limb_0, cond_decode_small_sign_output_tmp_1e9bf_2_limb_1] =
-            CondDecodeSmallSign::evaluate(
-                [
-                    cond_felt_252_as_rel_imm_input_limb_0.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_1.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_2.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_3.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_4.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_5.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_6.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_7.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_8.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_9.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_10.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_11.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_12.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_13.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_14.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_15.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_16.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_17.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_18.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_19.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_20.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_21.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_22.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_23.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_24.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_25.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_26.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_27.clone(),
-                    cond_felt_252_as_rel_imm_input_limb_28.clone(),
-                ],
-                msb_col0.clone(),
-                mid_limbs_set_col1.clone(),
-                eval,
-            );
+        CondDecodeSmallSign::evaluate(
+            [cond_felt_252_as_rel_imm_input_limb_28.clone()],
+            msb_col0.clone(),
+            mid_limbs_set_col1.clone(),
+            eval,
+        );
         // rel_imm limb 3 is fixed.
         eval.add_constraint(
             (cond_felt_252_as_rel_imm_input_limb_28.clone()
@@ -206,10 +175,10 @@ impl CondFelt252AsRelImm {
                 * (cond_felt_252_as_rel_imm_input_limb_27.clone()
                     - (msb_col0.clone() * M31_256.clone()))),
         );
-        ((((cond_felt_252_as_rel_imm_input_limb_0.clone()
+        [((((cond_felt_252_as_rel_imm_input_limb_0.clone()
             + (cond_felt_252_as_rel_imm_input_limb_1.clone() * M31_512.clone()))
             + (cond_felt_252_as_rel_imm_input_limb_2.clone() * M31_262144.clone()))
             - msb_col0.clone())
-            - (M31_134217728.clone() * mid_limbs_set_col1.clone()))
+            - (M31_134217728.clone() * mid_limbs_set_col1.clone()))]
     }
 }

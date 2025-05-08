@@ -11,13 +11,11 @@ impl DecodeInstructionFdb6E {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        decode_instruction_fdb6e_input: E::F,
+        [decode_instruction_fdb6e_input_pc]: [E::F; 1],
         offset2_col0: E::F,
         verify_instruction_lookup_elements: &relations::VerifyInstruction,
         eval: &mut E,
-    ) -> [E::F; 19] {
-        let M31_0 = E::F::from(M31::from(0));
-        let M31_1 = E::F::from(M31::from(1));
+    ) -> [E::F; 1] {
         let M31_128 = E::F::from(M31::from(128));
         let M31_32768 = E::F::from(M31::from(32768));
         let M31_32769 = E::F::from(M31::from(32769));
@@ -27,7 +25,7 @@ impl DecodeInstructionFdb6E {
             verify_instruction_lookup_elements,
             E::EF::one(),
             &[
-                decode_instruction_fdb6e_input.clone(),
+                decode_instruction_fdb6e_input_pc.clone(),
                 M31_32768.clone(),
                 M31_32769.clone(),
                 offset2_col0.clone(),
@@ -36,26 +34,6 @@ impl DecodeInstructionFdb6E {
             ],
         ));
 
-        [
-            M31_0.clone(),
-            M31_1.clone(),
-            (offset2_col0.clone() - M31_32768.clone()),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_1.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_1.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_1.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-            M31_0.clone(),
-        ]
+        [(offset2_col0.clone() - M31_32768.clone())]
     }
 }

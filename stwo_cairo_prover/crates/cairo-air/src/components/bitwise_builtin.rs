@@ -166,88 +166,84 @@ impl FrameworkEval for Eval {
         let xor_id_col87 = eval.next_trace_mask();
         let or_id_col88 = eval.next_trace_mask();
 
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_252_output_tmp_efb2a_2_limb_0, read_positive_num_bits_252_output_tmp_efb2a_2_limb_1, read_positive_num_bits_252_output_tmp_efb2a_2_limb_2, read_positive_num_bits_252_output_tmp_efb2a_2_limb_3, read_positive_num_bits_252_output_tmp_efb2a_2_limb_4, read_positive_num_bits_252_output_tmp_efb2a_2_limb_5, read_positive_num_bits_252_output_tmp_efb2a_2_limb_6, read_positive_num_bits_252_output_tmp_efb2a_2_limb_7, read_positive_num_bits_252_output_tmp_efb2a_2_limb_8, read_positive_num_bits_252_output_tmp_efb2a_2_limb_9, read_positive_num_bits_252_output_tmp_efb2a_2_limb_10, read_positive_num_bits_252_output_tmp_efb2a_2_limb_11, read_positive_num_bits_252_output_tmp_efb2a_2_limb_12, read_positive_num_bits_252_output_tmp_efb2a_2_limb_13, read_positive_num_bits_252_output_tmp_efb2a_2_limb_14, read_positive_num_bits_252_output_tmp_efb2a_2_limb_15, read_positive_num_bits_252_output_tmp_efb2a_2_limb_16, read_positive_num_bits_252_output_tmp_efb2a_2_limb_17, read_positive_num_bits_252_output_tmp_efb2a_2_limb_18, read_positive_num_bits_252_output_tmp_efb2a_2_limb_19, read_positive_num_bits_252_output_tmp_efb2a_2_limb_20, read_positive_num_bits_252_output_tmp_efb2a_2_limb_21, read_positive_num_bits_252_output_tmp_efb2a_2_limb_22, read_positive_num_bits_252_output_tmp_efb2a_2_limb_23, read_positive_num_bits_252_output_tmp_efb2a_2_limb_24, read_positive_num_bits_252_output_tmp_efb2a_2_limb_25, read_positive_num_bits_252_output_tmp_efb2a_2_limb_26, read_positive_num_bits_252_output_tmp_efb2a_2_limb_27, read_positive_num_bits_252_output_tmp_efb2a_2_limb_28] =
-            ReadPositiveNumBits252::evaluate(
+        ReadPositiveNumBits252::evaluate(
+            [
                 (E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone())),
-                op0_id_col0.clone(),
-                op0_limb_0_col1.clone(),
-                op0_limb_1_col2.clone(),
-                op0_limb_2_col3.clone(),
-                op0_limb_3_col4.clone(),
-                op0_limb_4_col5.clone(),
-                op0_limb_5_col6.clone(),
-                op0_limb_6_col7.clone(),
-                op0_limb_7_col8.clone(),
-                op0_limb_8_col9.clone(),
-                op0_limb_9_col10.clone(),
-                op0_limb_10_col11.clone(),
-                op0_limb_11_col12.clone(),
-                op0_limb_12_col13.clone(),
-                op0_limb_13_col14.clone(),
-                op0_limb_14_col15.clone(),
-                op0_limb_15_col16.clone(),
-                op0_limb_16_col17.clone(),
-                op0_limb_17_col18.clone(),
-                op0_limb_18_col19.clone(),
-                op0_limb_19_col20.clone(),
-                op0_limb_20_col21.clone(),
-                op0_limb_21_col22.clone(),
-                op0_limb_22_col23.clone(),
-                op0_limb_23_col24.clone(),
-                op0_limb_24_col25.clone(),
-                op0_limb_25_col26.clone(),
-                op0_limb_26_col27.clone(),
-                op0_limb_27_col28.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_positive_num_bits_252_output_tmp_efb2a_5_limb_0, read_positive_num_bits_252_output_tmp_efb2a_5_limb_1, read_positive_num_bits_252_output_tmp_efb2a_5_limb_2, read_positive_num_bits_252_output_tmp_efb2a_5_limb_3, read_positive_num_bits_252_output_tmp_efb2a_5_limb_4, read_positive_num_bits_252_output_tmp_efb2a_5_limb_5, read_positive_num_bits_252_output_tmp_efb2a_5_limb_6, read_positive_num_bits_252_output_tmp_efb2a_5_limb_7, read_positive_num_bits_252_output_tmp_efb2a_5_limb_8, read_positive_num_bits_252_output_tmp_efb2a_5_limb_9, read_positive_num_bits_252_output_tmp_efb2a_5_limb_10, read_positive_num_bits_252_output_tmp_efb2a_5_limb_11, read_positive_num_bits_252_output_tmp_efb2a_5_limb_12, read_positive_num_bits_252_output_tmp_efb2a_5_limb_13, read_positive_num_bits_252_output_tmp_efb2a_5_limb_14, read_positive_num_bits_252_output_tmp_efb2a_5_limb_15, read_positive_num_bits_252_output_tmp_efb2a_5_limb_16, read_positive_num_bits_252_output_tmp_efb2a_5_limb_17, read_positive_num_bits_252_output_tmp_efb2a_5_limb_18, read_positive_num_bits_252_output_tmp_efb2a_5_limb_19, read_positive_num_bits_252_output_tmp_efb2a_5_limb_20, read_positive_num_bits_252_output_tmp_efb2a_5_limb_21, read_positive_num_bits_252_output_tmp_efb2a_5_limb_22, read_positive_num_bits_252_output_tmp_efb2a_5_limb_23, read_positive_num_bits_252_output_tmp_efb2a_5_limb_24, read_positive_num_bits_252_output_tmp_efb2a_5_limb_25, read_positive_num_bits_252_output_tmp_efb2a_5_limb_26, read_positive_num_bits_252_output_tmp_efb2a_5_limb_27, read_positive_num_bits_252_output_tmp_efb2a_5_limb_28] =
-            ReadPositiveNumBits252::evaluate(
+            ],
+            op0_id_col0.clone(),
+            op0_limb_0_col1.clone(),
+            op0_limb_1_col2.clone(),
+            op0_limb_2_col3.clone(),
+            op0_limb_3_col4.clone(),
+            op0_limb_4_col5.clone(),
+            op0_limb_5_col6.clone(),
+            op0_limb_6_col7.clone(),
+            op0_limb_7_col8.clone(),
+            op0_limb_8_col9.clone(),
+            op0_limb_9_col10.clone(),
+            op0_limb_10_col11.clone(),
+            op0_limb_11_col12.clone(),
+            op0_limb_12_col13.clone(),
+            op0_limb_13_col14.clone(),
+            op0_limb_14_col15.clone(),
+            op0_limb_15_col16.clone(),
+            op0_limb_16_col17.clone(),
+            op0_limb_17_col18.clone(),
+            op0_limb_18_col19.clone(),
+            op0_limb_19_col20.clone(),
+            op0_limb_20_col21.clone(),
+            op0_limb_21_col22.clone(),
+            op0_limb_22_col23.clone(),
+            op0_limb_23_col24.clone(),
+            op0_limb_24_col25.clone(),
+            op0_limb_25_col26.clone(),
+            op0_limb_26_col27.clone(),
+            op0_limb_27_col28.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadPositiveNumBits252::evaluate(
+            [
                 ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone()))
                     + M31_1.clone()),
-                op1_id_col29.clone(),
-                op1_limb_0_col30.clone(),
-                op1_limb_1_col31.clone(),
-                op1_limb_2_col32.clone(),
-                op1_limb_3_col33.clone(),
-                op1_limb_4_col34.clone(),
-                op1_limb_5_col35.clone(),
-                op1_limb_6_col36.clone(),
-                op1_limb_7_col37.clone(),
-                op1_limb_8_col38.clone(),
-                op1_limb_9_col39.clone(),
-                op1_limb_10_col40.clone(),
-                op1_limb_11_col41.clone(),
-                op1_limb_12_col42.clone(),
-                op1_limb_13_col43.clone(),
-                op1_limb_14_col44.clone(),
-                op1_limb_15_col45.clone(),
-                op1_limb_16_col46.clone(),
-                op1_limb_17_col47.clone(),
-                op1_limb_18_col48.clone(),
-                op1_limb_19_col49.clone(),
-                op1_limb_20_col50.clone(),
-                op1_limb_21_col51.clone(),
-                op1_limb_22_col52.clone(),
-                op1_limb_23_col53.clone(),
-                op1_limb_24_col54.clone(),
-                op1_limb_25_col55.clone(),
-                op1_limb_26_col56.clone(),
-                op1_limb_27_col57.clone(),
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_7 = BitwiseXorNumBits9::evaluate(
+            ],
+            op1_id_col29.clone(),
+            op1_limb_0_col30.clone(),
+            op1_limb_1_col31.clone(),
+            op1_limb_2_col32.clone(),
+            op1_limb_3_col33.clone(),
+            op1_limb_4_col34.clone(),
+            op1_limb_5_col35.clone(),
+            op1_limb_6_col36.clone(),
+            op1_limb_7_col37.clone(),
+            op1_limb_8_col38.clone(),
+            op1_limb_9_col39.clone(),
+            op1_limb_10_col40.clone(),
+            op1_limb_11_col41.clone(),
+            op1_limb_12_col42.clone(),
+            op1_limb_13_col43.clone(),
+            op1_limb_14_col44.clone(),
+            op1_limb_15_col45.clone(),
+            op1_limb_16_col46.clone(),
+            op1_limb_17_col47.clone(),
+            op1_limb_18_col48.clone(),
+            op1_limb_19_col49.clone(),
+            op1_limb_20_col50.clone(),
+            op1_limb_21_col51.clone(),
+            op1_limb_22_col52.clone(),
+            op1_limb_23_col53.clone(),
+            op1_limb_24_col54.clone(),
+            op1_limb_25_col55.clone(),
+            op1_limb_26_col56.clone(),
+            op1_limb_27_col57.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_0_col1.clone(), op1_limb_0_col30.clone()],
             xor_col58.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -257,9 +253,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_0_col1.clone() + op1_limb_0_col30.clone()) - xor_col58.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_10 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_1_col2.clone(), op1_limb_1_col31.clone()],
             xor_col59.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -269,9 +263,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_1_col2.clone() + op1_limb_1_col31.clone()) - xor_col59.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_13 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_2_col3.clone(), op1_limb_2_col32.clone()],
             xor_col60.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -281,9 +273,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_2_col3.clone() + op1_limb_2_col32.clone()) - xor_col60.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_16 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_3_col4.clone(), op1_limb_3_col33.clone()],
             xor_col61.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -293,9 +283,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_3_col4.clone() + op1_limb_3_col33.clone()) - xor_col61.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_19 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_4_col5.clone(), op1_limb_4_col34.clone()],
             xor_col62.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -305,9 +293,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_4_col5.clone() + op1_limb_4_col34.clone()) - xor_col62.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_22 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_5_col6.clone(), op1_limb_5_col35.clone()],
             xor_col63.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -317,9 +303,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_5_col6.clone() + op1_limb_5_col35.clone()) - xor_col63.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_25 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_6_col7.clone(), op1_limb_6_col36.clone()],
             xor_col64.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -329,9 +313,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_6_col7.clone() + op1_limb_6_col36.clone()) - xor_col64.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_28 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_7_col8.clone(), op1_limb_7_col37.clone()],
             xor_col65.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -341,9 +323,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_7_col8.clone() + op1_limb_7_col37.clone()) - xor_col65.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_31 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_8_col9.clone(), op1_limb_8_col38.clone()],
             xor_col66.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -353,9 +333,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_8_col9.clone() + op1_limb_8_col38.clone()) - xor_col66.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_34 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_9_col10.clone(), op1_limb_9_col39.clone()],
             xor_col67.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -365,9 +343,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_9_col10.clone() + op1_limb_9_col39.clone()) - xor_col67.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_37 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_10_col11.clone(), op1_limb_10_col40.clone()],
             xor_col68.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -377,9 +353,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_10_col11.clone() + op1_limb_10_col40.clone()) - xor_col68.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_40 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_11_col12.clone(), op1_limb_11_col41.clone()],
             xor_col69.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -389,9 +363,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_11_col12.clone() + op1_limb_11_col41.clone()) - xor_col69.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_43 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_12_col13.clone(), op1_limb_12_col42.clone()],
             xor_col70.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -401,9 +373,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_12_col13.clone() + op1_limb_12_col42.clone()) - xor_col70.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_46 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_13_col14.clone(), op1_limb_13_col43.clone()],
             xor_col71.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -413,9 +383,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_13_col14.clone() + op1_limb_13_col43.clone()) - xor_col71.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_49 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_14_col15.clone(), op1_limb_14_col44.clone()],
             xor_col72.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -425,9 +393,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_14_col15.clone() + op1_limb_14_col44.clone()) - xor_col72.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_52 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_15_col16.clone(), op1_limb_15_col45.clone()],
             xor_col73.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -437,9 +403,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_15_col16.clone() + op1_limb_15_col45.clone()) - xor_col73.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_55 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_16_col17.clone(), op1_limb_16_col46.clone()],
             xor_col74.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -449,9 +413,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_16_col17.clone() + op1_limb_16_col46.clone()) - xor_col74.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_58 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_17_col18.clone(), op1_limb_17_col47.clone()],
             xor_col75.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -461,9 +423,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_17_col18.clone() + op1_limb_17_col47.clone()) - xor_col75.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_61 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_18_col19.clone(), op1_limb_18_col48.clone()],
             xor_col76.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -473,9 +433,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_18_col19.clone() + op1_limb_18_col48.clone()) - xor_col76.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_64 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_19_col20.clone(), op1_limb_19_col49.clone()],
             xor_col77.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -485,9 +443,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_19_col20.clone() + op1_limb_19_col49.clone()) - xor_col77.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_67 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_20_col21.clone(), op1_limb_20_col50.clone()],
             xor_col78.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -497,9 +453,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_20_col21.clone() + op1_limb_20_col50.clone()) - xor_col78.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_70 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_21_col22.clone(), op1_limb_21_col51.clone()],
             xor_col79.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -509,9 +463,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_21_col22.clone() + op1_limb_21_col51.clone()) - xor_col79.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_73 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_22_col23.clone(), op1_limb_22_col52.clone()],
             xor_col80.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -521,9 +473,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_22_col23.clone() + op1_limb_22_col52.clone()) - xor_col80.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_76 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_23_col24.clone(), op1_limb_23_col53.clone()],
             xor_col81.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -533,9 +483,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_23_col24.clone() + op1_limb_23_col53.clone()) - xor_col81.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_79 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_24_col25.clone(), op1_limb_24_col54.clone()],
             xor_col82.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -545,9 +493,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_24_col25.clone() + op1_limb_24_col54.clone()) - xor_col82.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_82 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_25_col26.clone(), op1_limb_25_col55.clone()],
             xor_col83.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -557,9 +503,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_25_col26.clone() + op1_limb_25_col55.clone()) - xor_col83.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_85 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_26_col27.clone(), op1_limb_26_col56.clone()],
             xor_col84.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,
@@ -569,9 +513,7 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_26_col27.clone() + op1_limb_26_col56.clone()) - xor_col84.clone())),
         );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let bitwise_xor_num_bits_9_output_tmp_efb2a_88 = BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits9::evaluate(
             [op0_limb_27_col28.clone(), op1_limb_27_col57.clone()],
             xor_col85.clone(),
             &self.verify_bitwise_xor_9_lookup_elements,

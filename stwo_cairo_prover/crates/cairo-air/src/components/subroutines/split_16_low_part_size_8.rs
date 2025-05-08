@@ -11,16 +11,12 @@ impl Split16LowPartSize8 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [split_16_low_part_size_8_input_limb_0]: [E::F; 1],
+        [split_16_low_part_size_8_input]: [E::F; 1],
         ms_8_bits_col0: E::F,
         eval: &mut E,
-    ) -> [E::F; 2] {
+    ) -> [E::F; 1] {
         let M31_256 = E::F::from(M31::from(256));
 
-        [
-            (split_16_low_part_size_8_input_limb_0.clone()
-                - (ms_8_bits_col0.clone() * M31_256.clone())),
-            ms_8_bits_col0.clone(),
-        ]
+        [(split_16_low_part_size_8_input.clone() - (ms_8_bits_col0.clone() * M31_256.clone()))]
     }
 }

@@ -31,53 +31,35 @@ impl Felt252UnpackFrom27 {
         unpacked_limb_24_col16: E::F,
         unpacked_limb_25_col17: E::F,
         eval: &mut E,
-    ) -> [E::F; 28] {
+    ) -> [E::F; 10] {
         let M31_512 = E::F::from(M31::from(512));
         let M31_8192 = E::F::from(M31::from(8192));
 
         [
-            unpacked_limb_0_col0.clone(),
-            unpacked_limb_1_col1.clone(),
             (((felt_252_unpack_from_27_input_limb_0.clone() - unpacked_limb_0_col0.clone())
                 - (unpacked_limb_1_col1.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_3_col2.clone(),
-            unpacked_limb_4_col3.clone(),
             (((felt_252_unpack_from_27_input_limb_1.clone() - unpacked_limb_3_col2.clone())
                 - (unpacked_limb_4_col3.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_6_col4.clone(),
-            unpacked_limb_7_col5.clone(),
             (((felt_252_unpack_from_27_input_limb_2.clone() - unpacked_limb_6_col4.clone())
                 - (unpacked_limb_7_col5.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_9_col6.clone(),
-            unpacked_limb_10_col7.clone(),
             (((felt_252_unpack_from_27_input_limb_3.clone() - unpacked_limb_9_col6.clone())
                 - (unpacked_limb_10_col7.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_12_col8.clone(),
-            unpacked_limb_13_col9.clone(),
             (((felt_252_unpack_from_27_input_limb_4.clone() - unpacked_limb_12_col8.clone())
                 - (unpacked_limb_13_col9.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_15_col10.clone(),
-            unpacked_limb_16_col11.clone(),
             (((felt_252_unpack_from_27_input_limb_5.clone() - unpacked_limb_15_col10.clone())
                 - (unpacked_limb_16_col11.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_18_col12.clone(),
-            unpacked_limb_19_col13.clone(),
             (((felt_252_unpack_from_27_input_limb_6.clone() - unpacked_limb_18_col12.clone())
                 - (unpacked_limb_19_col13.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_21_col14.clone(),
-            unpacked_limb_22_col15.clone(),
             (((felt_252_unpack_from_27_input_limb_7.clone() - unpacked_limb_21_col14.clone())
                 - (unpacked_limb_22_col15.clone() * M31_512.clone()))
                 * M31_8192.clone()),
-            unpacked_limb_24_col16.clone(),
-            unpacked_limb_25_col17.clone(),
             (((felt_252_unpack_from_27_input_limb_8.clone() - unpacked_limb_24_col16.clone())
                 - (unpacked_limb_25_col17.clone() * M31_512.clone()))
                 * M31_8192.clone()),

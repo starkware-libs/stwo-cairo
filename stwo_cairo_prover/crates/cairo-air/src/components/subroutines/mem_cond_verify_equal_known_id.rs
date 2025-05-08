@@ -15,7 +15,7 @@ impl MemCondVerifyEqualKnownId {
         id_col0: E::F,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         eval: &mut E,
-    ) -> () {
+    ) -> [E::F; 0] {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
@@ -30,6 +30,6 @@ impl MemCondVerifyEqualKnownId {
             ((id_col0.clone() - mem_cond_verify_equal_known_id_input_limb_1.clone())
                 * mem_cond_verify_equal_known_id_input_limb_2.clone()),
         );
-        ()
+        []
     }
 }

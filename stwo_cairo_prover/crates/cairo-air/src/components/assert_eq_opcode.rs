@@ -84,9 +84,9 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_fe864_output_tmp_d6f03_7_offset0, decode_instruction_fe864_output_tmp_d6f03_7_offset1, decode_instruction_fe864_output_tmp_d6f03_7_offset2, decode_instruction_fe864_output_tmp_d6f03_7_dst_base_fp, decode_instruction_fe864_output_tmp_d6f03_7_op0_base_fp, decode_instruction_fe864_output_tmp_d6f03_7_op1_imm, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_fp, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap, decode_instruction_fe864_output_tmp_d6f03_7_res_add, decode_instruction_fe864_output_tmp_d6f03_7_res_mul, decode_instruction_fe864_output_tmp_d6f03_7_pc_update_jump, decode_instruction_fe864_output_tmp_d6f03_7_pc_update_jump_rel, decode_instruction_fe864_output_tmp_d6f03_7_pc_update_jnz, decode_instruction_fe864_output_tmp_d6f03_7_ap_update_add, decode_instruction_fe864_output_tmp_d6f03_7_ap_update_add_1, decode_instruction_fe864_output_tmp_d6f03_7_opcode_call, decode_instruction_fe864_output_tmp_d6f03_7_opcode_ret, decode_instruction_fe864_output_tmp_d6f03_7_opcode_assert_eq, decode_instruction_fe864_output_tmp_d6f03_7_opcode_extension] =
+        let [decode_instruction_fe864_output_tmp_d6f03_7_offset0, decode_instruction_fe864_output_tmp_d6f03_7_offset2, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap] =
             DecodeInstructionFe864::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 offset2_col4.clone(),
                 dst_base_fp_col5.clone(),

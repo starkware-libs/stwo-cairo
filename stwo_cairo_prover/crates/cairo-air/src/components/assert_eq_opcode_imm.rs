@@ -82,9 +82,9 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_161c9_output_tmp_bb09e_5_offset0, decode_instruction_161c9_output_tmp_bb09e_5_offset1, decode_instruction_161c9_output_tmp_bb09e_5_offset2, decode_instruction_161c9_output_tmp_bb09e_5_dst_base_fp, decode_instruction_161c9_output_tmp_bb09e_5_op0_base_fp, decode_instruction_161c9_output_tmp_bb09e_5_op1_imm, decode_instruction_161c9_output_tmp_bb09e_5_op1_base_fp, decode_instruction_161c9_output_tmp_bb09e_5_op1_base_ap, decode_instruction_161c9_output_tmp_bb09e_5_res_add, decode_instruction_161c9_output_tmp_bb09e_5_res_mul, decode_instruction_161c9_output_tmp_bb09e_5_pc_update_jump, decode_instruction_161c9_output_tmp_bb09e_5_pc_update_jump_rel, decode_instruction_161c9_output_tmp_bb09e_5_pc_update_jnz, decode_instruction_161c9_output_tmp_bb09e_5_ap_update_add, decode_instruction_161c9_output_tmp_bb09e_5_ap_update_add_1, decode_instruction_161c9_output_tmp_bb09e_5_opcode_call, decode_instruction_161c9_output_tmp_bb09e_5_opcode_ret, decode_instruction_161c9_output_tmp_bb09e_5_opcode_assert_eq, decode_instruction_161c9_output_tmp_bb09e_5_opcode_extension] =
+        let [decode_instruction_161c9_output_tmp_bb09e_5_offset0] =
             DecodeInstruction161C9::evaluate(
-                input_pc_col0.clone(),
+                [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 dst_base_fp_col4.clone(),
                 ap_update_add_1_col5.clone(),

@@ -320,262 +320,214 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_9_limb_0, read_blake_word_output_tmp_92ff8_9_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_0_col35.clone()),
-                low_16_bits_col51.clone(),
-                high_16_bits_col52.clone(),
-                low_7_ms_bits_col53.clone(),
-                high_14_ms_bits_col54.clone(),
-                high_5_ms_bits_col55.clone(),
-                message_word_0_id_col56.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_18_limb_0, read_blake_word_output_tmp_92ff8_18_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_1_col36.clone()),
-                low_16_bits_col57.clone(),
-                high_16_bits_col58.clone(),
-                low_7_ms_bits_col59.clone(),
-                high_14_ms_bits_col60.clone(),
-                high_5_ms_bits_col61.clone(),
-                message_word_1_id_col62.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_27_limb_0, read_blake_word_output_tmp_92ff8_27_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_2_col37.clone()),
-                low_16_bits_col63.clone(),
-                high_16_bits_col64.clone(),
-                low_7_ms_bits_col65.clone(),
-                high_14_ms_bits_col66.clone(),
-                high_5_ms_bits_col67.clone(),
-                message_word_2_id_col68.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_36_limb_0, read_blake_word_output_tmp_92ff8_36_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_3_col38.clone()),
-                low_16_bits_col69.clone(),
-                high_16_bits_col70.clone(),
-                low_7_ms_bits_col71.clone(),
-                high_14_ms_bits_col72.clone(),
-                high_5_ms_bits_col73.clone(),
-                message_word_3_id_col74.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_45_limb_0, read_blake_word_output_tmp_92ff8_45_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_4_col39.clone()),
-                low_16_bits_col75.clone(),
-                high_16_bits_col76.clone(),
-                low_7_ms_bits_col77.clone(),
-                high_14_ms_bits_col78.clone(),
-                high_5_ms_bits_col79.clone(),
-                message_word_4_id_col80.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_54_limb_0, read_blake_word_output_tmp_92ff8_54_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_5_col40.clone()),
-                low_16_bits_col81.clone(),
-                high_16_bits_col82.clone(),
-                low_7_ms_bits_col83.clone(),
-                high_14_ms_bits_col84.clone(),
-                high_5_ms_bits_col85.clone(),
-                message_word_5_id_col86.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_63_limb_0, read_blake_word_output_tmp_92ff8_63_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_6_col41.clone()),
-                low_16_bits_col87.clone(),
-                high_16_bits_col88.clone(),
-                low_7_ms_bits_col89.clone(),
-                high_14_ms_bits_col90.clone(),
-                high_5_ms_bits_col91.clone(),
-                message_word_6_id_col92.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_72_limb_0, read_blake_word_output_tmp_92ff8_72_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_7_col42.clone()),
-                low_16_bits_col93.clone(),
-                high_16_bits_col94.clone(),
-                low_7_ms_bits_col95.clone(),
-                high_14_ms_bits_col96.clone(),
-                high_5_ms_bits_col97.clone(),
-                message_word_7_id_col98.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_81_limb_0, read_blake_word_output_tmp_92ff8_81_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_8_col43.clone()),
-                low_16_bits_col99.clone(),
-                high_16_bits_col100.clone(),
-                low_7_ms_bits_col101.clone(),
-                high_14_ms_bits_col102.clone(),
-                high_5_ms_bits_col103.clone(),
-                message_word_8_id_col104.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_90_limb_0, read_blake_word_output_tmp_92ff8_90_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_9_col44.clone()),
-                low_16_bits_col105.clone(),
-                high_16_bits_col106.clone(),
-                low_7_ms_bits_col107.clone(),
-                high_14_ms_bits_col108.clone(),
-                high_5_ms_bits_col109.clone(),
-                message_word_9_id_col110.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_99_limb_0, read_blake_word_output_tmp_92ff8_99_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_10_col45.clone()),
-                low_16_bits_col111.clone(),
-                high_16_bits_col112.clone(),
-                low_7_ms_bits_col113.clone(),
-                high_14_ms_bits_col114.clone(),
-                high_5_ms_bits_col115.clone(),
-                message_word_10_id_col116.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_108_limb_0, read_blake_word_output_tmp_92ff8_108_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_11_col46.clone()),
-                low_16_bits_col117.clone(),
-                high_16_bits_col118.clone(),
-                low_7_ms_bits_col119.clone(),
-                high_14_ms_bits_col120.clone(),
-                high_5_ms_bits_col121.clone(),
-                message_word_11_id_col122.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_117_limb_0, read_blake_word_output_tmp_92ff8_117_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_12_col47.clone()),
-                low_16_bits_col123.clone(),
-                high_16_bits_col124.clone(),
-                low_7_ms_bits_col125.clone(),
-                high_14_ms_bits_col126.clone(),
-                high_5_ms_bits_col127.clone(),
-                message_word_12_id_col128.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_126_limb_0, read_blake_word_output_tmp_92ff8_126_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_13_col48.clone()),
-                low_16_bits_col129.clone(),
-                high_16_bits_col130.clone(),
-                low_7_ms_bits_col131.clone(),
-                high_14_ms_bits_col132.clone(),
-                high_5_ms_bits_col133.clone(),
-                message_word_13_id_col134.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_135_limb_0, read_blake_word_output_tmp_92ff8_135_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_14_col49.clone()),
-                low_16_bits_col135.clone(),
-                high_16_bits_col136.clone(),
-                low_7_ms_bits_col137.clone(),
-                high_14_ms_bits_col138.clone(),
-                high_5_ms_bits_col139.clone(),
-                message_word_14_id_col140.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_blake_word_output_tmp_92ff8_144_limb_0, read_blake_word_output_tmp_92ff8_144_limb_1] =
-            ReadBlakeWord::evaluate(
-                (input_limb_34_col34.clone() + blake_round_sigma_output_limb_15_col50.clone()),
-                low_16_bits_col141.clone(),
-                high_16_bits_col142.clone(),
-                low_7_ms_bits_col143.clone(),
-                high_14_ms_bits_col144.clone(),
-                high_5_ms_bits_col145.clone(),
-                message_word_15_id_col146.clone(),
-                &self.range_check_7_2_5_lookup_elements,
-                &self.memory_address_to_id_lookup_elements,
-                &self.memory_id_to_big_lookup_elements,
-                &mut eval,
-            );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_0_col35.clone())],
+            low_16_bits_col51.clone(),
+            high_16_bits_col52.clone(),
+            low_7_ms_bits_col53.clone(),
+            high_14_ms_bits_col54.clone(),
+            high_5_ms_bits_col55.clone(),
+            message_word_0_id_col56.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_1_col36.clone())],
+            low_16_bits_col57.clone(),
+            high_16_bits_col58.clone(),
+            low_7_ms_bits_col59.clone(),
+            high_14_ms_bits_col60.clone(),
+            high_5_ms_bits_col61.clone(),
+            message_word_1_id_col62.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_2_col37.clone())],
+            low_16_bits_col63.clone(),
+            high_16_bits_col64.clone(),
+            low_7_ms_bits_col65.clone(),
+            high_14_ms_bits_col66.clone(),
+            high_5_ms_bits_col67.clone(),
+            message_word_2_id_col68.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_3_col38.clone())],
+            low_16_bits_col69.clone(),
+            high_16_bits_col70.clone(),
+            low_7_ms_bits_col71.clone(),
+            high_14_ms_bits_col72.clone(),
+            high_5_ms_bits_col73.clone(),
+            message_word_3_id_col74.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_4_col39.clone())],
+            low_16_bits_col75.clone(),
+            high_16_bits_col76.clone(),
+            low_7_ms_bits_col77.clone(),
+            high_14_ms_bits_col78.clone(),
+            high_5_ms_bits_col79.clone(),
+            message_word_4_id_col80.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_5_col40.clone())],
+            low_16_bits_col81.clone(),
+            high_16_bits_col82.clone(),
+            low_7_ms_bits_col83.clone(),
+            high_14_ms_bits_col84.clone(),
+            high_5_ms_bits_col85.clone(),
+            message_word_5_id_col86.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_6_col41.clone())],
+            low_16_bits_col87.clone(),
+            high_16_bits_col88.clone(),
+            low_7_ms_bits_col89.clone(),
+            high_14_ms_bits_col90.clone(),
+            high_5_ms_bits_col91.clone(),
+            message_word_6_id_col92.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_7_col42.clone())],
+            low_16_bits_col93.clone(),
+            high_16_bits_col94.clone(),
+            low_7_ms_bits_col95.clone(),
+            high_14_ms_bits_col96.clone(),
+            high_5_ms_bits_col97.clone(),
+            message_word_7_id_col98.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_8_col43.clone())],
+            low_16_bits_col99.clone(),
+            high_16_bits_col100.clone(),
+            low_7_ms_bits_col101.clone(),
+            high_14_ms_bits_col102.clone(),
+            high_5_ms_bits_col103.clone(),
+            message_word_8_id_col104.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_9_col44.clone())],
+            low_16_bits_col105.clone(),
+            high_16_bits_col106.clone(),
+            low_7_ms_bits_col107.clone(),
+            high_14_ms_bits_col108.clone(),
+            high_5_ms_bits_col109.clone(),
+            message_word_9_id_col110.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_10_col45.clone())],
+            low_16_bits_col111.clone(),
+            high_16_bits_col112.clone(),
+            low_7_ms_bits_col113.clone(),
+            high_14_ms_bits_col114.clone(),
+            high_5_ms_bits_col115.clone(),
+            message_word_10_id_col116.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_11_col46.clone())],
+            low_16_bits_col117.clone(),
+            high_16_bits_col118.clone(),
+            low_7_ms_bits_col119.clone(),
+            high_14_ms_bits_col120.clone(),
+            high_5_ms_bits_col121.clone(),
+            message_word_11_id_col122.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_12_col47.clone())],
+            low_16_bits_col123.clone(),
+            high_16_bits_col124.clone(),
+            low_7_ms_bits_col125.clone(),
+            high_14_ms_bits_col126.clone(),
+            high_5_ms_bits_col127.clone(),
+            message_word_12_id_col128.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_13_col48.clone())],
+            low_16_bits_col129.clone(),
+            high_16_bits_col130.clone(),
+            low_7_ms_bits_col131.clone(),
+            high_14_ms_bits_col132.clone(),
+            high_5_ms_bits_col133.clone(),
+            message_word_13_id_col134.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_14_col49.clone())],
+            low_16_bits_col135.clone(),
+            high_16_bits_col136.clone(),
+            low_7_ms_bits_col137.clone(),
+            high_14_ms_bits_col138.clone(),
+            high_5_ms_bits_col139.clone(),
+            message_word_14_id_col140.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        ReadBlakeWord::evaluate(
+            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_15_col50.clone())],
+            low_16_bits_col141.clone(),
+            high_16_bits_col142.clone(),
+            low_7_ms_bits_col143.clone(),
+            high_14_ms_bits_col144.clone(),
+            high_5_ms_bits_col145.clone(),
+            message_word_15_id_col146.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.blake_g_lookup_elements,
             E::EF::one(),
