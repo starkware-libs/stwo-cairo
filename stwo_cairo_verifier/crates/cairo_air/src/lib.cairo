@@ -215,7 +215,7 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
-const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 168] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
     PreprocessedColumn::PedersenPoints(0), //
@@ -322,8 +322,6 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
     PreprocessedColumn::RangeCheck5(([11, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::Seq(10), //
     PreprocessedColumn::Seq(9), //
-    PreprocessedColumn::RangeCheck2(([3, 6], 0)), // TODO(AnatG): remove this
-    PreprocessedColumn::RangeCheck2(([3, 6], 1)), // TODO(AnatG): remove this
     PreprocessedColumn::RangeCheck2(([5, 4], 0)), //
     PreprocessedColumn::RangeCheck2(([5, 4], 1)), //
     PreprocessedColumn::Seq(8), //
@@ -417,8 +415,6 @@ type TripleXor32Elements = LookupElements<8>;
 type RangeCheck_6Elements = LookupElements<1>;
 
 type RangeCheck_8Elements = LookupElements<1>;
-
-type RangeCheck_3_6Elements = LookupElements<2>;
 
 type RangeCheck_11Elements = LookupElements<1>;
 
@@ -561,7 +557,6 @@ struct RangeChecksInteractionElements {
     pub rc_12: RangeCheck_12Elements,
     pub rc_18: RangeCheck_18Elements,
     pub rc_19: RangeCheck_19Elements,
-    pub rc_3_6: RangeCheck_3_6Elements,
     pub rc_4_3: RangeCheck_4_3Elements,
     pub rc_4_4: RangeCheck_4_4Elements,
     pub rc_5_4: RangeCheck_5_4Elements,
@@ -582,7 +577,6 @@ impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTrait {
             rc_12: LookupElementsImpl::draw(ref channel),
             rc_18: LookupElementsImpl::draw(ref channel),
             rc_19: LookupElementsImpl::draw(ref channel),
-            rc_3_6: LookupElementsImpl::draw(ref channel),
             rc_4_3: LookupElementsImpl::draw(ref channel),
             rc_4_4: LookupElementsImpl::draw(ref channel),
             rc_5_4: LookupElementsImpl::draw(ref channel),
@@ -807,7 +801,6 @@ pub struct RangeChecksClaim {
     pub rc_12: components::range_check_vector::Claim,
     pub rc_18: components::range_check_vector::Claim,
     pub rc_19: components::range_check_vector::Claim,
-    pub rc_3_6: components::range_check_vector::Claim,
     pub rc_4_3: components::range_check_vector::Claim,
     pub rc_4_4: components::range_check_vector::Claim,
     pub rc_5_4: components::range_check_vector::Claim,
@@ -827,7 +820,6 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
         self.rc_12.mix_into(ref channel);
         self.rc_18.mix_into(ref channel);
         self.rc_19.mix_into(ref channel);
-        self.rc_3_6.mix_into(ref channel);
         self.rc_4_3.mix_into(ref channel);
         self.rc_4_4.mix_into(ref channel);
         self.rc_5_4.mix_into(ref channel);
@@ -843,10 +835,9 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
             array![
                 self.rc_6.log_sizes(), self.rc_8.log_sizes(), self.rc_11.log_sizes(),
                 self.rc_12.log_sizes(), self.rc_18.log_sizes(), self.rc_19.log_sizes(),
-                self.rc_3_6.log_sizes(), self.rc_4_3.log_sizes(), self.rc_4_4.log_sizes(),
-                self.rc_5_4.log_sizes(), self.rc_9_9.log_sizes(), self.rc_7_2_5.log_sizes(),
-                self.rc_3_6_6_3.log_sizes(), self.rc_4_4_4_4.log_sizes(),
-                self.rc_3_3_3_3_3.log_sizes(),
+                self.rc_4_3.log_sizes(), self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(),
+                self.rc_9_9.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
+                self.rc_4_4_4_4.log_sizes(), self.rc_3_3_3_3_3.log_sizes(),
             ],
         )
     }
@@ -861,7 +852,6 @@ pub struct RangeChecksInteractionClaim {
     pub rc_12: components::range_check_vector::InteractionClaim,
     pub rc_18: components::range_check_vector::InteractionClaim,
     pub rc_19: components::range_check_vector::InteractionClaim,
-    pub rc_3_6: components::range_check_vector::InteractionClaim,
     pub rc_4_3: components::range_check_vector::InteractionClaim,
     pub rc_4_4: components::range_check_vector::InteractionClaim,
     pub rc_5_4: components::range_check_vector::InteractionClaim,
@@ -881,7 +871,6 @@ impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         self.rc_12.mix_into(ref channel);
         self.rc_18.mix_into(ref channel);
         self.rc_19.mix_into(ref channel);
-        self.rc_3_6.mix_into(ref channel);
         self.rc_4_3.mix_into(ref channel);
         self.rc_4_4.mix_into(ref channel);
         self.rc_5_4.mix_into(ref channel);
@@ -900,7 +889,6 @@ impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         sum += *self.rc_12.claimed_sum;
         sum += *self.rc_18.claimed_sum;
         sum += *self.rc_19.claimed_sum;
-        sum += *self.rc_3_6.claimed_sum;
         sum += *self.rc_4_3.claimed_sum;
         sum += *self.rc_4_4.claimed_sum;
         sum += *self.rc_5_4.claimed_sum;
@@ -2753,7 +2741,6 @@ pub struct RangeChecksComponents {
     rc_12: components::range_check_vector::Rc12BitComponent,
     rc_18: components::range_check_vector::Rc18BitComponent,
     rc_19: components::range_check_vector::Rc19BitComponent,
-    rc_3_6: components::range_check_vector::Rc3Bit6BitComponent,
     rc_4_3: components::range_check_vector::Rc4Bit3BitComponent,
     rc_4_4: components::range_check_vector::Rc4Bit4BitComponent,
     rc_5_4: components::range_check_vector::Rc5Bit4BitComponent,
@@ -2795,10 +2782,6 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             rc_19: components::range_check_vector::Rc19BitComponent {
                 interaction_claim: *interaction_claim.rc_19,
                 lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            },
-            rc_3_6: components::range_check_vector::Rc3Bit6BitComponent {
-                interaction_claim: *interaction_claim.rc_3_6,
-                lookup_elements: interaction_elements.range_checks.rc_3_6.clone(),
             },
             rc_4_3: components::range_check_vector::Rc4Bit3BitComponent {
                 interaction_claim: *interaction_claim.rc_4_3,
@@ -2891,14 +2874,6 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 point,
             );
         self
-            .rc_3_6
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
             .rc_4_3
             .mask_points(
                 ref preprocessed_column_set,
@@ -2972,7 +2947,6 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         max_degree = core::cmp::max(max_degree, self.rc_12.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_18.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_19.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_3_6.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_4_3.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_4_4.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_5_4.max_constraint_log_degree_bound());
@@ -3046,16 +3020,6 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             );
         self
             .rc_19
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        self
-            .rc_3_6
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -5587,7 +5551,6 @@ mod tests {
                 rc_12: LookupElementsDummyImpl::dummy(),
                 rc_18: LookupElementsDummyImpl::dummy(),
                 rc_19: LookupElementsDummyImpl::dummy(),
-                rc_3_6: LookupElementsDummyImpl::dummy(),
                 rc_4_3: LookupElementsDummyImpl::dummy(),
                 rc_4_4: LookupElementsDummyImpl::dummy(),
                 rc_5_4: LookupElementsDummyImpl::dummy(),
