@@ -18,9 +18,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(LOG_SIZE as u64);
-    }
+    pub fn mix_into(&self, _channel: &mut impl Channel) {}
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]

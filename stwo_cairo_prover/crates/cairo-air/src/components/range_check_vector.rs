@@ -71,11 +71,7 @@ macro_rules! range_check_eval{
                         ])
                     }
 
-                    pub fn mix_into(&self, channel: &mut impl Channel) {
-                        for &log_range in self.log_ranges.iter() {
-                            channel.mix_u64(log_range as u64);
-                        }
-                    }
+                    pub fn mix_into(&self, _channel: &mut impl Channel) {}
                 }
 
                 #[derive(Clone, Copy, Serialize, Deserialize, CairoSerialize)]
