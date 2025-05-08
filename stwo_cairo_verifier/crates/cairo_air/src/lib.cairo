@@ -386,6 +386,24 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
     PreprocessedColumn::BlakeSigma(15) //
 ];
 
+// Known preprocessed roots list, ordered by blowup factor, offseted by 1.
+#[cfg(not(feature: "poseidon252_verifier"))]
+const preprocessed_roots: [felt252; 5] = [
+    0x3ffa9700d8252fdb94e39fa9eed90cdf49f42992d3f84c006ac653d09054167b,
+    0x413e9a77a58e6daa05210c4eecca8a0220d969366fa01edc78cd2821b75e5b44,
+    0xb93705739584767dd2ba2baac2ef2ea6686e4105393d19554357be3565220433,
+    0xfa03ac402f631ed5b7017906e96a52ade75780aa7f59f5c6b23e24a6e3574626,
+    0x8092bea83c1e98619e145e505ed6822e1bbb1a0d489a4a480491735a8c4c4b1b,
+];
+#[cfg(feature: "poseidon252_verifier")]
+const preprocessed_roots: [felt252; 5] = [
+    0x0794c5e317a7576d3a3b7a74744982f51ee6f07dc912a2302914aac0eccf4725,
+    0x038374a258f1add945964da116602a5149a955e790670aefb2a82dc6b55bcece,
+    0x00ffc56feabc3e36ba276ef38bebb94bbff3595ef0e797f827a85b9b8a068c8d,
+    0x0061ebbbb564fece4b254ceb8bfce59e949b2e79e5317e18b818a1514ad10000,
+    0x05b7d068407e11d4d6b09a541bd5f5b62ab75e670789b9d5531e3dac9d58fb56,
+];
+
 type Cube252Elements = LookupElements<20>;
 
 type MemoryAddressToIdElements = LookupElements<2>;
@@ -470,6 +488,13 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
+
+    // Verify preprocessed root is known. Assumes log blowup factor in [1..5].
+    let root_offset = pcs_config.fri_config.log_blowup_factor - 1;
+    assert_eq!(
+        stark_proof.commitment_scheme_proof.commitments[0].clone(),
+        preprocessed_roots[root_offset],
+    );
 
     verify_claim(@claim);
 
