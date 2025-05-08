@@ -5,8 +5,8 @@ use stwo_prover::core::backend::simd::SimdBackend;
 
 use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_19, range_check_3_3_3_3_3,
-    range_check_3_6, range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4,
-    range_check_5_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
+    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4,
+    range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -17,7 +17,6 @@ pub struct RangeChecksClaimGenerator {
     pub rc_12_trace_generator: range_check_12::ClaimGenerator,
     pub rc_18_trace_generator: range_check_18::ClaimGenerator,
     pub rc_19_trace_generator: range_check_19::ClaimGenerator,
-    pub rc_3_6_trace_generator: range_check_3_6::ClaimGenerator,
     pub rc_4_3_trace_generator: range_check_4_3::ClaimGenerator,
     pub rc_4_4_trace_generator: range_check_4_4::ClaimGenerator,
     pub rc_5_4_trace_generator: range_check_5_4::ClaimGenerator,
@@ -42,7 +41,6 @@ impl RangeChecksClaimGenerator {
             rc_12_trace_generator: range_check_12::ClaimGenerator::new(),
             rc_18_trace_generator: range_check_18::ClaimGenerator::new(),
             rc_19_trace_generator: range_check_19::ClaimGenerator::new(),
-            rc_3_6_trace_generator: range_check_3_6::ClaimGenerator::new(),
             rc_4_3_trace_generator: range_check_4_3::ClaimGenerator::new(),
             rc_4_4_trace_generator: range_check_4_4::ClaimGenerator::new(),
             rc_5_4_trace_generator: range_check_5_4::ClaimGenerator::new(),
@@ -69,8 +67,6 @@ impl RangeChecksClaimGenerator {
             self.rc_18_trace_generator.write_trace(tree_builder);
         let (rc_19_claim, rc_19_interaction_gen) =
             self.rc_19_trace_generator.write_trace(tree_builder);
-        let (rc_3_6_claim, rc_3_6_interaction_gen) =
-            self.rc_3_6_trace_generator.write_trace(tree_builder);
         let (rc_4_3_claim, rc_4_3_interaction_gen) =
             self.rc_4_3_trace_generator.write_trace(tree_builder);
         let (rc_4_4_claim, rc_4_4_interaction_gen) =
@@ -95,7 +91,6 @@ impl RangeChecksClaimGenerator {
                 rc_12: rc_12_claim,
                 rc_18: rc_18_claim,
                 rc_19: rc_19_claim,
-                rc_3_6: rc_3_6_claim,
                 rc_4_3: rc_4_3_claim,
                 rc_4_4: rc_4_4_claim,
                 rc_5_4: rc_5_4_claim,
@@ -112,7 +107,6 @@ impl RangeChecksClaimGenerator {
                 rc_12_interaction_gen,
                 rc_18_interaction_gen,
                 rc_19_interaction_gen,
-                rc_3_6_interaction_gen,
                 rc_4_3_interaction_gen,
                 rc_4_4_interaction_gen,
                 rc_5_4_interaction_gen,
@@ -133,7 +127,6 @@ pub struct RangeChecksInteractionClaimGenerator {
     rc_12_interaction_gen: range_check_12::InteractionClaimGenerator,
     rc_18_interaction_gen: range_check_18::InteractionClaimGenerator,
     rc_19_interaction_gen: range_check_19::InteractionClaimGenerator,
-    rc_3_6_interaction_gen: range_check_3_6::InteractionClaimGenerator,
     rc_4_3_interaction_gen: range_check_4_3::InteractionClaimGenerator,
     rc_4_4_interaction_gen: range_check_4_4::InteractionClaimGenerator,
     rc_5_4_interaction_gen: range_check_5_4::InteractionClaimGenerator,
@@ -167,9 +160,6 @@ impl RangeChecksInteractionClaimGenerator {
         let rc_19_interaction_claim = self
             .rc_19_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_19);
-        let rc_3_6_interaction_claim = self
-            .rc_3_6_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_3_6);
         let rc_4_3_interaction_claim = self
             .rc_4_3_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_4_3);
@@ -201,7 +191,6 @@ impl RangeChecksInteractionClaimGenerator {
             rc_12: rc_12_interaction_claim,
             rc_18: rc_18_interaction_claim,
             rc_19: rc_19_interaction_claim,
-            rc_3_6: rc_3_6_interaction_claim,
             rc_4_3: rc_4_3_interaction_claim,
             rc_4_4: rc_4_4_interaction_claim,
             rc_5_4: rc_5_4_interaction_claim,
