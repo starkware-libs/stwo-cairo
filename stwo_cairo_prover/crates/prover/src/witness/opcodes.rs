@@ -247,6 +247,8 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
+                    &range_checks_trace_generator.rc_19_trace_generator,
+                    &range_checks_trace_generator.rc_8_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -590,6 +592,8 @@ impl OpcodesInteractionClaimGenerator {
                     tree_builder,
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
+                    &interaction_elements.range_checks.rc_19,
+                    &interaction_elements.range_checks.rc_8,
                     &interaction_elements.opcodes,
                     &interaction_elements.verify_instruction,
                 )
