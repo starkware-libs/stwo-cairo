@@ -465,6 +465,13 @@ pub struct CairoProof {
     pub stark_proof: StarkProof,
 }
 
+/// The output of a verification.
+#[derive(Drop, Serde)]
+pub struct VerificationOutput {
+    pub program_hash: felt252,
+    pub output: Array<felt252>,
+}
+
 pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     let CairoProof { claim, interaction_pow, interaction_claim, stark_proof } = proof;
 
