@@ -8,13 +8,13 @@ use super::{ConstValue, M31, M31InnerT, M31Trait, M31_P, P};
 pub impl M31InvertibleImpl of Invertible<M31> {
     fn inverse(self: M31) -> M31 {
         assert!(self.is_non_zero());
-        let t0 = sqn(self, 2) * self;
-        let t1 = sqn(t0, 1) * t0;
-        let t2 = sqn(t1, 3) * t0;
-        let t3 = sqn(t2, 1) * t0;
-        let t4 = sqn(t3, 8) * t3;
-        let t5 = sqn(t4, 8) * t3;
-        sqn(t5, 7) * t2
+        let t0 = square_n_times(self, 2) * self;
+        let t1 = t0 * t0 * t0;
+        let t2 = square_n_times(t1, 3) * t0;
+        let t3 = t2 * t2 * t0;
+        let t4 = square_n_times(t3, 8) * t3;
+        let t5 = square_n_times(t4, 8) * t3;
+        square_n_times(t5, 7) * t2
     }
 }
 
@@ -110,11 +110,11 @@ impl M31IntoUnreducedM31 of Into<M31, UnreducedM31> {
 }
 
 /// Returns `v^(2^n)`.
-fn sqn(v: M31, n: usize) -> M31 {
+fn square_n_times(v: M31, n: usize) -> M31 {
     if n == 0 {
         return v;
     }
-    sqn(v * v, n - 1)
+    square_n_times(v * v, n - 1)
 }
 
 impl M31AddHelper of AddHelper<M31InnerT, M31InnerT> {
