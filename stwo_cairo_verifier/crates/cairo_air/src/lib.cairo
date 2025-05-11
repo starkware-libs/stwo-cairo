@@ -180,7 +180,6 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -210,68 +209,75 @@ pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
+// TODO: Use "use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;"
+// TODO: Stone uses a different initial state with the key set to 0.
+// Consider using this initial state instead.
+pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
+    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
+];
+
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
-const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 114] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
-    PreprocessedColumn::PedersenPoints(0), //
-    PreprocessedColumn::PedersenPoints(1), //
-    PreprocessedColumn::PedersenPoints(2), //
-    PreprocessedColumn::PedersenPoints(3), //
-    PreprocessedColumn::PedersenPoints(4), //
-    PreprocessedColumn::PedersenPoints(5), //
-    PreprocessedColumn::PedersenPoints(6), //
-    PreprocessedColumn::PedersenPoints(7), //
-    PreprocessedColumn::PedersenPoints(8), //
-    PreprocessedColumn::PedersenPoints(9), //
-    PreprocessedColumn::PedersenPoints(10), //
-    PreprocessedColumn::PedersenPoints(11), //
-    PreprocessedColumn::PedersenPoints(12), //
-    PreprocessedColumn::PedersenPoints(13), //
-    PreprocessedColumn::PedersenPoints(14), //
-    PreprocessedColumn::PedersenPoints(15), //
-    PreprocessedColumn::PedersenPoints(16), //
-    PreprocessedColumn::PedersenPoints(17), //
-    PreprocessedColumn::PedersenPoints(18), //
-    PreprocessedColumn::PedersenPoints(19), //
-    PreprocessedColumn::PedersenPoints(20), //
-    PreprocessedColumn::PedersenPoints(21), //
-    PreprocessedColumn::PedersenPoints(22), //
-    PreprocessedColumn::PedersenPoints(23), //
-    PreprocessedColumn::PedersenPoints(24), //
-    PreprocessedColumn::PedersenPoints(25), //
-    PreprocessedColumn::PedersenPoints(26), //
-    PreprocessedColumn::PedersenPoints(27), //
-    PreprocessedColumn::PedersenPoints(28), //
-    PreprocessedColumn::PedersenPoints(29), //
-    PreprocessedColumn::PedersenPoints(30), //
-    PreprocessedColumn::PedersenPoints(31), //
-    PreprocessedColumn::PedersenPoints(32), //
-    PreprocessedColumn::PedersenPoints(33), //
-    PreprocessedColumn::PedersenPoints(34), //
-    PreprocessedColumn::PedersenPoints(35), //
-    PreprocessedColumn::PedersenPoints(36), //
-    PreprocessedColumn::PedersenPoints(37), //
-    PreprocessedColumn::PedersenPoints(38), //
-    PreprocessedColumn::PedersenPoints(39), //
-    PreprocessedColumn::PedersenPoints(40), //
-    PreprocessedColumn::PedersenPoints(41), //
-    PreprocessedColumn::PedersenPoints(42), //
-    PreprocessedColumn::PedersenPoints(43), //
-    PreprocessedColumn::PedersenPoints(44), //
-    PreprocessedColumn::PedersenPoints(45), //
-    PreprocessedColumn::PedersenPoints(46), //
-    PreprocessedColumn::PedersenPoints(47), //
-    PreprocessedColumn::PedersenPoints(48), //
-    PreprocessedColumn::PedersenPoints(49), //
-    PreprocessedColumn::PedersenPoints(50), //
-    PreprocessedColumn::PedersenPoints(51), //
-    PreprocessedColumn::PedersenPoints(52), //
-    PreprocessedColumn::PedersenPoints(53), //
-    PreprocessedColumn::PedersenPoints(54), //
-    PreprocessedColumn::PedersenPoints(55), //
+    // PreprocessedColumn::PedersenPoints(0), //
+    // PreprocessedColumn::PedersenPoints(1), //
+    // PreprocessedColumn::PedersenPoints(2), //
+    // PreprocessedColumn::PedersenPoints(3), //
+    // PreprocessedColumn::PedersenPoints(4), //
+    // PreprocessedColumn::PedersenPoints(5), //
+    // PreprocessedColumn::PedersenPoints(6), //
+    // PreprocessedColumn::PedersenPoints(7), //
+    // PreprocessedColumn::PedersenPoints(8), //
+    // PreprocessedColumn::PedersenPoints(9), //
+    // PreprocessedColumn::PedersenPoints(10), //
+    // PreprocessedColumn::PedersenPoints(11), //
+    // PreprocessedColumn::PedersenPoints(12), //
+    // PreprocessedColumn::PedersenPoints(13), //
+    // PreprocessedColumn::PedersenPoints(14), //
+    // PreprocessedColumn::PedersenPoints(15), //
+    // PreprocessedColumn::PedersenPoints(16), //
+    // PreprocessedColumn::PedersenPoints(17), //
+    // PreprocessedColumn::PedersenPoints(18), //
+    // PreprocessedColumn::PedersenPoints(19), //
+    // PreprocessedColumn::PedersenPoints(20), //
+    // PreprocessedColumn::PedersenPoints(21), //
+    // PreprocessedColumn::PedersenPoints(22), //
+    // PreprocessedColumn::PedersenPoints(23), //
+    // PreprocessedColumn::PedersenPoints(24), //
+    // PreprocessedColumn::PedersenPoints(25), //
+    // PreprocessedColumn::PedersenPoints(26), //
+    // PreprocessedColumn::PedersenPoints(27), //
+    // PreprocessedColumn::PedersenPoints(28), //
+    // PreprocessedColumn::PedersenPoints(29), //
+    // PreprocessedColumn::PedersenPoints(30), //
+    // PreprocessedColumn::PedersenPoints(31), //
+    // PreprocessedColumn::PedersenPoints(32), //
+    // PreprocessedColumn::PedersenPoints(33), //
+    // PreprocessedColumn::PedersenPoints(34), //
+    // PreprocessedColumn::PedersenPoints(35), //
+    // PreprocessedColumn::PedersenPoints(36), //
+    // PreprocessedColumn::PedersenPoints(37), //
+    // PreprocessedColumn::PedersenPoints(38), //
+    // PreprocessedColumn::PedersenPoints(39), //
+    // PreprocessedColumn::PedersenPoints(40), //
+    // PreprocessedColumn::PedersenPoints(41), //
+    // PreprocessedColumn::PedersenPoints(42), //
+    // PreprocessedColumn::PedersenPoints(43), //
+    // PreprocessedColumn::PedersenPoints(44), //
+    // PreprocessedColumn::PedersenPoints(45), //
+    // PreprocessedColumn::PedersenPoints(46), //
+    // PreprocessedColumn::PedersenPoints(47), //
+    // PreprocessedColumn::PedersenPoints(48), //
+    // PreprocessedColumn::PedersenPoints(49), //
+    // PreprocessedColumn::PedersenPoints(50), //
+    // PreprocessedColumn::PedersenPoints(51), //
+    // PreprocessedColumn::PedersenPoints(52), //
+    // PreprocessedColumn::PedersenPoints(53), //
+    // PreprocessedColumn::PedersenPoints(54), //
+    // PreprocessedColumn::PedersenPoints(55), //
     PreprocessedColumn::Seq(22), //
     PreprocessedColumn::Seq(21), //
     PreprocessedColumn::Seq(20), //

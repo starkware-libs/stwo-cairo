@@ -16,8 +16,8 @@ use super::m31::{M31, M31InnerT, UnreducedM31};
 // #[cfg(feature: "qm31_opcode")]
 // use opcode::*;
 
-mod opcode;
-use opcode::*;
+mod naive;
+use naive::*;
 
 /// Equals `(2^31 - 1)^4`.
 pub const P4: u128 = 0xFFFFFFF800000017FFFFFFE00000001;
