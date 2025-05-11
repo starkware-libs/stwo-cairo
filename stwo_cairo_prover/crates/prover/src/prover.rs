@@ -234,13 +234,19 @@ pub mod tests {
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
 
+        use std::io::Write;
+        use std::process::Command;
+
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
         use stwo_cairo_adapter::adapter::read_and_adapt_prover_input_info_file;
         use stwo_cairo_adapter::test_utils::{get_prover_input_info_path, get_test_program};
+        use stwo_cairo_serialize::CairoSerialize;
+        use stwo_prover::core::fri::FriConfig;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+        use tempfile::NamedTempFile;
         use test_log::test;
 
         use super::*;
@@ -279,6 +285,48 @@ pub mod tests {
                 preprocessed_trace,
             )
             .unwrap();
+        }
+
+        #[test]
+        fn test_e2e_prove_cairo_verify_all_opcode_components() {
+            let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
+            let input = run_program_and_adapter(&compiled_program);
+            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                input,
+                PcsConfig {
+                    pow_bits: 26,
+                    fri_config: FriConfig::new(0, 1, 70),
+                },
+                preprocessed_trace,
+            )
+            .unwrap();
+
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            let proof_hex: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{:x}", felt))
+                .collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
+
+            let status = Command::new("bash")
+                .arg("-c")
+                .arg(format!(
+                    "(cd ../../../stwo_cairo_verifier; \
+                    scarb execute --package stwo_cairo_verifier \
+                    --arguments-file {} --output standard --target standalone \
+                    )",
+                    proof_file.path().to_str().unwrap()
+                ))
+                .current_dir(env!("CARGO_MANIFEST_DIR"))
+                .status()
+                .unwrap();
+
+            assert!(status.success());
         }
 
         #[test]
