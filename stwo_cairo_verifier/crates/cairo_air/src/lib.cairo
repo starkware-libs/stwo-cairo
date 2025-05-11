@@ -213,7 +213,7 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
-const PREPROCESSED_COLUMNS: [PreprocessedColumn; 168] = [
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
     PreprocessedColumn::PedersenPoints(0), //
@@ -279,12 +279,10 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 168] = [
     PreprocessedColumn::BitwiseXor((10, 1)), //
     PreprocessedColumn::BitwiseXor((10, 2)), //
     PreprocessedColumn::Seq(19), //
-    PreprocessedColumn::RangeCheck5(([19, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::Seq(18), //
     PreprocessedColumn::BitwiseXor((9, 0)), //
     PreprocessedColumn::BitwiseXor((9, 1)), //
     PreprocessedColumn::BitwiseXor((9, 2)), //
-    PreprocessedColumn::RangeCheck5(([18, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::RangeCheck2(([9, 9], 0)), //
     PreprocessedColumn::RangeCheck2(([9, 9], 1)), //
     PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 0)), //
@@ -315,9 +313,7 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 168] = [
     PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)), //
     PreprocessedColumn::Seq(13), //
     PreprocessedColumn::Seq(12), //
-    PreprocessedColumn::RangeCheck5(([12, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::Seq(11), //
-    PreprocessedColumn::RangeCheck5(([11, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::Seq(10), //
     PreprocessedColumn::Seq(9), //
     PreprocessedColumn::RangeCheck2(([5, 4], 0)), //
@@ -326,14 +322,12 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 168] = [
     PreprocessedColumn::BitwiseXor((4, 0)), //
     PreprocessedColumn::BitwiseXor((4, 1)), //
     PreprocessedColumn::BitwiseXor((4, 2)), //
-    PreprocessedColumn::RangeCheck5(([8, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::RangeCheck2(([4, 4], 0)), //
     PreprocessedColumn::RangeCheck2(([4, 4], 1)), //
     PreprocessedColumn::Seq(7), //
     PreprocessedColumn::RangeCheck2(([4, 3], 0)), //
     PreprocessedColumn::RangeCheck2(([4, 3], 1)), //
     PreprocessedColumn::Seq(6), //
-    PreprocessedColumn::RangeCheck5(([6, 0, 0, 0, 0], 0)), // TODO(AnatG): remove this
     PreprocessedColumn::PoseidonRoundKeys(0), //
     PreprocessedColumn::PoseidonRoundKeys(1), //
     PreprocessedColumn::PoseidonRoundKeys(2), //
