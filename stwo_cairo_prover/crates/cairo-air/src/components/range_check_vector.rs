@@ -45,6 +45,7 @@ macro_rules! range_check_eval{
                 use stwo_prover::core::pcs::TreeVec;
 
                 use $crate::preprocessed::RangeCheck;
+                use $crate::preprocessed::Seq;
                 use $crate::preprocessed::PreProcessedColumn;
                 use $crate::relations;
 
@@ -102,12 +103,16 @@ macro_rules! range_check_eval{
                         self.log_size() + 1
                     }
                     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-                        let rc_values = (0..N_RANGES)
+                        let values = if N_RANGES == 1 {
+                            vec![eval.get_preprocessed_column(Seq::new(self.log_size()).id())]
+                        } else {
+                            (0..N_RANGES)
                             .map(|i| eval.get_preprocessed_column(RangeCheck::new(RANGES, i).id()))
-                            .collect::<Vec<_>>();
+                            .collect::<Vec<_>>()
+                        };
                         let multiplicity = eval.next_trace_mask();
                         eval.add_to_relation(RelationEntry::new(
-                            &self.lookup_elements, E::EF::from(-multiplicity), &rc_values
+                            &self.lookup_elements, E::EF::from(-multiplicity), &values
                         ));
 
                         eval.finalize_logup();

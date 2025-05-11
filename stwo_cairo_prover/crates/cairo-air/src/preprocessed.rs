@@ -91,18 +91,6 @@ impl PreProcessedTrace {
 }
 
 fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
-    // RangeCheck_6.
-    let range_check_6 = RangeCheck::new([6], 0);
-    // RangeCheck_8.
-    let range_check_8 = RangeCheck::new([8], 0);
-    // RangeCheck_11.
-    let range_check_11 = RangeCheck::new([11], 0);
-    // RangeCheck_12.
-    let range_check_12 = RangeCheck::new([12], 0);
-    // RangeCheck_18.
-    let range_check_18 = RangeCheck::new([18], 0);
-    // RangeCheck_19.
-    let range_check_19 = RangeCheck::new([19], 0);
     // RangeCheck_4_3.
     let range_check_4_3_col_0 = RangeCheck::new([4, 3], 0);
     let range_check_4_3_col_1 = RangeCheck::new([4, 3], 1);
@@ -137,12 +125,6 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     let range_check_3_3_3_3_3_col_4 = RangeCheck::new([3, 3, 3, 3, 3], 4);
 
     vec![
-        Box::new(range_check_6),
-        Box::new(range_check_8),
-        Box::new(range_check_11),
-        Box::new(range_check_12),
-        Box::new(range_check_18),
-        Box::new(range_check_19),
         Box::new(range_check_4_3_col_0),
         Box::new(range_check_4_3_col_1),
         Box::new(range_check_4_4_col_0),
