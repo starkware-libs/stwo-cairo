@@ -263,7 +263,7 @@ impl InteractionClaimGenerator {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
         // Sum last logup term.
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.pedersen_points_table_0,

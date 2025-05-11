@@ -76,7 +76,7 @@ impl InteractionClaimGenerator {
         let seq = unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) };
 
         // Sum last logup term.
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         let values = chain![[seq], sigmas].collect_vec();
         let denom = blake_round_sigma.combine(&values);
         col_gen.write_frac(0, -PackedQM31::one() * mults, denom);

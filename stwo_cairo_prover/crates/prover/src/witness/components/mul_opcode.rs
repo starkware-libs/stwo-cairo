@@ -1975,10 +1975,9 @@ impl InteractionClaimGenerator {
         verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
-        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
-
+        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
         // Sum logup terms in pairs.
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.verify_instruction_0,
@@ -1992,7 +1991,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_0,
@@ -2006,7 +2005,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_1,
@@ -2020,7 +2019,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_2,
@@ -2034,7 +2033,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_1,
@@ -2048,7 +2047,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_3,
@@ -2062,7 +2061,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_5,
@@ -2076,7 +2075,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_7,
@@ -2090,7 +2089,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_9,
@@ -2104,7 +2103,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_11,
@@ -2118,7 +2117,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_13,
@@ -2132,7 +2131,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_15,
@@ -2146,7 +2145,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_17,
@@ -2160,7 +2159,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_19,
@@ -2174,7 +2173,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_21,
@@ -2188,7 +2187,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_23,
@@ -2202,7 +2201,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_25,
@@ -2216,7 +2215,7 @@ impl InteractionClaimGenerator {
             });
         col_gen.finalize_col();
 
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_19_27,
@@ -2232,7 +2231,7 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         // Sum last logup term.
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (col_gen.par_iter_mut(), &self.lookup_data.opcodes_1)
             .into_par_iter()
             .enumerate()

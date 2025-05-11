@@ -196,7 +196,7 @@ impl InteractionClaimGenerator {
         for (i, ((ids0, mults0), (ids1, mults1))) in
             izip!(&self.ids, &self.multiplicities).tuples().enumerate()
         {
-            let mut col_gen = logup_gen.new_col();
+            let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
             (col_gen.par_iter_mut(), ids0, ids1, mults0, mults1)
                 .into_par_iter()
                 .enumerate()

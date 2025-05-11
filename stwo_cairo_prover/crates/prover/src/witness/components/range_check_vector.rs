@@ -98,7 +98,7 @@ macro_rules! range_check_prover {
                 ) -> InteractionClaim {
                     let log_size = RANGES.iter().sum::<u32>();
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
-                    let mut col_gen = logup_gen.new_col();
+                    let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
 
                     // Lookup values columns.
                     for vec_row in 0..(1 << (log_size - LOG_N_LANES)) {

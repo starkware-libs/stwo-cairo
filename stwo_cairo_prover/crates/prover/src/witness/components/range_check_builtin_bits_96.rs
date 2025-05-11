@@ -251,10 +251,9 @@ impl InteractionClaimGenerator {
         memory_id_to_big: &relations::MemoryIdToBig,
         range_check_6: &relations::RangeCheck_6,
     ) -> InteractionClaim {
-        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
-
+        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
         // Sum logup terms in pairs.
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
@@ -269,7 +268,7 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         // Sum last logup term.
-        let mut col_gen = logup_gen.new_col();
+        let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
         (col_gen.par_iter_mut(), &self.lookup_data.memory_id_to_big_0)
             .into_par_iter()
             .for_each(|(writer, values)| {

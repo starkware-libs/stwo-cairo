@@ -84,7 +84,7 @@ impl InteractionClaimGenerator {
         // columns batched together.
         for ((i0, mults0), (i1, mults1)) in self.lookup_data.mults.into_iter().enumerate().tuples()
         {
-            let mut col_gen = logup_gen.new_col();
+            let mut col_gen = unsafe { logup_gen.uninitialized_new_col() };
 
             // Each multiplicity column represents a different combination of `EXPAND_BITS`
             // MSBs of each enumeration column. For example, if `EXPAND_BITS == 1`, then the
