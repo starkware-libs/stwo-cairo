@@ -175,6 +175,7 @@ use components::verify_instruction::{
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
+use stwo_cairo_air::utils::construct_f252;
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
@@ -470,6 +471,23 @@ pub struct CairoProof {
 pub struct VerificationOutput {
     pub program_hash: felt252,
     pub output: Array<felt252>,
+}
+
+/// Given a proof, returns the output of the verifier.
+pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
+    // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
+    // f252 prime to yield a felt.
+    let program_hash = construct_f252(
+        hash_memory_section(proof.claim.public_data.public_memory.program),
+    );
+
+    let mut output = array![];
+    for entry in proof.claim.public_data.public_memory.output {
+        let (_, val) = entry;
+        output.append(construct_f252(BoxTrait::new(*val)));
+    }
+
+    VerificationOutput { program_hash, output }
 }
 
 pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {

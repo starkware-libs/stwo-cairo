@@ -1,5 +1,4 @@
-use stwo_cairo_air::utils::construct_f252;
-use stwo_cairo_air::{CairoProof, VerificationOutput, verify_cairo};
+use stwo_cairo_air::{CairoProof, VerificationOutput, get_verification_output};
 
 /// An executable (can be run using cairo-execute) of a mock verifier.
 /// To build, run this from the root folder:
@@ -20,20 +19,7 @@ use stwo_cairo_air::{CairoProof, VerificationOutput, verify_cairo};
 /// should be given as an array of hex numbers (felt252s) as strings. For example: ["0x7", "0x80"].
 #[executable]
 fn main(proof: CairoProof) -> VerificationOutput {
-    let mut output = array![];
-
-    // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
-    // f252 prime to yield a felt.
-    let program_hash = construct_f252(
-        hash_memory_section(@proof.claim.public_data.public_memory.program),
-    );
-
-    for entry in @proof.claim.public_data.public_memory.output {
-        let (_, val) = entry;
-        output.append(construct_f252(BoxTrait::new(*val)));
-    }
-
     // In the real verifier, here is the actual verification. Here we skip it.
 
-    VerificationOutput { program_hash, output }
+    get_verification_output(proof: @proof)
 }
