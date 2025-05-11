@@ -32,6 +32,7 @@ stwo-cairo-serialize = { path = "../cairo-serialize" }
 cairo-air.workspace = true
 stwo-prover.workspace = true
 tracing.workspace = true
+tempfile.workspace = true
 
 [dev-dependencies]
 cairo-vm = { workspace = true, default-features = true }
