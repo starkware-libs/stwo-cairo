@@ -47,13 +47,13 @@ pub impl QM31Impl of QM31Trait {
     }
 
     #[inline]
-    fn fms(a: QM31, b: QM31, c: QM31) -> QM31 {
-        QM31 { inner: a.inner * b.inner - c.inner }
+    fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
+        QM31 { inner: a.inner * b.inner + c.inner }
     }
 
     #[inline]
-    fn fma(a: QM31, b: QM31, c: QM31) -> QM31 {
-        QM31 { inner: a.inner * b.inner + c.inner }
+    fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
+        QM31 { inner: a.inner * b.inner - c.inner }
     }
 
     #[inline]
