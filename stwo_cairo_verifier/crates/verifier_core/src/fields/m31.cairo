@@ -19,14 +19,14 @@ pub const P_U32: u32 = 0x7fffffff;
 
 const NZ_M31_P: NonZero<ConstValue<P>> = 0x7fffffff;
 
+type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
+
 const M31_P: ConstValue<P> = 0x7fffffff;
 
 /// Equals `2^31`.
 pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 
 pub type M31InnerT = BoundedInt<0, 0x7ffffffe>;
-
-type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct M31 {
@@ -36,21 +36,26 @@ pub struct M31 {
 #[generate_trait]
 pub impl M31Impl of M31Trait {
     #[inline]
-    fn reduce_u32(val: u32) -> M31InnerT {
-        let (_, res) = div_rem(val, NZ_M31_P);
-        upcast(res)
+    fn new(val: M31InnerT) -> M31 {
+        M31 { inner: val }
     }
 
     #[inline]
-    fn reduce_u64(val: u64) -> M31InnerT {
+    fn reduce_u32(val: u32) -> M31 {
         let (_, res) = div_rem(val, NZ_M31_P);
-        upcast(res)
+        Self::new(res)
     }
 
     #[inline]
-    fn reduce_u128(val: u128) -> M31InnerT {
+    fn reduce_u64(val: u64) -> M31 {
         let (_, res) = div_rem(val, NZ_M31_P);
-        upcast(res)
+        Self::new(res)
+    }
+
+    #[inline]
+    fn reduce_u128(val: u128) -> M31 {
+        let (_, res) = div_rem(val, NZ_M31_P);
+        Self::new(res)
     }
 }
 
@@ -71,7 +76,7 @@ impl M31IntoFelt252 of Into<M31, felt252> {
 pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
     #[inline]
     fn into(self: M31InnerT) -> M31 {
-        M31 { inner: self }
+        M31Trait::new(self)
     }
 }
 
@@ -83,14 +88,14 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
             return None;
         }
 
-        Some(M31Trait::reduce_u32(self).into())
+        Some(M31Trait::reduce_u32(self))
     }
 }
 
 pub impl M31Zero of core::num::traits::Zero<M31> {
     #[inline]
     fn zero() -> M31 {
-        M31 { inner: 0 }
+        M31Trait::new(0)
     }
 
     fn is_zero(self: @M31) -> bool {
@@ -105,7 +110,7 @@ pub impl M31Zero of core::num::traits::Zero<M31> {
 pub impl M31One of core::num::traits::One<M31> {
     #[inline]
     fn one() -> M31 {
-        M31 { inner: 1 }
+        M31Trait::new(1)
     }
 
     fn is_one(self: @M31) -> bool {
