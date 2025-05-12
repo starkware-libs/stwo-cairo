@@ -84,9 +84,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let (q, r) = DivRem::div_rem(nonce, NZ_2_POW_32);
         let nonce_hi = q.try_into().unwrap();
         let nonce_lo = r.try_into().unwrap();
-        let msg = [nonce_lo, nonce_hi, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let res = blake2s_compress(self.digest.hash, 0, BoxImpl::new(msg));
-        update_digest(ref self, Blake2sHash { hash: res });
+        self.mix_u32s(array![nonce_lo, nonce_hi].span());
     }
 
     fn mix_u32s(ref self: Blake2sChannel, data: Span<u32>) {
@@ -383,15 +381,15 @@ mod tests {
     fn test_mix_u64() {
         let mut channel: Blake2sChannel = Default::default();
 
-        channel.mix_u64(0x1211109876543210);
+        channel.mix_u64(0x1111222233334444);
 
         // Tested against values produced from Rust code.
         // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
         assert_eq!(
             channel.digest.hash.unbox(),
             [
-                743523477, 161816109, 3300966720, 3503887744, 929103465, 2486638855, 1826907926,
-                3137305201,
+                0xc13f9ebc, 0x97884ed2, 0x59336d95, 0x24977332, 0xcdca6b9d, 0x74924d22, 0x4abae704,
+                0xce6edc77,
             ],
         );
     }
