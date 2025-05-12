@@ -215,13 +215,6 @@ pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
-// TODO: Use "use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;"
-// TODO: Stone uses a different initial state with the key set to 0.
-// Consider using this initial state instead.
-pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
-    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
-];
-
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
@@ -1920,6 +1913,7 @@ pub type MemorySection = Array<PubMemoryValue>;
 
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
@@ -1945,6 +1939,18 @@ pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
 
     // Finalize hash.
     blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+}
+
+/// Returns the hash of the memory section.
+/// Note: this function ignores the ids and therefore assumes that the section is sorted.
+#[cfg(feature: "poseidon252_verifier")]
+pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
+    let mut felts = array![];
+    for entry in section {
+        let (_, val) = *entry;
+        felts.append(construct_f252(BoxTrait::new(val)));
+    }
+    deconstruct_f252(poseidon_hash_span(felts.span()))
 }
 
 #[derive(Serde, Drop)]
@@ -5788,6 +5794,7 @@ mod tests {
         }
     }
 
+    #[cfg(not(feature: "poseidon252_verifier"))]
     #[test]
     fn test_hash_memory_section() {
         let section = array![
@@ -5800,6 +5807,23 @@ mod tests {
             [
                 3098114871, 843612567, 2372208999, 1823639248, 1136624132, 2551058277, 1389013608,
                 1207876589,
+            ],
+        );
+    }
+
+    #[cfg(feature: "poseidon252_verifier")]
+    #[test]
+    fn test_hash_memory_section() {
+        let section = array![
+            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
+            (0, [3, 4, 5, 6, 7, 8, 9, 10]),
+        ];
+
+        assert_eq!(
+            hash_memory_section(@section).unbox(),
+            [
+                2433336977, 2153250057, 881002283, 2835163344, 2300811583, 376217666, 1436681392,
+                91789842,
             ],
         );
     }
