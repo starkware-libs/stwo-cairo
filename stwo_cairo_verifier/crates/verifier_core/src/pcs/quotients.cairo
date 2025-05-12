@@ -462,7 +462,7 @@ impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
 #[inline]
 pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
     let [_, _, c, d] = v.to_array();
-    let v = QM31Trait::from_array([0, 0, c, d]);
+    let v = QM31Trait::from_array([M31 { inner: 0 }, M31 { inner: 0 }, c, d]);
     -(v + v)
 }
 

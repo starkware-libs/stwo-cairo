@@ -105,7 +105,7 @@ fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
 }
 
 // TODO(spapini): Check that this is sound.
-fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31InnerT; FELTS_PER_HASH] {
+fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
     let mut cur = draw_felt252(ref channel).into();
     [
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),

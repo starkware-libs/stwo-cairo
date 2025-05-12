@@ -14,7 +14,7 @@ pub impl M31InvertibleImpl of Invertible<M31> {
         let denom_qm31: QM31 = self.into();
         let denom_qm31_inv = One::one() / denom_qm31;
         let [v, _, _, _] = denom_qm31_inv.to_array();
-        M31 { inner: v }
+        v
     }
 }
 

@@ -36,21 +36,26 @@ pub struct M31 {
 #[generate_trait]
 pub impl M31Impl of M31Trait {
     #[inline]
-    fn reduce_u32(val: u32) -> M31InnerT {
-        let (_, res) = div_rem(val, NZ_M31_P);
-        upcast(res)
+    fn new(val: M31InnerT) -> M31 {
+        M31 { inner: val }
     }
 
     #[inline]
-    fn reduce_u64(val: u64) -> M31InnerT {
+    fn reduce_u32(val: u32) -> M31 {
         let (_, res) = div_rem(val, NZ_M31_P);
-        upcast(res)
+        M31 { inner: res }
     }
 
     #[inline]
-    fn reduce_u128(val: u128) -> M31InnerT {
+    fn reduce_u64(val: u64) -> M31 {
         let (_, res) = div_rem(val, NZ_M31_P);
-        upcast(res)
+        M31 { inner: res }
+    }
+
+    #[inline]
+    fn reduce_u128(val: u128) -> M31 {
+        let (_, res) = div_rem(val, NZ_M31_P);
+        M31 { inner: res }
     }
 }
 
@@ -83,7 +88,7 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
             return None;
         }
 
-        Some(M31Trait::reduce_u32(self).into())
+        Some(M31Trait::reduce_u32(self))
     }
 }
 

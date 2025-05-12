@@ -114,28 +114,28 @@ pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
 impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
     fn lt(lhs: CirclePoint<QM31>, rhs: CirclePoint<QM31>) -> bool {
         let [lxa, lxb, lxc, lxd] = lhs.x.to_array();
-        let lxa: u32 = upcast(lxa);
-        let lxb: u32 = upcast(lxb);
-        let lxc: u32 = upcast(lxc);
-        let lxd: u32 = upcast(lxd);
+        let lxa: u32 = lxa.into();
+        let lxb: u32 = lxb.into();
+        let lxc: u32 = lxc.into();
+        let lxd: u32 = lxd.into();
 
         let [rxa, rxb, rxc, rxd] = rhs.x.to_array();
-        let rxa: u32 = upcast(rxa);
-        let rxb: u32 = upcast(rxb);
-        let rxc: u32 = upcast(rxc);
-        let rxd: u32 = upcast(rxd);
+        let rxa: u32 = rxa.into();
+        let rxb: u32 = rxb.into();
+        let rxc: u32 = rxc.into();
+        let rxd: u32 = rxd.into();
 
         let [lya, lyb, lyc, lyd] = lhs.y.to_array();
-        let lya: u32 = upcast(lya);
-        let lyb: u32 = upcast(lyb);
-        let lyc: u32 = upcast(lyc);
-        let lyd: u32 = upcast(lyd);
+        let lya: u32 = lya.into();
+        let lyb: u32 = lyb.into();
+        let lyc: u32 = lyc.into();
+        let lyd: u32 = lyd.into();
 
         let [rya, ryb, ryc, ryd] = rhs.y.to_array();
-        let rya: u32 = upcast(rya);
-        let ryb: u32 = upcast(ryb);
-        let ryc: u32 = upcast(ryc);
-        let ryd: u32 = upcast(ryd);
+        let rya: u32 = rya.into();
+        let ryb: u32 = ryb.into();
+        let ryc: u32 = ryc.into();
+        let ryd: u32 = ryd.into();
 
         lxa < rxa || lxa == rxa
             && (lxb < rxb || lxb == rxb
