@@ -33,17 +33,14 @@ impl QM31InvertibleImpl of Invertible<QM31> {
 
 pub impl QM31Impl of QM31Trait {
     #[inline]
-    fn from_array(arr: [M31InnerT; 4]) -> QM31 {
+    fn from_array(arr: [M31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [a, b, c, d] = arr;
-        QM31 {
-            a: CM31 { a: M31 { inner: a }, b: M31 { inner: b } },
-            b: CM31 { a: M31 { inner: c }, b: M31 { inner: d } },
-        }
+        QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
     }
 
     #[inline]
-    fn to_array(self: QM31) -> [M31InnerT; 4] {
-        [self.a.a.inner, self.a.b.inner, self.b.a.inner, self.b.b.inner]
+    fn to_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE] {
+        [self.a.a, self.a.b, self.b.a, self.b.b]
     }
 
     #[inline]
