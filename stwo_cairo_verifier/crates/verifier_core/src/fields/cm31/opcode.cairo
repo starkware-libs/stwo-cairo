@@ -2,7 +2,7 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
-use super::super::m31::{M31, M31InnerT};
+use super::super::m31::{M31, M31Trait, M31Zero};
 use super::super::qm31::{M31IntoQM31, QM31, QM31Trait, qm31_const};
 use super::super::{BatchInvertible, Invertible};
 
@@ -35,12 +35,12 @@ pub impl CM31Impl of CM31Trait {
     #[inline(always)]
     fn unpack(self: CM31) -> (M31, M31) {
         let [a, b, _, _] = self.inner.to_array();
-        (a.into(), b.into())
+        (a, b)
     }
 
     #[inline(always)]
     fn pack(a: M31, b: M31) -> CM31 {
-        CM31 { inner: QM31Trait::from_array([a.inner, b.inner, 0, 0]) }
+        CM31 { inner: QM31Trait::from_array([a, b, M31Zero::zero(), M31Zero::zero()]) }
     }
 }
 
@@ -142,9 +142,9 @@ pub impl CM31Serde of Serde<CM31> {
     }
 
     fn deserialize(ref serialized: Span<felt252>) -> Option<CM31> {
-        let a: M31InnerT = Serde::deserialize(ref serialized)?;
-        let b: M31InnerT = Serde::deserialize(ref serialized)?;
-        Some(CM31 { inner: QM31Trait::from_array([a, b, 0, 0]) })
+        let a: M31 = Serde::deserialize(ref serialized)?;
+        let b: M31 = Serde::deserialize(ref serialized)?;
+        Some(CM31 { inner: QM31Trait::from_array([a, b, M31Zero::zero(), M31Zero::zero()]) })
     }
 }
 

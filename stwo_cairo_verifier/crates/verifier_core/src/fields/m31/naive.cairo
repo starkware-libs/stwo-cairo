@@ -29,7 +29,7 @@ pub impl M31Add of core::traits::Add<M31> {
             Err(gte) => upcast(bounded_int::sub(gte, M31_P)),
         };
 
-        M31 { inner: res }
+        M31Trait::new(res)
     }
 }
 
@@ -42,7 +42,7 @@ pub impl M31Sub of core::traits::Sub<M31> {
             Err(gte) => gte,
         };
 
-        M31 { inner: res }
+        M31Trait::new(res)
     }
 }
 
@@ -79,7 +79,7 @@ pub impl M31MulAssign of MulAssign<M31, M31> {
 pub impl M31Neg of Neg<M31> {
     #[inline]
     fn neg(a: M31) -> M31 {
-        M31 { inner: 0 } - a
+        M31Zero::zero() - a
     }
 }
 
