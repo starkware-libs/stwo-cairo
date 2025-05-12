@@ -293,7 +293,8 @@ fn accumulate_row_quotients(
         let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
         let denom_inv = *denominator_inverses[batch_i];
         let quotient = numerator.reduce().mul_cm31(denom_inv);
-        quotient_accumulator = QM31Trait::fma(quotient_accumulator, batch_coeff, quotient);
+        quotient_accumulator =
+            QM31Trait::fused_mul_add(quotient_accumulator, batch_coeff, quotient);
     }
 
     quotient_accumulator
@@ -443,7 +444,9 @@ impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
     ) -> ComplexConjugateLineCoeffs {
         let alpha_mul_a = alpha * neg_twice_imaginary_part(@sample_value);
         let alpha_mul_c = alpha * neg_twice_imaginary_part(sample_point.y);
-        let alpha_mul_b = QM31Trait::fms(sample_value, alpha_mul_c, alpha_mul_a * *sample_point.y);
+        let alpha_mul_b = QM31Trait::fused_mul_sub(
+            sample_value, alpha_mul_c, alpha_mul_a * *sample_point.y,
+        );
 
         // TODO(andrew): These alpha multiplications are expensive.
         // Think they can be saved and done all at once.

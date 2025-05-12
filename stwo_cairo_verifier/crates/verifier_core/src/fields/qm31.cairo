@@ -36,11 +36,11 @@ pub trait QM31Trait {
 
     fn complex_conjugate(self: QM31) -> QM31;
 
-    /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
-    fn fms(a: QM31, b: QM31, c: QM31) -> QM31;
-
     /// Returns a fused multiply-add i.e. returns `a * b + c`.
-    fn fma(a: QM31, b: QM31, c: QM31) -> QM31;
+    fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31;
+
+    /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
+    fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31;
 
     /// Returns `lhs * rhs` in unreduced form.
     fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31;
@@ -130,23 +130,23 @@ mod tests {
     }
 
     #[test]
-    fn test_fma() {
+    fn test_fused_mul_add() {
         let a = qm31_const::<2147483643, 2147483557, 958, 2147483646>();
         let b = qm31_const::<2147483464, 75, 2147482726, 2147477523>();
         let c = qm31_const::<2, 2147483646, 2147483646, 2147483639>();
 
-        let res = QM31Trait::fma(a, b, c);
+        let res = QM31Trait::fused_mul_add(a, b, c);
 
         assert_eq!(res, a * b + c);
     }
 
     #[test]
-    fn test_fms() {
+    fn test_fused_mul_sub() {
         let a = qm31_const::<2147483643, 2147483557, 958, 2147483646>();
         let b = qm31_const::<2147483464, 75, 2147482726, 2147477523>();
         let c = qm31_const::<2, 2147483646, 2147483646, 2147483639>();
 
-        let res = QM31Trait::fms(a, b, c);
+        let res = QM31Trait::fused_mul_sub(a, b, c);
 
         assert_eq!(res, a * b - c);
     }
