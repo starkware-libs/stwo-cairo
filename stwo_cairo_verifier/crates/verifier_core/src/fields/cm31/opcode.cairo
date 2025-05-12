@@ -40,7 +40,7 @@ pub impl CM31Impl of CM31Trait {
 
     #[inline(always)]
     fn pack(a: M31, b: M31) -> CM31 {
-        CM31 { inner: a.into() + qm31_const::<0, 1, 0, 0>() * b.into() }
+        CM31 { inner: QM31Trait::from_array([a.inner, b.inner, 0, 0]) }
     }
 }
 
