@@ -15,7 +15,6 @@ pub impl CM31BatchInvertibleImpl of BatchInvertible<CM31> {}
 
 pub impl CM31InvertibleImpl of Invertible<CM31> {
     fn inverse(self: CM31) -> CM31 {
-        assert!(self.is_non_zero());
         let denom_inverse: M31 = (self.a * self.a + self.b * self.b).inverse();
         CM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
     }
@@ -95,7 +94,7 @@ pub impl CM31Zero of Zero<CM31> {
     }
 
     fn is_non_zero(self: @CM31) -> bool {
-        (*self).a.is_non_zero() || (*self).b.is_non_zero()
+        not(*self.is_zero())
     }
 }
 
@@ -107,7 +106,7 @@ pub impl CM31One of One<CM31> {
         (*self).a.is_one() && (*self).b.is_zero()
     }
     fn is_non_one(self: @CM31) -> bool {
-        (*self).a.is_non_one() || (*self).b.is_non_zero()
+        not(*self.is_one())
     }
 }
 
