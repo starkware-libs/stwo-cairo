@@ -1,4 +1,4 @@
-use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
+use bounded_int::{BoundedInt, DivRemHelper, constrain, div_rem, upcast};
 
 // TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
 // #[cfg(not(feature: "qm31_opcode"))]
@@ -73,22 +73,14 @@ impl M31IntoFelt252 of Into<M31, felt252> {
     }
 }
 
-pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
-    #[inline]
-    fn into(self: M31InnerT) -> M31 {
-        M31Trait::new(self)
-    }
-}
-
 impl U32TryIntoM31 of TryInto<u32, M31> {
     /// Returns Some if value is in the range `[0, P)`, else returns None.
     #[inline]
     fn try_into(self: u32) -> Option<M31> {
-        if self >= P_U32 {
-            return None;
+        match bounded_int::constrain::<u32, P>(self.into()) {
+            Ok(x) => Some(M31Trait::new(x)),
+            Err(_) => None,
         }
-
-        Some(M31Trait::reduce_u32(self))
     }
 }
 
@@ -120,6 +112,11 @@ pub impl M31One of core::num::traits::One<M31> {
     fn is_non_one(self: @M31) -> bool {
         *self.inner != 1
     }
+}
+
+impl M31ConstrainHelper of bounded_int::ConstrainHelper<u32, P> {
+    type LowT = M31InnerT;
+    type HighT = BoundedInt<P, 0xffffffff>;
 }
 
 impl DivRemU32ByP of DivRemHelper<u32, ConstValue<P>> {

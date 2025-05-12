@@ -2,8 +2,8 @@
 use bounded_int::{AddHelper, BoundedInt, SubHelper, upcast};
 use core::num::traits::{WideMul, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::super::{BatchInvertible, Invertible};
 use super::super::m31::M31Zero;
+use super::super::{BatchInvertible, Invertible};
 use super::{ConstValue, M31, M31InnerT, M31Trait, M31_P, P};
 
 pub impl M31InvertibleImpl of Invertible<M31> {
