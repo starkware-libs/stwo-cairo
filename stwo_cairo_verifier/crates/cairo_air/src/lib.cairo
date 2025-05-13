@@ -55,9 +55,6 @@ use components::call_opcode_rel::{
 use components::cube_252::{
     ClaimImpl as Cube252ClaimImpl, InteractionClaimImpl as Cube252InteractionClaimImpl,
 };
-use components::generic_opcode::{
-    ClaimImpl as GenericOpcodeClaimImpl, InteractionClaimImpl as GenericOpcodeInteractionClaimImpl,
-};
 use components::jnz_opcode::{
     ClaimImpl as JnzOpcodeClaimImpl, InteractionClaimImpl as JnzOpcodeInteractionClaimImpl,
 };
@@ -86,22 +83,12 @@ use components::memory_address_to_id::{
 use components::memory_id_to_big::{
     ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
 };
-use components::mul_mod_builtin::{
-    ClaimImpl as MulModBuiltinClaimImpl, InteractionClaimImpl as MulModBuiltinInteractionClaimImpl,
-};
 use components::mul_opcode::{
     ClaimImpl as MulOpcodeClaimImpl, InteractionClaimImpl as MulOpcodeInteractionClaimImpl,
 };
 use components::mul_opcode_small::{
     ClaimImpl as MulOpcodeSmallClaimImpl,
     InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl,
-};
-use components::partial_ec_mul::{
-    ClaimImpl as PartialEcMulClaimImpl, InteractionClaimImpl as PartialEcMulInteractionClaimImpl,
-};
-use components::pedersen_builtin::{
-    ClaimImpl as PedersenBuiltinClaimImpl,
-    InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl,
 };
 use components::pedersen_points_table::{
     ClaimImpl as PedersenPointsTableClaimImpl,
@@ -182,7 +169,6 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -540,7 +526,6 @@ pub fn lookup_sum(
     sum += *interaction_claim.verify_instruction.claimed_sum;
     sum += interaction_claim.blake_context.sum();
     sum += interaction_claim.builtins.sum();
-    sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.poseidon_context.sum();
     sum += *interaction_claim.memory_address_to_id.claimed_sum;
     sum += *interaction_claim.memory_id_to_value.big_claimed_sum;
@@ -659,8 +644,6 @@ pub struct Claim {
 pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<components::add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<components::bitwise_builtin::Claim>,
-    pub mul_mod_builtin: Option<components::mul_mod_builtin::Claim>,
-    pub pedersen_builtin: Option<components::pedersen_builtin::Claim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Claim>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Claim>,
@@ -673,12 +656,6 @@ impl BuiltinsClaimImpl of BuiltinsClaimTrait {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = self.bitwise_builtin {
-            claim.mix_into(ref channel);
-        }
-        if let Some(claim) = self.mul_mod_builtin {
-            claim.mix_into(ref channel);
-        }
-        if let Some(claim) = self.pedersen_builtin {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = self.poseidon_builtin {
@@ -703,14 +680,6 @@ impl BuiltinsClaimImpl of BuiltinsClaimTrait {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.mul_mod_builtin {
-            log_sizes.append(claim.log_sizes());
-        }
-
-        if let Some(claim) = self.pedersen_builtin {
-            log_sizes.append(claim.log_sizes());
-        }
-
         if let Some(claim) = self.poseidon_builtin {
             log_sizes.append(claim.log_sizes());
         }
@@ -731,8 +700,6 @@ impl BuiltinsClaimImpl of BuiltinsClaimTrait {
 pub struct BuiltinsInteractionClaim {
     pub add_mod_builtin: Option<components::add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<components::bitwise_builtin::InteractionClaim>,
-    pub mul_mod_builtin: Option<components::mul_mod_builtin::InteractionClaim>,
-    pub pedersen_builtin: Option<components::pedersen_builtin::InteractionClaim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::InteractionClaim>,
@@ -745,12 +712,6 @@ impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = self.bitwise_builtin {
-            claim.mix_into(ref channel);
-        }
-        if let Some(claim) = self.mul_mod_builtin {
-            claim.mix_into(ref channel);
-        }
-        if let Some(claim) = self.pedersen_builtin {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = self.poseidon_builtin {
@@ -772,14 +733,6 @@ impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
         }
 
         if let Some(claim) = self.bitwise_builtin {
-            sum += *claim.claimed_sum;
-        }
-
-        if let Some(claim) = self.mul_mod_builtin {
-            sum += *claim.claimed_sum;
-        }
-
-        if let Some(claim) = self.pedersen_builtin {
             sum += *claim.claimed_sum;
         }
 
@@ -910,91 +863,6 @@ impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         sum += *self.rc_4_4_4_4.claimed_sum;
         sum += *self.rc_3_3_3_3_3.claimed_sum;
         sum
-    }
-}
-
-#[derive(Drop, Serde)]
-struct PedersenClaim {
-    pub partial_ec_mul: components::partial_ec_mul::Claim,
-    pub pedersen_points_table: components::pedersen_points_table::Claim,
-}
-
-#[generate_trait]
-impl PedersenClaimImpl of PedersenClaimTrait {
-    fn mix_into(self: @PedersenClaim, ref channel: Channel) {
-        self.partial_ec_mul.mix_into(ref channel);
-        self.pedersen_points_table.mix_into(ref channel);
-    }
-
-    fn log_sizes(self: @PedersenClaim) -> TreeArray<Span<u32>> {
-        utils::tree_array_concat_cols(
-            array![self.partial_ec_mul.log_sizes(), self.pedersen_points_table.log_sizes()],
-        )
-    }
-}
-
-#[derive(Drop, Serde)]
-struct PedersenInteractionClaim {
-    pub partial_ec_mul: components::partial_ec_mul::InteractionClaim,
-    pub pedersen_points_table: components::pedersen_points_table::InteractionClaim,
-}
-
-#[generate_trait]
-impl PedersenInteractionClaimImpl of PedersenInteractionClaimTrait {
-    fn mix_into(self: @PedersenInteractionClaim, ref channel: Channel) {
-        self.partial_ec_mul.mix_into(ref channel);
-        self.pedersen_points_table.mix_into(ref channel);
-    }
-
-    fn sum(self: @PedersenInteractionClaim) -> QM31 {
-        let mut sum = Zero::zero();
-        sum += *self.partial_ec_mul.claimed_sum;
-        sum += *self.pedersen_points_table.claimed_sum;
-        sum
-    }
-}
-
-#[derive(Drop, Serde)]
-struct PedersenContextClaim {
-    pub claim: Option<PedersenClaim>,
-}
-
-#[generate_trait]
-impl PedersenContextClaimImpl of PedersenContextClaimTrait {
-    fn mix_into(self: @PedersenContextClaim, ref channel: Channel) {
-        if let Option::Some(claim) = self.claim {
-            claim.mix_into(ref channel);
-        }
-    }
-
-    fn log_sizes(self: @PedersenContextClaim) -> TreeArray<Span<u32>> {
-        if let Option::Some(claim) = self.claim {
-            claim.log_sizes()
-        } else {
-            array![]
-        }
-    }
-}
-
-#[derive(Drop, Serde)]
-struct PedersenContextInteractionClaim {
-    pub interaction_claim: Option<PedersenInteractionClaim>,
-}
-
-#[generate_trait]
-impl PedersenContextInteractionClaimImpl of PedersenContextInteractionClaimTrait {
-    fn mix_into(self: @PedersenContextInteractionClaim, ref channel: Channel) {
-        if let Some(interaction_claim) = self.interaction_claim {
-            interaction_claim.mix_into(ref channel);
-        }
-    }
-
-    fn sum(self: @PedersenContextInteractionClaim) -> QM31 {
-        if let Some(interaction_claim) = self.interaction_claim {
-            interaction_claim.sum()
-        } else {
-            Zero::zero()
-        }
     }
 }
 
@@ -1192,7 +1060,6 @@ pub struct CairoClaim {
     pub verify_instruction: components::verify_instruction::Claim,
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
-    pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
     pub memory_address_to_id: components::memory_address_to_id::Claim,
     pub memory_id_to_value: components::memory_id_to_big::Claim,
@@ -1211,7 +1078,7 @@ impl CairoClaimImpl of CairoClaimTrait {
             array![
                 self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
                 self.blake_context.log_sizes(), self.builtins.log_sizes(),
-                self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
+                array![], self.poseidon_context.log_sizes(),
                 self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
                 self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
                 self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
@@ -1241,7 +1108,6 @@ impl CairoClaimImpl of CairoClaimTrait {
         self.verify_instruction.mix_into(ref channel);
         self.blake_context.mix_into(ref channel);
         self.builtins.mix_into(ref channel);
-        self.pedersen_context.mix_into(ref channel);
         self.poseidon_context.mix_into(ref channel);
         self.memory_address_to_id.mix_into(ref channel);
         self.memory_id_to_value.mix_into(ref channel);
@@ -1304,8 +1170,6 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         range_check_96_builtin,
         bitwise_builtin,
         add_mod_builtin,
-        mul_mod_builtin,
-        pedersen_builtin,
         poseidon_builtin,
     } = builtins_claim;
     check_builtin(
@@ -1357,30 +1221,6 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
             ),
         *segment_ranges.add_mod,
         ADD_MOD_MEMORY_CELLS,
-    );
-    check_builtin(
-        mul_mod_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.mul_mod_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *segment_ranges.mul_mod,
-        MUL_MOD_MEMORY_CELLS,
-    );
-    check_builtin(
-        pedersen_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.pedersen_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *segment_ranges.pedersen,
-        PEDERSEN_MEMORY_CELLS,
     );
     check_builtin(
         poseidon_builtin
@@ -1445,7 +1285,6 @@ pub struct CairoInteractionClaim {
     pub verify_instruction: components::verify_instruction::InteractionClaim,
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
-    pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
     pub memory_address_to_id: components::memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: components::memory_id_to_big::InteractionClaim,
@@ -1463,7 +1302,6 @@ impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         self.verify_instruction.mix_into(ref channel);
         self.blake_context.mix_into(ref channel);
         self.builtins.mix_into(ref channel);
-        self.pedersen_context.mix_into(ref channel);
         self.poseidon_context.mix_into(ref channel);
         self.memory_address_to_id.mix_into(ref channel);
         self.memory_id_to_value.mix_into(ref channel);
@@ -1509,7 +1347,6 @@ pub struct OpcodeInteractionClaim {
     call: Array<components::call_opcode::InteractionClaim>,
     call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::InteractionClaim>,
     call_rel: Array<components::call_opcode_rel::InteractionClaim>,
-    generic: Array<components::generic_opcode::InteractionClaim>,
     jnz: Array<components::jnz_opcode::InteractionClaim>,
     jnz_taken: Array<components::jnz_opcode_taken::InteractionClaim>,
     jump: Array<components::jump_opcode::InteractionClaim>,
@@ -1562,10 +1399,6 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
         }
 
         for interaction_claim in self.call_rel.span() {
-            interaction_claim.mix_into(ref channel);
-        }
-
-        for interaction_claim in self.generic.span() {
             interaction_claim.mix_into(ref channel);
         }
 
@@ -1650,10 +1483,6 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
         }
 
         for interaction_claim in self.call_rel.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.generic.span() {
             sum += *interaction_claim.claimed_sum;
         }
 
@@ -1790,35 +1619,6 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 pub type MemorySection = Array<PubMemoryValue>;
 
 /// Returns the hash of the memory section.
-/// Note: this function ignores the ids and therefore assumes that the section is sorted.
-#[cfg(not(feature: "poseidon252_verifier"))]
-pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut byte_count = 0;
-    let mut buffer = array![];
-    for entry in section {
-        // Compress whenever the buffer reaches capacity.
-        if let Some(msg) = buffer.span().try_into() {
-            state = blake2s_compress(state, byte_count, *msg);
-            buffer = array![];
-        }
-
-        // Append current value to the buffer without its id.
-        let (_, val) = *entry;
-        buffer.append_span(val.span());
-        byte_count += 32;
-    }
-
-    // Pad buffer to blake hash message size.
-    for _ in buffer.len()..16 {
-        buffer.append(0);
-    }
-
-    // Finalize hash.
-    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
-}
-
-#[cfg(feature: "poseidon252_verifier")]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut felts = array![];
     for entry in section {
@@ -2025,7 +1825,6 @@ pub struct OpcodeClaim {
     pub call: Array<components::call_opcode::Claim>,
     pub call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::Claim>,
     pub call_rel: Array<components::call_opcode_rel::Claim>,
-    pub generic: Array<components::generic_opcode::Claim>,
     pub jnz: Array<components::jnz_opcode::Claim>,
     pub jnz_taken: Array<components::jnz_opcode_taken::Claim>,
     pub jump: Array<components::jump_opcode::Claim>,
@@ -2088,11 +1887,6 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
         channel.mix_u64(self.call_rel.len().into());
         for claim in self.call_rel.span() {
-            claim.mix_into(ref channel);
-        }
-
-        channel.mix_u64(self.generic.len().into());
-        for claim in self.generic.span() {
             claim.mix_into(ref channel);
         }
 
@@ -2190,10 +1984,6 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
             log_sizes.append(claim.log_sizes());
         }
 
-        for claim in self.generic.span() {
-            log_sizes.append(claim.log_sizes());
-        }
-
         for claim in self.jnz.span() {
             log_sizes.append(claim.log_sizes());
         }
@@ -2252,7 +2042,6 @@ pub struct CairoAir {
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
-    pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
@@ -2282,10 +2071,6 @@ impl CairoAirNewImpl of CairoAirNewTrait {
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
-        );
-
-        let pedersen_context_components = PedersenContextComponentsImpl::new(
-            cairo_claim.pedersen_context, interaction_elements, interaction_claim.pedersen_context,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
@@ -2355,7 +2140,6 @@ impl CairoAirNewImpl of CairoAirNewTrait {
             verify_instruction: verifyinstruction_component,
             blake_context: blake_context_component,
             builtins: builtins_components,
-            pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_component, small_memory_id_to_value_component),
@@ -2376,8 +2160,6 @@ impl CairoAirImpl of Air<CairoAir> {
         max_degree =
             core::cmp::max(max_degree, self.blake_context.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.builtins.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.pedersen_context.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(max_degree, self.poseidon_context.max_constraint_log_degree_bound());
         max_degree =
@@ -2432,14 +2214,6 @@ impl CairoAirImpl of Air<CairoAir> {
             );
         self
             .builtins
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .pedersen_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -2581,16 +2355,6 @@ impl CairoAirImpl of Air<CairoAir> {
             );
         self
             .builtins
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        self
-            .pedersen_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -3122,187 +2886,6 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     }
 }
 
-#[derive(Drop)]
-pub struct PedersenContextComponents {
-    components: Option<PedersenComponents>,
-}
-
-#[generate_trait]
-impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
-    fn new(
-        claim: @PedersenContextClaim,
-        interaction_elements: @CairoInteractionElements,
-        interaction_claim: @PedersenContextInteractionClaim,
-    ) -> PedersenContextComponents {
-        if let Some(claim) = claim.claim {
-            PedersenContextComponents {
-                components: Some(
-                    PedersenComponentsImpl::new(
-                        claim,
-                        interaction_elements,
-                        interaction_claim.interaction_claim.as_snap().unwrap(),
-                    ),
-                ),
-            }
-        } else {
-            PedersenContextComponents { components: None }
-        }
-    }
-
-    fn max_constraint_log_degree_bound(self: @PedersenContextComponents) -> u32 {
-        if let Option::Some(components) = self.components {
-            components.max_constraint_log_degree_bound()
-        } else {
-            0
-        }
-    }
-
-    fn mask_points(
-        self: @PedersenContextComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
-    fn evaluate_constraints_at_point(
-        self: @PedersenContextComponents,
-        ref sum: QM31,
-        ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Span<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-        random_coeff: QM31,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-    }
-}
-
-#[derive(Drop)]
-struct PedersenComponents {
-    pub partial_ec_mul: components::partial_ec_mul::Component,
-    pub pedersen_points_table: components::pedersen_points_table::Component,
-}
-
-#[generate_trait]
-impl PedersenComponentsImpl of PedersenComponentsTrait {
-    fn new(
-        claim: @PedersenClaim,
-        interaction_elements: @CairoInteractionElements,
-        interaction_claim: @PedersenInteractionClaim,
-    ) -> PedersenComponents {
-        let partial_ec_mul_component = components::partial_ec_mul::Component {
-            claim: *claim.partial_ec_mul,
-            interaction_claim: *interaction_claim.partial_ec_mul,
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-        };
-
-        let pedersen_points_table_component = components::pedersen_points_table::Component {
-            claim: *claim.pedersen_points_table,
-            interaction_claim: *interaction_claim.pedersen_points_table,
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-        };
-
-        PedersenComponents {
-            partial_ec_mul: partial_ec_mul_component,
-            pedersen_points_table: pedersen_points_table_component,
-        }
-    }
-
-    fn mask_points(
-        self: @PedersenComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .partial_ec_mul
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .pedersen_points_table
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-    }
-
-    fn evaluate_constraints_at_point(
-        self: @PedersenComponents,
-        ref sum: QM31,
-        ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Span<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-        random_coeff: QM31,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .partial_ec_mul
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        self
-            .pedersen_points_table
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-    }
-
-    fn max_constraint_log_degree_bound(self: @PedersenComponents) -> u32 {
-        let mut max_degree = 0;
-        max_degree =
-            core::cmp::max(max_degree, self.partial_ec_mul.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(
-                max_degree, self.pedersen_points_table.max_constraint_log_degree_bound(),
-            );
-        max_degree
-    }
-}
 
 #[derive(Drop)]
 pub struct PoseidonContextComponents {
@@ -3870,8 +3453,6 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
 pub struct BuiltinComponents {
     pub add_mod_builtin: Option<components::add_mod_builtin::Component>,
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
-    pub mul_mod_builtin: Option<components::mul_mod_builtin::Component>,
-    pub pedersen_builtin: Option<components::pedersen_builtin::Component>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
@@ -3919,63 +3500,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                         verify_bitwise_xor_9_lookup_elements: interaction_elements
                             .verify_bitwise_xor_9
                             .clone(),
-                    },
-                );
-        }
-
-        let mut mul_mod_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.mul_mod_builtin {
-            mul_mod_builtin_component =
-                Option::Some(
-                    components::mul_mod_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.mul_mod_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_12_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_12
-                            .clone(),
-                        range_check_18_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_18
-                            .clone(),
-                        range_check_3_6_6_3_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_3_6_6_3
-                            .clone(),
-                    },
-                );
-        }
-
-        let mut pedersen_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.pedersen_builtin {
-            pedersen_builtin_component =
-                Option::Some(
-                    components::pedersen_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                        range_check_5_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_5_4
-                            .clone(),
-                        partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
                     },
                 );
         }
@@ -4063,8 +3587,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         BuiltinComponents {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
-            mul_mod_builtin: mul_mod_builtin_component,
-            pedersen_builtin: pedersen_builtin_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -4090,26 +3612,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = self.bitwise_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -4161,14 +3663,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
         if let Option::Some(component) = self.poseidon_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
@@ -4207,30 +3701,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = self.bitwise_builtin.as_snap() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -4292,7 +3762,6 @@ pub struct OpcodeComponents {
     call: Array<components::call_opcode::Component>,
     call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::Component>,
     call_rel: Array<components::call_opcode_rel::Component>,
-    generic: Array<components::generic_opcode::Component>,
     jnz: Array<components::jnz_opcode::Component>,
     jnz_taken: Array<components::jnz_opcode_taken::Component>,
     jump: Array<components::jump_opcode::Component>,
@@ -4592,41 +4061,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         assert!(call_rel_claims.is_empty());
         assert!(call_rel_interaction_claims.is_empty());
 
-        // Generic components
-        let mut generic_components = array![];
-        let mut generic_claims = claim.generic.span();
-        let mut generic_interaction_claims = interaction_claim.generic.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (generic_claims.pop_front(), generic_interaction_claims.pop_front()) {
-            generic_components
-                .append(
-                    components::generic_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_9_9_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9
-                            .clone(),
-                    },
-                );
-        }
-        assert!(generic_claims.is_empty());
-        assert!(generic_interaction_claims.is_empty());
-
         // Jnz components
         let mut jnz_components = array![];
         let mut jnz_claims = claim.jnz.span();
@@ -4923,7 +4357,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             call: call_components,
             call_op_1_base_fp: call_op_1_base_fp_components,
             call_rel: call_rel_components,
-            generic: generic_components,
             jnz: jnz_components,
             jnz_taken: jnz_taken_components,
             jump: jump_components,
@@ -5035,16 +4468,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         }
 
         for component in self.call_rel.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        for component in self.generic.span() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -5195,10 +4618,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         }
 
         for component in self.call_rel.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        for component in self.generic.span() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
@@ -5357,17 +4776,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                 );
         }
         for component in self.call_rel.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.generic.span() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -5590,24 +4998,6 @@ mod tests {
         }
     }
 
-    #[cfg(not(feature: "poseidon252_verifier"))]
-    #[test]
-    fn test_hash_memory_section() {
-        let section = array![
-            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
-            (0, [3, 4, 5, 6, 7, 8, 9, 10]),
-        ];
-
-        assert_eq!(
-            hash_memory_section(@section).unbox(),
-            [
-                3098114871, 843612567, 2372208999, 1823639248, 1136624132, 2551058277, 1389013608,
-                1207876589,
-            ],
-        );
-    }
-
-    #[cfg(feature: "poseidon252_verifier")]
     #[test]
     fn test_hash_memory_section() {
         let section = array![

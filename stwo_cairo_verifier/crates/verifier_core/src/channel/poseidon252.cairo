@@ -157,7 +157,7 @@ fn draw_felt252(ref channel: Poseidon252Channel) -> felt252 {
 }
 
 #[inline]
-fn extract_m31<const N: usize>(ref num: u256) -> M31InnerT {
+fn extract_m31(ref num: u256) -> M31InnerT {
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     M31Trait::reduce_u128(r.low)

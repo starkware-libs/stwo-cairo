@@ -620,6 +620,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
+        core::internal::revoke_ap_tracking();
+        
         verify_add_252_evaluate(
             [
                 op0_limb_0_col44, op0_limb_1_col45, op0_limb_2_col46, op0_limb_3_col47,
