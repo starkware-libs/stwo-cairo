@@ -34,13 +34,13 @@ pub impl CM31Impl of CM31Trait {
 
     #[inline(always)]
     fn unpack(self: CM31) -> (M31, M31) {
-        let [a, b, _, _] = self.inner.to_array();
+        let [a, b, _, _] = self.inner.to_fixed_array();
         (a, b)
     }
 
     #[inline(always)]
     fn pack(a: M31, b: M31) -> CM31 {
-        CM31 { inner: QM31Trait::from_array([a, b, M31Zero::zero(), M31Zero::zero()]) }
+        CM31 { inner: QM31Trait::from_fixed_array([a, b, M31Zero::zero(), M31Zero::zero()]) }
     }
 }
 
@@ -136,7 +136,7 @@ pub impl CM31Neg of Neg<CM31> {
 
 pub impl CM31Serde of Serde<CM31> {
     fn serialize(self: @CM31, ref output: Array<felt252>) {
-        let [a, b, _, _] = self.inner.to_array();
+        let [a, b, _, _] = self.inner.to_fixed_array();
         output.append(a.into());
         output.append(b.into());
     }
@@ -144,7 +144,7 @@ pub impl CM31Serde of Serde<CM31> {
     fn deserialize(ref serialized: Span<felt252>) -> Option<CM31> {
         let a: M31 = Serde::deserialize(ref serialized)?;
         let b: M31 = Serde::deserialize(ref serialized)?;
-        Some(CM31 { inner: QM31Trait::from_array([a, b, M31Zero::zero(), M31Zero::zero()]) })
+        Some(CM31 { inner: QM31Trait::from_fixed_array([a, b, M31Zero::zero(), M31Zero::zero()]) })
     }
 }
 

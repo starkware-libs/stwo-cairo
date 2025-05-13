@@ -16,13 +16,13 @@ pub struct QM31 {
 
 pub impl QM31Impl of QM31Trait {
     #[inline]
-    fn from_array(arr: [M31; QM31_EXTENSION_DEGREE]) -> QM31 {
+    fn from_fixed_array(arr: [M31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [a, b, c, d] = arr;
         QM31 { inner: core::qm31::QM31Trait::new(a.inner, b.inner, c.inner, d.inner) }
     }
 
     #[inline]
-    fn to_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE] {
+    fn to_fixed_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE] {
         let [a, b, c, d] = core::qm31::QM31Trait::unpack(self.inner);
         [M31Trait::new(a), M31Trait::new(b), M31Trait::new(c), M31Trait::new(d)]
     }
@@ -39,8 +39,8 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn complex_conjugate(self: QM31) -> QM31 {
-        let [a, b, c, d] = self.to_array();
-        Self::from_array([a, b, -c, -d])
+        let [a, b, c, d] = self.to_fixed_array();
+        Self::from_fixed_array([a, b, -c, -d])
     }
 
     #[inline]

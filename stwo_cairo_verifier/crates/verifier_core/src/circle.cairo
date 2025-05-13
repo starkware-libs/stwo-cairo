@@ -113,25 +113,25 @@ pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
 // `CirclePoint` in the Stwo derives PartialOrd, this matches that implementation.
 impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
     fn lt(lhs: CirclePoint<QM31>, rhs: CirclePoint<QM31>) -> bool {
-        let [lxa, lxb, lxc, lxd] = lhs.x.to_array();
+        let [lxa, lxb, lxc, lxd] = lhs.x.to_fixed_array();
         let lxa: u32 = lxa.into();
         let lxb: u32 = lxb.into();
         let lxc: u32 = lxc.into();
         let lxd: u32 = lxd.into();
 
-        let [rxa, rxb, rxc, rxd] = rhs.x.to_array();
+        let [rxa, rxb, rxc, rxd] = rhs.x.to_fixed_array();
         let rxa: u32 = rxa.into();
         let rxb: u32 = rxb.into();
         let rxc: u32 = rxc.into();
         let rxd: u32 = rxd.into();
 
-        let [lya, lyb, lyc, lyd] = lhs.y.to_array();
+        let [lya, lyb, lyc, lyd] = lhs.y.to_fixed_array();
         let lya: u32 = lya.into();
         let lyb: u32 = lyb.into();
         let lyc: u32 = lyc.into();
         let lyd: u32 = lyd.into();
 
-        let [rya, ryb, ryc, ryd] = rhs.y.to_array();
+        let [rya, ryb, ryc, ryd] = rhs.y.to_fixed_array();
         let rya: u32 = rya.into();
         let ryb: u32 = ryb.into();
         let ryc: u32 = ryc.into();
