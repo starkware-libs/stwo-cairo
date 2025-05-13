@@ -70,15 +70,15 @@ mod tests {
 
     use crate::adapter::read_and_adapt_prover_input_info_file;
     use crate::test_utils::{
-        get_prover_input_info_path, get_prover_input_path, get_test_program,
-        prover_input_from_compiled_cairo_program, read_json, write_json,
+        get_prover_input_info_path, get_prover_input_path, get_test_program, read_json,
+        run_program_and_adapter, write_json,
     };
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_test_program(test_name);
-        let mut prover_input = prover_input_from_compiled_cairo_program(&compiled_program);
+        let mut prover_input = run_program_and_adapter(&compiled_program);
         // Instruction cache is not deterministic, sort it.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
 
