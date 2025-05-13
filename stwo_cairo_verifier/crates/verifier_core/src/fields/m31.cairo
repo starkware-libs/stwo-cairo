@@ -73,13 +73,6 @@ impl M31IntoFelt252 of Into<M31, felt252> {
     }
 }
 
-pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
-    #[inline]
-    fn into(self: M31InnerT) -> M31 {
-        M31Trait::new(self)
-    }
-}
-
 impl U32TryIntoM31 of TryInto<u32, M31> {
     /// Returns Some if value is in the range `[0, P)`, else returns None.
     #[inline]

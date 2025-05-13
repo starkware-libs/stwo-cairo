@@ -3,7 +3,7 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31InnerTIntoM31, M31Trait, UnreducedM31};
+use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
 use super::{
     PackedUnreducedCM31Trait, PackedUnreducedQM31Trait, QM31Dispaly, QM31Trait,
     QM31_EXTENSION_DEGREE, UnreducedQM31Trait,
@@ -40,9 +40,7 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn complex_conjugate(self: QM31) -> QM31 {
         let [a, b, c, d] = self.to_array();
-        let neg_c = (-TryInto::<_, M31>::try_into(c).unwrap());
-        let neg_d = (-TryInto::<_, M31>::try_into(d).unwrap());
-        Self::from_array([a, b, neg_c, neg_d])
+        Self::from_array([a, b, -c, -d])
     }
 
     #[inline]

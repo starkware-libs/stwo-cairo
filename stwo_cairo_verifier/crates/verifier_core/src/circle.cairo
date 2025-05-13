@@ -7,7 +7,7 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
 use crate::fields::Invertible;
-use crate::fields::m31::{M31, M31InnerT};
+use crate::fields::m31::{M31, M31InnerT, M31Trait};
 use crate::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow2;
 
@@ -31,7 +31,7 @@ pub struct CirclePoint<F> {
 
 impl CirclePointM31InnerTIntoCirclePointM31 of Into<CirclePoint<M31InnerT>, CirclePoint<M31>> {
     fn into(self: CirclePoint<M31InnerT>) -> CirclePoint<M31> {
-        CirclePoint { x: self.x.into(), y: self.y.into() }
+        CirclePoint { x: M31Trait::new(self.x), y: M31Trait::new(self.y) }
     }
 }
 
