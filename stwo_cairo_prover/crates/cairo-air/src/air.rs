@@ -15,6 +15,7 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::fields::FieldExpOps;
 use stwo_prover::core::pcs::TreeVec;
 use stwo_prover::core::prover::StarkProof;
+use stwo_prover::core::vcs::blake2_hash::Blake2sHasher;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
 use super::blake::air::{BlakeContextClaim, BlakeContextComponents, BlakeContextInteractionClaim};
@@ -449,6 +450,23 @@ impl PublicMemory {
         public_segments.mix_into(channel);
 
         // Mix output memory section.
+        let mut hasher = Blake2sHasher::new();
+        for (_, felt) in output {
+            for limb in felt {
+                hasher.update(&limb.to_le_bytes());
+            }
+        }
+
+        channel.mix_u32s(
+            &hasher
+                .finalize()
+                .0
+                .array_chunks()
+                .copied()
+                .map(u32::from_be_bytes)
+                .collect_vec(),
+        );
+
         channel.mix_u64(output.len() as u64);
         for (id, value) in output {
             channel.mix_u64(*id as u64);

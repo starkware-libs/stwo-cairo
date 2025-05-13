@@ -1915,14 +1915,7 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         public_segments.mix_into(ref channel);
 
         // Mix output memory section.
-        channel.mix_u64(output.len().into());
-        for (id, value) in output.span() {
-            channel.mix_u64((*id).into());
-            // Mix each element of the array individually
-            for val_element in (*value).span() {
-                channel.mix_u64((*val_element).into());
-            }
-        }
+        channel.mix_u32s(hash_memory_section(output).unbox().span());
 
         // Mix safe_call memory section.
         channel.mix_u64(safe_call.len().into());
