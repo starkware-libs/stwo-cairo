@@ -2,7 +2,8 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
-use super::super::m31::{M31, M31Trait, M31Zero};
+use super::super::cm31::PackedUnreducedCM31Trait;
+use super::super::m31::{M31, M31Trait, M31Zero, UnreducedM31};
 use super::super::qm31::{M31IntoQM31, QM31, QM31Trait, qm31_const};
 use super::super::{BatchInvertible, Invertible};
 
@@ -148,3 +149,47 @@ pub impl CM31Serde of Serde<CM31> {
     }
 }
 
+#[derive(Copy, Drop, Debug)]
+pub struct PackedUnreducedCM31 {
+    // Using CM31 directly is efficient thanks to the QM31 opcode.
+    pub inner: CM31,
+}
+
+pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
+    #[inline]
+    fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: CM31 { inner: self.inner.inner * rhs.inner.into() } }
+    }
+
+    /// Returns a zero element with each coordinate set to `P*P*P`.
+    #[inline]
+    fn large_zero() -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: Zero::zero() }
+    }
+
+    #[inline]
+    fn reduce(self: PackedUnreducedCM31) -> CM31 {
+        self.inner
+    }
+}
+
+pub impl PackedUnreducedCM31Add of Add<PackedUnreducedCM31> {
+    #[inline]
+    fn add(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: lhs.inner + rhs.inner }
+    }
+}
+
+pub impl PackedUnreducedCM31Sub of Sub<PackedUnreducedCM31> {
+    #[inline]
+    fn sub(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: lhs.inner - rhs.inner }
+    }
+}
+
+pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
+    #[inline]
+    fn into(self: CM31) -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: self }
+    }
+}

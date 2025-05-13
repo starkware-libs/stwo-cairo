@@ -3,7 +3,7 @@ use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
-use super::super::cm31::CM31;
+use super::super::cm31::{CM31, PackedUnreducedCM31};
 use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
 use super::{
     PackedUnreducedCM31Trait, PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE,
@@ -346,58 +346,6 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
     #[inline]
     fn into(self: QM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: self.a.into(), b: self.b.into() }
-    }
-}
-
-/// An unreduced [`CM31`] packed into a single `felt252`.
-#[derive(Copy, Drop, Debug)]
-pub struct PackedUnreducedCM31 {
-    /// Stores a 128 bit and 124 bit unreduced M31 packed into a felt252 i.e. `a + (b << 128)`.
-    pub inner: felt252,
-}
-
-pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
-    #[inline]
-    fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: self.inner * rhs.inner }
-    }
-
-    /// Returns a zero element with each coordinate set to `P*P*P`.
-    #[inline]
-    fn large_zero() -> PackedUnreducedCM31 {
-        // Stores `P*P*P + (P*P*P << 128)`.
-        const PPP_PPP: felt252 = 0x1fffffff400000017fffffff000000001fffffff400000017fffffff;
-        PackedUnreducedCM31 { inner: PPP_PPP }
-    }
-
-    #[inline]
-    fn reduce(self: PackedUnreducedCM31) -> CM31 {
-        let u256 { low: a, high: b } = self.inner.into();
-        CM31 { a: M31Trait::reduce_u128(a).into(), b: M31Trait::reduce_u128(b).into() }
-    }
-}
-
-pub impl PackedUnreducedCM31Add of Add<PackedUnreducedCM31> {
-    #[inline]
-    fn add(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: lhs.inner + rhs.inner }
-    }
-}
-
-pub impl PackedUnreducedCM31Sub of Sub<PackedUnreducedCM31> {
-    #[inline]
-    fn sub(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: lhs.inner - rhs.inner }
-    }
-}
-
-pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
-    #[inline]
-    fn into(self: CM31) -> PackedUnreducedCM31 {
-        const POW2_128: felt252 = 0x100000000000000000000000000000000;
-        let a_felt: felt252 = self.a.into();
-        let b_felt: felt252 = self.b.into();
-        PackedUnreducedCM31 { inner: a_felt + b_felt * POW2_128 }
     }
 }
 
