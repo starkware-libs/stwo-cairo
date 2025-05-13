@@ -1,4 +1,5 @@
 #![feature(portable_simd)]
+#![feature(array_chunks)]
 use serde::{Deserialize, Serialize};
 
 use crate::preprocessed::PreProcessedTrace;
