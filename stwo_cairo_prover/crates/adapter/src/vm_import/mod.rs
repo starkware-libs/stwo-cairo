@@ -121,10 +121,8 @@ pub fn adapt_vm_output(
     res
 }
 
-/// Creates Cairo input for Stwo, utilized by:
-/// - `adapt_vm_output` in the prover.
-/// - `adapt_finished_runner` in the validator. TODO(Stav): delete when
-///   'adapt_prover_input_info_vm_output' is used.
+/// Creates Cairo input for Stwo, utilized by `adapt_vm_output` in the prover.
+/// TODO(Stav): delete when 'adapt_prover_input_info_vm_output' is used.
 pub fn adapt_to_stwo_input(
     trace: &[RelocatedTraceEntry],
     mut memory: MemoryBuilder,
