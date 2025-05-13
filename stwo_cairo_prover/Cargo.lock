@@ -2360,6 +2360,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "051eb1abcf10076295e815102942cc58f9d5e3b4560e46e53c21e8ff6f3af7b1"
 
 [[package]]
+name = "vm_adapter_prover"
+version = "0.1.1"
+dependencies = [
+ "cairo-air",
+ "clap",
+ "sonic-rs",
+ "stwo-cairo-adapter",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+ "stwo_cairo_prover",
+ "stwo_cairo_utils",
+ "thiserror 2.0.11",
+ "tracing",
+]
+
+[[package]]
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
