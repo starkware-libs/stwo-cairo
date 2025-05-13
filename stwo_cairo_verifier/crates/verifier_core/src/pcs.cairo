@@ -1,6 +1,8 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::fri::FriConfig;
 mod quotients;
+#[cfg(test)]
+mod quotients_test;
 pub mod verifier;
 use crate::fri::FriConfigTrait;
 
@@ -23,22 +25,5 @@ pub impl PcsConfigImpl of PcsConfigTrait {
             },
         } = self;
         *pow_bits + *log_blowup_factor * *n_queries
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::fri::FriConfig;
-    use super::*;
-
-    #[test]
-    fn test_security_bits() {
-        let config = PcsConfig {
-            pow_bits: 42,
-            fri_config: FriConfig {
-                log_blowup_factor: 10, log_last_layer_degree_bound: 1, n_queries: 70,
-            },
-        };
-        assert_eq!(config.security_bits(), 10 * 70 + 42);
     }
 }
