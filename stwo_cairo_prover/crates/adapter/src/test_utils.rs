@@ -7,7 +7,7 @@ use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_def
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-use cairo_vm::vm::runners::cairo_runner::{CairoRunner, ProverInputInfo};
+use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
 use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
 use tracing::{span, Level};
@@ -55,7 +55,7 @@ pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInput
     prover_input_info
 }
 
-pub fn runner_from_compiled_cairo_program(program: &[u8]) -> CairoRunner {
+pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
     let cairo_run_config = CairoRunConfig {
         entrypoint: "main",
         trace_enabled: true,
@@ -68,16 +68,12 @@ pub fn runner_from_compiled_cairo_program(program: &[u8]) -> CairoRunner {
         disable_trace_padding: true,
     };
 
-    cairo_run(
+    let runner = cairo_run(
         program,
         &cairo_run_config,
         &mut BuiltinHintProcessor::new_empty(),
     )
-    .expect("Failed to run cairo program")
-}
-
-pub fn prover_input_from_compiled_cairo_program(compiled_program: &[u8]) -> ProverInput {
-    let runner = runner_from_compiled_cairo_program(compiled_program);
+    .expect("Failed to run cairo program");
     adapt_finished_runner(runner).expect("Unable to create prover input from finished runner")
 }
 
