@@ -9,7 +9,7 @@ members = [
     "crates/common",
     "crates/recursion_bridge",
     "crates/cairo-air",
-]
+    "crates/dev_utils"]
 resolver = "2"
 
 [workspace.package]
