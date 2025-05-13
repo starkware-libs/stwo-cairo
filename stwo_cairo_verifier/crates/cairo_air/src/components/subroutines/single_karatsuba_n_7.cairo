@@ -206,6 +206,8 @@ pub fn single_karatsuba_n_7_evaluate(
     let y_sum_tmp_90dd9_3_limb_6: QM31 = (single_karatsuba_n_7_input_limb_20
         + single_karatsuba_n_7_input_limb_27);
 
+    core::internal::revoke_ap_tracking();
+
     [
         z0_tmp_90dd9_0_limb_0, z0_tmp_90dd9_0_limb_1, z0_tmp_90dd9_0_limb_2, z0_tmp_90dd9_0_limb_3,
         z0_tmp_90dd9_0_limb_4, z0_tmp_90dd9_0_limb_5, z0_tmp_90dd9_0_limb_6,
