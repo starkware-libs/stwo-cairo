@@ -1,12 +1,26 @@
 pub mod channel;
 pub mod circle;
+#[cfg(test)]
+mod circle_test;
 mod circle_mul_table;
+#[cfg(test)]
+mod circle_mul_table_test;
 pub mod fields;
+#[cfg(test)]
+mod fields_test;
 pub mod fri;
+#[cfg(test)]
+mod fri_test;
 pub mod pcs;
+#[cfg(test)]
+mod pcs_test;
 pub mod poly;
 mod queries;
+#[cfg(test)]
+mod queries_test;
 pub mod utils;
+#[cfg(test)]
+mod utils_test;
 pub mod vcs;
 pub mod verifier;
 
