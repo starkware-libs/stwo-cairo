@@ -4,7 +4,7 @@ use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
+use super::super::m31::{M31, M31BoundedInt, M31Trait, UnreducedM31};
 use super::{
     PackedUnreducedCM31Trait, PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE,
     UnreducedQM31Trait,
@@ -402,7 +402,10 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
 }
 
 pub fn qm31_const<
-    const W0: M31InnerT, const W1: M31InnerT, const W2: M31InnerT, const W3: M31InnerT,
+    const W0: M31BoundedInt,
+    const W1: M31BoundedInt,
+    const W2: M31BoundedInt,
+    const W3: M31BoundedInt,
 >() -> QM31 nopanic {
     QM31 {
         a: CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } },

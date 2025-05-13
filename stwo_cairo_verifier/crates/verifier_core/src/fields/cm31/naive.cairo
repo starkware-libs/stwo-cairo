@@ -2,7 +2,7 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
-use super::super::m31::{M31, M31InnerT, m31};
+use super::super::m31::{M31, M31BoundedInt, m31};
 use super::super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
@@ -125,7 +125,7 @@ pub impl CM31Neg of Neg<CM31> {
 }
 
 #[inline]
-pub fn cm31_const<const W0: M31InnerT, const W1: M31InnerT>() -> CM31 nopanic {
+pub fn cm31_const<const W0: M31BoundedInt, const W1: M31BoundedInt>() -> CM31 nopanic {
     CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } }
 }
 

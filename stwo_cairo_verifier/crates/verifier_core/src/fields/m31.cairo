@@ -24,19 +24,19 @@ const M31_P: ConstValue<P> = 0x7fffffff;
 /// Equals `2^31`.
 pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 
-pub type M31InnerT = BoundedInt<0, 0x7ffffffe>;
+pub type M31BoundedInt = BoundedInt<0, 0x7ffffffe>;
 
 type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct M31 {
-    pub inner: M31InnerT,
+    pub inner: M31BoundedInt,
 }
 
 #[generate_trait]
 pub impl M31Impl of M31Trait {
     #[inline]
-    fn new(val: M31InnerT) -> M31 {
+    fn new(val: M31BoundedInt) -> M31 {
         M31 { inner: val }
     }
 
@@ -73,9 +73,9 @@ impl M31IntoFelt252 of Into<M31, felt252> {
     }
 }
 
-pub impl M31InnerTIntoM31 of Into<M31InnerT, M31> {
+pub impl M31InnerTIntoM31 of Into<M31BoundedInt, M31> {
     #[inline]
-    fn into(self: M31InnerT) -> M31 {
+    fn into(self: M31BoundedInt) -> M31 {
         M31Trait::new(self)
     }
 }
@@ -125,19 +125,19 @@ pub impl M31One of core::num::traits::One<M31> {
 impl DivRemU32ByP of DivRemHelper<u32, ConstValue<P>> {
     // 0x2 = (2**32 - 1) / P.
     type DivT = BoundedInt<0, 2>;
-    type RemT = M31InnerT;
+    type RemT = M31BoundedInt;
 }
 
 impl DivRemU64ByP of DivRemHelper<u64, ConstValue<P>> {
     // 0x200000004 = (2**64 - 1) / P.
     type DivT = BoundedInt<0, 0x200000004>;
-    type RemT = M31InnerT;
+    type RemT = M31BoundedInt;
 }
 
 impl DivRemU128ByP of DivRemHelper<u128, ConstValue<P>> {
     // 0x2000000040000000800000010 = (2**128 - 1) / P.
     type DivT = BoundedInt<0, 0x2000000040000000800000010>;
-    type RemT = M31InnerT;
+    type RemT = M31BoundedInt;
 }
 
 impl DisplayM31 of core::fmt::Display<M31> {

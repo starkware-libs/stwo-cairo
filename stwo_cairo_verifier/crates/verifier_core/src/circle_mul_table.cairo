@@ -1,8 +1,8 @@
 use crate::circle::CirclePoint;
-use crate::fields::m31::M31InnerT;
+use crate::fields::m31::M31BoundedInt;
 
 /// Index `i` stores `M31_CIRCLE_GEN * i`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [CirclePoint<M31InnerT>; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [CirclePoint<M31BoundedInt>; 64] = [
     CirclePoint { x: 1, y: 0 }, CirclePoint { x: 2, y: 1268011823 },
     CirclePoint { x: 7, y: 777079998 }, CirclePoint { x: 26, y: 1840308169 },
     CirclePoint { x: 97, y: 141701737 }, CirclePoint { x: 362, y: 873982426 },
@@ -38,7 +38,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5: [CirclePoint<M31InnerT>; 64] = [
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^6`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11: [CirclePoint<M31InnerT>; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11: [CirclePoint<M31BoundedInt>; 64] = [
     CirclePoint { x: 1, y: 0 }, CirclePoint { x: 2042371533, y: 1362265296 },
     CirclePoint { x: 212706801, y: 1223819887 }, CirclePoint { x: 1343082982, y: 1656388718 },
     CirclePoint { x: 421007138, y: 256177860 }, CirclePoint { x: 1637047685, y: 109864373 },
@@ -74,7 +74,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11: [CirclePoint<M31InnerT>; 64] = 
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^12`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17: [CirclePoint<M31InnerT>; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17: [CirclePoint<M31BoundedInt>; 64] = [
     CirclePoint { x: 1, y: 0 }, CirclePoint { x: 595037635, y: 2111542451 },
     CirclePoint { x: 1799120754, y: 343598868 }, CirclePoint { x: 1475016787, y: 1876816901 },
     CirclePoint { x: 438833264, y: 1327019128 }, CirclePoint { x: 433600440, y: 167145119 },
@@ -110,7 +110,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17: [CirclePoint<M31InnerT>; 64] =
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^18`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23: [CirclePoint<M31InnerT>; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23: [CirclePoint<M31BoundedInt>; 64] = [
     CirclePoint { x: 1, y: 0 }, CirclePoint { x: 1420207432, y: 2023238517 },
     CirclePoint { x: 2015554631, y: 1088093947 }, CirclePoint { x: 1720479643, y: 177413607 },
     CirclePoint { x: 996212859, y: 1140996376 }, CirclePoint { x: 816861480, y: 962195439 },
@@ -146,7 +146,7 @@ pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23: [CirclePoint<M31InnerT>; 64] =
 ];
 
 /// Index `i` stores `M31_CIRCLE_GEN * i * 2^24`.
-pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29: [CirclePoint<M31InnerT>; 64] = [
+pub const M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29: [CirclePoint<M31BoundedInt>; 64] = [
     CirclePoint { x: 1, y: 0 }, CirclePoint { x: 838195206, y: 1774253895 },
     CirclePoint { x: 579625837, y: 1690787918 }, CirclePoint { x: 2013328190, y: 1108537731 },
     CirclePoint { x: 1179735656, y: 1241207368 }, CirclePoint { x: 2140339328, y: 404685994 },

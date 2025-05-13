@@ -7,12 +7,12 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
 use crate::fields::Invertible;
-use crate::fields::m31::{M31, M31InnerT};
+use crate::fields::m31::{M31, M31BoundedInt};
 use crate::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].
-pub const M31_CIRCLE_GEN: CirclePoint<M31InnerT> = CirclePoint { x: 0x2, y: 0x4B94532F };
+pub const M31_CIRCLE_GEN: CirclePoint<M31BoundedInt> = CirclePoint { x: 0x2, y: 0x4B94532F };
 
 pub const M31_CIRCLE_LOG_ORDER: u32 = 31;
 
@@ -29,8 +29,8 @@ pub struct CirclePoint<F> {
     pub y: F,
 }
 
-impl CirclePointM31InnerTIntoCirclePointM31 of Into<CirclePoint<M31InnerT>, CirclePoint<M31>> {
-    fn into(self: CirclePoint<M31InnerT>) -> CirclePoint<M31> {
+impl CirclePointM31InnerTIntoCirclePointM31 of Into<CirclePoint<M31BoundedInt>, CirclePoint<M31>> {
+    fn into(self: CirclePoint<M31BoundedInt>) -> CirclePoint<M31> {
         CirclePoint { x: self.x.into(), y: self.y.into() }
     }
 }

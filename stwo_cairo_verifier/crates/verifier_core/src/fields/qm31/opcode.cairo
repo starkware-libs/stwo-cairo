@@ -3,7 +3,7 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31InnerTIntoM31, M31Trait, UnreducedM31};
+use super::super::m31::{M31, M31BoundedInt, M31InnerTIntoM31, M31Trait, UnreducedM31};
 use super::{
     PackedUnreducedCM31Trait, PackedUnreducedQM31Trait, QM31Dispaly, QM31Trait,
     QM31_EXTENSION_DEGREE, UnreducedQM31Trait,
@@ -317,7 +317,10 @@ impl QM31Debug of core::fmt::Debug<QM31> {
 
 #[inline(always)]
 pub fn qm31_const<
-    const W0: M31InnerT, const W1: M31InnerT, const W2: M31InnerT, const W3: M31InnerT,
+    const W0: M31BoundedInt,
+    const W1: M31BoundedInt,
+    const W2: M31BoundedInt,
+    const W3: M31BoundedInt,
 >() -> QM31 nopanic {
     QM31 { inner: core::qm31::qm31_const::<W0, W1, W2, W3>() }
 }

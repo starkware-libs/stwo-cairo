@@ -9,8 +9,8 @@ use super::{ConstValue, M31, M31Trait, M31_P, M31_SHIFT, P, P_U32};
 pub impl M31InvertibleImpl of Invertible<M31> {
     #[inline(always)]
     fn inverse(self: M31) -> M31 {
-        // TODO: Change impl to m31_ops::div when NonZero<M31InnerT> is possible.
-        // Currently there is no way to construct a NonZero<M31InnerT>.
+        // TODO: Change impl to m31_ops::div when NonZero<M31BoundedInt> is possible.
+        // Currently there is no way to construct a NonZero<M31BoundedInt>.
         let denom_qm31: QM31 = self.into();
         let denom_qm31_inv = One::one() / denom_qm31;
         let [v, _, _, _] = denom_qm31_inv.to_array();

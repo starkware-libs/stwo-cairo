@@ -3,7 +3,7 @@ use bounded_int::{AddHelper, BoundedInt, SubHelper, upcast};
 use core::num::traits::{WideMul, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::{BatchInvertible, Invertible};
-use super::{ConstValue, M31, M31InnerT, M31Trait, M31_P, P};
+use super::{ConstValue, M31, M31BoundedInt, M31Trait, M31_P, P};
 
 pub impl M31InvertibleImpl of Invertible<M31> {
     fn inverse(self: M31) -> M31 {
@@ -117,11 +117,11 @@ fn repeated_square(v: M31, n: usize) -> M31 {
     repeated_square(v * v, n - 1)
 }
 
-impl M31AddHelper of AddHelper<M31InnerT, M31InnerT> {
+impl M31AddHelper of AddHelper<M31BoundedInt, M31BoundedInt> {
     type Result = BoundedInt<0, { 2 * (P - 1) }>;
 }
 
-impl M31SubHelper of SubHelper<M31InnerT, M31InnerT> {
+impl M31SubHelper of SubHelper<M31BoundedInt, M31BoundedInt> {
     type Result = BoundedInt<{ -(P - 1) }, { P - 1 }>;
 }
 
@@ -135,12 +135,12 @@ impl M31SubReduceHelper of AddHelper<BoundedInt<{ -(P - 1) }, { -1 }>, ConstValu
 }
 
 pub impl M31AddConstrainP of bounded_int::ConstrainHelper<BoundedInt<0, { 2 * (P - 1) }>, P> {
-    type LowT = M31InnerT;
+    type LowT = M31BoundedInt;
     type HighT = BoundedInt<{ P }, { 2 * (P - 1) }>;
 }
 
 
 pub impl M31SubConstrain0 of bounded_int::ConstrainHelper<BoundedInt<{ -(P - 1) }, { P - 1 }>, 0> {
     type LowT = BoundedInt<{ -(P - 1) }, { -1 }>;
-    type HighT = M31InnerT;
+    type HighT = M31BoundedInt;
 }
