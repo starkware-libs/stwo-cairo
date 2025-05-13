@@ -63,7 +63,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
                 buffer = array![];
             }
 
-            let [r0, r1, r2, r3] = felt.to_array();
+            let [r0, r1, r2, r3] = felt.to_fixed_array();
             buffer.append(r0.into());
             buffer.append(r1.into());
             buffer.append(r2.into());
@@ -127,7 +127,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
     fn draw_felt(ref self: Blake2sChannel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
-        QM31Trait::from_array([r0, r1, r2, r3])
+        QM31Trait::from_fixed_array([r0, r1, r2, r3])
     }
 
     fn draw_felts(ref self: Blake2sChannel, mut n_felts: usize) -> Array<SecureField> {
@@ -135,11 +135,11 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
         while n_felts != 0 {
             let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_random_base_felts(ref self).unbox();
-            res.append(QM31Trait::from_array([r0, r1, r2, r3]));
+            res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
             if n_felts == 1 {
                 break;
             }
-            res.append(QM31Trait::from_array([r4, r5, r6, r7]));
+            res.append(QM31Trait::from_fixed_array([r4, r5, r6, r7]));
             n_felts -= 2;
         }
 
