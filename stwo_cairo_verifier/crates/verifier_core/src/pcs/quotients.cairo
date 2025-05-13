@@ -407,11 +407,9 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
             column += 1;
         }
 
-        // TODO(andrew): Remove. Only sorting since rust verifier sorts groups by point.
-        let sorted_points = point_set.sort_ascending();
         let mut groups = array![];
 
-        for point in sorted_points {
+        for point in point_set {
             let point_key = CirclePointQM31Key::encode(@point);
             let (entry, columns_and_values) = grouped_samples.entry(point_key);
             let columns_and_values = columns_and_values.deref();
@@ -521,10 +519,10 @@ mod tests {
 
         assert!(
             res == array![
-                qm31_const::<1655798290, 1221610097, 1389601557, 962654234>(),
-                qm31_const::<638770057, 234503953, 730529691, 1759474677>(),
-                qm31_const::<812355951, 1467349841, 519312011, 1870584702>(),
-                qm31_const::<1802072315, 1125204194, 422281582, 1308225981>(),
+                qm31_const::<1791980583, 1709376644, 1911116353, 1204412580>(),
+                qm31_const::<1417689272, 1640898968, 1760036812, 1705156550>(),
+                qm31_const::<503725777, 621939055, 1324380556, 1450763049>(),
+                qm31_const::<1895961752, 170000503, 1562444038, 1465755799>(),
             ]
                 .span(),
         );
@@ -619,11 +617,11 @@ mod tests {
                     ],
                 },
                 ColumnSampleBatch {
-                    point: sample2.point,
-                    columns_and_values: array![(0, @sample2.value), (2, @sample2.value)],
+                    point: sample1.point, columns_and_values: array![(0, @sample1.value)],
                 },
                 ColumnSampleBatch {
-                    point: sample1.point, columns_and_values: array![(0, @sample1.value)],
+                    point: sample2.point,
+                    columns_and_values: array![(0, @sample2.value), (2, @sample2.value)],
                 },
             ],
         )
