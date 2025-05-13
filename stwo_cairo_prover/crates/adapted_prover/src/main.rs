@@ -1,28 +1,13 @@
-use std::io::Write;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use cairo_air::verifier::{verify_cairo, CairoVerificationError};
-use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
-use serde::Serialize;
-use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
+use stwo_cairo_adapter::vm_import::adapt_vm_output;
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::prover::{
-    default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
+use stwo_cairo_prover::debug_tools::serialize_proof::{
+    create_and_serialize_proof, Error, ProofFormat,
 };
-use stwo_cairo_serialize::CairoSerialize;
 use stwo_cairo_utils::binary_utils::run_binary;
-use stwo_cairo_utils::file_utils::{create_file, read_to_string, IoErrorWithPath};
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::pcs::PcsConfig;
-use stwo_prover::core::prover::ProvingError;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo_prover::core::vcs::ops::MerkleHasher;
-use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
-use thiserror::Error;
 use tracing::{span, Level};
 
 /// Command line arguments for adapted_stwo.
@@ -80,33 +65,6 @@ struct Args {
     verify: bool,
 }
 
-#[derive(Debug, Clone, clap::ValueEnum)]
-enum ProofFormat {
-    /// Standard JSON format.
-    Json,
-    /// Array of field elements serialized as hex strings.
-    /// Compatible with `scarb execute`
-    CairoSerde,
-}
-
-#[derive(Debug, Error)]
-enum Error {
-    #[error("Invalid arguments: {0}")]
-    Cli(#[from] clap::Error),
-    #[error("IO failed: {0}")]
-    IO(#[from] std::io::Error),
-    #[error("Proving failed: {0}")]
-    Proving(#[from] ProvingError),
-    #[error("Serialization failed: {0}")]
-    Serializing(#[from] sonic_rs::error::Error),
-    #[error("Verification failed: {0}")]
-    Verification(#[from] CairoVerificationError),
-    #[error("VM import failed: {0}")]
-    VmImport(#[from] VmImportError),
-    #[error("File IO failed: {0}")]
-    File(#[from] IoErrorWithPath),
-}
-
 fn main() -> ExitCode {
     run_binary(run, "adapted_stwo")
 }
@@ -115,81 +73,18 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
-    let vm_output: ProverInput =
-        adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
+    let input: ProverInput = adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
 
     log::info!(
         "Casm states by opcode:\n{}",
-        vm_output.state_transitions.casm_states_by_opcode
+        input.state_transitions.casm_states_by_opcode
     );
 
-    let ProverParameters {
-        channel_hash,
-        pcs_config,
-        preprocessed_trace,
-    } = match args.params_json {
-        Some(path) => sonic_rs::from_str(&read_to_string(&path)?)?,
-        None => default_prod_prover_parameters(),
-    };
-
-    let run_inner_fn = match channel_hash {
-        ChannelHash::Blake2s => run_inner::<Blake2sMerkleChannel>,
-        ChannelHash::Poseidon252 => run_inner::<Poseidon252MerkleChannel>,
-    };
-
-    run_inner_fn(
-        vm_output,
-        pcs_config,
-        preprocessed_trace,
+    create_and_serialize_proof(
+        input,
         args.verify,
         args.proof_path,
         args.proof_format,
-    )?;
-
-    Ok(())
-}
-
-/// Generates proof given the Cairo VM output and prover config/parameters.
-/// Serializes the proof as JSON and write to the output path.
-/// Verifies the proof in case the respective flag is set.
-fn run_inner<MC: MerkleChannel>(
-    vm_output: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
-    verify: bool,
-    proof_path: PathBuf,
-    proof_format: ProofFormat,
-) -> Result<(), Error>
-where
-    SimdBackend: BackendForChannel<MC>,
-    MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
-{
-    let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
-    let mut proof_file = create_file(&proof_path)?;
-
-    let span = span!(Level::INFO, "Serialize proof").entered();
-    match proof_format {
-        ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(&proof)?.as_bytes())?;
-        }
-        ProofFormat::CairoSerde => {
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&proof, &mut serialized);
-
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
-                .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
-        }
-    }
-    span.exit();
-    if verify {
-        verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
-        log::info!("Proof verified successfully");
-    }
-
-    Ok(())
+        args.params_json,
+    )
 }
