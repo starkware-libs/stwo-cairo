@@ -180,7 +180,6 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -210,68 +209,75 @@ pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
+// TODO: Use "use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;"
+// TODO: Stone uses a different initial state with the key set to 0.
+// Consider using this initial state instead.
+pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
+    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
+];
+
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
-const PREPROCESSED_COLUMNS: [PreprocessedColumn; 170] = [
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 114] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
-    PreprocessedColumn::PedersenPoints(0), //
-    PreprocessedColumn::PedersenPoints(1), //
-    PreprocessedColumn::PedersenPoints(2), //
-    PreprocessedColumn::PedersenPoints(3), //
-    PreprocessedColumn::PedersenPoints(4), //
-    PreprocessedColumn::PedersenPoints(5), //
-    PreprocessedColumn::PedersenPoints(6), //
-    PreprocessedColumn::PedersenPoints(7), //
-    PreprocessedColumn::PedersenPoints(8), //
-    PreprocessedColumn::PedersenPoints(9), //
-    PreprocessedColumn::PedersenPoints(10), //
-    PreprocessedColumn::PedersenPoints(11), //
-    PreprocessedColumn::PedersenPoints(12), //
-    PreprocessedColumn::PedersenPoints(13), //
-    PreprocessedColumn::PedersenPoints(14), //
-    PreprocessedColumn::PedersenPoints(15), //
-    PreprocessedColumn::PedersenPoints(16), //
-    PreprocessedColumn::PedersenPoints(17), //
-    PreprocessedColumn::PedersenPoints(18), //
-    PreprocessedColumn::PedersenPoints(19), //
-    PreprocessedColumn::PedersenPoints(20), //
-    PreprocessedColumn::PedersenPoints(21), //
-    PreprocessedColumn::PedersenPoints(22), //
-    PreprocessedColumn::PedersenPoints(23), //
-    PreprocessedColumn::PedersenPoints(24), //
-    PreprocessedColumn::PedersenPoints(25), //
-    PreprocessedColumn::PedersenPoints(26), //
-    PreprocessedColumn::PedersenPoints(27), //
-    PreprocessedColumn::PedersenPoints(28), //
-    PreprocessedColumn::PedersenPoints(29), //
-    PreprocessedColumn::PedersenPoints(30), //
-    PreprocessedColumn::PedersenPoints(31), //
-    PreprocessedColumn::PedersenPoints(32), //
-    PreprocessedColumn::PedersenPoints(33), //
-    PreprocessedColumn::PedersenPoints(34), //
-    PreprocessedColumn::PedersenPoints(35), //
-    PreprocessedColumn::PedersenPoints(36), //
-    PreprocessedColumn::PedersenPoints(37), //
-    PreprocessedColumn::PedersenPoints(38), //
-    PreprocessedColumn::PedersenPoints(39), //
-    PreprocessedColumn::PedersenPoints(40), //
-    PreprocessedColumn::PedersenPoints(41), //
-    PreprocessedColumn::PedersenPoints(42), //
-    PreprocessedColumn::PedersenPoints(43), //
-    PreprocessedColumn::PedersenPoints(44), //
-    PreprocessedColumn::PedersenPoints(45), //
-    PreprocessedColumn::PedersenPoints(46), //
-    PreprocessedColumn::PedersenPoints(47), //
-    PreprocessedColumn::PedersenPoints(48), //
-    PreprocessedColumn::PedersenPoints(49), //
-    PreprocessedColumn::PedersenPoints(50), //
-    PreprocessedColumn::PedersenPoints(51), //
-    PreprocessedColumn::PedersenPoints(52), //
-    PreprocessedColumn::PedersenPoints(53), //
-    PreprocessedColumn::PedersenPoints(54), //
-    PreprocessedColumn::PedersenPoints(55), //
+    // PreprocessedColumn::PedersenPoints(0), //
+    // PreprocessedColumn::PedersenPoints(1), //
+    // PreprocessedColumn::PedersenPoints(2), //
+    // PreprocessedColumn::PedersenPoints(3), //
+    // PreprocessedColumn::PedersenPoints(4), //
+    // PreprocessedColumn::PedersenPoints(5), //
+    // PreprocessedColumn::PedersenPoints(6), //
+    // PreprocessedColumn::PedersenPoints(7), //
+    // PreprocessedColumn::PedersenPoints(8), //
+    // PreprocessedColumn::PedersenPoints(9), //
+    // PreprocessedColumn::PedersenPoints(10), //
+    // PreprocessedColumn::PedersenPoints(11), //
+    // PreprocessedColumn::PedersenPoints(12), //
+    // PreprocessedColumn::PedersenPoints(13), //
+    // PreprocessedColumn::PedersenPoints(14), //
+    // PreprocessedColumn::PedersenPoints(15), //
+    // PreprocessedColumn::PedersenPoints(16), //
+    // PreprocessedColumn::PedersenPoints(17), //
+    // PreprocessedColumn::PedersenPoints(18), //
+    // PreprocessedColumn::PedersenPoints(19), //
+    // PreprocessedColumn::PedersenPoints(20), //
+    // PreprocessedColumn::PedersenPoints(21), //
+    // PreprocessedColumn::PedersenPoints(22), //
+    // PreprocessedColumn::PedersenPoints(23), //
+    // PreprocessedColumn::PedersenPoints(24), //
+    // PreprocessedColumn::PedersenPoints(25), //
+    // PreprocessedColumn::PedersenPoints(26), //
+    // PreprocessedColumn::PedersenPoints(27), //
+    // PreprocessedColumn::PedersenPoints(28), //
+    // PreprocessedColumn::PedersenPoints(29), //
+    // PreprocessedColumn::PedersenPoints(30), //
+    // PreprocessedColumn::PedersenPoints(31), //
+    // PreprocessedColumn::PedersenPoints(32), //
+    // PreprocessedColumn::PedersenPoints(33), //
+    // PreprocessedColumn::PedersenPoints(34), //
+    // PreprocessedColumn::PedersenPoints(35), //
+    // PreprocessedColumn::PedersenPoints(36), //
+    // PreprocessedColumn::PedersenPoints(37), //
+    // PreprocessedColumn::PedersenPoints(38), //
+    // PreprocessedColumn::PedersenPoints(39), //
+    // PreprocessedColumn::PedersenPoints(40), //
+    // PreprocessedColumn::PedersenPoints(41), //
+    // PreprocessedColumn::PedersenPoints(42), //
+    // PreprocessedColumn::PedersenPoints(43), //
+    // PreprocessedColumn::PedersenPoints(44), //
+    // PreprocessedColumn::PedersenPoints(45), //
+    // PreprocessedColumn::PedersenPoints(46), //
+    // PreprocessedColumn::PedersenPoints(47), //
+    // PreprocessedColumn::PedersenPoints(48), //
+    // PreprocessedColumn::PedersenPoints(49), //
+    // PreprocessedColumn::PedersenPoints(50), //
+    // PreprocessedColumn::PedersenPoints(51), //
+    // PreprocessedColumn::PedersenPoints(52), //
+    // PreprocessedColumn::PedersenPoints(53), //
+    // PreprocessedColumn::PedersenPoints(54), //
+    // PreprocessedColumn::PedersenPoints(55), //
     PreprocessedColumn::Seq(22), //
     PreprocessedColumn::Seq(21), //
     PreprocessedColumn::Seq(20), //
@@ -702,10 +708,12 @@ impl BuiltinsClaimImpl of BuiltinsClaimTrait {
         }
 
         if let Some(claim) = self.mul_mod_builtin {
+            assert!(claim.log_sizes().len() == 0);
             log_sizes.append(claim.log_sizes());
         }
 
         if let Some(claim) = self.pedersen_builtin {
+            assert!(claim.log_sizes().len() == 0);
             log_sizes.append(claim.log_sizes());
         }
 
@@ -2178,6 +2186,7 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
         }
 
         for claim in self.generic.span() {
+            assert!(claim.log_sizes().len() == 0);
             log_sizes.append(claim.log_sizes());
         }
 
@@ -2239,7 +2248,6 @@ pub struct CairoAir {
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
-    pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
@@ -2269,10 +2277,6 @@ impl CairoAirNewImpl of CairoAirNewTrait {
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
-        );
-
-        let pedersen_context_components = PedersenContextComponentsImpl::new(
-            cairo_claim.pedersen_context, interaction_elements, interaction_claim.pedersen_context,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
@@ -2342,7 +2346,6 @@ impl CairoAirNewImpl of CairoAirNewTrait {
             verify_instruction: verifyinstruction_component,
             blake_context: blake_context_component,
             builtins: builtins_components,
-            pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_component, small_memory_id_to_value_component),
@@ -2363,8 +2366,6 @@ impl CairoAirImpl of Air<CairoAir> {
         max_degree =
             core::cmp::max(max_degree, self.blake_context.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.builtins.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.pedersen_context.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(max_degree, self.poseidon_context.max_constraint_log_degree_bound());
         max_degree =
@@ -2419,14 +2420,6 @@ impl CairoAirImpl of Air<CairoAir> {
             );
         self
             .builtins
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .pedersen_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -2568,16 +2561,6 @@ impl CairoAirImpl of Air<CairoAir> {
             );
         self
             .builtins
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        self
-            .pedersen_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -3109,187 +3092,6 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     }
 }
 
-#[derive(Drop)]
-pub struct PedersenContextComponents {
-    components: Option<PedersenComponents>,
-}
-
-#[generate_trait]
-impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
-    fn new(
-        claim: @PedersenContextClaim,
-        interaction_elements: @CairoInteractionElements,
-        interaction_claim: @PedersenContextInteractionClaim,
-    ) -> PedersenContextComponents {
-        if let Some(claim) = claim.claim {
-            PedersenContextComponents {
-                components: Some(
-                    PedersenComponentsImpl::new(
-                        claim,
-                        interaction_elements,
-                        interaction_claim.interaction_claim.as_snap().unwrap(),
-                    ),
-                ),
-            }
-        } else {
-            PedersenContextComponents { components: None }
-        }
-    }
-
-    fn max_constraint_log_degree_bound(self: @PedersenContextComponents) -> u32 {
-        if let Option::Some(components) = self.components {
-            components.max_constraint_log_degree_bound()
-        } else {
-            0
-        }
-    }
-
-    fn mask_points(
-        self: @PedersenContextComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
-    fn evaluate_constraints_at_point(
-        self: @PedersenContextComponents,
-        ref sum: QM31,
-        ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Span<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-        random_coeff: QM31,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-    }
-}
-
-#[derive(Drop)]
-struct PedersenComponents {
-    pub partial_ec_mul: components::partial_ec_mul::Component,
-    pub pedersen_points_table: components::pedersen_points_table::Component,
-}
-
-#[generate_trait]
-impl PedersenComponentsImpl of PedersenComponentsTrait {
-    fn new(
-        claim: @PedersenClaim,
-        interaction_elements: @CairoInteractionElements,
-        interaction_claim: @PedersenInteractionClaim,
-    ) -> PedersenComponents {
-        let partial_ec_mul_component = components::partial_ec_mul::Component {
-            claim: *claim.partial_ec_mul,
-            interaction_claim: *interaction_claim.partial_ec_mul,
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-        };
-
-        let pedersen_points_table_component = components::pedersen_points_table::Component {
-            claim: *claim.pedersen_points_table,
-            interaction_claim: *interaction_claim.pedersen_points_table,
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-        };
-
-        PedersenComponents {
-            partial_ec_mul: partial_ec_mul_component,
-            pedersen_points_table: pedersen_points_table_component,
-        }
-    }
-
-    fn mask_points(
-        self: @PedersenComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .partial_ec_mul
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .pedersen_points_table
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-    }
-
-    fn evaluate_constraints_at_point(
-        self: @PedersenComponents,
-        ref sum: QM31,
-        ref preprocessed_mask_values: PreprocessedMaskValues,
-        ref trace_mask_values: ColumnSpan<Span<QM31>>,
-        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-        random_coeff: QM31,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .partial_ec_mul
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        self
-            .pedersen_points_table
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-    }
-
-    fn max_constraint_log_degree_bound(self: @PedersenComponents) -> u32 {
-        let mut max_degree = 0;
-        max_degree =
-            core::cmp::max(max_degree, self.partial_ec_mul.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(
-                max_degree, self.pedersen_points_table.max_constraint_log_degree_bound(),
-            );
-        max_degree
-    }
-}
 
 #[derive(Drop)]
 pub struct PoseidonContextComponents {
@@ -3857,8 +3659,6 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
 pub struct BuiltinComponents {
     pub add_mod_builtin: Option<components::add_mod_builtin::Component>,
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
-    pub mul_mod_builtin: Option<components::mul_mod_builtin::Component>,
-    pub pedersen_builtin: Option<components::pedersen_builtin::Component>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
@@ -3906,63 +3706,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                         verify_bitwise_xor_9_lookup_elements: interaction_elements
                             .verify_bitwise_xor_9
                             .clone(),
-                    },
-                );
-        }
-
-        let mut mul_mod_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.mul_mod_builtin {
-            mul_mod_builtin_component =
-                Option::Some(
-                    components::mul_mod_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.mul_mod_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_12_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_12
-                            .clone(),
-                        range_check_18_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_18
-                            .clone(),
-                        range_check_3_6_6_3_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_3_6_6_3
-                            .clone(),
-                    },
-                );
-        }
-
-        let mut pedersen_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.pedersen_builtin {
-            pedersen_builtin_component =
-                Option::Some(
-                    components::pedersen_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                        range_check_5_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_5_4
-                            .clone(),
-                        partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
                     },
                 );
         }
@@ -4050,8 +3793,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         BuiltinComponents {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
-            mul_mod_builtin: mul_mod_builtin_component,
-            pedersen_builtin: pedersen_builtin_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -4077,26 +3818,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = self.bitwise_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -4148,14 +3869,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
         if let Option::Some(component) = self.poseidon_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
@@ -4194,30 +3907,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = self.bitwise_builtin.as_snap() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -4279,7 +3968,6 @@ pub struct OpcodeComponents {
     call: Array<components::call_opcode::Component>,
     call_op_1_base_fp: Array<components::call_opcode_op_1_base_fp::Component>,
     call_rel: Array<components::call_opcode_rel::Component>,
-    generic: Array<components::generic_opcode::Component>,
     jnz: Array<components::jnz_opcode::Component>,
     jnz_taken: Array<components::jnz_opcode_taken::Component>,
     jump: Array<components::jump_opcode::Component>,
@@ -4579,41 +4267,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         assert!(call_rel_claims.is_empty());
         assert!(call_rel_interaction_claims.is_empty());
 
-        // Generic components
-        let mut generic_components = array![];
-        let mut generic_claims = claim.generic.span();
-        let mut generic_interaction_claims = interaction_claim.generic.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (generic_claims.pop_front(), generic_interaction_claims.pop_front()) {
-            generic_components
-                .append(
-                    components::generic_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_9_9_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9
-                            .clone(),
-                    },
-                );
-        }
-        assert!(generic_claims.is_empty());
-        assert!(generic_interaction_claims.is_empty());
-
         // Jnz components
         let mut jnz_components = array![];
         let mut jnz_claims = claim.jnz.span();
@@ -4910,7 +4563,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             call: call_components,
             call_op_1_base_fp: call_op_1_base_fp_components,
             call_rel: call_rel_components,
-            generic: generic_components,
             jnz: jnz_components,
             jnz_taken: jnz_taken_components,
             jump: jump_components,
@@ -5022,16 +4674,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         }
 
         for component in self.call_rel.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        for component in self.generic.span() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -5182,10 +4824,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         }
 
         for component in self.call_rel.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        for component in self.generic.span() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
@@ -5344,17 +4982,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                 );
         }
         for component in self.call_rel.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.generic.span() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,

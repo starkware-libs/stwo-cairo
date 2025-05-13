@@ -24,8 +24,4 @@ pub type TreeArray<T> = Array<T>;
 /// A span in which each element relates (by index) to a commitment tree.
 pub type TreeSpan<T> = Span<T>;
 
-#[cfg(not(feature: "poseidon252_verifier"))]
-pub type Hash = vcs::blake2s_hasher::Blake2sHash;
-
-#[cfg(feature: "poseidon252_verifier")]
 pub type Hash = felt252;
