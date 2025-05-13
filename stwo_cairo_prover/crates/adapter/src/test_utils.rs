@@ -12,7 +12,7 @@ use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
 use tracing::{span, Level};
 
-use crate::adapter::adapt_finished_runner;
+use crate::adapter::adapter;
 use crate::ProverInput;
 
 pub fn program_from_casm(
@@ -74,7 +74,12 @@ pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
         &mut BuiltinHintProcessor::new_empty(),
     )
     .expect("Failed to run cairo program");
-    adapt_finished_runner(runner).expect("Unable to create prover input from finished runner")
+    adapter(
+        &mut runner
+            .get_prover_input_info()
+            .expect("Failed to get prover input info from finished runner"),
+    )
+    .expect("Failed to run adapter")
 }
 
 pub fn get_test_program(test_name: &str) -> Vec<u8> {
