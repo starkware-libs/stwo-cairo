@@ -43,14 +43,17 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct BuiltinSegments {
-    pub add_mod: Option<MemorySegmentAddresses>,
-    pub bitwise: Option<MemorySegmentAddresses>,
     pub output: Option<MemorySegmentAddresses>,
-    pub mul_mod: Option<MemorySegmentAddresses>,
     pub pedersen: Option<MemorySegmentAddresses>,
+    pub range_check_bits_128: Option<MemorySegmentAddresses>,
+    pub ecdsa: Option<MemorySegmentAddresses>,
+    pub bitwise: Option<MemorySegmentAddresses>,
+    pub ec_op: Option<MemorySegmentAddresses>,
+    pub keccak: Option<MemorySegmentAddresses>,
     pub poseidon: Option<MemorySegmentAddresses>,
     pub range_check_bits_96: Option<MemorySegmentAddresses>,
-    pub range_check_bits_128: Option<MemorySegmentAddresses>,
+    pub add_mod: Option<MemorySegmentAddresses>,
+    pub mul_mod: Option<MemorySegmentAddresses>,
 }
 
 impl BuiltinSegments {
@@ -58,20 +61,15 @@ impl BuiltinSegments {
     /// TODO(Stav): remove after using 'get_builtins_segment'.
     pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
         let mut res = BuiltinSegments::default();
-        for (name, value) in memory_segments.iter() {
+        for (name, &value) in memory_segments.iter() {
             if let Some(builtin_name) = BuiltinName::from_str(name) {
-                // Filter empty segments.
-                let segment = if value.begin_addr == value.stop_ptr {
-                    None
-                } else {
-                    assert!(
-                        value.begin_addr < value.stop_ptr,
-                        "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
-                        value.begin_addr,
-                        value.stop_ptr,
-                    );
-                    Some(*value)
-                };
+                assert!(
+                    value.begin_addr <= value.stop_ptr,
+                    "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
+                    value.begin_addr,
+                    value.stop_ptr,
+                );
+                let segment = Some(value);
                 match builtin_name {
                     BuiltinName::range_check => res.range_check_bits_128 = segment,
                     BuiltinName::pedersen => res.pedersen = segment,
@@ -82,7 +80,17 @@ impl BuiltinSegments {
                     BuiltinName::mul_mod => res.mul_mod = segment,
                     BuiltinName::output => res.output = segment,
                     BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
-                        assert!(segment.is_none(), "{} builtin is not supported", name);
+                        assert!(
+                            value.begin_addr == value.stop_ptr,
+                            "{} builtin is not supported",
+                            name
+                        );
+                        match builtin_name {
+                            BuiltinName::ec_op => res.ec_op = segment,
+                            BuiltinName::keccak => res.keccak = segment,
+                            BuiltinName::ecdsa => res.ecdsa = segment,
+                            _ => unreachable!(),
+                        }
                     }
                     // Not builtins.
                     BuiltinName::segment_arena => {}
@@ -130,8 +138,9 @@ impl BuiltinSegments {
     // satisfies all the AIR constraints.
     // TODO (ohadn): relocate this function if a more appropriate place is found.
     // TODO (Stav): remove when the new adapter flow is used.
+    // TODO(Ohad): refactor.
     pub fn pad_builtin_segments(&mut self, memory: &mut MemoryBuilder) {
-        if let Some(segment) = &self.add_mod {
+        if let Some(segment) = self.add_mod {
             self.add_mod = Some(pad_segment(
                 segment,
                 memory,
@@ -139,7 +148,7 @@ impl BuiltinSegments {
                 Some("add_mod"),
             ));
         }
-        if let Some(segment) = &self.bitwise {
+        if let Some(segment) = self.bitwise {
             self.bitwise = Some(pad_segment(
                 segment,
                 memory,
@@ -147,7 +156,8 @@ impl BuiltinSegments {
                 Some("bitwise"),
             ));
         }
-        if let Some(segment) = &self.mul_mod {
+
+        if let Some(segment) = self.mul_mod {
             self.mul_mod = Some(pad_segment(
                 segment,
                 memory,
@@ -155,7 +165,7 @@ impl BuiltinSegments {
                 Some("mul_mod"),
             ));
         }
-        if let Some(segment) = &self.pedersen {
+        if let Some(segment) = self.pedersen {
             self.pedersen = Some(pad_segment(
                 segment,
                 memory,
@@ -163,7 +173,7 @@ impl BuiltinSegments {
                 Some("pedersen"),
             ));
         }
-        if let Some(segment) = &self.poseidon {
+        if let Some(segment) = self.poseidon {
             self.poseidon = Some(pad_segment(
                 segment,
                 memory,
@@ -171,7 +181,7 @@ impl BuiltinSegments {
                 Some("poseidon"),
             ));
         }
-        if let Some(segment) = &self.range_check_bits_96 {
+        if let Some(segment) = self.range_check_bits_96 {
             self.range_check_bits_96 = Some(pad_segment(
                 segment,
                 memory,
@@ -179,7 +189,7 @@ impl BuiltinSegments {
                 Some("range_check_96"),
             ));
         }
-        if let Some(segment) = &self.range_check_bits_128 {
+        if let Some(segment) = self.range_check_bits_128 {
             self.range_check_bits_128 = Some(pad_segment(
                 segment,
                 memory,
@@ -304,12 +314,18 @@ fn pad_segment(
     MemorySegmentAddresses {
         begin_addr,
         stop_ptr,
-    }: &MemorySegmentAddresses,
+    }: MemorySegmentAddresses,
     mem: &mut MemoryBuilder,
     n_cells_per_instance: u32,
     segment_name: Option<&str>,
 ) -> MemorySegmentAddresses {
-    let (begin_addr, stop_ptr) = (*begin_addr as u32, *stop_ptr as u32);
+    if stop_ptr == begin_addr {
+        return MemorySegmentAddresses {
+            begin_addr,
+            stop_ptr,
+        };
+    }
+    let (begin_addr, stop_ptr) = (begin_addr as u32, stop_ptr as u32);
     let initial_length = stop_ptr - begin_addr;
     assert!(initial_length > 0);
     assert!(initial_length % n_cells_per_instance == 0);

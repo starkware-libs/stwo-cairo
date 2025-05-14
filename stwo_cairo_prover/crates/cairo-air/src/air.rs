@@ -301,17 +301,17 @@ impl SegmentRange {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
 pub struct PublicSegmentRanges {
-    pub output: SegmentRange,
-    pub pedersen: SegmentRange,
-    pub range_check_128: SegmentRange,
-    pub ecdsa: SegmentRange,
-    pub bitwise: SegmentRange,
-    pub ec_op: SegmentRange,
-    pub keccak: SegmentRange,
-    pub poseidon: SegmentRange,
-    pub range_check_96: SegmentRange,
-    pub add_mod: SegmentRange,
-    pub mul_mod: SegmentRange,
+    pub output: Option<SegmentRange>,
+    pub pedersen: Option<SegmentRange>,
+    pub range_check_128: Option<SegmentRange>,
+    pub ecdsa: Option<SegmentRange>,
+    pub bitwise: Option<SegmentRange>,
+    pub ec_op: Option<SegmentRange>,
+    pub keccak: Option<SegmentRange>,
+    pub poseidon: Option<SegmentRange>,
+    pub range_check_96: Option<SegmentRange>,
+    pub add_mod: Option<SegmentRange>,
+    pub mul_mod: Option<SegmentRange>,
 }
 
 impl PublicSegmentRanges {
@@ -320,37 +320,8 @@ impl PublicSegmentRanges {
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let PublicSegmentRanges {
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = *self;
-        let segments = [
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        ]
-        .into_iter()
-        .collect_vec();
-
+        let segments = self.declared_segments();
         let n_segments = segments.len() as u32;
-        assert_eq!(n_segments, 11);
 
         segments
             .into_iter()
@@ -375,6 +346,12 @@ impl PublicSegmentRanges {
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        for segment in self.declared_segments() {
+            segment.mix_into(channel);
+        }
+    }
+
+    pub fn declared_segments(&self) -> Vec<SegmentRange> {
         let Self {
             output,
             pedersen,
@@ -388,17 +365,23 @@ impl PublicSegmentRanges {
             add_mod,
             mul_mod,
         } = *self;
-        output.mix_into(channel);
-        pedersen.mix_into(channel);
-        range_check_128.mix_into(channel);
-        ecdsa.mix_into(channel);
-        bitwise.mix_into(channel);
-        ec_op.mix_into(channel);
-        keccak.mix_into(channel);
-        poseidon.mix_into(channel);
-        range_check_96.mix_into(channel);
-        add_mod.mix_into(channel);
-        mul_mod.mix_into(channel);
+
+        [
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        ]
+        .into_iter()
+        .flatten()
+        .collect()
     }
 }
 
