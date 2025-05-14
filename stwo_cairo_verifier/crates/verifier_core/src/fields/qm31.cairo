@@ -6,17 +6,14 @@ use bounded_int::upcast;
 use super::cm31::CM31;
 use super::m31::{M31, UnreducedM31};
 
-// TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
-// #[cfg(not(feature: "qm31_opcode"))]
-// mod naive;
-// #[cfg(not(feature: "qm31_opcode"))]
-// use naive::*;
-// #[cfg(feature: "qm31_opcode")]
-// mod opcode;
-// #[cfg(feature: "qm31_opcode")]
-// use opcode::*;
-
+// TODO: Scarb currently has issues with feature flags. Change to "qm31_opcode" when possible.
+#[cfg(feature: "no_qm31_opcode")]
+mod naive;
+#[cfg(feature: "no_qm31_opcode")]
+use naive::*;
+#[cfg(not(feature: "no_qm31_opcode"))]
 mod opcode;
+#[cfg(not(feature: "no_qm31_opcode"))]
 use opcode::*;
 
 /// Equals `(2^31 - 1)^4`.

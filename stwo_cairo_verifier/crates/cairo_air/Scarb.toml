@@ -13,7 +13,7 @@ poseidon252_verifier = []
 sort-module-level-items = true
 
 [dependencies]
-stwo_verifier_core = { path = "../verifier_core", features = ["qm31_opcode"] }
+stwo_verifier_core = { path = "../verifier_core", features = ["no_qm31_opcode", "poseidon252_verifier"] }
 stwo_constraint_framework = { path = "../constraint_framework" }
 
 [dev-dependencies]

@@ -1,3 +1,5 @@
+// TODO(anatg): Change to #[cfg(any(not(feature: "poseidon252_verifier")), test)] when any is
+// supported.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s_hasher;
 #[cfg(test)]
@@ -5,8 +7,7 @@ pub mod blake2s_hasher;
 mod blake2s_hasher_test;
 
 pub mod hasher;
-
-// TODO(ShaharS): Put this behind a feature flag once poseidon is tested in the CI.
+// TODO(anatg): Add #[cfg(any(feature: "poseidon252_verifier"), test)] when any is supported.
 mod poseidon_hasher;
 #[cfg(test)]
 mod poseidon_hasher_test;

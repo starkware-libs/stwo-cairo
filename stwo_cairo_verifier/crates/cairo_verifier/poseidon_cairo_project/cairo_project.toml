@@ -1,10 +1,10 @@
 [crate_roots]
-"bounded_int" = "crates/bounded_int/src"
-"stwo_cairo_air" = "crates/cairo_air/src"
-"stwo_constraint_framework" = "crates/constraint_framework/src"
-"stwo_verifier_core" = "crates/verifier_core/src"
-"stwo_cairo_verifier" = "crates/cairo_verifier/src"
-"stwo_cairo_verifier_mock" = "crates/cairo_verifier_mock/src"
+"bounded_int" = "../../bounded_int/src"
+"stwo_cairo_air" = "../../cairo_air/src"
+"stwo_constraint_framework" = "../../constraint_framework/src"
+"stwo_verifier_core" = "../../verifier_core/src"
+"stwo_cairo_verifier" = "../../cairo_verifier/src"
+"stwo_cairo_verifier_mock" = "../../cairo_verifier_mock/src"
 
 [config.global]
 edition = "2024_07"
@@ -48,7 +48,11 @@ coupons = false
 name = "stwo_cairo_air"
 edition = "2024_07"
 version = "0.1.0"
-cfg_set = [["target", "lib"]]
+cfg_set = [
+    ["target", "lib"],
+    ["feature", "poseidon252_verifier"], 
+    ["feature", "no_qm31_opcode"],
+]
 
 [config.override."stwo_cairo_air".dependencies.stwo_cairo_air]
 discriminator = "stwo_cairo_air"
@@ -84,7 +88,11 @@ coupons = false
 name = "stwo_verifier_core"
 edition = "2024_07"
 version = "0.1.0"
-cfg_set = [["target", "lib"]]
+cfg_set = [
+    ["target", "lib"],
+    ["feature", "poseidon252_verifier"], 
+    ["feature", "no_qm31_opcode"],
+]
 
 [config.override."stwo_verifier_core".dependencies.bounded_int]
 discriminator = "bounded_int"
