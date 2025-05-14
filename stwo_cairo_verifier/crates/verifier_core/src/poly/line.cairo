@@ -2,7 +2,7 @@ use core::iter::{IntoIterator, Iterator};
 use core::num::traits::Zero;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl};
 use crate::fields::m31::{M31, m31};
-use crate::fields::qm31::{QM31, QM31Serde, QM31Trait};
+use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fields::{BaseField, SecureField};
 use crate::poly::utils::{butterfly, fold};
 use crate::utils::pow2;
@@ -36,11 +36,13 @@ pub impl LinePolyImpl of LinePolyTrait {
     // Note there are tradeoffs depending on the blowup factor last FRI layer degree bound.
     fn eval_at_point(self: @LinePoly, mut x: BaseField) -> SecureField {
         let mut doublings = array![];
-        for _ in 0..*self.log_size {
-            doublings.append(x);
-            let x_square = x * x;
-            x = x_square + x_square - m31(1);
-        }
+        for _ in 0
+            ..*self
+                .log_size {
+                    doublings.append(x);
+                    let x_square = x * x;
+                    x = x_square + x_square - m31(1);
+                }
 
         fold(self.coeffs, @doublings, 0, 0, self.coeffs.len())
     }
@@ -115,20 +117,21 @@ fn line_fft(
         let stride = chunk_size / 2;
         let values_span = values.span();
         let mut next_values = array![];
-        for chunk_i in 0..n_chunks {
-            let chunk_offset = chunk_i * chunk_size;
-            let mut chunk_l_vals = values_span.slice(chunk_offset, stride).into_iter();
-            let mut chunk_r_vals = values_span.slice(chunk_offset + stride, stride).into_iter();
-            let mut next_r_values = array![];
-            for twiddle in twiddles {
-                let v0 = *chunk_l_vals.next().unwrap();
-                let v1 = *chunk_r_vals.next().unwrap();
-                let (v0, v1) = butterfly(v0, v1, *twiddle);
-                next_values.append(v0);
-                next_r_values.append(v1);
+        for chunk_i in 0
+            ..n_chunks {
+                let chunk_offset = chunk_i * chunk_size;
+                let mut chunk_l_vals = values_span.slice(chunk_offset, stride).into_iter();
+                let mut chunk_r_vals = values_span.slice(chunk_offset + stride, stride).into_iter();
+                let mut next_r_values = array![];
+                for twiddle in twiddles {
+                    let v0 = *chunk_l_vals.next().unwrap();
+                    let v1 = *chunk_r_vals.next().unwrap();
+                    let (v0, v1) = butterfly(v0, v1, *twiddle);
+                    next_values.append(v0);
+                    next_r_values.append(v1);
+                }
+                next_values.append_span(next_r_values.span());
             }
-            next_values.append_span(next_r_values.span());
-        }
         values = next_values;
     }
 
@@ -319,9 +322,14 @@ mod tests {
     fn test_eval_at_point_3() {
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size: 3,
         };
@@ -338,9 +346,14 @@ mod tests {
         let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size));
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size,
         };
@@ -348,9 +361,10 @@ mod tests {
         let result = poly.evaluate(domain);
         let mut result_iter = result.values.into_iter();
 
-        for x in domain.into_iter() {
-            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-        }
+        for x in domain
+            .into_iter() {
+                assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
+            }
     }
 
     #[test]
@@ -359,9 +373,14 @@ mod tests {
         let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size + 2));
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size,
         };
@@ -369,9 +388,10 @@ mod tests {
         let result = poly.evaluate(domain);
         let mut result_iter = result.values.into_iter();
 
-        for x in domain.into_iter() {
-            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-        }
+        for x in domain
+            .into_iter() {
+                assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
+            }
     }
 
     impl LineDomainIntoIterator of IntoIterator<LineDomain> {

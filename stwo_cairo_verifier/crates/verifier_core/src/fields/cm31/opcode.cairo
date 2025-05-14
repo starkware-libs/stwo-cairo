@@ -3,7 +3,7 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
 use super::super::m31::{M31, M31InnerT};
-use super::super::qm31::{M31IntoQM31, QM31, QM31Trait, qm31_const};
+use super::super::qm31::{M31IntoQM31, QM31Trait, qm31_const};
 use super::super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq)]

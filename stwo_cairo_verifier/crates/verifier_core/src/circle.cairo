@@ -1,4 +1,3 @@
-use bounded_int::upcast;
 use core::num::traits::{One, WrappingAdd, WrappingMul, WrappingSub, Zero};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle_mul_table::{

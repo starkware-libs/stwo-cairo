@@ -83,7 +83,6 @@ pub fn get_folded_query_positions(mut query_positions: Span<usize>, n_folds: u32
 
 #[cfg(test)]
 mod test {
-    use crate::channel::{Channel, ChannelTrait};
     use super::{Queries, QueriesImpl};
 
     #[test]
