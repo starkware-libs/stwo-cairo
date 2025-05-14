@@ -3,7 +3,6 @@ use core::iter::{IntoIterator, Iterator};
 use core::num::traits::WrappingMul;
 use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::utils::pow2;
 use super::components::memory_id_to_big;
@@ -105,6 +104,26 @@ pub fn construct_f252(x: Box<[u32; 8]>) -> felt252 {
     result * offset + l0.into()
 }
 
+/// Deconstructs a `felt252` to 8 u32 little-endian limbs.
+pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
+    let offset = 0x100000000;
+    let cur: u256 = x.into();
+    let (cur, l0) = DivRem::div_rem(cur, offset);
+    let (cur, l1) = DivRem::div_rem(cur, offset);
+    let (cur, l2) = DivRem::div_rem(cur, offset);
+    let (cur, l3) = DivRem::div_rem(cur, offset);
+    let (cur, l4) = DivRem::div_rem(cur, offset);
+    let (cur, l5) = DivRem::div_rem(cur, offset);
+    let (cur, l6) = DivRem::div_rem(cur, offset);
+    let (_, l7) = DivRem::div_rem(cur, offset);
+    BoxTrait::new(
+        [
+            l0.try_into().unwrap(), l1.try_into().unwrap(), l2.try_into().unwrap(),
+            l3.try_into().unwrap(), l4.try_into().unwrap(), l5.try_into().unwrap(),
+            l6.try_into().unwrap(), l7.try_into().unwrap(),
+        ],
+    )
+}
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
