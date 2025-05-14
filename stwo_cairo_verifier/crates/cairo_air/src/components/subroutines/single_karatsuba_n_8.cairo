@@ -57,6 +57,9 @@ pub fn single_karatsuba_n_8_evaluate(
         single_karatsuba_n_8_input_limb_31,
     ] =
         input;
+
+    core::internal::revoke_ap_tracking();
+
     let z0_tmp_87f53_0_limb_0: QM31 = (single_karatsuba_n_8_input_limb_0
         * single_karatsuba_n_8_input_limb_16);
     let z0_tmp_87f53_0_limb_1: QM31 = ((single_karatsuba_n_8_input_limb_0
@@ -247,6 +250,8 @@ pub fn single_karatsuba_n_8_evaluate(
         + single_karatsuba_n_8_input_limb_30);
     let y_sum_tmp_87f53_3_limb_7: QM31 = (single_karatsuba_n_8_input_limb_23
         + single_karatsuba_n_8_input_limb_31);
+
+    core::internal::revoke_ap_tracking();
 
     [
         z0_tmp_87f53_0_limb_0, z0_tmp_87f53_0_limb_1, z0_tmp_87f53_0_limb_2, z0_tmp_87f53_0_limb_3,

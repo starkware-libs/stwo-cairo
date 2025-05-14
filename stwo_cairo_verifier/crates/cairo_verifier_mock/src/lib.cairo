@@ -1,5 +1,5 @@
 use stwo_cairo_air::utils::construct_f252;
-use stwo_cairo_air::{CairoProof, VerificationOutput, verify_cairo};
+use stwo_cairo_air::{CairoProof, VerificationOutput, verify_cairo, hash_memory_section};
 
 /// An executable (can be run using cairo-execute) of a mock verifier.
 /// To build, run this from the root folder:
