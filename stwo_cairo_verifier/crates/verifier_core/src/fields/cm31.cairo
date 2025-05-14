@@ -2,7 +2,7 @@
 //! Equivalent to M31\[x\] over (x^2 + 1) as the irreducible polynomial.
 //! Represented as (a, b) of a + bi.
 
-use super::m31::M31;
+use super::m31::{M31, UnreducedM31};
 
 // TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
 // #[cfg(not(feature: "qm31_opcode"))]
@@ -36,4 +36,13 @@ impl DisplayCM31 of core::fmt::Display<CM31> {
         let b: u32 = b.into();
         write!(f, "{} + {}i", @a, @b)
     }
+}
+
+pub trait PackedUnreducedCM31Trait {
+    fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31;
+
+    /// Returns a zero element with each coordinate set to `P*P*P`.
+    fn large_zero() -> PackedUnreducedCM31;
+
+    fn reduce(self: PackedUnreducedCM31) -> CM31;
 }
