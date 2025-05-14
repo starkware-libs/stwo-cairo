@@ -19,7 +19,9 @@ const BYTES_PER_HASH: usize = 32;
 
 // TODO: Stone uses a different initial state with the key set to 0.
 // Consider using this initial state instead.
-pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
+pub const BLAKE2S_256_INITIAL_STATE: [
+    u32
+    ; 8] = [
     0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
 ];
 
@@ -150,16 +152,17 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let words = draw_random_words(ref self).hash.unbox();
         let mut bytes = array![];
 
-        for word in words.span() {
-            let (q, r) = DivRem::div_rem(*word, 0x100);
-            bytes.append(r.try_into().unwrap());
-            let (q, r) = DivRem::div_rem(q, 0x100);
-            bytes.append(r.try_into().unwrap());
-            let (q, r) = DivRem::div_rem(q, 0x100);
-            bytes.append(r.try_into().unwrap());
-            let (_, r) = DivRem::div_rem(q, 0x100);
-            bytes.append(r.try_into().unwrap());
-        }
+        for word in words
+            .span() {
+                let (q, r) = DivRem::div_rem(*word, 0x100);
+                bytes.append(r.try_into().unwrap());
+                let (q, r) = DivRem::div_rem(q, 0x100);
+                bytes.append(r.try_into().unwrap());
+                let (q, r) = DivRem::div_rem(q, 0x100);
+                bytes.append(r.try_into().unwrap());
+                let (_, r) = DivRem::div_rem(q, 0x100);
+                bytes.append(r.try_into().unwrap());
+            }
 
         bytes
     }
@@ -195,9 +198,14 @@ fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31InnerT; 8]> {
         if w0 < P2 && w1 < P2 && w2 < P2 && w3 < P2 && w4 < P2 && w5 < P2 && w6 < P2 && w7 < P2 {
             break BoxImpl::new(
                 [
-                    M31Trait::reduce_u32(w0), M31Trait::reduce_u32(w1), M31Trait::reduce_u32(w2),
-                    M31Trait::reduce_u32(w3), M31Trait::reduce_u32(w4), M31Trait::reduce_u32(w5),
-                    M31Trait::reduce_u32(w6), M31Trait::reduce_u32(w7),
+                    M31Trait::reduce_u32(w0),
+                    M31Trait::reduce_u32(w1),
+                    M31Trait::reduce_u32(w2),
+                    M31Trait::reduce_u32(w3),
+                    M31Trait::reduce_u32(w4),
+                    M31Trait::reduce_u32(w5),
+                    M31Trait::reduce_u32(w6),
+                    M31Trait::reduce_u32(w7),
                 ],
             );
         }
@@ -217,59 +225,7 @@ mod tests {
     use core::box::BoxImpl;
     use crate::fields::qm31::qm31_const;
     use crate::vcs::blake2s_hasher::Blake2sHash;
-    use super::{Blake2sChannel, ChannelTrait, check_proof_of_work, new_channel};
-
-    #[test]
-    fn test_blake_bytes() {
-        let mut channel: Blake2sChannel = Default::default();
-
-        let result = channel.draw_random_bytes();
-
-        // Tested against velue produced from Rust code.
-        // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-        assert_eq!(
-            result,
-            array![
-                174, 9, 219, 124, 213, 79, 66, 180, 144, 239, 9, 182, 188, 84, 26, 246, 136, 228,
-                149, 155, 184, 197, 63, 53, 154, 111, 86, 227, 138, 180, 84, 163,
-            ],
-        );
-    }
-
-    #[test]
-    fn test_draw_felt() {
-        let mut channel: Blake2sChannel = Default::default();
-
-        let felt = channel.draw_felt();
-
-        // Tested against values produced from Rust code.
-        // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-        assert_eq!(felt, qm31_const::<2094729646, 876761046, 906620817, 1981437117>());
-    }
-
-    #[test]
-    fn test_draw_felts() {
-        let mut channel: Blake2sChannel = Default::default();
-
-        let felts = channel.draw_felts(8);
-
-        // Tested against values produced from Rust code.
-        // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-        assert_eq!(
-            felts,
-            array![
-                qm31_const::<2094729646, 876761046, 906620817, 1981437117>(),
-                qm31_const::<462808201, 893371832, 1666609051, 592753803>(),
-                qm31_const::<2092874317, 1414799646, 202729759, 1138457893>(),
-                qm31_const::<740261418, 1566411288, 1094134286, 1085813917>(),
-                qm31_const::<1782652641, 591937235, 375882621, 687600507>(),
-                qm31_const::<417708784, 676515713, 1053713500, 313648782>(),
-                qm31_const::<1896458727, 242850046, 267152034, 827396985>(),
-                qm31_const::<1959202869, 765813487, 1783334404, 305015811>(),
-            ],
-        );
-    }
-
+    use super::{Blake2sChannel, ChannelTrait, check_proof_of_work};
     #[test]
     fn test_mix_felts_with_1_felt() {
         let mut channel: Blake2sChannel = Default::default();

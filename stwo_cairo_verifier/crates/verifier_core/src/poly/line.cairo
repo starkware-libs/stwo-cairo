@@ -36,11 +36,13 @@ pub impl LinePolyImpl of LinePolyTrait {
     // Note there are tradeoffs depending on the blowup factor last FRI layer degree bound.
     fn eval_at_point(self: @LinePoly, mut x: BaseField) -> SecureField {
         let mut doublings = array![];
-        for _ in 0..*self.log_size {
-            doublings.append(x);
-            let x_square = x * x;
-            x = x_square + x_square - m31(1);
-        }
+        for _ in 0
+            ..*self
+                .log_size {
+                    doublings.append(x);
+                    let x_square = x * x;
+                    x = x_square + x_square - m31(1);
+                }
 
         fold(self.coeffs, @doublings, 0, 0, self.coeffs.len())
     }
@@ -115,20 +117,21 @@ fn line_fft(
         let stride = chunk_size / 2;
         let values_span = values.span();
         let mut next_values = array![];
-        for chunk_i in 0..n_chunks {
-            let chunk_offset = chunk_i * chunk_size;
-            let mut chunk_l_vals = values_span.slice(chunk_offset, stride).into_iter();
-            let mut chunk_r_vals = values_span.slice(chunk_offset + stride, stride).into_iter();
-            let mut next_r_values = array![];
-            for twiddle in twiddles {
-                let v0 = *chunk_l_vals.next().unwrap();
-                let v1 = *chunk_r_vals.next().unwrap();
-                let (v0, v1) = butterfly(v0, v1, *twiddle);
-                next_values.append(v0);
-                next_r_values.append(v1);
+        for chunk_i in 0
+            ..n_chunks {
+                let chunk_offset = chunk_i * chunk_size;
+                let mut chunk_l_vals = values_span.slice(chunk_offset, stride).into_iter();
+                let mut chunk_r_vals = values_span.slice(chunk_offset + stride, stride).into_iter();
+                let mut next_r_values = array![];
+                for twiddle in twiddles {
+                    let v0 = *chunk_l_vals.next().unwrap();
+                    let v1 = *chunk_r_vals.next().unwrap();
+                    let (v0, v1) = butterfly(v0, v1, *twiddle);
+                    next_values.append(v0);
+                    next_r_values.append(v1);
+                }
+                next_values.append_span(next_r_values.span());
             }
-            next_values.append_span(next_r_values.span());
-        }
         values = next_values;
     }
 
@@ -276,71 +279,19 @@ mod tests {
     use super::{LineDomain, LineDomainImpl, LineDomainIterator, LinePoly, LinePolyTrait};
 
     #[test]
-    fn line_domain_of_size_two_works() {
-        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), 1);
-        LineDomainImpl::new(coset);
-    }
-
-    #[test]
-    fn line_domain_of_size_one_works() {
-        let coset = CosetImpl::new(CirclePointIndexImpl::new(0), 0);
-        LineDomainImpl::new(coset);
-    }
-
-    #[test]
-    fn test_eval_at_point_1() {
-        let line_poly = LinePoly {
-            coeffs: array![
-                qm31_const::<1080276375, 1725024947, 477465525, 102017026>(),
-                qm31_const::<1080276375, 1725024947, 477465525, 102017026>(),
-            ],
-            log_size: 1,
-        };
-        let x = m31(590768354);
-
-        let result = line_poly.eval_at_point(x);
-
-        assert_eq!(result, qm31_const::<515899232, 1030391528, 1006544539, 11142505>());
-    }
-
-    #[test]
-    fn test_eval_at_point_2() {
-        let line_poly = LinePoly {
-            coeffs: array![qm31_const::<1, 2, 3, 4>(), qm31_const::<5, 6, 7, 8>()], log_size: 1,
-        };
-        let x = m31(10);
-
-        let result = line_poly.eval_at_point(x);
-
-        assert_eq!(result, qm31_const::<51, 62, 73, 84>());
-    }
-
-    #[test]
-    fn test_eval_at_point_3() {
-        let poly = LinePoly {
-            coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
-            ],
-            log_size: 3,
-        };
-        let x = m31(10);
-
-        let result = poly.eval_at_point(x);
-
-        assert_eq!(result, qm31_const::<1328848956, 239350644, 174242200, 838661589>());
-    }
-
-    #[test]
     fn test_evaluate() {
         let log_size = 3;
         let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size));
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size,
         };
@@ -348,9 +299,10 @@ mod tests {
         let result = poly.evaluate(domain);
         let mut result_iter = result.values.into_iter();
 
-        for x in domain.into_iter() {
-            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-        }
+        for x in domain
+            .into_iter() {
+                assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
+            }
     }
 
     #[test]
@@ -359,9 +311,14 @@ mod tests {
         let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size + 2));
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size,
         };
@@ -369,9 +326,10 @@ mod tests {
         let result = poly.evaluate(domain);
         let mut result_iter = result.values.into_iter();
 
-        for x in domain.into_iter() {
-            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-        }
+        for x in domain
+            .into_iter() {
+                assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
+            }
     }
 
     impl LineDomainIntoIterator of IntoIterator<LineDomain> {

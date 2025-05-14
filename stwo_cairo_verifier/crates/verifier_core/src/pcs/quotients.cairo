@@ -130,24 +130,48 @@ pub fn fri_answers(
         }
 
         let mut n_columns_per_log_size: Array<usize> = array![];
-        for log_size in (0..31_u32) {
-            n_columns_per_log_size
-                .append(res_dict.get(30_felt252 - log_size.into()).deref_or(0))
-                .try_into()
-                .unwrap();
-        }
+        for log_size in (0
+            ..31_u32) {
+                n_columns_per_log_size
+                    .append(res_dict.get(30_felt252 - log_size.into()).deref_or(0))
+                    .try_into()
+                    .unwrap();
+            }
         n_columns_per_tree.append(n_columns_per_log_size.span());
     }?;
 
     let mut columns_per_log_size_rev = array![
-        log_size_30_columns, log_size_29_columns, log_size_28_columns, log_size_27_columns,
-        log_size_26_columns, log_size_25_columns, log_size_24_columns, log_size_23_columns,
-        log_size_22_columns, log_size_21_columns, log_size_20_columns, log_size_19_columns,
-        log_size_18_columns, log_size_17_columns, log_size_16_columns, log_size_15_columns,
-        log_size_14_columns, log_size_13_columns, log_size_12_columns, log_size_11_columns,
-        log_size_10_columns, log_size_09_columns, log_size_08_columns, log_size_07_columns,
-        log_size_06_columns, log_size_05_columns, log_size_04_columns, log_size_03_columns,
-        log_size_02_columns, log_size_01_columns, log_size_00_columns,
+        log_size_30_columns,
+        log_size_29_columns,
+        log_size_28_columns,
+        log_size_27_columns,
+        log_size_26_columns,
+        log_size_25_columns,
+        log_size_24_columns,
+        log_size_23_columns,
+        log_size_22_columns,
+        log_size_21_columns,
+        log_size_20_columns,
+        log_size_19_columns,
+        log_size_18_columns,
+        log_size_17_columns,
+        log_size_16_columns,
+        log_size_15_columns,
+        log_size_14_columns,
+        log_size_13_columns,
+        log_size_12_columns,
+        log_size_11_columns,
+        log_size_10_columns,
+        log_size_09_columns,
+        log_size_08_columns,
+        log_size_07_columns,
+        log_size_06_columns,
+        log_size_05_columns,
+        log_size_04_columns,
+        log_size_03_columns,
+        log_size_02_columns,
+        log_size_01_columns,
+        log_size_00_columns,
     ]
         .into_iter();
 
@@ -264,37 +288,38 @@ fn accumulate_row_quotients(
 
     let mut quotient_accumulator: QM31 = Zero::zero();
 
-    for batch_i in 0..n_batches {
-        let line_coeffs = quotient_constants.line_coeffs[batch_i];
-        let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
-        let batch_size = sample_batch_columns_and_values.len();
-        assert!(batch_size == line_coeffs.len());
-        let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
+    for batch_i in 0
+        ..n_batches {
+            let line_coeffs = quotient_constants.line_coeffs[batch_i];
+            let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
+            let batch_size = sample_batch_columns_and_values.len();
+            assert!(batch_size == line_coeffs.len());
+            let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
-        for sample_i in 0..batch_size {
-            let (column_index, _) = sample_batch_columns_and_values[sample_i];
-            let query_eval_at_column = *queried_values_at_row.at(*column_index);
+            for sample_i in 0
+                ..batch_size {
+                    let (column_index, _) = sample_batch_columns_and_values[sample_i];
+                    let query_eval_at_column = *queried_values_at_row.at(*column_index);
 
-            let ComplexConjugateLineCoeffs {
-                alpha_mul_a, alpha_mul_b, alpha_mul_c,
-            } = *line_coeffs[sample_i];
-            // The numerator is a line equation passing through
-            //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
-            // evaluated at (domain_point.y, value).
-            // When substituting a polynomial in this line equation, we get a polynomial
-            // with a root at sample_point and conj(sample_point) if the original polynomial
-            // had the values sample_value and conj(sample_value) at these points.
-            // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
-            // TODO(andrew): The whole `linear_term` can be moved out of the loop.
-            let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
-            numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
+                    let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c, } =
+                        *line_coeffs[sample_i];
+                    // The numerator is a line equation passing through
+                    //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
+                    // evaluated at (domain_point.y, value).
+                    // When substituting a polynomial in this line equation, we get a polynomial
+                    // with a root at sample_point and conj(sample_point) if the original polynomial
+                    // had the values sample_value and conj(sample_value) at these points.
+                    // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
+                    // TODO(andrew): The whole `linear_term` can be moved out of the loop.
+                    let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
+                    numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
+                }
+
+            let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
+            let denom_inv = *denominator_inverses[batch_i];
+            let quotient = numerator.reduce().mul_cm31(denom_inv);
+            quotient_accumulator = QM31Trait::fma(quotient_accumulator, batch_coeff, quotient);
         }
-
-        let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
-        let denom_inv = *denominator_inverses[batch_i];
-        let quotient = numerator.reduce().mul_cm31(denom_inv);
-        quotient_accumulator = QM31Trait::fma(quotient_accumulator, batch_coeff, quotient);
-    }
 
     quotient_accumulator
 }
@@ -336,31 +361,34 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
         let mut line_coeffs = array![];
         let mut batch_random_coeffs = array![];
 
-        for sample_batch in sample_batches.span() {
-            // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
-            // Use a better solution.
-            assert!(
-                *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
-                "Cannot evaluate a line with a single point ({:?}).",
-                sample_batch.point,
-            );
+        for sample_batch in sample_batches
+            .span() {
+                // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
+                // Use a better solution.
+                assert!(
+                    *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
+                    "Cannot evaluate a line with a single point ({:?}).",
+                    sample_batch.point,
+                );
 
-            let mut alpha: QM31 = One::one();
-            let mut batch_line_coeffs = array![];
+                let mut alpha: QM31 = One::one();
+                let mut batch_line_coeffs = array![];
 
-            for (_, column_value) in sample_batch.columns_and_values.span() {
-                alpha = alpha * random_coeff;
-                batch_line_coeffs
-                    .append(
-                        ComplexConjugateLineCoeffsImpl::new(
-                            sample_batch.point, **column_value, alpha,
-                        ),
-                    );
+                for (_, column_value) in sample_batch
+                    .columns_and_values
+                    .span() {
+                        alpha = alpha * random_coeff;
+                        batch_line_coeffs
+                            .append(
+                                ComplexConjugateLineCoeffsImpl::new(
+                                    sample_batch.point, **column_value, alpha,
+                                ),
+                            );
+                    }
+
+                batch_random_coeffs.append(alpha);
+                line_coeffs.append(batch_line_coeffs);
             }
-
-            batch_random_coeffs.append(alpha);
-            line_coeffs.append(batch_line_coeffs);
-        }
 
         QuotientConstants { line_coeffs, batch_random_coeffs }
     }
@@ -390,19 +418,20 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
         for samples in samples_per_column {
             // TODO(andrew): Almost all columns have a single sample at the OODS point.
             // Handling this case specifically is more optimal than using the dictionary.
-            for sample in samples.span() {
-                let point_key = CirclePointQM31Key::encode(sample.point);
-                let (entry, point_samples) = grouped_samples.entry(point_key);
+            for sample in samples
+                .span() {
+                    let point_key = CirclePointQM31Key::encode(sample.point);
+                    let (entry, point_samples) = grouped_samples.entry(point_key);
 
-                // Check if we've seen the point before.
-                if point_samples.is_null() {
-                    point_set.append(*sample.point);
+                    // Check if we've seen the point before.
+                    if point_samples.is_null() {
+                        point_set.append(*sample.point);
+                    }
+
+                    let mut point_samples = point_samples.deref_or(array![]);
+                    point_samples.append((column, sample.value));
+                    grouped_samples = entry.finalize(NullableTrait::new(point_samples));
                 }
-
-                let mut point_samples = point_samples.deref_or(array![]);
-                point_samples.append((column, sample.value));
-                grouped_samples = entry.finalize(NullableTrait::new(point_samples));
-            }
 
             column += 1;
         }
