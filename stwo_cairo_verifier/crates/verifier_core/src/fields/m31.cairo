@@ -1,4 +1,4 @@
-use bounded_int::{BoundedInt, DivRemHelper, constrain, div_rem, upcast};
+use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
 
 // TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
 // #[cfg(not(feature: "qm31_opcode"))]

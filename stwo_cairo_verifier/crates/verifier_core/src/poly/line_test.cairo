@@ -1,8 +1,7 @@
-use core::iter::{IntoIterator, Iterator};
 use crate::circle::{CirclePointIndexImpl, CosetImpl};
 use crate::fields::m31::m31;
 use crate::fields::qm31::qm31_const;
-use crate::poly::line::{LineDomain, LineDomainImpl, LinePoly, LinePolyTrait};
+use crate::poly::line::{LineDomainImpl, LinePoly, LinePolyTrait};
 
 #[test]
 fn line_domain_of_size_two_works() {

@@ -2,7 +2,6 @@
 //! Equivalent to CM31\[x\] over (x^2 - 2 - i) as the irreducible polynomial.
 //! Represented as ((a, b), (c, d)) of (a + bi) + (c + di)u.
 
-use bounded_int::upcast;
 use super::cm31::CM31;
 use super::m31::{M31, UnreducedM31};
 

@@ -1,6 +1,6 @@
 use crate::circle::{
-    CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
-    CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
+    CirclePoint, CirclePointIndexImpl, CirclePointM31Impl, CirclePointQM31AddCirclePointM31Impl,
+    CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
 };
 use crate::fields::m31::{M31Trait, m31};
 

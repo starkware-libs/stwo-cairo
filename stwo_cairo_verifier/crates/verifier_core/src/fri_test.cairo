@@ -1,4 +1,4 @@
-use crate::channel::{Channel, ChannelTrait};
+use crate::channel::Channel;
 use crate::circle::{CirclePointIndexImpl, CosetImpl};
 use crate::fields::qm31::qm31_const;
 use crate::fri::{FriConfig, FriVerificationError, FriVerifierImpl};

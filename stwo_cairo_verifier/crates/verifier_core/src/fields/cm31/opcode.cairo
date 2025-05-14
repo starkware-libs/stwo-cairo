@@ -1,8 +1,8 @@
 //! Implementation of CM31 field using the QM31 opcode.
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::super::m31::{M31, M31Trait, M31Zero, UnreducedM31};
-use super::super::qm31::{M31IntoQM31, QM31, QM31Trait, qm31_const};
+use super::super::m31::{M31, M31Zero, UnreducedM31};
+use super::super::qm31::{M31IntoQM31, QM31Trait};
 use super::super::{BatchInvertible, Invertible};
 use super::{CM31Trait, PackedUnreducedCM31Trait};
 

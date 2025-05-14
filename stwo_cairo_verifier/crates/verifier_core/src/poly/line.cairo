@@ -2,7 +2,7 @@ use core::iter::{IntoIterator, Iterator};
 use core::num::traits::Zero;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl};
 use crate::fields::m31::{M31, m31};
-use crate::fields::qm31::{QM31, QM31Serde, QM31Trait};
+use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fields::{BaseField, SecureField};
 use crate::poly::utils::{butterfly, fold};
 use crate::utils::pow2;
@@ -271,7 +271,6 @@ impl LineDomainIteratorImpl of Iterator<LineDomainIterator> {
 mod tests {
     use core::iter::{IntoIterator, Iterator};
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
-    use crate::fields::m31::m31;
     use crate::fields::qm31::qm31_const;
     use super::{LineDomain, LineDomainImpl, LineDomainIterator, LinePoly, LinePolyTrait};
 
