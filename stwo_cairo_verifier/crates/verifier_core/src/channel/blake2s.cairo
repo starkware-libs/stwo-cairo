@@ -62,7 +62,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
                 state = blake2s_compress(state, byte_count, *msg);
                 buffer = array![];
             }
-
+            // test.
             let [r0, r1, r2, r3] = felt.to_array();
             buffer.append(upcast(r0));
             buffer.append(upcast(r1));
