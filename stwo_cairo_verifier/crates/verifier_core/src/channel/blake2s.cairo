@@ -1,4 +1,3 @@
-use bounded_int::upcast;
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use core::traits::DivRem;

@@ -72,15 +72,6 @@ trait UnreducedQM31Trait {
     fn reduce(self: UnreducedQM31) -> QM31;
 }
 
-trait PackedUnreducedCM31Trait {
-    fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31;
-
-    /// Returns a zero element with each coordinate set to `P*P*P`.
-    fn large_zero() -> PackedUnreducedCM31;
-
-    fn reduce(self: PackedUnreducedCM31) -> CM31;
-}
-
 pub trait PackedUnreducedQM31Trait {
     fn mul_m31(self: PackedUnreducedQM31, rhs: UnreducedM31) -> PackedUnreducedQM31;
 
