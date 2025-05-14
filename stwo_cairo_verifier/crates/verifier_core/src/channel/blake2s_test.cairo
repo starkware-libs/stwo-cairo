@@ -1,8 +1,7 @@
 use core::box::BoxImpl;
 use crate::channel::ChannelTrait;
-use crate::channel::blake2s::{Blake2sChannel, new_channel};
+use crate::channel::blake2s::Blake2sChannel;
 use crate::fields::qm31::qm31_const;
-use crate::vcs::blake2s_hasher::Blake2sHash;
 
 
 #[test]

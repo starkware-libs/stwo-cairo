@@ -1,15 +1,12 @@
-use core::num::traits::{One, Zero};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
+use core::num::traits::Zero;
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
-use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
-use stwo_verifier_core::fri::FriConfig;
-use stwo_verifier_core::pcs::PcsConfig;
+use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
-use stwo_verifier_core::verifier::{Air, verify};
+use stwo_verifier_core::verifier::Air;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 #[cfg(feature: "poseidon252_verifier")]

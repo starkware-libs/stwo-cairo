@@ -1,4 +1,3 @@
-use crate::channel::{Channel, ChannelTrait};
 use crate::queries::{Queries, QueriesImpl};
 
 #[test]
