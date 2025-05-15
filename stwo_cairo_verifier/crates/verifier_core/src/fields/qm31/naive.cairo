@@ -3,15 +3,17 @@ use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
-use super::super::cm31::CM31;
+use super::super::cm31::{CM31, CM31Trait};
 use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
 use super::{
     PackedUnreducedCM31Trait, PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE,
     UnreducedQM31Trait,
 };
 
+// R = 2 + i = u^2.
 pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
 
+// Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct QM31 {
     a: CM31,
@@ -46,10 +48,7 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
-        QM31 {
-            a: CM31 { a: self.a.a * rhs, b: self.a.b * rhs },
-            b: CM31 { a: self.b.a * rhs, b: self.b.b * rhs },
-        }
+        QM31 { a: CM31Trait::mul_m31(self.a, rhs), b: CM31Trait::mul_m31(self.b, rhs) }
     }
 
     #[inline]
@@ -62,13 +61,13 @@ pub impl QM31Impl of QM31Trait {
     }
 
     #[inline]
-    fn fms(a: QM31, b: QM31, c: QM31) -> QM31 {
-        (Self::mul_unreduced(a, b) - c.into()).reduce()
+    fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
+        (Self::mul_unreduced(a, b) + c.into()).reduce()
     }
 
     #[inline]
-    fn fma(a: QM31, b: QM31, c: QM31) -> QM31 {
-        (Self::mul_unreduced(a, b) + c.into()).reduce()
+    fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
+        (Self::mul_unreduced(a, b) - c.into()).reduce()
     }
 
     // TODO(andrew): May be net worse performance doing unreduced arithmetic due to all felt252
@@ -202,7 +201,7 @@ pub impl QM31Zero of Zero<QM31> {
     }
 
     fn is_non_zero(self: @QM31) -> bool {
-        (*self).a.is_non_zero() || (*self).b.is_non_zero()
+        !self.is_zero()
     }
 }
 
@@ -217,7 +216,7 @@ pub impl QM31One of One<QM31> {
     }
 
     fn is_non_one(self: @QM31) -> bool {
-        (*self).a.is_non_one() || (*self).b.is_non_zero()
+        !self.is_one()
     }
 }
 
