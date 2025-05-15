@@ -110,7 +110,7 @@ pub fn adapt_vm_output(
         .collect();
     let res = adapt_to_stwo_input(
         trace.as_slice(),
-        MemoryBuilder::from_iter(MemoryConfig::default(), memory.as_slice().iter().copied()),
+        MemoryBuilder::from_entries(MemoryConfig::default(), memory.as_slice().to_vec()),
         public_memory_addresses,
         &public_input
             .memory_segments
