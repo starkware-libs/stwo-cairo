@@ -62,7 +62,6 @@ pub const VERIFY_BITWISE_XOR_4_LOG_SIZE: u32 = 8;
 
 pub const RANGE_CHECK_3_3_3_3_3_LOG_SIZE: u32 = 15;
 pub const RANGE_CHECK_3_6_6_3_LOG_SIZE: u32 = 18;
-pub const RANGE_CHECK_3_6_LOG_SIZE: u32 = 9;
 pub const RANGE_CHECK_4_3_LOG_SIZE: u32 = 7;
 pub const RANGE_CHECK_4_4_4_4_LOG_SIZE: u32 = 16;
 pub const RANGE_CHECK_4_4_LOG_SIZE: u32 = 8;
