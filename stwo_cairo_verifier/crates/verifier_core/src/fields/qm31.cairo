@@ -4,7 +4,7 @@
 
 use bounded_int::upcast;
 use super::cm31::CM31;
-use super::m31::{M31, M31InnerT, UnreducedM31};
+use super::m31::{M31, UnreducedM31};
 
 // TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
 // #[cfg(not(feature: "qm31_opcode"))]
@@ -25,9 +25,9 @@ pub const P4: u128 = 0xFFFFFFF800000017FFFFFFE00000001;
 pub const QM31_EXTENSION_DEGREE: usize = 4;
 
 pub trait QM31Trait {
-    fn from_array(arr: [M31InnerT; 4]) -> QM31;
+    fn from_array(arr: [M31; QM31_EXTENSION_DEGREE]) -> QM31;
 
-    fn to_array(self: QM31) -> [M31InnerT; 4];
+    fn to_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE];
 
     fn mul_m31(self: QM31, rhs: M31) -> QM31;
 
@@ -60,10 +60,10 @@ pub impl QM31Serde of Serde<QM31> {
     }
 
     fn deserialize(ref serialized: Span<felt252>) -> Option<QM31> {
-        let a: M31InnerT = Serde::deserialize(ref serialized)?;
-        let b: M31InnerT = Serde::deserialize(ref serialized)?;
-        let c: M31InnerT = Serde::deserialize(ref serialized)?;
-        let d: M31InnerT = Serde::deserialize(ref serialized)?;
+        let a: M31 = Serde::deserialize(ref serialized)?;
+        let b: M31 = Serde::deserialize(ref serialized)?;
+        let c: M31 = Serde::deserialize(ref serialized)?;
+        let d: M31 = Serde::deserialize(ref serialized)?;
         Some(QM31Trait::from_array([a, b, c, d]))
     }
 }
@@ -93,10 +93,10 @@ pub trait PackedUnreducedQM31Trait {
 impl QM31Dispaly of core::fmt::Display<QM31> {
     fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
         let [a, b, c, d] = (*self).to_array();
-        let a: u32 = upcast(a);
-        let b: u32 = upcast(b);
-        let c: u32 = upcast(c);
-        let d: u32 = upcast(d);
+        let a: u32 = a.into();
+        let b: u32 = b.into();
+        let c: u32 = c.into();
+        let d: u32 = d.into();
         write!(f, "({} + {}i) + ({} + {}i)u", a, b, c, d)
     }
 }
