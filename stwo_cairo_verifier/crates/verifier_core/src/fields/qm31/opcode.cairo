@@ -1,10 +1,9 @@
 //! Implementation of QM31 field using the QM31 opcode.
-use bounded_int::upcast;
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31InnerTIntoM31, M31Trait, UnreducedM31};
+use super::super::m31::{M31, M31InnerT, M31InnerTIntoM31, UnreducedM31};
 use super::{
     PackedUnreducedCM31Trait, PackedUnreducedQM31Trait, QM31Dispaly, QM31Trait,
     QM31_EXTENSION_DEGREE, UnreducedQM31Trait,

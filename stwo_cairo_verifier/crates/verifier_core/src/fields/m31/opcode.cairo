@@ -4,7 +4,7 @@ use core::ops::{AddAssign, MulAssign, SubAssign};
 use core::qm31::m31_ops;
 use super::super::qm31::{QM31, QM31Trait};
 use super::super::{BatchInvertible, Invertible};
-use super::{ConstValue, M31, M31InnerT, M31Trait, M31_P, M31_SHIFT, P, P_U32};
+use super::M31;
 
 pub impl M31InvertibleImpl of Invertible<M31> {
     #[inline(always)]
