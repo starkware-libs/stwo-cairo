@@ -146,28 +146,3 @@ impl DisplayM31 of core::fmt::Display<M31> {
 pub fn m31(val: u32) -> M31 {
     M31Trait::reduce_u32(val).into()
 }
-
-#[cfg(test)]
-mod tests {
-    use super::super::Invertible;
-    use super::{P_U32 as P, m31};
-
-    const POW2_15: u32 = 0b1000000000000000;
-    const POW2_16: u32 = 0b10000000000000000;
-
-    #[test]
-    fn test_m31() {
-        assert_eq!(m31(P), m31(0));
-        assert_eq!(m31(P + 1), m31(1));
-        assert_eq!(m31(1) + m31(2), m31(3));
-        assert_eq!(m31(3) - m31(2), m31(1));
-        assert_eq!(m31(P - 1) + m31(1), m31(0));
-        assert_eq!(m31(0) - m31(1), m31(P - 1));
-        assert_eq!(m31(0) - m31(P - 1), m31(1));
-    }
-
-    #[test]
-    fn test_m31_inv() {
-        assert_eq!(m31(POW2_15).inverse(), m31(POW2_16));
-    }
-}
