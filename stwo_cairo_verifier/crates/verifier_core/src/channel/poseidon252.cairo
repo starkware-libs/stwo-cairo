@@ -47,14 +47,14 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             match (felts.pop_front(), felts.pop_front()) {
                 (None, _) => { break; },
                 (Some(x), None) => {
-                    res.append(pack4(0, (*x).to_array()));
+                    res.append(pack4(0, (*x).to_fixed_array()));
                     break;
                 },
                 (
                     Some(x), Some(y),
                 ) => {
-                    let cur = pack4(0, (*x).to_array());
-                    res.append(pack4(cur, (*y).to_array()));
+                    let cur = pack4(0, (*x).to_fixed_array());
+                    res.append(pack4(cur, (*y).to_fixed_array()));
                 },
             };
         }
@@ -95,7 +95,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     fn draw_felt(ref self: Poseidon252Channel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self);
-        QM31Trait::from_array([r0, r1, r2, r3])
+        QM31Trait::from_fixed_array([r0, r1, r2, r3])
     }
 
     fn draw_felts(ref self: Poseidon252Channel, mut n_felts: usize) -> Array<SecureField> {
@@ -105,11 +105,11 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
                 break;
             }
             let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_base_felts(ref self);
-            res.append(QM31Trait::from_array([r0, r1, r2, r3]));
+            res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
             if n_felts == 1 {
                 break;
             }
-            res.append(QM31Trait::from_array([r4, r5, r6, r7]));
+            res.append(QM31Trait::from_fixed_array([r4, r5, r6, r7]));
             n_felts -= 2;
         }
         res

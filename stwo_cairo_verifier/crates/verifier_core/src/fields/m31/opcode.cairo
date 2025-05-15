@@ -13,7 +13,7 @@ pub impl M31InvertibleImpl of Invertible<M31> {
         // Currently there is no way to construct a NonZero<M31InnerT>.
         let denom_qm31: QM31 = self.into();
         let denom_qm31_inv = One::one() / denom_qm31;
-        let [v, _, _, _] = denom_qm31_inv.to_array();
+        let [v, _, _, _] = denom_qm31_inv.to_fixed_array();
         v
     }
 }
