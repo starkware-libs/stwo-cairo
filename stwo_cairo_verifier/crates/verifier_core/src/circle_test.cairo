@@ -2,15 +2,17 @@ use crate::circle::{
     CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointM31Impl,
     CirclePointQM31AddCirclePointM31Impl, CirclePointQM31Impl, Coset, CosetImpl, M31_CIRCLE_GEN,
 };
-use crate::fields::m31::m31;
+use crate::fields::m31::{M31Trait, m31};
 
 #[test]
 fn test_to_point() {
     let index = CirclePointIndexImpl::new(index: 0b01111111111111111111111111111111);
+    let index2 = CirclePointIndexImpl::new(index: 0b00111111111111111111111111111111);
+
     assert_eq!(index.to_point(), -M31_CIRCLE_GEN.into());
-    let index = CirclePointIndexImpl::new(index: 0b00111111111111111111111111111111);
     assert_eq!(
-        index.to_point(), CirclePoint { x: -(M31_CIRCLE_GEN.x.into()), y: M31_CIRCLE_GEN.y.into() },
+        index2.to_point(),
+        CirclePoint { x: -M31Trait::new(M31_CIRCLE_GEN.x), y: M31Trait::new(M31_CIRCLE_GEN.y) },
     );
 }
 
