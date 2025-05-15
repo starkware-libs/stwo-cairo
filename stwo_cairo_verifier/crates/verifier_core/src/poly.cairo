@@ -1,4 +1,9 @@
 pub mod circle;
-pub mod line;
-pub mod utils;
+#[cfg(test)]
+mod circle_test;
 
+pub mod line;
+#[cfg(test)]
+mod line_test;
+
+pub mod utils;
