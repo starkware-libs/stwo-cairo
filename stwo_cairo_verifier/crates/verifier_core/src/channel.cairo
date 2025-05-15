@@ -6,6 +6,13 @@ pub mod blake2s;
 pub mod poseidon252;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
+#[cfg(test)]
+mod blake2s_test;
+#[cfg(feature: "poseidon252_verifier")]
+#[cfg(test)]
+mod poseidon252_test;
+
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub type Channel = blake2s::Blake2sChannel;
 #[cfg(feature: "poseidon252_verifier")]
 pub type Channel = poseidon252::Poseidon252Channel;
