@@ -67,7 +67,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
         constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,

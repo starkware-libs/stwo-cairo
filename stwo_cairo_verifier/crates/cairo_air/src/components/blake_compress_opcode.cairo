@@ -80,7 +80,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
         preprocessed_column_set.insert(PreprocessedColumn::Seq(*(self.claim.log_size)));
         trace_mask_points.append(array![point]);
