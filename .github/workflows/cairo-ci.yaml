@@ -19,7 +19,7 @@ on:
 
 jobs:
   scarb-test:
-    runs-on: stwo-cairo-l
+    runs-on: stwo-cairo-avx-l
     defaults:
       run:
         working-directory: ./stwo_cairo_verifier
@@ -32,12 +32,16 @@ jobs:
       - run: scarb test
 
   run-tests:
-    runs-on: stwo-cairo-l
+    runs-on: stwo-cairo-avx-l
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v3
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install latest nextest release
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
