@@ -2,8 +2,15 @@ use crate::{Hash, SecureField};
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s;
+#[cfg(not(feature: "poseidon252_verifier"))]
+#[cfg(test)]
+mod blake2s_test;
+
 #[cfg(feature: "poseidon252_verifier")]
 pub mod poseidon252;
+#[cfg(feature: "poseidon252_verifier")]
+#[cfg(test)]
+mod poseidon252_test;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub type Channel = blake2s::Blake2sChannel;
