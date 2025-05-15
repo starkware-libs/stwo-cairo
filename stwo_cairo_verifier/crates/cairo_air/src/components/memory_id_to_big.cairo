@@ -106,7 +106,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let trace_gen = CanonicCosetImpl::new(*self.log_n_rows).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(*self.log_n_rows).coset.step;
         constraints_big::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -236,7 +236,7 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *self.log_n_rows;
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         constraints_small::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,

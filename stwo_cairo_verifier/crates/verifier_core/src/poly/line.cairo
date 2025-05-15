@@ -139,7 +139,7 @@ fn line_fft(
 fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     let mut iter = LineDomainIterator {
         cur: self.coset.initial_index.to_point(),
-        step: self.coset.step_size.to_point(),
+        step: self.coset.step.to_point(),
         remaining: self.size() / 2,
     };
     let mut res = array![];
@@ -380,7 +380,7 @@ mod tests {
         fn into_iter(self: LineDomain) -> LineDomainIterator {
             LineDomainIterator {
                 cur: self.coset.initial_index.to_point(),
-                step: self.coset.step_size.to_point(),
+                step: self.coset.step.to_point(),
                 remaining: self.size(),
             }
         }
