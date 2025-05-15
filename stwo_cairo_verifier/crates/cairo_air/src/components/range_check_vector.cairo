@@ -84,7 +84,7 @@ pub impl Rc6BitComponentImpl of CairoComponent<Rc6BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_6_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_6_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -147,7 +147,7 @@ pub impl Rc8BitComponentImpl of CairoComponent<Rc8BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_8_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_8_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -210,7 +210,7 @@ pub impl Rc11BitComponentImpl of CairoComponent<Rc11BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_11_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_11_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -273,7 +273,7 @@ pub impl Rc12ComponentImpl of CairoComponent<Rc12BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_12_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_12_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -336,7 +336,7 @@ pub impl Rc18BitComponentImpl of CairoComponent<Rc18BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_18_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_18_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -399,7 +399,7 @@ pub impl Rc19BitComponentImpl of CairoComponent<Rc19BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_19_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_19_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -463,7 +463,7 @@ pub impl Rc9Bit9BitComponentImpl of CairoComponent<Rc9Bit9BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_9_9_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_9_9_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -530,7 +530,7 @@ pub impl Rc3Bit6BitComponentImpl of CairoComponent<Rc3Bit6BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_3_6_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_3_6_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -597,7 +597,7 @@ pub impl Rc4Bit3BitComponentImpl of CairoComponent<Rc4Bit3BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_4_3_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_4_3_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -664,7 +664,7 @@ pub impl Rc4Bit4BitComponentImpl of CairoComponent<Rc4Bit4BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_4_4_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_4_4_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -731,7 +731,7 @@ pub impl Rc5Bit4BitComponentImpl of CairoComponent<Rc5Bit4BitComponent> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_5_4_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_5_4_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -798,7 +798,7 @@ pub impl Rc7Bit2Bit5BitComponentImpl of CairoComponent<Rc7Bit2Bit5BitComponent> 
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_7_2_5_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_7_2_5_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -869,7 +869,7 @@ pub impl Rc3Bit6Bit6Bit3BitComponentImpl of CairoComponent<Rc3Bit6Bit6Bit3BitCom
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_3_6_6_3_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_3_6_6_3_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -944,7 +944,7 @@ pub impl Rc4Bit4Bit4Bit4BitComponentImpl of CairoComponent<Rc4Bit4Bit4Bit4BitCom
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_4_4_4_4_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_4_4_4_4_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
@@ -1019,7 +1019,7 @@ pub impl Rc3Bit3Bit3Bit3Bit3BitComponentImpl of CairoComponent<Rc3Bit3Bit3Bit3Bi
         point: CirclePoint<QM31>,
     ) {
         let log_size = rc_3_3_3_3_3_log_size();
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         rc_3_3_3_3_3_constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,

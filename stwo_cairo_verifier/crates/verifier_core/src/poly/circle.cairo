@@ -89,7 +89,7 @@ pub impl CanonicCosetImpl of CanonicCosetTrait {
         assert!(self.coset.log_size.is_non_zero());
         Coset {
             initial_index: *self.coset.initial_index,
-            step_size: *self.coset.step_size + *self.coset.step_size,
+            step: *self.coset.step + *self.coset.step,
             log_size: *self.coset.log_size - 1,
         }
     }
@@ -138,7 +138,7 @@ mod tests {
     fn test_circle_domain_at_1() {
         let half_coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
-            step_size: CirclePointIndexImpl::new(67108864),
+            step: CirclePointIndexImpl::new(67108864),
             log_size: 5,
         };
         let domain = CircleDomain { half_coset };
@@ -152,7 +152,7 @@ mod tests {
     fn test_circle_domain_at_2() {
         let half_coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
-            step_size: CirclePointIndexImpl::new(67108864),
+            step: CirclePointIndexImpl::new(67108864),
             log_size: 5,
         };
         let domain = CircleDomain { half_coset };

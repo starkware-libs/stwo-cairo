@@ -1,4 +1,3 @@
-use bounded_int::upcast;
 use core::num::traits::{One, WrappingAdd, WrappingMul, WrappingSub, Zero};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle_mul_table::{
@@ -6,9 +5,9 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23, M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29,
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
-use crate::fields::Invertible;
 use crate::fields::m31::{M31, M31InnerT};
 use crate::fields::qm31::{QM31, QM31Trait};
+use crate::fields::Invertible;
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].
@@ -43,7 +42,7 @@ pub trait CirclePointTrait<
         CirclePoint { x: One::one(), y: Zero::zero() }
     }
 
-    /// Applies the circle's x-coordinate doubling map.
+    /// Computes the x-coordinate of the doubling map. Depends only on the pre-image x-coordinate.
     fn double_x(x: F) -> F {
         let sqx = x * x;
         sqx + sqx - One::one()
@@ -56,10 +55,10 @@ pub trait CirclePointTrait<
         self: @CirclePoint<F>,
     ) -> u32 {
         // we only need the x-coordinate to check order since the only point
-        // with x=1 is the circle's identity
+        // with x=1 is the circle's identity.
         let mut res = 0;
         let mut cur = self.x.clone();
-        while cur != One::one() {
+        while !cur.is_one() {
             cur = Self::double_x(cur);
             res += 1;
         }
@@ -99,7 +98,7 @@ pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
 pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     /// Returns a random QM31 circle point.
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
-        let t = self.draw_felt();
+        let t: QM31 = self.draw_felt();
         let t_squared = t * t;
         let t_squared_plus_1_inv = (t_squared + One::one()).inverse();
         let x = (One::one() - t_squared) * t_squared_plus_1_inv;
@@ -119,26 +118,26 @@ pub impl ComplexConjugateImpl of ComplexConjugateTrait {
 #[derive(Copy, Clone, Debug, PartialEq, Drop)]
 pub struct Coset {
     pub initial_index: CirclePointIndex,
-    pub step_size: CirclePointIndex,
+    pub step: CirclePointIndex,
     pub log_size: u32,
 }
 
 #[generate_trait]
 pub impl CosetImpl of CosetTrait {
     fn new(initial_index: CirclePointIndex, log_size: u32) -> Coset {
-        let step_size = CirclePointIndexImpl::subgroup_gen(log_size);
-        Coset { initial_index, step_size, log_size }
+        let step = CirclePointIndexImpl::subgroup_gen(log_size);
+        Coset { initial_index, step, log_size }
     }
 
     fn index_at(self: @Coset, index: usize) -> CirclePointIndex {
-        *self.initial_index + self.step_size.mul(index)
+        *self.initial_index + self.step.mul(index)
     }
 
     fn double(self: @Coset) -> Coset {
         assert!(*self.log_size > 0);
         Coset {
             initial_index: *self.initial_index + *self.initial_index,
-            step_size: *self.step_size + *self.step_size,
+            step: *self.step + *self.step,
             log_size: *self.log_size - 1,
         }
     }
@@ -340,7 +339,7 @@ mod tests {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
             log_size: 5,
-            step_size: CirclePointIndexImpl::new(67108864),
+            step: CirclePointIndexImpl::new(67108864),
         };
 
         let result = coset.index_at(8);
@@ -357,7 +356,7 @@ mod tests {
             Coset {
                 initial_index: CirclePointIndexImpl::new(16777216),
                 log_size: 5,
-                step_size: CirclePointIndexImpl::new(67108864),
+                step: CirclePointIndexImpl::new(67108864),
             },
         );
     }
@@ -366,7 +365,7 @@ mod tests {
     fn test_coset_double() {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
-            step_size: CirclePointIndexImpl::new(67108864),
+            step: CirclePointIndexImpl::new(67108864),
             log_size: 5,
         };
 
@@ -376,7 +375,7 @@ mod tests {
             result,
             Coset {
                 initial_index: CirclePointIndexImpl::new(33554432),
-                step_size: CirclePointIndexImpl::new(134217728),
+                step: CirclePointIndexImpl::new(134217728),
                 log_size: 4,
             },
         );
@@ -386,7 +385,7 @@ mod tests {
     fn test_coset_at() {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
-            step_size: CirclePointIndexImpl::new(67108864),
+            step: CirclePointIndexImpl::new(67108864),
             log_size: 5,
         };
 
@@ -399,7 +398,7 @@ mod tests {
     fn test_coset_size() {
         let coset = Coset {
             initial_index: CirclePointIndexImpl::new(16777216),
-            step_size: CirclePointIndexImpl::new(67108864),
+            step: CirclePointIndexImpl::new(67108864),
             log_size: 5,
         };
 

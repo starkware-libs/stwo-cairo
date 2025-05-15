@@ -139,7 +139,7 @@ fn line_fft(
 fn gen_twiddles(self: @LineDomain) -> Array<M31> {
     let mut iter = LineDomainIterator {
         cur: self.coset.initial_index.to_point(),
-        step: self.coset.step_size.to_point(),
+        step: self.coset.step.to_point(),
         remaining: self.size() / 2,
     };
     let mut res = array![];
@@ -319,9 +319,14 @@ mod tests {
     fn test_eval_at_point_3() {
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size: 3,
         };
@@ -338,9 +343,14 @@ mod tests {
         let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size));
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size,
         };
@@ -359,9 +369,14 @@ mod tests {
         let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size + 2));
         let poly = LinePoly {
             coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
+                qm31_const::<1, 8, 0, 1>(),
+                qm31_const::<2, 7, 1, 2>(),
+                qm31_const::<3, 6, 0, 1>(),
+                qm31_const::<4, 5, 1, 3>(),
+                qm31_const::<5, 4, 0, 1>(),
+                qm31_const::<6, 3, 1, 4>(),
+                qm31_const::<7, 2, 0, 1>(),
+                qm31_const::<8, 1, 1, 5>(),
             ],
             log_size,
         };
@@ -380,7 +395,7 @@ mod tests {
         fn into_iter(self: LineDomain) -> LineDomainIterator {
             LineDomainIterator {
                 cur: self.coset.initial_index.to_point(),
-                step: self.coset.step_size.to_point(),
+                step: self.coset.step.to_point(),
                 remaining: self.size(),
             }
         }

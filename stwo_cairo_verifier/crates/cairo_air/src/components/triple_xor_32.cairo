@@ -15,9 +15,9 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::components::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
+use crate::components::CairoComponent;
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 21;
@@ -72,7 +72,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);

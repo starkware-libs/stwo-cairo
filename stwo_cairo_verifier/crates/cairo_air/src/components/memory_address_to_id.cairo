@@ -83,7 +83,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *self.claim.log_size;
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step_size;
+        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         constraints::mask_points(
             ref preprocessed_column_set,
             ref trace_mask_points,
