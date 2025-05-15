@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use cairo_vm::vm::runners::cairo_runner::{CairoRunner, ProverInputInfo};
+use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
 use tracing::{span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
@@ -10,20 +10,6 @@ use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::test_utils::read_prover_input_info_file;
 use crate::StateTransitions;
-
-/// Translates a CairoRunner that finished its run into a ProverInput by extracting the relevant
-/// input to the adapter.
-/// When dev mod is enabled, the opcodes generated from the plain casm will be mapped to the generic
-/// component only.
-pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImportError> {
-    let _span = tracing::info_span!("adapt_finished_runner").entered();
-
-    let mut prover_input_info = runner
-        .get_prover_input_info()
-        .expect("Unable to get prover input info");
-
-    adapter(&mut prover_input_info)
-}
 
 pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
     BuiltinSegments::pad_relocatble_builtin_segments(

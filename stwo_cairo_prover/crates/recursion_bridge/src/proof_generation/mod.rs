@@ -8,7 +8,7 @@ mod tests {
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
     use cairo_vm::types::layout_name::LayoutName;
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-    use stwo_cairo_adapter::adapter::adapt_finished_runner;
+    use stwo_cairo_adapter::adapter::adapter;
     use stwo_cairo_adapter::test_utils::program_from_casm;
     use stwo_cairo_adapter::ProverInput;
     use stwo_cairo_prover::prover::prove_cairo;
@@ -35,7 +35,12 @@ mod tests {
             .expect("Run failed");
         runner.relocate(true).unwrap();
 
-        adapt_finished_runner(runner).expect("Failed to adapt finished runner")
+        adapter(
+            &mut runner
+                .get_prover_input_info()
+                .expect("Failed to get prover input info from finished runner"),
+        )
+        .expect("Failed to run adapter")
     }
 
     // TODO(Ohad): this is temporary, develop better automation.

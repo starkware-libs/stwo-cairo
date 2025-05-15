@@ -714,7 +714,7 @@ mod mappings_tests {
     use stwo_cairo_common::prover_types::cpu::CasmState;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::adapter::adapt_finished_runner;
+    use crate::adapter::adapter;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
     use crate::opcodes::{CasmStatesByOpcode, StateTransitions};
@@ -739,7 +739,12 @@ mod mappings_tests {
             )
             .expect("Run failed");
         runner.relocate(true).unwrap();
-        adapt_finished_runner(runner).expect("Failed to adapt finished runner")
+        adapter(
+            &mut runner
+                .get_prover_input_info()
+                .expect("Failed to get prover input info from finished runner"),
+        )
+        .expect("Failed to run adapter")
     }
 
     #[test]
