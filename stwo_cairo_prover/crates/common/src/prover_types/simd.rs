@@ -11,8 +11,8 @@ use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
 
 use super::cpu::{
-    BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
-    PRIME,
+    BigUInt, CasmState, Felt252, Felt252Width27, Relocatable, UInt16, UInt32, UInt64,
+    FELT252WIDTH27_N_WORDS, PRIME, M31,
 };
 use crate::memory::N_M31_IN_FELT252;
 
@@ -657,10 +657,16 @@ impl<const B: usize, const L: usize, const F: usize> EqExtend for PackedBigUInt<
 }
 
 #[derive(Copy, Clone, Debug)]
+pub struct PackedRelocatable {
+    pub segment_index: PackedM31,
+    pub offset: PackedM31,
+}
+
+#[derive(Copy, Clone, Debug)]
 pub struct PackedCasmState {
-    pub pc: PackedM31,
-    pub ap: PackedM31,
-    pub fp: PackedM31,
+    pub pc: PackedRelocatable,
+    pub ap: PackedRelocatable,
+    pub fp: PackedRelocatable,
 }
 
 impl Pack for CasmState {
@@ -668,9 +674,30 @@ impl Pack for CasmState {
 
     fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
         PackedCasmState {
-            pc: PackedM31::from_array(std::array::from_fn(|i| inputs[i].pc)),
-            ap: PackedM31::from_array(std::array::from_fn(|i| inputs[i].ap)),
-            fp: PackedM31::from_array(std::array::from_fn(|i| inputs[i].fp)),
+            pc: PackedRelocatable {
+                segment_index: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(inputs[i].pc.segment_index as u32)
+                })),
+                offset: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(inputs[i].pc.offset as u32)
+                })),
+            },
+            ap: PackedRelocatable {
+                segment_index: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(inputs[i].ap.segment_index as u32)
+                })),
+                offset: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(inputs[i].ap.offset as u32)
+                })),
+            },
+            fp: PackedRelocatable {
+                segment_index: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(inputs[i].fp.segment_index as u32)
+                })),
+                offset: PackedM31::from_array(std::array::from_fn(|i| {
+                    M31::from_u32_unchecked(inputs[i].fp.offset as u32)
+                })),
+            },
         }
     }
 }
@@ -679,11 +706,26 @@ impl Unpack for PackedCasmState {
     type CpuType = CasmState;
 
     fn unpack(self) -> [Self::CpuType; N_LANES] {
-        let (pc, ap, fp) = (self.pc.to_array(), self.ap.to_array(), self.fp.to_array());
+        let pc_segment_indices = self.pc.segment_index.to_array();
+        let pc_offsets = self.pc.offset.to_array();
+        let ap_segment_indices = self.ap.segment_index.to_array();
+        let ap_offsets = self.ap.offset.to_array();
+        let fp_segment_indices = self.fp.segment_index.to_array();
+        let fp_offsets = self.fp.offset.to_array();
+
         std::array::from_fn(|i| CasmState {
-            pc: pc[i],
-            ap: ap[i],
-            fp: fp[i],
+            pc: Relocatable {
+                segment_index: pc_segment_indices[i].0 as usize,
+                offset: pc_offsets[i].0 as usize,
+            },
+            ap: Relocatable {
+                segment_index: ap_segment_indices[i].0 as usize,
+                offset: ap_offsets[i].0 as usize,
+            },
+            fp: Relocatable {
+                segment_index: fp_segment_indices[i].0 as usize,
+                offset: fp_offsets[i].0 as usize,
+            },
         })
     }
 }

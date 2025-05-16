@@ -8,6 +8,7 @@ use starknet_ff::FieldElement;
 use starknet_types_core::felt::Felt as StarknetTypesFelt;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::core::channel::Channel;
+use cairo_vm::vm::trace::trace_entry::TraceEntry;
 
 pub type M31 = stwo_prover::core::fields::m31::M31;
 pub type QM31 = stwo_prover::core::fields::qm31::QM31;
@@ -23,6 +24,25 @@ pub trait NumericType: ProverType + Rem + Shl + Shr + BitAnd + BitOr + BitXor {}
 impl NumericType for UInt16 {}
 impl NumericType for UInt32 {}
 impl NumericType for UInt64 {}
+
+#[derive(
+    Eq, Ord, Hash, PartialEq, PartialOrd, Clone, Copy, Debug, Serialize, Deserialize, Default, CairoSerialize,
+)]
+pub struct Relocatable {
+    pub segment_index: usize,
+    pub offset: usize,
+}
+
+impl Add<usize> for Relocatable {
+    type Output = Self;
+
+    fn add(self, rhs_offset: usize) -> Self::Output {
+        Relocatable {
+            segment_index: self.segment_index,
+            offset: self.offset + rhs_offset,
+        }
+    }
+}
 
 pub trait SingleFeltType: ProverType {
     fn as_m31(&self) -> M31;
@@ -51,25 +71,53 @@ impl ProverType for M31 {
     Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash, CairoSerialize,
 )]
 pub struct CasmState {
-    pub pc: M31,
-    pub ap: M31,
-    pub fp: M31,
+    pub pc: Relocatable,
+    pub ap: Relocatable,
+    pub fp: Relocatable,
 }
 
+
+impl From<&TraceEntry> for CasmState {
+    fn from(trace_entry: &TraceEntry) -> Self {
+        CasmState {
+            pc: Relocatable {
+                segment_index: trace_entry.pc.segment_index as usize,
+                offset: trace_entry.pc.offset as usize,
+            },
+            ap: Relocatable {
+                segment_index: 1,
+                offset: trace_entry.ap as usize,
+            },
+            fp: Relocatable {
+                segment_index: 1,
+                offset: trace_entry.fp as usize,
+            },
+        }
+    }
+}
+
+
 impl CasmState {
-    pub fn values(&self) -> [M31; 3] {
+    pub fn values(&self) -> [Relocatable; 3] {
         [self.pc, self.ap, self.fp]
     }
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.pc.0 as u64);
-        channel.mix_u64(self.ap.0 as u64);
-        channel.mix_u64(self.fp.0 as u64);
+        channel.mix_u64(self.pc.segment_index as u64);
+        channel.mix_u64(self.pc.offset as u64);
+        channel.mix_u64(self.ap.segment_index as u64);
+        channel.mix_u64(self.ap.offset as u64);
+        channel.mix_u64(self.fp.segment_index as u64);
+        channel.mix_u64(self.fp.offset as u64);
     }
 }
 
 impl ProverType for CasmState {
     fn calc(&self) -> String {
-        format!("{{ pc: {}, ap: {}, fp: {} }}", self.pc, self.ap, self.fp)
+        format!(
+            "{{ pc: (seg{:?}, off{:?}), ap: (seg{:?}, off{:?}), fp: (seg{:?}, off{:?}) }}",
+            self.pc.segment_index, self.pc.offset, self.ap.segment_index, self.ap.offset,
+            self.fp.segment_index, self.fp.offset
+        )
     }
     fn r#type() -> String {
         "CasmState".to_string()

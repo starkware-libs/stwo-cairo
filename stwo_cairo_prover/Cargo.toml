@@ -9,6 +9,7 @@ members = [
     "crates/common",
     "crates/recursion_bridge",
     "crates/cairo-air",
+    "crates/continuation",
 ]
 resolver = "2"
 
@@ -43,6 +44,7 @@ stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
+stwo-cairo-continuation = { path = "crates/continuation", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "8b5436d", features = [
     "parallel",

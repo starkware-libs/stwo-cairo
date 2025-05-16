@@ -13,6 +13,8 @@ starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo-prover.workspace = true
 serde_arrays.workspace = true
+cairo-vm.workspace = true
+
 
 [dev-dependencies]
 rand.workspace = true

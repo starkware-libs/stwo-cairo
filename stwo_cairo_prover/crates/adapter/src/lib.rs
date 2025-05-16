@@ -4,6 +4,7 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use memory::Memory;
 use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 
 pub mod adapter;
 pub mod builtins;
@@ -21,8 +22,8 @@ pub const N_REGISTERS: usize = 3;
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
     pub memory: Memory,
-    pub inst_cache: Vec<(u32, u128)>,
-    pub public_memory_addresses: Vec<u32>,
+    pub inst_cache: Vec<(Relocatable, u128)>,
+    pub public_memory_addresses: Vec<Relocatable>,
     pub builtins_segments: BuiltinSegments,
 }
 
@@ -62,7 +63,7 @@ impl ExecutionResources {
                 .collect(),
             builtin_instance_counts: input.builtins_segments.get_counts(),
             memory_tables_sizes: MemoryTablesSizes {
-                address_to_id: input.memory.address_to_id.len(),
+                address_to_id: input.memory.relocatable_to_id.len(),
                 id_to_big: input.memory.f252_values.len(),
                 id_to_small: input.memory.small_values.len(),
             },

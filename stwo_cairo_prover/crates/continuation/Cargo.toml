@@ -1,0 +1,11 @@
+[package]
+name = "stwo-cairo-continuation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stwo-cairo-adapter.workspace = true
+
+[dev-dependencies]
+cairo-vm.workspace = true
+tracing = { workspace = true }

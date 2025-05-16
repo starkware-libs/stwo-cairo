@@ -7,7 +7,6 @@ use super::memory::{MemoryBuilder, MemoryConfig};
 use super::vm_import::VmImportError;
 use super::ProverInput;
 use crate::builtins::BuiltinSegments;
-use crate::relocator::Relocator;
 use crate::test_utils::read_prover_input_info_file;
 use crate::StateTransitions;
 
@@ -26,22 +25,28 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
 }
 
 pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
-    BuiltinSegments::pad_relocatble_builtin_segments(
+    BuiltinSegments::pad_relocatable_builtin_segments(
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
     );
-    let relocator = Relocator::new(
-        prover_input_info.relocatable_memory.clone(),
-        prover_input_info.builtins_segments.clone(),
-    );
 
-    let relocated_memory = relocator.get_relocated_memory();
-    let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
+    let memory = MemoryBuilder::from_relocatable_memory(MemoryConfig::default(), &prover_input_info.relocatable_memory.clone());
+    let state_transitions = StateTransitions::from_relocatables(&prover_input_info.relocatable_trace, &memory);
 
-    let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
-    let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
+    let builtins_segments = BuiltinSegments::get_builtin_segments(&prover_input_info.builtins_segments, &prover_input_info.relocatable_memory);
 
-    let builtins_segments = relocator.get_builtin_segments();
+    let public_memory_addresses = prover_input_info
+    .public_memory_offsets
+    .iter()
+    .flat_map(|(segment_idx, offsets_in_segment)| {
+        offsets_in_segment.iter().map(move |offset_val| {
+            stwo_cairo_common::prover_types::cpu::Relocatable {
+                segment_index: *segment_idx,
+                offset: *offset_val,
+            }
+        })
+        })
+        .collect();
 
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
@@ -49,8 +54,7 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         state_transitions,
         memory,
         inst_cache,
-        public_memory_addresses: relocator
-            .relocate_public_addresses(prover_input_info.public_memory_offsets.clone()),
+        public_memory_addresses,
         builtins_segments,
     })
 }
