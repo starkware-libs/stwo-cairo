@@ -1,7 +1,7 @@
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
-use crate::fields::m31::M31Trait;
+use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
 use crate::{BaseField, SecureField};
@@ -136,7 +136,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 }
 
-fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
+pub fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
     low & gen_bit_mask(n_bits) == 0
 }
@@ -157,7 +157,7 @@ fn draw_felt252(ref channel: Poseidon252Channel) -> felt252 {
 }
 
 #[inline]
-fn extract_m31<const N: usize>(ref num: u256) -> M31 {
+fn extract_m31(ref num: u256) -> M31 {
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     M31Trait::reduce_u128(r.low)

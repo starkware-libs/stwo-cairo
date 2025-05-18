@@ -10,8 +10,8 @@ use bounded_int::{BoundedInt, DivRemHelper, constrain, div_rem, upcast};
 // #[cfg(feature: "qm31_opcode")]
 // use opcode::*;
 
-mod opcode;
-use opcode::*;
+mod naive;
+use naive::*;
 
 pub const P: felt252 = 0x7fffffff;
 

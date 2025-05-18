@@ -18,7 +18,7 @@ fn test_fold_2() {
 }
 
 #[test]
-#[cfg(feature: "poseidon252_verifier")]
+#[cfg(not(feature: "poseidon252_verifier"))]
 fn test_generate() {
     let mut channel: Channel = Default::default();
     let result = QueriesImpl::generate(ref channel, 31, 100);

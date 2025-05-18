@@ -1,5 +1,8 @@
+use crate::channel::{
+    ChannelTrait,
+};
 use crate::channel::poseidon252::{
-    ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work, gen_bit_mask,
+     Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work,
 };
 use crate::fields::qm31::qm31_const;
 

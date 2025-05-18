@@ -1791,7 +1791,7 @@ pub type MemorySection = Array<PubMemoryValue>;
 
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
-#[cfg(not(feature: "poseidon252_verifier"))]
+#[cfg(feature: "poseidon252_verifier")]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
@@ -1820,7 +1820,7 @@ pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
 
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
-#[cfg(feature: "poseidon252_verifier")]
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut felts = array![];
     for entry in section {
@@ -5598,7 +5598,7 @@ mod tests {
         }
     }
 
-    #[cfg(not(feature: "poseidon252_verifier"))]
+    #[cfg(feature: "poseidon252_verifier")]
     #[test]
     fn test_hash_memory_section() {
         let section = array![
@@ -5615,7 +5615,7 @@ mod tests {
         );
     }
 
-    #[cfg(feature: "poseidon252_verifier")]
+    #[cfg(not(feature: "poseidon252_verifier"))]
     #[test]
     fn test_hash_memory_section() {
         let section = array![

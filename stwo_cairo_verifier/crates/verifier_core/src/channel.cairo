@@ -1,24 +1,24 @@
 use crate::{Hash, SecureField};
 
-#[cfg(not(feature: "poseidon252_verifier"))]
+#[cfg(feature: "poseidon252_verifier")]
 pub mod blake2s;
-#[cfg(not(feature: "poseidon252_verifier"))]
+#[cfg(feature: "poseidon252_verifier")]
 #[cfg(test)]
 mod blake2s_test;
 
-#[cfg(feature: "poseidon252_verifier")]
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub mod poseidon252;
-#[cfg(feature: "poseidon252_verifier")]
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[cfg(test)]
 mod poseidon252_test;
 
-#[cfg(not(feature: "poseidon252_verifier"))]
+#[cfg(feature: "poseidon252_verifier")]
 pub type Channel = blake2s::Blake2sChannel;
-#[cfg(feature: "poseidon252_verifier")]
-pub type Channel = poseidon252::Poseidon252Channel;
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub use blake2s::Blake2sChannelImpl as ChannelImpl;
+pub type Channel = poseidon252::Poseidon252Channel;
 #[cfg(feature: "poseidon252_verifier")]
+pub use blake2s::Blake2sChannelImpl as ChannelImpl;
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
 #[derive(Default, Drop)]
