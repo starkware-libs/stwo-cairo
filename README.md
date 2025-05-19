@@ -17,7 +17,8 @@ Prove Cairo programs with the new [Stwo prover](https://github.com/starkware-lib
 
 ## Disclaimer
 
-🚧 Stwo is WIP and is not yet Sound 🚧
+🚧 S-two is not yet production-ready, but getting close.
+Early adopters are welcome—but we don't recommend using it in a production setting just yet. 🚧
 
 🚧 The Stwo prover and its Cairo adaptation are still being built, therefore API breaking changes might happen
 often, so use it at your own risk. 🚧
