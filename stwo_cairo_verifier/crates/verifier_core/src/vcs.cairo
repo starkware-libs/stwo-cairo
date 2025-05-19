@@ -1,5 +1,7 @@
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s_hasher;
 #[cfg(test)]
+#[cfg(not(feature: "poseidon252_verifier"))]
 mod blake2s_hasher_test;
 
 pub mod hasher;
