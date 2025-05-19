@@ -17,6 +17,8 @@ mod fib_128_column_with_blowup_16_proof;
 #[cfg(feature: "poseidon252_verifier")]
 mod fib_128_column_with_blowup_2_proof;
 
+const SECURITY_BITS: u32 = 60;
+
 // TODO(andrew): Add back in with new proof data.
 #[test]
 #[available_gas(100000000000)]
@@ -46,7 +48,7 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
             ref channel,
         );
 
-    if let Err(err) = verify(air, ref channel, proof, commitment_scheme) {
+    if let Err(err) = verify(air, ref channel, proof, commitment_scheme, SECURITY_BITS) {
         panic!("Verification failed: {:?}", err);
     }
 }
@@ -80,7 +82,7 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
             ref channel,
         );
 
-    if let Err(err) = verify(air, ref channel, proof, commitment_scheme) {
+    if let Err(err) = verify(air, ref channel, proof, commitment_scheme, SECURITY_BITS) {
         panic!("Verification failed: {:?}", err);
     }
 }
