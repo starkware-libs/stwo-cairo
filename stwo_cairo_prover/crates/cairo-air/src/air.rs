@@ -301,17 +301,17 @@ impl SegmentRange {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
 pub struct PublicSegmentRanges {
-    pub output: SegmentRange,
-    pub pedersen: SegmentRange,
-    pub range_check_128: SegmentRange,
-    pub ecdsa: SegmentRange,
-    pub bitwise: SegmentRange,
-    pub ec_op: SegmentRange,
-    pub keccak: SegmentRange,
-    pub poseidon: SegmentRange,
-    pub range_check_96: SegmentRange,
-    pub add_mod: SegmentRange,
-    pub mul_mod: SegmentRange,
+    pub output: Option<SegmentRange>,
+    pub pedersen: Option<SegmentRange>,
+    pub range_check_128: Option<SegmentRange>,
+    pub ecdsa: Option<SegmentRange>,
+    pub bitwise: Option<SegmentRange>,
+    pub ec_op: Option<SegmentRange>,
+    pub keccak: Option<SegmentRange>,
+    pub poseidon: Option<SegmentRange>,
+    pub range_check_96: Option<SegmentRange>,
+    pub add_mod: Option<SegmentRange>,
+    pub mul_mod: Option<SegmentRange>,
 }
 
 impl PublicSegmentRanges {
@@ -320,37 +320,9 @@ impl PublicSegmentRanges {
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let PublicSegmentRanges {
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = *self;
-        let segments = [
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        ]
-        .into_iter()
-        .collect_vec();
+        let segments = self.present_segments();
 
         let n_segments = segments.len() as u32;
-        assert_eq!(n_segments, 11);
 
         segments
             .into_iter()
@@ -375,30 +347,28 @@ impl PublicSegmentRanges {
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        let Self {
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = *self;
-        output.mix_into(channel);
-        pedersen.mix_into(channel);
-        range_check_128.mix_into(channel);
-        ecdsa.mix_into(channel);
-        bitwise.mix_into(channel);
-        ec_op.mix_into(channel);
-        keccak.mix_into(channel);
-        poseidon.mix_into(channel);
-        range_check_96.mix_into(channel);
-        add_mod.mix_into(channel);
-        mul_mod.mix_into(channel);
+        for segment in self.present_segments() {
+            segment.mix_into(channel);
+        }
+    }
+
+    pub fn present_segments(&self) -> Vec<SegmentRange> {
+        vec![
+            self.output,
+            self.pedersen,
+            self.range_check_128,
+            self.ecdsa,
+            self.bitwise,
+            self.ec_op,
+            self.keccak,
+            self.poseidon,
+            self.range_check_96,
+            self.add_mod,
+            self.mul_mod,
+        ]
+        .into_iter()
+        .flatten()
+        .collect_vec()
     }
 }
 
@@ -408,7 +378,7 @@ pub type MemorySection = Vec<PubMemoryValue>;
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
-    pub output: MemorySection,
+    pub output: Option<MemorySection>,
     pub safe_call: MemorySection,
 }
 
@@ -420,18 +390,31 @@ impl PublicMemory {
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
-            .map(|section| section.clone().into_iter().enumerate());
+        // let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
+        //     .map(|section| section.clone().into_iter().enumerate());
+        let program = self.program.iter().copied().enumerate();
+        let safe_call = self.safe_call.iter().copied().enumerate();
         let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
-        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
         let safe_call_iter =
             safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
 
-        program_iter
+        let mut entries = program_iter
             .chain(safe_call_iter)
             .chain(segment_ranges_iter)
-            .chain(output_iter)
+            .collect_vec();
+
+        if let Some(output) = &self.output {
+            let output_iter = output
+                .iter()
+                .copied()
+                .enumerate()
+                .map(move |(i, (id, value))| (final_ap + i as u32, id, value))
+                .collect_vec();
+            entries.extend(output_iter);
+        }
+
+        entries.into_iter()
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -449,7 +432,9 @@ impl PublicMemory {
         public_segments.mix_into(channel);
 
         // Mix output memory section.
-        channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
+        if let Some(output) = &output {
+            channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
+        }
 
         // Mix safe_call memory section.
         channel.mix_u64(safe_call.len() as u64);

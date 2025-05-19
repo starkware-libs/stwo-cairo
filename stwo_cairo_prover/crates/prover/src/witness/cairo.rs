@@ -1,10 +1,12 @@
+use std::ops::Range;
+
 use cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
     PublicMemory, PublicSegmentRanges, SegmentRange,
 };
 use itertools::Itertools;
 use stwo_cairo_adapter::memory::Memory;
-use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::M31;
 use tracing::{span, Level};
@@ -25,8 +27,13 @@ use crate::witness::components::{
 };
 use crate::witness::utils::TreeBuilder;
 
-fn extract_public_segments(memory: &Memory, initial_ap: u32, final_ap: u32) -> PublicSegmentRanges {
-    let n_public_segments = 11;
+fn extract_public_segments(
+    memory: &Memory,
+    initial_ap: u32,
+    final_ap: u32,
+    public_segment_context: PublicSegmentContext,
+) -> PublicSegmentRanges {
+    let n_public_segments = public_segment_context.iter().filter(|&b| *b).count() as u32;
 
     let to_memory_value = |addr: u32| {
         let id = memory.get_raw_id(addr);
@@ -36,26 +43,34 @@ fn extract_public_segments(memory: &Memory, initial_ap: u32, final_ap: u32) -> P
 
     let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(to_memory_value);
     let end_ptrs = (final_ap - n_public_segments..final_ap).map(to_memory_value);
-    let ranges: Vec<_> = start_ptrs
+    let mut ranges = start_ptrs
         .zip(end_ptrs)
         .map(|(start_ptr, stop_ptr)| SegmentRange {
             start_ptr,
             stop_ptr,
-        })
-        .collect();
+        });
+    let mut present = public_segment_context.into_iter();
+    let mut next = || {
+        let present = present.next().unwrap();
+        if present {
+            ranges.next()
+        } else {
+            None
+        }
+    };
 
     PublicSegmentRanges {
-        output: ranges[0],
-        pedersen: ranges[1],
-        range_check_128: ranges[2],
-        ecdsa: ranges[3],
-        bitwise: ranges[4],
-        ec_op: ranges[5],
-        keccak: ranges[6],
-        poseidon: ranges[7],
-        range_check_96: ranges[8],
-        add_mod: ranges[9],
-        mul_mod: ranges[10],
+        output: next(),
+        pedersen: next(),
+        range_check_128: next(),
+        ecdsa: next(),
+        bitwise: next(),
+        ec_op: next(),
+        keccak: next(),
+        poseidon: next(),
+        range_check_96: next(),
+        add_mod: next(),
+        mul_mod: next(),
     }
 }
 
@@ -64,18 +79,12 @@ fn extract_sections_from_memory(
     initial_pc: u32,
     initial_ap: u32,
     final_ap: u32,
+    public_segment_context: PublicSegmentContext,
 ) -> PublicMemory {
-    let public_segments = extract_public_segments(memory, initial_ap, final_ap);
-    let program_memory_addresses = initial_pc..initial_ap - 2;
-    let safe_call_addresses = initial_ap - 2..initial_ap;
-    let output_memory_addresses =
-        public_segments.output.start_ptr.value..public_segments.output.stop_ptr.value;
-    let [program, safe_call, output] = [
-        program_memory_addresses,
-        safe_call_addresses,
-        output_memory_addresses,
-    ]
-    .map(|range| {
+    let public_segments =
+        extract_public_segments(memory, initial_ap, final_ap, public_segment_context);
+
+    let sweep = |range: Range<u32>| {
         range
             .map(|addr| {
                 let id = memory.get_raw_id(addr);
@@ -83,7 +92,16 @@ fn extract_sections_from_memory(
                 (id, value)
             })
             .collect_vec()
-    });
+    };
+    let program = sweep(initial_pc..initial_ap - 2);
+    let safe_call = sweep(initial_ap - 2..initial_ap);
+    let output = public_segments.output.map(
+        |SegmentRange {
+             start_ptr,
+             stop_ptr,
+         }| { sweep(start_ptr.value..stop_ptr.value) },
+    );
+
     PublicMemory {
         program,
         safe_call,
@@ -116,19 +134,27 @@ pub struct CairoClaimGenerator {
     // ...
 }
 impl CairoClaimGenerator {
-    pub fn new(input: ProverInput) -> Self {
-        let initial_state = input.state_transitions.initial_state;
-        let final_state = input.state_transitions.final_state;
-        let opcodes = OpcodesClaimGenerator::new(input.state_transitions);
+    pub fn new(
+        ProverInput {
+            state_transitions,
+            memory,
+            inst_cache,
+            public_memory_addresses,
+            builtins_segments,
+            public_segment_context,
+        }: ProverInput,
+    ) -> Self {
+        let initial_state = state_transitions.initial_state;
+        let final_state = state_transitions.final_state;
+        let opcodes = OpcodesClaimGenerator::new(state_transitions);
         let verify_instruction_trace_generator =
-            verify_instruction::ClaimGenerator::new(input.inst_cache);
-        let builtins = BuiltinsClaimGenerator::new(input.builtins_segments);
+            verify_instruction::ClaimGenerator::new(inst_cache);
+        let builtins = BuiltinsClaimGenerator::new(builtins_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =
-            memory_address_to_id::ClaimGenerator::new(&input.memory);
-        let memory_id_to_value_trace_generator =
-            memory_id_to_big::ClaimGenerator::new(&input.memory);
+            memory_address_to_id::ClaimGenerator::new(&memory);
+        let memory_id_to_value_trace_generator = memory_id_to_big::ClaimGenerator::new(&memory);
         let range_checks_trace_generator = RangeChecksClaimGenerator::new();
         let verify_bitwise_xor_4_trace_generator = verify_bitwise_xor_4::ClaimGenerator::new();
         let verify_bitwise_xor_7_trace_generator = verify_bitwise_xor_7::ClaimGenerator::new();
@@ -136,8 +162,7 @@ impl CairoClaimGenerator {
         let verify_bitwise_xor_9_trace_generator = verify_bitwise_xor_9::ClaimGenerator::new();
 
         // Yield public memory.
-        for addr in input
-            .public_memory_addresses
+        for addr in public_memory_addresses
             .iter()
             .copied()
             .map(M31::from_u32_unchecked)
@@ -151,8 +176,13 @@ impl CairoClaimGenerator {
         let initial_pc = initial_state.pc.0;
         let initial_ap = initial_state.ap.0;
         let final_ap = final_state.ap.0;
-        let public_memory =
-            extract_sections_from_memory(&input.memory, initial_pc, initial_ap, final_ap);
+        let public_memory = extract_sections_from_memory(
+            &memory,
+            initial_pc,
+            initial_ap,
+            final_ap,
+            public_segment_context,
+        );
 
         let public_data = PublicData {
             public_memory,
@@ -160,7 +190,7 @@ impl CairoClaimGenerator {
             final_state,
         };
 
-        let blake_context_trace_generator = BlakeContextClaimGenerator::new(input.memory);
+        let blake_context_trace_generator = BlakeContextClaimGenerator::new(memory);
 
         Self {
             public_data,

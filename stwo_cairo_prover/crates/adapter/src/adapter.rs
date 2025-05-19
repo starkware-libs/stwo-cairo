@@ -9,7 +9,7 @@ use super::ProverInput;
 use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::test_utils::read_prover_input_info_file;
-use crate::StateTransitions;
+use crate::{PublicSegmentContext, StateTransitions};
 
 pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
     BuiltinSegments::pad_relocatble_builtin_segments(
@@ -31,6 +31,9 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
 
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
+
+    // TODO(Ohad): take this from the input.
+    let public_segment_context = PublicSegmentContext::bootloader_context();
     Ok(ProverInput {
         state_transitions,
         memory,
@@ -38,6 +41,7 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         public_memory_addresses: relocator
             .relocate_public_addresses(prover_input_info.public_memory_offsets.clone()),
         builtins_segments,
+        public_segment_context,
     })
 }
 
