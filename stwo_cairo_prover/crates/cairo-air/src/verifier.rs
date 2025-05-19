@@ -48,7 +48,7 @@ fn verify_claim(claim: &CairoClaim) {
 
     verify_builtins(&claim.builtins, public_segments);
 
-    verify_program(program);
+    verify_program(program, public_segments);
 
     assert_eq!(*initial_pc, BaseField::one());
     assert!(
@@ -82,23 +82,42 @@ struct BuiltinClaim {
 }
 
 fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmentRanges) {
+    let PublicSegmentRanges {
+        output,
+        pedersen,
+        range_check_128,
+        ecdsa,
+        bitwise,
+        ec_op,
+        keccak,
+        poseidon,
+        range_check_96,
+        add_mod,
+        mul_mod,
+    } = *segment_ranges;
     // Check that non-supported builtins aren't used.
-    assert_eq!(
-        segment_ranges.ec_op.start_ptr.value,
-        segment_ranges.ec_op.stop_ptr.value
-    );
-    assert_eq!(
-        segment_ranges.ecdsa.start_ptr.value,
-        segment_ranges.ecdsa.stop_ptr.value
-    );
-    assert_eq!(
-        segment_ranges.keccak.start_ptr.value,
-        segment_ranges.keccak.stop_ptr.value
-    );
+    if let Some(ecdsa) = ecdsa {
+        assert_eq!(
+            ecdsa.start_ptr.value, ecdsa.stop_ptr.value,
+            "ECDSA segment is not empty"
+        );
+    }
+    if let Some(keccak) = keccak {
+        assert_eq!(
+            keccak.start_ptr.value, keccak.stop_ptr.value,
+            "Keccak segment is not empty"
+        );
+    }
+    if let Some(ec_op) = ec_op {
+        assert_eq!(
+            ec_op.start_ptr.value, ec_op.stop_ptr.value,
+            "EC_OP segment is not empty"
+        );
+    }
 
     // Output builtin.
-    assert!(segment_ranges.output.stop_ptr.value < 1 << 31);
-    assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
+    assert!(output.stop_ptr.value < 1 << 31);
+    assert!(output.start_ptr.value <= output.stop_ptr.value);
 
     // Macro for calling `check_builtin` on all builtins except both range_check builtins.
     macro_rules! check_builtin_generic {
@@ -110,7 +129,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
                             segment_start: claim.[<$name _builtin_segment_start>],
                             log_size: claim.log_size,
                         }),
-                    segment_ranges.$name,
+                    $name,
                     stringify!($name),
                     [<$name:upper _MEMORY_CELLS>]
                 );
@@ -126,7 +145,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
                 segment_start: claim.range_check_builtin_segment_start,
                 log_size: claim.log_size,
             }),
-        segment_ranges.range_check_128,
+        range_check_128,
         "range_check_128",
         RANGE_CHECK_MEMORY_CELLS,
     );
@@ -137,7 +156,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
                 segment_start: claim.range_check96_builtin_segment_start,
                 log_size: claim.log_size,
             }),
-        segment_ranges.range_check_96,
+        range_check_96,
         "range_check_96",
         RANGE_CHECK_MEMORY_CELLS,
     );
@@ -148,9 +167,10 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
     check_builtin_generic!(poseidon);
 }
 
-fn verify_program(program: &MemorySection) {
-    assert_eq!(program[0].1, [0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += N_BUILTINS.
-    assert_eq!(program[1].1, [11, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (N_BUILTINS).
+fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges) {
+    let n_builtins = public_segments.present_segments().len() as u32;
+    assert_eq!(program[0].1, [0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += Imm.
+    assert_eq!(program[1].1, [n_builtins, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction.
     assert_eq!(program[2].1, [0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0]); // Instruction: call rel ?
     assert_eq!(program[4].1, [0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0]); // Instruction: jmp rel 0.
     assert_eq!(program[5].1, [0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
@@ -158,13 +178,20 @@ fn verify_program(program: &MemorySection) {
 
 fn check_builtin(
     builtin_claim: Option<BuiltinClaim>,
-    segment_range: SegmentRange,
+    segment_range: Option<SegmentRange>,
     name: &str,
     n_cells: usize,
 ) {
-    if segment_range.is_empty() {
-        return;
-    }
+    let segment_range = match segment_range {
+        None => return,
+        Some(segment_range) => {
+            if segment_range.is_empty() {
+                return;
+            }
+            segment_range
+        }
+    };
+
     // If segment range is non-empty, claim must be Some.
     let BuiltinClaim {
         segment_start,

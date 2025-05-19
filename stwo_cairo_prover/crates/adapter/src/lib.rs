@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use builtins::BuiltinSegments;
 pub use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
@@ -24,6 +26,51 @@ pub struct ProverInput {
     pub inst_cache: Vec<(u32, u128)>,
     pub public_memory_addresses: Vec<u32>,
     pub builtins_segments: BuiltinSegments,
+    pub public_segment_context: PublicSegmentContext,
+}
+
+const N_PUBLIC_SEGMENTS: usize = 11;
+/// Represents the pointer arguments of the `main` function.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PublicSegmentContext {
+    present: [bool; N_PUBLIC_SEGMENTS],
+}
+impl PublicSegmentContext {
+    pub fn new(vm_format: &[BuiltinName]) -> Self {
+        let mut present = [false; N_PUBLIC_SEGMENTS];
+        for builtin in vm_format {
+            match builtin {
+                BuiltinName::output => present[0] = true,
+                BuiltinName::pedersen => present[1] = true,
+                BuiltinName::range_check => present[2] = true,
+                BuiltinName::ecdsa => present[3] = true,
+                BuiltinName::bitwise => present[4] = true,
+                BuiltinName::ec_op => present[5] = true,
+                BuiltinName::keccak => present[6] = true,
+                BuiltinName::poseidon => present[7] = true,
+                BuiltinName::range_check96 => present[8] = true,
+                BuiltinName::add_mod => present[9] = true,
+                BuiltinName::mul_mod => present[10] = true,
+                BuiltinName::segment_arena => {
+                    // Do nothing.
+                }
+            }
+        }
+        Self { present }
+    }
+
+    pub fn bootloader_context() -> Self {
+        Self {
+            present: [true; N_PUBLIC_SEGMENTS],
+        }
+    }
+}
+impl Deref for PublicSegmentContext {
+    type Target = [bool; N_PUBLIC_SEGMENTS];
+
+    fn deref(&self) -> &Self::Target {
+        &self.present
+    }
 }
 
 /// Sizes of memory address to ID and ID to value tables.
