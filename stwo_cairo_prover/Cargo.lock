@@ -1411,19 +1411,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "recursion-bridge"
-version = "0.1.0"
-dependencies = [
- "cairo-air",
- "cairo-lang-casm",
- "cairo-vm",
- "serde_json",
- "stwo-cairo-adapter",
- "stwo-prover",
- "stwo_cairo_prover",
-]
-
-[[package]]
 name = "redox_syscall"
 version = "0.5.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
