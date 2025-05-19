@@ -1290,9 +1290,15 @@ fn verify_claim(claim: @CairoClaim) {
 
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
     // Check that non-supported builtins aren't used.
-    assert!(segment_ranges.ec_op.start_ptr.value == segment_ranges.ec_op.stop_ptr.value);
-    assert!(segment_ranges.ecdsa.start_ptr.value == segment_ranges.ecdsa.stop_ptr.value);
-    assert!(segment_ranges.keccak.start_ptr.value == segment_ranges.keccak.stop_ptr.value);
+    if let Some(ec_op) = segment_ranges.ec_op {
+        assert!(ec_op.start_ptr.value == ec_op.stop_ptr.value);
+    }
+    if let Some(ecdsa) = segment_ranges.ecdsa {
+        assert!(ecdsa.start_ptr.value == ecdsa.stop_ptr.value);
+    }
+    if let Some(keccak) = segment_ranges.keccak {
+        assert!(keccak.start_ptr.value == keccak.stop_ptr.value);
+    }
 
     // Output builtin.
     assert!(segment_ranges.output.stop_ptr.value <= @pow2(31));
@@ -1396,10 +1402,18 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     );
 }
 
-fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
-    if segment_range.is_empty() {
-        return;
-    }
+fn check_builtin(
+    builtin_claim: Option<BuiltinClaim>, segment_range: Option<SegmentRange>, n_cells: usize,
+) {
+    let segment_range = match segment_range {
+        None => { return; },
+        Some(segment_range) => {
+            if segment_range.is_empty() {
+                return;
+            }
+            segment_range
+        },
+    };
 
     let BuiltinClaim { segment_start, log_size } = builtin_claim.unwrap();
 
@@ -1744,45 +1758,61 @@ impl SegmentRangeImpl of SegmentRangeTrait {
 #[derive(Clone, Debug, Serde, Copy, Drop)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
-    pub pedersen: SegmentRange,
-    pub range_check_128: SegmentRange,
-    pub ecdsa: SegmentRange,
-    pub bitwise: SegmentRange,
-    pub ec_op: SegmentRange,
-    pub keccak: SegmentRange,
-    pub poseidon: SegmentRange,
-    pub range_check_96: SegmentRange,
-    pub add_mod: SegmentRange,
-    pub mul_mod: SegmentRange,
+    pub pedersen: Option<SegmentRange>,
+    pub range_check_128: Option<SegmentRange>,
+    pub ecdsa: Option<SegmentRange>,
+    pub bitwise: Option<SegmentRange>,
+    pub ec_op: Option<SegmentRange>,
+    pub keccak: Option<SegmentRange>,
+    pub poseidon: Option<SegmentRange>,
+    pub range_check_96: Option<SegmentRange>,
+    pub add_mod: Option<SegmentRange>,
+    pub mul_mod: Option<SegmentRange>,
 }
 
 #[generate_trait]
 impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
     fn mix_into(self: @PublicSegmentRanges, ref channel: Channel) {
-        let PublicSegmentRanges {
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = *self;
-        output.mix_into(ref channel);
-        pedersen.mix_into(ref channel);
-        range_check_128.mix_into(ref channel);
-        ecdsa.mix_into(ref channel);
-        bitwise.mix_into(ref channel);
-        ec_op.mix_into(ref channel);
-        keccak.mix_into(ref channel);
-        poseidon.mix_into(ref channel);
-        range_check_96.mix_into(ref channel);
-        add_mod.mix_into(ref channel);
-        mul_mod.mix_into(ref channel);
+        for segment in self.present_segments() {
+            segment.mix_into(ref channel);
+        }
+    }
+
+    fn present_segments(self: @PublicSegmentRanges) -> Array<@SegmentRange> {
+        let mut segments = array![];
+
+        segments.append(self.output);
+        if let Some(pedersen) = self.pedersen {
+            segments.append(pedersen);
+        }
+        if let Some(range_check_128) = self.range_check_128 {
+            segments.append(range_check_128);
+        }
+        if let Some(ecdsa) = self.ecdsa {
+            segments.append(ecdsa);
+        }
+        if let Some(bitwise) = self.bitwise {
+            segments.append(bitwise);
+        }
+        if let Some(ec_op) = self.ec_op {
+            segments.append(ec_op);
+        }
+        if let Some(keccak) = self.keccak {
+            segments.append(keccak);
+        }
+        if let Some(poseidon) = self.poseidon {
+            segments.append(poseidon);
+        }
+        if let Some(range_check_96) = self.range_check_96 {
+            segments.append(range_check_96);
+        }
+        if let Some(add_mod) = self.add_mod {
+            segments.append(add_mod);
+        }
+        if let Some(mul_mod) = self.mul_mod {
+            segments.append(mul_mod);
+        }
+        segments
     }
 }
 
@@ -1865,41 +1895,22 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         let (id, value) = self.safe_call[1];
         entries.append((initial_ap - 1, *id, *value));
 
-        // Segment ranges.
-        let PublicSegmentRanges {
-            output,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = self.public_segments;
-
         i = 0;
-        for segment in [
-            output, pedersen, range_check_128, ecdsa, bitwise, ec_op, keccak, poseidon,
-            range_check_96, add_mod, mul_mod,
-        ]
-            .span() {
+        for segment in self.public_segments.present_segments() {
             entries
                 .append(
                     (
                         initial_ap + i,
-                        **segment.start_ptr.id,
-                        [**segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                        *segment.start_ptr.id,
+                        [*segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
                     ),
                 );
             entries
                 .append(
                     (
                         final_ap - 11 + i,
-                        **segment.stop_ptr.id,
-                        [**segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                        *segment.stop_ptr.id,
+                        [*segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
                     ),
                 );
             i += 1;
@@ -5523,37 +5534,19 @@ mod tests {
     #[cairofmt::skip]
     fn test_public_data_logup_sum() {
         let mut public_data_felts = array![
-            52,0,2147450879,67600385,0,0,0,0,0,0,1,11,0,0,0,0,0,0,0,2,2147581952,285507585,0,0,0,0,
-            0,0,3,30,0,0,0,0,0,0,0,4,2147450879,17268737,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,2147450879,
-            67600385,0,0,0,0,0,0,6,1,0,0,0,0,0,0,0,7,2147450878,546013183,0,0,0,0,0,0,8,2147450877,
-            34045953,0,0,0,0,0,0,9,4,0,0,0,0,0,0,0,10,2147450880,1208647676,0,0,0,0,0,0,7,
-            2147450878,546013183,0,0,0,0,0,0,11,2147450880,1208385537,0,0,0,0,0,0,12,3,0,0,0,0,0,0,
-            0,13,2147254271,1073905664,0,0,0,0,0,0,11,2147450880,1208385537,0,0,0,0,0,0,14,6,0,0,0,
-            0,0,0,0,15,2147254271,1073905665,0,0,0,0,0,0,16,2147254272,1208123395,0,0,0,0,0,0,17,
-            2147450879,1074167809,0,0,0,0,0,0,18,5,0,0,0,0,0,0,0,19,2147254272,1208123396,0,0,0,0,0,
-            0,17,2147450879,1074167809,0,0,0,0,0,0,20,7,0,0,0,0,0,0,0,21,2147254272,1210482689,0,0,
-            0,0,0,0,18,5,0,0,0,0,0,0,0,22,2147319808,1210482689,0,0,0,0,0,0,1073741824,0,0,0,0,0,0,
-            17,134217728,2,2147581952,285507585,0,0,0,0,0,0,1073741825,4294967277,4294967295,
-            4294967295,4294967295,4294967295,4294967295,16,134217728,7,2147450878,546013183,0,0,0,0,
-            0,0,0,2147450879,67600385,0,0,0,0,0,0,6,1,0,0,0,0,0,0,0,23,2147450880,1074233345,0,0,0,
-            0,0,0,24,50,0,0,0,0,0,0,0,25,2147450880,1208647671,0,0,0,0,0,0,26,2147450880,1208647680,
-            0,0,0,0,0,0,2,2147581952,285507585,0,0,0,0,0,0,1073741826,4294967268,4294967295,
-            4294967295,4294967295,4294967295,4294967295,16,134217728,27,2147450880,1208647667,0,0,0,
-            0,0,0,28,2147450880,1208647668,0,0,0,0,0,0,29,2147450880,1208647669,0,0,0,0,0,0,30,
-            2147450880,1208647670,0,0,0,0,0,0,31,2147450880,1209171963,0,0,0,0,0,0,32,2147450880,
-            1208647672,0,0,0,0,0,0,33,2147450880,1208647673,0,0,0,0,0,0,34,2147450880,1208647674,0,
-            0,0,0,0,0,35,2147450880,1208647675,0,0,0,0,0,0,10,2147450880,1208647676,0,0,0,0,0,0,36,
-            2147450880,1208647677,0,0,0,0,0,0,7,2147450878,546013183,0,0,0,0,0,0,38,485,38,485,38,
-            485,38,485,39,869,39,869,40,4965,40,4965,41,4997,188,5247,42,15237,42,15237,43,15461,43,
-            15461,44,15717,44,15717,45,16485,45,16485,46,20581,46,20581,47,22373,47,22373,0,2,37,55,
-            0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,1,55,55,5,485,55
-        ].span();
+            0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520, 0, 228, 
+            2520, 228, 2520, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 
+            2520, 0, 5, 0, 5, 0, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 2520, 
+            0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520,
+            0, 228, 2520, 228, 2520, 0, 2, 227, 1336, 0, 0, 0, 0, 0, 
+            0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1336, 1336, 5, 2520, 1336]
+        .span();
         let public_data: PublicData = Serde::deserialize(ref public_data_felts).unwrap();
         let dummy_lookup_elements = dummy_interaction_lookup_elements();
 
         let sum = public_data.logup_sum(@dummy_lookup_elements);
 
-        assert_eq!(sum, qm31_const::<1953467177,1393200374, 79713755, 621084348>());
+        assert_eq!(sum, qm31_const::<971792689, 636659210, 1237675822, 245392094>());
     }
 
     fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
