@@ -7,7 +7,6 @@ members = [
     "crates/cairo-serialize-derive",
     "crates/utils",
     "crates/common",
-    "crates/recursion_bridge",
     "crates/cairo-air",
 ]
 resolver = "2"
