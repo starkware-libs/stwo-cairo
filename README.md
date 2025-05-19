@@ -1,8 +1,8 @@
-# ⚡ Stwo Cairo ⚡
+# ⚡ S-two Cairo ⚡
 
-Prove Cairo programs with the new [Stwo prover](https://github.com/starkware-libs/stwo), which is based on the [circle STARK](https://eprint.iacr.org/2024/278) protocol
+Prove Cairo programs with the new [S-two prover](https://github.com/starkware-libs/stwo), which is based on the [circle STARK](https://eprint.iacr.org/2024/278) protocol
 
-* [Using Stwo to Prove Cairo Programs](#using-stwo-to-prove-cairo-programs)
+* [Using S-two to Prove Cairo Programs](#using-stwo-to-prove-cairo-programs)
 * [Creating a Cairo Executable](#creating-a-cairo-executable)
   * [Prerequisites](#prerequisites)
   * [Defining an Executable Package](#defining-an-executable-package)
@@ -17,9 +17,10 @@ Prove Cairo programs with the new [Stwo prover](https://github.com/starkware-lib
 
 ## Disclaimer
 
-🚧 Stwo is WIP and is not yet Sound 🚧
+🚧 S-two is not yet production-ready, but getting close.
+Early adopters are welcome, but we don't recommend using it in a production setting just yet. 🚧
 
-🚧 The Stwo prover and its Cairo adaptation are still being built, therefore API breaking changes might happen
+🚧 The S-two prover and its Cairo adaptation are still being built, therefore API breaking changes might happen
 often, so use it at your own risk. 🚧
 
 # Using Stwo to Prove Cairo Programs
@@ -30,7 +31,7 @@ After executing a Cairo program one should be in the possession of four files:
 * trace.bin
 * memory.bin
 
-With the *absolute* paths to the trace and memory files appearing in `air_private_inputs`. After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a Stwo proof (run the command below from the `stwo_cairo_prover` folder):
+With the *absolute* paths to the trace and memory files appearing in `air_private_inputs`. After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a S-two proof (run the command below from the `stwo_cairo_prover` folder):
 
 ```
 cargo run --bin adapted_stwo --release \
@@ -41,7 +42,7 @@ cargo run --bin adapted_stwo --release \
 
 For best performance, run with `RUSTFLAGS="-C target-cpu=native -C opt-level=3" --features="std"`
 
-In the next section we'll see how to generate the inputs to adapted stwo from a Cairo program.
+In the next section we'll see how to generate the inputs to `adapted_stwo` from a Cairo program.
 
 # Creating a Cairo Executable
 
@@ -103,7 +104,7 @@ The above command runs our executable function within the `test-execute` package
 
 ## Execution targets
 
-The `--target` flag allows specifying either a `standalone` target or `bootloader` target. Standalone means that the program will be executed as-is, and intended to be proven directly with Stwo. When we run with the bootloader target, the program’s execution is expected to be wrapped by the [bootloader’s](https://github.com/Moonsong-Labs/cairo-bootloader?tab=readme-ov-file#cairo-bootloader) execution, which itself will be proven via Stwo.
+The `--target` flag allows specifying either a `standalone` target or `bootloader` target. Standalone means that the program will be executed as-is, and intended to be proven directly with S-two. When we run with the bootloader target, the program’s execution is expected to be wrapped by the [bootloader’s](https://github.com/Moonsong-Labs/cairo-bootloader?tab=readme-ov-file#cairo-bootloader) execution, which itself will be proven via S-two.
 
 When executing with `--target standalone` (the default if not specified) we get the four files which consist as the input for the `adapted_stwo` binary (`air_private_input.json`, `air_public_input.json`, `trace.bin`, `memory.bin`), while when executing with `--target bootloader`, the output is given in the CairoPie format (Position Indenpendent Execution).
 
@@ -143,11 +144,11 @@ Syscalls are not supported in an executable target. Using syscalls, directly or 
 
 ### Padding overhead
 
-At the time of writing, the execution (\# of steps and \# of builtin application per builtin) with a `standalone` target is still padded to powers of 2, w.r.t to the ratios in the [all_cairo](https://github.com/lambdaclass/cairo-vm/blob/15bf79470cdd8eff29f41fc0a87143dce5499c7e/vm/src/types/instance_definitions/builtins_instance_def.rs#L157) layout. This will be removed in the future as Stwo does not rely on padding. `bootloader` target executions are not padded.
+At the time of writing, the execution (\# of steps and \# of builtin application per builtin) with a `standalone` target is still padded to powers of 2, w.r.t to the ratios in the [all_cairo](https://github.com/lambdaclass/cairo-vm/blob/15bf79470cdd8eff29f41fc0a87143dce5499c7e/vm/src/types/instance_definitions/builtins_instance_def.rs#L157) layout. This will be removed in the future as S-two does not rely on padding. `bootloader` target executions are not padded.
 
 # Proving from Scarb
 
-`stwo-cairo` is integrated in Scarb from v2.10.0 onwards, which means that instead of building and running stwo-cairo on your own, you can use the `scarb prove` command (note that stwo is continuously improving, for the most up-to-date version use stwo-cairo [directly](#using-stwo-to-prove-cairo-programs)).
+`stwo-cairo` is integrated in Scarb from v2.10.0 onwards, which means that instead of building and running stwo-cairo on your own, you can use the `scarb prove` command (note that S-two is continuously improving, for the most up-to-date version use stwo-cairo [directly](#using-stwo-to-prove-cairo-programs)).
 
 After running `scarb execute`, a new folder is created under `./target/execute/<package_name>` path. These folders will be called `execution1`, `execution2`, ... and so on (run `scarb clean` to clear your execution history). Rather than specifying the paths to the trace files, you can use the execution id (the index of the relevant execution) to specify what exactly you want to prove. That is, after executing, you can run:
 
