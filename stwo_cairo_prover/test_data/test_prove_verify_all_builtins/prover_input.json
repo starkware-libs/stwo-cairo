@@ -12171,6 +12171,21 @@
     5687,
     5688
   ],
+  "public_segment_context": {
+    "present": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
   "state_transitions": {
     "casm_states_by_opcode": {
       "add_ap_opcode": [

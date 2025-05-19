@@ -18,6 +18,7 @@ use super::opcodes::StateTransitions;
 use super::ProverInput;
 use crate::builtins::MemorySegmentAddresses;
 use crate::memory::{MemoryBuilder, MemoryEntry};
+use crate::PublicSegmentContext;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
@@ -60,6 +61,9 @@ fn deserialize_inputs<'a>(
 
 /// Adapts the VM's output files to the Cairo input of the prover.
 /// TODO(Stav): delete when 'adapt_prover_input_info_vm_output' is used.
+///
+/// # Assumptions
+/// - The arguments are the artifacts of a bootloader execution, using every builtin.
 pub fn adapt_vm_output(
     public_input_json: &Path,
     private_input_json: &Path,
@@ -108,6 +112,8 @@ pub fn adapt_vm_output(
         .iter()
         .map(|entry| entry.address as u32)
         .collect();
+
+    let public_segment_context = PublicSegmentContext::bootloader_context();
     let res = adapt_to_stwo_input(
         trace.as_slice(),
         MemoryBuilder::from_iter(MemoryConfig::default(), memory.as_slice().iter().copied()),
@@ -117,6 +123,7 @@ pub fn adapt_vm_output(
             .into_iter()
             .map(|(k, v)| (k, v.into()))
             .collect(),
+        public_segment_context,
     );
     res
 }
@@ -128,6 +135,7 @@ pub fn adapt_to_stwo_input(
     mut memory: MemoryBuilder,
     public_memory_addresses: Vec<u32>,
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    public_segment_context: PublicSegmentContext,
 ) -> Result<ProverInput, VmImportError> {
     let state_transitions = StateTransitions::from_slice_parallel(trace, &memory);
     let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
@@ -141,6 +149,7 @@ pub fn adapt_to_stwo_input(
         inst_cache,
         public_memory_addresses,
         builtins_segments,
+        public_segment_context,
     })
 }
 
