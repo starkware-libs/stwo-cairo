@@ -46,7 +46,7 @@ fn test_horizontal_fib_128_column_with_blowup_16() {
             ref channel,
         );
 
-    if let Err(err) = verify(air, ref channel, proof, commitment_scheme) {
+    if let Err(err) = verify(air, ref channel, proof, commitment_scheme, 60) {
         panic!("Verification failed: {:?}", err);
     }
 }
@@ -80,7 +80,7 @@ fn test_horizontal_fib_128_column_with_blowup_2() {
             ref channel,
         );
 
-    if let Err(err) = verify(air, ref channel, proof, commitment_scheme) {
+    if let Err(err) = verify(air, ref channel, proof, commitment_scheme, 60) {
         panic!("Verification failed: {:?}", err);
     }
 }
