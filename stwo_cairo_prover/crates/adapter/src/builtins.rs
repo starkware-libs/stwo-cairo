@@ -39,18 +39,24 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
     }
 }
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy)]
+pub struct Segment{
+    pub id: u32,
+    pub length: u32,
+}
+
 // TODO(ohadn): change field types in MemorySegmentAddresses to match address type.
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct BuiltinSegments {
-    pub add_mod: Option<u32>,
-    pub bitwise: Option<u32>,
-    pub output: Option<u32>,
-    pub mul_mod: Option<u32>,
-    pub pedersen: Option<u32>,
-    pub poseidon: Option<u32>,
-    pub range_check_bits_96: Option<u32>,
-    pub range_check_bits_128: Option<u32>,
+    pub add_mod: Option<Segment>,
+    pub bitwise: Option<Segment>,
+    pub output: Option<Segment>,
+    pub mul_mod: Option<Segment>,
+    pub pedersen: Option<Segment>,
+    pub poseidon: Option<Segment>,
+    pub range_check_bits_96: Option<Segment>,
+    pub range_check_bits_128: Option<Segment>,
 }
 
 impl BuiltinSegments {
@@ -95,10 +101,10 @@ impl BuiltinSegments {
     /// Returns the number of instances for each builtin.
     pub fn get_counts(&self) -> HashMap<BuiltinName, usize> {
         let mut counts = HashMap::new();
-        let mut insert_builtin = |builtin_name, segment: &Option<u32>, n_cells_per_instance| {
+        let mut insert_builtin = |builtin_name, segment: &Option<Segment>, n_cells_per_instance| {
             counts.insert(
                 builtin_name,
-                segment.map(|s| s as usize).unwrap_or(0) / n_cells_per_instance,
+                segment.map(|s| s.length as usize).unwrap_or(0) / n_cells_per_instance,
             );
         };
 
@@ -259,7 +265,10 @@ impl BuiltinSegments {
             let segment = if relocatable_memory[*segment_index].len() == 0 {
                 None
             } else {
-                Some(*segment_index as u32)
+                Some(Segment{
+                    id: *segment_index as u32,
+                    length: relocatable_memory[*segment_index].len() as u32,
+                })
             };
 
             match builtin_name {
