@@ -7,6 +7,7 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{span, Level};
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 
 // use super::memory::MemoryBuilder;
 
@@ -41,7 +42,7 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, Copy)]
 pub struct Segment{
-    pub id: u32,
+    pub start: Relocatable,
     pub length: u32,
 }
 
@@ -266,7 +267,7 @@ impl BuiltinSegments {
                 None
             } else {
                 Some(Segment{
-                    id: *segment_index as u32,
+                    start: Relocatable{segment_index: *segment_index, offset: 0},
                     length: relocatable_memory[*segment_index].len() as u32,
                 })
             };
