@@ -17,3 +17,6 @@ cairo_execute = "2.9.2"
 
 [dev-dependencies]
 cairo_test = "2.11.2"
+
+[features]
+poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
