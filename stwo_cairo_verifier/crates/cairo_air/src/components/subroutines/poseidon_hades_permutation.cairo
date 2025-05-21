@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: fc694d80
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -375,11 +375,12 @@ pub fn poseidon_hades_permutation_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
+    let poseidon_full_round_chain_chain_tmp_tmp_7d028_66: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
 
     poseidon_full_round_chain_sum_0 = poseidon_full_round_chain_lookup_elements
         .combine_qm31(
             [
-                (seq * qm31_const::<2, 0, 0, 0>()), qm31_const::<0, 0, 0, 0>(),
+                poseidon_full_round_chain_chain_tmp_tmp_7d028_66, qm31_const::<0, 0, 0, 0>(),
                 combination_limb_0_col0, combination_limb_1_col1, combination_limb_2_col2,
                 combination_limb_3_col3, combination_limb_4_col4, combination_limb_5_col5,
                 combination_limb_6_col6, combination_limb_7_col7, combination_limb_8_col8,
@@ -396,7 +397,7 @@ pub fn poseidon_hades_permutation_evaluate(
     poseidon_full_round_chain_sum_1 = poseidon_full_round_chain_lookup_elements
         .combine_qm31(
             [
-                (seq * qm31_const::<2, 0, 0, 0>()), qm31_const::<4, 0, 0, 0>(),
+                poseidon_full_round_chain_chain_tmp_tmp_7d028_66, qm31_const::<4, 0, 0, 0>(),
                 poseidon_full_round_chain_output_limb_0_col33,
                 poseidon_full_round_chain_output_limb_1_col34,
                 poseidon_full_round_chain_output_limb_2_col35,
@@ -779,18 +780,21 @@ pub fn poseidon_hades_permutation_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
+    let poseidon_full_round_chain_chain_id_tmp_7d028_149: QM31 =
+        (poseidon_full_round_chain_chain_tmp_tmp_7d028_66
+        + qm31_const::<1, 0, 0, 0>());
 
     poseidon_full_round_chain_sum_19 = poseidon_full_round_chain_lookup_elements
         .combine_qm31(
             [
-                ((seq * qm31_const::<2, 0, 0, 0>()) + qm31_const::<1, 0, 0, 0>()),
-                qm31_const::<31, 0, 0, 0>(), combination_limb_0_col156, combination_limb_1_col157,
-                combination_limb_2_col158, combination_limb_3_col159, combination_limb_4_col160,
-                combination_limb_5_col161, combination_limb_6_col162, combination_limb_7_col163,
-                combination_limb_8_col164, combination_limb_9_col165, combination_limb_0_col145,
-                combination_limb_1_col146, combination_limb_2_col147, combination_limb_3_col148,
-                combination_limb_4_col149, combination_limb_5_col150, combination_limb_6_col151,
-                combination_limb_7_col152, combination_limb_8_col153, combination_limb_9_col154,
+                poseidon_full_round_chain_chain_id_tmp_7d028_149, qm31_const::<31, 0, 0, 0>(),
+                combination_limb_0_col156, combination_limb_1_col157, combination_limb_2_col158,
+                combination_limb_3_col159, combination_limb_4_col160, combination_limb_5_col161,
+                combination_limb_6_col162, combination_limb_7_col163, combination_limb_8_col164,
+                combination_limb_9_col165, combination_limb_0_col145, combination_limb_1_col146,
+                combination_limb_2_col147, combination_limb_3_col148, combination_limb_4_col149,
+                combination_limb_5_col150, combination_limb_6_col151, combination_limb_7_col152,
+                combination_limb_8_col153, combination_limb_9_col154,
                 poseidon_3_partial_rounds_chain_output_limb_30_col135,
                 poseidon_3_partial_rounds_chain_output_limb_31_col136,
                 poseidon_3_partial_rounds_chain_output_limb_32_col137,
@@ -807,8 +811,8 @@ pub fn poseidon_hades_permutation_evaluate(
     poseidon_full_round_chain_sum_20 = poseidon_full_round_chain_lookup_elements
         .combine_qm31(
             [
-                ((seq * qm31_const::<2, 0, 0, 0>()) + qm31_const::<1, 0, 0, 0>()),
-                qm31_const::<35, 0, 0, 0>(), poseidon_full_round_chain_output_limb_0_col167,
+                poseidon_full_round_chain_chain_id_tmp_7d028_149, qm31_const::<35, 0, 0, 0>(),
+                poseidon_full_round_chain_output_limb_0_col167,
                 poseidon_full_round_chain_output_limb_1_col168,
                 poseidon_full_round_chain_output_limb_2_col169,
                 poseidon_full_round_chain_output_limb_3_col170,
