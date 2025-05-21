@@ -67,14 +67,14 @@ pub struct Memory {
     pub relocatable_to_id: Vec<Vec<EncodedMemoryValueId>>,
     pub f252_values: Vec<[u32; 8]>,
     pub small_values: Vec<u128>,
-    pub relocatable_values: Vec<Relocatable>,
+    pub relocatable_values: Vec<[u32; 2]>,
 }
 impl Memory {
     pub fn get(&self, relocatable: Relocatable) -> MemoryValue {
         match self.relocatable_to_id[relocatable.segment_index as usize][relocatable.offset as usize].decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
-            MemoryValueId::MemRelocatable(id) => MemoryValue::MemRelocatable(self.relocatable_values[id as usize]),
+            MemoryValueId::MemoryRelocatable(id) => MemoryValue::MemoryRelocatable(self.relocatable_values[id as usize]),
             // TODO(Ohad): This case should be a panic, but at the moment there is padding on memory
             // holes, fill the holes before padding, then uncomment.
             // MemoryValueId::Empty => panic!("Accessing empty memory cell"),
@@ -104,10 +104,10 @@ pub fn value_from_felt252(felt252: F252) -> MemoryValue {
 // TODO(Ohad): Remove `inst_cache`.
 pub struct MemoryBuilder {
     memory: Memory,
-    inst_cache: DashMap<Relocatable, u128>,
+    inst_cache: DashMap<u32, u128>,
     felt252_id_cache: HashMap<[u32; 8], usize>,
     small_values_cache: HashMap<u128, usize>,
-    relocatable_id_cache: HashMap<Relocatable, usize>,
+    relocatable_id_cache: HashMap<[u32; 2], usize>,
 }
 impl MemoryBuilder {
     pub fn new(config: MemoryConfig) -> Self {
@@ -150,11 +150,11 @@ impl MemoryBuilder {
         for (segment_index, segment) in relocatable_memory.iter().enumerate(){
             builder.relocatable_to_id.push(Vec::new());
             for (offset, value) in segment.iter().enumerate(){
-                let relocatable = Relocatable{segment_index: segment_index as usize, offset: offset as usize};
+                let relocatable = Relocatable{segment_index: segment_index as usize, offset: offset as u32};
                 match value {
                     Some(MaybeRelocatableVM::RelocatableValue(relocatable_value)) => {
-                        let relocatable_value = Relocatable{segment_index: relocatable_value.segment_index as usize, offset: relocatable_value.offset as usize};
-                        builder.set(relocatable, MemoryValue::MemRelocatable(relocatable_value));
+                        let relocatable_value_u32 = [relocatable_value.segment_index as u32, relocatable_value.offset as u32];
+                        builder.set(relocatable, MemoryValue::MemoryRelocatable(relocatable_value_u32));
                     }
                     Some(MaybeRelocatableVM::Int(felt252)) => {
                         let value = value_from_felt252(bytemuck::cast(felt252.to_bytes_le()));
@@ -167,9 +167,9 @@ impl MemoryBuilder {
         builder
     }
 
-    pub fn get_inst(&self, relocatable: Relocatable) -> u128 {
-        *self.inst_cache.entry(relocatable).or_insert_with(|| {
-            let value = self.memory.get(relocatable).as_u256();
+    pub fn get_inst(&self, address: u32) -> u128 {
+        *self.inst_cache.entry(address).or_insert_with(|| {
+            let value = self.memory.get(Relocatable::program(address)).as_u256();
             assert_eq!(value[3..8], [0; 5]);
             value[0] as u128 | ((value[1] as u128) << 32) | ((value[2] as u128) << 64)
         })
@@ -203,13 +203,13 @@ impl MemoryBuilder {
                 };
                 MemoryValueId::F252(id as u32)
             }
-            MemoryValue::MemRelocatable(val) => {
+            MemoryValue::MemoryRelocatable(val) => {
                 let len = self.relocatable_values.len();
                 let id = *self.relocatable_id_cache.entry(val).or_insert(len);
                 if id == len {
                     self.relocatable_values.push(val);
                 };
-                MemoryValueId::MemRelocatable(id as u32)
+                MemoryValueId::MemoryRelocatable(id as u32)
             }
         });
         self.relocatable_to_id[relocatable.segment_index as usize].insert(relocatable.offset as usize, res);
@@ -241,7 +241,7 @@ impl MemoryBuilder {
     //     }
     // }
 
-    pub fn build(self) -> (Memory, Vec<(Relocatable, u128)>) {
+    pub fn build(self) -> (Memory, Vec<(u32, u128)>) {
         (self.memory, self.inst_cache.into_iter().collect())
     }
 }
@@ -271,7 +271,7 @@ impl EncodedMemoryValueId {
         match value {
             MemoryValueId::Small(id) => EncodedMemoryValueId(id),
             MemoryValueId::F252(id) => EncodedMemoryValueId(id | LARGE_MEMORY_VALUE_ID_BASE),
-            MemoryValueId::MemRelocatable(id) => EncodedMemoryValueId(id | RELOCATABLE_ID_BASE),
+            MemoryValueId::MemoryRelocatable(id) => EncodedMemoryValueId(id | RELOCATABLE_ID_BASE),
             MemoryValueId::Empty => EncodedMemoryValueId(DEFAULT_ID),
         }
     }
@@ -284,7 +284,7 @@ impl EncodedMemoryValueId {
         match tag {
             0 => MemoryValueId::Small(val),
             1 => MemoryValueId::F252(val),
-            2 => MemoryValueId::MemRelocatable(val),
+            2 => MemoryValueId::MemoryRelocatable(val),
             _ => panic!("Invalid tag"),
         }
     }
@@ -299,7 +299,7 @@ impl Default for EncodedMemoryValueId {
 pub enum MemoryValueId {
     Small(u32),
     F252(u32),
-    MemRelocatable(u32),
+    MemoryRelocatable(u32),
     // Used to mark an unused address, a 'hole' in the memory.
     Empty,
 }
@@ -308,14 +308,14 @@ pub enum MemoryValueId {
 pub enum MemoryValue {
     Small(u128),
     F252([u32; 8]),
-    MemRelocatable(Relocatable),
+    MemoryRelocatable([u32; 2]),
 }
 impl MemoryValue {
     pub fn as_small(&self) -> u128 {
         match self {
             MemoryValue::Small(x) => *x,
+            MemoryValue::MemoryRelocatable(x) => (x[0] as u128) << 64 | (x[1] as u128),
             MemoryValue::F252(_) => panic!("Cannot convert F252 to u128"),
-            MemoryValue::MemRelocatable(_) => panic!("Cannot convert MemRelocatable to u128"),
         }
     }
 
@@ -326,7 +326,7 @@ impl MemoryValue {
                 [x[0], x[1], x[2], x[3], 0, 0, 0, 0]
             }
             MemoryValue::F252(x) => x,
-            MemoryValue::MemRelocatable(_) => panic!("Cannot convert MemRelocatable to u256"),
+            MemoryValue::MemoryRelocatable(x) => [x[0], x[1], 0, 0, 0, 0, 0, 0],
         }
     }
 }

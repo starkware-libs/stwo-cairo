@@ -1,210 +1,262 @@
 ProverInput {
     state_transitions: StateTransitions {
         initial_state: CasmState {
-            pc: M31(
-                0,
-            ),
-            ap: M31(
-                2,
-            ),
-            fp: M31(
-                2,
-            ),
+            pc: Relocatable {
+                segment_index: 0,
+                offset: 0,
+            },
+            ap: Relocatable {
+                segment_index: 1,
+                offset: 2,
+            },
+            fp: Relocatable {
+                segment_index: 1,
+                offset: 2,
+            },
         },
         final_state: CasmState {
-            pc: M31(
-                4,
-            ),
-            ap: M31(
-                16,
-            ),
-            fp: M31(
-                2,
-            ),
+            pc: Relocatable {
+                segment_index: 0,
+                offset: 4,
+            },
+            ap: Relocatable {
+                segment_index: 1,
+                offset: 16,
+            },
+            fp: Relocatable {
+                segment_index: 1,
+                offset: 2,
+            },
         },
         casm_states_by_opcode: CasmStatesByOpcode {
             generic_opcode: [],
             add_ap_opcode: [
                 CasmState {
-                    pc: M31(
-                        0,
-                    ),
-                    ap: M31(
-                        2,
-                    ),
-                    fp: M31(
-                        2,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 0,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 2,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 2,
+                    },
                 },
             ],
-            add_opcode: [],
+            add_opcode: [
+                CasmState {
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 6,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
+                },
+                CasmState {
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 12,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 10,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
+                },
+                CasmState {
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 12,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 13,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
+                },
+            ],
             add_opcode_small: [
                 CasmState {
-                    pc: M31(
-                        6,
-                    ),
-                    ap: M31(
-                        7,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 15,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 12,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
                 CasmState {
-                    pc: M31(
-                        12,
-                    ),
-                    ap: M31(
-                        10,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
-                },
-                CasmState {
-                    pc: M31(
-                        15,
-                    ),
-                    ap: M31(
-                        12,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
-                },
-                CasmState {
-                    pc: M31(
-                        12,
-                    ),
-                    ap: M31(
-                        13,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
-                },
-                CasmState {
-                    pc: M31(
-                        15,
-                    ),
-                    ap: M31(
-                        15,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 15,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 15,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
             ],
             assert_eq_opcode: [
                 CasmState {
-                    pc: M31(
-                        14,
-                    ),
-                    ap: M31(
-                        11,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 14,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 11,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
                 CasmState {
-                    pc: M31(
-                        14,
-                    ),
-                    ap: M31(
-                        14,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 14,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 14,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
             ],
             assert_eq_opcode_double_deref: [],
             assert_eq_opcode_imm: [
                 CasmState {
-                    pc: M31(
-                        19,
-                    ),
-                    ap: M31(
-                        4,
-                    ),
-                    fp: M31(
-                        4,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 19,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 4,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 4,
+                    },
                 },
                 CasmState {
-                    pc: M31(
-                        8,
-                    ),
-                    ap: M31(
-                        8,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 8,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 8,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
                 CasmState {
-                    pc: M31(
-                        10,
-                    ),
-                    ap: M31(
-                        9,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 10,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 9,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
             ],
             call_opcode: [],
             call_opcode_rel: [
                 CasmState {
-                    pc: M31(
-                        2,
-                    ),
-                    ap: M31(
-                        2,
-                    ),
-                    fp: M31(
-                        2,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 2,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 2,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 2,
+                    },
                 },
                 CasmState {
-                    pc: M31(
-                        21,
-                    ),
-                    ap: M31(
-                        5,
-                    ),
-                    fp: M31(
-                        4,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 21,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 5,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 4,
+                    },
                 },
             ],
             call_opcode_op_1_base_fp: [],
             jnz_opcode: [
                 CasmState {
-                    pc: M31(
-                        16,
-                    ),
-                    ap: M31(
-                        16,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 16,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 16,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
             ],
             jnz_opcode_taken: [
                 CasmState {
-                    pc: M31(
-                        16,
-                    ),
-                    ap: M31(
-                        13,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 16,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 13,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
             ],
             jump_opcode_rel_imm: [],
@@ -215,26 +267,32 @@ ProverInput {
             mul_opcode: [],
             ret_opcode: [
                 CasmState {
-                    pc: M31(
-                        18,
-                    ),
-                    ap: M31(
-                        16,
-                    ),
-                    fp: M31(
-                        7,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 18,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 16,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 7,
+                    },
                 },
                 CasmState {
-                    pc: M31(
-                        23,
-                    ),
-                    ap: M31(
-                        16,
-                    ),
-                    fp: M31(
-                        4,
-                    ),
+                    pc: Relocatable {
+                        segment_index: 0,
+                        offset: 23,
+                    },
+                    ap: Relocatable {
+                        segment_index: 1,
+                        offset: 16,
+                    },
+                    fp: Relocatable {
+                        segment_index: 1,
+                        offset: 4,
+                    },
                 },
             ],
             blake_compress_opcode: [],
@@ -463,76 +521,115 @@ ProverInput {
             3,
         ],
         relocatable_values: [
-            [
-                1,
-                2,
-            ],
-            [
-                0,
-                4,
-            ],
-            [
-                1,
-                4,
-            ],
-            [
-                0,
-                23,
-            ],
+            Relocatable {
+                segment_index: 1,
+                offset: 2,
+            },
+            Relocatable {
+                segment_index: 0,
+                offset: 4,
+            },
+            Relocatable {
+                segment_index: 1,
+                offset: 4,
+            },
+            Relocatable {
+                segment_index: 0,
+                offset: 23,
+            },
         ],
     },
     inst_cache: [
         (
-            8,
-            5189976364521848832,
-        ),
-        (
-            6,
-            5198983563776458752,
-        ),
-        (
-            23,
-            2345108766317314046,
-        ),
-        (
-            15,
-            5201798296363630592,
-        ),
-        (
-            12,
-            5198420613823037440,
-        ),
-        (
-            19,
-            5189976364521848832,
-        ),
-        (
-            0,
+            Relocatable {
+                segment_index: 0,
+                offset: 0,
+            },
             290341444919459839,
         ),
         (
-            14,
-            5193354051357474816,
-        ),
-        (
-            18,
-            2345108766317314046,
-        ),
-        (
-            10,
+            Relocatable {
+                segment_index: 0,
+                offset: 19,
+            },
             5189976364521848832,
         ),
         (
-            16,
+            Relocatable {
+                segment_index: 0,
+                offset: 14,
+            },
+            5193354051357474816,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 18,
+            },
+            2345108766317314046,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 12,
+            },
+            5198420613823037440,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 16,
+            },
             145944781866893309,
         ),
         (
-            2,
+            Relocatable {
+                segment_index: 0,
+                offset: 2,
+            },
             1226245742482522112,
         ),
         (
-            21,
+            Relocatable {
+                segment_index: 0,
+                offset: 10,
+            },
+            5189976364521848832,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 8,
+            },
+            5189976364521848832,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 15,
+            },
+            5201798296363630592,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 21,
+            },
             1226245742482522112,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 6,
+            },
+            5198983563776458752,
+        ),
+        (
+            Relocatable {
+                segment_index: 0,
+                offset: 23,
+            },
+            2345108766317314046,
         ),
     ],
     public_memory_addresses: [

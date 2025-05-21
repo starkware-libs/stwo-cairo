@@ -42,7 +42,7 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         offsets_in_segment.iter().map(move |offset_val| {
             stwo_cairo_common::prover_types::cpu::Relocatable {
                 segment_index: *segment_idx,
-                offset: *offset_val,
+                offset: *offset_val as u32,
             }
         })
         })
