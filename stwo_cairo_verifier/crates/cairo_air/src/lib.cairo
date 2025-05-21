@@ -173,6 +173,7 @@ use components::verify_instruction::{
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
 use core::blake::{blake2s_compress, blake2s_finalize};
+use core::box::BoxImpl;
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
@@ -192,8 +193,10 @@ use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 
 pub mod components;
 pub mod utils;
@@ -458,6 +461,66 @@ type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+/// Returns PreProcessedTrace::canonical root for the given blowup factor.
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
+    match log_blowup_factor - 1 {
+        0 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x97fa3f, 0xdb2f25d8, 0xa99fe394, 0xdf0cd9ee, 0x9229f449, 0x4cf8d3, 0xd053c66a,
+                    0x7b165490,
+                ],
+            ),
+        },
+        1 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x779a3e41, 0xaa6d8ea5, 0x4e0c2105, 0x28acaec, 0x3669d920, 0xdc1ea06f,
+                    0x2128cd78, 0x445b5eb7,
+                ],
+            ),
+        },
+        2 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x730537b9, 0x7d768495, 0xaa2bbad2, 0xa62eefc2, 0x5416e68, 0x55193d39,
+                    0x35be5743, 0x33042265,
+                ],
+            ),
+        },
+        3 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x40ac03fa, 0xd51e632f, 0x67901b7, 0xad526ae9, 0xaa8057e7, 0xc6f5597f,
+                    0xa6243eb2, 0x264657e3,
+                ],
+            ),
+        },
+        4 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0xa8be9280, 0x61981e3c, 0x505e149e, 0x2e82d65e, 0xd1abb1b, 0x484a9a48,
+                    0x5a739104, 0x1b4b4c8c,
+                ],
+            ),
+        },
+        _ => panic!("invalid blowup factor"),
+    }
+}
+
+/// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
+#[cfg(feature: "poseidon252_verifier")]
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
+    match log_blowup_factor - 1 {
+        0 => 0x0794c5e317a7576d3a3b7a74744982f51ee6f07dc912a2302914aac0eccf4725,
+        1 => 0x061ee13478b14ab70eea7cffff70f8d01df0cdd1bd876e8d86eb7cb3ab547171,
+        2 => 0x0202f6bc8bf6b077de94233853672a220b33913d391efa3ee6b149a1dbd9c464,
+        3 => 0x012e94945ec687ac9143522c41b9891497ddef8f1c712bbd647ef54d42d2de8c,
+        4 => 0x05687ddca9af21a26d2b4439471005e6ec6282b4bf7dd74e3ca386f8a98d6cad,
+        _ => panic!("invalid blowup factor"),
+    }
+}
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
@@ -488,11 +551,11 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     let log_sizes = claim.log_sizes();
 
-    // Preproccessed trace.
-    commitment_scheme
-        .commit(
-            stark_proof.commitment_scheme_proof.commitments[0].clone(), *log_sizes[0], ref channel,
-        );
+    // Preprocessed trace.
+    let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
+    let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
+    assert!(preprocessed_root == expected_preprocessed_root);
+    commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
 
     commitment_scheme
