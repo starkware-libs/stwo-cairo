@@ -458,6 +458,66 @@ type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+/// Returns the preprocessed root for the given blowup factor.
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
+    match log_blowup_factor {
+        1 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x3ffa9700, 0xd8252fdb, 0x94e39fa9, 0xeed90cdf, 0x49f42992, 0xd3f84c00,
+                    0x6ac653d0, 0x9054167b,
+                ],
+            ),
+        },
+        2 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x413e9a77, 0xa58e6daa, 0x5210c4e, 0xecca8a02, 0x20d96936, 0x6fa01edc,
+                    0x78cd2821, 0xb75e5b44,
+                ],
+            ),
+        },
+        3 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0xb9370573, 0x9584767d, 0xd2ba2baa, 0xc2ef2ea6, 0x686e4105, 0x393d1955,
+                    0x4357be35, 0x65220433,
+                ],
+            ),
+        },
+        4 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0xfa03ac40, 0x2f631ed5, 0xb7017906, 0xe96a52ad, 0xe75780aa, 0x7f59f5c6,
+                    0xb23e24a6, 0xe3574626,
+                ],
+            ),
+        },
+        5 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x8092bea8, 0x3c1e9861, 0x9e145e50, 0x5ed6822e, 0x1bbb1a0d, 0x489a4a48,
+                    0x491735a, 0x8c4c4b1b,
+                ],
+            ),
+        },
+        _ => panic!("invalid blowup factor"),
+    }
+}
+
+/// Returns the preprocessed root for the given blowup factor.
+#[cfg(feature: "poseidon252_verifier")]
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
+    match log_blowup_factor {
+        1 => 0x0794c5e317a7576d3a3b7a74744982f51ee6f07dc912a2302914aac0eccf4725,
+        2 => 0x038374a258f1add945964da116602a5149a955e790670aefb2a82dc6b55bcece,
+        3 => 0x00ffc56feabc3e36ba276ef38bebb94bbff3595ef0e797f827a85b9b8a068c8d,
+        4 => 0x0061ebbbb564fece4b254ceb8bfce59e949b2e79e5317e18b818a1514ad10000,
+        5 => 0x05b7d068407e11d4d6b09a541bd5f5b62ab75e670789b9d5531e3dac9d58fb56,
+        _ => panic!("invalid blowup factor"),
+    }
+}
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
@@ -488,11 +548,11 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     let log_sizes = claim.log_sizes();
 
-    // Preproccessed trace.
-    commitment_scheme
-        .commit(
-            stark_proof.commitment_scheme_proof.commitments[0].clone(), *log_sizes[0], ref channel,
-        );
+    // Preprocessed trace.
+    let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
+    let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
+    assert!(preprocessed_root == expected_preprocessed_root);
+    commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
 
     commitment_scheme
