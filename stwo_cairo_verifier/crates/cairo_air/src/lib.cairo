@@ -173,6 +173,7 @@ use components::verify_instruction::{
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
 use core::blake::{blake2s_compress, blake2s_finalize};
+use core::box::BoxImpl;
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
@@ -192,8 +193,10 @@ use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 
 pub mod components;
 pub mod utils;
@@ -461,44 +464,44 @@ type VerifyBitwiseXor_12Elements = LookupElements<3>;
 /// Returns the preprocessed root for the given blowup factor.
 #[cfg(not(feature: "poseidon252_verifier"))]
 fn preprocessed_root(log_blowup_factor: u32) -> Hash {
-    match log_blowup_factor {
+    match log_blowup_factor - 1 {
+        0 => Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x97fa3f, 0xdb2f25d8, 0xa99fe394, 0xdf0cd9ee, 0x9229f449, 0x4cf8d3, 0xd053c66a,
+                    0x7b165490,
+                ],
+            ),
+        },
         1 => Blake2sHash {
             hash: BoxImpl::new(
                 [
-                    0x3ffa9700, 0xd8252fdb, 0x94e39fa9, 0xeed90cdf, 0x49f42992, 0xd3f84c00,
-                    0x6ac653d0, 0x9054167b,
+                    0x779a3e41, 0xaa6d8ea5, 0x4e0c2105, 0x28acaec, 0x3669d920, 0xdc1ea06f,
+                    0x2128cd78, 0x445b5eb7,
                 ],
             ),
         },
         2 => Blake2sHash {
             hash: BoxImpl::new(
                 [
-                    0x413e9a77, 0xa58e6daa, 0x5210c4e, 0xecca8a02, 0x20d96936, 0x6fa01edc,
-                    0x78cd2821, 0xb75e5b44,
+                    0x730537b9, 0x7d768495, 0xaa2bbad2, 0xa62eefc2, 0x5416e68, 0x55193d39,
+                    0x35be5743, 0x33042265,
                 ],
             ),
         },
         3 => Blake2sHash {
             hash: BoxImpl::new(
                 [
-                    0xb9370573, 0x9584767d, 0xd2ba2baa, 0xc2ef2ea6, 0x686e4105, 0x393d1955,
-                    0x4357be35, 0x65220433,
+                    0x40ac03fa, 0xd51e632f, 0x67901b7, 0xad526ae9, 0xaa8057e7, 0xc6f5597f,
+                    0xa6243eb2, 0x264657e3,
                 ],
             ),
         },
         4 => Blake2sHash {
             hash: BoxImpl::new(
                 [
-                    0xfa03ac40, 0x2f631ed5, 0xb7017906, 0xe96a52ad, 0xe75780aa, 0x7f59f5c6,
-                    0xb23e24a6, 0xe3574626,
-                ],
-            ),
-        },
-        5 => Blake2sHash {
-            hash: BoxImpl::new(
-                [
-                    0x8092bea8, 0x3c1e9861, 0x9e145e50, 0x5ed6822e, 0x1bbb1a0d, 0x489a4a48,
-                    0x491735a, 0x8c4c4b1b,
+                    0xa8be9280, 0x61981e3c, 0x505e149e, 0x2e82d65e, 0xd1abb1b, 0x484a9a48,
+                    0x5a739104, 0x1b4b4c8c,
                 ],
             ),
         },
@@ -551,6 +554,8 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     // Preprocessed trace.
     let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
     let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
+    println!("preprocessed_root: {:?}", preprocessed_root);
+    println!("expected_preprocessed_root: {:?}", expected_preprocessed_root);
     assert!(preprocessed_root == expected_preprocessed_root);
     commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
