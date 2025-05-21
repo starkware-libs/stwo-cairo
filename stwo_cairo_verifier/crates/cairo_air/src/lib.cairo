@@ -183,7 +183,6 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -1897,7 +1896,7 @@ pub type MemorySection = Array<PubMemoryValue>;
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
+    let mut state = BoxTrait::new(stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
     let mut buffer = array![];
     for entry in section {
