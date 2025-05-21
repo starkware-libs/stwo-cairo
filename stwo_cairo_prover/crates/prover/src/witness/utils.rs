@@ -2,6 +2,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use cairo_air::air::CairoClaim;
 use cairo_air::preprocessed::PreProcessedTrace;
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -13,7 +14,7 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
-
+use crate::witness::components::memory_address_to_id::RelocatableToId;
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
         .array_chunks::<N_LANES>()
@@ -37,6 +38,38 @@ impl AtomicMultiplicityColumn {
 
     pub fn increase_at(&self, address: u32) {
         self.data[address as usize].fetch_add(1, Ordering::Relaxed);
+    }
+
+    /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with
+    /// zeros if needed. This function performs a copy on the inner data, If atomics are not
+    /// necessary, use [`MultiplicityColumn`] instead.
+    pub fn into_simd_vec(self) -> Vec<PackedM31> {
+        // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
+        // multiple of N_LANES.
+        BaseColumn::from_iter(
+            self.data
+                .into_iter()
+                .map(|a| M31(a.load(Ordering::Relaxed))),
+        )
+        .data
+    }
+}
+
+//Same as AtomicMultiplicityColumn but for 2D data
+pub struct AtomicMultiplicityColumn2D {
+    data: Vec<Vec<AtomicU32>>,
+}
+impl AtomicMultiplicityColumn2D {
+    /// Creates a new `AtomicMultiplicityColumn2D` with the given size. The elements are initialized
+    /// to 0.
+    pub fn new(relocatable_to_id: &RelocatableToId) -> Self {
+        Self {
+            data: relocatable_to_id.data.iter().map(|segment| segment.iter().map(|_| AtomicU32::new(0)).collect()).collect(),
+        }
+    }
+
+    pub fn increase_at(&self, relocatable: Relocatable) {
+        self.data[relocatable.segment_index][relocatable.offset as usize].fetch_add(1, Ordering::Relaxed);
     }
 
     /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with

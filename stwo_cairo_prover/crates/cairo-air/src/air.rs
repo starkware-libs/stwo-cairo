@@ -265,7 +265,7 @@ impl PublicData {
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
 pub struct MemorySmallValue {
     pub id: u32,
-    pub value: u32,
+    pub value: u64,
 }
 impl MemorySmallValue {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -371,7 +371,7 @@ impl PublicSegmentRanges {
                     ]
                 },
             )
-            .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
+            .map(|(addr, id, value)| (addr, id, [((value >> 32) & 0xFFFFFFFF) as u32, (value & 0xFFFFFFFF) as u32, 0, 0, 0, 0, 0, 0]))
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {

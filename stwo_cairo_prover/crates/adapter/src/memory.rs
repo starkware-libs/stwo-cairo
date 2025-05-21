@@ -314,7 +314,7 @@ impl MemoryValue {
     pub fn as_small(&self) -> u128 {
         match self {
             MemoryValue::Small(x) => *x,
-            MemoryValue::MemoryRelocatable(x) => (x[0] as u128) << 64 | (x[1] as u128),
+            MemoryValue::MemoryRelocatable(x) => (x[0] as u128) << 32 | (x[1] as u128),
             MemoryValue::F252(_) => panic!("Cannot convert F252 to u128"),
         }
     }

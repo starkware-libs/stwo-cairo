@@ -5,14 +5,14 @@ use cairo_air::components::range_check_builtin_bits_128::{
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big};
 use crate::witness::prelude::*;
-
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub log_size: u32,
-    pub range_check_builtin_segment_start: u32,
+    pub range_check_builtin_segment_start: Relocatable,
 }
 impl ClaimGenerator {
-    pub fn new(log_size: u32, range_check_builtin_segment_start: u32) -> Self {
+    pub fn new(log_size: u32, range_check_builtin_segment_start: Relocatable) -> Self {
         assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,

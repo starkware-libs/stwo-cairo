@@ -20,20 +20,21 @@ use stwo_prover::core::backend::{Col, Column};
 use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 
-use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
+use crate::witness::utils::{TreeBuilder, AtomicMultiplicityColumn2D};
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
 
 /// A struct that represents a mapping from Address to ID. Zero address is not allowed.
-pub struct AddressToId {
+pub struct RelocatableToId {
     /// Since zero address is reserved, the vector holding the data is offset by 1, i.e. the ID of
     /// address 1 is stored at index 0, and so on.
-    data: Vec<u32>,
+    pub data: Vec<Vec<u32>>,
 }
-impl AddressToId {
-    pub fn new(data: Vec<u32>) -> Self {
+impl RelocatableToId {
+    pub fn new(data: Vec<Vec<u32>>) -> Self {
         Self { data }
     }
 
@@ -54,32 +55,39 @@ impl AddressToId {
     }
 }
 
-impl Index<usize> for AddressToId {
+impl Index<Relocatable> for RelocatableToId {
     type Output = u32;
 
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.data[index - 1]
+    fn index(&self, relocatable: Relocatable) -> &Self::Output {
+        &self.data[relocatable.segment_index][relocatable.offset as usize]
     }
 }
 
 /// A struct to generate the memory address to ID trace.
 pub struct ClaimGenerator {
-    address_to_raw_id: AddressToId,
-    multiplicities: AtomicMultiplicityColumn,
+    relocatable_to_id: RelocatableToId,
+    multiplicities: AtomicMultiplicityColumn2D,
 }
 impl ClaimGenerator {
     pub fn new(memory: &Memory) -> Self {
         // Note that while `memory.address_to_id` starts from address 0, the memory component can
         // only yield addresses starting from 1.
-        let address_to_raw_id = AddressToId::new(
-            (1..memory.address_to_id.len())
-                .map(|addr| memory.get_raw_id(addr as u32))
-                .collect_vec(),
+        let relocatable_to_id = RelocatableToId::new(
+            memory
+                .relocatable_to_id
+                .iter()
+                .enumerate()
+                .map(|(segment_index, segment)| {
+                    (0..segment.len()).map(|offset| memory.get_raw_id(Relocatable {
+                        segment_index,
+                        offset: offset as u32,
+                    })).collect_vec()
+                }).collect_vec(),
         );
-        let multiplicities = AtomicMultiplicityColumn::new(address_to_raw_id.len());
+        let multiplicities = AtomicMultiplicityColumn2D::new(&relocatable_to_id);
 
         Self {
-            address_to_raw_id,
+            relocatable_to_id,
             multiplicities,
         }
     }
@@ -90,8 +98,8 @@ impl ClaimGenerator {
         PackedBaseField::from_array(memory_ids)
     }
 
-    pub fn get_id(&self, input: BaseField) -> M31 {
-        M31(self.address_to_raw_id[input.0 as usize])
+    pub fn get_id(&self, input: Relocatable) -> M31 {
+        M31(self.relocatable_to_id[input])
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
@@ -113,9 +121,9 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn add_input(&self, addr: &BaseField) {
+    pub fn add_input(&self, addr: &Relocatable) {
         // Addresses are offset by 1.
-        self.multiplicities.increase_at(addr.0 - 1);
+        self.multiplicities.increase_at(addr);
     }
 
     pub fn write_trace(
@@ -124,7 +132,7 @@ impl ClaimGenerator {
     ) -> (Claim, InteractionClaimGenerator) {
         let size = std::cmp::max(
             (self
-                .address_to_raw_id
+                .relocatable_to_id
                 .len()
                 .div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT))
             .next_power_of_two(),
@@ -135,11 +143,11 @@ impl ClaimGenerator {
             std::array::from_fn(|_| Col::<SimdBackend, M31>::zeros(size));
 
         // Pad to a multiple of `N_LANES`.
-        let next_multiple_of_16 = self.address_to_raw_id.len().next_multiple_of(16);
-        self.address_to_raw_id.resize(next_multiple_of_16, 0);
+        let next_multiple_of_16 = self.relocatable_to_id.len().next_multiple_of(16);
+        self.relocatable_to_id.resize(next_multiple_of_16, 0);
 
         let id_it = self
-            .address_to_raw_id
+            .relocatable_to_id
             .array_chunks::<N_LANES>()
             .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
         let multiplicities = self.multiplicities.into_simd_vec();

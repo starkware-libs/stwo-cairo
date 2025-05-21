@@ -5,14 +5,14 @@ use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_12, range_check_18, range_check_3_6_6_3,
 };
 use crate::witness::prelude::*;
-
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub log_size: u32,
-    pub mul_mod_builtin_segment_start: u32,
+    pub mul_mod_builtin_segment_start: Relocatable,
 }
 impl ClaimGenerator {
-    pub fn new(log_size: u32, mul_mod_builtin_segment_start: u32) -> Self {
+    pub fn new(log_size: u32, mul_mod_builtin_segment_start: Relocatable) -> Self {
         assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,

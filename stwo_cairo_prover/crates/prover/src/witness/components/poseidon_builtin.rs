@@ -7,14 +7,14 @@ use crate::witness::components::{
     range_check_felt_252_width_27,
 };
 use crate::witness::prelude::*;
-
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub log_size: u32,
-    pub poseidon_builtin_segment_start: u32,
+    pub poseidon_builtin_segment_start: Relocatable,
 }
 impl ClaimGenerator {
-    pub fn new(log_size: u32, poseidon_builtin_segment_start: u32) -> Self {
+    pub fn new(log_size: u32, poseidon_builtin_segment_start: Relocatable) -> Self {
         assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,

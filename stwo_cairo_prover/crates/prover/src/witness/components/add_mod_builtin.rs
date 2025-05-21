@@ -3,14 +3,15 @@ use cairo_air::components::add_mod_builtin::{Claim, InteractionClaim, N_TRACE_CO
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big};
 use crate::witness::prelude::*;
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
     pub log_size: u32,
-    pub add_mod_builtin_segment_start: u32,
+    pub add_mod_builtin_segment_start: Relocatable,
 }
 impl ClaimGenerator {
-    pub fn new(log_size: u32, add_mod_builtin_segment_start: u32) -> Self {
+    pub fn new(log_size: u32, add_mod_builtin_segment_start: Relocatable) -> Self {
         assert!(log_size >= LOG_N_LANES);
         Self {
             log_size,

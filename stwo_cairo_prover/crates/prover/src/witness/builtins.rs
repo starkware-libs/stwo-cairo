@@ -27,7 +27,7 @@ pub struct BuiltinsClaimGenerator {
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
         let add_mod_builtin_trace_generator = builtin_segments.add_mod.map(|segment| {
-            let segment_length = segment.stop_ptr - segment.begin_addr;
+            let segment_length = segment.length as usize;
             assert!(
                 (segment_length % ADD_MOD_MEMORY_CELLS) == 0,
                 "add mod segment length is not a multiple of it's cells_per_instance"
@@ -37,10 +37,10 @@ impl BuiltinsClaimGenerator {
                 n_instances.is_power_of_two(),
                 "add mod instances number is not a power of two"
             );
-            add_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            add_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.start)
         });
         let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|segment| {
-            let segment_length = segment.stop_ptr - segment.begin_addr;
+            let segment_length = segment.length as usize;
             assert!(
                 (segment_length % BITWISE_MEMORY_CELLS) == 0,
                 "bitwise segment length is not a multiple of it's cells_per_instance"
@@ -50,10 +50,10 @@ impl BuiltinsClaimGenerator {
                 n_instances.is_power_of_two(),
                 "bitwise instances number is not a power of two"
             );
-            bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.start)
         });
         let mul_mod_builtin_trace_generator = builtin_segments.mul_mod.map(|segment| {
-            let segment_length = segment.stop_ptr - segment.begin_addr;
+            let segment_length = segment.length as usize;
             assert!(
                 (segment_length % MUL_MOD_MEMORY_CELLS) == 0,
                 "mul mod segment length is not a multiple of it's cells_per_instance"
@@ -63,10 +63,10 @@ impl BuiltinsClaimGenerator {
                 n_instances.is_power_of_two(),
                 "mul mod instances number is not a power of two"
             );
-            mul_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            mul_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.start)
         });
         let pedersen_builtin_trace_generator = builtin_segments.pedersen.map(|segment| {
-            let segment_length = segment.stop_ptr - segment.begin_addr;
+            let segment_length = segment.length as usize;
             assert!(
                 (segment_length % PEDERSEN_MEMORY_CELLS) == 0,
                 "pedersen segment length is not a multiple of it's cells_per_instance"
@@ -77,10 +77,10 @@ impl BuiltinsClaimGenerator {
                 "pedersen instances number is not a power of two"
             );
 
-            pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.start)
         });
         let poseidon_builtin_trace_generator = builtin_segments.poseidon.map(|segment| {
-            let segment_length = segment.stop_ptr - segment.begin_addr;
+            let segment_length = segment.length as usize;
             assert!(
                 (segment_length % POSEIDON_MEMORY_CELLS) == 0,
                 "poseidon segment length is not a multiple of it's cells_per_instance"
@@ -91,11 +91,11 @@ impl BuiltinsClaimGenerator {
                 "poseidon instances number is not a power of two"
             );
 
-            poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.start)
         });
         let range_check_96_builtin_trace_generator =
             builtin_segments.range_check_bits_96.map(|segment| {
-                let segment_length = segment.stop_ptr - segment.begin_addr;
+                let segment_length = segment.length as usize;
                 let n_instances = segment_length / RANGE_CHECK_MEMORY_CELLS;
                 assert!(
                     n_instances.is_power_of_two(),
@@ -103,21 +103,18 @@ impl BuiltinsClaimGenerator {
                 );
                 range_check_builtin_bits_96::ClaimGenerator::new(
                     n_instances.ilog2(),
-                    segment.begin_addr as u32,
+                    segment.start,
                 )
             });
         let range_check_128_builtin_trace_generator =
             builtin_segments.range_check_bits_128.map(|segment| {
-                let segment_length = segment.stop_ptr - segment.begin_addr;
+                let segment_length = segment.length as usize;
                 let n_instances = segment_length / RANGE_CHECK_MEMORY_CELLS;
                 assert!(
                     n_instances.is_power_of_two(),
                     "range_check_bits_128 instances number is not a power of two"
                 );
-                range_check_builtin_bits_128::ClaimGenerator::new(
-                    n_instances.ilog2(),
-                    segment.begin_addr as u32,
-                )
+                range_check_builtin_bits_128::ClaimGenerator::new(n_instances.ilog2(), segment.start)
             });
         Self {
             add_mod_builtin_trace_generator,

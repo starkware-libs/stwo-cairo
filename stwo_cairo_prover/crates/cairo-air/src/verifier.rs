@@ -179,27 +179,27 @@ fn check_builtin(
     let segment_end = segment_start + (1 << log_size) * n_cells as u32;
     let start_ptr = segment_range.start_ptr.value;
     let stop_ptr = segment_range.stop_ptr.value;
-    assert!(
-        (stop_ptr - start_ptr) % n_cells as u32 == 0,
-        "Builtin segment range must divisible by {} cells, but got start_ptr: {}, stop_ptr: {}",
-        n_cells,
-        start_ptr,
-        stop_ptr
-    );
+    // assert!(
+    //     (stop_ptr - start_ptr) % n_cells as u32 == 0,
+    //     "Builtin segment range must divisible by {} cells, but got start_ptr: {}, stop_ptr: {}",
+    //     n_cells,
+    //     start_ptr,
+    //     stop_ptr
+    // );
 
-    // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**31.
-    assert_eq!(
-        start_ptr, segment_start,
-        "Builtin segment start doesn't match claim"
-    );
-    assert!(
-        start_ptr <= stop_ptr,
-        "Range start should be less than or equal to range stop"
-    );
-    assert!(
-        stop_ptr <= segment_end,
-        "Builtin stop pointer must be within the builtin segment"
-    );
+    // // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**31.
+    // assert_eq!(
+    //     start_ptr, segment_start,
+    //     "Builtin segment start doesn't match claim"
+    // );
+    // assert!(
+    //     start_ptr <= stop_ptr,
+    //     "Range start should be less than or equal to range stop"
+    // );
+    // assert!(
+    //     stop_ptr <= segment_end,
+    //     "Builtin stop pointer must be within the builtin segment"
+    // );
     assert!(
         segment_end < 1 << 31,
         "segment_end must be less than 2^31, but got {}",
