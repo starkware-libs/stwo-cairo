@@ -173,6 +173,7 @@ use components::verify_instruction::{
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
 use core::blake::{blake2s_compress, blake2s_finalize};
+use core::box::BoxImpl;
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
@@ -448,6 +449,68 @@ type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+/// Returns PreProcessedTrace::canonical root for the given blowup factor.
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn preprocessed_root(
+    log_blowup_factor: u32,
+) -> stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+    match log_blowup_factor - 1 {
+        0 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
+                    0x1e720385, 0x70f00ad4,
+                ],
+            ),
+        },
+        1 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
+                    0x5553d795, 0x3fc5a18a,
+                ],
+            ),
+        },
+        2 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
+                    0xc80ca41a, 0xc757f720,
+                ],
+            ),
+        },
+        3 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
+                    0x19d8fff5, 0x9e792495,
+                ],
+            ),
+        },
+        4 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
+                    0xe13c2956, 0x66aeb325,
+                ],
+            ),
+        },
+        _ => panic!("invalid blowup factor"),
+    }
+}
+
+/// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
+#[cfg(feature: "poseidon252_verifier")]
+fn preprocessed_root(log_blowup_factor: u32) -> felt252 {
+    match log_blowup_factor - 1 {
+        0 => 0x053be12b3503460f6657c5a46ed1b56719f91e45530a869327b39b7b8a20e0e6,
+        1 => 0x009c3ff379acfd021edc6424e1db4efeaf89dcc33454f3dc4ebe4cab8eedf6b9,
+        2 => 0x03d4e5bd52271fa8f9e62faa88edbb7139e6d8c53f03da60245ec4630be6aa57,
+        3 => 0x01d88ea9df444050fb2e8694c58bece0f152c7901b24e2c4814374e12dc88159,
+        4 => 0x048d6171d793484bb412ad431d3fdd875dfd00cfa1e3e95d4e5d38bd0e4add50,
+        _ => panic!("invalid blowup factor"),
+    }
+}
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
@@ -478,11 +541,13 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
 
     let log_sizes = claim.log_sizes();
 
-    // Preproccessed trace.
-    commitment_scheme
-        .commit(
-            stark_proof.commitment_scheme_proof.commitments[0].clone(), *log_sizes[0], ref channel,
-        );
+    // Preprocessed trace.
+    let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
+    let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
+    println!("Preprocessed root {:?}", preprocessed_root);
+    println!("Expected preprocessed root {:?}", expected_preprocessed_root);
+    assert!(preprocessed_root == expected_preprocessed_root);
+    commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
 
     commitment_scheme
