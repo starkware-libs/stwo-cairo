@@ -74,7 +74,9 @@ pub fn accumulate_relation_uses<const N: usize>(
     for relation_use in relation_uses_per_row {
         let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
         let prev = relation_counts.entry(relation_use.relation_id).or_insert(0);
-        *prev = prev.checked_add(relation_uses_in_component).unwrap();
+        *prev = prev
+            .checked_add(relation_uses_in_component)
+            .unwrap_or_else(|| panic!("Relation uses overflow {}", relation_use.relation_id));
     }
 }
 
