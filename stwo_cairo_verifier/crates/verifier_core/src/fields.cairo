@@ -12,16 +12,13 @@ pub trait Invertible<T> {
 // TODO(andrew): Consider removing in favour of inverse libfunc.
 pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
     /// Computes all `1/arr[i]` with a single call to `inverse()` using Montgomery batch inversion.
-    fn batch_inverse(
-        values: Array<T>,
-    ) -> Array<
-        T,
-    > {
+    fn batch_inverse(values: Array<T>) -> Array<T> {
         if values.is_empty() {
             return array![];
         }
 
-        // Collect array `z, zy, ..., zy..b`.
+        // Collect array of products: `z, z*y, ..., z*y*..*b`.
+        // rename to suffix_products
         let mut prefix_product_rev = array![];
         let mut values_span = values.span();
         let mut cumulative_product = *values_span.pop_back().unwrap();
@@ -31,10 +28,14 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
             cumulative_product = cumulative_product * *value;
         }
 
-        // Compute `1/zy..a`.
+        // Compute `1/(z*y*..*b*a)`.
         let mut cumulative_product_inv = cumulative_product.inverse();
 
-        // Collect all `1/a = zy..b/zy..a, 1/b = zy..c/zy..b, ..., 1/y = z/zy`.
+        // Collect all:
+        //   `1/a = (z*y*..*b)/(z*y*..*a)`,
+        //   `1/b = (z*y*..*c)/(z*y*..*b)`,
+        //   ...,
+        //   `1/y = z/(z*y)`.
         let mut inverses = array![];
         let mut prefix_product_rev_span = prefix_product_rev.span();
         let mut values = values;
@@ -51,6 +52,8 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
         inverses
     }
 }
+
+// in general, move tests to separate files
 
 #[cfg(test)]
 mod tests {

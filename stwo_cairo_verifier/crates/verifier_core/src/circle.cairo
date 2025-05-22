@@ -1,3 +1,6 @@
+// fix struct order in all files
+
+
 use bounded_int::upcast;
 use core::num::traits::{One, WrappingAdd, WrappingMul, WrappingSub, Zero};
 use crate::channel::{Channel, ChannelTrait};
@@ -12,6 +15,7 @@ use crate::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].
+// why M31InnerT?
 pub const M31_CIRCLE_GEN: CirclePoint<M31InnerT> = CirclePoint { x: 0x2, y: 0x4B94532F };
 
 pub const M31_CIRCLE_LOG_ORDER: u32 = 31;
@@ -30,6 +34,7 @@ pub struct CirclePoint<F> {
 }
 
 impl CirclePointM31InnerTIntoCirclePointM31 of Into<CirclePoint<M31InnerT>, CirclePoint<M31>> {
+    // delete if possible
     fn into(self: CirclePoint<M31InnerT>) -> CirclePoint<M31> {
         CirclePoint { x: self.x.into(), y: self.y.into() }
     }
@@ -43,7 +48,8 @@ pub trait CirclePointTrait<
         CirclePoint { x: One::one(), y: Zero::zero() }
     }
 
-    /// Applies the circle's x-coordinate doubling map.
+    /// Computes the x-coordinate of the doubling map (which depends only on the x coordinate of the
+    /// input).
     fn double_x(x: F) -> F {
         let sqx = x * x;
         sqx + sqx - One::one()
@@ -55,10 +61,11 @@ pub trait CirclePointTrait<
     fn log_order(
         self: @CirclePoint<F>,
     ) -> u32 {
-        // we only need the x-coordinate to check order since the only point
-        // with x=1 is the circle's identity
+        // We only need the x-coordinate to check order since the only point with x=1 is the
+        // circle's identity.
         let mut res = 0;
         let mut cur = self.x.clone();
+        // use is_not_one
         while cur != One::one() {
             cur = Self::double_x(cur);
             res += 1;
@@ -99,7 +106,7 @@ pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
 pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     /// Returns a random QM31 circle point.
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
-        let t = self.draw_felt();
+        let t: QM31 = self.draw_felt();
         let t_squared = t * t;
         let t_squared_plus_1_inv = (t_squared + One::one()).inverse();
         let x = (One::one() - t_squared) * t_squared_plus_1_inv;
@@ -108,6 +115,7 @@ pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     }
 }
 
+// do the todo
 // TODO: Remove once only "0" and "-1" are allowed as mask offsets. This only exists
 // because currently the rust prover sorts the quotients by the mask point.
 // `CirclePoint` in the Stwo derives PartialOrd, this matches that implementation.
@@ -137,6 +145,7 @@ impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
         let ryc: u32 = upcast(ryc);
         let ryd: u32 = upcast(ryd);
 
+        // use early returns
         lxa < rxa || lxa == rxa
             && (lxb < rxb || lxb == rxb
                 && (lxc < rxc || lxc == rxc
@@ -149,6 +158,7 @@ impl CirclePointQM31PartialOrd of PartialOrd<CirclePoint<QM31>> {
 
 #[generate_trait]
 pub impl ComplexConjugateImpl of ComplexConjugateTrait {
+    // rename
     fn complex_conjugate(self: CirclePoint<QM31>) -> CirclePoint<QM31> {
         CirclePoint { x: self.x.complex_conjugate(), y: self.y.complex_conjugate() }
     }
@@ -158,26 +168,26 @@ pub impl ComplexConjugateImpl of ComplexConjugateTrait {
 #[derive(Copy, Clone, Debug, PartialEq, Drop)]
 pub struct Coset {
     pub initial_index: CirclePointIndex,
-    pub step_size: CirclePointIndex,
+    pub step: CirclePointIndex,
     pub log_size: u32,
 }
 
 #[generate_trait]
 pub impl CosetImpl of CosetTrait {
     fn new(initial_index: CirclePointIndex, log_size: u32) -> Coset {
-        let step_size = CirclePointIndexImpl::subgroup_gen(log_size);
-        Coset { initial_index, step_size, log_size }
+        let step = CirclePointIndexImpl::subgroup_gen(log_size);
+        Coset { initial_index, step, log_size }
     }
 
     fn index_at(self: @Coset, index: usize) -> CirclePointIndex {
-        *self.initial_index + self.step_size.mul(index)
+        *self.initial_index + self.step.mul(index)
     }
 
     fn double(self: @Coset) -> Coset {
         assert!(*self.log_size > 0);
         Coset {
             initial_index: *self.initial_index + *self.initial_index,
-            step_size: *self.step_size + *self.step_size,
+            step: *self.step + *self.step,
             log_size: *self.log_size - 1,
         }
     }
@@ -192,18 +202,20 @@ pub impl CosetImpl of CosetTrait {
         pow2(*self.log_size)
     }
 
+    // fix documentation (1 is not in the canonic coset of size 8)
     /// Creates a coset of the form `G_2n + <G_n>`.
     ///
     /// For example, for `n=8`, we get the point indices `[1,3,5,7,9,11,13,15]`.
-    fn odds(log_size: u32) -> Coset {
+    fn canonic_coset(log_size: u32) -> Coset {
         Self::new(CirclePointIndexImpl::subgroup_gen(log_size + 1), log_size)
     }
 
+    // fix documentation (1 is not in the canonic coset of size 8)
     /// Creates a coset of the form `G_4n + <G_n>`.
     ///
     /// For example, for `n=8`, we get the point indices `[1,5,9,13,17,21,25,29]`.
-    /// Its conjugate will be `[3,7,11,15,19,23,27,31]`.
-    fn half_odds(log_size: u32) -> Coset {
+    /// Its negation will be `[3,7,11,15,19,23,27,31]`.
+    fn half_canonic_coset(log_size: u32) -> Coset {
         Self::new(CirclePointIndexImpl::subgroup_gen(log_size + 2), log_size)
     }
 }
@@ -249,6 +261,9 @@ pub impl CirclePointIndexImpl of CirclePointIndexTrait {
         self.reduce().index
     }
 
+    // is it ever used for index that is not power of 2? if not, implement simpler.
+    // otherwise, implement two functions (one for powers of 2)
+    // didn't audit
     fn to_point(self: @CirclePointIndex) -> CirclePoint<M31> {
         const NZ_2_POW_24: NonZero<u32> = 0b1000000000000000000000000;
         const NZ_2_POW_18: NonZero<u32> = 0b1000000000000000000;

@@ -18,7 +18,9 @@ pub fn mask_points(
     trace_gen: CirclePointIndex,
     log_size: u32,
 ) {
+    // to_point on a constant input can be saved
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
+    // loop or change data structure
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);

@@ -181,6 +181,7 @@ pub struct LineDomain {
 #[generate_trait]
 pub impl LineDomainImpl of LineDomainTrait {
     /// Returns a domain comprising of the x-coordinates of points in a coset.
+    // is it used only in tests? cfg[test], same for log_order
     fn new(coset: Coset) -> LineDomain {
         let coset_size = coset.size();
         if (coset_size == 2) {

@@ -14,6 +14,7 @@ pub use blake2s::Blake2sChannelImpl as ChannelImpl;
 #[cfg(feature: "poseidon252_verifier")]
 pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
+// document fields
 #[derive(Default, Drop)]
 pub struct ChannelTime {
     n_challenges: usize,
@@ -26,8 +27,11 @@ impl ChannelTimeImpl of ChannelTimeTrait {
         self.n_sent += 1;
     }
 
+    // rename e.g. next_challenge
     fn inc_challenges(ref self: ChannelTime) {
+        // is n_challenges ever used?
         self.n_challenges += 1;
+        // why set to zero?
         self.n_sent = 0;
     }
 }
@@ -37,16 +41,19 @@ pub trait ChannelTrait {
 
     fn mix_u64(ref self: Channel, nonce: u64);
 
+    fn mix_root(ref self: Channel, root: Hash);
+
+    // rename e.g. draw_secure_felt/draw_qm31
     fn draw_felt(ref self: Channel) -> SecureField;
 
     /// Generates a uniform random vector of SecureField elements.
+    // rename e.g. draw_secure_felts/draw_qm31s
     fn draw_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
 
     /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
     fn draw_random_bytes(ref self: Channel) -> Array<u8>;
 
-    fn mix_root(ref self: Channel, root: Hash);
-
     // TODO: Consider adding nonce to this function so channel could use different hash function.
+    // document please
     fn check_proof_of_work(self: @Channel, n_bits: u32) -> bool;
 }

@@ -21,6 +21,7 @@ pub impl CM31InvertibleImpl of Invertible<CM31> {
 
 pub impl CM31BatchInvertibleImpl of BatchInvertible<CM31> {}
 
+// why you need CM31 in opcode version?
 pub impl CM31Impl of CM31Trait {
     #[inline(always)]
     fn mul_m31(self: CM31, rhs: M31) -> CM31 {
@@ -40,6 +41,7 @@ pub impl CM31Impl of CM31Trait {
 
     #[inline(always)]
     fn pack(a: M31, b: M31) -> CM31 {
+        // use from_array
         CM31 { inner: a.into() + qm31_const::<0, 1, 0, 0>() * b.into() }
     }
 }

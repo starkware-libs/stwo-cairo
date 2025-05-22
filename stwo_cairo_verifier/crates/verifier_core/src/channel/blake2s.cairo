@@ -17,6 +17,7 @@ pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
 
+// this is consistent with Wikipedia, so why there is a TODO?
 // TODO: Stone uses a different initial state with the key set to 0.
 // Consider using this initial state instead.
 pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
@@ -36,7 +37,7 @@ pub fn new_channel(digest: Blake2sHash) -> Blake2sChannel {
 impl Blake2sChannelDefault of Default<Blake2sChannel> {
     fn default() -> Blake2sChannel {
         Blake2sChannel {
-            digest: Blake2sHash { hash: BoxImpl::new([0; 8]) }, channel_time: Default::default(),
+            digest: Blake2sHash { hash: BoxImpl::new([0_u32; 8]) }, channel_time: Default::default(),
         }
     }
 }
@@ -47,18 +48,19 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let [r0, r1, r2, r3, r4, r5, r6, r7] = root.hash.unbox();
         let msg = [d0, d1, d2, d3, d4, d5, d6, d7, r0, r1, r2, r3, r4, r5, r6, r7];
         let res = blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 64, BoxImpl::new(msg));
-        update_digest(ref self, Blake2sHash { hash: res });
+        self.update_digest(Blake2sHash { hash: res });
     }
 
     fn mix_felts(ref self: Blake2sChannel, felts: Span<SecureField>) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
-        let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
+        let mut buffer: Array<u32> = array![d0, d1, d2, d3, d4, d5, d6, d7];
         let mut byte_count = 32;
 
         for felt in felts {
             // Compress whenever the buffer reaches capacity.
-            if let Some(msg) = buffer.span().try_into() {
+            let msg_opt: Option<Box<[u32; 16]>> = buffer.span().try_into();
+            if let Some(msg) = msg_opt {
                 state = blake2s_compress(state, byte_count, *msg);
                 buffer = array![];
             }
@@ -81,15 +83,17 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
     fn mix_u64(ref self: Blake2sChannel, nonce: u64) {
         const NZ_2_POW_32: NonZero<u64> = 0x100000000;
+        // either do it with BoundedInt or bitwise operations
         let (q, r) = DivRem::div_rem(nonce, NZ_2_POW_32);
-        let nonce_hi = q.try_into().unwrap();
-        let nonce_lo = r.try_into().unwrap();
-        let msg = [nonce_lo, nonce_hi, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let res = blake2s_compress(self.digest.hash, 0, BoxImpl::new(msg));
+        let nonce_high = q.try_into().unwrap();
+        let nonce_low = r.try_into().unwrap();
+        let msg = [self.digest.hash, nonce_low, nonce_high, 0...];
+        let res = blake2s_finalize(BLAKE2S_256_INITIAL_STATE, 40, BoxImpl::new(msg));
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
     fn draw_felt(ref self: Blake2sChannel) -> SecureField {
+        // consider implementing draw_base_felts4, also in draw_felts
         let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
         QM31Trait::from_array([r0, r1, r2, r3])
     }
@@ -101,6 +105,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
             let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_random_base_felts(ref self).unbox();
             res.append(QM31Trait::from_array([r0, r1, r2, r3]));
             if n_felts == 1 {
+                // use draw_base_felts4
                 break;
             }
             res.append(QM31Trait::from_array([r4, r5, r6, r7]));
@@ -111,18 +116,18 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn draw_random_bytes(ref self: Blake2sChannel) -> Array<u8> {
-        let words = draw_random_words(ref self).hash.unbox();
+        let words: [u32; 8] = draw_random_words(ref self).unbox();
         let mut bytes = array![];
 
         for word in words.span() {
+            // use BoundedInt or bitwise operations
             let (q, r) = DivRem::div_rem(*word, 0x100);
             bytes.append(r.try_into().unwrap());
             let (q, r) = DivRem::div_rem(q, 0x100);
             bytes.append(r.try_into().unwrap());
             let (q, r) = DivRem::div_rem(q, 0x100);
             bytes.append(r.try_into().unwrap());
-            let (_, r) = DivRem::div_rem(q, 0x100);
-            bytes.append(r.try_into().unwrap());
+            bytes.append(q.try_into().unwrap());
         }
 
         bytes
@@ -130,7 +135,9 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
     fn check_proof_of_work(self: @Blake2sChannel, n_bits: u32) -> bool {
         const U128_2_POW_32: u128 = 0x100000000;
+        // the implementation in stone is different, why did you change it?
         let [d0, d1, d2, d3, _, _, _, _] = self.digest.hash.unbox();
+        // limit n_bits to 64 bits to make this function simpler
         let v = d3.into();
         let v = v * U128_2_POW_32 + d2.into();
         let v = v * U128_2_POW_32 + d1.into();
@@ -147,8 +154,8 @@ fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
 // TODO: Consider just returning secure felts.
 fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31InnerT; 8]> {
     loop {
-        let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();
-
+        let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).unbox();
+        // this can be more efficient by first doing div_rem of BoundedInt and check that div!=2.
         // Retry if not all the u32 are in the range [0, 2P).
         const P2: u32 = 0x7FFFFFFF * 2;
         if w0 < P2 && w1 < P2 && w2 < P2 && w3 < P2 && w4 < P2 && w5 < P2 && w6 < P2 && w7 < P2 {
@@ -163,12 +170,13 @@ fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31InnerT; 8]> {
     }
 }
 
-fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
+fn draw_random_words(ref channel: Blake2sChannel) -> Box<[u32; 8]> {
     let [d0, d1, d2, d3, d4, d5, d6, d7] = channel.digest.hash.unbox();
     let counter = channel.channel_time.n_sent.into();
     let msg = BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, counter, 0, 0, 0, 0, 0, 0, 0]);
     channel.channel_time.inc_sent();
-    Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 64, msg) }
+    // if it is 64 then there is no domain separation from mix_root
+    blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 36, msg)
 }
 
 #[cfg(test)]
