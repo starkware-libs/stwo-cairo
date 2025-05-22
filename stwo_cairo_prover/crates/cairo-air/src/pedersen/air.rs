@@ -1,11 +1,10 @@
 use num_traits::Zero;
-use stwo_cairo_adapter::HashMap;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::qm31::QM31;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements};
+use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
 use crate::components::prelude::*;
 use crate::components::{indented_component_display, partial_ec_mul, pedersen_points_table};
 
@@ -27,9 +26,9 @@ impl PedersenContextClaim {
             .unwrap_or_default()
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         if let Some(claim) = &self.claim {
-            claim.accumulate_relation_uses(relation_counts);
+            claim.accumulate_relation_uses(relation_uses);
         }
     }
 }
@@ -55,7 +54,7 @@ impl Claim {
         TreeVec::concat_cols(log_sizes)
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             partial_ec_mul,
             pedersen_points_table: _,
@@ -65,7 +64,7 @@ impl Claim {
         // - pedersen_points_table
 
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             partial_ec_mul::RELATION_USES_PER_ROW,
             partial_ec_mul.log_size,
         );

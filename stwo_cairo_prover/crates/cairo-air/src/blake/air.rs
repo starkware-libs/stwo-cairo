@@ -1,6 +1,5 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_adapter::HashMap;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -9,7 +8,7 @@ use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::QM31;
 use stwo_prover::core::pcs::TreeVec;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements};
+use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
 use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
@@ -32,9 +31,9 @@ impl BlakeContextClaim {
             .unwrap_or_default()
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         if let Some(claim) = &self.claim {
-            claim.accumulate_relation_uses(relation_counts);
+            claim.accumulate_relation_uses(relation_uses);
         }
     }
 }
@@ -69,7 +68,7 @@ impl Claim {
         TreeVec::concat_cols(log_sizes)
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             blake_round,
             blake_g,
@@ -83,17 +82,17 @@ impl Claim {
         // - verify_bitwise_xor_12
 
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             blake_round::RELATION_USES_PER_ROW,
             blake_round.log_size,
         );
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             blake_g::RELATION_USES_PER_ROW,
             blake_g.log_size,
         );
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             triple_xor_32::RELATION_USES_PER_ROW,
             triple_xor_32.log_size,
         );

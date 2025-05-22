@@ -1,7 +1,6 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_adapter::HashMap;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -12,7 +11,7 @@ use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
 use super::components::display_components;
-use crate::air::accumulate_relation_uses;
+use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_op_1_base_fp,
@@ -104,7 +103,7 @@ impl OpcodeClaim {
         ))
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             add,
             add_small,
@@ -134,7 +133,7 @@ impl OpcodeClaim {
             ($field:ident, $module:ident) => {
                 $field.iter().for_each(|c| {
                     accumulate_relation_uses(
-                        relation_counts,
+                        relation_uses,
                         $module::RELATION_USES_PER_ROW,
                         c.log_size,
                     )
