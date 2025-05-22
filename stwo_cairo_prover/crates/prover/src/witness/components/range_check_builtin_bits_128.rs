@@ -30,7 +30,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
-            self.range_check_builtin_segment_start,
+            self.range_check_builtin_segment_start.segment_index,
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
@@ -51,7 +51,7 @@ impl ClaimGenerator {
         (
             Claim {
                 log_size,
-                range_check_builtin_segment_start: self.range_check_builtin_segment_start,
+                range_check_builtin_segment_start: self.range_check_builtin_segment_start.segment_index as u32,
             },
             InteractionClaimGenerator {
                 log_size,
@@ -63,7 +63,7 @@ impl ClaimGenerator {
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 1],
+    memory_address_to_id: [Vec<PackedRelocatable>; 1],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 1],
 }
 
@@ -73,7 +73,7 @@ struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     log_size: u32,
-    range_check_builtin_segment_start: u32,
+    range_check_builtin_segment_start: usize,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
 ) -> (
@@ -105,22 +105,23 @@ fn write_trace_simd(
         .for_each(
             |(row_index, (mut row, lookup_data, sub_component_inputs))| {
                 let seq = seq.packed_at(row_index);
+                let segment_id_packed = PackedM31::broadcast(M31::from(range_check_builtin_segment_start));
 
                 // Read Positive Num Bits 128.
 
                 let memory_address_to_id_value_tmp_c9e8f_0 = memory_address_to_id_state
                     .deduce_output(
-                        ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start)))
-                            + (seq)),
+                        PackedRelocatable{segment_index: segment_id_packed, offset: seq},
                     );
                 let memory_id_to_big_value_tmp_c9e8f_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_c9e8f_0);
                 let value_id_col0 = memory_address_to_id_value_tmp_c9e8f_0;
                 *row[0] = value_id_col0;
                 *sub_component_inputs.memory_address_to_id[0] =
-                    ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start))) + (seq));
+                    PackedRelocatable{segment_index: segment_id_packed, offset: seq};
                 *lookup_data.memory_address_to_id_0 = [
-                    ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start))) + (seq)),
+                    segment_id_packed,
+                    seq,
                     value_id_col0,
                 ];
                 let value_limb_0_col1 = memory_id_to_big_value_tmp_c9e8f_1.get_m31(0);
@@ -234,7 +235,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
 }
 

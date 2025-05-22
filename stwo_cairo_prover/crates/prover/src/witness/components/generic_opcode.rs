@@ -47,7 +47,11 @@ impl ClaimGenerator {
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
-    verify_instruction: [Vec<verify_instruction::PackedInputType>; 1],memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 3],memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 28],range_check_19: [Vec<range_check_19::PackedInputType>; 28],
+    verify_instruction: [Vec<verify_instruction::PackedInputType>; 1],
+    memory_address_to_id: [Vec<PackedRelocatable>; 3],
+    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],
+    range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 28],
+    range_check_19: [Vec<range_check_19::PackedInputType>; 28],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -164,7 +168,7 @@ SubComponentInputs,) {
 
             //Decode Instruction.
 
-            let memory_address_to_id_value_tmp_57455_0 = memory_address_to_id_state.deduce_output(input_pc_col0);let memory_id_to_big_value_tmp_57455_1 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_0);let offset0_tmp_57455_2 = ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(0))) + (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(1))) & (UInt16_127))) << (UInt16_9))));let offset0_col3 = offset0_tmp_57455_2.as_m31();
+            let memory_address_to_id_value_tmp_57455_0 = memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));let memory_id_to_big_value_tmp_57455_1 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_0);let offset0_tmp_57455_2 = ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(0))) + (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(1))) & (UInt16_127))) << (UInt16_9))));let offset0_col3 = offset0_tmp_57455_2.as_m31();
             *row[3] = offset0_col3;let offset1_tmp_57455_3 = ((((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(1))) >> (UInt16_7))) + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(2))) << (UInt16_2))))) + (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(3))) & (UInt16_31))) << (UInt16_11))));let offset1_col4 = offset1_tmp_57455_3.as_m31();
             *row[4] = offset1_col4;let offset2_tmp_57455_4 = ((((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(3))) >> (UInt16_5))) + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(4))) << (UInt16_4))))) + (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(5))) & (UInt16_7))) << (UInt16_13))));let offset2_col5 = offset2_tmp_57455_4.as_m31();
             *row[5] = offset2_col5;let dst_base_fp_tmp_57455_5 = ((((((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(5))) >> (UInt16_3))) + (((PackedUInt16::from_m31(memory_id_to_big_value_tmp_57455_1.get_m31(6))) << (UInt16_6))))) >> (UInt16_0))) & (UInt16_1));let dst_base_fp_col6 = dst_base_fp_tmp_57455_5.as_m31();
@@ -186,7 +190,38 @@ SubComponentInputs,) {
                 (input_pc_col0, [offset0_col3, offset1_col4, offset2_col5], [((((((((((((dst_base_fp_col6) * (M31_8))) + (((op0_base_fp_col7) * (M31_16))))) + (((op1_imm_col8) * (M31_32))))) + (((op1_base_fp_col9) * (M31_64))))) + (((op1_base_ap_col10) * (M31_128))))) + (((res_add_col11) * (M31_256)))), ((((((((((((((((res_mul_col12) + (((pc_update_jump_col13) * (M31_2))))) + (((pc_update_jump_rel_col14) * (M31_4))))) + (((pc_update_jnz_col15) * (M31_8))))) + (((ap_update_add_col16) * (M31_16))))) + (((ap_update_add_1_col17) * (M31_32))))) + (((opcode_call_col18) * (M31_64))))) + (((opcode_ret_col19) * (M31_128))))) + (((opcode_assert_eq_col20) * (M31_256))))], M31_0);
             *lookup_data.verify_instruction_0 = [input_pc_col0, offset0_col3, offset1_col4, offset2_col5, ((((((((((((dst_base_fp_col6) * (M31_8))) + (((op0_base_fp_col7) * (M31_16))))) + (((op1_imm_col8) * (M31_32))))) + (((op1_base_fp_col9) * (M31_64))))) + (((op1_base_ap_col10) * (M31_128))))) + (((res_add_col11) * (M31_256)))), ((((((((((((((((res_mul_col12) + (((pc_update_jump_col13) * (M31_2))))) + (((pc_update_jump_rel_col14) * (M31_4))))) + (((pc_update_jnz_col15) * (M31_8))))) + (((ap_update_add_col16) * (M31_16))))) + (((ap_update_add_1_col17) * (M31_32))))) + (((opcode_call_col18) * (M31_64))))) + (((opcode_ret_col19) * (M31_128))))) + (((opcode_assert_eq_col20) * (M31_256)))), M31_0];let decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20 = ([((offset0_col3) - (M31_32768)), ((offset1_col4) - (M31_32768)), ((offset2_col5) - (M31_32768))], [dst_base_fp_col6, op0_base_fp_col7, op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12, pc_update_jump_col13, pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16, ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20], M31_0);
 
-            let op1_base_op0_tmp_57455_21 = ((((((M31_1) - (op1_imm_col8))) - (op1_base_fp_col9))) - (op1_base_ap_col10));let res_op1_tmp_57455_22 = ((((((M31_1) - (res_add_col11))) - (res_mul_col12))) - (pc_update_jnz_col15));let pc_update_regular_tmp_57455_23 = ((((((M31_1) - (pc_update_jump_col13))) - (pc_update_jump_rel_col14))) - (pc_update_jnz_col15));let ap_update_regular_tmp_57455_24 = ((((((M31_1) - (ap_update_add_col16))) - (ap_update_add_1_col17))) - (opcode_call_col18));let fp_update_regular_tmp_57455_25 = ((((M31_1) - (opcode_call_col18))) - (opcode_ret_col19));let decode_generic_instruction_output_tmp_57455_26 = ([dst_base_fp_col6, op0_base_fp_col7, op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12, pc_update_jump_col13, pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16, ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20, op1_base_op0_tmp_57455_21, res_op1_tmp_57455_22, pc_update_regular_tmp_57455_23, fp_update_regular_tmp_57455_25, ((M31_1) + (op1_imm_col8))], [decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20.0[0], decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20.0[1], decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20.0[2]]);
+            let op1_base_op0_tmp_57455_21 = ((((((M31_1) - (op1_imm_col8))) - (op1_base_fp_col9))) - (op1_base_ap_col10));
+            let res_op1_tmp_57455_22 = ((((((M31_1) - (res_add_col11))) - (res_mul_col12))) - (pc_update_jnz_col15));
+            let pc_update_regular_tmp_57455_23 = ((((((M31_1) - (pc_update_jump_col13))) - (pc_update_jump_rel_col14))) - (pc_update_jnz_col15));
+            let ap_update_regular_tmp_57455_24 = ((((((M31_1) - (ap_update_add_col16))) - (ap_update_add_1_col17))) - (opcode_call_col18));
+            let fp_update_regular_tmp_57455_25 = ((((M31_1) - (opcode_call_col18))) - (opcode_ret_col19));
+            let decode_generic_instruction_output_tmp_57455_26 = (
+                [dst_base_fp_col6,
+                 op0_base_fp_col7,
+                 op1_imm_col8,
+                 op1_base_fp_col9,
+                 op1_base_ap_col10,
+                 res_add_col11,
+                 res_mul_col12,
+                 pc_update_jump_col13,
+                 pc_update_jump_rel_col14,
+                 pc_update_jnz_col15,
+                 ap_update_add_col16,
+                 ap_update_add_1_col17,
+                 opcode_call_col18,
+                 opcode_ret_col19,
+                 opcode_assert_eq_col20, 
+                 op1_base_op0_tmp_57455_21, 
+                 res_op1_tmp_57455_22, 
+                 pc_update_regular_tmp_57455_23, 
+                 fp_update_regular_tmp_57455_25, 
+                 ((M31_1) + (op1_imm_col8))
+                 ],
+                [decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20.0[0],
+                 decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20.0[1], 
+                 decode_instruction_e0ab3b76b5a0014a_output_tmp_57455_20.0[2]
+                 ]
+                );
 
             //Eval Operands.
 
@@ -195,9 +230,9 @@ SubComponentInputs,) {
 
             //Read Positive Num Bits 252.
 
-            let memory_address_to_id_value_tmp_57455_27 = memory_address_to_id_state.deduce_output(((dst_src_col21) + (decode_generic_instruction_output_tmp_57455_26.1[0])));let memory_id_to_big_value_tmp_57455_28 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_27);let dst_id_col22 = memory_address_to_id_value_tmp_57455_27;
+            let memory_address_to_id_value_tmp_57455_27 = memory_address_to_id_state.deduce_output(PackedRelocatable::from_ap_m31(((dst_src_col21) + (decode_generic_instruction_output_tmp_57455_26.1[0]))));let memory_id_to_big_value_tmp_57455_28 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_27);let dst_id_col22 = memory_address_to_id_value_tmp_57455_27;
             *row[22] = dst_id_col22;*sub_component_inputs.memory_address_to_id[0] =
-                ((dst_src_col21) + (decode_generic_instruction_output_tmp_57455_26.1[0]));
+                PackedRelocatable::from_ap_m31(((dst_src_col21) + (decode_generic_instruction_output_tmp_57455_26.1[0])));
             *lookup_data.memory_address_to_id_0 = [((dst_src_col21) + (decode_generic_instruction_output_tmp_57455_26.1[0])), dst_id_col22];let dst_limb_0_col23 = memory_id_to_big_value_tmp_57455_28.get_m31(0);
             *row[23] = dst_limb_0_col23;let dst_limb_1_col24 = memory_id_to_big_value_tmp_57455_28.get_m31(1);
             *row[24] = dst_limb_1_col24;let dst_limb_2_col25 = memory_id_to_big_value_tmp_57455_28.get_m31(2);
@@ -235,10 +270,12 @@ SubComponentInputs,) {
 
             //Read Positive Num Bits 252.
 
-            let memory_address_to_id_value_tmp_57455_30 = memory_address_to_id_state.deduce_output(((op0_src_col51) + (decode_generic_instruction_output_tmp_57455_26.1[1])));let memory_id_to_big_value_tmp_57455_31 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_30);let op0_id_col52 = memory_address_to_id_value_tmp_57455_30;
+            let memory_address_to_id_value_tmp_57455_30 = memory_address_to_id_state.deduce_output(PackedRelocatable::from_ap_m31(((op0_src_col51) + (decode_generic_instruction_output_tmp_57455_26.1[1]))));
+            let memory_id_to_big_value_tmp_57455_31 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_30);
+            let op0_id_col52 = memory_address_to_id_value_tmp_57455_30;
             *row[52] = op0_id_col52;*sub_component_inputs.memory_address_to_id[1] =
-                ((op0_src_col51) + (decode_generic_instruction_output_tmp_57455_26.1[1]));
-            *lookup_data.memory_address_to_id_1 = [((op0_src_col51) + (decode_generic_instruction_output_tmp_57455_26.1[1])), op0_id_col52];let op0_limb_0_col53 = memory_id_to_big_value_tmp_57455_31.get_m31(0);
+                PackedRelocatable::from_ap_m31(((op0_src_col51) + (decode_generic_instruction_output_tmp_57455_26.1[1])));
+            *lookup_data.memory_address_to_id_1 = [M31_1, ((op0_src_col51) + (decode_generic_instruction_output_tmp_57455_26.1[1])), op0_id_col52];let op0_limb_0_col53 = memory_id_to_big_value_tmp_57455_31.get_m31(0);
             *row[53] = op0_limb_0_col53;let op0_limb_1_col54 = memory_id_to_big_value_tmp_57455_31.get_m31(1);
             *row[54] = op0_limb_1_col54;let op0_limb_2_col55 = memory_id_to_big_value_tmp_57455_31.get_m31(2);
             *row[55] = op0_limb_2_col55;let op0_limb_3_col56 = memory_id_to_big_value_tmp_57455_31.get_m31(3);
@@ -279,10 +316,17 @@ SubComponentInputs,) {
 
             //Read Positive Num Bits 252.
 
-            let memory_address_to_id_value_tmp_57455_34 = memory_address_to_id_state.deduce_output(((op1_src_col81) + (decode_generic_instruction_output_tmp_57455_26.1[2])));let memory_id_to_big_value_tmp_57455_35 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_34);let op1_id_col82 = memory_address_to_id_value_tmp_57455_34;
-            *row[82] = op1_id_col82;*sub_component_inputs.memory_address_to_id[2] =
-                ((op1_src_col81) + (decode_generic_instruction_output_tmp_57455_26.1[2]));
-            *lookup_data.memory_address_to_id_2 = [((op1_src_col81) + (decode_generic_instruction_output_tmp_57455_26.1[2])), op1_id_col82];let op1_limb_0_col83 = memory_id_to_big_value_tmp_57455_35.get_m31(0);
+            let memory_address_to_id_value_tmp_57455_34 = memory_address_to_id_state.deduce_output(PackedRelocatable{
+                segment_index: M31_1 * (M31_1 - op1_imm_col8),
+                offset: ((op1_src_col81) + (decode_generic_instruction_output_tmp_57455_26.1[2])),
+            });
+            let memory_id_to_big_value_tmp_57455_35 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_57455_34);
+            let op1_id_col82 = memory_address_to_id_value_tmp_57455_34;
+            *row[82] = op1_id_col82;*sub_component_inputs.memory_address_to_id[2] = PackedRelocatable{
+                segment_index: M31_1 * (M31_1 - op1_imm_col8),
+                offset: ((op1_src_col81) + (decode_generic_instruction_output_tmp_57455_26.1[2])),
+            };
+            *lookup_data.memory_address_to_id_2 = [M31_1 * (M31_1 - op1_imm_col8), ((op1_src_col81) + (decode_generic_instruction_output_tmp_57455_26.1[2])), op1_id_col82];let op1_limb_0_col83 = memory_id_to_big_value_tmp_57455_35.get_m31(0);
             *row[83] = op1_limb_0_col83;let op1_limb_1_col84 = memory_id_to_big_value_tmp_57455_35.get_m31(1);
             *row[84] = op1_limb_1_col84;let op1_limb_2_col85 = memory_id_to_big_value_tmp_57455_35.get_m31(2);
             *row[85] = op1_limb_2_col85;let op1_limb_3_col86 = memory_id_to_big_value_tmp_57455_35.get_m31(3);
@@ -648,7 +692,15 @@ SubComponentInputs,) {
 
 #[derive(Uninitialized,IterMut, ParIterMut)]
 struct LookupData
-{memory_address_to_id_0: Vec<[PackedM31; 2]>,memory_address_to_id_1: Vec<[PackedM31; 2]>,memory_address_to_id_2: Vec<[PackedM31; 2]>,memory_id_to_big_0: Vec<[PackedM31; 29]>,memory_id_to_big_1: Vec<[PackedM31; 29]>,memory_id_to_big_2: Vec<[PackedM31; 29]>,opcodes_0: Vec<[PackedM31; 3]>,opcodes_1: Vec<[PackedM31; 3]>,range_check_19_0: Vec<[PackedM31; 1]>,range_check_19_1: Vec<[PackedM31; 1]>,range_check_19_2: Vec<[PackedM31; 1]>,range_check_19_3: Vec<[PackedM31; 1]>,range_check_19_4: Vec<[PackedM31; 1]>,range_check_19_5: Vec<[PackedM31; 1]>,range_check_19_6: Vec<[PackedM31; 1]>,range_check_19_7: Vec<[PackedM31; 1]>,range_check_19_8: Vec<[PackedM31; 1]>,range_check_19_9: Vec<[PackedM31; 1]>,range_check_19_10: Vec<[PackedM31; 1]>,range_check_19_11: Vec<[PackedM31; 1]>,range_check_19_12: Vec<[PackedM31; 1]>,range_check_19_13: Vec<[PackedM31; 1]>,range_check_19_14: Vec<[PackedM31; 1]>,range_check_19_15: Vec<[PackedM31; 1]>,range_check_19_16: Vec<[PackedM31; 1]>,range_check_19_17: Vec<[PackedM31; 1]>,range_check_19_18: Vec<[PackedM31; 1]>,range_check_19_19: Vec<[PackedM31; 1]>,range_check_19_20: Vec<[PackedM31; 1]>,range_check_19_21: Vec<[PackedM31; 1]>,range_check_19_22: Vec<[PackedM31; 1]>,range_check_19_23: Vec<[PackedM31; 1]>,range_check_19_24: Vec<[PackedM31; 1]>,range_check_19_25: Vec<[PackedM31; 1]>,range_check_19_26: Vec<[PackedM31; 1]>,range_check_19_27: Vec<[PackedM31; 1]>,range_check_9_9_0: Vec<[PackedM31; 2]>,range_check_9_9_1: Vec<[PackedM31; 2]>,range_check_9_9_2: Vec<[PackedM31; 2]>,range_check_9_9_3: Vec<[PackedM31; 2]>,range_check_9_9_4: Vec<[PackedM31; 2]>,range_check_9_9_5: Vec<[PackedM31; 2]>,range_check_9_9_6: Vec<[PackedM31; 2]>,range_check_9_9_7: Vec<[PackedM31; 2]>,range_check_9_9_8: Vec<[PackedM31; 2]>,range_check_9_9_9: Vec<[PackedM31; 2]>,range_check_9_9_10: Vec<[PackedM31; 2]>,range_check_9_9_11: Vec<[PackedM31; 2]>,range_check_9_9_12: Vec<[PackedM31; 2]>,range_check_9_9_13: Vec<[PackedM31; 2]>,range_check_9_9_14: Vec<[PackedM31; 2]>,range_check_9_9_15: Vec<[PackedM31; 2]>,range_check_9_9_16: Vec<[PackedM31; 2]>,range_check_9_9_17: Vec<[PackedM31; 2]>,range_check_9_9_18: Vec<[PackedM31; 2]>,range_check_9_9_19: Vec<[PackedM31; 2]>,range_check_9_9_20: Vec<[PackedM31; 2]>,range_check_9_9_21: Vec<[PackedM31; 2]>,range_check_9_9_22: Vec<[PackedM31; 2]>,range_check_9_9_23: Vec<[PackedM31; 2]>,range_check_9_9_24: Vec<[PackedM31; 2]>,range_check_9_9_25: Vec<[PackedM31; 2]>,range_check_9_9_26: Vec<[PackedM31; 2]>,range_check_9_9_27: Vec<[PackedM31; 2]>,verify_instruction_0: Vec<[PackedM31; 7]>,}
+{memory_address_to_id_0: Vec<[PackedM31; 2]>,
+    memory_address_to_id_1: Vec<[PackedM31; 3]>,
+    memory_address_to_id_2: Vec<[PackedM31; 3]>,
+    memory_id_to_big_0: Vec<[PackedM31; 29]>,
+    memory_id_to_big_1: Vec<[PackedM31; 29]>,
+    memory_id_to_big_2: Vec<[PackedM31; 29]>,
+    opcodes_0: Vec<[PackedM31; 3]>,
+    opcodes_1: Vec<[PackedM31; 3]>,
+    range_check_19_0: Vec<[PackedM31; 1]>,range_check_19_1: Vec<[PackedM31; 1]>,range_check_19_2: Vec<[PackedM31; 1]>,range_check_19_3: Vec<[PackedM31; 1]>,range_check_19_4: Vec<[PackedM31; 1]>,range_check_19_5: Vec<[PackedM31; 1]>,range_check_19_6: Vec<[PackedM31; 1]>,range_check_19_7: Vec<[PackedM31; 1]>,range_check_19_8: Vec<[PackedM31; 1]>,range_check_19_9: Vec<[PackedM31; 1]>,range_check_19_10: Vec<[PackedM31; 1]>,range_check_19_11: Vec<[PackedM31; 1]>,range_check_19_12: Vec<[PackedM31; 1]>,range_check_19_13: Vec<[PackedM31; 1]>,range_check_19_14: Vec<[PackedM31; 1]>,range_check_19_15: Vec<[PackedM31; 1]>,range_check_19_16: Vec<[PackedM31; 1]>,range_check_19_17: Vec<[PackedM31; 1]>,range_check_19_18: Vec<[PackedM31; 1]>,range_check_19_19: Vec<[PackedM31; 1]>,range_check_19_20: Vec<[PackedM31; 1]>,range_check_19_21: Vec<[PackedM31; 1]>,range_check_19_22: Vec<[PackedM31; 1]>,range_check_19_23: Vec<[PackedM31; 1]>,range_check_19_24: Vec<[PackedM31; 1]>,range_check_19_25: Vec<[PackedM31; 1]>,range_check_19_26: Vec<[PackedM31; 1]>,range_check_19_27: Vec<[PackedM31; 1]>,range_check_9_9_0: Vec<[PackedM31; 2]>,range_check_9_9_1: Vec<[PackedM31; 2]>,range_check_9_9_2: Vec<[PackedM31; 2]>,range_check_9_9_3: Vec<[PackedM31; 2]>,range_check_9_9_4: Vec<[PackedM31; 2]>,range_check_9_9_5: Vec<[PackedM31; 2]>,range_check_9_9_6: Vec<[PackedM31; 2]>,range_check_9_9_7: Vec<[PackedM31; 2]>,range_check_9_9_8: Vec<[PackedM31; 2]>,range_check_9_9_9: Vec<[PackedM31; 2]>,range_check_9_9_10: Vec<[PackedM31; 2]>,range_check_9_9_11: Vec<[PackedM31; 2]>,range_check_9_9_12: Vec<[PackedM31; 2]>,range_check_9_9_13: Vec<[PackedM31; 2]>,range_check_9_9_14: Vec<[PackedM31; 2]>,range_check_9_9_15: Vec<[PackedM31; 2]>,range_check_9_9_16: Vec<[PackedM31; 2]>,range_check_9_9_17: Vec<[PackedM31; 2]>,range_check_9_9_18: Vec<[PackedM31; 2]>,range_check_9_9_19: Vec<[PackedM31; 2]>,range_check_9_9_20: Vec<[PackedM31; 2]>,range_check_9_9_21: Vec<[PackedM31; 2]>,range_check_9_9_22: Vec<[PackedM31; 2]>,range_check_9_9_23: Vec<[PackedM31; 2]>,range_check_9_9_24: Vec<[PackedM31; 2]>,range_check_9_9_25: Vec<[PackedM31; 2]>,range_check_9_9_26: Vec<[PackedM31; 2]>,range_check_9_9_27: Vec<[PackedM31; 2]>,verify_instruction_0: Vec<[PackedM31; 7]>,}
 
 pub struct InteractionClaimGenerator {
     n_rows: usize, log_size: u32,

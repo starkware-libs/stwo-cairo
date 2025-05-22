@@ -1969,8 +1969,11 @@ dependencies = [
 name = "stwo-cairo-continuation"
 version = "0.1.0"
 dependencies = [
+ "cairo-air",
  "cairo-vm",
  "stwo-cairo-adapter",
+ "stwo-prover",
+ "stwo_cairo_prover",
  "tracing",
 ]
 

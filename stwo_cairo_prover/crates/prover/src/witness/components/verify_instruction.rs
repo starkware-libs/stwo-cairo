@@ -133,7 +133,7 @@ impl ClaimGenerator {
 struct SubComponentInputs {
     range_check_7_2_5: [Vec<range_check_7_2_5::PackedInputType>; 1],
     range_check_4_3: [Vec<range_check_4_3::PackedInputType>; 1],
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 1],
+    memory_address_to_id: [Vec<PackedRelocatable>; 1],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 1],
 }
 
@@ -256,11 +256,11 @@ fn write_trace_simd(
                 // Mem Verify.
 
                 let memory_address_to_id_value_tmp_16a4f_9 =
-                    memory_address_to_id_state.deduce_output(input_limb_0_col0);
+                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_limb_0_col0));
                 let instruction_id_col15 = memory_address_to_id_value_tmp_16a4f_9;
                 *row[15] = instruction_id_col15;
-                *sub_component_inputs.memory_address_to_id[0] = input_limb_0_col0;
-                *lookup_data.memory_address_to_id_0 = [input_limb_0_col0, instruction_id_col15];
+                *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_pc_m31(input_limb_0_col0);
+                *lookup_data.memory_address_to_id_0 = [M31_0, input_limb_0_col0, instruction_id_col15];
                 *sub_component_inputs.memory_id_to_big[0] = instruction_id_col15;
                 *lookup_data.memory_id_to_big_0 = [
                     instruction_id_col15,
@@ -314,7 +314,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
     range_check_4_3_0: Vec<[PackedM31; 2]>,
     range_check_7_2_5_0: Vec<[PackedM31; 3]>,

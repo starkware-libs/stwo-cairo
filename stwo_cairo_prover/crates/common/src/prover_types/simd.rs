@@ -9,9 +9,9 @@ use itertools::Itertools;
 use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
-
+use stwo_prover::core::fields::m31::{M31};
 use super::cpu::{
-    BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
+    BigUInt, CasmState, Felt252, Felt252Width27, Relocatable, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
     PRIME,
 };
 use crate::memory::N_M31_IN_FELT252;
@@ -513,7 +513,85 @@ impl DivExtend for PackedM31 {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Copy, Clone, Debug)]
+pub struct PackedRelocatable {
+    pub segment_index: PackedM31,
+    pub offset: PackedM31,
+}
+
+impl PackedRelocatable {
+    pub fn broadcast(value: Relocatable) -> Self {
+        Self {
+            segment_index: PackedM31::broadcast(M31::from(value.segment_index as u32)),
+            offset: PackedM31::broadcast(M31::from(value.offset)),
+        }
+    }
+
+    pub fn from_array(arr: [Relocatable; N_LANES]) -> Self {
+        Self {
+            segment_index: PackedM31::from_array(arr.map(|r| M31::from(r.segment_index as u32))),
+            offset: PackedM31::from_array(arr.map(|r| M31::from(r.offset))),
+        }
+    }
+
+    pub fn to_array(&self) -> [Relocatable; N_LANES] {
+        let segment_indices = self.segment_index.to_array();
+        let offsets = self.offset.to_array();
+        
+        std::array::from_fn(|i| Relocatable {
+            segment_index: segment_indices[i].0 as usize,
+            offset: offsets[i].0,
+        })
+    }
+
+    /// Creates a PackedRelocatable from a PackedM31 value where the values
+    /// are interpreted as addresses in segment 0
+    pub fn from_pc_m31(value: PackedM31) -> Self {
+        Self {
+            segment_index: PackedM31::broadcast(M31::from(0)),
+            offset: value,
+        }
+    }
+
+    /// Creates a PackedRelocatable from a PackedM31 value where the values
+    /// are interpreted as addresses in segment 1
+    pub fn from_ap_m31(value: PackedM31) -> Self {
+        Self {
+            segment_index: PackedM31::broadcast(M31::from(1)),
+            offset: value,
+        }
+    }
+}
+
+impl Pack for Relocatable {
+    type SimdType = PackedRelocatable;
+
+    fn pack(inputs: [Self; N_LANES]) -> Self::SimdType {
+        PackedRelocatable::from_array(inputs)
+    }
+}
+
+impl Unpack for PackedRelocatable {
+    type CpuType = Relocatable;
+
+    fn unpack(self) -> [Self::CpuType; N_LANES] {
+        self.to_array()
+    }
+}
+
+impl EqExtend for PackedRelocatable {
+    fn eq(&self, other: Self) -> PackedBool {
+        let segment_eq = self.segment_index.eq(other.segment_index);
+        let offset_eq = self.offset.eq(other.offset);
+        
+        // Both segment_index and offset must be equal
+        PackedBool {
+            value: segment_eq.value & offset_eq.value,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct PackedFelt252Width27 {
     value: [Felt252Width27; N_LANES],
 }

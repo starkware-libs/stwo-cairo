@@ -71,7 +71,7 @@ impl ClaimGenerator {
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
     verify_instruction: [Vec<verify_instruction::PackedInputType>; 1],
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 2],
+    memory_address_to_id: [Vec<PackedRelocatable>; 2],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 2],
 }
 
@@ -146,7 +146,7 @@ fn write_trace_simd(
                 // Decode Instruction.
 
                 let memory_address_to_id_value_tmp_2757b_0 =
-                    memory_address_to_id_state.deduce_output(input_pc_col0);
+                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_2757b_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_2757b_0);
                 let offset1_tmp_2757b_2 =
@@ -245,16 +245,17 @@ fn write_trace_simd(
 
                 let memory_address_to_id_value_tmp_2757b_7 = memory_address_to_id_state
                     .deduce_output(
-                        ((mem0_base_col7)
+                        PackedRelocatable::from_ap_m31(((mem0_base_col7)
                             + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[1])),
-                    );
+                    ));
                 let memory_id_to_big_value_tmp_2757b_8 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_2757b_7);
                 let mem1_base_id_col8 = memory_address_to_id_value_tmp_2757b_7;
                 *row[8] = mem1_base_id_col8;
-                *sub_component_inputs.memory_address_to_id[0] = ((mem0_base_col7)
-                    + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[1]));
+                *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(((mem0_base_col7)
+                    + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[1])));
                 *lookup_data.memory_address_to_id_0 = [
+                    M31_1,
                     ((mem0_base_col7)
                         + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[1])),
                     mem1_base_id_col8,
@@ -335,19 +336,20 @@ fn write_trace_simd(
 
                 let memory_address_to_id_value_tmp_2757b_10 = memory_address_to_id_state
                     .deduce_output(
-                        ((((mem1_base_limb_0_col9) + ((mem1_base_limb_1_col10) * (M31_512)))
+                        PackedRelocatable::from_ap_m31(((((mem1_base_limb_0_col9) + ((mem1_base_limb_1_col10) * (M31_512)))
                             + ((mem1_base_limb_2_col11) * (M31_262144)))
-                            + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2])),
+                            + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2]))),
                     );
                 let memory_id_to_big_value_tmp_2757b_11 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_2757b_10);
                 let next_pc_id_col12 = memory_address_to_id_value_tmp_2757b_10;
                 *row[12] = next_pc_id_col12;
-                *sub_component_inputs.memory_address_to_id[1] = ((((mem1_base_limb_0_col9)
+                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31(((((mem1_base_limb_0_col9)
                     + ((mem1_base_limb_1_col10) * (M31_512)))
                     + ((mem1_base_limb_2_col11) * (M31_262144)))
-                    + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2]));
+                    + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2])));
                 *lookup_data.memory_address_to_id_1 = [
+                    M31_1,
                     ((((mem1_base_limb_0_col9) + ((mem1_base_limb_1_col10) * (M31_512)))
                         + ((mem1_base_limb_2_col11) * (M31_262144)))
                         + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2])),
@@ -441,8 +443,8 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_address_to_id_1: Vec<[PackedM31; 2]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    memory_address_to_id_1: Vec<[PackedM31; 3]>,
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
     memory_id_to_big_1: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,

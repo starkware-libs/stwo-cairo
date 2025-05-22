@@ -190,6 +190,13 @@ impl CairoClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write opcode trace").entered();
+        // For each write_trace_simd method, there are three things to do:
+        // 1. Adapt the input of the deduce_output method called on memory_address_to_id for it 
+        //    to be a PackedRelocatable using from_pc_m31 or from_ap_m31 depending on the segment we are trying to read from.
+        // 2. Change the SubComponentInputs::memory_address_to_id to be a [Vec<PackedRelocatable>; 20] instead of a [Vec<memory_address_to_id::PackedInputType>; 20].
+        //    Adapt the value affected to the *sub_component_inputs.memory_address_to_id[i] variables to be a PackedRelocatable::from_ap_m31 or PackedRelocatable::from_pc_m31.
+        // 3. Change all memory_address_to_id_<i> to be a Vec<[PackedM31; 3]> instead of a Vec<[PackedM31; 2]>.
+        //    Adapt the value affected to the *lookup_data.memory_address_to_id_<i> variables by adding an M31_0 or M31_1 to the first element of the array.
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
             &mut self.blake_context_trace_generator,

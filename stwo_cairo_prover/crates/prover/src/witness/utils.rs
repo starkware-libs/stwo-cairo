@@ -68,7 +68,7 @@ impl AtomicMultiplicityColumn2D {
         }
     }
 
-    pub fn increase_at(&self, relocatable: Relocatable) {
+    pub fn increase_at(&self, relocatable: &Relocatable) {
         self.data[relocatable.segment_index][relocatable.offset as usize].fetch_add(1, Ordering::Relaxed);
     }
 
@@ -81,7 +81,7 @@ impl AtomicMultiplicityColumn2D {
         BaseColumn::from_iter(
             self.data
                 .into_iter()
-                .map(|a| M31(a.load(Ordering::Relaxed))),
+                .flat_map(|atomic_vec| atomic_vec.into_iter().map(|a| M31(a.load(Ordering::Relaxed)))),
         )
         .data
     }

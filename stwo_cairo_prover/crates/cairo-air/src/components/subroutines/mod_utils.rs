@@ -15,7 +15,7 @@ impl ModUtils {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [mod_utils_input_limb_0, mod_utils_input_limb_1]: [E::F; 2],
+        mod_utils_input_limb_1: E::F,
         is_instance_0_col0: E::F,
         p0_id_col1: E::F,
         p0_limb_0_col2: E::F,
@@ -273,13 +273,12 @@ impl ModUtils {
         // is_instance_0 is 0 when instance_num is not 0..
         eval.add_constraint((is_instance_0_col0.clone() * mod_utils_input_limb_1.clone()));
         let prev_instance_addr_tmp_7b599_1 = eval.add_intermediate(
-            (mod_utils_input_limb_0.clone()
-                + (M31_7.clone()
+            ((M31_7.clone()
                     * ((mod_utils_input_limb_1.clone() - M31_1.clone())
                         + is_instance_0_col0.clone()))),
         );
         let instance_addr_tmp_7b599_2 = eval.add_intermediate(
-            (mod_utils_input_limb_0.clone() + (M31_7.clone() * mod_utils_input_limb_1.clone())),
+            ((M31_7.clone() * mod_utils_input_limb_1.clone())),
         );
         ReadPositiveNumBits99::evaluate(
             [instance_addr_tmp_7b599_2.clone()],

@@ -495,10 +495,7 @@ impl FrameworkEval for Eval {
         let carry_61_col409 = eval.next_trace_mask();
 
         ModUtils::evaluate(
-            [
-                E::F::from(M31::from(self.claim.mul_mod_builtin_segment_start)),
-                seq.clone(),
-            ],
+            seq.clone(),
             is_instance_0_col0.clone(),
             p0_id_col1.clone(),
             p0_limb_0_col2.clone(),

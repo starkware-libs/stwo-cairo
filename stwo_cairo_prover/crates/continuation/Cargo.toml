@@ -5,6 +5,9 @@ edition = "2021"
 
 [dependencies]
 stwo-cairo-adapter.workspace = true
+stwo_cairo_prover = { path = "../prover" }
+cairo-air = { path = "../cairo-air" }
+stwo-prover.workspace = true
 
 [dev-dependencies]
 cairo-vm.workspace = true

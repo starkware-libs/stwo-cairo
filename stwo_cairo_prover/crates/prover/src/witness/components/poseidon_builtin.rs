@@ -39,7 +39,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
-            self.poseidon_builtin_segment_start,
+            self.poseidon_builtin_segment_start.segment_index,
             cube_252_state,
             memory_address_to_id_state,
             memory_id_to_big_state,
@@ -106,7 +106,7 @@ impl ClaimGenerator {
         (
             Claim {
                 log_size,
-                poseidon_builtin_segment_start: self.poseidon_builtin_segment_start,
+                poseidon_builtin_segment_start: self.poseidon_builtin_segment_start.segment_index as u32,
             },
             InteractionClaimGenerator {
                 log_size,
@@ -118,7 +118,7 @@ impl ClaimGenerator {
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 6],
+    memory_address_to_id: [Vec<PackedRelocatable>; 6],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 6],
     poseidon_full_round_chain: [Vec<poseidon_full_round_chain::PackedInputType>; 8],
     range_check_felt_252_width_27: [Vec<range_check_felt_252_width_27::PackedInputType>; 2],
@@ -135,7 +135,7 @@ struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     log_size: u32,
-    poseidon_builtin_segment_start: u32,
+    poseidon_builtin_segment_start: usize,
     cube_252_state: &cube_252::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
@@ -318,6 +318,7 @@ fn write_trace_simd(
     let M31_94624323 = PackedM31::broadcast(M31::from(94624323));
     let M31_95050340 = PackedM31::broadcast(M31::from(95050340));
     let seq = Seq::new(log_size);
+    let segment_id_packed = PackedM31::broadcast(M31::from(poseidon_builtin_segment_start));
 
     (trace.par_iter_mut(),
     lookup_data.par_iter_mut(),sub_component_inputs.par_iter_mut(),)
@@ -329,10 +330,10 @@ fn write_trace_simd(
 
             //Read Positive Num Bits 252.
 
-            let memory_address_to_id_value_tmp_51986_0 = memory_address_to_id_state.deduce_output(((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6)))));let memory_id_to_big_value_tmp_51986_1 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_51986_0);let input_state_0_id_col0 = memory_address_to_id_value_tmp_51986_0;
+            let memory_address_to_id_value_tmp_51986_0 = memory_address_to_id_state.deduce_output(PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)))});let memory_id_to_big_value_tmp_51986_1 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_51986_0);let input_state_0_id_col0 = memory_address_to_id_value_tmp_51986_0;
             *row[0] = input_state_0_id_col0;*sub_component_inputs.memory_address_to_id[0] =
-                ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))));
-            *lookup_data.memory_address_to_id_0 = [((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6)))), input_state_0_id_col0];let input_state_0_limb_0_col1 = memory_id_to_big_value_tmp_51986_1.get_m31(0);
+                PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)))};
+            *lookup_data.memory_address_to_id_0 = [PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)), (((seq) * (M31_6))), input_state_0_id_col0];let input_state_0_limb_0_col1 = memory_id_to_big_value_tmp_51986_1.get_m31(0);
             *row[1] = input_state_0_limb_0_col1;let input_state_0_limb_1_col2 = memory_id_to_big_value_tmp_51986_1.get_m31(1);
             *row[2] = input_state_0_limb_1_col2;let input_state_0_limb_2_col3 = memory_id_to_big_value_tmp_51986_1.get_m31(2);
             *row[3] = input_state_0_limb_2_col3;let input_state_0_limb_3_col4 = memory_id_to_big_value_tmp_51986_1.get_m31(3);
@@ -368,10 +369,10 @@ fn write_trace_simd(
 
             //Read Positive Num Bits 252.
 
-            let memory_address_to_id_value_tmp_51986_4 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1)));let memory_id_to_big_value_tmp_51986_5 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_51986_4);let input_state_1_id_col29 = memory_address_to_id_value_tmp_51986_4;
+            let memory_address_to_id_value_tmp_51986_4 = memory_address_to_id_state.deduce_output(PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_1))});let memory_id_to_big_value_tmp_51986_5 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_51986_4);let input_state_1_id_col29 = memory_address_to_id_value_tmp_51986_4;
             *row[29] = input_state_1_id_col29;*sub_component_inputs.memory_address_to_id[1] =
-                ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1));
-            *lookup_data.memory_address_to_id_1 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1)), input_state_1_id_col29];let input_state_1_limb_0_col30 = memory_id_to_big_value_tmp_51986_5.get_m31(0);
+                PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_1))};
+            *lookup_data.memory_address_to_id_1 = [segment_id_packed, (((seq) * (M31_6)) + (M31_1)), input_state_1_id_col29];let input_state_1_limb_0_col30 = memory_id_to_big_value_tmp_51986_5.get_m31(0);
             *row[30] = input_state_1_limb_0_col30;let input_state_1_limb_1_col31 = memory_id_to_big_value_tmp_51986_5.get_m31(1);
             *row[31] = input_state_1_limb_1_col31;let input_state_1_limb_2_col32 = memory_id_to_big_value_tmp_51986_5.get_m31(2);
             *row[32] = input_state_1_limb_2_col32;let input_state_1_limb_3_col33 = memory_id_to_big_value_tmp_51986_5.get_m31(3);
@@ -407,10 +408,10 @@ fn write_trace_simd(
 
             //Read Positive Num Bits 252.
 
-            let memory_address_to_id_value_tmp_51986_8 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2)));let memory_id_to_big_value_tmp_51986_9 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_51986_8);let input_state_2_id_col58 = memory_address_to_id_value_tmp_51986_8;
+            let memory_address_to_id_value_tmp_51986_8 = memory_address_to_id_state.deduce_output(PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_2))});let memory_id_to_big_value_tmp_51986_9 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_51986_8);let input_state_2_id_col58 = memory_address_to_id_value_tmp_51986_8;
             *row[58] = input_state_2_id_col58;*sub_component_inputs.memory_address_to_id[2] =
-                ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2));
-            *lookup_data.memory_address_to_id_2 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2)), input_state_2_id_col58];let input_state_2_limb_0_col59 = memory_id_to_big_value_tmp_51986_9.get_m31(0);
+                PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_2))};
+            *lookup_data.memory_address_to_id_2 = [segment_id_packed, (((seq) * (M31_6)) + (M31_2)), input_state_2_id_col58];let input_state_2_limb_0_col59 = memory_id_to_big_value_tmp_51986_9.get_m31(0);
             *row[59] = input_state_2_limb_0_col59;let input_state_2_limb_1_col60 = memory_id_to_big_value_tmp_51986_9.get_m31(1);
             *row[60] = input_state_2_limb_1_col60;let input_state_2_limb_2_col61 = memory_id_to_big_value_tmp_51986_9.get_m31(2);
             *row[61] = input_state_2_limb_2_col61;let input_state_2_limb_3_col62 = memory_id_to_big_value_tmp_51986_9.get_m31(3);
@@ -803,10 +804,10 @@ fn write_trace_simd(
 
             // Mem Verify.
 
-            let memory_address_to_id_value_tmp_51986_166 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3)));let output_state_0_id_col302 = memory_address_to_id_value_tmp_51986_166;
+            let memory_address_to_id_value_tmp_51986_166 = memory_address_to_id_state.deduce_output(PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_3))});let output_state_0_id_col302 = memory_address_to_id_value_tmp_51986_166;
             *row[302] = output_state_0_id_col302;*sub_component_inputs.memory_address_to_id[3] =
-                ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3));
-            *lookup_data.memory_address_to_id_3 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3)), output_state_0_id_col302];*sub_component_inputs.memory_id_to_big[3] =
+                PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_3))};
+            *lookup_data.memory_address_to_id_3 = [segment_id_packed, (((seq) * (M31_6)) + (M31_3)), output_state_0_id_col302];*sub_component_inputs.memory_id_to_big[3] =
                 output_state_0_id_col302;
             *lookup_data.memory_id_to_big_3 = [output_state_0_id_col302, unpacked_limb_0_col284, unpacked_limb_1_col285, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(2), unpacked_limb_3_col286, unpacked_limb_4_col287, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(5), unpacked_limb_6_col288, unpacked_limb_7_col289, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(8), unpacked_limb_9_col290, unpacked_limb_10_col291, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(11), unpacked_limb_12_col292, unpacked_limb_13_col293, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(14), unpacked_limb_15_col294, unpacked_limb_16_col295, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(17), unpacked_limb_18_col296, unpacked_limb_19_col297, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(20), unpacked_limb_21_col298, unpacked_limb_22_col299, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(23), unpacked_limb_24_col300, unpacked_limb_25_col301, felt_252_unpack_from_27_output_tmp_51986_165.get_m31(26), poseidon_full_round_chain_output_limb_9_col263];
 
@@ -834,10 +835,10 @@ fn write_trace_simd(
 
             // Mem Verify.
 
-            let memory_address_to_id_value_tmp_51986_169 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4)));let output_state_1_id_col321 = memory_address_to_id_value_tmp_51986_169;
+            let memory_address_to_id_value_tmp_51986_169 = memory_address_to_id_state.deduce_output(PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_4))});let output_state_1_id_col321 = memory_address_to_id_value_tmp_51986_169;
             *row[321] = output_state_1_id_col321;*sub_component_inputs.memory_address_to_id[4] =
-                ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4));
-            *lookup_data.memory_address_to_id_4 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4)), output_state_1_id_col321];*sub_component_inputs.memory_id_to_big[4] =
+                PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_4))};
+            *lookup_data.memory_address_to_id_4 = [segment_id_packed, (((seq) * (M31_6)) + (M31_4)), output_state_1_id_col321];*sub_component_inputs.memory_id_to_big[4] =
                 output_state_1_id_col321;
             *lookup_data.memory_id_to_big_4 = [output_state_1_id_col321, unpacked_limb_0_col303, unpacked_limb_1_col304, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(2), unpacked_limb_3_col305, unpacked_limb_4_col306, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(5), unpacked_limb_6_col307, unpacked_limb_7_col308, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(8), unpacked_limb_9_col309, unpacked_limb_10_col310, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(11), unpacked_limb_12_col311, unpacked_limb_13_col312, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(14), unpacked_limb_15_col313, unpacked_limb_16_col314, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(17), unpacked_limb_18_col315, unpacked_limb_19_col316, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(20), unpacked_limb_21_col317, unpacked_limb_22_col318, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(23), unpacked_limb_24_col319, unpacked_limb_25_col320, felt_252_unpack_from_27_output_tmp_51986_168.get_m31(26), poseidon_full_round_chain_output_limb_19_col273];
 
@@ -865,10 +866,10 @@ fn write_trace_simd(
 
             // Mem Verify.
 
-            let memory_address_to_id_value_tmp_51986_172 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5)));let output_state_2_id_col340 = memory_address_to_id_value_tmp_51986_172;
+            let memory_address_to_id_value_tmp_51986_172 = memory_address_to_id_state.deduce_output(PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_5))});let output_state_2_id_col340 = memory_address_to_id_value_tmp_51986_172;
             *row[340] = output_state_2_id_col340;*sub_component_inputs.memory_address_to_id[5] =
-                ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5));
-            *lookup_data.memory_address_to_id_5 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5)), output_state_2_id_col340];*sub_component_inputs.memory_id_to_big[5] =
+                PackedRelocatable{segment_index: segment_id_packed, offset: (((seq) * (M31_6)) + (M31_5))};
+            *lookup_data.memory_address_to_id_5 = [segment_id_packed, (((seq) * (M31_6)) + (M31_5)), output_state_2_id_col340];*sub_component_inputs.memory_id_to_big[5] =
                 output_state_2_id_col340;
             *lookup_data.memory_id_to_big_5 = [output_state_2_id_col340, unpacked_limb_0_col322, unpacked_limb_1_col323, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(2), unpacked_limb_3_col324, unpacked_limb_4_col325, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(5), unpacked_limb_6_col326, unpacked_limb_7_col327, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(8), unpacked_limb_9_col328, unpacked_limb_10_col329, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(11), unpacked_limb_12_col330, unpacked_limb_13_col331, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(14), unpacked_limb_15_col332, unpacked_limb_16_col333, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(17), unpacked_limb_18_col334, unpacked_limb_19_col335, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(20), unpacked_limb_21_col336, unpacked_limb_22_col337, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(23), unpacked_limb_24_col338, unpacked_limb_25_col339, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(26), poseidon_full_round_chain_output_limb_29_col283];
         });
@@ -880,12 +881,12 @@ fn write_trace_simd(
 struct LookupData {
     cube_252_0: Vec<[PackedM31; 20]>,
     cube_252_1: Vec<[PackedM31; 20]>,
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_address_to_id_1: Vec<[PackedM31; 2]>,
-    memory_address_to_id_2: Vec<[PackedM31; 2]>,
-    memory_address_to_id_3: Vec<[PackedM31; 2]>,
-    memory_address_to_id_4: Vec<[PackedM31; 2]>,
-    memory_address_to_id_5: Vec<[PackedM31; 2]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    memory_address_to_id_1: Vec<[PackedM31; 3]>,
+    memory_address_to_id_2: Vec<[PackedM31; 3]>,
+    memory_address_to_id_3: Vec<[PackedM31; 3]>,
+    memory_address_to_id_4: Vec<[PackedM31; 3]>,
+    memory_address_to_id_5: Vec<[PackedM31; 3]>,
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
     memory_id_to_big_1: Vec<[PackedM31; 29]>,
     memory_id_to_big_2: Vec<[PackedM31; 29]>,

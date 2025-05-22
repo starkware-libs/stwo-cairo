@@ -177,8 +177,8 @@ fn check_builtin(
     });
 
     let segment_end = segment_start + (1 << log_size) * n_cells as u32;
-    let start_ptr = segment_range.start_ptr.value;
-    let stop_ptr = segment_range.stop_ptr.value;
+    // let start_ptr = segment_range.start_ptr.value;
+    // let stop_ptr = segment_range.stop_ptr.value;
     // assert!(
     //     (stop_ptr - start_ptr) % n_cells as u32 == 0,
     //     "Builtin segment range must divisible by {} cells, but got start_ptr: {}, stop_ptr: {}",
