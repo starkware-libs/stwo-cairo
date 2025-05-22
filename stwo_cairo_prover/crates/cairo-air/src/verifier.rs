@@ -65,8 +65,8 @@ fn verify_claim(claim: &CairoClaim) {
     // Assert that each relation has strictly less than P uses.
     let mut relation_uses = HashMap::<&'static str, u32>::new();
     claim.accumulate_relation_uses(&mut relation_uses);
-    for (_, uses) in relation_uses {
-        assert!(uses < PRIME);
+    for (name, uses) in relation_uses {
+        assert!(uses < PRIME, "Relation {} has {} uses.", name, uses);
     }
 }
 
