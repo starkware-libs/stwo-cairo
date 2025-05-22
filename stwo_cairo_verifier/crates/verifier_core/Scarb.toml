@@ -7,8 +7,9 @@ edition = "2024_07"
 casm = true
 
 [features]
+default = []
 poseidon252_verifier = []
-qm31_opcode = []
+no_qm31_opcode = []
 
 [tool.fmt]
 sort-module-level-items = true
