@@ -77,7 +77,7 @@ impl BuiltinsClaim {
                 .into_iter(),
         ))
     }
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u64>) {
         let Self {
             add_mod_builtin,
             bitwise_builtin,

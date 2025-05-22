@@ -66,7 +66,7 @@ where
 
 /// Accumulates the number of uses of each relation in a map.
 pub fn accumulate_relation_uses<const N: usize>(
-    relation_counts: &mut HashMap<&'static str, u32>,
+    relation_counts: &mut HashMap<&'static str, u64>,
     relation_uses_per_row: [RelationUse; N],
     log_size: u32,
 ) {
@@ -153,7 +153,7 @@ impl CairoClaim {
         TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u64>) {
         let Self {
             public_data: _,
             opcodes,

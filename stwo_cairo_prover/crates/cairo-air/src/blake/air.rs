@@ -32,7 +32,7 @@ impl BlakeContextClaim {
             .unwrap_or_default()
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u64>) {
         if let Some(claim) = &self.claim {
             claim.accumulate_relation_uses(relation_counts);
         }
@@ -69,7 +69,7 @@ impl Claim {
         TreeVec::concat_cols(log_sizes)
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u64>) {
         let Self {
             blake_round,
             blake_g,

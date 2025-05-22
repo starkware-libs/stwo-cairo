@@ -63,17 +63,18 @@ fn verify_claim(claim: &CairoClaim) {
     assert!(initial_ap <= final_ap);
 
     // Assert that each relation has strictly less than P uses.
-    let mut relation_uses = HashMap::<&'static str, u32>::new();
+    let mut relation_uses = HashMap::<&'static str, u64>::new();
     claim.accumulate_relation_uses(&mut relation_uses);
+    log::info!("relation_uses: {:?}", relation_uses);
     for (name, uses) in relation_uses {
-        assert!(uses < PRIME, "Relation {} has {} uses.", name, uses);
+        assert!(uses < PRIME.into(), "Relation {} has {} uses.", name, uses);
     }
 }
 
 #[derive(Clone)]
 pub struct RelationUse {
     pub relation_id: &'static str,
-    pub uses: u32,
+    pub uses: u64,
 }
 
 struct BuiltinClaim {

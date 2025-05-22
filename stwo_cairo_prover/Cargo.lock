@@ -403,6 +403,7 @@ name = "cairo-air"
 version = "0.1.1"
 dependencies = [
  "itertools 0.12.1",
+ "log",
  "num-traits",
  "paste",
  "rand",
