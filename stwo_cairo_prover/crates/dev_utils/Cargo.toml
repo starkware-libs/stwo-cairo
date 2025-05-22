@@ -1,0 +1,23 @@
+[package]
+name = "vm_adapter_prover"
+version.workspace = true
+edition.workspace = true
+
+[features]
+std = ["stwo-cairo-adapter/std"] 
+
+[dependencies]
+cairo-air.workspace = true
+clap.workspace = true
+serde.workspace = true
+starknet-ff.workspace = true
+sonic-rs = "0.3.17"
+stwo-cairo-adapter.workspace = true
+stwo-cairo-serialize.workspace = true
+stwo-prover.workspace = true
+stwo_cairo_prover.workspace = true
+stwo_cairo_utils.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+log.workspace = true
+
