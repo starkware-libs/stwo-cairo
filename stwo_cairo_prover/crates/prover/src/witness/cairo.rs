@@ -3,7 +3,7 @@ use cairo_air::air::{
     PublicMemory, PublicSegmentRanges, SegmentRange,
 };
 use itertools::Itertools;
-use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_adapter::memory::{Memory, MemoryValue};
 use stwo_cairo_adapter::ProverInput;
 use stwo_prover::core::backend::simd::SimdBackend;
 
@@ -31,8 +31,12 @@ fn extract_public_segments(memory: &Memory, initial_ap: u32, final_ap: u32) -> P
 
     let to_memory_value = |addr: Relocatable| {
         let id = memory.get_raw_id(addr);
-        let value = memory.get(addr).as_small() as u64;
-        MemorySmallValue { id, value }
+        let value = match memory.get(addr) {
+            MemoryValue::Small(x) => MemorySmallValue { id, segment_index: 0, offset: x as u32 },
+            MemoryValue::F252(x) => MemorySmallValue { id, segment_index: 0, offset: x[0] as u32 },
+            MemoryValue::MemoryRelocatable(x) => MemorySmallValue { id, segment_index: x[0] as u32, offset: x[1] as u32 },
+        };
+        value
     };
 
     let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(|i| Relocatable::execution(i)).map(to_memory_value);
@@ -73,7 +77,7 @@ fn extract_sections_from_memory(
         Relocatable::execution(initial_ap - 1)
     ];
     let output_memory_addresses =
-        (public_segments.output.start_ptr.value..public_segments.output.stop_ptr.value).map(|i| Relocatable::execution(i as u32)).collect_vec();
+        (public_segments.output.start_ptr.offset..public_segments.output.stop_ptr.offset).map(|i| Relocatable::execution(i as u32)).collect_vec();
         // Maybe not all the output is on execution segment
     let [program, safe_call, output] = [
         program_memory_addresses,

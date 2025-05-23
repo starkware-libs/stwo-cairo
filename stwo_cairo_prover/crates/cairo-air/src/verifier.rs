@@ -84,21 +84,21 @@ struct BuiltinClaim {
 fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmentRanges) {
     // Check that non-supported builtins aren't used.
     assert_eq!(
-        segment_ranges.ec_op.start_ptr.value,
-        segment_ranges.ec_op.stop_ptr.value
+        segment_ranges.ec_op.start_ptr.offset,
+        segment_ranges.ec_op.stop_ptr.offset
     );
     assert_eq!(
-        segment_ranges.ecdsa.start_ptr.value,
-        segment_ranges.ecdsa.stop_ptr.value
+        segment_ranges.ecdsa.start_ptr.offset,
+        segment_ranges.ecdsa.stop_ptr.offset
     );
     assert_eq!(
-        segment_ranges.keccak.start_ptr.value,
-        segment_ranges.keccak.stop_ptr.value
+        segment_ranges.keccak.start_ptr.offset,
+        segment_ranges.keccak.stop_ptr.offset
     );
 
     // Output builtin.
-    assert!(segment_ranges.output.stop_ptr.value < 1 << 31);
-    assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
+    assert!(segment_ranges.output.stop_ptr.offset < 1 << 31);
+    assert!(segment_ranges.output.start_ptr.offset <= segment_ranges.output.stop_ptr.offset);
 
     // Macro for calling `check_builtin` on all builtins except both range_check builtins.
     macro_rules! check_builtin_generic {

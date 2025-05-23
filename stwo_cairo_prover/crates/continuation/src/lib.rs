@@ -21,11 +21,17 @@ mod tests{
     fn run_fibonacci_test() {
 
         let result = test_fibonacci();
-        println!("{:#?}", result);
         let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-        let _proof =
+        let proof =
         prove_cairo::<Blake2sMerkleChannel>(result, PcsConfig::default(), preprocessed_trace);
-        // let path = "../../test_data/fibonacci/fibonacci_proof.json";
-        // std::fs::write(path, serde_json::to_string(&proof).unwrap()).unwrap();
+        let path = "../../test_data/fibonacci/fibonacci_proof_2D.json";
+        match proof {
+            Ok(proof) => {
+                std::fs::write(path, serde_json::to_string(&proof).unwrap()).unwrap();
+            }
+            Err(e) => {
+                println!("Error: {:?}", e);
+            }
+        }
     }
 }

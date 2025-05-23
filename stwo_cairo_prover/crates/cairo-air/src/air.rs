@@ -265,12 +265,14 @@ impl PublicData {
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
 pub struct MemorySmallValue {
     pub id: u32,
-    pub value: u64,
+    pub segment_index: u32,
+    pub offset: u32,
 }
 impl MemorySmallValue {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.id as u64);
-        channel.mix_u64(self.value as u64);
+        channel.mix_u64(self.segment_index as u64);
+        channel.mix_u64(self.offset as u64);
     }
 }
 
@@ -290,7 +292,7 @@ pub struct SegmentRange {
 
 impl SegmentRange {
     pub fn is_empty(&self) -> bool {
-        self.start_ptr.value == self.stop_ptr.value
+        self.start_ptr.offset == self.stop_ptr.offset
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -366,12 +368,12 @@ impl PublicSegmentRanges {
                     let start_address = initial_ap + i as u32;
                     let stop_address = final_ap - n_segments + i as u32;
                     [
-                        (start_address, start_ptr.id, start_ptr.value),
-                        (stop_address, stop_ptr.id, stop_ptr.value),
+                        (start_address, start_ptr.id, start_ptr.segment_index, start_ptr.offset),
+                        (stop_address, stop_ptr.id, stop_ptr.segment_index, stop_ptr.offset),
                     ]
                 },
             )
-            .map(|(addr, id, value)| (addr, id, [((value >> 32) & 0xFFFFFFFF) as u32, (value & 0xFFFFFFFF) as u32, 0, 0, 0, 0, 0, 0]))
+            .map(|(addr, id, segment_index, offset)| (addr, id, [segment_index, offset, 0, 0, 0, 0, 0, 0]))
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {

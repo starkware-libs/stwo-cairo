@@ -24,7 +24,7 @@ pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     pcs_config: PcsConfig,
     preprocessed_trace: PreProcessedTraceVariant,
-) -> ()//Result<CairoProof<MC::H>, ProvingError>
+) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
 {
@@ -72,54 +72,54 @@ where
         interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
     span.exit();
 
-    // tracing::info!(
-    //     "Witness trace cells: {:?}",
-    //     witness_trace_cells(&claim, &preprocessed_trace)
-    // );
-    // // Validate lookup argument.
-    // debug_assert_eq!(
-    //     lookup_sum(&claim, &interaction_elements, &interaction_claim),
-    //     SecureField::zero()
-    // );
+    tracing::info!(
+        "Witness trace cells: {:?}",
+        witness_trace_cells(&claim, &preprocessed_trace)
+    );
+    // Validate lookup argument.
+    debug_assert_eq!(
+        lookup_sum(&claim, &interaction_elements, &interaction_claim),
+        SecureField::zero()
+    );
 
-    // interaction_claim.mix_into(channel);
-    // tree_builder.commit(channel);
+    interaction_claim.mix_into(channel);
+    tree_builder.commit(channel);
 
-    // // Component provers.
-    // let component_builder = CairoComponents::new(
-    //     &claim,
-    //     &interaction_elements,
-    //     &interaction_claim,
-    //     &preprocessed_trace.ids(),
-    // );
+    // Component provers.
+    let component_builder = CairoComponents::new(
+        &claim,
+        &interaction_elements,
+        &interaction_claim,
+        &preprocessed_trace.ids(),
+    );
 
-    // // TODO(Ohad): move to a testing routine.
-    // #[cfg(feature = "relation-tracker")]
-    // {
-    //     use crate::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
-    //     let summary = track_and_summarize_cairo_relations(
-    //         &commitment_scheme,
-    //         &component_builder,
-    //         &claim.public_data,
-    //     );
-    //     tracing::info!("Relations summary: {:?}", summary);
-    // }
+    // TODO(Ohad): move to a testing routine.
+    #[cfg(feature = "relation-tracker")]
+    {
+        use crate::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
+        let summary = track_and_summarize_cairo_relations(
+            &commitment_scheme,
+            &component_builder,
+            &claim.public_data,
+        );
+        tracing::info!("Relations summary: {:?}", summary);
+    }
 
-    // let components = component_builder.provers();
+    let components = component_builder.provers();
 
-    // // Prove stark.
-    // let span = span!(Level::INFO, "Prove STARKs").entered();
-    // let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
-    // span.exit();
+    // Prove stark.
+    let span = span!(Level::INFO, "Prove STARKs").entered();
+    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    span.exit();
 
-    // event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
+    event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
 
-    // Ok(CairoProof {
-    //     claim,
-    //     interaction_pow,
-    //     interaction_claim,
-    //     stark_proof: proof,
-    // })
+    Ok(CairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof: proof,
+    })
 }
 
 #[derive(Default)]
