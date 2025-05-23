@@ -1,3 +1,4 @@
 /target
 /test_data/test_read_from_small_files
 /test_data/test_read_from_large_files
+.DS_Store
