@@ -314,9 +314,8 @@ impl MemoryValue {
     pub fn as_small(&self) -> u128 {
         match self {
             MemoryValue::Small(x) => *x,
-            // This encoding allows to write my_memoryRelocatable.as_small() + offset to increase the offset of the memory relocatable
-            MemoryValue::MemoryRelocatable(x) => (x[0] as u128) << 32 | (x[1] as u128), 
             MemoryValue::F252(_) => panic!("Cannot convert F252 to u128"),
+            MemoryValue::MemoryRelocatable(_) => panic!("Cannot convert MemoryRelocatable to u128"),
         }
     }
 
