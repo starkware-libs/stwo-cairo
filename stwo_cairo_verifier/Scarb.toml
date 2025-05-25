@@ -3,6 +3,7 @@ members = [
     "crates/bounded_int",
     "crates/cairo_air",
     "crates/cairo_verifier",
+    "crates/cairo_verifier_mock",
     "crates/constraint_framework",
     "crates/verifier_core",
 ]
