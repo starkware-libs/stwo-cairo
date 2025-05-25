@@ -1,4 +1,4 @@
-use cairo_air::preprocessed::PreProcessedTrace;
+use cairo_air::PreProcessedTraceVariant;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
@@ -11,11 +11,12 @@ use stwo_prover::core::vcs::ops::MerkleHasher;
 #[allow(unused)]
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
+    preprocessed_trace: PreProcessedTraceVariant,
 ) -> <<MC as MerkleChannel>::H as MerkleHasher>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let preprocessed_trace = PreProcessedTrace::canonical();
+    let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
 
     // Precompute twiddles for the commitment scheme.
     let max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
@@ -49,7 +50,10 @@ fn test_canonical_preprocessed_root_regression() {
             .expect("Invalid hex string"),
     );
 
-    let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(log_blowup_factor);
+    let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+        log_blowup_factor,
+        PreProcessedTraceVariant::Canonical,
+    );
 
     assert_eq!(root, expected);
 }

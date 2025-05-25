@@ -2,6 +2,8 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use cairo_air::air::CairoClaim;
 use cairo_air::preprocessed::PreProcessedTrace;
+use cairo_air::PreProcessedTraceVariant;
+use itertools::Itertools;
 use num_traits::{One, Zero};
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -13,6 +15,12 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_prover::core::vcs::ops::MerkleHasher;
+use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+use tracing::info;
+
+use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
 
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
@@ -121,6 +129,66 @@ pub fn witness_trace_cells(claim: &CairoClaim, pp_trace: &PreProcessedTrace) -> 
     log_sizes[PREPROCESSED_TRACE_IDX] = pp_trace.log_sizes();
 
     tree_trace_cells(log_sizes)
+}
+
+fn get_preprocessed_roots<MC: MerkleChannel>(
+    max_log_blowup_factor: u32,
+    preprocessed_trace: PreProcessedTraceVariant,
+) -> Vec<<MC::H as MerkleHasher>::Hash>
+where
+    stwo_prover::core::backend::simd::SimdBackend: BackendForChannel<MC>,
+{
+    (1..=max_log_blowup_factor)
+        .map(|i| generate_preprocessed_commitment_root::<MC>(i, preprocessed_trace))
+        .collect_vec()
+}
+
+/// Exports the preprocessed roots for both Blake2s and Poseidon252 channels.
+/// Note: This function is very slow and is intended for generating the preprocessed roots when
+/// needed.
+pub fn export_preprocessed_roots() {
+    let max_log_blowup_factor = 5;
+
+    // Blake2s roots.
+    let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
+        max_log_blowup_factor,
+        PreProcessedTraceVariant::Canonical,
+    )
+    .into_iter()
+    .collect_vec();
+    let blake_roots_u8: Vec<Vec<u8>> = blake_roots
+        .into_iter()
+        .map(|root| root.into())
+        .collect_vec();
+    blake_roots_u8.iter().enumerate().for_each(|(i, root)| {
+        let hex_string = root
+            .clone()
+            .array_chunks::<4>()
+            .map(|chunk| {
+                let mut bytes = [0u8; 4];
+                bytes.copy_from_slice(chunk.as_ref());
+                format!("{:#010x}", u32::from_le_bytes(bytes))
+            })
+            .collect_vec()
+            .join(", ");
+
+        info!("log_blowup_factor: {}, blake root: [{}]", i + 1, hex_string);
+    });
+
+    // Poseidon252 roots.
+    get_preprocessed_roots::<Poseidon252MerkleChannel>(
+        max_log_blowup_factor,
+        PreProcessedTraceVariant::CanonicalWithoutPedersen,
+    )
+    .into_iter()
+    .enumerate()
+    .for_each(|(i, root)| {
+        info!(
+            "log_blowup_factor: {}, poseidon root: [{:#010x}]",
+            i + 1,
+            root
+        );
+    });
 }
 
 #[cfg(test)]
