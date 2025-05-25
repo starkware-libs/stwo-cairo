@@ -173,6 +173,7 @@ use components::verify_instruction::{
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
 use core::blake::{blake2s_compress, blake2s_finalize};
+use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
@@ -447,6 +448,14 @@ type VerifyBitwiseXor_8Elements = LookupElements<3>;
 type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 type VerifyBitwiseXor_12Elements = LookupElements<3>;
+
+type RelationUsesDict = Felt252Dict<u64>;
+
+#[derive(Drop)]
+struct RelationUse {
+    pub relation_id: felt252,
+    pub uses: u64,
+}
 
 
 #[derive(Drop, Serde)]
@@ -844,11 +853,20 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
     fn log_sizes(self: @RangeChecksClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.rc_6.log_sizes(), self.rc_8.log_sizes(), self.rc_11.log_sizes(),
-                self.rc_12.log_sizes(), self.rc_18.log_sizes(), self.rc_19.log_sizes(),
-                self.rc_4_3.log_sizes(), self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(),
-                self.rc_9_9.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
-                self.rc_4_4_4_4.log_sizes(), self.rc_3_3_3_3_3.log_sizes(),
+                self.rc_6.log_sizes(),
+                self.rc_8.log_sizes(),
+                self.rc_11.log_sizes(),
+                self.rc_12.log_sizes(),
+                self.rc_18.log_sizes(),
+                self.rc_19.log_sizes(),
+                self.rc_4_3.log_sizes(),
+                self.rc_4_4.log_sizes(),
+                self.rc_5_4.log_sizes(),
+                self.rc_9_9.log_sizes(),
+                self.rc_7_2_5.log_sizes(),
+                self.rc_3_6_6_3.log_sizes(),
+                self.rc_4_4_4_4.log_sizes(),
+                self.rc_3_3_3_3_3.log_sizes(),
             ],
         )
     }
@@ -1020,7 +1038,8 @@ impl PoseidonClaimImpl of PoseidonClaimTrait {
         utils::tree_array_concat_cols(
             array![
                 self.poseidon_3_partial_rounds_chain.log_sizes(),
-                self.poseidon_full_round_chain.log_sizes(), self.cube_252.log_sizes(),
+                self.poseidon_full_round_chain.log_sizes(),
+                self.cube_252.log_sizes(),
                 self.poseidon_round_keys.log_sizes(),
                 self.range_check_felt_252_width_27.log_sizes(),
             ],
@@ -1124,8 +1143,10 @@ impl BlakeClaimImpl of BlakeClaimTrait {
     fn log_sizes(self: @BlakeClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.blake_round.log_sizes(), self.blake_g.log_sizes(),
-                self.blake_round_sigma.log_sizes(), self.triple_xor_32.log_sizes(),
+                self.blake_round.log_sizes(),
+                self.blake_g.log_sizes(),
+                self.blake_round_sigma.log_sizes(),
+                self.triple_xor_32.log_sizes(),
                 self.verify_bitwise_xor_12.log_sizes(),
             ],
         )
@@ -1208,12 +1229,18 @@ impl CairoClaimImpl of CairoClaimTrait {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
         let mut aggregated_log_sizes = utils::tree_array_concat_cols(
             array![
-                self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
-                self.blake_context.log_sizes(), self.builtins.log_sizes(),
-                self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
+                self.opcodes.log_sizes(),
+                self.verify_instruction.log_sizes(),
+                self.blake_context.log_sizes(),
+                self.builtins.log_sizes(),
+                self.pedersen_context.log_sizes(),
+                self.poseidon_context.log_sizes(),
+                self.memory_address_to_id.log_sizes(),
+                self.memory_id_to_value.log_sizes(),
+                self.range_checks.log_sizes(),
+                self.verify_bitwise_xor_4.log_sizes(),
+                self.verify_bitwise_xor_7.log_sizes(),
+                self.verify_bitwise_xor_8.log_sizes(),
                 self.verify_bitwise_xor_9.log_sizes(),
             ],
         );
@@ -1249,6 +1276,34 @@ impl CairoClaimImpl of CairoClaimTrait {
         self.verify_bitwise_xor_7.mix_into(ref channel);
         self.verify_bitwise_xor_8.mix_into(ref channel);
         self.verify_bitwise_xor_9.mix_into(ref channel);
+    }
+
+    fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
+        let CairoClaim {
+            public_data: _,
+            opcodes,
+            verify_instruction: _todo,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id: _,
+            memory_id_to_value: _todo,
+            range_checks: _,
+            verify_bitwise_xor_4: _,
+            verify_bitwise_xor_7: _,
+            verify_bitwise_xor_8: _,
+            verify_bitwise_xor_9: _,
+        } = self;
+        // NOTE: The following components do not USE relations:
+        // - range_checks
+        // - verify_bitwise_xor_*
+        // - memory_address_to_id
+        // opcodes.accumulate_relation_uses(relation_uses);
+        // builtins.accumulate_relation_uses(relation_uses);
+        // blake_context.accumulate_relation_uses(relation_uses);
+        // pedersen_context.accumulate_relation_uses(relation_uses);
+        // poseidon_context.accumulate_relation_uses(relation_uses);            
     }
 }
 
@@ -1288,6 +1343,9 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
+
+    let mut relation_uses: RelationUsesDict = Default::default();
+    claim.accumulate_relation_uses(ref relation_uses);
 }
 
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
@@ -2260,6 +2318,55 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
 
         utils::tree_array_concat_cols(log_sizes)
     }
+
+    fn accumulate_relation_uses(self: @OpcodeClaim, ref relation_uses: RelationUsesDict) {
+        let OpcodeClaim {
+            add,
+            add_small,
+            add_ap,
+            assert_eq,
+            assert_eq_imm,
+            assert_eq_double_deref,
+            blake,
+            call,
+            call_op_1_base_fp,
+            call_rel,
+            generic,
+            jnz,
+            jnz_taken,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
+            mul,
+            mul_small,
+            qm31,
+            ret,
+        } = self;
+    }
+
+}
+
+pub fn accumulate_relation_uses<const N: usize>(
+    ref relation_uses: RelationUsesDict,
+    relation_uses_per_row: [RelationUse; N],
+    log_size: u32,
+) {
+    let relation_uses_per_row = relation_uses_per_row.span();
+    let component_size = pow2(log_size);
+    for i in 0..N {
+        // let RelationUse{relation_id, uses} = relation_uses_per_row.at(i);
+        let RelationUse {relation_id, uses} = *relation_uses_per_row[i];
+        let (entry, prev_value) = relation_uses.entry(relation_id);
+        // let relation_uses_in_component = uses.checked_mul(component_size).unwrap();
+        // *entry = prev_value.checked_add(relation_uses_in_component).unwrap();
+    }
+
+    // for relation_use in relation_uses_per_row {
+    //     let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
+    //     let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
+    //     *prev = prev.checked_add(relation_uses_in_component).unwrap();
+    // }
 }
 
 #[derive(Drop, Debug)]
@@ -5583,7 +5690,8 @@ mod tests {
     #[test]
     fn test_hash_memory_section() {
         let section = array![
-            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
+            (0, [1, 2, 3, 4, 5, 6, 7, 8]),
+            (0, [2, 3, 4, 5, 6, 7, 8, 9]),
             (0, [3, 4, 5, 6, 7, 8, 9, 10]),
         ];
 
@@ -5600,7 +5708,8 @@ mod tests {
     #[test]
     fn test_hash_memory_section() {
         let section = array![
-            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
+            (0, [1, 2, 3, 4, 5, 6, 7, 8]),
+            (0, [2, 3, 4, 5, 6, 7, 8, 9]),
             (0, [3, 4, 5, 6, 7, 8, 9, 10]),
         ];
 
