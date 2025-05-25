@@ -16,11 +16,11 @@ Prove Cairo programs with the blazing-fast [Stwo prover](https://github.com/star
 
 ## Disclaimer
 
-⚠️ Stwo is a work in progress and should be used at your own risk ⚠️
+⚠️ S-Two is a work in progress and should be used at your own risk ⚠️
 
 In particular:
 
-* Stwo is not yet sound
+* S-Two is not yet sound
 
 * Breaking API changes might happen often
 
