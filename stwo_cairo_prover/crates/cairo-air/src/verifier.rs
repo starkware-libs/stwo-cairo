@@ -1,5 +1,6 @@
 use num_traits::{One, Zero};
 use paste::paste;
+use serde_json::to_string_pretty;
 use stwo_cairo_adapter::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
@@ -63,17 +64,34 @@ fn verify_claim(claim: &CairoClaim) {
     assert!(initial_ap <= final_ap);
 
     // Assert that each relation has strictly less than P uses.
-    let mut relation_uses = HashMap::<&'static str, u32>::new();
+    let mut relation_uses = HashMap::<&'static str, u64>::new();
     claim.accumulate_relation_uses(&mut relation_uses);
-    for (name, uses) in relation_uses {
-        assert!(uses < PRIME, "Relation {} has {} uses.", name, uses);
+    check_relation_uses(&relation_uses);
+}
+
+fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
+    let all_relation_uses_pretty = to_string_pretty(&relation_uses).unwrap();
+    log::info!("All relation uses:\n{}", all_relation_uses_pretty);
+
+    let outstanding_relations = relation_uses
+        .iter()
+        .filter(|(_, &uses)| uses >= PRIME.into())
+        .collect::<Vec<_>>();
+
+    if !outstanding_relations.is_empty() {
+        let outstanding_relations_pretty = to_string_pretty(&outstanding_relations).unwrap();
+        panic!(
+            "Found {} outstanding relations:\n{}",
+            outstanding_relations.len(),
+            outstanding_relations_pretty
+        );
     }
 }
 
 #[derive(Clone)]
 pub struct RelationUse {
     pub relation_id: &'static str,
-    pub uses: u32,
+    pub uses: u64,
 }
 
 struct BuiltinClaim {

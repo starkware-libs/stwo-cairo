@@ -1,7 +1,6 @@
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_adapter::HashMap;
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
@@ -11,7 +10,7 @@ use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::TreeVec;
 
 use super::air::CairoInteractionElements;
-use crate::air::accumulate_relation_uses;
+use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
@@ -77,7 +76,7 @@ impl BuiltinsClaim {
                 .into_iter(),
         ))
     }
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             add_mod_builtin,
             bitwise_builtin,
@@ -93,7 +92,7 @@ impl BuiltinsClaim {
             ($field:ident, $module:ident) => {
                 if let Some(field) = $field {
                     accumulate_relation_uses(
-                        relation_counts,
+                        relation_uses,
                         $module::RELATION_USES_PER_ROW,
                         field.log_size,
                     );

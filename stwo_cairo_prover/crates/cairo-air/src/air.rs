@@ -64,16 +64,18 @@ where
     }
 }
 
+pub type RelationUsesDict = HashMap<&'static str, u64>;
+
 /// Accumulates the number of uses of each relation in a map.
 pub fn accumulate_relation_uses<const N: usize>(
-    relation_counts: &mut HashMap<&'static str, u32>,
+    relation_uses: &mut RelationUsesDict,
     relation_uses_per_row: [RelationUse; N],
     log_size: u32,
 ) {
     let component_size = 1 << log_size;
     for relation_use in relation_uses_per_row {
         let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
-        let prev = relation_counts.entry(relation_use.relation_id).or_insert(0);
+        let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
         *prev = prev.checked_add(relation_uses_in_component).unwrap();
     }
 }
@@ -153,7 +155,7 @@ impl CairoClaim {
         TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 
-    pub fn accumulate_relation_uses(&self, relation_counts: &mut HashMap<&'static str, u32>) {
+    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             public_data: _,
             opcodes,
@@ -175,13 +177,13 @@ impl CairoClaim {
         // - verify_bitwise_xor_*
         // - memory_address_to_id
 
-        opcodes.accumulate_relation_uses(relation_counts);
-        builtins.accumulate_relation_uses(relation_counts);
-        blake_context.accumulate_relation_uses(relation_counts);
-        pedersen_context.accumulate_relation_uses(relation_counts);
-        poseidon_context.accumulate_relation_uses(relation_counts);
+        opcodes.accumulate_relation_uses(relation_uses);
+        builtins.accumulate_relation_uses(relation_uses);
+        blake_context.accumulate_relation_uses(relation_uses);
+        pedersen_context.accumulate_relation_uses(relation_uses);
+        poseidon_context.accumulate_relation_uses(relation_uses);
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             verify_instruction::RELATION_USES_PER_ROW,
             verify_instruction.log_size,
         );
@@ -189,12 +191,12 @@ impl CairoClaim {
         // TODO(ShaharS): Look into the file name of memory_id_to_big.
         // memory_id_to_value has a big value component and a small value component.
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             memory_id_to_big::RELATION_USES_PER_ROW_BIG,
             memory_id_to_value.big_log_size,
         );
         accumulate_relation_uses(
-            relation_counts,
+            relation_uses,
             memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
             memory_id_to_value.small_log_size,
         );
@@ -826,7 +828,7 @@ mod tests {
 
     #[test]
     fn test_accumulate_relation_uses() {
-        let mut relation_counts = HashMap::from([("relation_1", 4), ("relation_2", 10)]);
+        let mut relation_uses = HashMap::from([("relation_1", 4), ("relation_2", 10)]);
         let log_size = 2;
         let relation_uses_per_row = [
             RelationUse {
@@ -839,10 +841,10 @@ mod tests {
             },
         ];
 
-        accumulate_relation_uses(&mut relation_counts, relation_uses_per_row, log_size);
+        accumulate_relation_uses(&mut relation_uses, relation_uses_per_row, log_size);
 
-        assert_eq!(relation_counts.len(), 2);
-        assert_eq!(relation_counts.get("relation_1"), Some(&12));
-        assert_eq!(relation_counts.get("relation_2"), Some(&26));
+        assert_eq!(relation_uses.len(), 2);
+        assert_eq!(relation_uses.get("relation_1"), Some(&12));
+        assert_eq!(relation_uses.get("relation_2"), Some(&26));
     }
 }

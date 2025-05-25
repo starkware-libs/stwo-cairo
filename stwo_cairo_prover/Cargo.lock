@@ -403,11 +403,13 @@ name = "cairo-air"
 version = "0.1.1"
 dependencies = [
  "itertools 0.12.1",
+ "log",
  "num-traits",
  "paste",
  "rand",
  "rayon",
  "serde",
+ "serde_json",
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
