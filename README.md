@@ -1,117 +1,135 @@
 # ⚡ Stwo Cairo ⚡
 
-Prove Cairo programs with the new [Stwo prover](https://github.com/starkware-libs/stwo), which is based on the [circle STARK](https://eprint.iacr.org/2024/278) protocol
+Prove Cairo programs with the blazing-fast [Stwo prover](https://github.com/starkware-libs/stwo), powered by the cryptographic breakthrough of [Circle STARKs](https://eprint.iacr.org/2024/278).
 
-* [Using Stwo to Prove Cairo Programs](#using-stwo-to-prove-cairo-programs)
-* [Creating a Cairo Executable](#creating-a-cairo-executable)
-  * [Prerequisites](#prerequisites)
-  * [Defining an Executable Package](#defining-an-executable-package)
-  * [Execution targets](#execution-targets)
-  * [Input Format](#input-format)
-  * [Output Format](#output-format)
-  * [Limitations](#limitations)
-    * [Gas](#gas)
-    * [Syscalls](#syscalls)
-    * [Padding Overhead](#padding-overhead)
-* [Proving from Scarb](#proving-from-scarb)
+* [Disclaimer](#disclaimer)
+* [Prerequisites](#prerequisites)
+* [Usage](#usage)
+  * [Example](#example)
+* [Inputs](#inputs)
+* [Limitations](#limitations)
+  * [Gas](#gas)
+  * [Syscalls](#syscalls)
+  * [Padding](#padding)
+  * [Pedersen](#pedersen)
+* [`scarb-prove`](#scarb-prove)
 
 ## Disclaimer
 
-🚧 Stwo is WIP and is not yet Sound 🚧
+⚠️ Stwo is a work in progress and should be used at your own risk ⚠️
 
-🚧 The Stwo prover and its Cairo adaptation are still being built, therefore API breaking changes might happen
-often, so use it at your own risk. 🚧
+In particular:
 
-# Using Stwo to Prove Cairo Programs
+* Stwo is not yet sound
 
-After executing a Cairo program one should be in the possession of four files:
-* air_public_inputs.json
-* air_private_inputs.json
-* trace.bin
-* memory.bin
-
-With the *absolute* paths to the trace and memory files appearing in `air_private_inputs`. After building stwo-cairo, you can run the `adapted_stwo` binary and obtain a Stwo proof (run the command below from the `stwo_cairo_prover` folder):
-
-```
-cargo run --bin adapted_stwo --release \
---pub_json <path_to_air_public_input> \
---priv_json <path_to_air_private_input> \
---proof_path <path for proof output>
-```
-
-For best performance, run with `RUSTFLAGS="-C target-cpu=native -C opt-level=3" --features="std"`
-
-In the next section we'll see how to generate the inputs to adapted stwo from a Cairo program.
-
-# Creating a Cairo Executable
+* Breaking API changes might happen often
 
 ## Prerequisites
 
-Install [Scarb](https://docs.swmansion.com/scarb/docs.html#installation), the Cairo package manager. The recommended installation is via [asdf](https://asdf-vm.com/).
+- [Rust](https://www.rust-lang.org/tools/install/)
 
-Make sure to use Scarb 2.10.0 onwards, or alternatively the latest nightly. After going through the installation steps above, you can do this by running:
+  - See [`cairo-prove/rust-toolchain.toml`](cairo-prove/rust-toolchain.toml) for the specific version
+- [Scarb](https://docs.swmansion.com/scarb/download.html)
+  - The recommended installation method is using [asdf](https://asdf-vm.com/)
+  - Make sure to use version 2.10.0 and onwards, and preferably the latest nightly version.
+  
+    To use the latest nightly version, run:
+    
+    ```
+    asdf set -u scarb latest:nightly
+    ```
 
-`asdf set scarb 2.10.0`
+## Installation
 
-or
-
-`asdf set scarb latest:nightly`
-
-## Defining an Executable Package
-
-Start a new Scarb project with `Scarb new <project_name>`, and add the following to your `Scarb.toml` file:
-
-1. Specify that this package should compile to a Cairo executable by adding `[[target.executable]]` to your toml file (note that `lib` or `starknet-contract` targets cannot be executed in this way)  
-2. Add the `cairo_execute="2.10.0"`	 plugin to your dependencies  
-3. Disable gas usage (gas is only supported for `lib` or `starknet-contract` targets) by adding `enable-gas = false` under the `[cairo]` section in your toml.
-
-Below we have an example of the manifest file of a simple executable
+First, clone this repo and navigate to its directory:
 
 ```
-[package]
-name = "test_execute"
-version = "0.1.0"
-edition = "2024_07"
-
-[[target.executable]]
-
-[cairo]
-enable-gas = false
-
-[dependencies]
-cairo_execute = "2.10.0"
+git clone https://github.com/starkware-libs/stwo-cairo.git
+cd stwo-cairo
 ```
 
-Now we can move on to the code itself. An executable project must have **exactly one function** annotated with the `#[executable]` attribute. Consider the following simple `lib.cairo` file of an executable project:
+Then, navigate to the `cairo-prove` directory and build the project:
 
 ```
-#[executable]
-fn main(num: u8) -> u8 {
-    num
-}
+cd cairo-prove
+./build.sh
 ```
 
-You can now run:
+Finally, add the `cairo-prove` binary to your PATH:
 
 ```
-scarb execute -p test_execute --print-program-output --arguments 5
+sudo cp target/release/cairo-prove /usr/local/bin/
 ```
 
-Where `test_execute` is the name of the package with the executable target (as defined in our Scarb.toml manifest)
+*Note: Adding the binary to your path is optional but highly recommended, as otherwise `cairo-prove`'s path needs to be specified each time it is used.*
 
-The above command runs our executable function within the `test-execute` package and prints the program's output segment, which contains a success bit (0 for success) followed by the Cairo Serde of main’s output or the panic reason in case of a panic.
+## Usage
 
-## Execution targets
+To prove an execution of a Cairo program you must first create its executable. To do so, navigate to its directory and run:
 
-The `--target` flag allows specifying either a `standalone` target or `bootloader` target. Standalone means that the program will be executed as-is, and intended to be proven directly with Stwo. When we run with the bootloader target, the program’s execution is expected to be wrapped by the [bootloader’s](https://github.com/Moonsong-Labs/cairo-bootloader?tab=readme-ov-file#cairo-bootloader) execution, which itself will be proven via Stwo.
+```
+scarb build
+```
 
-When executing with `--target standalone` (the default if not specified) we get the four files which consist as the input for the `adapted_stwo` binary (`air_private_input.json`, `air_public_input.json`, `trace.bin`, `memory.bin`), while when executing with `--target bootloader`, the output is given in the CairoPie format (Position Indenpendent Execution).
+To generate a proof for an execution of a program's executable, run:
 
-In the meantime, `stwo-cairo` does not contain an API for executing the bootloader with the user's program as input, hence the only way to get a proof for a bootloader target is to take the generated CairoPie and send it to a third party like [Atlantic](https://docs.herodotus.cloud/atlantic/introduction).
+```
+cairo-prove prove <path-to-executable> <path-to-output> --arguments <args>
+```
+or:
 
-## Input format
+```
+cairo-prove prove <path-to-executable> <path-to-output-file> --arguments-file <path-to-args-file>
+```
 
-The expected input with `--arguments` is a comma-separated list of integers. This list should correspond to the Cairo’s Serde of main’s arguments, for example:
+*Note: For information about the formats of `arguments` and `arguments-file`, see [Inputs](#inputs).*
+
+To verify a proof, run:
+
+```
+cairo-prove verify <path-to-proof-file>
+```
+
+or, if the Pedersen builtin is used in the proof:
+
+```
+cairo-prove verify <path-to-proof-file> --with-pedersen
+```
+
+*Note: To learn more about the effects of the Pedersen builtin, see [Pedersen](#pedersen).*
+
+### Example
+
+The following can be used inside the `cairo-prove/example` directory to create an executable of [cairo-prove/example/src/lib.cairo](cairo-prove/example/src/lib.cairo), prove its execution, and verify the proof:
+
+```terminal
+scarb build
+cairo-prove prove \
+  target/dev/example.executable.json \
+  ./example_proof.json \
+  --arguments 10000
+cairo-prove verify ./example_proof.json
+```
+
+If successful, the result should be similar to the following:
+
+```
+Compiling example v0.1.0 (stwo-cairo/cairo-prove/example/Scarb.toml)
+Finished `dev` profile target(s) in 4 seconds
+[2025-05-27T10:23:36Z INFO  cairo_prove] Generating proof for target: "target/dev/example.executable.json"
+[2025-05-27T10:23:36Z INFO  cairo_prove::execute] Executing program...
+[2025-05-27T10:23:36Z INFO  cairo_prove::execute] Program executed successfully.
+[2025-05-27T10:23:36Z INFO  cairo_prove::prove] Generating input for the prover...
+[2025-05-27T10:23:36Z INFO  cairo_prove::prove] Input for the prover generated successfully.
+[2025-05-27T10:23:52Z INFO  cairo_prove] Proof saved to: "./example_proof.json"
+[2025-05-27T10:23:52Z INFO  cairo_prove] Proof generation completed in 15.74s
+[2025-05-27T10:26:02Z INFO  cairo_prove] Verifying proof from: "./example_proof.json"
+[2025-05-27T10:26:02Z INFO  cairo_prove] Verification successful
+```
+
+## Inputs
+
+The expected input provided to `cairo-prove prove` using the `--arguments` option is a comma-separated list of integers. This list should correspond to the [serialization](https://docs.starknet.io/architecture-and-concepts/smart-contracts/serialization-of-cairo-types/) of the `main` function’s arguments, for example:
 
 | main’s signature | valid arguments example |
 | :---- | :---- |
@@ -121,42 +139,35 @@ The expected input with `--arguments` is a comma-separated list of integers. Thi
 | `fn main(num1: u8, num2: u256)` | 1,2,3 |
 | `fn main(num1: u8, arr: Array<u8>)` | 1,2,1,2 |
 
-See the [documentation](https://docs.starknet.io/architecture-and-concepts/smart-contracts/serialization-of-cairo-types/) for more information about Cairo’s Serde.
 
-Note that when using `--arguments-file`, the expected input is an array of felts represented as hex string. For example, `1,2,3` in the above table becomes `["0x1", "0x2", "0x3"]`.
-
-## Output format
-
-For standalone targets, the output is trace files (`air_public_input.json`, `air_private_input.json`, `memory.bin`, and `trace.bin`)
-
-For bootloader targets, the output is a CairoPie
+When using the `--arguments-file` option, the expected content of the file is an array of the equivalent hex strings. For example, `1,2,3` in the above table becomes `["0x1", "0x2", "0x3"]`.
 
 ## Limitations
 
 ### Gas
 
-Executables must be compiled with the `enable-gas = false` config in the manifest file. Gas tracking introduces a computation overhead and makes less sense outside the context of Starknet smart contracts.
+Executables must be created with the `enable-gas = false` config in project's `Scarb.toml` file (e.g., [cairo-prove/example/Scarb.toml](cairo-prove/example/Scarb.toml)).
+
+This limitation exists because gas tracking introduces computational overhead, which does not make sense in non-Starknet contexts.
 
 ### Syscalls
 
-Syscalls are not supported in an executable target. Using syscalls, directly or via corelib functions that use syscalls (such as sha256, keccak, secp256k/r1 operations) will fail the compilation.
+Executables cannot be created from programs that use [syscalls](https://book.cairo-lang.org/appendix-08-system-calls.html), either directly or via functions from [the Cairo Core library](https://docs.cairo-lang.org/core/) that use syscalls (such as `sha256`, `keccak`, and `secp256k1`/`secp256r1` operations).
 
-### Padding overhead
+### Padding
 
-At the time of writing, the execution (\# of steps and \# of builtin application per builtin) with a `standalone` target is still padded to powers of 2, w.r.t to the ratios in the [all_cairo](https://github.com/lambdaclass/cairo-vm/blob/15bf79470cdd8eff29f41fc0a87143dce5499c7e/vm/src/types/instance_definitions/builtins_instance_def.rs#L157) layout. This will be removed in the future as Stwo does not rely on padding. `bootloader` target executions are not padded.
+Execution resources (the number of steps and builtin invocations) are currently padded to the next power of 2, with respect to the ratios in the [`all_cairo` layout](https://github.com/lambdaclass/cairo-vm/blob/15bf79470cdd8eff29f41fc0a87143dce5499c7e/vm/src/types/instance_definitions/builtins_instance_def.rs#L157).
 
-# Proving from Scarb
+This padding exists for legacy reasons and will be removed in a future version, as Stwo does not rely on it.
 
-`stwo-cairo` is integrated in Scarb from v2.10.0 onwards, which means that instead of building and running stwo-cairo on your own, you can use the `scarb prove` command (note that stwo is continuously improving, for the most up-to-date version use stwo-cairo [directly](#using-stwo-to-prove-cairo-programs)).
+### Pedersen
 
-After running `scarb execute`, a new folder is created under `./target/execute/<package_name>` path. These folders will be called `execution1`, `execution2`, ... and so on (run `scarb clean` to clear your execution history). Rather than specifying the paths to the trace files, you can use the execution id (the index of the relevant execution) to specify what exactly you want to prove. That is, after executing, you can run:
+When the [Pedersen builtin](https://book.cairo-lang.org/ch204-02-01-pedersen.html) is used in an execution of a program, additional preprocessed columns need to be added to its proof.
 
-```
-scarb prove --execution_id 1
-```
+This variant is automatically deduced by `cairo-prove prove`, but requires adding the `--with-pedersen` option to `cairo-prove verify`.
 
-and a proof for the trace files inside the `execution1` folder will be generated, and a `proof.json` file will be placed inside `execution1/proof`. To verify the proof, you can run:
+## `scarb prove`
 
-```
-scarb verify <path_to_proof_json>
-```
+As of Scarb version 2.10.0, `scarb prove` can be used instead of manually building and running `stwo-cairo`.
+
+However, `scarb prove` is still a work in progress, and using `stwo-cairo` directly is preferable for now.
