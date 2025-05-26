@@ -18,7 +18,6 @@ use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
-use tracing::info;
 
 use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
 
@@ -153,26 +152,16 @@ pub fn export_preprocessed_roots() {
     let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
         max_log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
-    )
-    .into_iter()
-    .collect_vec();
-    let blake_roots_u8: Vec<Vec<u8>> = blake_roots
-        .into_iter()
-        .map(|root| root.into())
-        .collect_vec();
-    blake_roots_u8.iter().enumerate().for_each(|(i, root)| {
-        let hex_string = root
-            .clone()
+    );
+    blake_roots.iter().enumerate().for_each(|(i, root)| {
+        let root_bytes = root.0;
+        let u32s_hex = root_bytes
             .array_chunks::<4>()
-            .map(|chunk| {
-                let mut bytes = [0u8; 4];
-                bytes.copy_from_slice(chunk.as_ref());
-                format!("{:#010x}", u32::from_le_bytes(bytes))
-            })
+            .map(|&bytes| format!("{:#010x}", u32::from_le_bytes(bytes)))
             .collect_vec()
             .join(", ");
 
-        info!("log_blowup_factor: {}, blake root: [{}]", i + 1, hex_string);
+        println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
     });
 
     // Poseidon252 roots.
@@ -183,7 +172,7 @@ pub fn export_preprocessed_roots() {
     .into_iter()
     .enumerate()
     .for_each(|(i, root)| {
-        info!(
+        println!(
             "log_blowup_factor: {}, poseidon root: [{:#010x}]",
             i + 1,
             root
