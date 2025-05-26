@@ -872,6 +872,7 @@ fn write_trace_simd(
             *lookup_data.memory_address_to_id_5 = [segment_id_packed, (((seq) * (M31_6)) + (M31_5)), output_state_2_id_col340];*sub_component_inputs.memory_id_to_big[5] =
                 output_state_2_id_col340;
             *lookup_data.memory_id_to_big_5 = [output_state_2_id_col340, unpacked_limb_0_col322, unpacked_limb_1_col323, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(2), unpacked_limb_3_col324, unpacked_limb_4_col325, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(5), unpacked_limb_6_col326, unpacked_limb_7_col327, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(8), unpacked_limb_9_col328, unpacked_limb_10_col329, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(11), unpacked_limb_12_col330, unpacked_limb_13_col331, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(14), unpacked_limb_15_col332, unpacked_limb_16_col333, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(17), unpacked_limb_18_col334, unpacked_limb_19_col335, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(20), unpacked_limb_21_col336, unpacked_limb_22_col337, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(23), unpacked_limb_24_col338, unpacked_limb_25_col339, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(26), poseidon_full_round_chain_output_limb_29_col283];
+            *row[341] = segment_id_packed;
         });
 
     (trace, lookup_data, sub_component_inputs)

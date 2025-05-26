@@ -2744,6 +2744,7 @@ fn write_trace_simd(
                             - ((p3_limb_8_col46) * (sub_p_bit_col236)))))
                     * (M31_16));
                 *row[250] = carry_13_col250;
+                *row[251] = segment_id_packed;
             },
         );
 

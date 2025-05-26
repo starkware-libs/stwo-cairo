@@ -88,6 +88,7 @@ impl DecodeBlakeOpcode {
                         * decode_blake_opcode_input_ap.clone()))),
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(mem0_base_col9.clone()
                 + decode_instruction_64420_output_tmp_47e62_10_offset1.clone())],
             op0_id_col10.clone(),
@@ -105,6 +106,7 @@ impl DecodeBlakeOpcode {
                     + (op1_base_ap_col6.clone() * decode_blake_opcode_input_ap.clone()))),
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(mem1_base_col14.clone()
                 + decode_instruction_64420_output_tmp_47e62_10_offset2.clone())],
             op1_id_col15.clone(),
@@ -116,6 +118,7 @@ impl DecodeBlakeOpcode {
             eval,
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [decode_blake_opcode_input_ap.clone()],
             ap_id_col19.clone(),
             ap_limb_0_col20.clone(),

@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::mod_utils::ModUtils;
 
-pub const N_TRACE_COLUMNS: usize = 251;
+pub const N_TRACE_COLUMNS: usize = 252;
 pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -316,8 +316,10 @@ impl FrameworkEval for Eval {
         let carry_11_col248 = eval.next_trace_mask();
         let carry_12_col249 = eval.next_trace_mask();
         let carry_13_col250 = eval.next_trace_mask();
+        let segment_id_packed = eval.next_trace_mask();
 
         ModUtils::evaluate(
+            segment_id_packed.clone(),
             seq.clone(),
             is_instance_0_col0.clone(),
             p0_id_col1.clone(),

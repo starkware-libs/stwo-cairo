@@ -200,6 +200,7 @@ impl FrameworkEval for Eval {
         #[allow(unused_variables)]
         let [qm_31_read_reduced_output_tmp_fa85a_15_limb_0, qm_31_read_reduced_output_tmp_fa85a_15_limb_1, qm_31_read_reduced_output_tmp_fa85a_15_limb_2, qm_31_read_reduced_output_tmp_fa85a_15_limb_3] =
             Qm31ReadReduced::evaluate(
+                M31_1.clone(),
                 [(mem_dst_base_col12.clone()
                     + decode_instruction_3802d_output_tmp_fa85a_11_offset0.clone())],
                 dst_id_col15.clone(),
@@ -230,6 +231,7 @@ impl FrameworkEval for Eval {
         #[allow(unused_variables)]
         let [qm_31_read_reduced_output_tmp_fa85a_19_limb_0, qm_31_read_reduced_output_tmp_fa85a_19_limb_1, qm_31_read_reduced_output_tmp_fa85a_19_limb_2, qm_31_read_reduced_output_tmp_fa85a_19_limb_3] =
             Qm31ReadReduced::evaluate(
+                M31_1.clone(),
                 [(mem0_base_col13.clone()
                     + decode_instruction_3802d_output_tmp_fa85a_11_offset1.clone())],
                 op0_id_col34.clone(),
@@ -260,6 +262,7 @@ impl FrameworkEval for Eval {
         #[allow(unused_variables)]
         let [qm_31_read_reduced_output_tmp_fa85a_23_limb_0, qm_31_read_reduced_output_tmp_fa85a_23_limb_1, qm_31_read_reduced_output_tmp_fa85a_23_limb_2, qm_31_read_reduced_output_tmp_fa85a_23_limb_3] =
             Qm31ReadReduced::evaluate(
+                M31_1.clone()*(M31_1.clone() - op1_imm_col8.clone()),
                 [(mem1_base_col14.clone()
                     + decode_instruction_3802d_output_tmp_fa85a_11_offset2.clone())],
                 op1_id_col53.clone(),

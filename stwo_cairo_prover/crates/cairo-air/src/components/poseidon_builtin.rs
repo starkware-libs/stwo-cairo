@@ -4,7 +4,7 @@ use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::poseidon_hades_permutation::PoseidonHadesPermutation;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
-pub const N_TRACE_COLUMNS: usize = 341;
+pub const N_TRACE_COLUMNS: usize = 342;
 pub const RELATION_USES_PER_ROW: [RelationUse; 9] = [
     RelationUse {
         relation_id: "Cube252",
@@ -450,11 +450,12 @@ impl FrameworkEval for Eval {
         let unpacked_limb_24_col338 = eval.next_trace_mask();
         let unpacked_limb_25_col339 = eval.next_trace_mask();
         let output_state_2_id_col340 = eval.next_trace_mask();
+        let segment_id_col341 = eval.next_trace_mask();
 
         ReadPositiveNumBits252::evaluate(
+            segment_id_col341.clone(),
             [
-                (E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone())),
+                (seq.clone() * M31_6.clone()),
             ],
             input_state_0_id_col0.clone(),
             input_state_0_limb_0_col1.clone(),
@@ -535,10 +536,9 @@ impl FrameworkEval for Eval {
                 + (input_state_0_limb_26_col27.clone() * M31_262144.clone())),
         );
         ReadPositiveNumBits252::evaluate(
+            segment_id_col341.clone(),
             [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_1.clone()),
+                (seq.clone() * M31_6.clone()) + M31_1.clone(),
             ],
             input_state_1_id_col29.clone(),
             input_state_1_limb_0_col30.clone(),
@@ -619,10 +619,9 @@ impl FrameworkEval for Eval {
                 + (input_state_1_limb_26_col56.clone() * M31_262144.clone())),
         );
         ReadPositiveNumBits252::evaluate(
+            segment_id_col341.clone(),
             [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_2.clone()),
+                (seq.clone() * M31_6.clone()) + M31_2.clone(),
             ],
             input_state_2_id_col58.clone(),
             input_state_2_limb_0_col59.clone(),
@@ -980,9 +979,8 @@ impl FrameworkEval for Eval {
             );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_3.clone()),
+                segment_id_col341.clone(),
+                (seq.clone() * M31_6.clone()) + M31_3.clone(),
                 unpacked_limb_0_col284.clone(),
                 unpacked_limb_1_col285.clone(),
                 felt_252_unpack_from_27_output_tmp_51986_168_limb_2.clone(),
@@ -1055,9 +1053,8 @@ impl FrameworkEval for Eval {
             );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_4.clone()),
+                segment_id_col341.clone(),
+                (seq.clone() * M31_6.clone()) + M31_4.clone(),
                 unpacked_limb_0_col303.clone(),
                 unpacked_limb_1_col304.clone(),
                 felt_252_unpack_from_27_output_tmp_51986_171_limb_2.clone(),
@@ -1130,9 +1127,8 @@ impl FrameworkEval for Eval {
             );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_5.clone()),
+                segment_id_col341.clone(),
+                (seq.clone() * M31_6.clone()) + M31_5.clone(),
                 unpacked_limb_0_col322.clone(),
                 unpacked_limb_1_col323.clone(),
                 felt_252_unpack_from_27_output_tmp_51986_174_limb_2.clone(),

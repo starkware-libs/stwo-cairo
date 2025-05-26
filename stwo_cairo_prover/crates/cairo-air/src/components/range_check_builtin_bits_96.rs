@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::read_positive_num_bits_96::ReadPositiveNumBits96;
 
-pub const N_TRACE_COLUMNS: usize = 12;
+pub const N_TRACE_COLUMNS: usize = 13;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -80,11 +80,12 @@ impl FrameworkEval for Eval {
         let value_limb_8_col9 = eval.next_trace_mask();
         let value_limb_9_col10 = eval.next_trace_mask();
         let value_limb_10_col11 = eval.next_trace_mask();
+        let segment_id = eval.next_trace_mask();
 
         ReadPositiveNumBits96::evaluate(
+            segment_id.clone(),
             [
-                (E::F::from(M31::from(self.claim.range_check96_builtin_segment_start))
-                    + seq.clone()),
+               seq.clone(),
             ],
             value_id_col0.clone(),
             value_limb_0_col1.clone(),

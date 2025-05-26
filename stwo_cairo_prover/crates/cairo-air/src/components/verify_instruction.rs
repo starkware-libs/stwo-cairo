@@ -116,6 +116,7 @@ impl FrameworkEval for Eval {
             );
         MemVerify::evaluate(
             [
+                M31_0.clone(),
                 input_pc_col0.clone(),
                 offset0_low_col7.clone(),
                 encode_offsets_output_tmp_16a4f_8_limb_1.clone(),

@@ -113,6 +113,7 @@ impl FrameworkEval for Eval {
                     + ((M31_1.clone() - op0_base_fp_col5.clone()) * input_ap_col1.clone()))),
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(mem0_base_col7.clone()
                 + decode_instruction_9bd86_output_tmp_22134_6_offset1.clone())],
             mem1_base_id_col8.clone(),
@@ -124,6 +125,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(((mem1_base_limb_0_col9.clone()
                 + (mem1_base_limb_1_col10.clone() * M31_512.clone()))
                 + (mem1_base_limb_2_col11.clone() * M31_262144.clone()))

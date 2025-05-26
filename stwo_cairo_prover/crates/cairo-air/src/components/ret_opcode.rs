@@ -96,6 +96,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(input_fp_col2.clone() - M31_1.clone())],
             next_pc_id_col3.clone(),
             next_pc_limb_0_col4.clone(),
@@ -106,6 +107,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(input_fp_col2.clone() - M31_2.clone())],
             next_fp_id_col7.clone(),
             next_fp_limb_0_col8.clone(),

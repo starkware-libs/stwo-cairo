@@ -72,6 +72,17 @@ impl AtomicMultiplicityColumn2D {
         self.data[relocatable.segment_index][relocatable.offset as usize].fetch_add(1, Ordering::Relaxed);
     }
 
+    pub fn resize(&mut self, new_len: Vec<usize>, value: u32) {
+        self.data.iter_mut().zip(new_len).for_each(|(segment, nl)| {
+            let current_len = segment.len();
+            if nl > current_len {
+                segment.extend((current_len..nl).map(|_| AtomicU32::new(value)));
+            } else {
+                panic!("New length is smaller than current length");
+            }
+        });
+    }
+
     /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with
     /// zeros if needed. This function performs a copy on the inner data, If atomics are not
     /// necessary, use [`MultiplicityColumn`] instead.

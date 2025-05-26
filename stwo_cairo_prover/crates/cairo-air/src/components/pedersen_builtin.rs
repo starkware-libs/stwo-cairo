@@ -3,7 +3,7 @@ use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_split::ReadSplit;
 use crate::components::subroutines::verify_reduced_252::VerifyReduced252;
 
-pub const N_TRACE_COLUMNS: usize = 351;
+pub const N_TRACE_COLUMNS: usize = 352;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -492,6 +492,7 @@ impl FrameworkEval for Eval {
         let partial_ec_mul_output_limb_69_col348 = eval.next_trace_mask();
         let partial_ec_mul_output_limb_70_col349 = eval.next_trace_mask();
         let pedersen_result_id_col350 = eval.next_trace_mask();
+        let segment_id_col351 = eval.next_trace_mask();
 
         let instance_addr_tmp_d00c6_0 = eval.add_intermediate(
             ((seq.clone() * M31_3.clone())
@@ -500,6 +501,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_split_output_tmp_d00c6_6_original_limb_27] = ReadSplit::evaluate(
+            segment_id_col351.clone(),
             [instance_addr_tmp_d00c6_0.clone()],
             value_limb_0_col0.clone(),
             value_limb_1_col1.clone(),
@@ -539,6 +541,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_split_output_tmp_d00c6_12_original_limb_27] = ReadSplit::evaluate(
+            segment_id_col351.clone(),
             [(instance_addr_tmp_d00c6_0.clone() + M31_1.clone())],
             value_limb_0_col30.clone(),
             value_limb_1_col31.clone(),
@@ -1299,6 +1302,7 @@ impl FrameworkEval for Eval {
 
         MemVerify::evaluate(
             [
+                segment_id_col351.clone(),
                 (instance_addr_tmp_d00c6_0.clone() + M31_2.clone()),
                 partial_ec_mul_output_limb_15_col294.clone(),
                 partial_ec_mul_output_limb_16_col295.clone(),

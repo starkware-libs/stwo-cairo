@@ -235,6 +235,7 @@ impl EvalOperands {
                         * eval_operands_input_limb_1.clone()))),
         );
         ReadPositiveNumBits252::evaluate(
+            M31_1.clone(),
             [(dst_src_col0.clone() + eval_operands_input_limb_23.clone())],
             dst_id_col1.clone(),
             dst_limb_0_col2.clone(),
@@ -277,6 +278,7 @@ impl EvalOperands {
                         * eval_operands_input_limb_1.clone()))),
         );
         ReadPositiveNumBits252::evaluate(
+            M31_1.clone(),
             [(op0_src_col30.clone() + eval_operands_input_limb_24.clone())],
             op0_id_col31.clone(),
             op0_limb_0_col32.clone(),
@@ -355,6 +357,7 @@ impl EvalOperands {
                         * cond_felt_252_as_addr_output_tmp_3172c_6.clone()))),
         );
         ReadPositiveNumBits252::evaluate(
+            M31_1.clone() * (M31_1.clone() - op1_src_col60.clone()),
             [(op1_src_col60.clone() + eval_operands_input_limb_25.clone())],
             op1_id_col61.clone(),
             op1_limb_0_col62.clone(),

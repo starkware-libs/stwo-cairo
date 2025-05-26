@@ -12,6 +12,7 @@ impl ReadSmall {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
+        segment_index: E::F,
         [read_small_input]: [E::F; 1],
         id_col0: E::F,
         msb_col1: E::F,
@@ -35,7 +36,7 @@ impl ReadSmall {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[read_small_input.clone(), id_col0.clone()],
+            &[segment_index.clone(), read_small_input.clone(), id_col0.clone()],
         ));
 
         CondDecodeSmallSign::evaluate(

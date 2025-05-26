@@ -116,6 +116,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_c921e_11_limb_0] = ReadSmall::evaluate(
+            M31_1.clone() * (M31_1.clone() - op1_imm_col4.clone()),
             [(mem1_base_col6.clone()
                 + decode_instruction_d2a10_output_tmp_c921e_5_offset2.clone())],
             op1_id_col7.clone(),

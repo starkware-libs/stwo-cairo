@@ -72,6 +72,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
         let M31_262144 = E::F::from(M31::from(262144));
@@ -103,6 +104,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [input_ap_col1.clone()],
             stored_fp_id_col3.clone(),
             stored_fp_limb_0_col4.clone(),
@@ -119,6 +121,7 @@ impl FrameworkEval for Eval {
                 - input_fp_col2.clone()),
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(input_ap_col1.clone() + M31_1.clone())],
             stored_ret_pc_id_col7.clone(),
             stored_ret_pc_limb_0_col8.clone(),
@@ -138,6 +141,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_7ab23_14_limb_0] = ReadSmall::evaluate(
+            M31_0.clone(),
             [(input_pc_col0.clone() + M31_1.clone())],
             distance_to_next_pc_id_col11.clone(),
             msb_col12.clone(),

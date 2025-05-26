@@ -152,6 +152,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_756b7_16_limb_0] = ReadSmall::evaluate(
+            M31_1.clone(),
             [(mem_dst_base_col11.clone()
                 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0.clone())],
             dst_id_col14.clone(),
@@ -167,6 +168,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_756b7_22_limb_0] = ReadSmall::evaluate(
+            M31_1.clone(),
             [(mem0_base_col12.clone()
                 + decode_instruction_bc3cd_output_tmp_756b7_10_offset1.clone())],
             op0_id_col20.clone(),
@@ -182,6 +184,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_756b7_28_limb_0] = ReadSmall::evaluate(
+            M31_1.clone() * (M31_1.clone() - op1_imm_col8.clone()),
             [(mem1_base_col13.clone()
                 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2.clone())],
             op1_id_col26.clone(),

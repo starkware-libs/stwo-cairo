@@ -67,6 +67,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_0 = E::F::from(M31::from(0));
         let M31_2 = E::F::from(M31::from(2));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
@@ -99,8 +100,10 @@ impl FrameworkEval for Eval {
         );
         MemVerifyEqual::evaluate(
             [
+                M31_1.clone(),
                 (mem_dst_base_col6.clone()
                     + decode_instruction_161c9_output_tmp_bb09e_5_offset0.clone()),
+                M31_0.clone(),
                 (input_pc_col0.clone() + M31_1.clone()),
             ],
             dst_id_col7.clone(),

@@ -6944,6 +6944,7 @@ fn write_trace_simd(
                 *row[409] = carry_61_col409;
                 *sub_component_inputs.range_check_18[61] = [((carry_61_col409) + (M31_131072))];
                 *lookup_data.range_check_18_61 = [((carry_61_col409) + (M31_131072))];
+                *row[410] = segment_id_packed;
             },
         );
 

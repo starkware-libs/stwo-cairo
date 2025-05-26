@@ -11,7 +11,7 @@ impl MemCondVerifyEqualKnownId {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [mem_cond_verify_equal_known_id_input_limb_0, mem_cond_verify_equal_known_id_input_limb_1, mem_cond_verify_equal_known_id_input_limb_2]: [E::F; 3],
+        [segment_id, mem_cond_verify_equal_known_id_input_limb_0, mem_cond_verify_equal_known_id_input_limb_1, mem_cond_verify_equal_known_id_input_limb_2]: [E::F; 4],
         id_col0: E::F,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         eval: &mut E,
@@ -20,6 +20,7 @@ impl MemCondVerifyEqualKnownId {
             memory_address_to_id_lookup_elements,
             E::EF::one(),
             &[
+                segment_id.clone(),
                 mem_cond_verify_equal_known_id_input_limb_0.clone(),
                 id_col0.clone(),
             ],

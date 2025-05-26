@@ -11,6 +11,7 @@ impl ReadPositiveNumBits27 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
+        segment_index: E::F,
         [read_positive_num_bits_27_input]: [E::F; 1],
         id_col0: E::F,
         value_limb_0_col1: E::F,
@@ -23,7 +24,7 @@ impl ReadPositiveNumBits27 {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[read_positive_num_bits_27_input.clone(), id_col0.clone()],
+            &[segment_index.clone(), read_positive_num_bits_27_input.clone(), id_col0.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(

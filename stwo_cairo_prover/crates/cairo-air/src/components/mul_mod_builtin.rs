@@ -3,7 +3,7 @@ use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::Do
 use crate::components::subroutines::mod_utils::ModUtils;
 use crate::components::subroutines::mod_words_to_12_bit_array::ModWordsTo12BitArray;
 
-pub const N_TRACE_COLUMNS: usize = 410;
+pub const N_TRACE_COLUMNS: usize = 411;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -493,8 +493,10 @@ impl FrameworkEval for Eval {
         let carry_59_col407 = eval.next_trace_mask();
         let carry_60_col408 = eval.next_trace_mask();
         let carry_61_col409 = eval.next_trace_mask();
+        let segment_id_packed_col410 = eval.next_trace_mask();
 
         ModUtils::evaluate(
+            segment_id_packed_col410.clone(),
             seq.clone(),
             is_instance_0_col0.clone(),
             p0_id_col1.clone(),

@@ -22,6 +22,7 @@ impl VerifyBlakeWord {
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_0 = E::F::from(M31::from(0));
         let M31_128 = E::F::from(M31::from(128));
         let M31_4 = E::F::from(M31::from(4));
@@ -40,6 +41,7 @@ impl VerifyBlakeWord {
 
         MemVerify::evaluate(
             [
+                M31_1.clone(),
                 verify_blake_word_input_limb_0.clone(),
                 (verify_blake_word_input_limb_1.clone()
                     - (low_7_ms_bits_col0.clone() * M31_512.clone())),

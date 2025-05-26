@@ -3,7 +3,7 @@ use crate::components::subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
 use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
-pub const N_TRACE_COLUMNS: usize = 89;
+pub const N_TRACE_COLUMNS: usize = 90;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -165,11 +165,12 @@ impl FrameworkEval for Eval {
         let and_id_col86 = eval.next_trace_mask();
         let xor_id_col87 = eval.next_trace_mask();
         let or_id_col88 = eval.next_trace_mask();
+        let segment_id_col89 = eval.next_trace_mask();
 
         ReadPositiveNumBits252::evaluate(
+            segment_id_col89.clone(),
             [
-                (E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone())),
+                (seq.clone() * M31_5.clone()),
             ],
             op0_id_col0.clone(),
             op0_limb_0_col1.clone(),
@@ -205,10 +206,9 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadPositiveNumBits252::evaluate(
+            segment_id_col89.clone(),
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone()))
-                    + M31_1.clone()),
+                ((seq.clone() * M31_5.clone()) + M31_1.clone()),
             ],
             op1_id_col29.clone(),
             op1_limb_0_col30.clone(),
@@ -525,9 +525,8 @@ impl FrameworkEval for Eval {
         );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone()))
-                    + M31_2.clone()),
+                segment_id_col89.clone(),
+                (seq.clone() * M31_5.clone()) + M31_2.clone(),
                 and_tmp_efb2a_8.clone(),
                 and_tmp_efb2a_11.clone(),
                 and_tmp_efb2a_14.clone(),
@@ -564,9 +563,8 @@ impl FrameworkEval for Eval {
         );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone()))
-                    + M31_3.clone()),
+                segment_id_col89.clone(),
+                (seq.clone() * M31_5.clone())+ M31_3.clone(),
                 xor_col58.clone(),
                 xor_col59.clone(),
                 xor_col60.clone(),
@@ -603,9 +601,8 @@ impl FrameworkEval for Eval {
         );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone()))
-                    + M31_4.clone()),
+                segment_id_col89.clone(),
+                (seq.clone() * M31_5.clone()) + M31_4.clone(),
                 (and_tmp_efb2a_8.clone() + xor_col58.clone()),
                 (and_tmp_efb2a_11.clone() + xor_col59.clone()),
                 (and_tmp_efb2a_14.clone() + xor_col60.clone()),

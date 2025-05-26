@@ -122,6 +122,7 @@ impl FrameworkEval for Eval {
                     + ((M31_1.clone() - op0_base_fp_col7.clone()) * input_ap_col1.clone()))),
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(mem0_base_col10.clone()
                 + decode_instruction_cb32b_output_tmp_b1151_8_offset1.clone())],
             mem1_base_id_col11.clone(),
@@ -134,8 +135,10 @@ impl FrameworkEval for Eval {
         );
         MemVerifyEqual::evaluate(
             [
+                M31_1.clone(),
                 (mem_dst_base_col9.clone()
                     + decode_instruction_cb32b_output_tmp_b1151_8_offset0.clone()),
+                M31_1.clone(),
                 (((mem1_base_limb_0_col12.clone()
                     + (mem1_base_limb_1_col13.clone() * M31_512.clone()))
                     + (mem1_base_limb_2_col14.clone() * M31_262144.clone()))

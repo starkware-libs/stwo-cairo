@@ -110,8 +110,10 @@ impl FrameworkEval for Eval {
         );
         MemVerifyEqual::evaluate(
             [
+                M31_1.clone(),
                 (mem_dst_base_col8.clone()
                     + decode_instruction_fe864_output_tmp_d6f03_7_offset0.clone()),
+                M31_1.clone(),
                 (mem1_base_col9.clone()
                     + decode_instruction_fe864_output_tmp_d6f03_7_offset2.clone()),
             ],

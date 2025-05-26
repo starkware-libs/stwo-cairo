@@ -227,6 +227,7 @@ fn write_trace_simd(
                     ]),
                     value_id_col0,
                 );
+                *row[17] = segment_id_packed;
             },
         );
 

@@ -924,6 +924,7 @@ fn write_trace_simd(
                     ((and_tmp_efb2a_86) + (xor_col84)),
                     ((and_tmp_efb2a_89) + (xor_col85)),
                 ];
+                *row[89] = segment_id_packed;
             },
         );
 

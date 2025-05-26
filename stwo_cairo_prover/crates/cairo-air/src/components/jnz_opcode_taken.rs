@@ -75,6 +75,7 @@ impl FrameworkEval for Eval {
         let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));
         let M31_256 = E::F::from(M31::from(256));
+        let M31_0 = E::F::from(M31::from(0));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -141,6 +142,7 @@ impl FrameworkEval for Eval {
                     + ((M31_1.clone() - dst_base_fp_col4.clone()) * input_ap_col1.clone()))),
         );
         ReadPositiveNumBits252::evaluate(
+            M31_1.clone(),
             [(mem_dst_base_col6.clone()
                 + decode_instruction_de75a_output_tmp_f51a9_5_offset0.clone())],
             dst_id_col7.clone(),
@@ -253,6 +255,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_f51a9_17_limb_0] = ReadSmall::evaluate(
+            M31_0.clone(),
             [(input_pc_col0.clone() + M31_1.clone())],
             next_pc_id_col38.clone(),
             msb_col39.clone(),

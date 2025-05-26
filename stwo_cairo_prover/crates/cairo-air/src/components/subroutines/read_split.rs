@@ -12,6 +12,7 @@ impl ReadSplit {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
+        segment_id: E::F,
         [read_split_input_address]: [E::F; 1],
         value_limb_0_col0: E::F,
         value_limb_1_col1: E::F,
@@ -58,6 +59,7 @@ impl ReadSplit {
 
         MemVerify::evaluate(
             [
+                segment_id.clone(),                
                 read_split_input_address.clone(),
                 value_limb_0_col0.clone(),
                 value_limb_1_col1.clone(),

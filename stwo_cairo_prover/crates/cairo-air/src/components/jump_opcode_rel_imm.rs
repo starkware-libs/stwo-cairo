@@ -71,6 +71,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
@@ -95,6 +96,7 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_81a39_9_limb_0] = ReadSmall::evaluate(
+            M31_0.clone(),
             [(input_pc_col0.clone() + M31_1.clone())],
             next_pc_id_col4.clone(),
             msb_col5.clone(),

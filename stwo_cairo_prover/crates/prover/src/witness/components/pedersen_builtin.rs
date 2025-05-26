@@ -696,6 +696,7 @@ fn write_trace_simd(
             *sub_component_inputs.memory_id_to_big[2] =
                 pedersen_result_id_col350;
             *lookup_data.memory_id_to_big_2 = [pedersen_result_id_col350, partial_ec_mul_output_limb_15_col294, partial_ec_mul_output_limb_16_col295, partial_ec_mul_output_limb_17_col296, partial_ec_mul_output_limb_18_col297, partial_ec_mul_output_limb_19_col298, partial_ec_mul_output_limb_20_col299, partial_ec_mul_output_limb_21_col300, partial_ec_mul_output_limb_22_col301, partial_ec_mul_output_limb_23_col302, partial_ec_mul_output_limb_24_col303, partial_ec_mul_output_limb_25_col304, partial_ec_mul_output_limb_26_col305, partial_ec_mul_output_limb_27_col306, partial_ec_mul_output_limb_28_col307, partial_ec_mul_output_limb_29_col308, partial_ec_mul_output_limb_30_col309, partial_ec_mul_output_limb_31_col310, partial_ec_mul_output_limb_32_col311, partial_ec_mul_output_limb_33_col312, partial_ec_mul_output_limb_34_col313, partial_ec_mul_output_limb_35_col314, partial_ec_mul_output_limb_36_col315, partial_ec_mul_output_limb_37_col316, partial_ec_mul_output_limb_38_col317, partial_ec_mul_output_limb_39_col318, partial_ec_mul_output_limb_40_col319, partial_ec_mul_output_limb_41_col320, partial_ec_mul_output_limb_42_col321];
+            *row[351] = segment_id_packed;
         });
 
     (trace, lookup_data, sub_component_inputs)

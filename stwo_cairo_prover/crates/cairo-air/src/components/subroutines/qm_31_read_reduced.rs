@@ -12,6 +12,7 @@ impl Qm31ReadReduced {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
+        segment_id: E::F,
         [qm_31_read_reduced_input]: [E::F; 1],
         id_col0: E::F,
         value_limb_0_col1: E::F,
@@ -44,6 +45,7 @@ impl Qm31ReadReduced {
         let M31_512 = E::F::from(M31::from(512));
 
         ReadPositiveNumBits144::evaluate(
+            segment_id.clone(),
             [qm_31_read_reduced_input.clone()],
             id_col0.clone(),
             value_limb_0_col1.clone(),

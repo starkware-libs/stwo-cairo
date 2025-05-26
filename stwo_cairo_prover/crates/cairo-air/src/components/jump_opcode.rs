@@ -113,6 +113,7 @@ impl FrameworkEval for Eval {
                     + (op1_base_ap_col5.clone() * input_ap_col1.clone()))),
         );
         ReadPositiveNumBits27::evaluate(
+            M31_1.clone(),
             [(mem1_base_col7.clone()
                 + decode_instruction_43e1c_output_tmp_39ce3_6_offset2.clone())],
             next_pc_id_col8.clone(),
