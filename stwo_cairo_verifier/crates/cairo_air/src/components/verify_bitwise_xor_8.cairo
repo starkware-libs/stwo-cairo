@@ -19,7 +19,6 @@ use crate::components::{CairoComponent, VERIFY_BITWISE_XOR_8_LOG_SIZE};
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 0] = [];
 pub const LOG_SIZE: u32 = VERIFY_BITWISE_XOR_8_LOG_SIZE;
 
 #[derive(Drop, Serde, Copy)]
