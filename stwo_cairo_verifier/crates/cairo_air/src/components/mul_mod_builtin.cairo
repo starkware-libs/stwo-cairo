@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: c5d13a07
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -22,6 +22,10 @@ use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_b
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 410;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
+    ('MemoryAddressToId', 29), ('MemoryIdToBig', 24), ('RangeCheck_12', 32),
+    ('RangeCheck_3_6_6_3', 40), ('RangeCheck_18', 62),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
