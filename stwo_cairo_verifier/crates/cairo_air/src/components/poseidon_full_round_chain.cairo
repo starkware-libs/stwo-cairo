@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -22,6 +22,10 @@ use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::linear
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 126;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
+    ('Cube252', 3), ('PoseidonRoundKeys', 1), ('RangeCheck_3_3_3_3_3', 6),
+    ('PoseidonFullRoundChain', 1),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

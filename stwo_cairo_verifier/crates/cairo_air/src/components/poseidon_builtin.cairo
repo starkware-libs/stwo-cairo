@@ -1,4 +1,4 @@
-// Constraints version: fc694d80
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -23,6 +23,11 @@ use crate::components::subroutines::read_positive_num_bits_252::read_positive_nu
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 341;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 9] = [
+    ('MemoryAddressToId', 6), ('MemoryIdToBig', 6), ('PoseidonFullRoundChain', 2),
+    ('RangeCheckFelt252Width27', 2), ('Cube252', 2), ('RangeCheck_3_3_3_3_3', 2),
+    ('RangeCheck_4_4_4_4', 6), ('RangeCheck_4_4', 3), ('Poseidon3PartialRoundsChain', 1),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

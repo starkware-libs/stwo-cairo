@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -23,6 +23,11 @@ use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluat
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 169;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
+    ('VerifyInstruction', 1), ('MemoryAddressToId', 20), ('MemoryIdToBig', 20),
+    ('RangeCheck_7_2_5', 17), ('VerifyBitwiseXor_8', 4), ('BlakeRound', 1), ('TripleXor32', 8),
+    ('Opcodes', 1),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

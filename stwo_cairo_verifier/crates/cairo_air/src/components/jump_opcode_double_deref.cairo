@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -21,6 +21,9 @@ use crate::components::subroutines::read_positive_num_bits_27::read_positive_num
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 17;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
+    ('VerifyInstruction', 1), ('MemoryAddressToId', 2), ('MemoryIdToBig', 2), ('Opcodes', 1),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
