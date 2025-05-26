@@ -74,9 +74,7 @@ macro_rules! range_check_prover {
 
                     tree_builder.extend_evals(trace);
 
-                    let claim = Claim {
-                        log_ranges: RANGES.to_vec(),
-                    };
+                    let claim = Claim {};
 
                     let interaction_claim_prover = InteractionClaimGenerator {
                         multiplicities: multiplicity_data,
