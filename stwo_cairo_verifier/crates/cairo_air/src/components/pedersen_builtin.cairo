@@ -1,4 +1,4 @@
-// Constraints version: fc694d80
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -22,6 +22,10 @@ use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evalu
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 351;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
+    ('RangeCheck_5_4', 2), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('RangeCheck_8', 4),
+    ('PartialEcMul', 4),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -20,6 +20,10 @@ use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 212;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
+    ('BlakeRoundSigma', 1), ('RangeCheck_7_2_5', 16), ('MemoryAddressToId', 16),
+    ('MemoryIdToBig', 16), ('BlakeG', 8), ('BlakeRound', 1),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

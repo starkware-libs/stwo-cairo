@@ -33,6 +33,9 @@ pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_SMALL_FELT252;
 
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
+pub const RELATION_USES_PER_ROW_BIG: [(felt252, u32); 1] = [('RangeCheck_9_9', 14)];
+pub const RELATION_USES_PER_ROW_SMALL: [(felt252, u32); 1] = [('RangeCheck_9_9', 4)];
+
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub big_log_size: u32,

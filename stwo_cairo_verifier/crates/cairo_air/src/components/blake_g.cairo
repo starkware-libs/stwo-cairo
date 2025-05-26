@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: bc855610
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -24,6 +24,10 @@ use crate::components::subroutines::xor_rot_32_r_8::xor_rot_32_r_8_evaluate;
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 53;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
+    ('VerifyBitwiseXor_8', 8), ('VerifyBitwiseXor_12', 2), ('VerifyBitwiseXor_4', 2),
+    ('VerifyBitwiseXor_7', 2), ('VerifyBitwiseXor_9', 2),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

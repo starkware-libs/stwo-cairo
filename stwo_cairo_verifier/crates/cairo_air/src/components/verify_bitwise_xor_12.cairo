@@ -23,6 +23,7 @@ pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS;
 
 pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
 
+
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
