@@ -11,7 +11,11 @@ use crate::relocator::Relocator;
 use crate::test_utils::read_prover_input_info_file;
 use crate::{PublicSegmentContext, StateTransitions};
 
-pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
+// If generic_mode is true, the adapter will map all the instruction to the generic opcode.
+pub fn adapter(
+    prover_input_info: &mut ProverInputInfo,
+    generic_mode: bool,
+) -> Result<ProverInput, VmImportError> {
     BuiltinSegments::pad_relocatble_builtin_segments(
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
@@ -25,7 +29,8 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
     let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
-    let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
+    let state_transitions =
+        StateTransitions::from_slice_parallel(&relocated_trace, &memory, generic_mode);
 
     let builtins_segments = relocator.get_builtin_segments();
 
@@ -45,12 +50,17 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
     })
 }
 
+// If generic_mode is true, the adapter will map all the instruction to the generic opcode.
 pub fn read_and_adapt_prover_input_info_file(
     prover_input_info_path: &Path,
+    generic_mode: bool,
 ) -> Result<ProverInput, VmImportError> {
     let _span: span::EnteredSpan = span!(Level::INFO, "adapter").entered();
 
-    adapter(&mut read_prover_input_info_file(prover_input_info_path))
+    adapter(
+        &mut read_prover_input_info_file(prover_input_info_path),
+        generic_mode,
+    )
 }
 
 #[cfg(test)]
@@ -68,7 +78,7 @@ mod tests {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_test_program(test_name);
-        let mut prover_input = run_program_and_adapter(&compiled_program);
+        let mut prover_input = run_program_and_adapter(&compiled_program, false);
         // Instruction cache is not deterministic, sort it.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
 
@@ -80,7 +90,7 @@ mod tests {
         }
 
         let mut prover_input_b =
-            read_and_adapt_prover_input_info_file(&get_prover_input_info_path(test_name))
+            read_and_adapt_prover_input_info_file(&get_prover_input_info_path(test_name), false)
                 .expect("Failed to create prover input from vm output");
         prover_input_b.inst_cache.sort_by_key(|(addr, _)| *addr);
 

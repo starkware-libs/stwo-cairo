@@ -50,10 +50,16 @@ impl CasmStatesByOpcode {
     fn from_iter(
         iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
         memory: &MemoryBuilder,
+        generic_mode: bool,
     ) -> Self {
         let mut res = CasmStatesByOpcode::default();
-        for entry in iter {
-            res.push_instr(memory, entry.into());
+        if generic_mode {
+            // If generic mode is enabled, we only push the generic opcode.
+            res.generic_opcode = iter.map(|entry| entry.into()).collect();
+        } else {
+            for entry in iter {
+                res.push_instr(memory, entry.into());
+            }
         }
         res
     }
@@ -633,6 +639,7 @@ impl StateTransitions {
     pub fn from_iter(
         iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
         memory: &MemoryBuilder,
+        generic_mode: bool,
     ) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_iter").entered();
         let mut iter = iter.peekable();
@@ -642,7 +649,7 @@ impl StateTransitions {
         // Assuming the last instruction is jrl0, no need to push it.
         let final_state = iter.next_back().unwrap().into();
 
-        let states = CasmStatesByOpcode::from_iter(iter, memory);
+        let states = CasmStatesByOpcode::from_iter(iter, memory, generic_mode);
 
         StateTransitions {
             initial_state,
@@ -651,7 +658,11 @@ impl StateTransitions {
         }
     }
 
-    pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
+    pub fn from_slice_parallel(
+        trace: &[RelocatedTraceEntry],
+        memory: &MemoryBuilder,
+        generic_mode: bool,
+    ) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_slice_parallel").entered();
         let initial_state = trace.first().copied().unwrap().into();
 
@@ -663,7 +674,7 @@ impl StateTransitions {
         let chunk_size = trace.len().div_ceil(n_workers);
         let casm_states_by_opcode = trace
             .par_chunks(chunk_size)
-            .map(|chunk| CasmStatesByOpcode::from_iter(chunk.iter().copied(), memory))
+            .map(|chunk| CasmStatesByOpcode::from_iter(chunk.iter().copied(), memory, generic_mode))
             .reduce(Default::default, |mut acc, chunk| {
                 acc.merge(&chunk);
                 acc
@@ -707,6 +718,8 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 #[cfg(test)]
 mod mappings_tests {
 
+    use std::array::from_fn;
+
     use cairo_lang_casm::casm;
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
     use cairo_vm::types::layout_name::LayoutName;
@@ -743,6 +756,7 @@ mod mappings_tests {
             &mut runner
                 .get_prover_input_info()
                 .expect("Failed to get prover input info from finished runner"),
+            false,
         )
         .expect("Failed to run adapter")
     }
@@ -758,7 +772,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
         assert_eq!(states.jump_opcode_rel.len(), 1);
     }
 
@@ -773,7 +788,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
         assert_eq!(states.jump_opcode_double_deref.len(), 1);
     }
 
@@ -1064,7 +1080,8 @@ mod mappings_tests {
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
 
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
 
         matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
         assert_eq!(states.blake_compress_opcode.len(), 1);
@@ -1080,7 +1097,8 @@ mod mappings_tests {
 
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
 
         matches!(instruction.opcode_extension, OpcodeExtension::QM31Operation);
         assert_eq!(states.qm_31_add_mul_opcode.len(), 1);
@@ -1104,6 +1122,7 @@ mod mappings_tests {
                 .relocate_trace(&get_test_relocatble_trace())
                 .into_iter(),
             &memory_builder,
+            false,
         );
         assert_eq!(
             state_transitions.casm_states_by_opcode.qm_31_add_mul_opcode,
@@ -1111,5 +1130,30 @@ mod mappings_tests {
         );
         assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
         assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
+    }
+
+    #[test]
+    fn test_generic_mode() {
+        let encoded_qm_31_add_mul_inst =
+            0b11100000001001010011111111111110101111111111111001000000000000000;
+        let mut x = u128_to_4_limbs(encoded_qm_31_add_mul_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        for i in 0..50 {
+            memory_builder.set(i, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        }
+
+        let encoded_blake_finalize_inst =
+            0b10000000000001011011111111111110101111111111111000111111111111011;
+        x = u128_to_4_limbs(encoded_blake_finalize_inst);
+        for i in 50..100 {
+            memory_builder.set(i, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        }
+
+        let trace: [RelocatedTraceEntry; 100] = from_fn(|i| relocated_trace_entry!(i, 1, 1));
+        let states = CasmStatesByOpcode::from_iter(trace.into_iter(), &memory_builder, true);
+
+        assert_eq!(states.generic_opcode.len(), 100);
+        assert_eq!(states.qm_31_add_mul_opcode.len(), 0);
+        assert_eq!(states.blake_compress_opcode.len(), 0);
     }
 }
