@@ -662,6 +662,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "dev-utils"
+version = "0.1.1"
+dependencies = [
+ "cairo-air",
+ "clap",
+ "log",
+ "serde",
+ "sonic-rs",
+ "starknet-ff",
+ "stwo-cairo-adapter",
+ "stwo-cairo-serialize",
+ "stwo-prover",
+ "stwo_cairo_prover",
+ "thiserror 2.0.11",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
