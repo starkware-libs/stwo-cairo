@@ -16,13 +16,8 @@ Prove Cairo programs with the blazing-fast [S-Two prover](https://github.com/sta
 
 ## Disclaimer
 
-⚠️ S-Two is a work in progress and should be used at your own risk ⚠️
-
-In particular:
-
-* S-Two is not yet sound
-
-* Breaking API changes might happen often
+S-two is not yet production-ready, but getting close.
+Early adopters are welcome—but we don't recommend using it in a production setting just yet.
 
 ## Prerequisites
 
