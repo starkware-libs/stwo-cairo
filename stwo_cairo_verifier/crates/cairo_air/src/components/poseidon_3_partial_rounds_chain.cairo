@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: c5d13a07
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -20,6 +20,10 @@ use crate::components::subroutines::poseidon_partial_round::poseidon_partial_rou
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 169;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
+    ('PoseidonRoundKeys', 1), ('Cube252', 3), ('RangeCheck_4_4_4_4', 6), ('RangeCheck_4_4', 3),
+    ('RangeCheckFelt252Width27', 3), ('Poseidon3PartialRoundsChain', 1),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: c5d13a07
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -19,6 +19,7 @@ use crate::components::{BLAKE_ROUND_SIGMA_LOG_SIZE, CairoComponent};
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 1;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 0] = [];
 pub const LOG_SIZE: u32 = BLAKE_ROUND_SIGMA_LOG_SIZE;
 
 #[derive(Drop, Serde, Copy)]

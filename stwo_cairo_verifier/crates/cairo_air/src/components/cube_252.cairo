@@ -1,4 +1,4 @@
-// Constraints version: 9330aaaf
+// Constraints version: c5d13a07
 
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
@@ -21,6 +21,9 @@ use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 141;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
+    ('RangeCheck_9_9', 42), ('RangeCheck_19', 56),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {

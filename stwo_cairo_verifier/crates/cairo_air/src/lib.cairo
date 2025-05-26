@@ -1,4 +1,3 @@
-use components::CairoComponent;
 use components::add_ap_opcode::{
     ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
@@ -85,6 +84,7 @@ use components::memory_address_to_id::{
 };
 use components::memory_id_to_big::{
     ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
+    RELATION_USES_PER_ROW_BIG, RELATION_USES_PER_ROW_SMALL,
 };
 use components::mul_mod_builtin::{
     ClaimImpl as MulModBuiltinClaimImpl, InteractionClaimImpl as MulModBuiltinInteractionClaimImpl,
@@ -172,6 +172,7 @@ use components::verify_instruction::{
     ClaimImpl as VerifyInstructionClaimImpl,
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
+use components::{CairoComponent, memory_id_to_big, verify_instruction};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
@@ -453,12 +454,7 @@ type VerifyBitwiseXor_12Elements = LookupElements<3>;
 // corresponding relation.
 type RelationUsesDict = Felt252Dict<u64>;
 
-#[derive(Drop, Copy)]
-struct RelationUse {
-    pub relation_id: felt252,
-    pub uses: u64,
-}
-
+type RelationUse = (felt252, u32);
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
@@ -1293,13 +1289,13 @@ impl CairoClaimImpl of CairoClaimTrait {
         let CairoClaim {
             public_data: _,
             opcodes,
-            verify_instruction: _todo,
+            verify_instruction,
             blake_context,
             builtins,
             pedersen_context,
             poseidon_context,
             memory_address_to_id: _,
-            memory_id_to_value: _todo,
+            memory_id_to_value,
             range_checks: _,
             verify_bitwise_xor_4: _,
             verify_bitwise_xor_7: _,
@@ -1307,7 +1303,22 @@ impl CairoClaimImpl of CairoClaimTrait {
             verify_bitwise_xor_9: _,
         } = self;
         // NOTE: The following components do not USE relations:
-    // - range_checks
+        accumulate_relation_uses(
+            ref relation_uses,
+            verify_instruction::RELATION_USES_PER_ROW.span(),
+            *verify_instruction.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
+            *memory_id_to_value.big_log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
+            *memory_id_to_value.small_log_size,
+        );
+        // - range_checks
     // - verify_bitwise_xor_*
     // - memory_address_to_id
     // opcodes.accumulate_relation_uses(relation_uses);
@@ -1315,6 +1326,7 @@ impl CairoClaimImpl of CairoClaimTrait {
     // blake_context.accumulate_relation_uses(relation_uses);
     // pedersen_context.accumulate_relation_uses(relation_uses);
     // poseidon_context.accumulate_relation_uses(relation_uses);
+
     }
 }
 
@@ -2337,8 +2349,9 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
         utils::tree_array_concat_cols(log_sizes)
     }
 
-    fn accumulate_relation_uses(self: @OpcodeClaim, ref relation_uses: RelationUsesDict) {
-        // TODO(alonf): Implement.
+    fn accumulate_relation_uses(
+        self: @OpcodeClaim, ref relation_uses: RelationUsesDict,
+    ) { // TODO(alonf): Implement.
     }
 }
 
@@ -2347,7 +2360,7 @@ pub fn accumulate_relation_uses(
 ) {
     let component_size = pow2(log_size);
     for relation_use in relation_uses_per_row {
-        let RelationUse { relation_id, uses } = *relation_use;
+        let (relation_id, uses) = *relation_use;
         let (entry, prev_uses) = relation_uses.entry(relation_id);
         relation_uses = entry.finalize(prev_uses + uses.into() * component_size.into());
     }

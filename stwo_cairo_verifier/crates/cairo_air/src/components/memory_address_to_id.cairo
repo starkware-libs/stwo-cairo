@@ -31,6 +31,7 @@ mod constraints;
 pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 0] = [];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
