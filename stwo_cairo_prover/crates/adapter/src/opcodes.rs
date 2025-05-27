@@ -110,8 +110,9 @@ impl CasmStatesByOpcode {
                 opcode_assert_eq: false,
                 opcode_extension: OpcodeExtension::Stone,
             } => {
-                // ap += imm.
-                // ap += [ap/fp + offset2].
+                // next_ap = ap + imm.
+                // next_ap = ap + [ap/fp + offset2].
+                // next_ap must be in the range [0, 2^27 - 1].
                 assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
@@ -121,6 +122,19 @@ impl CasmStatesByOpcode {
                     (!op_1_imm) || offset2 == 1,
                     "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
+                let mem1_base = if op_1_imm {
+                    pc
+                } else if op_1_base_fp {
+                    fp
+                } else {
+                    ap
+                };
+                let op_1 = memory.get(mem1_base.0.checked_add_signed(offset2 as i32).unwrap());
+                if !is_within_range(op_1, -(ap.0 as i128), ((1 << 27) - 1) - ap.0 as i128) {
+                    panic!(
+                        "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
+                    );
+                }
                 self.add_ap_opcode.push(state);
             }
             // jump.
@@ -824,6 +838,82 @@ mod mappings_tests {
         let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 3);
+    }
+
+    #[test]
+    fn test_add_ap_upper_edge_case() {
+        // Encoding for the instruction `ap += [fp]`.
+        // Flags: dst_base_fp, op0_base_fp, op1_base_fp, ap_update_add
+        // Offsets: offset2 = 0, offset1 = -1, offset0 = -1
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b000010000001011100000000000000001111111111111110111111111111111;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        memory_builder.set(fp, MemoryValue::Small((((1 << 27) - 1) - ap) as u128));
+
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+        let casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
+    )]
+    fn test_add_ap_rangecheck_panic() {
+        // Encoding for the instruction `ap += [fp]`.
+        // Flags: dst_base_fp, op0_base_fp, op1_base_fp, ap_update_add
+        // Offsets: offset2 = 0, offset1 = -1, offset0 = -1
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b000010000001011100000000000000001111111111111110111111111111111;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        memory_builder.set(fp, MemoryValue::Small(((1 << 27) - ap) as u128));
+
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+        let _casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+    }
+
+    #[test]
+    fn test_add_ap_lower_edge_case() {
+        // Encoding for the instruction `ap += imm`.
+        // Flags: dst_base_fp, op0_base_fp, op1_imm, ap_update_add
+        // Offsets: offset2 = 1, offset1 = -1, offset0 = -1
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b000010000000111100000000000000101111111111111110111111111111111;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        memory_builder.set(pc + 1, MemoryValue::Small((-(ap as i128)) as u128));
+
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+        let casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
+    )]
+    fn test_add_ap_rangecheck_panic_neg() {
+        // Encoding for the instruction `ap += imm`.
+        // Flags: dst_base_fp, op0_base_fp, op1_imm, ap_update_add
+        // Offsets: offset2 = 1, offset1 = -1, offset0 = -1
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b000010000000111100000000000000101111111111111110111111111111111;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        memory_builder.set(pc + 1, MemoryValue::Small((-(ap as i128 + 1)) as u128));
+
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+        let _casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
     }
 
     #[test]
