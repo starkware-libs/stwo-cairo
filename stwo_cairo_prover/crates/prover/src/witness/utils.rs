@@ -77,8 +77,10 @@ impl AtomicMultiplicityColumn2D {
             let current_len = segment.len();
             if nl > current_len {
                 segment.extend((current_len..nl).map(|_| AtomicU32::new(value)));
+            } 
+            else if nl == current_len {   
             } else {
-                panic!("New length is smaller than current length");
+                panic!("New length {} is smaller than current length {} for segment {:?}", nl, current_len, segment);
             }
         });
     }

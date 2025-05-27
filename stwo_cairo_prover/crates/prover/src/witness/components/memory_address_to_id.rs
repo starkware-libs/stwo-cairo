@@ -1,4 +1,3 @@
-use std::iter::zip;
 use std::ops::Index;
 use std::simd::Simd;
 
@@ -180,43 +179,29 @@ impl ClaimGenerator {
             offsets.push(offset);
         }
         
-        let mut scalar_segment_ids = Vec::with_capacity(multiplicities.len());
-        let mut scalar_offsets = Vec::with_capacity(multiplicities.len());
-        let mut current_flat_base = 0;
-        let mut current_scalar_segment_id = 0;
-
-        for i_scalar in 0..multiplicities.len() {
-            let current_segment_padded_len = next_multiples_of_16[current_scalar_segment_id];
-            if current_segment_padded_len > 0 && i_scalar >= current_flat_base + current_segment_padded_len {
-                current_flat_base += current_segment_padded_len;
-                current_scalar_segment_id += 1;
-            } else if current_segment_padded_len == 0 && i_scalar >= current_flat_base { 
-                current_scalar_segment_id += 1;
-            }
-            let offset_in_segment = i_scalar - current_flat_base;
-            scalar_segment_ids.push(current_scalar_segment_id);
-            scalar_offsets.push(offset_in_segment);
+        let mut flat_segment_ids = Vec::new();
+        let mut flat_offsets = Vec::new();
+        for (i, new_len) in next_multiples_of_16.iter().enumerate() {
+            flat_segment_ids.extend(std::iter::repeat(i as u32).take(*new_len));
+            flat_offsets.extend((0..*new_len).map(|x| x as u32));
         }
+        let segment_ids = flat_segment_ids
+        .array_chunks::<N_LANES>()
+        .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
+        let offsets = flat_offsets
+        .array_chunks::<N_LANES>()
+        .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
 
-       
-        for (i_chunk, (id_packed, multiplicity_packed)) in zip(id_it, multiplicities).enumerate() {
-            let chunk_idx_trace = i_chunk / n_packed_rows;
-            let i_row_in_chunk = i_chunk % n_packed_rows;
+        println!("multiplicities: {:?}", multiplicities);
+        println!("segment_ids: {:?}", segment_ids);
+        println!("offsets: {:?}", offsets);
+        
+        for (i, (id_packed, multiplicity_packed, segment_id_packed, offset_packed)) in izip!(id_it, multiplicities, segment_ids, offsets).enumerate() {
+            let chunk_idx_trace = i / n_packed_rows;
+            let i_row_in_chunk = i % n_packed_rows;
 
-            let scalar_start_index = i_chunk * N_LANES;
-
-            let segment_ids_for_chunk_array: [M31; N_LANES] = core::array::from_fn(|j| {
-                M31::from(scalar_segment_ids[scalar_start_index + j] as u32)
-            });
-            let offsets_for_chunk_array: [M31; N_LANES] = core::array::from_fn(|j| {
-                M31::from(scalar_offsets[scalar_start_index + j] as u32)
-            });
-
-            let packed_segment_ids = PackedM31::from_array(segment_ids_for_chunk_array);
-            let packed_offsets = PackedM31::from_array(offsets_for_chunk_array);
-
-            trace[0 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = packed_segment_ids;
-            trace[1 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = packed_offsets;
+            trace[0 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = segment_id_packed;
+            trace[1 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = offset_packed;
             trace[2 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = id_packed;
             trace[3 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = multiplicity_packed;
         }
