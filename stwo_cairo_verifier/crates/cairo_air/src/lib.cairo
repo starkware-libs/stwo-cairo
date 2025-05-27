@@ -800,6 +800,68 @@ impl BuiltinsClaimImpl of BuiltinsClaimTrait {
 
         utils::tree_array_concat_cols(log_sizes)
     }
+
+    fn accumulate_relation_uses(self: @BuiltinsClaim, ref relation_uses: RelationUsesDict) {
+        let BuiltinsClaim {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
+
+        if let Some(claim) = add_mod_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::add_mod_builtin::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+        if let Some(claim) = bitwise_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::bitwise_builtin::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+        if let Some(claim) = mul_mod_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::mul_mod_builtin::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+        if let Some(claim) = pedersen_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::pedersen_builtin::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+        if let Some(claim) = poseidon_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::poseidon_builtin::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+        if let Some(claim) = range_check_96_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::range_check_builtin_bits_96::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+        if let Some(claim) = range_check_128_builtin {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::range_check_builtin_bits_128::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+    }
 }
 
 #[derive(Drop, Serde, Copy)]
@@ -1326,7 +1388,7 @@ impl CairoClaimImpl of CairoClaimTrait {
             opcodes,
             verify_instruction,
             blake_context: _todo,
-            builtins: _todo,
+            builtins,
             pedersen_context: _todo,
             poseidon_context: _todo,
             memory_address_to_id: _,
@@ -1343,6 +1405,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         // - memory_address_to_id
 
         opcodes.accumulate_relation_uses(ref relation_uses);
+        builtins.accumulate_relation_uses(ref relation_uses);
 
         accumulate_relation_uses(
             ref relation_uses,
