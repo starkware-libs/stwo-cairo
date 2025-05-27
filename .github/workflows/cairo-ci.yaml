@@ -30,7 +30,7 @@ jobs:
           scarb-version: "nightly-2025-04-12"
       - run: scarb fmt --check
       - run: scarb test
-
+      - run: scarb test --features=poseidon252_verifier --no-default-features
   run-tests:
     runs-on: stwo-cairo-l
     defaults:

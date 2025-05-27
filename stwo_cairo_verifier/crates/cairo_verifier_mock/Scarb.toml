@@ -1,5 +1,5 @@
 [package]
-name = "stwo_cairo_verifier"
+name = "stwo_cairo_verifier_mock"
 version = "0.1.0"
 edition = "2024_07"
 

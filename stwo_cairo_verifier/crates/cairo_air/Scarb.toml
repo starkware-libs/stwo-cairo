@@ -6,12 +6,20 @@ edition = "2024_07"
 [lib]
 casm = true
 
+[features]
+default = []
+poseidon252_verifier = ["stwo_verifier_core/poseidon252_verifier"]
+
+[cairo]
+enable-gas = false
+
 [tool.fmt]
 sort-module-level-items = true
 
 [dependencies]
-stwo_verifier_core = { path = "../verifier_core", features = ["qm31_opcode"] }
+stwo_verifier_core = { path = "../verifier_core" }
 stwo_constraint_framework = { path = "../constraint_framework" }
 
 [dev-dependencies]
-cairo_test = "2.11.2"
+cairo_test = "2.11.4"
+

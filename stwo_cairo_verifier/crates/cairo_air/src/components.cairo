@@ -107,3 +107,36 @@ pub trait CairoComponent<T> {
         point: CirclePoint<QM31>,
     );
 }
+
+#[derive(Drop)]
+pub struct DummyComponent {
+    // Redundant field to ensure that the struct is not empty.
+    // Cannot have arrays of empty structs.
+    pub log_size: u32,
+}
+
+pub impl ComponentImpl of CairoComponent<DummyComponent> {
+    fn mask_points(
+        self: @DummyComponent,
+        ref preprocessed_column_set: PreprocessedColumnSet,
+        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
+        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
+        point: CirclePoint<QM31>,
+    ) { // No-op.
+    }
+
+    fn max_constraint_log_degree_bound(self: @DummyComponent) -> u32 {
+        0
+    }
+
+    fn evaluate_constraints_at_point(
+        self: @DummyComponent,
+        ref sum: QM31,
+        ref preprocessed_mask_values: PreprocessedMaskValues,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+        random_coeff: QM31,
+        point: CirclePoint<QM31>,
+    ) { // No-op.
+    }
+}
