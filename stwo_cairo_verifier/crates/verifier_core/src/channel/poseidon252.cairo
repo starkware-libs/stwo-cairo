@@ -66,7 +66,11 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
-        self.mix_root(nonce.into())
+        const NZ_2_POW_32: NonZero<u64> = 0x100000000;
+        let (q, r) = DivRem::div_rem(nonce, NZ_2_POW_32);
+        let nonce_hi = q.try_into().unwrap();
+        let nonce_lo = r.try_into().unwrap();
+        self.mix_u32s(array![nonce_lo, nonce_hi].span());
     }
 
     fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
