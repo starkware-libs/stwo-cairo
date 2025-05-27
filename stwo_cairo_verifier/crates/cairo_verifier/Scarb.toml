@@ -8,6 +8,10 @@ edition = "2024_07"
 [tool.fmt]
 sort-module-level-items = true
 
+[features]
+default = []
+poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
+
 [cairo]
 enable-gas = false
 
@@ -16,4 +20,4 @@ stwo_cairo_air = { path = "../cairo_air" }
 cairo_execute = "2.9.2"
 
 [dev-dependencies]
-cairo_test = "2.11.2"
+cairo_test = "2.11.4"

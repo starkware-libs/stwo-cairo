@@ -3,7 +3,6 @@ use core::iter::{IntoIterator, Iterator};
 use core::num::traits::WrappingMul;
 use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::utils::pow2;
 use super::components::memory_id_to_big;
@@ -125,7 +124,6 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
         ],
     )
 }
-
 
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
