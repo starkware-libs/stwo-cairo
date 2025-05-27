@@ -125,7 +125,6 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
     )
 }
 
-
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
 /// Parameters:
