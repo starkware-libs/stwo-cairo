@@ -191,10 +191,6 @@ impl ClaimGenerator {
         let offsets = flat_offsets
         .array_chunks::<N_LANES>()
         .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
-
-        println!("multiplicities: {:?}", multiplicities);
-        println!("segment_ids: {:?}", segment_ids);
-        println!("offsets: {:?}", offsets);
         
         for (i, (id_packed, multiplicity_packed, segment_id_packed, offset_packed)) in izip!(id_it, multiplicities, segment_ids, offsets).enumerate() {
             let chunk_idx_trace = i / n_packed_rows;
