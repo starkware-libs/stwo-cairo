@@ -1,4 +1,3 @@
-use components::CairoComponent;
 use components::add_ap_opcode::{
     ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
@@ -172,8 +171,10 @@ use components::verify_instruction::{
     ClaimImpl as VerifyInstructionClaimImpl,
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
+use components::{CairoComponent, memory_id_to_big, verify_instruction};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
+use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
@@ -187,7 +188,7 @@ use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
+use stwo_verifier_core::fields::m31::{M31, P_U32, m31};
 use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -448,6 +449,13 @@ type VerifyBitwiseXor_8Elements = LookupElements<3>;
 type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 type VerifyBitwiseXor_12Elements = LookupElements<3>;
+
+// A dict from relation_id, which is a string encoded as a felt252, to the number of uses of the
+// corresponding relation.
+type RelationUsesDict = Felt252Dict<u64>;
+
+// A tuple of (relation_id, uses).
+type RelationUse = (felt252, u32);
 
 /// Returns PreProcessedTrace::canonical root for the given blowup factor.
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -1313,6 +1321,46 @@ impl CairoClaimImpl of CairoClaimTrait {
         self.verify_bitwise_xor_8.mix_into(ref channel);
         self.verify_bitwise_xor_9.mix_into(ref channel);
     }
+    fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
+        let CairoClaim {
+            public_data: _,
+            opcodes,
+            verify_instruction,
+            blake_context: _todo,
+            builtins: _todo,
+            pedersen_context: _todo,
+            poseidon_context: _todo,
+            memory_address_to_id: _,
+            memory_id_to_value,
+            range_checks: _,
+            verify_bitwise_xor_4: _,
+            verify_bitwise_xor_7: _,
+            verify_bitwise_xor_8: _,
+            verify_bitwise_xor_9: _,
+        } = self;
+        // NOTE: The following components do not USE relations:
+        // - range_checks
+        // - verify_bitwise_xor_*
+        // - memory_address_to_id
+
+        opcodes.accumulate_relation_uses(ref relation_uses);
+
+        accumulate_relation_uses(
+            ref relation_uses,
+            verify_instruction::RELATION_USES_PER_ROW.span(),
+            *verify_instruction.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
+            *memory_id_to_value.big_log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
+            *memory_id_to_value.small_log_size,
+        );
+    }
 }
 
 /// Verifies the claim of the Cairo proof.
@@ -1351,6 +1399,16 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
+
+    // Check that no relation has more than P-1 uses.
+    let mut relation_uses: RelationUsesDict = Default::default();
+    claim.accumulate_relation_uses(ref relation_uses);
+    let squashed_dict = relation_uses.squash();
+    let entries = squashed_dict.into_entries();
+    for entry in entries {
+        let (_relation_id, _first_uses, last_uses) = entry;
+        assert!(last_uses < P_U32.into(), "A relation has more than P-1 uses");
+    }
 }
 
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
@@ -2322,6 +2380,210 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
         }
 
         utils::tree_array_concat_cols(log_sizes)
+    }
+
+    fn accumulate_relation_uses(self: @OpcodeClaim, ref relation_uses: RelationUsesDict) {
+        let OpcodeClaim {
+            add,
+            add_small,
+            add_ap,
+            assert_eq,
+            assert_eq_imm,
+            assert_eq_double_deref,
+            blake,
+            call,
+            call_op_1_base_fp,
+            call_rel,
+            generic,
+            jnz,
+            jnz_taken,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
+            mul,
+            mul_small,
+            qm31,
+            ret,
+        } = self;
+        for claim in add.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::add_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in add_small.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::add_opcode_small::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in add_ap.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::add_ap_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in assert_eq.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::assert_eq_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in assert_eq_imm.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::assert_eq_opcode_imm::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in assert_eq_double_deref.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::assert_eq_opcode_double_deref::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in blake.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::blake_compress_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in call.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::call_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in call_op_1_base_fp.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::call_opcode_op_1_base_fp::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in call_rel.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::call_opcode_rel::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in generic.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::generic_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in jnz.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::jnz_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in jnz_taken.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::jnz_opcode_taken::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in jump.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::jump_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in jump_double_deref.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::jump_opcode_double_deref::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in jump_rel.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::jump_opcode_rel::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in jump_rel_imm.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::jump_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in mul.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::mul_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in mul_small.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::mul_opcode_small::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in qm31.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::qm_31_add_mul_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+
+        for claim in ret.span() {
+            accumulate_relation_uses(
+                ref relation_uses,
+                components::ret_opcode::RELATION_USES_PER_ROW.span(),
+                *claim.log_size,
+            );
+        }
+    }
+}
+
+pub fn accumulate_relation_uses(
+    ref relation_uses: RelationUsesDict, relation_uses_per_row: Span<RelationUse>, log_size: u32,
+) {
+    let component_size = pow2(log_size);
+    for relation_use in relation_uses_per_row {
+        let (relation_id, uses) = *relation_use;
+        let (entry, prev_uses) = relation_uses.entry(relation_id);
+        relation_uses = entry.finalize(prev_uses + uses.into() * component_size.into());
     }
 }
 
