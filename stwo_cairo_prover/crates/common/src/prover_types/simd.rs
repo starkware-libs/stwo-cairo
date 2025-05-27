@@ -212,6 +212,12 @@ impl PackedUInt32 {
     }
 }
 
+impl PackedM31Type for PackedUInt32 {
+    fn as_m31(&self) -> PackedM31 {
+        unsafe { PackedM31::from_simd_unchecked(self.simd.cast()) }
+    }
+}
+
 impl Rem for PackedUInt32 {
     type Output = Self;
 

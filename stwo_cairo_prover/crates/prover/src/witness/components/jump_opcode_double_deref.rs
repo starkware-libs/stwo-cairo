@@ -241,7 +241,7 @@ fn write_trace_simd(
                     + (((M31_1) - (op0_base_fp_col5)) * (input_ap_col1)));
                 *row[7] = mem0_base_col7;
 
-                // Read Positive Num Bits 27.
+                // Read Positive Num Bits 72.
 
                 let memory_address_to_id_value_tmp_2757b_7 = memory_address_to_id_state
                     .deduce_output(
@@ -249,7 +249,7 @@ fn write_trace_simd(
                             + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[1])),
                     ));
                 let memory_id_to_big_value_tmp_2757b_8 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_2757b_7);
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_2757b_7); // returns rel = [segment_id as u32, offset as u32, 0,0,0,0,0,0]
                 let mem1_base_id_col8 = memory_address_to_id_value_tmp_2757b_7;
                 *row[8] = mem1_base_id_col8;
                 *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(((mem0_base_col7)
@@ -260,23 +260,34 @@ fn write_trace_simd(
                         + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[1])),
                     mem1_base_id_col8,
                 ];
-                let mem1_base_limb_0_col9 = memory_id_to_big_value_tmp_2757b_8.get_m31(0);
+                let mem1_base_limb_0_col9 = memory_id_to_big_value_tmp_2757b_8.get_m31(0); // fetches bits 0-8 of segment_id as m31
                 *row[9] = mem1_base_limb_0_col9;
-                let mem1_base_limb_1_col10 = memory_id_to_big_value_tmp_2757b_8.get_m31(1);
+                let mem1_base_limb_1_col10 = memory_id_to_big_value_tmp_2757b_8.get_m31(1); // fetches bits 9-17 of segment_id as m31
                 *row[10] = mem1_base_limb_1_col10;
-                let mem1_base_limb_2_col11 = memory_id_to_big_value_tmp_2757b_8.get_m31(2);
+                let mem1_base_limb_2_col11 = memory_id_to_big_value_tmp_2757b_8.get_m31(2); // fetches bits 18-26 of segment_id as m31
                 *row[11] = mem1_base_limb_2_col11;
+                let mem1_base_limb_3_col12 = memory_id_to_big_value_tmp_2757b_8.get_m31(3); // fetches bits 27-35
+                *row[12] = mem1_base_limb_3_col12;
+                let mem1_base_limb_4_col13 = memory_id_to_big_value_tmp_2757b_8.get_m31(4); // 36-44
+                *row[13] = mem1_base_limb_4_col13;
+                let mem1_base_limb_5_col14 = memory_id_to_big_value_tmp_2757b_8.get_m31(5); // 45-53
+                *row[14] = mem1_base_limb_5_col14;
+                let mem1_base_limb_6_col15 = memory_id_to_big_value_tmp_2757b_8.get_m31(6); // 54-62
+                *row[15] = mem1_base_limb_6_col15;
+                let mem1_base_limb_7_col16 = memory_id_to_big_value_tmp_2757b_8.get_m31(7); // 63-71
+                *row[16] = mem1_base_limb_7_col16;
+
                 *sub_component_inputs.memory_id_to_big[0] = mem1_base_id_col8;
                 *lookup_data.memory_id_to_big_0 = [
                     mem1_base_id_col8,
                     mem1_base_limb_0_col9,
                     mem1_base_limb_1_col10,
                     mem1_base_limb_2_col11,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
+                    mem1_base_limb_3_col12,
+                    mem1_base_limb_4_col13,
+                    mem1_base_limb_5_col14,
+                    mem1_base_limb_6_col15,
+                    mem1_base_limb_7_col16,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -298,16 +309,16 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_2757b_9 = (
+                let read_positive_num_bits_72_output_tmp_2757b_9 = (
                     PackedFelt252::from_limbs([
                         mem1_base_limb_0_col9,
                         mem1_base_limb_1_col10,
                         mem1_base_limb_2_col11,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
+                        mem1_base_limb_3_col12,
+                        mem1_base_limb_4_col13,
+                        mem1_base_limb_5_col14,
+                        mem1_base_limb_6_col15,
+                        mem1_base_limb_7_col16,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -331,42 +342,66 @@ fn write_trace_simd(
                     ]),
                     mem1_base_id_col8,
                 );
+                
+                let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
+                let UInt32_18 = PackedUInt32::broadcast(UInt32::from(18));
+                let UInt32_27 = PackedUInt32::broadcast(UInt32::from(27));
+                let UInt32_31 = PackedUInt32::broadcast(UInt32::from(31));
+                let UInt32_5 = PackedUInt32::broadcast(UInt32::from(5));
+                let UInt32_4 = PackedUInt32::broadcast(UInt32::from(4));
+                let UInt32_13 = PackedUInt32::broadcast(UInt32::from(13));
+                let UInt32_22 = PackedUInt32::broadcast(UInt32::from(22));
+                let UInt32_31 = PackedUInt32::broadcast(UInt32::from(31));
+                let UInt32_1 = PackedUInt32::broadcast(UInt32::from(1));
 
                 // Read Positive Num Bits 27.
+                let packed_segment_id = (
+                    PackedUInt32::from_m31(mem1_base_limb_0_col9)
+                    | (PackedUInt32::from_m31(mem1_base_limb_1_col10) << UInt32_9)
+                    | (PackedUInt32::from_m31(mem1_base_limb_2_col11) << UInt32_18)
+                    | ((PackedUInt32::from_m31(mem1_base_limb_3_col12) & UInt32_31) << UInt32_27)
+                ).as_m31();
+                let packed_offset = (
+                    (PackedUInt32::from_m31(mem1_base_limb_3_col12) >> UInt32_5)
+                    | (PackedUInt32::from_m31(mem1_base_limb_4_col13) << UInt32_4)
+                    | (PackedUInt32::from_m31(mem1_base_limb_5_col14) << UInt32_13)
+                    | (PackedUInt32::from_m31(mem1_base_limb_6_col15) << UInt32_22)
+                    | ((PackedUInt32::from_m31(mem1_base_limb_7_col16) & UInt32_1) << UInt32_31)
+                ).as_m31();
+
+                let segment_id_final_word_col22 = (PackedUInt32::from_m31(mem1_base_limb_3_col12) & UInt32_31).as_m31();
+                *row[22] = segment_id_final_word_col22;
+                let offset_initial_word_col23 = (PackedUInt32::from_m31(mem1_base_limb_3_col12) >> UInt32_5).as_m31();
+                *row[23] = offset_initial_word_col23;
+                let offset_final_word_col24 = (PackedUInt32::from_m31(mem1_base_limb_7_col16) & UInt32_1).as_m31();
+                *row[24] = offset_final_word_col24;
 
                 let memory_address_to_id_value_tmp_2757b_10 = memory_address_to_id_state
                     .deduce_output(
-                        PackedRelocatable::from_ap_m31(((((mem1_base_limb_0_col9) + ((mem1_base_limb_1_col10) * (M31_512)))
-                            + ((mem1_base_limb_2_col11) * (M31_262144)))
-                            + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2]))),
+                        PackedRelocatable { segment_index: packed_segment_id, offset: packed_offset + decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2] }
                     );
                 let memory_id_to_big_value_tmp_2757b_11 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_2757b_10);
-                let next_pc_id_col12 = memory_address_to_id_value_tmp_2757b_10;
-                *row[12] = next_pc_id_col12;
-                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31(((((mem1_base_limb_0_col9)
-                    + ((mem1_base_limb_1_col10) * (M31_512)))
-                    + ((mem1_base_limb_2_col11) * (M31_262144)))
-                    + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2])));
+                let next_pc_id_col17 = memory_address_to_id_value_tmp_2757b_10;
+                *row[17] = next_pc_id_col17;
+                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable { segment_index: packed_segment_id, offset: packed_offset + decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2] };
                 *lookup_data.memory_address_to_id_1 = [
-                    M31_1,
-                    ((((mem1_base_limb_0_col9) + ((mem1_base_limb_1_col10) * (M31_512)))
-                        + ((mem1_base_limb_2_col11) * (M31_262144)))
-                        + (decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2])),
-                    next_pc_id_col12,
+                    packed_segment_id,
+                    packed_offset + decode_instruction_f67489ac525d7245_output_tmp_2757b_6.0[2],
+                    next_pc_id_col17,
                 ];
-                let next_pc_limb_0_col13 = memory_id_to_big_value_tmp_2757b_11.get_m31(0);
-                *row[13] = next_pc_limb_0_col13;
-                let next_pc_limb_1_col14 = memory_id_to_big_value_tmp_2757b_11.get_m31(1);
-                *row[14] = next_pc_limb_1_col14;
-                let next_pc_limb_2_col15 = memory_id_to_big_value_tmp_2757b_11.get_m31(2);
-                *row[15] = next_pc_limb_2_col15;
-                *sub_component_inputs.memory_id_to_big[1] = next_pc_id_col12;
+                let next_pc_limb_0_col18 = memory_id_to_big_value_tmp_2757b_11.get_m31(0);
+                *row[18] = next_pc_limb_0_col18;
+                let next_pc_limb_1_col19 = memory_id_to_big_value_tmp_2757b_11.get_m31(1);
+                *row[19] = next_pc_limb_1_col19;
+                let next_pc_limb_2_col20 = memory_id_to_big_value_tmp_2757b_11.get_m31(2);
+                *row[20] = next_pc_limb_2_col20;
+                *sub_component_inputs.memory_id_to_big[1] = next_pc_id_col17;
                 *lookup_data.memory_id_to_big_1 = [
-                    next_pc_id_col12,
-                    next_pc_limb_0_col13,
-                    next_pc_limb_1_col14,
-                    next_pc_limb_2_col15,
+                    next_pc_id_col17,
+                    next_pc_limb_0_col18,
+                    next_pc_limb_1_col19,
+                    next_pc_limb_2_col20,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -395,9 +430,9 @@ fn write_trace_simd(
                 ];
                 let read_positive_num_bits_27_output_tmp_2757b_12 = (
                     PackedFelt252::from_limbs([
-                        next_pc_limb_0_col13,
-                        next_pc_limb_1_col14,
-                        next_pc_limb_2_col15,
+                        next_pc_limb_0_col18,
+                        next_pc_limb_1_col19,
+                        next_pc_limb_2_col20,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -424,17 +459,17 @@ fn write_trace_simd(
                         M31_0,
                         M31_0,
                     ]),
-                    next_pc_id_col12,
+                    next_pc_id_col17,
                 );
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    (((next_pc_limb_0_col13) + ((next_pc_limb_1_col14) * (M31_512)))
-                        + ((next_pc_limb_2_col15) * (M31_262144))),
+                    (((next_pc_limb_0_col18) + ((next_pc_limb_1_col19) * (M31_512)))
+                        + ((next_pc_limb_2_col20) * (M31_262144))),
                     ((input_ap_col1) + (ap_update_add_1_col6)),
                     input_fp_col2,
                 ];
-                *row[16] = enabler_col.packed_at(row_index);
+                *row[21] = enabler_col.packed_at(row_index);
             },
         );
 
