@@ -1109,6 +1109,19 @@ impl PedersenClaimImpl of PedersenClaimTrait {
             array![self.partial_ec_mul.log_sizes(), self.pedersen_points_table.log_sizes()],
         )
     }
+
+    fn accumulate_relation_uses(self: @PedersenClaim, ref relation_uses: RelationUsesDict) {
+        let PedersenClaim { partial_ec_mul, pedersen_points_table: _ } = self;
+
+        // NOTE: The following components do not USE relations:
+        // - pedersen_points_table
+
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::partial_ec_mul::RELATION_USES_PER_ROW.span(),
+            *partial_ec_mul.log_size,
+        );
+    }
 }
 
 #[derive(Drop, Serde)]
@@ -1150,6 +1163,12 @@ impl PedersenContextClaimImpl of PedersenContextClaimTrait {
             claim.log_sizes()
         } else {
             array![]
+        }
+    }
+
+    fn accumulate_relation_uses(self: @PedersenContextClaim, ref relation_uses: RelationUsesDict) {
+        if let Some(claim) = self.claim {
+            claim.accumulate_relation_uses(ref relation_uses);
         }
     }
 }
@@ -1465,7 +1484,7 @@ impl CairoClaimImpl of CairoClaimTrait {
             verify_instruction,
             blake_context,
             builtins,
-            pedersen_context: _todo,
+            pedersen_context,
             poseidon_context: _todo,
             memory_address_to_id: _,
             memory_id_to_value,
@@ -1483,6 +1502,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         opcodes.accumulate_relation_uses(ref relation_uses);
         blake_context.accumulate_relation_uses(ref relation_uses);
         builtins.accumulate_relation_uses(ref relation_uses);
+        pedersen_context.accumulate_relation_uses(ref relation_uses);
 
         accumulate_relation_uses(
             ref relation_uses,
