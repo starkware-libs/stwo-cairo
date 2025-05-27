@@ -5,6 +5,7 @@ use stwo_cairo_adapter::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
+use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
@@ -67,6 +68,18 @@ fn verify_claim(claim: &CairoClaim) {
     let mut relation_uses = HashMap::<&'static str, u64>::new();
     claim.accumulate_relation_uses(&mut relation_uses);
     check_relation_uses(&relation_uses);
+
+    // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
+    // Check that IDs in (ID -> Value) do not overflow P.
+    let largest_id = claim
+        .memory_id_to_value
+        .big_log_sizes
+        .iter()
+        .map(|log_size| 1 << log_size)
+        .sum::<u32>()
+        - 1
+        + LARGE_MEMORY_VALUE_ID_BASE;
+    assert!(largest_id < PRIME);
 }
 
 fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
