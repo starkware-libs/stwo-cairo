@@ -119,25 +119,33 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        let big_table_trace = gen_big_memory_trace(self.big_values, self.big_mults.into_simd_vec());
+        let big_table_traces =
+            gen_big_memory_traces(self.big_values, self.big_mults.into_simd_vec());
         let small_table_trace =
             gen_small_memory_trace(self.small_values, self.small_mults.into_simd_vec());
 
         // Lookup data.
-        let big_values: [_; N_M31_IN_FELT252] =
-            std::array::from_fn(|i| big_table_trace[i].data.clone());
-        let big_multiplicities = big_table_trace.last().unwrap().data.clone();
+        let big_components_values: Vec<[_; N_M31_IN_FELT252]> = big_table_traces
+            .iter()
+            .map(|trace| std::array::from_fn(|i| trace[i].data.clone()))
+            .collect_vec();
+        let big_multiplicities = big_table_traces
+            .iter()
+            .map(|trace| trace.last().unwrap().data.clone())
+            .collect_vec();
         let small_values: [_; N_M31_IN_SMALL_FELT252] =
             std::array::from_fn(|i| small_table_trace[i].data.clone());
         let small_multiplicities = small_table_trace.last().unwrap().data.clone();
 
         // Add inputs to range check that all the values are 9-bit felts.
-        for (col0, col1) in big_values.iter().tuples() {
-            col0.par_iter()
-                .zip(col1.par_iter())
-                .for_each(|(val0, val1)| {
-                    range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
-                });
+        for values in &big_components_values {
+            for (col0, col1) in values.iter().tuples() {
+                col0.par_iter()
+                    .zip(col1.par_iter())
+                    .for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
+                    });
+            }
         }
         for (col0, col1) in small_values.iter().tuples() {
             col0.par_iter()
@@ -148,17 +156,21 @@ impl ClaimGenerator {
         }
 
         // Extend trace.
-        let big_log_size = big_table_trace[0].len().ilog2();
-        let trace = big_table_trace
-            .into_iter()
-            .map(|eval| {
-                CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
-                    CanonicCoset::new(big_log_size).circle_domain(),
-                    eval,
-                )
-            })
-            .collect_vec();
-        tree_builder.extend_evals(trace);
+        let mut big_log_sizes = vec![];
+        for big_table_trace in big_table_traces {
+            let big_log_size = big_table_trace[0].length.ilog2();
+            big_log_sizes.push(big_log_size);
+            let trace = big_table_trace
+                .into_iter()
+                .map(|eval| {
+                    CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
+                        CanonicCoset::new(big_log_size).circle_domain(),
+                        eval,
+                    )
+                })
+                .collect_vec();
+            tree_builder.extend_evals(trace);
+        }
         let small_log_size = small_table_trace[0].len().ilog2();
         let trace = small_table_trace
             .into_iter()
@@ -173,11 +185,11 @@ impl ClaimGenerator {
 
         (
             Claim {
-                big_log_size,
+                big_log_sizes,
                 small_log_size,
             },
             InteractionClaimGenerator {
-                big_values,
+                big_components_values,
                 big_multiplicities,
                 small_values,
                 small_multiplicities,
@@ -186,11 +198,29 @@ impl ClaimGenerator {
     }
 }
 
+const MAX_BIG_LOG_SIZE: u32 = cairo_air::preprocessed::MAX_SEQUENCE_LOG_SIZE;
+const MAX_BIG_SIZE: usize = 1 << MAX_BIG_LOG_SIZE;
+
+fn gen_big_memory_traces(values: Vec<[u32; 8]>, mults: Vec<PackedM31>) -> Vec<Vec<BaseColumn>> {
+    assert_eq!(values.len() / N_LANES, mults.len());
+    let mut traces = vec![];
+
+    for (values, mults) in values
+        .chunks(MAX_BIG_SIZE)
+        .zip(mults.chunks(MAX_BIG_SIZE / N_LANES))
+    {
+        let trace = gen_single_big_memory_trace(values, mults.to_vec());
+        traces.push(trace);
+    }
+
+    traces
+}
+
 // Generates the trace of the large value memory table.
-fn gen_big_memory_trace(values: Vec<[u32; 8]>, mults: Vec<PackedM31>) -> Vec<BaseColumn> {
+fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: Vec<PackedM31>) -> Vec<BaseColumn> {
+    assert_eq!(values.len(), mults.len() * N_LANES);
     let column_length = values.len();
     let packed_values = values
-        .into_iter()
         .array_chunks::<N_LANES>()
         .map(|chunk| {
             std::array::from_fn(|i| Simd::from_array(std::array::from_fn(|j| chunk[j][i])))
@@ -252,8 +282,8 @@ fn gen_small_memory_trace(values: Vec<u128>, mults: Vec<PackedM31>) -> Vec<BaseC
 
 #[derive(Debug)]
 pub struct InteractionClaimGenerator {
-    pub big_values: [Vec<PackedM31>; N_M31_IN_FELT252],
-    pub big_multiplicities: Vec<PackedM31>,
+    pub big_components_values: Vec<[Vec<PackedM31>; N_M31_IN_FELT252]>,
+    pub big_multiplicities: Vec<Vec<PackedM31>>,
     pub small_values: [Vec<PackedM31>; N_M31_IN_SMALL_FELT252],
     pub small_multiplicities: Vec<PackedM31>,
 }
@@ -264,9 +294,25 @@ impl InteractionClaimGenerator {
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
     ) -> InteractionClaim {
-        let (big_trace, big_claimed_sum) =
-            self.gen_big_memory_interaction_trace(lookup_elements, range9_9_lookup_elements);
-        tree_builder.extend_evals(big_trace);
+        let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
+            .big_components_values
+            .iter()
+            .zip(self.big_multiplicities.iter())
+            .enumerate()
+            .map(|(i, (big_components_values, big_multiplicities))| {
+                let offset = (i * MAX_BIG_SIZE).try_into().unwrap();
+                Self::gen_big_memory_interaction_trace(
+                    big_components_values,
+                    big_multiplicities,
+                    offset,
+                    lookup_elements,
+                    range9_9_lookup_elements,
+                )
+            })
+            .unzip();
+        for big_trace in big_traces {
+            tree_builder.extend_evals(big_trace);
+        }
 
         let (small_trace, small_claimed_sum) =
             self.gen_small_memory_interaction_trace(lookup_elements, range9_9_lookup_elements);
@@ -274,23 +320,25 @@ impl InteractionClaimGenerator {
 
         InteractionClaim {
             small_claimed_sum,
-            big_claimed_sum,
+            big_claimed_sums,
         }
     }
 
     fn gen_big_memory_interaction_trace(
-        &self,
+        big_components_values: &[Vec<PackedM31>; N_M31_IN_FELT252],
+        big_multiplicities: &[PackedM31],
+        offset: u32,
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         QM31,
     ) {
-        let big_table_log_size = self.big_values[0].len().ilog2() + LOG_N_LANES;
+        let big_table_log_size = big_components_values[0].len().ilog2() + LOG_N_LANES;
         let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
 
         // Every element is 9-bit.
-        for (limb0, limb1, limb2, lim3) in self.big_values.iter().tuples() {
+        for (limb0, limb1, limb2, lim3) in big_components_values.iter().tuples() {
             let mut col_gen = big_values_logup_gen.new_col();
             (col_gen.par_iter_mut(), limb0, limb1, limb2, lim3)
                 .into_par_iter()
@@ -305,21 +353,22 @@ impl InteractionClaimGenerator {
         // Yield large values.
         let mut col_gen = big_values_logup_gen.new_col();
         let large_memory_value_id_tag = Simd::splat(LARGE_MEMORY_VALUE_ID_BASE);
+        #[allow(clippy::needless_range_loop)]
         for vec_row in 0..1 << (big_table_log_size - LOG_N_LANES) {
             let id_and_value: [_; N_M31_IN_FELT252 + MEMORY_ID_SIZE] = std::array::from_fn(|i| {
                 if i == 0 {
                     unsafe {
                         PackedM31::from_simd_unchecked(
-                            (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32))
+                            (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32 + offset))
                                 | large_memory_value_id_tag,
                         )
                     }
                 } else {
-                    self.big_values[i - 1][vec_row]
+                    big_components_values[i - 1][vec_row]
                 }
             });
             let denom: PackedQM31 = lookup_elements.combine(&id_and_value);
-            col_gen.write_frac(vec_row, (-self.big_multiplicities[vec_row]).into(), denom);
+            col_gen.write_frac(vec_row, (-big_multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
 
@@ -379,7 +428,7 @@ impl InteractionClaimGenerator {
 #[cfg(test)]
 mod tests {
     use cairo_air::air::CairoInteractionElements;
-    use cairo_air::components::memory_id_to_big::{self, BigEval, SmallEval};
+    use cairo_air::components::memory_id_to_big::{self, SmallEval};
     use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
     use rand::rngs::SmallRng;
@@ -443,14 +492,12 @@ mod tests {
         tree_builder.finalize_interaction();
 
         let mut location_allocator = TraceLocationAllocator::default();
-        let big_component = memory_id_to_big::BigComponent::new(
+        let big_components = memory_id_to_big::big_components_from_claim(
+            &claim.big_log_sizes,
+            &interaction_claim.big_claimed_sums,
+            &interaction_elements.memory_id_to_value,
+            &interaction_elements.range_checks.rc_9_9,
             &mut location_allocator,
-            BigEval {
-                log_n_rows: claim.big_log_size,
-                lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                range9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            },
-            interaction_claim.big_claimed_sum,
         );
 
         let small_component = memory_id_to_big::SmallComponent::new(
@@ -464,7 +511,9 @@ mod tests {
         );
 
         let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
-        assert_component(&big_component, &trace_domain_evaluations);
+        for component in big_components {
+            assert_component(&component, &trace_domain_evaluations);
+        }
         assert_component(&small_component, &trace_domain_evaluations);
     }
 
