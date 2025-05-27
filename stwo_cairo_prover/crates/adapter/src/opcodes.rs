@@ -121,6 +121,19 @@ impl CasmStatesByOpcode {
                     (!op_1_imm) || offset2 == 1,
                     "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
+                let mem1_base = if op_1_imm {
+                    pc
+                } else if op_1_base_fp {
+                    fp
+                } else {
+                    ap
+                };
+                let op_1 = memory.get(mem1_base.0.checked_add_signed(offset2 as i32).unwrap());
+                if !is_within_range(op_1, -(ap.0 as i128), ((1 << 27) - 1) - ap.0 as i128) {
+                    panic!(
+                        "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
+                    );
+                }
                 self.add_ap_opcode.push(state);
             }
             // jump.
@@ -827,6 +840,40 @@ mod mappings_tests {
     }
 
     #[test]
+    fn test_add_ap_upper_edge_case() {
+        assert_eq!(((1 << 27) - 5) - 9, 134217714);
+        let instructions = casm! {
+            [ap] = 134217714, ap++;
+            ap += [ap - 1];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions);
+        let state_transitions = input.state_transitions;
+        let casm_states_by_opcode = state_transitions.casm_states_by_opcode;
+        assert_eq!(state_transitions.final_state.ap.0, (1 << 27) - 5);
+        assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "Relocated address: 134217739 for segment: 1 exceeded the maximum address value."
+    )]
+    fn test_add_ap_rangecheck_panic() {
+        assert_eq!(1 << 26, 67108864);
+        let instructions = casm! {
+            [ap] = 67108864, ap++;
+            ap += [ap - 1];
+            ap += [fp];
+            [ap] = 1, ap++;
+        }
+        .instructions;
+
+        let _input = input_from_plain_casm(instructions);
+    }
+
+    #[test]
     fn test_call() {
         let instructions = casm! {
             call rel 2;
@@ -936,7 +983,7 @@ mod mappings_tests {
             // 134217725 + 2= 2^27-1.
             [ap] = [fp] + [ap-1], ap++;
             // 134217724 + 3 = 2^27-1.
-            [ap] = [fp-1] + 134217724, ap++;
+            [ap] = [fp-1] + 134217724, ap++; //
             [ap] = 1, ap++;
         }
         .instructions;
