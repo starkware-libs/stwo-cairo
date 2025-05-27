@@ -47,17 +47,20 @@ relation!(RelationElements, N_LOGUP_POWERS);
 #[derive(Clone)]
 pub struct BigEval {
     pub log_n_rows: u32,
+    pub offset: u32,
     pub lookup_elements: relations::MemoryIdToBig,
     pub range9_9_lookup_elements: relations::RangeCheck_9_9,
 }
 impl BigEval {
     pub fn new(
-        claim: Claim,
+        log_n_rows: u32,
+        offset: u32,
         lookup_elements: relations::MemoryIdToBig,
         range9_9_lookup_elements: relations::RangeCheck_9_9,
     ) -> Self {
         Self {
-            log_n_rows: claim.big_log_size,
+            log_n_rows,
+            offset,
             lookup_elements,
             range9_9_lookup_elements,
         }
@@ -88,7 +91,9 @@ impl FrameworkEval for BigEval {
         }
 
         // Yield the value.
-        let id = seq + E::F::from(M31::from(LARGE_MEMORY_VALUE_ID_BASE));
+        let id = seq
+            + E::F::from(M31::from(LARGE_MEMORY_VALUE_ID_BASE))
+            + E::F::from(M31::from(self.offset));
         eval.add_to_relation(RelationEntry::new(
             &self.lookup_elements,
             E::EF::from(-multiplicity),
@@ -156,60 +161,69 @@ impl FrameworkEval for SmallEval {
 
 #[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Claim {
-    pub big_log_size: u32,
+    pub big_log_sizes: Vec<u32>,
     pub small_log_size: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = chain!(
-            vec![self.big_log_size; BIG_N_COLUMNS],
-            vec![self.small_log_size; SMALL_N_COLUMNS]
-        )
-        .collect();
-        let interaction_log_sizes = chain!(
+        // Original trace.
+        let big_trace_log_sizes = self
+            .big_log_sizes
+            .iter()
+            .flat_map(|&log_size| vec![log_size; BIG_N_COLUMNS]);
+        let small_trace_log_sizes = vec![self.small_log_size; SMALL_N_COLUMNS];
+        let trace_log_sizes = chain!(big_trace_log_sizes, small_trace_log_sizes).collect_vec();
+
+        // Interaction trace.
+        let big_interaction_log_sizes = self.big_log_sizes.iter().flat_map(|&log_size| {
             // A range-check for every pair of limbs, batched in pairs.
             // And a yield of the value.
             vec![
-                self.big_log_size;
+                log_size;
                 SECURE_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))
-            ],
-            // Not batched range-check.
-            // TODO(Ohad): Batch.
-            vec![
-                self.small_log_size;
-                SECURE_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)
             ]
-        )
-        .collect();
+        }); // Not batched range-check.
+            // TODO(Ohad): Batch.
+        let small_interaction_log_sizes = vec![
+            self.small_log_size;
+            SECURE_EXTENSION_DEGREE
+                * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)
+        ];
+        let interaction_log_sizes =
+            chain!(big_interaction_log_sizes, small_interaction_log_sizes).collect_vec();
 
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.big_log_size as u64);
-        channel.mix_u64(self.small_log_size as u64);
+        chain!(self.big_log_sizes.clone(), [self.small_log_size])
+            .for_each(|log_size| channel.mix_u64(log_size as u64));
     }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct InteractionClaim {
-    pub big_claimed_sum: SecureField,
+    pub big_claimed_sums: Vec<SecureField>,
     pub small_claimed_sum: SecureField,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.big_claimed_sum]);
+        channel.mix_felts(&self.big_claimed_sums);
         channel.mix_felts(&[self.small_claimed_sum]);
+    }
+
+    pub fn claimed_sum(&self) -> SecureField {
+        self.small_claimed_sum + self.big_claimed_sums.iter().sum::<SecureField>()
     }
 }
 
 impl CairoSerialize for InteractionClaim {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
         let Self {
-            big_claimed_sum,
+            big_claimed_sums,
             small_claimed_sum,
         } = self;
-        CairoSerialize::serialize(big_claimed_sum, output);
+        CairoSerialize::serialize(big_claimed_sums, output);
         CairoSerialize::serialize(small_claimed_sum, output);
     }
 }
@@ -232,6 +246,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let big_eval = BigEval {
             log_n_rows: 4,
+            offset: 0,
             lookup_elements: relations::MemoryIdToBig::dummy(),
             range9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
         };

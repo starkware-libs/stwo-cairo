@@ -190,11 +190,13 @@ impl CairoClaim {
 
         // TODO(ShaharS): Look into the file name of memory_id_to_big.
         // memory_id_to_value has a big value component and a small value component.
-        accumulate_relation_uses(
-            relation_uses,
-            memory_id_to_big::RELATION_USES_PER_ROW_BIG,
-            memory_id_to_value.big_log_size,
-        );
+        for &log_size in &memory_id_to_value.big_log_sizes {
+            accumulate_relation_uses(
+                relation_uses,
+                memory_id_to_big::RELATION_USES_PER_ROW_BIG,
+                log_size,
+            );
+        }
         accumulate_relation_uses(
             relation_uses,
             memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
@@ -549,8 +551,7 @@ pub fn lookup_sum(
     sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.poseidon_context.sum();
     sum += interaction_claim.memory_address_to_id.claimed_sum;
-    sum += interaction_claim.memory_id_to_value.big_claimed_sum;
-    sum += interaction_claim.memory_id_to_value.small_claimed_sum;
+    sum += interaction_claim.memory_id_to_value.claimed_sum();
     sum += interaction_claim.range_checks.sum();
     sum += interaction_claim.verify_bitwise_xor_4.claimed_sum;
     sum += interaction_claim.verify_bitwise_xor_7.claimed_sum;
@@ -569,7 +570,7 @@ pub struct CairoComponents {
     pub poseidon_context: PoseidonContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
     pub memory_id_to_value: (
-        memory_id_to_big::BigComponent,
+        Vec<memory_id_to_big::BigComponent>,
         memory_id_to_big::SmallComponent,
     ),
     pub range_checks: RangeChecksComponents,
@@ -648,15 +649,27 @@ impl CairoComponents {
             interaction_claim.memory_address_to_id.clone().claimed_sum,
         );
 
-        let memory_id_to_value_component = memory_id_to_big::BigComponent::new(
-            tree_span_provider,
-            memory_id_to_big::BigEval::new(
-                cairo_claim.memory_id_to_value.clone(),
-                interaction_elements.memory_id_to_value.clone(),
-                interaction_elements.range_checks.rc_9_9.clone(),
-            ),
-            interaction_claim.memory_id_to_value.clone().big_claimed_sum,
-        );
+        let mut offset = 0;
+        let memory_id_to_value_components = cairo_claim
+            .memory_id_to_value
+            .big_log_sizes
+            .iter()
+            .zip(&interaction_claim.memory_id_to_value.big_claimed_sums)
+            .map(|(&log_size, &claimed_sum)| {
+                let component = memory_id_to_big::BigComponent::new(
+                    tree_span_provider,
+                    memory_id_to_big::BigEval::new(
+                        log_size,
+                        offset,
+                        interaction_elements.memory_id_to_value.clone(),
+                        interaction_elements.range_checks.rc_9_9.clone(),
+                    ),
+                    claimed_sum,
+                );
+                offset += 1 << log_size;
+                component
+            })
+            .collect();
         let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
             tree_span_provider,
             memory_id_to_big::SmallEval::new(
@@ -723,7 +736,7 @@ impl CairoComponents {
             poseidon_context,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (
-                memory_id_to_value_component,
+                memory_id_to_value_components,
                 small_memory_id_to_value_component,
             ),
             range_checks: range_checks_component,
@@ -742,11 +755,12 @@ impl CairoComponents {
             self.builtins.provers(),
             self.pedersen_context.provers(),
             self.poseidon_context.provers(),
-            [
-                &self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,
-                &self.memory_id_to_value.0 as &dyn ComponentProver<SimdBackend>,
-                &self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,
-            ],
+            [&self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,],
+            self.memory_id_to_value
+                .0
+                .iter()
+                .map(|component| component as &dyn ComponentProver<SimdBackend>),
+            [&self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,],
             self.range_checks.provers(),
             [
                 &self.verify_bitwise_xor_4 as &dyn ComponentProver<SimdBackend>,
@@ -784,11 +798,13 @@ impl std::fmt::Display for CairoComponents {
             "MemoryAddressToId: {}",
             indented_component_display(&self.memory_address_to_id)
         )?;
-        writeln!(
-            f,
-            "MemoryIdToValue: {}",
-            indented_component_display(&self.memory_id_to_value.0)
-        )?;
+        for component in &self.memory_id_to_value.0 {
+            writeln!(
+                f,
+                "MemoryIdToValue: {}",
+                indented_component_display(component)
+            )?;
+        }
         writeln!(
             f,
             "SmallMemoryIdToValue: {}",
