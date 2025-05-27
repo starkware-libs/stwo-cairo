@@ -1262,6 +1262,29 @@ impl BlakeClaimImpl of BlakeClaimTrait {
             ],
         )
     }
+
+    fn accumulate_relation_uses(self: @BlakeClaim, ref relation_uses: RelationUsesDict) {
+        let BlakeClaim {
+            blake_round, blake_g, blake_round_sigma: _, triple_xor_32, verify_bitwise_xor_12: _,
+        } = self;
+        // NOTE: The following components do not USE relations:
+        // - blake_sigma
+        // - verify_bitwise_xor_12
+
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::blake_round::RELATION_USES_PER_ROW.span(),
+            *blake_round.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses, components::blake_g::RELATION_USES_PER_ROW.span(), *blake_g.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::triple_xor_32::RELATION_USES_PER_ROW.span(),
+            *triple_xor_32.log_size,
+        );
+    }
 }
 
 #[derive(Drop, Serde)]
@@ -1312,6 +1335,12 @@ impl BlakeContextClaimImpl of BlakeContextClaimTrait {
             claim.log_sizes()
         } else {
             array![]
+        }
+    }
+
+    fn accumulate_relation_uses(self: @BlakeContextClaim, ref relation_uses: RelationUsesDict) {
+        if let Some(claim) = self.claim {
+            claim.accumulate_relation_uses(ref relation_uses);
         }
     }
 }
@@ -1387,7 +1416,7 @@ impl CairoClaimImpl of CairoClaimTrait {
             public_data: _,
             opcodes,
             verify_instruction,
-            blake_context: _todo,
+            blake_context,
             builtins,
             pedersen_context: _todo,
             poseidon_context: _todo,
@@ -1405,6 +1434,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         // - memory_address_to_id
 
         opcodes.accumulate_relation_uses(ref relation_uses);
+        blake_context.accumulate_relation_uses(ref relation_uses);
         builtins.accumulate_relation_uses(ref relation_uses);
 
         accumulate_relation_uses(
