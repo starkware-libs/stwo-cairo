@@ -1178,6 +1178,40 @@ impl PoseidonClaimImpl of PoseidonClaimTrait {
             ],
         )
     }
+
+    fn accumulate_relation_uses(self: @PoseidonClaim, ref relation_uses: RelationUsesDict) {
+        let PoseidonClaim {
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys: _,
+            range_check_felt_252_width_27,
+        } = self;
+
+        // NOTE: The following components do not USE relations:
+        // - poseidon_round_keys
+
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::poseidon_3_partial_rounds_chain::RELATION_USES_PER_ROW.span(),
+            *poseidon_3_partial_rounds_chain.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::poseidon_full_round_chain::RELATION_USES_PER_ROW.span(),
+            *poseidon_full_round_chain.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::cube_252::RELATION_USES_PER_ROW.span(),
+            *cube_252.log_size,
+        );
+        accumulate_relation_uses(
+            ref relation_uses,
+            components::range_check_felt_252_width_27::RELATION_USES_PER_ROW.span(),
+            *range_check_felt_252_width_27.log_size,
+        );
+    }
 }
 
 #[derive(Drop, Serde)]
@@ -1228,6 +1262,12 @@ impl PoseidonContextClaimImpl of PoseidonContextClaimTrait {
             claim.log_sizes()
         } else {
             array![]
+        }
+    }
+
+    fn accumulate_relation_uses(self: @PoseidonContextClaim, ref relation_uses: RelationUsesDict) {
+        if let Some(claim) = self.claim {
+            claim.accumulate_relation_uses(ref relation_uses);
         }
     }
 }
@@ -1439,7 +1479,7 @@ impl CairoClaimImpl of CairoClaimTrait {
             blake_context,
             builtins,
             pedersen_context,
-            poseidon_context: _todo,
+            poseidon_context,
             memory_address_to_id: _,
             memory_id_to_value,
             range_checks: _,
@@ -1457,6 +1497,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         blake_context.accumulate_relation_uses(ref relation_uses);
         builtins.accumulate_relation_uses(ref relation_uses);
         pedersen_context.accumulate_relation_uses(ref relation_uses);
+        poseidon_context.accumulate_relation_uses(ref relation_uses);
 
         accumulate_relation_uses(
             ref relation_uses,
