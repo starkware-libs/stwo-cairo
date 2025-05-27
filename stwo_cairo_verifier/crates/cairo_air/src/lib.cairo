@@ -5842,7 +5842,7 @@ mod tests {
     use stwo_verifier_core::utils::ArrayImpl;
     use super::{
         CairoInteractionElements, PublicData, PublicDataImpl, RangeChecksInteractionElements,
-        hash_memory_section,
+        RelationUsesDict, accumulate_relation_uses, hash_memory_section,
     };
     #[test]
     #[cairofmt::skip]
@@ -5949,5 +5949,19 @@ mod tests {
                 alpha_powers: ArrayImpl::new_repeated(N, One::one()),
             }
         }
+    }
+
+    #[test]
+    fn test_accumulate_relation_uses() {
+        let mut relation_uses: RelationUsesDict = Default::default();
+        relation_uses.insert('relation_1', 4);
+        relation_uses.insert('relation_2', 10);
+        let log_size = 2;
+        let relation_uses_per_row = [('relation_1', 2), ('relation_2', 4)];
+
+        accumulate_relation_uses(ref relation_uses, relation_uses_per_row.span(), log_size);
+
+        assert_eq!(relation_uses.get('relation_1'), 12);
+        assert_eq!(relation_uses.get('relation_2'), 26);
     }
 }
