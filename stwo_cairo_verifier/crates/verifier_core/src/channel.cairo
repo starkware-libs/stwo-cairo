@@ -2,8 +2,8 @@ use crate::{Hash, SecureField};
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s;
-#[cfg(not(feature: "poseidon252_verifier"))]
 #[cfg(test)]
+#[cfg(not(feature: "poseidon252_verifier"))]
 mod blake2s_test;
 
 #[cfg(feature: "poseidon252_verifier")]
@@ -62,6 +62,5 @@ pub trait ChannelTrait {
     ///
     /// This interface allows the channel to use different hash function for the
     /// PoW than the one used by the channel.
-    #[allow(clippy::doc_markdown)]
     fn mix_and_check_pow_nonce(ref self: Channel, n_bits: u32, nonce: u64) -> bool;
 }
