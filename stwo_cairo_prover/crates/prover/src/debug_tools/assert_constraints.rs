@@ -126,7 +126,9 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(verify_bitwise_xor_8, &trace);
     assert_component(verify_bitwise_xor_9, &trace);
     assert_component(memory_address_to_id, &trace);
-    assert_component(&memory_id_to_value.0, &trace);
+    for component in &memory_id_to_value.0 {
+        assert_component(component, &trace);
+    }
     assert_component(&memory_id_to_value.1, &trace);
 
     if let Some(components) = &blake_context.components {

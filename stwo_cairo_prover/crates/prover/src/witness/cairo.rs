@@ -271,10 +271,14 @@ impl CairoClaimGenerator {
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator
             .write_trace(tree_builder);
+
+        // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
+        const LOG_MAX_BIG_SIZE: u32 = cairo_air::preprocessed::MAX_SEQUENCE_LOG_SIZE;
         let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
             self.memory_id_to_value_trace_generator.write_trace(
                 tree_builder,
                 &self.range_checks_trace_generator.rc_9_9_trace_generator,
+                LOG_MAX_BIG_SIZE,
             );
         let (range_checks_claim, range_checks_interaction_gen) =
             self.range_checks_trace_generator.write_trace(tree_builder);
