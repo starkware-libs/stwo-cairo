@@ -172,10 +172,12 @@ use components::verify_instruction::{
     ClaimImpl as VerifyInstructionClaimImpl,
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
+#[cfg(not(feature: "poseidon252_verifier"))]
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use core::num::traits::one::One;
+#[cfg(feature: "poseidon252_verifier")]
 use core::poseidon::poseidon_hash_span;
 use stwo_cairo_air::utils::{construct_f252, deconstruct_f252};
 use stwo_constraint_framework::{
@@ -183,6 +185,7 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
@@ -194,7 +197,7 @@ use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 
 pub mod components;
 pub mod utils;
@@ -216,6 +219,7 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
+#[cfg(not(feature: "poseidon252_verifier"))]
 const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
@@ -275,6 +279,116 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
     PreprocessedColumn::PedersenPoints(53), //
     PreprocessedColumn::PedersenPoints(54), //
     PreprocessedColumn::PedersenPoints(55), //
+    PreprocessedColumn::Seq(22), //
+    PreprocessedColumn::Seq(21), //
+    PreprocessedColumn::Seq(20), //
+    PreprocessedColumn::BitwiseXor((10, 0)), //
+    PreprocessedColumn::BitwiseXor((10, 1)), //
+    PreprocessedColumn::BitwiseXor((10, 2)), //
+    PreprocessedColumn::Seq(19), //
+    PreprocessedColumn::Seq(18), //
+    PreprocessedColumn::BitwiseXor((9, 0)), //
+    PreprocessedColumn::BitwiseXor((9, 1)), //
+    PreprocessedColumn::BitwiseXor((9, 2)), //
+    PreprocessedColumn::RangeCheck2(([9, 9], 0)), //
+    PreprocessedColumn::RangeCheck2(([9, 9], 1)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 0)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 1)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 2)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3)), //
+    PreprocessedColumn::Seq(17), //
+    PreprocessedColumn::Seq(16), //
+    PreprocessedColumn::BitwiseXor((8, 0)), //
+    PreprocessedColumn::BitwiseXor((8, 1)), //
+    PreprocessedColumn::BitwiseXor((8, 2)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)), //
+    PreprocessedColumn::Seq(15), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 2)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 3)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 4)), //
+    PreprocessedColumn::Seq(14), //
+    PreprocessedColumn::BitwiseXor((7, 0)), //
+    PreprocessedColumn::BitwiseXor((7, 1)), //
+    PreprocessedColumn::BitwiseXor((7, 2)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 0)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 1)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)), //
+    PreprocessedColumn::Seq(13), //
+    PreprocessedColumn::Seq(12), //
+    PreprocessedColumn::Seq(11), //
+    PreprocessedColumn::Seq(10), //
+    PreprocessedColumn::Seq(9), //
+    PreprocessedColumn::RangeCheck2(([5, 4], 0)), //
+    PreprocessedColumn::RangeCheck2(([5, 4], 1)), //
+    PreprocessedColumn::Seq(8), //
+    PreprocessedColumn::BitwiseXor((4, 0)), //
+    PreprocessedColumn::BitwiseXor((4, 1)), //
+    PreprocessedColumn::BitwiseXor((4, 2)), //
+    PreprocessedColumn::RangeCheck2(([4, 4], 0)), //
+    PreprocessedColumn::RangeCheck2(([4, 4], 1)), //
+    PreprocessedColumn::Seq(7), //
+    PreprocessedColumn::RangeCheck2(([4, 3], 0)), //
+    PreprocessedColumn::RangeCheck2(([4, 3], 1)), //
+    PreprocessedColumn::Seq(6), //
+    PreprocessedColumn::PoseidonRoundKeys(0), //
+    PreprocessedColumn::PoseidonRoundKeys(1), //
+    PreprocessedColumn::PoseidonRoundKeys(2), //
+    PreprocessedColumn::PoseidonRoundKeys(3), //
+    PreprocessedColumn::PoseidonRoundKeys(4), //
+    PreprocessedColumn::PoseidonRoundKeys(5), //
+    PreprocessedColumn::PoseidonRoundKeys(6), //
+    PreprocessedColumn::PoseidonRoundKeys(7), //
+    PreprocessedColumn::PoseidonRoundKeys(8), //
+    PreprocessedColumn::PoseidonRoundKeys(9), //
+    PreprocessedColumn::PoseidonRoundKeys(10), //
+    PreprocessedColumn::PoseidonRoundKeys(11), //
+    PreprocessedColumn::PoseidonRoundKeys(12), //
+    PreprocessedColumn::PoseidonRoundKeys(13), //
+    PreprocessedColumn::PoseidonRoundKeys(14), //
+    PreprocessedColumn::PoseidonRoundKeys(15), //
+    PreprocessedColumn::PoseidonRoundKeys(16), //
+    PreprocessedColumn::PoseidonRoundKeys(17), //
+    PreprocessedColumn::PoseidonRoundKeys(18), //
+    PreprocessedColumn::PoseidonRoundKeys(19), //
+    PreprocessedColumn::PoseidonRoundKeys(20), //
+    PreprocessedColumn::PoseidonRoundKeys(21), //
+    PreprocessedColumn::PoseidonRoundKeys(22), //
+    PreprocessedColumn::PoseidonRoundKeys(23), //
+    PreprocessedColumn::PoseidonRoundKeys(24), //
+    PreprocessedColumn::PoseidonRoundKeys(25), //
+    PreprocessedColumn::PoseidonRoundKeys(26), //
+    PreprocessedColumn::PoseidonRoundKeys(27), //
+    PreprocessedColumn::PoseidonRoundKeys(28), //
+    PreprocessedColumn::PoseidonRoundKeys(29), //
+    PreprocessedColumn::Seq(5), //
+    PreprocessedColumn::Seq(4), //
+    PreprocessedColumn::BlakeSigma(0), //
+    PreprocessedColumn::BlakeSigma(1), //
+    PreprocessedColumn::BlakeSigma(2), //
+    PreprocessedColumn::BlakeSigma(3), //
+    PreprocessedColumn::BlakeSigma(4), //
+    PreprocessedColumn::BlakeSigma(5), //
+    PreprocessedColumn::BlakeSigma(6), //
+    PreprocessedColumn::BlakeSigma(7), //
+    PreprocessedColumn::BlakeSigma(8), //
+    PreprocessedColumn::BlakeSigma(9), //
+    PreprocessedColumn::BlakeSigma(10), //
+    PreprocessedColumn::BlakeSigma(11), //
+    PreprocessedColumn::BlakeSigma(12), //
+    PreprocessedColumn::BlakeSigma(13), //
+    PreprocessedColumn::BlakeSigma(14), //
+    PreprocessedColumn::BlakeSigma(15) //
+];
+
+#[cfg(feature: "poseidon252_verifier")]
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 106] = [
+    PreprocessedColumn::Seq(24), //
+    PreprocessedColumn::Seq(23), //
     PreprocessedColumn::Seq(22), //
     PreprocessedColumn::Seq(21), //
     PreprocessedColumn::Seq(20), //
@@ -451,11 +565,9 @@ type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
 /// Returns PreProcessedTrace::canonical root for the given blowup factor.
 #[cfg(not(feature: "poseidon252_verifier"))]
-fn preprocessed_root(
-    log_blowup_factor: u32,
-) -> stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        0 => Hash {
             hash: BoxImpl::new(
                 [
                     0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
@@ -463,7 +575,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        1 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        1 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
@@ -471,7 +583,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        2 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        2 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
@@ -479,7 +591,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        3 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        3 => Hash {
             hash: BoxImpl::new(
                 [
                     0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
@@ -487,7 +599,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        4 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        4 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
@@ -501,7 +613,7 @@ fn preprocessed_root(
 
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 #[cfg(feature: "poseidon252_verifier")]
-fn preprocessed_root(log_blowup_factor: u32) -> felt252 {
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
         0 => 0x053be12b3503460f6657c5a46ed1b56719f91e45530a869327b39b7b8a20e0e6,
         1 => 0x009c3ff379acfd021edc6424e1db4efeaf89dcc33454f3dc4ebe4cab8eedf6b9,
@@ -1899,6 +2011,7 @@ pub type MemorySection = Array<PubMemoryValue>;
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
+
     let mut buffer = array![];
     for entry in section {
         // Compress whenever the buffer reaches capacity.
@@ -3185,6 +3298,13 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     }
 }
 
+#[cfg(feature: "poseidon252_verifier")]
+#[derive(Drop)]
+pub struct PedersenContextComponents {
+    components: Option<components::DummyComponent>,
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PedersenContextComponents {
     components: Option<PedersenComponents>,
@@ -3192,6 +3312,7 @@ pub struct PedersenContextComponents {
 
 #[generate_trait]
 impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
+    #[cfg(not(feature: "poseidon252_verifier"))]
     fn new(
         claim: @PedersenContextClaim,
         interaction_elements: @CairoInteractionElements,
@@ -3210,6 +3331,16 @@ impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
         } else {
             PedersenContextComponents { components: None }
         }
+    }
+
+    #[cfg(feature: "poseidon252_verifier")]
+    fn new(
+        claim: @PedersenContextClaim,
+        interaction_elements: @CairoInteractionElements,
+        interaction_claim: @PedersenContextInteractionClaim,
+    ) -> PedersenContextComponents {
+        assert!(claim.claim.is_none());
+        PedersenContextComponents { components: None }
     }
 
     fn max_constraint_log_degree_bound(self: @PedersenContextComponents) -> u32 {
@@ -3261,12 +3392,14 @@ impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 struct PedersenComponents {
     pub partial_ec_mul: components::partial_ec_mul::Component,
     pub pedersen_points_table: components::pedersen_points_table::Component,
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[generate_trait]
 impl PedersenComponentsImpl of PedersenComponentsTrait {
     fn new(
@@ -3367,6 +3500,13 @@ impl PedersenComponentsImpl of PedersenComponentsTrait {
     }
 }
 
+#[cfg(feature: "poseidon252_verifier")]
+#[derive(Drop)]
+pub struct PoseidonContextComponents {
+    components: Option<components::DummyComponent>,
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PoseidonContextComponents {
     components: Option<PoseidonComponents>,
@@ -3374,6 +3514,7 @@ pub struct PoseidonContextComponents {
 
 #[generate_trait]
 impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
+    #[cfg(not(feature: "poseidon252_verifier"))]
     fn new(
         claim: @PoseidonContextClaim,
         interaction_elements: @CairoInteractionElements,
@@ -3392,6 +3533,16 @@ impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
         } else {
             PoseidonContextComponents { components: None }
         }
+    }
+
+    #[cfg(feature: "poseidon252_verifier")]
+    fn new(
+        claim: @PoseidonContextClaim,
+        interaction_elements: @CairoInteractionElements,
+        interaction_claim: @PoseidonContextInteractionClaim,
+    ) -> PoseidonContextComponents {
+        assert!(claim.claim.is_none());
+        PoseidonContextComponents { components: None }
     }
 
     fn max_constraint_log_degree_bound(self: @PoseidonContextComponents) -> u32 {
@@ -3443,6 +3594,7 @@ impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 struct PoseidonComponents {
     pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::Component,
@@ -3452,6 +3604,7 @@ struct PoseidonComponents {
     pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Component,
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[generate_trait]
 impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
@@ -3929,14 +4082,44 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
+type AddModComponent =
+    components::add_mod_builtin::Component;
+#[cfg(feature: "poseidon252_verifier")]
+type AddModComponent = components::DummyComponent;
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+type MulModComponent =
+    components::mul_mod_builtin::Component;
+#[cfg(feature: "poseidon252_verifier")]
+type MulModComponent = components::DummyComponent;
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+type PedersenComponent =
+    components::pedersen_builtin::Component;
+#[cfg(feature: "poseidon252_verifier")]
+type PedersenComponent = components::DummyComponent;
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+type PoseidonComponent =
+    components::poseidon_builtin::Component;
+#[cfg(feature: "poseidon252_verifier")]
+type PoseidonComponent = components::DummyComponent;
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+type RC96Component =
+    components::range_check_builtin_bits_96::Component;
+#[cfg(feature: "poseidon252_verifier")]
+type RC96Component = components::DummyComponent;
+
 #[derive(Drop)]
 pub struct BuiltinComponents {
-    pub add_mod_builtin: Option<components::add_mod_builtin::Component>,
+    pub add_mod_builtin: Option<AddModComponent>,
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
-    pub mul_mod_builtin: Option<components::mul_mod_builtin::Component>,
-    pub pedersen_builtin: Option<components::pedersen_builtin::Component>,
-    pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
-    pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Component>,
+    pub mul_mod_builtin: Option<MulModComponent>,
+    pub pedersen_builtin: Option<PedersenComponent>,
+    pub poseidon_builtin: Option<PoseidonComponent>,
+    pub range_check_96_builtin: Option<RC96Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
 }
 
@@ -3947,26 +4130,11 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
-        let mut add_mod_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.add_mod_builtin {
-            add_mod_builtin_component =
-                Option::Some(
-                    components::add_mod_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.add_mod_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                    },
-                );
-        }
+        let add_mod_builtin_component = get_add_mod_component(
+            claim.add_mod_builtin, interaction_elements, interaction_claim.add_mod_builtin,
+        );
 
         let mut bitwise_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.bitwise_builtin {
             bitwise_builtin_component =
                 Option::Some(
@@ -3986,127 +4154,25 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        let mut mul_mod_builtin_component = Option::None;
+        let mul_mod_builtin_component = get_mul_mod_component(
+            claim.mul_mod_builtin, interaction_elements, interaction_claim.mul_mod_builtin,
+        );
 
-        if let Option::Some(claim) = claim.mul_mod_builtin {
-            mul_mod_builtin_component =
-                Option::Some(
-                    components::mul_mod_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.mul_mod_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_12_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_12
-                            .clone(),
-                        range_check_18_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_18
-                            .clone(),
-                        range_check_3_6_6_3_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_3_6_6_3
-                            .clone(),
-                    },
-                );
-        }
+        let pedersen_builtin_component = get_pedersen_component(
+            claim.pedersen_builtin, interaction_elements, interaction_claim.pedersen_builtin,
+        );
 
-        let mut pedersen_builtin_component = Option::None;
+        let poseidon_builtin_component = get_poseidon_component(
+            claim.poseidon_builtin, interaction_elements, interaction_claim.poseidon_builtin,
+        );
 
-        if let Option::Some(claim) = claim.pedersen_builtin {
-            pedersen_builtin_component =
-                Option::Some(
-                    components::pedersen_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                        range_check_5_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_5_4
-                            .clone(),
-                        partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-                    },
-                );
-        }
-
-        let mut poseidon_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.poseidon_builtin {
-            poseidon_builtin_component =
-                Option::Some(
-                    components::poseidon_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.poseidon_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-                        poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
-                            .poseidon_3_partial_rounds_chain
-                            .clone(),
-                        range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_3_3_3_3_3
-                            .clone(),
-                        range_check_4_4_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4_4_4
-                            .clone(),
-                        range_check_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4
-                            .clone(),
-                        poseidon_full_round_chain_lookup_elements: interaction_elements
-                            .poseidon_full_round_chain
-                            .clone(),
-                        range_check_felt_252_width_27_lookup_elements: interaction_elements
-                            .range_check_felt_252_width_27
-                            .clone(),
-                    },
-                );
-        }
-
-        let mut range_check_96_builtin_component = Option::None;
-
-        if let Option::Some(claim) = claim.range_check_96_builtin {
-            range_check_96_builtin_component =
-                Option::Some(
-                    components::range_check_builtin_bits_96::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.range_check_96_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_6_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_6
-                            .clone(),
-                    },
-                );
-        }
+        let range_check_96_builtin_component = get_rc96_component(
+            claim.range_check_96_builtin,
+            interaction_elements,
+            interaction_claim.range_check_96_builtin,
+        );
 
         let mut range_check_128_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
@@ -4341,6 +4407,190 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
     }
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn get_add_mod_component(
+    claim: @Option<components::add_mod_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::add_mod_builtin::InteractionClaim>,
+) -> Option<AddModComponent> {
+    if let Option::Some(claim) = claim {
+        return Option::Some(
+            components::add_mod_builtin::Component {
+                claim: *claim,
+                interaction_claim: (*interaction_claim).unwrap(),
+                memory_address_to_id_lookup_elements: interaction_elements
+                    .memory_address_to_id
+                    .clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            },
+        );
+    }
+    Option::None
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn get_add_mod_component(
+    claim: @Option<components::add_mod_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::add_mod_builtin::InteractionClaim>,
+) -> Option<AddModComponent> {
+    assert!(claim.is_none());
+    Option::None
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn get_mul_mod_component(
+    claim: @Option<components::mul_mod_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::mul_mod_builtin::InteractionClaim>,
+) -> Option<MulModComponent> {
+    if let Option::Some(claim) = claim {
+        return Option::Some(
+            components::mul_mod_builtin::Component {
+                claim: *claim,
+                interaction_claim: (*interaction_claim).unwrap(),
+                memory_address_to_id_lookup_elements: interaction_elements
+                    .memory_address_to_id
+                    .clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
+                range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+                range_check_3_6_6_3_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_3_6_6_3
+                    .clone(),
+            },
+        );
+    }
+    Option::None
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn get_mul_mod_component(
+    claim: @Option<components::mul_mod_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::mul_mod_builtin::InteractionClaim>,
+) -> Option<MulModComponent> {
+    assert!(claim.is_none());
+    Option::None
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn get_rc96_component(
+    claim: @Option<components::range_check_builtin_bits_96::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::range_check_builtin_bits_96::InteractionClaim>,
+) -> Option<RC96Component> {
+    if let Option::Some(claim) = claim {
+        return Option::Some(
+            components::range_check_builtin_bits_96::Component {
+                claim: *claim,
+                interaction_claim: (*interaction_claim).unwrap(),
+                memory_address_to_id_lookup_elements: interaction_elements
+                    .memory_address_to_id
+                    .clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                range_check_6_lookup_elements: interaction_elements.range_checks.rc_6.clone(),
+            },
+        );
+    }
+    Option::None
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn get_rc96_component(
+    claim: @Option<components::range_check_builtin_bits_96::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::range_check_builtin_bits_96::InteractionClaim>,
+) -> Option<RC96Component> {
+    assert!(claim.is_none());
+    Option::None
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn get_pedersen_component(
+    claim: @Option<components::pedersen_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::pedersen_builtin::InteractionClaim>,
+) -> Option<PedersenComponent> {
+    if let Option::Some(claim) = claim {
+        return Option::Some(
+            components::pedersen_builtin::Component {
+                claim: *claim,
+                interaction_claim: (*interaction_claim).unwrap(),
+                memory_address_to_id_lookup_elements: interaction_elements
+                    .memory_address_to_id
+                    .clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+                range_check_5_4_lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
+                partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+            },
+        );
+    }
+    Option::None
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn get_pedersen_component(
+    claim: @Option<components::pedersen_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::pedersen_builtin::InteractionClaim>,
+) -> Option<PedersenComponent> {
+    assert!(claim.is_none());
+    Option::None
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn get_poseidon_component(
+    claim: @Option<components::poseidon_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::poseidon_builtin::InteractionClaim>,
+) -> Option<PoseidonComponent> {
+    if let Option::Some(claim) = claim {
+        return Option::Some(
+            components::poseidon_builtin::Component {
+                claim: *claim,
+                interaction_claim: (*interaction_claim).unwrap(),
+                memory_address_to_id_lookup_elements: interaction_elements
+                    .memory_address_to_id
+                    .clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+                poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                    .poseidon_3_partial_rounds_chain
+                    .clone(),
+                range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_3_3_3_3_3
+                    .clone(),
+                range_check_4_4_4_4_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_4_4_4_4
+                    .clone(),
+                range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
+                poseidon_full_round_chain_lookup_elements: interaction_elements
+                    .poseidon_full_round_chain
+                    .clone(),
+                range_check_felt_252_width_27_lookup_elements: interaction_elements
+                    .range_check_felt_252_width_27
+                    .clone(),
+            },
+        );
+    }
+    Option::None
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn get_poseidon_component(
+    claim: @Option<components::poseidon_builtin::Claim>,
+    interaction_elements: @CairoInteractionElements,
+    interaction_claim: @Option<components::poseidon_builtin::InteractionClaim>,
+) -> Option<PoseidonComponent> {
+    assert!(claim.is_none());
+    Option::None
 }
 
 #[derive(Drop)]
@@ -5570,7 +5820,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
     }
 }
-
 
 #[cfg(test)]
 mod tests {

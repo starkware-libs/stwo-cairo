@@ -30,6 +30,7 @@ jobs:
           scarb-version: "nightly-2025-05-17"
       - run: scarb fmt --check
       - run: scarb test
+      - run: scarb test --features=poseidon252_verifier --no-default-features --package=stwo_verifier_core
 
   run-tests:
     runs-on: stwo-cairo-avx-l
@@ -44,7 +45,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: software-mansion/setup-scarb@v1
         with:
-          scarb-version: "nightly-2025-04-12"
+          scarb-version: "nightly-2025-05-17"
       - name: Install latest nextest release
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
