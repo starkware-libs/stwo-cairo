@@ -246,6 +246,7 @@ pub mod tests {
         use stwo_prover::core::fri::FriConfig;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+        use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
         use tempfile::NamedTempFile;
         use test_log::test;
 
@@ -319,6 +320,49 @@ pub mod tests {
                     "(cd ../../../stwo_cairo_verifier; \
                     scarb execute --package stwo_cairo_verifier \
                     --arguments-file {} --output standard --target standalone \
+                    )",
+                    proof_file.path().to_str().unwrap()
+                ))
+                .current_dir(env!("CARGO_MANIFEST_DIR"))
+                .status()
+                .unwrap();
+
+            assert!(status.success());
+        }
+
+        #[test]
+        fn test_poseidon_e2e_prove_cairo_verify_all_opcode_components() {
+            let compiled_program = get_test_program("test_prove_verify_bitwise_builtin");
+            let input = run_program_and_adapter(&compiled_program);
+            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
+            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
+                input,
+                PcsConfig {
+                    pow_bits: 26,
+                    fri_config: FriConfig::new(0, 1, 70),
+                },
+                preprocessed_trace,
+            )
+            .unwrap();
+
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            let proof_hex: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{:x}", felt))
+                .collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
+
+            let status = Command::new("bash")
+                .arg("-c")
+                .arg(format!(
+                    "(cd ../../../stwo_cairo_verifier; \
+                    scarb execute --package stwo_cairo_verifier \
+                    --arguments-file {} --output standard --target standalone \
+                    --no-default-features --features poseidon252_verifier
                     )",
                     proof_file.path().to_str().unwrap()
                 ))
