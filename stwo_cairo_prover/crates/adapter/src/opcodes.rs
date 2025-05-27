@@ -121,6 +121,20 @@ impl CasmStatesByOpcode {
                     (!op_1_imm) || offset2 == 1,
                     "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
+                let mem1_base = if op_1_imm {
+                    pc
+                } else if op_1_base_fp {
+                    fp
+                } else {
+                    ap
+                };
+                let op_1 = memory.get(mem1_base.0.checked_add_signed(offset2 as i32).unwrap());
+                if !matches!(op_1, MemoryValue::Small(val) if ((ap.0 as i128) + (val as i128) >= 0) && ((ap.0 as i128) + (val as i128) < (1<<27)))
+                {
+                    panic!(
+                        "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
+                    );
+                }
                 self.add_ap_opcode.push(state);
             }
             // jump.
