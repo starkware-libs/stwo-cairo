@@ -121,6 +121,7 @@ pub struct ConstraintParams {
     pub claimed_sum: QM31,
     pub seq: QM31,
     pub column_size: M31,
+    pub offset: M31,
 }
 
 pub fn evaluate_constraints_at_point(
@@ -168,6 +169,7 @@ pub fn evaluate_constraints_at_point(
         claimed_sum,
         seq,
         column_size,
+        offset,
     } = params;
     let [
         trace_1_column_0,
@@ -419,6 +421,7 @@ pub fn evaluate_constraints_at_point(
         RangeCheck_9_9_alpha1,
         RangeCheck_9_9_z,
         seq,
+        offset.into(),
         trace_1_column_0_offset_0,
         trace_1_column_10_offset_0,
         trace_1_column_11_offset_0,
@@ -647,6 +650,7 @@ fn intermediates(
     RangeCheck_9_9_alpha1: QM31,
     RangeCheck_9_9_z: QM31,
     seq: QM31,
+    offset: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_10_offset_0: QM31,
     trace_1_column_11_offset_0: QM31,
@@ -732,6 +736,7 @@ fn intermediates(
         MemoryIdToBig_alpha9,
         MemoryIdToBig_z,
         seq,
+        offset,
         trace_1_column_0_offset_0,
         trace_1_column_10_offset_0,
         trace_1_column_11_offset_0,
@@ -925,6 +930,7 @@ pub fn intermediate14(
     MemoryIdToBig_alpha9: QM31,
     MemoryIdToBig_z: QM31,
     seq: QM31,
+    offset: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_10_offset_0: QM31,
     trace_1_column_11_offset_0: QM31,
@@ -954,7 +960,7 @@ pub fn intermediate14(
     trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
 ) -> QM31 {
-    (MemoryIdToBig_alpha0) * (seq + m31(1073741824).into())
+    (MemoryIdToBig_alpha0) * (seq + m31(1073741824).into() + offset)
         + (MemoryIdToBig_alpha1) * (trace_1_column_0_offset_0)
         + (MemoryIdToBig_alpha2) * (trace_1_column_1_offset_0)
         + (MemoryIdToBig_alpha3) * (trace_1_column_2_offset_0)
