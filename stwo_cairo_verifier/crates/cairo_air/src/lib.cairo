@@ -80,7 +80,7 @@ use components::jump_opcode_rel_imm::{
 };
 use components::memory_address_to_id::{
     ClaimImpl as MemoryAddressToIdClaimImpl,
-    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl,
+    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, MEMORY_ADDRESS_TO_ID_SPLIT,
 };
 use components::memory_id_to_big::{
     ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
@@ -178,7 +178,7 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedF
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
-use stwo_cairo_air::utils::{construct_f252, deconstruct_f252};
+use stwo_cairo_air::utils::{U32Impl, construct_f252, deconstruct_f252};
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
@@ -1461,6 +1461,13 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
+
+    // When using address_to_id relation, it is assumed that address < 2^27.
+    // To verify that, one needs to check that the size of the address_to_id component <=
+    // 2^(27 - log2(MEMORY_ADDRESS_TO_ID_SPLIT)), beacuse the component is split to
+    // MEMORY_ADDRESS_TO_ID_SPLIT addresses in each row of the component.
+    let log_split_size: u32 = (MEMORY_ADDRESS_TO_ID_SPLIT * 2 - 1).ilog2(); // log2 rounded up.
+    assert!(*claim.memory_address_to_id.log_size <= 27_u32 - log_split_size);
 
     // Count the number of uses of each relation.
     let mut relation_uses: RelationUsesDict = Default::default();
