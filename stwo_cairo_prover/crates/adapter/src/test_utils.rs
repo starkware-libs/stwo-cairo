@@ -55,7 +55,7 @@ pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInput
     prover_input_info
 }
 
-pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
+pub fn run_program_and_adapter(program: &[u8], generic_mode: bool) -> ProverInput {
     let cairo_run_config = CairoRunConfig {
         entrypoint: "main",
         trace_enabled: true,
@@ -78,6 +78,7 @@ pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
         &mut runner
             .get_prover_input_info()
             .expect("Failed to get prover input info from finished runner"),
+        generic_mode,
     )
     .expect("Failed to run adapter")
 }
