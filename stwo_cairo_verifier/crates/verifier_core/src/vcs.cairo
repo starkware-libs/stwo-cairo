@@ -1,3 +1,4 @@
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s_hasher;
 pub mod hasher;
 
