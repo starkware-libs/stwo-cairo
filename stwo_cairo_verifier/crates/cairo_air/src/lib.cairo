@@ -506,6 +506,20 @@ fn preprocessed_root(
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn preprocessed_root_without_pedersen(
+    log_blowup_factor: u32,
+) -> stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+    match log_blowup_factor - 1 {
+        0 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [3874691771, 970201765, 4163136015, 707689571, 3629981039, 3510408166, 807592626, 3264437778],
+            ),
+        },
+        _ => panic!("invalid blowup factor"),
+    }
+}
+
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 #[cfg(feature: "poseidon252_verifier")]
 fn preprocessed_root(log_blowup_factor: u32) -> felt252 {
@@ -566,7 +580,7 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
     let log_sizes = claim.log_sizes();
 
     // Preprocessed trace.
-    let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
+    let expected_preprocessed_root = preprocessed_root_without_pedersen(pcs_config.fri_config.log_blowup_factor);
     let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
     assert!(preprocessed_root == expected_preprocessed_root);
     commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
