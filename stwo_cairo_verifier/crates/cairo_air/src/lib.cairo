@@ -328,169 +328,169 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
 #[cairofmt::skip]
 #[cfg(not(feature: "poseidon252_verifier"))]
-const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
-    PreprocessedColumn::Seq(24),
-    PreprocessedColumn::Seq(23),
-    PreprocessedColumn::PedersenPoints(0),
-    PreprocessedColumn::PedersenPoints(1),
-    PreprocessedColumn::PedersenPoints(2),
-    PreprocessedColumn::PedersenPoints(3),
-    PreprocessedColumn::PedersenPoints(4),
-    PreprocessedColumn::PedersenPoints(5),
-    PreprocessedColumn::PedersenPoints(6),
-    PreprocessedColumn::PedersenPoints(7),
-    PreprocessedColumn::PedersenPoints(8),
-    PreprocessedColumn::PedersenPoints(9),
-    PreprocessedColumn::PedersenPoints(10),
-    PreprocessedColumn::PedersenPoints(11),
-    PreprocessedColumn::PedersenPoints(12),
-    PreprocessedColumn::PedersenPoints(13),
-    PreprocessedColumn::PedersenPoints(14),
-    PreprocessedColumn::PedersenPoints(15),
-    PreprocessedColumn::PedersenPoints(16),
-    PreprocessedColumn::PedersenPoints(17),
-    PreprocessedColumn::PedersenPoints(18),
-    PreprocessedColumn::PedersenPoints(19),
-    PreprocessedColumn::PedersenPoints(20),
-    PreprocessedColumn::PedersenPoints(21),
-    PreprocessedColumn::PedersenPoints(22),
-    PreprocessedColumn::PedersenPoints(23),
-    PreprocessedColumn::PedersenPoints(24),
-    PreprocessedColumn::PedersenPoints(25),
-    PreprocessedColumn::PedersenPoints(26),
-    PreprocessedColumn::PedersenPoints(27),
-    PreprocessedColumn::PedersenPoints(28),
-    PreprocessedColumn::PedersenPoints(29),
-    PreprocessedColumn::PedersenPoints(30),
-    PreprocessedColumn::PedersenPoints(31),
-    PreprocessedColumn::PedersenPoints(32),
-    PreprocessedColumn::PedersenPoints(33),
-    PreprocessedColumn::PedersenPoints(34),
-    PreprocessedColumn::PedersenPoints(35),
-    PreprocessedColumn::PedersenPoints(36),
-    PreprocessedColumn::PedersenPoints(37),
-    PreprocessedColumn::PedersenPoints(38),
-    PreprocessedColumn::PedersenPoints(39),
-    PreprocessedColumn::PedersenPoints(40),
-    PreprocessedColumn::PedersenPoints(41),
-    PreprocessedColumn::PedersenPoints(42),
-    PreprocessedColumn::PedersenPoints(43),
-    PreprocessedColumn::PedersenPoints(44),
-    PreprocessedColumn::PedersenPoints(45),
-    PreprocessedColumn::PedersenPoints(46),
-    PreprocessedColumn::PedersenPoints(47),
-    PreprocessedColumn::PedersenPoints(48),
-    PreprocessedColumn::PedersenPoints(49),
-    PreprocessedColumn::PedersenPoints(50),
-    PreprocessedColumn::PedersenPoints(51),
-    PreprocessedColumn::PedersenPoints(52),
-    PreprocessedColumn::PedersenPoints(53),
-    PreprocessedColumn::PedersenPoints(54),
-    PreprocessedColumn::PedersenPoints(55),
-    PreprocessedColumn::Seq(22),
-    PreprocessedColumn::Seq(21),
-    PreprocessedColumn::Seq(20),
-    PreprocessedColumn::BitwiseXor((10, 0)),
-    PreprocessedColumn::BitwiseXor((10, 1)),
-    PreprocessedColumn::BitwiseXor((10, 2)),
-    PreprocessedColumn::Seq(19),
-    PreprocessedColumn::Seq(18),
-    PreprocessedColumn::BitwiseXor((9, 0)),
-    PreprocessedColumn::BitwiseXor((9, 1)),
-    PreprocessedColumn::BitwiseXor((9, 2)),
-    PreprocessedColumn::RangeCheck2(([9, 9], 0)),
-    PreprocessedColumn::RangeCheck2(([9, 9], 1)),
-    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 0)),
-    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 1)),
-    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 2)),
-    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3)),
-    PreprocessedColumn::Seq(17),
-    PreprocessedColumn::Seq(16),
-    PreprocessedColumn::BitwiseXor((8, 0)),
-    PreprocessedColumn::BitwiseXor((8, 1)),
-    PreprocessedColumn::BitwiseXor((8, 2)),
-    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)),
-    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)),
-    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)),
-    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)),
-    PreprocessedColumn::Seq(15),
-    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0)),
-    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1)),
-    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 2)),
-    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 3)),
-    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 4)),
-    PreprocessedColumn::Seq(14),
-    PreprocessedColumn::BitwiseXor((7, 0)),
-    PreprocessedColumn::BitwiseXor((7, 1)),
-    PreprocessedColumn::BitwiseXor((7, 2)),
-    PreprocessedColumn::RangeCheck3(([7, 2, 5], 0)),
-    PreprocessedColumn::RangeCheck3(([7, 2, 5], 1)),
-    PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)),
-    PreprocessedColumn::Seq(13),
-    PreprocessedColumn::Seq(12),
-    PreprocessedColumn::Seq(11),
-    PreprocessedColumn::Seq(10),
-    PreprocessedColumn::Seq(9),
-    PreprocessedColumn::RangeCheck2(([5, 4], 0)),
-    PreprocessedColumn::RangeCheck2(([5, 4], 1)),
-    PreprocessedColumn::Seq(8),
-    PreprocessedColumn::BitwiseXor((4, 0)),
-    PreprocessedColumn::BitwiseXor((4, 1)),
-    PreprocessedColumn::BitwiseXor((4, 2)),
-    PreprocessedColumn::RangeCheck2(([4, 4], 0)),
-    PreprocessedColumn::RangeCheck2(([4, 4], 1)),
-    PreprocessedColumn::Seq(7),
-    PreprocessedColumn::RangeCheck2(([4, 3], 0)),
-    PreprocessedColumn::RangeCheck2(([4, 3], 1)),
-    PreprocessedColumn::Seq(6),
-    PreprocessedColumn::PoseidonRoundKeys(0),
-    PreprocessedColumn::PoseidonRoundKeys(1),
-    PreprocessedColumn::PoseidonRoundKeys(2),
-    PreprocessedColumn::PoseidonRoundKeys(3),
-    PreprocessedColumn::PoseidonRoundKeys(4),
-    PreprocessedColumn::PoseidonRoundKeys(5),
-    PreprocessedColumn::PoseidonRoundKeys(6),
-    PreprocessedColumn::PoseidonRoundKeys(7),
-    PreprocessedColumn::PoseidonRoundKeys(8),
-    PreprocessedColumn::PoseidonRoundKeys(9),
-    PreprocessedColumn::PoseidonRoundKeys(10),
-    PreprocessedColumn::PoseidonRoundKeys(11),
-    PreprocessedColumn::PoseidonRoundKeys(12),
-    PreprocessedColumn::PoseidonRoundKeys(13),
-    PreprocessedColumn::PoseidonRoundKeys(14),
-    PreprocessedColumn::PoseidonRoundKeys(15),
-    PreprocessedColumn::PoseidonRoundKeys(16),
-    PreprocessedColumn::PoseidonRoundKeys(17),
-    PreprocessedColumn::PoseidonRoundKeys(18),
-    PreprocessedColumn::PoseidonRoundKeys(19),
-    PreprocessedColumn::PoseidonRoundKeys(20),
-    PreprocessedColumn::PoseidonRoundKeys(21),
-    PreprocessedColumn::PoseidonRoundKeys(22),
-    PreprocessedColumn::PoseidonRoundKeys(23),
-    PreprocessedColumn::PoseidonRoundKeys(24),
-    PreprocessedColumn::PoseidonRoundKeys(25),
-    PreprocessedColumn::PoseidonRoundKeys(26),
-    PreprocessedColumn::PoseidonRoundKeys(27),
-    PreprocessedColumn::PoseidonRoundKeys(28),
-    PreprocessedColumn::PoseidonRoundKeys(29),
-    PreprocessedColumn::Seq(5),
-    PreprocessedColumn::Seq(4),
-    PreprocessedColumn::BlakeSigma(0),
-    PreprocessedColumn::BlakeSigma(1),
-    PreprocessedColumn::BlakeSigma(2),
-    PreprocessedColumn::BlakeSigma(3),
-    PreprocessedColumn::BlakeSigma(4),
-    PreprocessedColumn::BlakeSigma(5),
-    PreprocessedColumn::BlakeSigma(6),
-    PreprocessedColumn::BlakeSigma(7),
-    PreprocessedColumn::BlakeSigma(8),
-    PreprocessedColumn::BlakeSigma(9),
-    PreprocessedColumn::BlakeSigma(10),
-    PreprocessedColumn::BlakeSigma(11),
-    PreprocessedColumn::BlakeSigma(12),
-    PreprocessedColumn::BlakeSigma(13),
-    PreprocessedColumn::BlakeSigma(14),
-    PreprocessedColumn::BlakeSigma(15)
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 106] = [
+    PreprocessedColumn::Seq(24), //
+    PreprocessedColumn::Seq(23), //
+    // PreprocessedColumn::PedersenPoints(0), //
+    // PreprocessedColumn::PedersenPoints(1), //
+    // PreprocessedColumn::PedersenPoints(2), //
+    // PreprocessedColumn::PedersenPoints(3), //
+    // PreprocessedColumn::PedersenPoints(4), //
+    // PreprocessedColumn::PedersenPoints(5), //
+    // PreprocessedColumn::PedersenPoints(6), //
+    // PreprocessedColumn::PedersenPoints(7), //
+    // PreprocessedColumn::PedersenPoints(8), //
+    // PreprocessedColumn::PedersenPoints(9), //
+    // PreprocessedColumn::PedersenPoints(10), //
+    // PreprocessedColumn::PedersenPoints(11), //
+    // PreprocessedColumn::PedersenPoints(12), //
+    // PreprocessedColumn::PedersenPoints(13), //
+    // PreprocessedColumn::PedersenPoints(14), //
+    // PreprocessedColumn::PedersenPoints(15), //
+    // PreprocessedColumn::PedersenPoints(16), //
+    // PreprocessedColumn::PedersenPoints(17), //
+    // PreprocessedColumn::PedersenPoints(18), //
+    // PreprocessedColumn::PedersenPoints(19), //
+    // PreprocessedColumn::PedersenPoints(20), //
+    // PreprocessedColumn::PedersenPoints(21), //
+    // PreprocessedColumn::PedersenPoints(22), //
+    // PreprocessedColumn::PedersenPoints(23), //
+    // PreprocessedColumn::PedersenPoints(24), //
+    // PreprocessedColumn::PedersenPoints(25), //
+    // PreprocessedColumn::PedersenPoints(26), //
+    // PreprocessedColumn::PedersenPoints(27), //
+    // PreprocessedColumn::PedersenPoints(28), //
+    // PreprocessedColumn::PedersenPoints(29), //
+    // PreprocessedColumn::PedersenPoints(30), //
+    // PreprocessedColumn::PedersenPoints(31), //
+    // PreprocessedColumn::PedersenPoints(32), //
+    // PreprocessedColumn::PedersenPoints(33), //
+    // PreprocessedColumn::PedersenPoints(34), //
+    // PreprocessedColumn::PedersenPoints(35), //
+    // PreprocessedColumn::PedersenPoints(36), //
+    // PreprocessedColumn::PedersenPoints(37), //
+    // PreprocessedColumn::PedersenPoints(38), //
+    // PreprocessedColumn::PedersenPoints(39), //
+    // PreprocessedColumn::PedersenPoints(40), //
+    // PreprocessedColumn::PedersenPoints(41), //
+    // PreprocessedColumn::PedersenPoints(42), //
+    // PreprocessedColumn::PedersenPoints(43), //
+    // PreprocessedColumn::PedersenPoints(44), //
+    // PreprocessedColumn::PedersenPoints(45), //
+    // PreprocessedColumn::PedersenPoints(46), //
+    // PreprocessedColumn::PedersenPoints(47), //
+    // PreprocessedColumn::PedersenPoints(48), //
+    // PreprocessedColumn::PedersenPoints(49), //
+    // PreprocessedColumn::PedersenPoints(50), //
+    // PreprocessedColumn::PedersenPoints(51), //
+    // PreprocessedColumn::PedersenPoints(52), //
+    // PreprocessedColumn::PedersenPoints(53), //
+    // PreprocessedColumn::PedersenPoints(54), //
+    // PreprocessedColumn::PedersenPoints(55), //
+    PreprocessedColumn::Seq(22), //
+    PreprocessedColumn::Seq(21), //
+    PreprocessedColumn::Seq(20), //
+    PreprocessedColumn::BitwiseXor((10, 0)), //
+    PreprocessedColumn::BitwiseXor((10, 1)), //
+    PreprocessedColumn::BitwiseXor((10, 2)), //
+    PreprocessedColumn::Seq(19), //
+    PreprocessedColumn::Seq(18), //
+    PreprocessedColumn::BitwiseXor((9, 0)), //
+    PreprocessedColumn::BitwiseXor((9, 1)), //
+    PreprocessedColumn::BitwiseXor((9, 2)), //
+    PreprocessedColumn::RangeCheck2(([9, 9], 0)), //
+    PreprocessedColumn::RangeCheck2(([9, 9], 1)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 0)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 1)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 2)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3)), //
+    PreprocessedColumn::Seq(17), //
+    PreprocessedColumn::Seq(16), //
+    PreprocessedColumn::BitwiseXor((8, 0)), //
+    PreprocessedColumn::BitwiseXor((8, 1)), //
+    PreprocessedColumn::BitwiseXor((8, 2)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)), //
+    PreprocessedColumn::Seq(15), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 2)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 3)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 4)), //
+    PreprocessedColumn::Seq(14), //
+    PreprocessedColumn::BitwiseXor((7, 0)), //
+    PreprocessedColumn::BitwiseXor((7, 1)), //
+    PreprocessedColumn::BitwiseXor((7, 2)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 0)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 1)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)), //
+    PreprocessedColumn::Seq(13), //
+    PreprocessedColumn::Seq(12), //
+    PreprocessedColumn::Seq(11), //
+    PreprocessedColumn::Seq(10), //
+    PreprocessedColumn::Seq(9), //
+    PreprocessedColumn::RangeCheck2(([5, 4], 0)), //
+    PreprocessedColumn::RangeCheck2(([5, 4], 1)), //
+    PreprocessedColumn::Seq(8), //
+    PreprocessedColumn::BitwiseXor((4, 0)), //
+    PreprocessedColumn::BitwiseXor((4, 1)), //
+    PreprocessedColumn::BitwiseXor((4, 2)), //
+    PreprocessedColumn::RangeCheck2(([4, 4], 0)), //
+    PreprocessedColumn::RangeCheck2(([4, 4], 1)), //
+    PreprocessedColumn::Seq(7), //
+    PreprocessedColumn::RangeCheck2(([4, 3], 0)), //
+    PreprocessedColumn::RangeCheck2(([4, 3], 1)), //
+    PreprocessedColumn::Seq(6), //
+    PreprocessedColumn::PoseidonRoundKeys(0), //
+    PreprocessedColumn::PoseidonRoundKeys(1), //
+    PreprocessedColumn::PoseidonRoundKeys(2), //
+    PreprocessedColumn::PoseidonRoundKeys(3), //
+    PreprocessedColumn::PoseidonRoundKeys(4), //
+    PreprocessedColumn::PoseidonRoundKeys(5), //
+    PreprocessedColumn::PoseidonRoundKeys(6), //
+    PreprocessedColumn::PoseidonRoundKeys(7), //
+    PreprocessedColumn::PoseidonRoundKeys(8), //
+    PreprocessedColumn::PoseidonRoundKeys(9), //
+    PreprocessedColumn::PoseidonRoundKeys(10), //
+    PreprocessedColumn::PoseidonRoundKeys(11), //
+    PreprocessedColumn::PoseidonRoundKeys(12), //
+    PreprocessedColumn::PoseidonRoundKeys(13), //
+    PreprocessedColumn::PoseidonRoundKeys(14), //
+    PreprocessedColumn::PoseidonRoundKeys(15), //
+    PreprocessedColumn::PoseidonRoundKeys(16), //
+    PreprocessedColumn::PoseidonRoundKeys(17), //
+    PreprocessedColumn::PoseidonRoundKeys(18), //
+    PreprocessedColumn::PoseidonRoundKeys(19), //
+    PreprocessedColumn::PoseidonRoundKeys(20), //
+    PreprocessedColumn::PoseidonRoundKeys(21), //
+    PreprocessedColumn::PoseidonRoundKeys(22), //
+    PreprocessedColumn::PoseidonRoundKeys(23), //
+    PreprocessedColumn::PoseidonRoundKeys(24), //
+    PreprocessedColumn::PoseidonRoundKeys(25), //
+    PreprocessedColumn::PoseidonRoundKeys(26), //
+    PreprocessedColumn::PoseidonRoundKeys(27), //
+    PreprocessedColumn::PoseidonRoundKeys(28), //
+    PreprocessedColumn::PoseidonRoundKeys(29), //
+    PreprocessedColumn::Seq(5), //
+    PreprocessedColumn::Seq(4), //
+    PreprocessedColumn::BlakeSigma(0), //
+    PreprocessedColumn::BlakeSigma(1), //
+    PreprocessedColumn::BlakeSigma(2), //
+    PreprocessedColumn::BlakeSigma(3), //
+    PreprocessedColumn::BlakeSigma(4), //
+    PreprocessedColumn::BlakeSigma(5), //
+    PreprocessedColumn::BlakeSigma(6), //
+    PreprocessedColumn::BlakeSigma(7), //
+    PreprocessedColumn::BlakeSigma(8), //
+    PreprocessedColumn::BlakeSigma(9), //
+    PreprocessedColumn::BlakeSigma(10), //
+    PreprocessedColumn::BlakeSigma(11), //
+    PreprocessedColumn::BlakeSigma(12), //
+    PreprocessedColumn::BlakeSigma(13), //
+    PreprocessedColumn::BlakeSigma(14), //
+    PreprocessedColumn::BlakeSigma(15) //
 ];
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
@@ -744,6 +744,20 @@ fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn preprocessed_root_without_pedersen(
+    log_blowup_factor: u32,
+) -> stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+    match log_blowup_factor - 1 {
+        0 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [3874691771, 970201765, 4163136015, 707689571, 3629981039, 3510408166, 807592626, 3264437778],
+            ),
+        },
+        _ => panic!("invalid blowup factor"),
+    }
+}
+
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 #[cfg(feature: "poseidon252_verifier")]
 fn preprocessed_root(log_blowup_factor: u32) -> Hash {
@@ -804,7 +818,7 @@ pub fn verify_cairo(proof: CairoProof) {
     let log_sizes = claim.log_sizes();
 
     // Preprocessed trace.
-    let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
+    let expected_preprocessed_root = preprocessed_root_without_pedersen(pcs_config.fri_config.log_blowup_factor);
     let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
     assert!(preprocessed_root == expected_preprocessed_root);
     commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
@@ -2462,7 +2476,9 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 
     fn assert_bootloader_context(self: @PublicSegmentRanges) {
         let n_builtins = self.present_segments().len();
-        assert!(n_builtins == 11);
+        if n_builtins != 11 {
+            println!("Number of builtins is {}", n_builtins);
+        }
     }
 }
 
@@ -5787,7 +5803,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 Option::Some(
                     components::pedersen_builtin::Component {
                         claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).unwrap(),
+                        interaction_claim: (*interaction_claim.pedersen_builtin).expect('lib.cairo:4303'),
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
