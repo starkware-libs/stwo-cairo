@@ -4,7 +4,7 @@ use std::time::Instant;
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_lang_runner::Arg;
-use cairo_prove::args::{Cli, Commands, ProgramArguments};
+use cairo_prove::args::{Cli, Commands, ProgramArguments, ProofFormat};
 use cairo_prove::execute::execute;
 use cairo_prove::prove::{prove, prover_input_from_runner};
 use clap::Parser;
@@ -14,6 +14,7 @@ use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
 use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
+use stwo_cairo_serialize::CairoSerialize;
 
 fn execute_and_prove(
     target_path: &str,
@@ -24,7 +25,7 @@ fn execute_and_prove(
     let executable = serde_json::from_reader(std::fs::File::open(target_path).unwrap())
         .expect("Failed to read executable");
     let runner = execute(executable, args);
-    
+
     // Prove.
     let prover_input = prover_input_from_runner(&runner);
     prove(prover_input, pcs_config)
@@ -41,7 +42,7 @@ fn secure_pcs_config() -> PcsConfig {
     }
 }
 
-fn handle_prove(target: &Path, proof: &Path, args: ProgramArguments) {
+fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: ProgramArguments) {
     info!("Generating proof for target: {:?}", target);
     let start = Instant::now();
     let cairo_proof = execute_and_prove(
@@ -52,8 +53,23 @@ fn handle_prove(target: &Path, proof: &Path, args: ProgramArguments) {
     let elapsed = start.elapsed();
 
     // Serialize proof to file.
-    let proof_json = serde_json::to_string(&cairo_proof).unwrap();
-    std::fs::write(proof.to_str().unwrap(), proof_json).unwrap();
+    match proof_format {
+        ProofFormat::Json => {
+            let proof_json = serde_json::to_string(&cairo_proof).unwrap();
+            std::fs::write(proof.to_str().unwrap(), proof_json).unwrap();
+        }
+        ProofFormat::CairoSerde => {
+            let mut serialized = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+
+            let proof_hex_strings: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{:x}", felt))
+                .collect();
+            let proof_json = serde_json::to_string(&proof_hex_strings).unwrap();
+            std::fs::write(proof.to_str().unwrap(), proof_json).unwrap();
+        }
+    }
     info!("Proof saved to: {:?}", proof);
     info!("Proof generation completed in {:.2?}", elapsed);
 }
@@ -83,9 +99,10 @@ fn main() {
         Commands::Prove {
             target,
             proof,
+            proof_format,
             program_arguments,
         } => {
-            handle_prove(&target, &proof, program_arguments);
+            handle_prove(&target, &proof, proof_format, program_arguments);
         }
         Commands::Verify {
             proof,
