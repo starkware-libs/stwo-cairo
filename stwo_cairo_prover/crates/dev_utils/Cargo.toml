@@ -8,7 +8,7 @@ cairo-air.workspace = true
 clap.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
-sonic-rs = "0.3.17"
+sonic-rs.workspace = true
 stwo-cairo-adapter = {path= "../adapter", features = ["std"]}
 stwo-cairo-serialize.workspace = true
 stwo-prover.workspace = true
@@ -17,4 +17,3 @@ tracing-subscriber.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 log.workspace = true
-

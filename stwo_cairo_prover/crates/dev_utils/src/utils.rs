@@ -1,7 +1,6 @@
-use std::fs::File;
-use std::io::Write;
 use std::path::PathBuf;
 
+use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use serde::Serialize;
@@ -20,16 +19,6 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
-use tracing::{span, Level};
-
-#[derive(Debug, Clone, clap::ValueEnum)]
-pub enum ProofFormat {
-    /// Standard JSON format.
-    Json,
-    /// Array of field elements serialized as hex strings.
-    /// Compatible with `scarb execute`
-    CairoSerde,
-}
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -64,26 +53,9 @@ where
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
     let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
-    let mut proof_file = File::create(proof_path)?;
 
-    let span = span!(Level::INFO, "Serialize proof").entered();
-    match proof_format {
-        ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(&proof)?.as_bytes())?;
-        }
-        ProofFormat::CairoSerde => {
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&proof, &mut serialized);
+    serialize_proof_to_file::<MC>(&proof, proof_path, proof_format)?;
 
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
-                .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
-        }
-    }
-    span.exit();
     if verify {
         verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
         log::info!("Proof verified successfully");
