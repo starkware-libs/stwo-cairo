@@ -216,65 +216,65 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
-const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 106] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
-    PreprocessedColumn::PedersenPoints(0), //
-    PreprocessedColumn::PedersenPoints(1), //
-    PreprocessedColumn::PedersenPoints(2), //
-    PreprocessedColumn::PedersenPoints(3), //
-    PreprocessedColumn::PedersenPoints(4), //
-    PreprocessedColumn::PedersenPoints(5), //
-    PreprocessedColumn::PedersenPoints(6), //
-    PreprocessedColumn::PedersenPoints(7), //
-    PreprocessedColumn::PedersenPoints(8), //
-    PreprocessedColumn::PedersenPoints(9), //
-    PreprocessedColumn::PedersenPoints(10), //
-    PreprocessedColumn::PedersenPoints(11), //
-    PreprocessedColumn::PedersenPoints(12), //
-    PreprocessedColumn::PedersenPoints(13), //
-    PreprocessedColumn::PedersenPoints(14), //
-    PreprocessedColumn::PedersenPoints(15), //
-    PreprocessedColumn::PedersenPoints(16), //
-    PreprocessedColumn::PedersenPoints(17), //
-    PreprocessedColumn::PedersenPoints(18), //
-    PreprocessedColumn::PedersenPoints(19), //
-    PreprocessedColumn::PedersenPoints(20), //
-    PreprocessedColumn::PedersenPoints(21), //
-    PreprocessedColumn::PedersenPoints(22), //
-    PreprocessedColumn::PedersenPoints(23), //
-    PreprocessedColumn::PedersenPoints(24), //
-    PreprocessedColumn::PedersenPoints(25), //
-    PreprocessedColumn::PedersenPoints(26), //
-    PreprocessedColumn::PedersenPoints(27), //
-    PreprocessedColumn::PedersenPoints(28), //
-    PreprocessedColumn::PedersenPoints(29), //
-    PreprocessedColumn::PedersenPoints(30), //
-    PreprocessedColumn::PedersenPoints(31), //
-    PreprocessedColumn::PedersenPoints(32), //
-    PreprocessedColumn::PedersenPoints(33), //
-    PreprocessedColumn::PedersenPoints(34), //
-    PreprocessedColumn::PedersenPoints(35), //
-    PreprocessedColumn::PedersenPoints(36), //
-    PreprocessedColumn::PedersenPoints(37), //
-    PreprocessedColumn::PedersenPoints(38), //
-    PreprocessedColumn::PedersenPoints(39), //
-    PreprocessedColumn::PedersenPoints(40), //
-    PreprocessedColumn::PedersenPoints(41), //
-    PreprocessedColumn::PedersenPoints(42), //
-    PreprocessedColumn::PedersenPoints(43), //
-    PreprocessedColumn::PedersenPoints(44), //
-    PreprocessedColumn::PedersenPoints(45), //
-    PreprocessedColumn::PedersenPoints(46), //
-    PreprocessedColumn::PedersenPoints(47), //
-    PreprocessedColumn::PedersenPoints(48), //
-    PreprocessedColumn::PedersenPoints(49), //
-    PreprocessedColumn::PedersenPoints(50), //
-    PreprocessedColumn::PedersenPoints(51), //
-    PreprocessedColumn::PedersenPoints(52), //
-    PreprocessedColumn::PedersenPoints(53), //
-    PreprocessedColumn::PedersenPoints(54), //
-    PreprocessedColumn::PedersenPoints(55), //
+    // PreprocessedColumn::PedersenPoints(0), //
+    // PreprocessedColumn::PedersenPoints(1), //
+    // PreprocessedColumn::PedersenPoints(2), //
+    // PreprocessedColumn::PedersenPoints(3), //
+    // PreprocessedColumn::PedersenPoints(4), //
+    // PreprocessedColumn::PedersenPoints(5), //
+    // PreprocessedColumn::PedersenPoints(6), //
+    // PreprocessedColumn::PedersenPoints(7), //
+    // PreprocessedColumn::PedersenPoints(8), //
+    // PreprocessedColumn::PedersenPoints(9), //
+    // PreprocessedColumn::PedersenPoints(10), //
+    // PreprocessedColumn::PedersenPoints(11), //
+    // PreprocessedColumn::PedersenPoints(12), //
+    // PreprocessedColumn::PedersenPoints(13), //
+    // PreprocessedColumn::PedersenPoints(14), //
+    // PreprocessedColumn::PedersenPoints(15), //
+    // PreprocessedColumn::PedersenPoints(16), //
+    // PreprocessedColumn::PedersenPoints(17), //
+    // PreprocessedColumn::PedersenPoints(18), //
+    // PreprocessedColumn::PedersenPoints(19), //
+    // PreprocessedColumn::PedersenPoints(20), //
+    // PreprocessedColumn::PedersenPoints(21), //
+    // PreprocessedColumn::PedersenPoints(22), //
+    // PreprocessedColumn::PedersenPoints(23), //
+    // PreprocessedColumn::PedersenPoints(24), //
+    // PreprocessedColumn::PedersenPoints(25), //
+    // PreprocessedColumn::PedersenPoints(26), //
+    // PreprocessedColumn::PedersenPoints(27), //
+    // PreprocessedColumn::PedersenPoints(28), //
+    // PreprocessedColumn::PedersenPoints(29), //
+    // PreprocessedColumn::PedersenPoints(30), //
+    // PreprocessedColumn::PedersenPoints(31), //
+    // PreprocessedColumn::PedersenPoints(32), //
+    // PreprocessedColumn::PedersenPoints(33), //
+    // PreprocessedColumn::PedersenPoints(34), //
+    // PreprocessedColumn::PedersenPoints(35), //
+    // PreprocessedColumn::PedersenPoints(36), //
+    // PreprocessedColumn::PedersenPoints(37), //
+    // PreprocessedColumn::PedersenPoints(38), //
+    // PreprocessedColumn::PedersenPoints(39), //
+    // PreprocessedColumn::PedersenPoints(40), //
+    // PreprocessedColumn::PedersenPoints(41), //
+    // PreprocessedColumn::PedersenPoints(42), //
+    // PreprocessedColumn::PedersenPoints(43), //
+    // PreprocessedColumn::PedersenPoints(44), //
+    // PreprocessedColumn::PedersenPoints(45), //
+    // PreprocessedColumn::PedersenPoints(46), //
+    // PreprocessedColumn::PedersenPoints(47), //
+    // PreprocessedColumn::PedersenPoints(48), //
+    // PreprocessedColumn::PedersenPoints(49), //
+    // PreprocessedColumn::PedersenPoints(50), //
+    // PreprocessedColumn::PedersenPoints(51), //
+    // PreprocessedColumn::PedersenPoints(52), //
+    // PreprocessedColumn::PedersenPoints(53), //
+    // PreprocessedColumn::PedersenPoints(54), //
+    // PreprocessedColumn::PedersenPoints(55), //
     PreprocessedColumn::Seq(22), //
     PreprocessedColumn::Seq(21), //
     PreprocessedColumn::Seq(20), //
@@ -4300,7 +4300,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 Option::Some(
                     components::pedersen_builtin::Component {
                         claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).unwrap(),
+                        interaction_claim: (*interaction_claim.pedersen_builtin).expect('lib.cairo:4303'),
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
