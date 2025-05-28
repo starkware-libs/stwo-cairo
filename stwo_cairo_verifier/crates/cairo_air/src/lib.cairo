@@ -1462,6 +1462,12 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
 
+    // When using address_to_id relation, it is assumed that address < 2^27.
+    // To verify that, one needs to check that the size of the address_to_id component <= 2^24,
+    // beacuse the component is split to 8 addresses in each row of the component. And so
+    // 2^24 * 8 = 2^27.
+    assert!(*claim.memory_address_to_id.log_size <= 24_u32);
+
     // Count the number of uses of each relation.
     let mut relation_uses: RelationUsesDict = Default::default();
     claim.accumulate_relation_uses(ref relation_uses);
