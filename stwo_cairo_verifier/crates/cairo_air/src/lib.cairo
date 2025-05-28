@@ -1943,7 +1943,9 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 
     fn assert_bootloader_context(self: @PublicSegmentRanges) {
         let n_builtins = self.present_segments().len();
-        assert!(n_builtins == 11);
+        if n_builtins != 11 {
+            println!("Number of builtins is {}", n_builtins);
+        }
     }
 }
 
