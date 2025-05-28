@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use rayon::iter::ParallelIterator;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::cpu::CasmState;
@@ -675,6 +675,34 @@ impl StateTransitions {
             casm_states_by_opcode,
         }
     }
+
+    pub fn from_slice_generic_mode(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
+        let _span = span!(Level::INFO, "StateTransitions::from_iter_generic_mode").entered();
+
+        // Assert all the instruction in the trace are provable by the generic opcode component.
+        trace.par_iter().for_each(|entry| {
+        let encoded_instruction = memory.get_inst(entry.pc as u32);
+        let instruction = Instruction::decode(encoded_instruction);
+        if !matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
+            panic!("generic_mode is enabled but some instruction can't be proved by the generic opcode component.");
+        }
+        });
+
+        let initial_state = trace.first().copied().unwrap().into();
+        let final_state = trace.last().copied().unwrap().into();
+        let trace = &trace[..trace.len() - 1];
+
+        let casm_states_by_opcode = CasmStatesByOpcode {
+            generic_opcode: trace.iter().map(|entry| CasmState::from(*entry)).collect(),
+            ..Default::default()
+        };
+
+        StateTransitions {
+            initial_state,
+            final_state,
+            casm_states_by_opcode,
+        }
+    }
 }
 
 fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
@@ -706,6 +734,8 @@ fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
 /// Tests instructions mapping.
 #[cfg(test)]
 mod mappings_tests {
+
+    use std::array::from_fn;
 
     use cairo_lang_casm::casm;
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
@@ -743,6 +773,7 @@ mod mappings_tests {
             &mut runner
                 .get_prover_input_info()
                 .expect("Failed to get prover input info from finished runner"),
+            false,
         )
         .expect("Failed to run adapter")
     }
@@ -1111,5 +1142,48 @@ mod mappings_tests {
         );
         assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
         assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
+    }
+
+    #[test]
+    fn test_generic_mode() {
+        let encoded_jump_rel = 0b000000100001011100000000000000001111111111111110111111111111111;
+        let mut x = u128_to_4_limbs(encoded_jump_rel);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        for i in 0..50 {
+            memory_builder.set(i, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        }
+
+        let encoded_jump_double_deref =
+            0b000000010000001100000000000000010000000000000000111111111111111;
+        x = u128_to_4_limbs(encoded_jump_double_deref);
+        for i in 50..100 {
+            memory_builder.set(i, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        }
+
+        let trace: [RelocatedTraceEntry; 100] = from_fn(|i| relocated_trace_entry!(i, 1, 1));
+        let states = StateTransitions::from_slice_generic_mode(&trace, &memory_builder);
+
+        assert_eq!(states.casm_states_by_opcode.generic_opcode.len(), 99);
+        assert_eq!(states.casm_states_by_opcode.jump_opcode_rel.len(), 0);
+        assert_eq!(
+            states.casm_states_by_opcode.jump_opcode_double_deref.len(),
+            0
+        );
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "generic_mode is enabled but some instruction can't be proved by the generic opcode component."
+    )]
+    fn test_generic_mode_fail_non_stone_opcode() {
+        let encoded_qm_31_add_mul_inst =
+            0b11100000001001010011111111111110101111111111111001000000000000000;
+        let x = u128_to_4_limbs(encoded_qm_31_add_mul_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        StateTransitions::from_slice_generic_mode(
+            &[relocated_trace_entry!(1, 1, 1)],
+            &memory_builder,
+        );
     }
 }

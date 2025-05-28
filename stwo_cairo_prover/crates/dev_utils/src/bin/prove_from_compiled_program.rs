@@ -55,6 +55,9 @@ struct Args {
     /// Verify the generated proof.
     #[structopt(long = "verify")]
     verify: bool,
+    // If generic mode is enabled, the adapter will map all instructions to the generic opcode.
+    #[structopt(long = "generic_mode")]
+    generic_mode: bool,
 }
 
 fn main() -> Result<(), Error> {
@@ -66,7 +69,7 @@ fn main() -> Result<(), Error> {
     let args = Args::try_parse_from(std::env::args())?;
 
     let compiled_program = read_compiled_cairo_program(&args.compiled_program);
-    let input = run_program_and_adapter(&compiled_program);
+    let input = run_program_and_adapter(&compiled_program, args.generic_mode);
 
     create_and_serialize_proof(
         input,
