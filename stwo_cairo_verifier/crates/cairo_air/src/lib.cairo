@@ -1462,9 +1462,19 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
 
-    // Check that no relation has more than P-1 uses.
+    // Count the number of uses of each relation.
     let mut relation_uses: RelationUsesDict = Default::default();
     claim.accumulate_relation_uses(ref relation_uses);
+
+    // Make sure ap does not overflow P:
+    // Check that the number of uses of the Opcodes relation is leq than 2^29. This bounds the
+    // number of steps of the program by 2^29. An add_ap use can increase ap *to* at most 2^27-1,
+    // and every other step can increase ap by at most 2. Therefore the most ap can increase to with
+    // n_steps steps is 2^27-1 + 2 * (n_steps-1). This is less than P if n_steps <= 2^29.
+    let opcodes_uses = relation_uses.get('Opcodes');
+    assert!(opcodes_uses <= pow2(29).into());
+
+    // Check that no relation has more than P-1 uses.
     let squashed_dict = relation_uses.squash();
     let entries = squashed_dict.into_entries();
     for entry in entries {
