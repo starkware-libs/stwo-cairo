@@ -498,7 +498,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let pedersen_builtin_segment_start: QM31 = (TryInto::<
             u32, M31,
         >::try_into((*(self.claim.pedersen_builtin_segment_start)))
-            .unwrap())
+            .expect('pedersen_builtin.cairo:502'))
             .into();
         let mut range_check_5_4_sum_0: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
