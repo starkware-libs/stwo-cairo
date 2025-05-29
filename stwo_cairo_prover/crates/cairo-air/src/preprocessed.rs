@@ -22,7 +22,7 @@ use crate::blake::const_columns::BlakeSigma;
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 // Used by every builtin for a read of the memory.
-const MAX_SEQUENCE_LOG_SIZE: u32 = 24;
+const MAX_SEQUENCE_LOG_SIZE: u32 = 27;
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;
@@ -50,6 +50,7 @@ impl PreProcessedTrace {
 
         Self { columns }
     }
+
 
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.

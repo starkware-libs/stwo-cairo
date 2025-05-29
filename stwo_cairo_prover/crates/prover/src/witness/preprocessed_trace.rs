@@ -4,6 +4,7 @@ use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::pcs::CommitmentTreeProver;
 use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
+use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
@@ -36,6 +37,15 @@ where
     );
 
     commitment_scheme.commitment.root()
+}
+
+#[test]
+fn bench_preprocessed_trace_commitment_root() {
+    let log_blowup_factor = 1;
+    let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+        log_blowup_factor,
+        PreProcessedTraceVariant::CanonicalWithoutPedersen,
+    );
 }
 
 #[cfg(feature = "slow-tests")]
