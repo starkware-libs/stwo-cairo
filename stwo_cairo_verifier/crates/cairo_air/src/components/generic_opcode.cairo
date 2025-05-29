@@ -20,7 +20,7 @@ use crate::components::subroutines::decode_generic_instruction::decode_generic_i
 use crate::components::subroutines::eval_operands::eval_operands_evaluate;
 use crate::components::subroutines::handle_opcodes::handle_opcodes_evaluate;
 use crate::components::subroutines::update_registers::update_registers_evaluate;
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 236;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [

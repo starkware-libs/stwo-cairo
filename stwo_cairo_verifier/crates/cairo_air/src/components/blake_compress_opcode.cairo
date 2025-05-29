@@ -20,7 +20,7 @@ use crate::components::subroutines::create_blake_output::create_blake_output_eva
 use crate::components::subroutines::create_blake_round_input::create_blake_round_input_evaluate;
 use crate::components::subroutines::decode_blake_opcode::decode_blake_opcode_evaluate;
 use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluate;
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 169;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
