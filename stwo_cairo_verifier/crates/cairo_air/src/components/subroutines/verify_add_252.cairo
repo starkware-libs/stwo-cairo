@@ -114,6 +114,8 @@ pub fn verify_add_252_evaluate(
     ] =
         input;
 
+    core::internal::revoke_ap_tracking();
+
     // Constraint - sub_p_bit is a bit
     let constraint_quotient = ((sub_p_bit_col0 * (sub_p_bit_col0 - qm31_const::<1, 0, 0, 0>())))
         * domain_vanishing_eval_inv;

@@ -1,16 +1,12 @@
 use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
 
-// TODO: Scarb currently has issues with feature flags. Enable again once bugs fixed.
-// #[cfg(not(feature: "qm31_opcode"))]
-// mod naive;
-// #[cfg(not(feature: "qm31_opcode"))]
-// use naive::*;
-// #[cfg(feature: "qm31_opcode")]
-// mod opcode;
-// #[cfg(feature: "qm31_opcode")]
-// use opcode::*;
-
+#[cfg(not(feature: "qm31_opcode"))]
+mod naive;
+#[cfg(not(feature: "qm31_opcode"))]
+use naive::*;
+#[cfg(feature: "qm31_opcode")]
 mod opcode;
+#[cfg(feature: "qm31_opcode")]
 use opcode::*;
 
 pub const P: felt252 = 0x7fffffff;

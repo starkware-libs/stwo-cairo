@@ -1,12 +1,15 @@
 use core::num::traits::Zero;
+use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
 };
 use stwo_verifier_core::fields::qm31::QM31;
+use stwo_verifier_core::fri::FriConfig;
+use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::ArrayImpl;
-use stwo_verifier_core::verifier::Air;
+use stwo_verifier_core::verifier::{Air, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 #[cfg(feature: "poseidon252_verifier")]
@@ -14,73 +17,77 @@ mod fib_128_column_with_blowup_16_proof;
 #[cfg(feature: "poseidon252_verifier")]
 mod fib_128_column_with_blowup_2_proof;
 
-// TODO(andrew): Add back in with new proof data.
-#[test]
-#[available_gas(100000000000)]
-#[ignore]
-#[cfg(feature: "poseidon252_verifier")]
-fn test_horizontal_fib_128_column_with_blowup_16() {
-    let proof = fib_128_column_with_blowup_16_proof::proof();
-    let config = PcsConfig {
-        pow_bits: 0,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15,
-        },
-    };
-
-    // Verify.
-    let log_size = 20;
-    let air = FibAir::<128> { log_size };
-    let mut channel: Channel = Default::default();
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
-
-    // Decommit.
-    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], [].span(), ref channel);
-    commitment_scheme
-        .commit(
-            *proof.commitment_scheme_proof.commitments[1],
-            ArrayImpl::new_repeated(n: 128, v: log_size).span(),
-            ref channel,
-        );
-
-    if let Err(err) = verify(air, ref channel, proof, commitment_scheme, 60) {
-        panic!("Verification failed: {:?}", err);
-    }
-}
+// Tests are under comment because of a gas limit issue.
 
 // TODO(andrew): Add back in with new proof data.
-#[test]
-#[available_gas(100000000000)]
-#[ignore]
-#[cfg(feature: "poseidon252_verifier")]
-fn test_horizontal_fib_128_column_with_blowup_2() {
-    let proof = fib_128_column_with_blowup_2_proof::proof();
-    let config = PcsConfig {
-        pow_bits: 0,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60,
-        },
-    };
+// #[test]
+// #[available_gas(100000000000)]
+// #[ignore]
+// #[cfg(feature: "poseidon252_verifier")]
+// fn test_horizontal_fib_128_column_with_blowup_16() {
+//     let proof = fib_128_column_with_blowup_16_proof::proof();
+//     let config = PcsConfig {
+//         pow_bits: 0,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 4, log_blowup_factor: 4, n_queries: 15,
+//         },
+//     };
 
-    // Verify.
-    let log_size = 20;
-    let air = FibAir::<128> { log_size };
-    let mut channel: Channel = Default::default();
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+//     // Verify.
+//     let log_size = 20;
+//     let air = FibAir::<128> { log_size };
+//     let mut channel: Channel = Default::default();
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
 
-    // Decommit.
-    commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], [].span(), ref channel);
-    commitment_scheme
-        .commit(
-            *proof.commitment_scheme_proof.commitments[1],
-            ArrayImpl::new_repeated(n: 128, v: log_size).span(),
-            ref channel,
-        );
+//     // Decommit.
+//     commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], [].span(), ref
+//     channel);
+//     commitment_scheme
+//         .commit(
+//             *proof.commitment_scheme_proof.commitments[1],
+//             ArrayImpl::new_repeated(n: 128, v: log_size).span(),
+//             ref channel,
+//         );
 
-    if let Err(err) = verify(air, ref channel, proof, commitment_scheme, 60) {
-        panic!("Verification failed: {:?}", err);
-    }
-}
+//     if let Err(err) = verify(air, ref channel, proof, commitment_scheme, 60) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
+
+// TODO(andrew): Add back in with new proof data.
+// #[test]
+// #[available_gas(100000000000)]
+// #[ignore]
+// #[cfg(feature: "poseidon252_verifier")]
+// fn test_horizontal_fib_128_column_with_blowup_2() {
+//     let proof = fib_128_column_with_blowup_2_proof::proof();
+//     let config = PcsConfig {
+//         pow_bits: 0,
+//         fri_config: FriConfig {
+//             log_last_layer_degree_bound: 6, log_blowup_factor: 1, n_queries: 60,
+//         },
+//     };
+
+//     // Verify.
+//     let log_size = 20;
+//     let air = FibAir::<128> { log_size };
+//     let mut channel: Channel = Default::default();
+//     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(config);
+
+//     // Decommit.
+//     commitment_scheme.commit(*proof.commitment_scheme_proof.commitments[0], [].span(), ref
+//     channel);
+//     commitment_scheme
+//         .commit(
+//             *proof.commitment_scheme_proof.commitments[1],
+//             ArrayImpl::new_repeated(n: 128, v: log_size).span(),
+//             ref channel,
+//         );
+
+//     if let Err(err) = verify(air, ref channel, proof, commitment_scheme, 60) {
+//         panic!("Verification failed: {:?}", err);
+//     }
+// }
 
 #[derive(Drop)]
 pub struct FibAir<const N_COLUMNS: usize> {
