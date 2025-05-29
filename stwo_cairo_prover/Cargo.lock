@@ -1966,19 +1966,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "stwo-cairo-continuation"
-version = "0.1.0"
-dependencies = [
- "cairo-air",
- "cairo-vm",
- "serde_json",
- "stwo-cairo-adapter",
- "stwo-prover",
- "stwo_cairo_prover",
- "tracing",
-]
-
-[[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
 dependencies = [

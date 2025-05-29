@@ -92,11 +92,11 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_many(assert_eq, &trace);
     assert_many(assert_eq_imm, &trace);
     assert_many(assert_eq_double_deref, &trace);
-    assert_many(blake, &trace);
+    assert_many(blake, &trace); // blake not used in the cairo test
     assert_many(call, &trace);
     assert_many(call_op_1_base_fp, &trace);
     assert_many(call_rel, &trace);
-    // assert_many(generic, &trace);
+    assert_many(generic, &trace); // opcode not used in the cairo test
     assert_many(jnz, &trace);
     assert_many(jnz_taken, &trace);
     assert_many(jump, &trace);
@@ -111,7 +111,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(verify_instruction, &trace);
     assert_component(&range_checks.rc_6, &trace);
     assert_component(&range_checks.rc_8, &trace);
-    // assert_component(&range_checks.rc_11, &trace);
+    assert_component(&range_checks.rc_11, &trace);
     assert_component(&range_checks.rc_12, &trace);
     assert_component(&range_checks.rc_18, &trace);
     assert_component(&range_checks.rc_19, &trace);
