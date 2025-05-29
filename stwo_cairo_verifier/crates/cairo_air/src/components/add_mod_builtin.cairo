@@ -17,7 +17,6 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
-use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 251;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [

@@ -20,7 +20,6 @@ use crate::components::subroutines::add_252::add_252_evaluate;
 use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
 use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn eval_operands_evaluate(

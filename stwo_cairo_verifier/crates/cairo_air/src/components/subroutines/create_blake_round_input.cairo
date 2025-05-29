@@ -19,7 +19,6 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn create_blake_round_input_evaluate(
