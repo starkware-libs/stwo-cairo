@@ -1145,6 +1145,7 @@ dependencies = [
  "num-bigint",
  "serde_json",
  "stwo-cairo-adapter",
+ "stwo-cairo-serialize",
  "stwo_cairo_prover",
 ]
 
