@@ -18,7 +18,7 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::decode_instruction_ea769::decode_instruction_ea769_evaluate;
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [

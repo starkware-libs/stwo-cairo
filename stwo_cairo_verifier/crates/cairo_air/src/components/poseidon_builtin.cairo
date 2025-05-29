@@ -20,7 +20,7 @@ use crate::components::subroutines::felt_252_unpack_from_27::felt_252_unpack_fro
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::poseidon_hades_permutation::poseidon_hades_permutation_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 341;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 9] = [
