@@ -668,8 +668,7 @@ pub fn lookup_sum(
     sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.poseidon_context.sum();
     sum += *interaction_claim.memory_address_to_id.claimed_sum;
-    sum += *interaction_claim.memory_id_to_value.big_claimed_sum;
-    sum += *interaction_claim.memory_id_to_value.small_claimed_sum;
+    sum += interaction_claim.memory_id_to_value.sum();
     sum += interaction_claim.range_checks.sum();
     sum += *interaction_claim.verify_bitwise_xor_4.claimed_sum;
     sum += *interaction_claim.verify_bitwise_xor_7.claimed_sum;
@@ -1460,11 +1459,11 @@ impl CairoClaimImpl of CairoClaimTrait {
             verify_instruction::RELATION_USES_PER_ROW.span(),
             *verify_instruction.log_size,
         );
-        accumulate_relation_uses(
-            ref relation_uses,
-            memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
-            *memory_id_to_value.big_log_size,
-        );
+        for log_size in memory_id_to_value.big_log_sizes.span() {
+            accumulate_relation_uses(
+                ref relation_uses, memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(), *log_size,
+            );
+        }
         accumulate_relation_uses(
             ref relation_uses,
             memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
@@ -1535,6 +1534,13 @@ fn verify_claim(claim: @CairoClaim) {
         let (_relation_id, _first_uses, last_uses) = entry;
         assert!(last_uses < P_U32.into(), "A relation has more than P-1 uses");
     }
+
+    // Check that the memory id to value does not overflow.
+    let mut n_unique_large_values = 0;
+    for log_size in claim.memory_id_to_value.big_log_sizes.span() {
+        n_unique_large_values += pow2(*log_size);
+    }
+    assert!(n_unique_large_values <= pow2(27));
 }
 
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
@@ -2731,7 +2737,8 @@ pub struct CairoAir {
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
-        components::memory_id_to_big::BigComponent, components::memory_id_to_big::SmallComponent,
+        Array<components::memory_id_to_big::BigComponent>,
+        components::memory_id_to_big::SmallComponent,
     ),
     range_checks: RangeChecksComponents,
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
@@ -2783,16 +2790,36 @@ impl CairoAirNewImpl of CairoAirNewTrait {
             lookup_elements: interaction_elements.memory_address_to_id.clone(),
         };
 
-        let memory_id_to_value_component = components::memory_id_to_big::BigComponent {
-            log_n_rows: *cairo_claim.memory_id_to_value.big_log_size,
-            interaction_claim: *interaction_claim.memory_id_to_value,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-        };
+        assert!(
+            cairo_claim
+                .memory_id_to_value
+                .big_log_sizes
+                .len() == interaction_claim
+                .memory_id_to_value
+                .big_claimed_sums
+                .len(),
+        );
+        let mut memory_id_to_value_components = array![];
+        let mut offset = 0;
+        for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
+            let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
+            let sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
+            memory_id_to_value_components
+                .append(
+                    components::memory_id_to_big::BigComponent {
+                        log_n_rows: log_size,
+                        offset: offset,
+                        sum: sum,
+                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+                    },
+                );
+            offset = offset + pow2(log_size);
+        }
 
         let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
-            interaction_claim: *interaction_claim.memory_id_to_value,
+            sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
             lookup_elements: interaction_elements.memory_id_to_value.clone(),
             range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
         };
@@ -2833,7 +2860,7 @@ impl CairoAirNewImpl of CairoAirNewTrait {
             pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
-            memory_id_to_value: (memory_id_to_value_component, small_memory_id_to_value_component),
+            memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
             range_checks: range_checks_components,
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
@@ -2858,8 +2885,12 @@ impl CairoAirImpl of Air<CairoAir> {
         max_degree =
             core::cmp::max(max_degree, self.memory_address_to_id.max_constraint_log_degree_bound());
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        max_degree =
-            core::cmp::max(max_degree, memory_id_to_value_big.max_constraint_log_degree_bound());
+        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
+            max_degree =
+                core::cmp::max(
+                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
+                );
+        }
         max_degree =
             core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
         max_degree =
@@ -2939,13 +2970,15 @@ impl CairoAirImpl of Air<CairoAir> {
             );
 
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        memory_id_to_value_big
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
+        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
+            memory_id_to_value_big_component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
         memory_id_to_value_small
             .mask_points(
                 ref preprocessed_column_set,
@@ -3095,15 +3128,17 @@ impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        memory_id_to_value_big
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
+            memory_id_to_value_big_component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         memory_id_to_value_small
             .evaluate_constraints_at_point(
                 ref sum,

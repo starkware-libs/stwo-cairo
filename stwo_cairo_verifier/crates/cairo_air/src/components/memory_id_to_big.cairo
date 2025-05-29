@@ -36,67 +36,85 @@ pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUM
 pub const RELATION_USES_PER_ROW_BIG: [(felt252, u32); 1] = [('RangeCheck_9_9', 14)];
 pub const RELATION_USES_PER_ROW_SMALL: [(felt252, u32); 1] = [('RangeCheck_9_9', 4)];
 
-#[derive(Drop, Serde, Copy)]
+#[derive(Drop, Serde)]
 pub struct Claim {
-    pub big_log_size: u32,
+    pub big_log_sizes: Array<u32>,
     pub small_log_size: u32,
 }
 
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let Claim { big_log_size, small_log_size } = *self;
+        let Claim { big_log_sizes, small_log_size } = self;
 
-        let preprocessed_log_sizes = array![big_log_size, small_log_size].span();
+        let mut preprocessed_log_sizes = big_log_sizes.clone();
+        preprocessed_log_sizes.append(*small_log_size);
 
         let mut trace_log_sizes = array![];
 
-        for _ in 0..BIG_N_COLUMNS {
-            trace_log_sizes.append(big_log_size);
+        for big_log_size in big_log_sizes.span() {
+            for _ in 0..BIG_N_COLUMNS {
+                trace_log_sizes.append(*big_log_size);
+            }
         }
 
         for _ in 0..SMALL_N_COLUMNS {
-            trace_log_sizes.append(small_log_size);
+            trace_log_sizes.append(*small_log_size);
         }
 
         let mut interaction_log_sizes = array![];
 
         // A lookup for every pair of limbs, and a yield of the value.
-        for _ in 0..(QM31_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))) {
-            interaction_log_sizes.append(big_log_size);
+        for big_log_size in big_log_sizes.span() {
+            for _ in 0..(QM31_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))) {
+                interaction_log_sizes.append(*big_log_size);
+            }
         }
 
         for _ in 0..(QM31_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)) {
-            interaction_log_sizes.append(small_log_size);
+            interaction_log_sizes.append(*small_log_size);
         }
 
-        array![preprocessed_log_sizes, trace_log_sizes.span(), interaction_log_sizes.span()]
+        array![preprocessed_log_sizes.span(), trace_log_sizes.span(), interaction_log_sizes.span()]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_u64((*self.big_log_size).into());
+        for big_log_size in self.big_log_sizes.span() {
+            channel.mix_u64((*big_log_size).into());
+        }
         channel.mix_u64((*self.small_log_size).into());
     }
 }
 
-#[derive(Copy, Drop, Serde)]
+#[derive(Drop, Serde)]
 pub struct InteractionClaim {
-    pub big_claimed_sum: QM31,
+    pub big_claimed_sums: Array<QM31>,
     pub small_claimed_sum: QM31,
 }
 
 #[generate_trait]
 pub impl InteractionClaimImpl of InteractionClaimTrait {
     fn mix_into(self: @InteractionClaim, ref channel: Channel) {
-        channel.mix_felts([*self.big_claimed_sum].span());
+        channel.mix_felts(self.big_claimed_sums.span());
         channel.mix_felts([*self.small_claimed_sum].span());
     }
+
+    fn sum(self: @InteractionClaim) -> QM31 {
+        let mut sum = Zero::zero();
+        for big_claimed_sum in self.big_claimed_sums.span() {
+            sum += *big_claimed_sum;
+        }
+        sum += *self.small_claimed_sum;
+        sum
+    }
 }
+
 
 #[derive(Drop)]
 pub struct BigComponent {
     pub log_n_rows: u32,
-    pub interaction_claim: InteractionClaim,
+    pub offset: u32,
+    pub sum: QM31,
     pub lookup_elements: super::super::MemoryIdToBigElements,
     pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
 }
@@ -170,6 +188,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
 
         let params = constraints_big::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
+            offset: (*self.offset).try_into().unwrap(),
             MemoryIdToBig_alpha0: id_to_value_alpha_0,
             MemoryIdToBig_alpha1: id_to_value_alpha_1,
             MemoryIdToBig_alpha10: id_to_value_alpha_10,
@@ -203,7 +222,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
             RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
-            claimed_sum: *self.interaction_claim.big_claimed_sum,
+            claimed_sum: *self.sum,
             seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
         };
 
@@ -225,7 +244,7 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
 #[derive(Drop)]
 pub struct SmallComponent {
     pub log_n_rows: u32,
-    pub interaction_claim: InteractionClaim,
+    pub sum: QM31,
     pub lookup_elements: super::super::MemoryIdToBigElements,
     pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
 }
@@ -293,7 +312,7 @@ pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
             RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
-            claimed_sum: *self.interaction_claim.small_claimed_sum,
+            claimed_sum: *self.sum,
             seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
         };
 
