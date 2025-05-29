@@ -19,7 +19,6 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::decode_instruction_cb32b::decode_instruction_cb32b_evaluate;
 use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
-use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [

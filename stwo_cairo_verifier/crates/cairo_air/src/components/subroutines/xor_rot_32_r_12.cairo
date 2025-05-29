@@ -19,7 +19,6 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_12::bitwise_xor_num_bits_12_evaluate;
 use crate::components::subroutines::bitwise_xor_num_bits_4::bitwise_xor_num_bits_4_evaluate;
 use crate::components::subroutines::split_16_low_part_size_12::split_16_low_part_size_12_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn xor_rot_32_r_12_evaluate(

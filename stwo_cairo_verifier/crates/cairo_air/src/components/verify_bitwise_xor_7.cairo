@@ -16,7 +16,7 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::{CairoComponent, VERIFY_BITWISE_XOR_7_LOG_SIZE};
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 1;
 pub const LOG_SIZE: u32 = VERIFY_BITWISE_XOR_7_LOG_SIZE;

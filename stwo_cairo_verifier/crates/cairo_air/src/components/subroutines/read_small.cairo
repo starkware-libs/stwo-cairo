@@ -17,7 +17,6 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::cond_decode_small_sign::cond_decode_small_sign_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn read_small_evaluate(

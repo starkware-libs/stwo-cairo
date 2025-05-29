@@ -19,7 +19,6 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
 use crate::components::subroutines::verify_add_252::verify_add_252_evaluate;
-use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 103;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
