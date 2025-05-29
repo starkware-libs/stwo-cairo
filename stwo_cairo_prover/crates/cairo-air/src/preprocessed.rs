@@ -22,7 +22,7 @@ use crate::blake::const_columns::BlakeSigma;
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 // Used by every builtin for a read of the memory.
-const MAX_SEQUENCE_LOG_SIZE: u32 = 24;
+pub const MAX_SEQUENCE_LOG_SIZE: u32 = 24;
 
 pub trait PreProcessedColumn {
     fn log_size(&self) -> u32;

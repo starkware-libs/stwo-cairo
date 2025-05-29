@@ -6,7 +6,7 @@ use stwo_cairo_adapter::builtins::{
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
 use stwo_cairo_adapter::HashMap;
-use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
+use stwo_cairo_common::memory::{LOG_MEMORY_ADDRESS_BOUND, MEMORY_ADDRESS_BOUND};
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::channel::{Channel, MerkleChannel};
@@ -67,6 +67,17 @@ fn verify_claim(claim: &CairoClaim) {
     let mut relation_uses = HashMap::<&'static str, u64>::new();
     claim.accumulate_relation_uses(&mut relation_uses);
     check_relation_uses(&relation_uses);
+
+    // Assert that the memory id to value does not overflow.
+    assert!(
+        claim
+            .memory_id_to_value
+            .big_log_sizes
+            .iter()
+            .map(|log_size| 1 << log_size)
+            .sum::<usize>()
+            <= MEMORY_ADDRESS_BOUND
+    );
 }
 
 fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
