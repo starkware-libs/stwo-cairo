@@ -17,7 +17,6 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn felt_252_unpack_from_27_range_check_output_evaluate(

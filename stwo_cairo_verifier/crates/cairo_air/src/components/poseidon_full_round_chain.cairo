@@ -19,7 +19,7 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::linear_combination_n_4_coefs_1_m1_1_1_evaluate;
 use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::linear_combination_n_4_coefs_3_1_1_1_evaluate;
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 126;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [

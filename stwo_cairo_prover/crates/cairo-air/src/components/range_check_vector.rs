@@ -55,12 +55,11 @@ macro_rules! range_check_eval{
                 pub type Component = FrameworkComponent<[<Eval>]>;
 
                 #[derive(Clone, Deserialize, Serialize, CairoSerialize)]
-                pub struct Claim {
-                    pub log_ranges: Vec<u32>,
-                }
+                pub struct Claim {}
+
                 impl Claim {
                     fn log_size(&self) -> u32 {
-                        self.log_ranges.iter().sum()
+                        RANGES.iter().sum()
                     }
 
                     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
