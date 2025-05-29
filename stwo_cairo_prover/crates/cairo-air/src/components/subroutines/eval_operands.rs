@@ -1,8 +1,8 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::add_252::Add252;
-use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
 use crate::components::subroutines::mul_252::Mul252;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
+use crate::components::subroutines::read_positive_num_bits_72::ReadPositiveNumBits72;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct EvalOperands {}
@@ -47,6 +47,8 @@ impl EvalOperands {
         dst_limb_26_col28: E::F,
         dst_limb_27_col29: E::F,
         op0_src_col30: E::F,
+        op0_offset: E::F,
+        op0_segment_id: E::F,
         op0_id_col31: E::F,
         op0_limb_0_col32: E::F,
         op0_limb_1_col33: E::F,
@@ -313,38 +315,20 @@ impl EvalOperands {
             memory_id_to_big_lookup_elements,
             eval,
         );
-        let [cond_felt_252_as_addr_output_tmp_3172c_6] = CondFelt252AsAddr::evaluate(
-            [
-                op0_limb_0_col32.clone(),
-                op0_limb_1_col33.clone(),
-                op0_limb_2_col34.clone(),
-                op0_limb_3_col35.clone(),
-                op0_limb_4_col36.clone(),
-                op0_limb_5_col37.clone(),
-                op0_limb_6_col38.clone(),
-                op0_limb_7_col39.clone(),
-                op0_limb_8_col40.clone(),
-                op0_limb_9_col41.clone(),
-                op0_limb_10_col42.clone(),
-                op0_limb_11_col43.clone(),
-                op0_limb_12_col44.clone(),
-                op0_limb_13_col45.clone(),
-                op0_limb_14_col46.clone(),
-                op0_limb_15_col47.clone(),
-                op0_limb_16_col48.clone(),
-                op0_limb_17_col49.clone(),
-                op0_limb_18_col50.clone(),
-                op0_limb_19_col51.clone(),
-                op0_limb_20_col52.clone(),
-                op0_limb_21_col53.clone(),
-                op0_limb_22_col54.clone(),
-                op0_limb_23_col55.clone(),
-                op0_limb_24_col56.clone(),
-                op0_limb_25_col57.clone(),
-                op0_limb_26_col58.clone(),
-                op0_limb_27_col59.clone(),
-                eval_operands_input_limb_18.clone(),
-            ],
+        ReadPositiveNumBits72::evaluate(
+            op0_segment_id.clone(),
+            [op0_offset.clone()],
+            op0_id_col31.clone(),
+            op0_limb_0_col32.clone(),
+            op0_limb_1_col33.clone(),
+            op0_limb_2_col34.clone(),
+            op0_limb_3_col35.clone(),
+            op0_limb_4_col36.clone(),
+            op0_limb_5_col37.clone(),
+            op0_limb_6_col38.clone(),
+            op0_limb_7_col39.clone(),
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
             eval,
         );
         // op1_src.
@@ -354,10 +338,10 @@ impl EvalOperands {
                     + (eval_operands_input_limb_7.clone() * eval_operands_input_limb_1.clone()))
                     + (eval_operands_input_limb_5.clone() * eval_operands_input_limb_0.clone()))
                     + (eval_operands_input_limb_18.clone()
-                        * cond_felt_252_as_addr_output_tmp_3172c_6.clone()))),
+                        * op0_offset.clone()))),
         );
         ReadPositiveNumBits252::evaluate(
-            M31_1.clone() * (M31_1.clone() - op1_src_col60.clone()),
+            op0_segment_id,
             [(op1_src_col60.clone() + eval_operands_input_limb_25.clone())],
             op1_id_col61.clone(),
             op1_limb_0_col62.clone(),

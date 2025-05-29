@@ -158,6 +158,7 @@ fn write_trace_simd(
                             memory_id_to_big_value_tmp_26616_1.get_m31(1),
                         )) & (UInt16_127))
                             << (UInt16_9)));
+
                 let offset0_col3 = offset0_tmp_26616_2.as_m31();
                 *row[3] = offset0_col3;
                 let offset1_tmp_26616_3 =
@@ -267,7 +268,7 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 27.
 
-                // m[ap/fp + off_op0]
+                // relocatable = m[ap/fp + off_op0]
                 let memory_address_to_id_value_tmp_26616_9 = memory_address_to_id_state
                     .deduce_output(PackedRelocatable::from_ap_m31(
                         ((mem0_base_col10)
@@ -382,13 +383,13 @@ fn write_trace_simd(
                 let UInt32_1 = PackedUInt32::broadcast(UInt32::from(1));
 
                 // Read Positive Num Bits 27.
-                let packed_segment_id = (
+                let packed_offset = (
                     PackedUInt32::from_m31(mem1_base_limb_0_col12)
                     | (PackedUInt32::from_m31(mem1_base_limb_1_col13) << UInt32_9)
                     | (PackedUInt32::from_m31(mem1_base_limb_2_col14) << UInt32_18)
                     | ((PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31) << UInt32_27)
                 ).as_m31();
-                let packed_offset = (
+                let packed_segment_id = (
                     (PackedUInt32::from_m31(mem1_base_limb_3_col15) >> UInt32_5)
                     | (PackedUInt32::from_m31(mem1_base_limb_4_col16) << UInt32_4)
                     | (PackedUInt32::from_m31(mem1_base_limb_5_col17) << UInt32_13)
@@ -396,17 +397,12 @@ fn write_trace_simd(
                     | ((PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1) << UInt32_31)
                 ).as_m31();
 
-                let segment_id_final_word_col20 = (PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31).as_m31();
-                *row[20] = segment_id_final_word_col20;
-                let offset_initial_word_col21 = (PackedUInt32::from_m31(mem1_base_limb_3_col15) >> UInt32_5).as_m31();
-                *row[21] = offset_initial_word_col21;
-                let offset_final_word_col22 = (PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1).as_m31();
-                *row[22] = offset_final_word_col22;
-
-
-                // Mem Verify Equal op1_addr=dst_addr
-
-                // dst = m[ap/fp + off_dst]
+                let offset_final_word_col20 = (PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31).as_m31();
+                *row[20] = offset_final_word_col20;
+                let segment_id_initial_word_col21 = (PackedUInt32::from_m31(mem1_base_limb_3_col15) >> UInt32_5).as_m31();
+                *row[21] = segment_id_initial_word_col21;
+                let segment_id_final_word_col22 = (PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1).as_m31();
+                *row[22] = segment_id_final_word_col22;
                 let memory_address_to_id_value_tmp_26616_12 = memory_address_to_id_state
                     .deduce_output(PackedRelocatable::from_ap_m31(
                         ((mem_dst_base_col9)
@@ -414,27 +410,27 @@ fn write_trace_simd(
                     ));
                 let dst_id_col23 = memory_address_to_id_value_tmp_26616_12;
                 *row[23] = dst_id_col23;
-                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31( // dst addr
+
+                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31( 
                     ((mem_dst_base_col9)
                         + (decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[0])),
                 );
-                *lookup_data.memory_address_to_id_1 = [ // [dst addr, dst id]
+                *lookup_data.memory_address_to_id_1 = [
                     M31_1,
                     ((mem_dst_base_col9)
                         + (decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[0])),
                     dst_id_col23,
                 ];
-                // op1 = m[off_op1 + m[ap/fp + off_op0]]
-                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable{ // op1 addr
+                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable{
                     segment_index: packed_segment_id,
                     offset: packed_offset + decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[2],
                 };
-                *lookup_data.memory_address_to_id_2 = [ // [op1 addr, dst id]
+                *lookup_data.memory_address_to_id_2 = [
                     packed_segment_id,
                     packed_offset + decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[2],
                     dst_id_col23,
                 ];
-
+        
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
                     ((input_pc_col0) + (M31_1)),

@@ -251,7 +251,7 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(((mem1_base_col7)
                     + (decode_instruction_c20090ead04cf422_output_tmp_39ce3_6.0[2])));
                 *lookup_data.memory_address_to_id_0 = [
-                    M31_0,
+                    M31_1,
                     ((mem1_base_col7)
                         + (decode_instruction_c20090ead04cf422_output_tmp_39ce3_6.0[2])),
                     next_pc_id_col8,

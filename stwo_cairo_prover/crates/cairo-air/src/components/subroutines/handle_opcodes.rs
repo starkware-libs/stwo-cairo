@@ -197,6 +197,9 @@ impl HandleOpcodes {
             ],
             eval,
         );
+        // handle_opcodes_input_limb_15 -> 7ième argument = opcode_call_col18
+        // handle_opcodes_input_limb_2 -> 2ième argument = fp
+        // cond_felt_252_as_addr_output_tmp_aa5c5_0 -> 26 à 53 <=> 15 à 42 = dst
         eval.add_constraint(
             (handle_opcodes_input_limb_15.clone()
                 * (cond_felt_252_as_addr_output_tmp_aa5c5_0.clone()

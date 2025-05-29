@@ -356,10 +356,10 @@ impl CasmStatesByOpcode {
                     },
                     {
                         let new_offset = op_1_addr.0.checked_add_signed(offset2 as i32).unwrap();
-                        memory.get(Relocatable::execution(new_offset))
+                        memory.get(Relocatable{segment_index: if op_1_imm { 0 } else { 1 }, offset: new_offset as u32})
                     },
                 );
-
+                
                 // [ap/fp + offset0] = [ap/fp + offset1] * imm.
                 // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                 assert_eq!(
@@ -422,7 +422,7 @@ impl CasmStatesByOpcode {
                     },
                     {
                         let new_offset = op_1_addr.0.checked_add_signed(offset2 as i32).unwrap();
-                        memory.get(Relocatable::execution(new_offset))
+                        memory.get(Relocatable{segment_index: if op_1_imm { 0 } else { 1 }, offset: new_offset as u32})
                     },
                 );
 

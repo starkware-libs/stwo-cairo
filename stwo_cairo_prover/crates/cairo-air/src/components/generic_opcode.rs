@@ -4,7 +4,7 @@ use crate::components::subroutines::eval_operands::EvalOperands;
 use crate::components::subroutines::handle_opcodes::HandleOpcodes;
 use crate::components::subroutines::update_registers::UpdateRegisters;
 
-pub const N_TRACE_COLUMNS: usize = 236;
+pub const N_TRACE_COLUMNS: usize = 239;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -319,6 +319,29 @@ impl FrameworkEval for Eval {
         let next_ap_col233 = eval.next_trace_mask();
         let next_fp_col234 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
+        let offset_final_word_col236 = eval.next_trace_mask();
+        let segment_id_initial_word_col237 = eval.next_trace_mask();
+        let segment_id_final_word_col238 = eval.next_trace_mask();
+
+        let M31_1 = E::F::from(M31::from(1));
+        let M31_shift4 = E::F::from(M31::from(1<<4));
+        let M31_shift13 = E::F::from(M31::from(1<<13));
+        let M31_shift22 = E::F::from(M31::from(1<<22));
+        let M31_shift31 = E::F::from(M31::from(1<<31));
+        let M31_9 = E::F::from(M31::from(1<<9));
+        let M31_18 = E::F::from(M31::from(1<<18));
+        let M31_27 = E::F::from(M31::from(1<<27));
+
+        let segment_id = segment_id_initial_word_col237.clone()
+            + op0_limb_4_col57.clone() * M31_shift4.clone()
+            + op0_limb_5_col58.clone() * M31_shift13.clone()
+            + op0_limb_6_col59.clone() * M31_shift22.clone()
+            + segment_id_final_word_col238.clone() * M31_shift31.clone();
+
+        let op0_offset = op0_limb_0_col53.clone()
+            + (op0_limb_1_col54.clone() * M31_9.clone())
+            + (op0_limb_2_col55.clone() * M31_18.clone())
+            + (offset_final_word_col236.clone() * M31_27.clone());
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
@@ -348,6 +371,12 @@ impl FrameworkEval for Eval {
                 &self.verify_instruction_lookup_elements,
                 &mut eval,
             );
+
+        let op0_segment_id = (M31_1.clone() - op1_imm_col8.clone()) * (
+            (decode_generic_instruction_output_tmp_57455_26_limb_22.clone() * segment_id.clone()) +
+            ((M31_1.clone() - decode_generic_instruction_output_tmp_57455_26_limb_22.clone()) * M31_1.clone())
+        );
+            
         EvalOperands::evaluate(
             [
                 input_pc_col0.clone(),
@@ -398,6 +427,8 @@ impl FrameworkEval for Eval {
             dst_limb_26_col49.clone(),
             dst_limb_27_col50.clone(),
             op0_src_col51.clone(),
+            op0_offset.clone(),
+            op0_segment_id.clone(),
             op0_id_col52.clone(),
             op0_limb_0_col53.clone(),
             op0_limb_1_col54.clone(),

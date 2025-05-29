@@ -84,7 +84,7 @@ impl ClaimGenerator {
                             if j >= 2 {
                                 0
                             } else {
-                                self.relocatable_values[id as usize][j]
+                                self.relocatable_values[id as usize][1-j]
                             }
                         }
                         MemoryValueId::Empty => {

@@ -355,13 +355,13 @@ fn write_trace_simd(
                 let UInt32_1 = PackedUInt32::broadcast(UInt32::from(1));
 
                 // Read Positive Num Bits 27.
-                let packed_segment_id = (
+                let packed_offset = (
                     PackedUInt32::from_m31(mem1_base_limb_0_col9)
                     | (PackedUInt32::from_m31(mem1_base_limb_1_col10) << UInt32_9)
                     | (PackedUInt32::from_m31(mem1_base_limb_2_col11) << UInt32_18)
                     | ((PackedUInt32::from_m31(mem1_base_limb_3_col12) & UInt32_31) << UInt32_27)
                 ).as_m31();
-                let packed_offset = (
+                let packed_segment_id = (
                     (PackedUInt32::from_m31(mem1_base_limb_3_col12) >> UInt32_5)
                     | (PackedUInt32::from_m31(mem1_base_limb_4_col13) << UInt32_4)
                     | (PackedUInt32::from_m31(mem1_base_limb_5_col14) << UInt32_13)
@@ -369,12 +369,12 @@ fn write_trace_simd(
                     | ((PackedUInt32::from_m31(mem1_base_limb_7_col16) & UInt32_1) << UInt32_31)
                 ).as_m31();
 
-                let segment_id_final_word_col22 = (PackedUInt32::from_m31(mem1_base_limb_3_col12) & UInt32_31).as_m31();
-                *row[22] = segment_id_final_word_col22;
-                let offset_initial_word_col23 = (PackedUInt32::from_m31(mem1_base_limb_3_col12) >> UInt32_5).as_m31();
-                *row[23] = offset_initial_word_col23;
-                let offset_final_word_col24 = (PackedUInt32::from_m31(mem1_base_limb_7_col16) & UInt32_1).as_m31();
-                *row[24] = offset_final_word_col24;
+                let offset_final_word_col236 = (PackedUInt32::from_m31(mem1_base_limb_3_col12) & UInt32_31).as_m31();
+                *row[22] = offset_final_word_col236;
+                let segment_id_initial_word_col237 = (PackedUInt32::from_m31(mem1_base_limb_3_col12) >> UInt32_5).as_m31();
+                *row[23] = segment_id_initial_word_col237;
+                let segment_id_final_word_col238 = (PackedUInt32::from_m31(mem1_base_limb_7_col16) & UInt32_1).as_m31();
+                *row[24] = segment_id_final_word_col238;
 
                 let memory_address_to_id_value_tmp_2757b_10 = memory_address_to_id_state
                     .deduce_output(

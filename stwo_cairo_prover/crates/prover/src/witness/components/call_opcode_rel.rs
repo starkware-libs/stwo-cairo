@@ -337,7 +337,7 @@ fn write_trace_simd(
                 *row[11] = distance_to_next_pc_id_col11;
                 *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable::from_pc_m31(((input_pc_col0) + (M31_1)));
                 *lookup_data.memory_address_to_id_2 =
-                    [M31_1, ((input_pc_col0) + (M31_1)), distance_to_next_pc_id_col11];
+                    [M31_0, ((input_pc_col0) + (M31_1)), distance_to_next_pc_id_col11];
 
                 // Cond Decode Small Sign.
 

@@ -69,7 +69,10 @@ impl AtomicMultiplicityColumn2D {
     }
 
     pub fn increase_at(&self, relocatable: &Relocatable) {
-        self.data[relocatable.segment_index][relocatable.offset as usize].fetch_add(1, Ordering::Relaxed);
+        self.data.get(relocatable.segment_index)
+            .and_then(|segment| segment.get(relocatable.offset as usize))
+            .map(|atomic| atomic.fetch_add(1, Ordering::Relaxed))
+            .unwrap_or_else(|| panic!("Index out of bounds: segment_index={}, offset={}", relocatable.segment_index, relocatable.offset));
     }
 
     pub fn resize(&mut self, new_len: Vec<usize>, value: u32) {

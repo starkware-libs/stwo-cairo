@@ -71,7 +71,14 @@ pub struct Memory {
 }
 impl Memory {
     pub fn get(&self, relocatable: Relocatable) -> MemoryValue {
-        match self.relocatable_to_id[relocatable.segment_index as usize][relocatable.offset as usize].decode() {
+        let segment = self.relocatable_to_id.get(relocatable.segment_index as usize)
+            .unwrap_or_else(|| panic!("Memory access error: segment_index {} out of bounds", relocatable.segment_index));
+            
+        let value_id = segment.get(relocatable.offset as usize)
+            .unwrap_or_else(|| panic!("Memory access error: offset {} out of bounds for segment {}", 
+                relocatable.offset, relocatable.segment_index));
+
+        match value_id.decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
             MemoryValueId::MemoryRelocatable(id) => MemoryValue::MemoryRelocatable(self.relocatable_values[id as usize]),
@@ -257,15 +264,16 @@ impl DerefMut for MemoryBuilder {
     }
 }
 
-pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x4000_0000;
-pub const RELOCATABLE_ID_BASE: u32 = 0x8000_0000;
+pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x2000_0000;
+pub const RELOCATABLE_ID_BASE: u32 = 0x4000_0000;
 
 /// Used to mark an unused address.
 /// Cannot be assigned as a valid ID, as [`DEFAULT_ID`] > 2**[`LOG_MEMORY_ADDRESS_BOUND`].
 pub const DEFAULT_ID: u32 = LARGE_MEMORY_VALUE_ID_BASE - 1;
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EncodedMemoryValueId(pub u32);
+
 impl EncodedMemoryValueId {
     pub fn encode(value: MemoryValueId) -> EncodedMemoryValueId {
         match value {
@@ -279,8 +287,8 @@ impl EncodedMemoryValueId {
         if self.0 == DEFAULT_ID {
             return MemoryValueId::Empty;
         }
-        let tag = self.0 >> 30;
-        let val = self.0 & 0x3FFF_FFFF;
+        let tag = self.0 >> 29;
+        let val = self.0 & 0x1FFF_FFFF;
         match tag {
             0 => MemoryValueId::Small(val),
             1 => MemoryValueId::F252(val),

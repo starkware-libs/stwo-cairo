@@ -5,10 +5,9 @@ use cairo_air::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
     N_TRACE_COLUMNS,
 };
-use cairo_air::preprocessed::Seq;
 use cairo_air::relations;
 use itertools::{izip, Itertools};
-use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use stwo_cairo_adapter::memory::Memory;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
@@ -141,6 +140,7 @@ impl ClaimGenerator {
     ) -> (Claim, InteractionClaimGenerator) {
         // Pad to a multiple of `N_LANES`.
         let next_multiples_of_16 = self.relocatable_to_id.data.iter().map(|segment| segment.len().next_multiple_of(16)).collect_vec();
+        let segment_sizes = self.relocatable_to_id.data.iter().map(|segment| segment.len()).collect_vec();
         self.relocatable_to_id.resize(next_multiples_of_16.clone(), 0);
         self.relocatable_to_id.flatten();
 
@@ -152,8 +152,8 @@ impl ClaimGenerator {
         let multiplicities = self.multiplicities.into_simd_vec();
 
         let size = std::cmp::max(
-            (multiplicities
-                .len()
+            ((multiplicities
+                .len() * N_LANES)
                 .div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT))
             .next_power_of_two(),
             N_LANES,
@@ -161,29 +161,14 @@ impl ClaimGenerator {
         let n_packed_rows = size.div_ceil(N_LANES);
         let mut trace: [_; N_TRACE_COLUMNS] =
             std::array::from_fn(|_| Col::<SimdBackend, M31>::zeros(size));
-
-        let mut segment_ids = Vec::new();
-        let mut offsets = Vec::new();
-        let mut current_flat_base = 0;
-        let mut segment_id = 0;
-        let mut offset;
-        for i in 0..multiplicities.len() {
-            if i >= current_flat_base + next_multiples_of_16[segment_id] {
-                current_flat_base += next_multiples_of_16[segment_id];
-                segment_id += 1;
-                offset = 0;
-            } else {
-                offset = i - current_flat_base;
-            }
-            segment_ids.push(segment_id);
-            offsets.push(offset);
-        }
         
         let mut flat_segment_ids = Vec::new();
         let mut flat_offsets = Vec::new();
-        for (i, new_len) in next_multiples_of_16.iter().enumerate() {
-            flat_segment_ids.extend(std::iter::repeat(i as u32).take(*new_len));
-            flat_offsets.extend((0..*new_len).map(|x| x as u32));
+        for (i, segment_size) in segment_sizes.iter().enumerate() {
+            flat_segment_ids.extend(std::iter::repeat(i as u32).take(*segment_size));
+            flat_segment_ids.extend(std::iter::repeat(0).take(next_multiples_of_16[i] - *segment_size));
+            flat_offsets.extend((0..*segment_size).map(|x| x as u32));
+            flat_offsets.extend(std::iter::repeat(0).take(next_multiples_of_16[i] - *segment_size));
         }
         let segment_ids = flat_segment_ids
         .array_chunks::<N_LANES>()
@@ -195,7 +180,6 @@ impl ClaimGenerator {
         for (i, (id_packed, multiplicity_packed, segment_id_packed, offset_packed)) in izip!(id_it, multiplicities, segment_ids, offsets).enumerate() {
             let chunk_idx_trace = i / n_packed_rows;
             let i_row_in_chunk = i % n_packed_rows;
-
             trace[0 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = segment_id_packed;
             trace[1 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = offset_packed;
             trace[2 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = id_packed;
@@ -203,10 +187,14 @@ impl ClaimGenerator {
         }
 
         // Lookup data.
-        let ids: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
-            std::array::from_fn(|i| trace[i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
-        let multiplicities: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
+        let segment_ids: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
+            std::array::from_fn(|i| trace[0 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
+        let offsets: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
             std::array::from_fn(|i| trace[1 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
+        let ids: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
+            std::array::from_fn(|i| trace[2 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
+        let multiplicities: [_; MEMORY_ADDRESS_TO_ID_SPLIT] =
+            std::array::from_fn(|i| trace[3 + i * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data.clone());
 
         // Commit on trace.
         let log_size = size.checked_ilog2().unwrap();
@@ -222,6 +210,8 @@ impl ClaimGenerator {
         (
             Claim { log_size },
             InteractionClaimGenerator {
+                segment_ids,
+                offsets,
                 ids,
                 multiplicities,
             },
@@ -230,6 +220,8 @@ impl ClaimGenerator {
 }
 
 pub struct InteractionClaimGenerator {
+    pub segment_ids: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
+    pub offsets: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
     pub ids: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
     pub multiplicities: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
 }
@@ -241,22 +233,17 @@ impl InteractionClaimGenerator {
     ) -> InteractionClaim {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
-        let n_rows = 1 << log_size;
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
-        for (i, ((ids0, mults0), (ids1, mults1))) in
-            izip!(&self.ids, &self.multiplicities).tuples().enumerate()
+        for ((segment_ids0, offsets0, ids0, mults0), (segment_ids1, offsets1, ids1, mults1)) in
+            izip!(&self.segment_ids, &self.offsets, &self.ids, &self.multiplicities).tuples()
         {
             let mut col_gen = logup_gen.new_col();
-            (col_gen.par_iter_mut(), ids0, ids1, mults0, mults1)
+            (col_gen.par_iter_mut(), segment_ids0, segment_ids1, offsets0, offsets1, ids0, ids1, mults0, mults1)
                 .into_par_iter()
-                .enumerate()
-                .for_each(|(vec_row, (writer, &id0, &id1, &mult0, &mult1))| {
-                    let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));
-                    let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
-                    let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
-                    let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);
-                    let p1: PackedQM31 = lookup_elements.combine(&[addr1, id1]);
+                .for_each(|(writer, &segment_id0, &segment_id1, &offset0, &offset1, &id0, &id1, &mult0, &mult1)| {
+                    let p0: PackedQM31 = lookup_elements.combine(&[segment_id0, offset0, id0]);
+                    let p1: PackedQM31 = lookup_elements.combine(&[segment_id1, offset1, id1]);
                     writer.write_frac(p0 * (-mult1) + p1 * (-mult0), p1 * p0);
                 });
             col_gen.finalize_col();
