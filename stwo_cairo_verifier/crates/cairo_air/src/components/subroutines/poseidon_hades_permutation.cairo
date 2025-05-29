@@ -20,7 +20,6 @@ use crate::components::subroutines::linear_combination_n_2_coefs_1_1::linear_com
 use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
 use crate::components::subroutines::linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate;
 use crate::components::subroutines::linear_combination_n_4_coefs_4_2_m2_1::linear_combination_n_4_coefs_4_2_m2_1_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn poseidon_hades_permutation_evaluate(

@@ -19,7 +19,7 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate;
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
-use crate::utils::U32Impl;
+
 
 pub const N_TRACE_COLUMNS: usize = 89;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [

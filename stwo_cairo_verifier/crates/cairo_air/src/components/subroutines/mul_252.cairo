@@ -18,7 +18,6 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
 use crate::components::subroutines::verify_mul_252::verify_mul_252_evaluate;
-use crate::utils::U32Impl;
 
 
 pub fn mul_252_evaluate(

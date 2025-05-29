@@ -9,32 +9,6 @@ use super::components::memory_id_to_big;
 
 
 #[generate_trait]
-pub impl U32Impl of U32ExTrait {
-    /// Returns the smallest power of two greater than or equal to self.
-    ///
-    /// Panics if the next power of two is greater than the type’s maximum value.
-    fn next_power_of_two(self: u32) -> u32 {
-        let mut next_power_of_two = 1;
-        while next_power_of_two < self {
-            next_power_of_two *= 2;
-        }
-        next_power_of_two
-    }
-
-    /// Returns the base 2 logarithm of the number, rounded down.
-    fn ilog2(self: u32) -> u32 {
-        let self: u64 = self.into();
-        let mut res = 0;
-        let mut next_power_of_two = 1;
-        while next_power_of_two < self {
-            next_power_of_two *= 2;
-            res += 1;
-        }
-        res
-    }
-}
-
-#[generate_trait]
 pub impl UsizeImpl of UsizeExTrait {
     /// Calculates the quotient of `self` and `other`, rounding the result towards positive
     /// infinity.

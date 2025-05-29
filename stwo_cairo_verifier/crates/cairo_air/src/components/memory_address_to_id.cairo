@@ -10,7 +10,7 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
-use crate::utils::{U32Impl, UsizeExTrait};
+use crate::utils::UsizeExTrait;
 use super::super::Invertible;
 
 mod constraints;
@@ -28,6 +28,7 @@ mod constraints;
 /// ID1 = [id3, id4, id5, 0]
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
+pub const LOG_MEMORY_ADDRESS_TO_ID_SPLIT: u32 = 3;
 pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
