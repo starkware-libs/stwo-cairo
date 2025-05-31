@@ -13481,19 +13481,17 @@
       ],
       "call_opcode": [
         {
+          "ap": 1558,
+          "fp": 1554,
+          "pc": 303
+        },
+        {
           "ap": 1568,
           "fp": 1564,
           "pc": 312
         }
       ],
-      "call_opcode_op_1_base_fp": [
-        {
-          "ap": 1558,
-          "fp": 1554,
-          "pc": 303
-        }
-      ],
-      "call_opcode_rel": [
+      "call_opcode_rel_imm": [
         {
           "ap": 1347,
           "fp": 1336,
