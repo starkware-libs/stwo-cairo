@@ -1,3 +1,4 @@
+// AIR version 1d0330d7
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_2a7a2::DecodeInstruction2A7A2;
 use crate::components::subroutines::read_positive_num_bits_27::ReadPositiveNumBits27;
@@ -137,7 +138,7 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_7ab23_14_limb_0] = ReadSmall::evaluate(
+        let [read_small_output_tmp_9db06_14_limb_0] = ReadSmall::evaluate(
             [(input_pc_col0.clone() + M31_1.clone())],
             distance_to_next_pc_id_col11.clone(),
             msb_col12.clone(),
@@ -163,7 +164,7 @@ impl FrameworkEval for Eval {
             &self.opcodes_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
-                (input_pc_col0.clone() + read_small_output_tmp_7ab23_14_limb_0.clone()),
+                (input_pc_col0.clone() + read_small_output_tmp_9db06_14_limb_0.clone()),
                 (input_ap_col1.clone() + M31_2.clone()),
                 (input_ap_col1.clone() + M31_2.clone()),
             ],
@@ -183,10 +184,10 @@ mod tests {
     use stwo_prover::core::fields::qm31::QM31;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::CALL_OPCODE_REL;
+    use crate::components::constraints_regression_test_values::CALL_OPCODE_REL_IMM;
 
     #[test]
-    fn call_opcode_rel_constraints_regression() {
+    fn call_opcode_rel_imm_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
@@ -203,6 +204,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, CALL_OPCODE_REL);
+        assert_eq!(sum, CALL_OPCODE_REL_IMM);
     }
 }
