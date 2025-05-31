@@ -16,10 +16,12 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
-use crate::utils::U32Impl;use crate::components::subroutines::decode_instruction_f1edd::decode_instruction_f1edd_evaluate;
+use crate::utils::U32Impl;
+use crate::components::subroutines::decode_instruction_2a7a2::decode_instruction_2a7a2_evaluate;
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::components::subroutines::read_small::read_small_evaluate;
 
-pub const N_TRACE_COLUMNS: usize = 19;
+pub const N_TRACE_COLUMNS: usize = 18;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -75,8 +77,9 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let log_size = *(self.claim.log_size);
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -142,51 +145,47 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let mut opcodes_sum_7: QM31 = Zero::zero();
         let mut opcodes_sum_8: QM31 = Zero::zero();
 
-
         let [
             input_pc_col0,
             input_ap_col1,
             input_fp_col2,
-            offset2_col3,
-            op1_base_fp_col4,
-            stored_fp_id_col5,
-            stored_fp_limb_0_col6,
-            stored_fp_limb_1_col7,
-            stored_fp_limb_2_col8,
-            stored_ret_pc_id_col9,
-            stored_ret_pc_limb_0_col10,
-            stored_ret_pc_limb_1_col11,
-            stored_ret_pc_limb_2_col12,
-            mem1_base_col13,
-            next_pc_id_col14,
-            next_pc_limb_0_col15,
-            next_pc_limb_1_col16,
-            next_pc_limb_2_col17,
+            stored_fp_id_col3,
+            stored_fp_limb_0_col4,
+            stored_fp_limb_1_col5,
+            stored_fp_limb_2_col6,
+            stored_ret_pc_id_col7,
+            stored_ret_pc_limb_0_col8,
+            stored_ret_pc_limb_1_col9,
+            stored_ret_pc_limb_2_col10,
+            distance_to_next_pc_id_col11,
+            msb_col12,
+            mid_limbs_set_col13,
+            distance_to_next_pc_limb_0_col14,
+            distance_to_next_pc_limb_1_col15,
+            distance_to_next_pc_limb_2_col16,
             enabler
-        ]: [Span<QM31>; 19] =
+        ]: [Span<QM31>; 18] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-
         let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();
         let [input_ap_col1]: [QM31; 1] = (*input_ap_col1.try_into().unwrap()).unbox();
         let [input_fp_col2]: [QM31; 1] = (*input_fp_col2.try_into().unwrap()).unbox();
-        let [offset2_col3]: [QM31; 1] = (*offset2_col3.try_into().unwrap()).unbox();
-        let [op1_base_fp_col4]: [QM31; 1] = (*op1_base_fp_col4.try_into().unwrap()).unbox();
-        let [stored_fp_id_col5]: [QM31; 1] = (*stored_fp_id_col5.try_into().unwrap()).unbox();
-        let [stored_fp_limb_0_col6]: [QM31; 1] = (*stored_fp_limb_0_col6.try_into().unwrap()).unbox();
-        let [stored_fp_limb_1_col7]: [QM31; 1] = (*stored_fp_limb_1_col7.try_into().unwrap()).unbox();
-        let [stored_fp_limb_2_col8]: [QM31; 1] = (*stored_fp_limb_2_col8.try_into().unwrap()).unbox();
-        let [stored_ret_pc_id_col9]: [QM31; 1] = (*stored_ret_pc_id_col9.try_into().unwrap()).unbox();
-        let [stored_ret_pc_limb_0_col10]: [QM31; 1] = (*stored_ret_pc_limb_0_col10.try_into().unwrap()).unbox();
-        let [stored_ret_pc_limb_1_col11]: [QM31; 1] = (*stored_ret_pc_limb_1_col11.try_into().unwrap()).unbox();
-        let [stored_ret_pc_limb_2_col12]: [QM31; 1] = (*stored_ret_pc_limb_2_col12.try_into().unwrap()).unbox();
-        let [mem1_base_col13]: [QM31; 1] = (*mem1_base_col13.try_into().unwrap()).unbox();
-        let [next_pc_id_col14]: [QM31; 1] = (*next_pc_id_col14.try_into().unwrap()).unbox();
-        let [next_pc_limb_0_col15]: [QM31; 1] = (*next_pc_limb_0_col15.try_into().unwrap()).unbox();
-        let [next_pc_limb_1_col16]: [QM31; 1] = (*next_pc_limb_1_col16.try_into().unwrap()).unbox();
-        let [next_pc_limb_2_col17]: [QM31; 1] = (*next_pc_limb_2_col17.try_into().unwrap()).unbox();
+        let [stored_fp_id_col3]: [QM31; 1] = (*stored_fp_id_col3.try_into().unwrap()).unbox();
+        let [stored_fp_limb_0_col4]: [QM31; 1] = (*stored_fp_limb_0_col4.try_into().unwrap()).unbox();
+        let [stored_fp_limb_1_col5]: [QM31; 1] = (*stored_fp_limb_1_col5.try_into().unwrap()).unbox();
+        let [stored_fp_limb_2_col6]: [QM31; 1] = (*stored_fp_limb_2_col6.try_into().unwrap()).unbox();
+        let [stored_ret_pc_id_col7]: [QM31; 1] = (*stored_ret_pc_id_col7.try_into().unwrap()).unbox();
+        let [stored_ret_pc_limb_0_col8]: [QM31; 1] = (*stored_ret_pc_limb_0_col8.try_into().unwrap()).unbox();
+        let [stored_ret_pc_limb_1_col9]: [QM31; 1] = (*stored_ret_pc_limb_1_col9.try_into().unwrap()).unbox();
+        let [stored_ret_pc_limb_2_col10]: [QM31; 1] = (*stored_ret_pc_limb_2_col10.try_into().unwrap()).unbox();
+        let [distance_to_next_pc_id_col11]: [QM31; 1] = (*distance_to_next_pc_id_col11.try_into().unwrap()).unbox();
+        let [msb_col12]: [QM31; 1] = (*msb_col12.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col13]: [QM31; 1] = (*mid_limbs_set_col13.try_into().unwrap()).unbox();
+        let [distance_to_next_pc_limb_0_col14]: [QM31; 1] = (*distance_to_next_pc_limb_0_col14.try_into().unwrap()).unbox();
+        let [distance_to_next_pc_limb_1_col15]: [QM31; 1] = (*distance_to_next_pc_limb_1_col15.try_into().unwrap()).unbox();
+        let [distance_to_next_pc_limb_2_col16]: [QM31; 1] = (*distance_to_next_pc_limb_2_col16.try_into().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
