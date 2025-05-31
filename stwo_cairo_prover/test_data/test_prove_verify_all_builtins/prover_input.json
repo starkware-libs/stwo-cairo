@@ -44062,8 +44062,7 @@
       ],
       "blake_compress_opcode": [],
       "call_opcode": [],
-      "call_opcode_op_1_base_fp": [],
-      "call_opcode_rel": [
+      "call_opcode_rel_imm": [
         {
           "ap": 496,
           "fp": 485,

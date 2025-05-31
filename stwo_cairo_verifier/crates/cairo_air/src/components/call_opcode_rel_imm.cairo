@@ -1,5 +1,4 @@
-// Constraints version: bc855610
-
+// AIR version f1e997f6
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -292,7 +291,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_7ab23_14_limb_0] = output;
+        let [read_small_output_tmp_9db06_14_limb_0] = output;
 
         opcodes_sum_7 = self
             .opcodes_lookup_elements
@@ -302,7 +301,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             .opcodes_lookup_elements
             .combine_qm31(
                 [
-                    (input_pc_col0 + read_small_output_tmp_7ab23_14_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_9db06_14_limb_0),
                     (input_ap_col1 + qm31_const::<2, 0, 0, 0>()),
                     (input_ap_col1 + qm31_const::<2, 0, 0, 0>()),
                 ],
