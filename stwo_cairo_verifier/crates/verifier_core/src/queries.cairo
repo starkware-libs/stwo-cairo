@@ -1,3 +1,4 @@
+use core::dict::{Felt252Dict, SquashedFelt252DictTrait};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use super::utils::{ArrayImpl, pow2};
@@ -19,9 +20,9 @@ pub impl QueriesImpl of QueriesImplTrait {
     /// Panics if `log_domain_size` is >=32.
     fn generate(ref channel: Channel, log_domain_size: u32, n_queries: usize) -> Queries {
         const BYTE_SHIFT: u32 = 0x100;
-        let mut unsorted_positions = array![];
+        let mut positions_dict: Felt252Dict<felt252> = Default::default();
+        let mut n_dict_entries = 0;
         let max_query_mask = pow2(log_domain_size) - 1;
-        let mut finished = false;
         loop {
             // In each iteration, random_bytes is truncated to multiples of 4 bytes.
             let mut random_bytes = channel.draw_random_bytes().span();
@@ -31,18 +32,26 @@ pub impl QueriesImpl of QueriesImplTrait {
                     * BYTE_SHIFT
                     + b0.into())
                     & max_query_mask;
-                unsorted_positions.append(position);
-                if unsorted_positions.len() == n_queries {
-                    finished = true;
+                positions_dict.insert(position.into(), 0);
+                n_dict_entries += 1;
+                if n_dict_entries == n_queries {
                     break;
                 }
             }
-            if finished {
+            if n_dict_entries == n_queries {
                 break;
             }
         }
 
-        Queries { positions: unsorted_positions.sort_ascending().dedup().span(), log_domain_size }
+        // A squashed dict's entries are sorted by key in ascending order.
+        let dict_entries = positions_dict.squash().into_entries();
+        let mut sorted_positions = array![];
+
+        for (position, _, _) in dict_entries {
+            sorted_positions.append(position.try_into().unwrap());
+        }
+
+        Queries { positions: sorted_positions.span(), log_domain_size }
     }
 
     fn len(self: @Queries) -> usize {
