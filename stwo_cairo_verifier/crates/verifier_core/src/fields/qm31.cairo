@@ -44,8 +44,8 @@ pub trait QM31Trait {
     /// Returns `lhs * rhs` in unreduced form.
     fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31;
 
-    /// Returns the combined value, given the values of its composing base field polynomials at that
-    /// point.
+    /// Combines the elements as coefficients in the basis `{1, i, u, iu}` to
+    /// form a single element.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31;
 }
 
