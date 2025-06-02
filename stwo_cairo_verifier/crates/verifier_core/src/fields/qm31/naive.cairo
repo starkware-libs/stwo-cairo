@@ -20,7 +20,6 @@ pub struct QM31 {
 
 impl QM31InvertibleImpl of Invertible<QM31> {
     fn inverse(self: QM31) -> QM31 {
-        assert!(self.is_non_zero());
         let b2 = self.b * self.b;
         let ib2 = CM31 { a: -b2.b, b: b2.a };
         let denom = self.a * self.a - (b2 + b2 + ib2);
