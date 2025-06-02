@@ -184,15 +184,15 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             column_log_sizes.append(column_commitment_domain.log_size());
         }
 
-        let unique_column_log_sizes = column_log_sizes.dedup().span();
+        let column_log_sizes = column_log_sizes.span();
 
         // Column are sorted in descending order by size.
-        let max_column_log_size = *unique_column_log_sizes.first().unwrap();
+        let max_column_log_size = *column_log_sizes.first().unwrap();
         let n_queries = self.config.n_queries;
         let queries = QueriesImpl::generate(ref channel, max_column_log_size, n_queries);
         self.queries = Some(queries);
 
-        (unique_column_log_sizes, get_query_positions_by_log_size(queries, unique_column_log_sizes))
+        (column_log_sizes, get_query_positions_by_log_size(queries, column_log_sizes))
     }
 }
 
