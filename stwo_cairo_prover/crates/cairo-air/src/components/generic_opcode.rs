@@ -1,3 +1,4 @@
+// AIR version f1e997f6
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_generic_instruction::DecodeGenericInstruction;
 use crate::components::subroutines::eval_operands::EvalOperands;
@@ -5,7 +6,7 @@ use crate::components::subroutines::handle_opcodes::HandleOpcodes;
 use crate::components::subroutines::update_registers::UpdateRegisters;
 
 pub const N_TRACE_COLUMNS: usize = 236;
-pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 12] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
@@ -20,11 +21,35 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     },
     RelationUse {
         relation_id: "RangeCheck_19",
-        uses: 28,
+        uses: 8,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_B",
+        uses: 7,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_C",
+        uses: 7,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_D",
+        uses: 6,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9",
-        uses: 28,
+        uses: 8,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_B",
+        uses: 8,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_C",
+        uses: 6,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_D",
+        uses: 6,
     },
     RelationUse {
         relation_id: "VerifyInstruction",
@@ -38,7 +63,13 @@ pub struct Eval {
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
+    pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
+    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
+    pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
+    pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
+    pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
+    pub range_check_19_d_lookup_elements: relations::RangeCheck_19_D,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -324,7 +355,7 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_generic_instruction_output_tmp_57455_26_limb_15, decode_generic_instruction_output_tmp_57455_26_limb_16, decode_generic_instruction_output_tmp_57455_26_limb_17, decode_generic_instruction_output_tmp_57455_26_limb_18, decode_generic_instruction_output_tmp_57455_26_limb_19, decode_generic_instruction_output_tmp_57455_26_limb_20, decode_generic_instruction_output_tmp_57455_26_limb_21, decode_generic_instruction_output_tmp_57455_26_limb_22] =
+        let [decode_generic_instruction_output_tmp_57455_26_op1_base_op0, decode_generic_instruction_output_tmp_57455_26_res_op1, decode_generic_instruction_output_tmp_57455_26_pc_update_regular, decode_generic_instruction_output_tmp_57455_26_fp_update_regular, decode_generic_instruction_output_tmp_57455_26_instruction_size, decode_generic_instruction_output_tmp_57455_26_offset0, decode_generic_instruction_output_tmp_57455_26_offset1, decode_generic_instruction_output_tmp_57455_26_offset2] =
             DecodeGenericInstruction::evaluate(
                 [input_pc_col0.clone()],
                 offset0_col3.clone(),
@@ -361,11 +392,11 @@ impl FrameworkEval for Eval {
                 res_add_col11.clone(),
                 res_mul_col12.clone(),
                 pc_update_jnz_col15.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_15.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_16.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_20.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_21.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_22.clone(),
+                decode_generic_instruction_output_tmp_57455_26_op1_base_op0.clone(),
+                decode_generic_instruction_output_tmp_57455_26_res_op1.clone(),
+                decode_generic_instruction_output_tmp_57455_26_offset0.clone(),
+                decode_generic_instruction_output_tmp_57455_26_offset1.clone(),
+                decode_generic_instruction_output_tmp_57455_26_offset2.clone(),
             ],
             dst_src_col21.clone(),
             dst_id_col22.clone(),
@@ -573,7 +604,13 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_b_lookup_elements,
+            &self.range_check_9_9_c_lookup_elements,
+            &self.range_check_9_9_d_lookup_elements,
             &self.range_check_19_lookup_elements,
+            &self.range_check_19_b_lookup_elements,
+            &self.range_check_19_c_lookup_elements,
+            &self.range_check_19_d_lookup_elements,
             &mut eval,
         );
         HandleOpcodes::evaluate(
@@ -587,11 +624,11 @@ impl FrameworkEval for Eval {
                 opcode_call_col18.clone(),
                 opcode_ret_col19.clone(),
                 opcode_assert_eq_col20.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_16.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_19.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_20.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_21.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_22.clone(),
+                decode_generic_instruction_output_tmp_57455_26_res_op1.clone(),
+                decode_generic_instruction_output_tmp_57455_26_instruction_size.clone(),
+                decode_generic_instruction_output_tmp_57455_26_offset0.clone(),
+                decode_generic_instruction_output_tmp_57455_26_offset1.clone(),
+                decode_generic_instruction_output_tmp_57455_26_offset2.clone(),
                 dst_limb_0_col23.clone(),
                 dst_limb_1_col24.clone(),
                 dst_limb_2_col25.clone(),
@@ -691,9 +728,9 @@ impl FrameworkEval for Eval {
                 ap_update_add_1_col17.clone(),
                 opcode_call_col18.clone(),
                 opcode_ret_col19.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_17.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_18.clone(),
-                decode_generic_instruction_output_tmp_57455_26_limb_19.clone(),
+                decode_generic_instruction_output_tmp_57455_26_pc_update_regular.clone(),
+                decode_generic_instruction_output_tmp_57455_26_fp_update_regular.clone(),
+                decode_generic_instruction_output_tmp_57455_26_instruction_size.clone(),
                 dst_limb_0_col23.clone(),
                 dst_limb_1_col24.clone(),
                 dst_limb_2_col25.clone(),
@@ -837,7 +874,13 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
             range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+            range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
+            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
+            range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
             range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+            range_check_19_b_lookup_elements: relations::RangeCheck_19_B::dummy(),
+            range_check_19_c_lookup_elements: relations::RangeCheck_19_C::dummy(),
+            range_check_19_d_lookup_elements: relations::RangeCheck_19_D::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
