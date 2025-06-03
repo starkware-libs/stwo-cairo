@@ -1,8 +1,8 @@
 #[macro_export]
 macro_rules! range_check_prover {
-    ($($log_range:expr),+) => {
+    ($name:ident, $name_upper:ident, $($log_range:expr),+) => {
         paste::paste! {
-            use cairo_air::components::range_check_vector::[<range_check_$($log_range)_*>]::{Claim, InteractionClaim};
+            use cairo_air::components::range_check_vector::$name::{Claim, InteractionClaim};
             use $crate::witness::prelude::*;
             const N_RANGES: usize = cairo_air::count_elements!($($log_range),*);
             const RANGES : [u32; N_RANGES] = [$($log_range),+];
@@ -92,7 +92,7 @@ macro_rules! range_check_prover {
                 pub fn write_interaction_trace(
                     &self,
                     tree_builder: &mut impl TreeBuilder<SimdBackend>,
-                    lookup_elements: &relations::[<RangeCheck_$($log_range)_*>],
+                    lookup_elements: &relations::$name_upper,
                 ) -> InteractionClaim {
                     let log_size = RANGES.iter().sum::<u32>();
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
@@ -132,7 +132,14 @@ macro_rules! generate_range_check_witness {
     ([$($log_range:expr),+]) => {
         paste::paste!{
             pub mod [<range_check_$($log_range)_*>] {
-                $crate::range_check_prover!($($log_range),+);
+                $crate::range_check_prover!([<range_check_$($log_range)_*>],[<RangeCheck_$($log_range)_*>],$($log_range),+);
+            }
+        }
+    };
+    ([$($log_range:expr),+], $suffix:ident, $suffix_upper:ident) => {
+        paste::paste!{
+            pub mod [<range_check_$($log_range)_*_$suffix>] {
+                $crate::range_check_prover!([<range_check_$($log_range)_*_$suffix>], [<RangeCheck_$($log_range)_*_$suffix_upper>], $($log_range),+);
             }
         }
     };
@@ -145,10 +152,16 @@ pub mod range_check_trace_generators {
     generate_range_check_witness!([12]);
     generate_range_check_witness!([18]);
     generate_range_check_witness!([19]);
+    generate_range_check_witness!([19], b, B);
+    generate_range_check_witness!([19], c, C);
+    generate_range_check_witness!([19], d, D);
     generate_range_check_witness!([4, 3]);
     generate_range_check_witness!([4, 4]);
     generate_range_check_witness!([5, 4]);
     generate_range_check_witness!([9, 9]);
+    generate_range_check_witness!([9, 9], b, B);
+    generate_range_check_witness!([9, 9], c, C);
+    generate_range_check_witness!([9, 9], d, D);
     generate_range_check_witness!([7, 2, 5]);
     generate_range_check_witness!([3, 6, 6, 3]);
     generate_range_check_witness!([4, 4, 4, 4]);
