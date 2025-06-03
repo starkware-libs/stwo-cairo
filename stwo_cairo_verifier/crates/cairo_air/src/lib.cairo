@@ -138,6 +138,18 @@ use components::range_check_18::{
 use components::range_check_19::{
     ClaimImpl as RangeCheck_19ClaimImpl, InteractionClaimImpl as RangeCheck_19InteractionClaimImpl,
 };
+use components::range_check_19_b::{
+    ClaimImpl as RangeCheck_19BClaimImpl,
+    InteractionClaimImpl as RangeCheck_19BInteractionClaimImpl,
+};
+use components::range_check_19_c::{
+    ClaimImpl as RangeCheck_19CClaimImpl,
+    InteractionClaimImpl as RangeCheck_19CInteractionClaimImpl,
+};
+use components::range_check_19_d::{
+    ClaimImpl as RangeCheck_19DClaimImpl,
+    InteractionClaimImpl as RangeCheck_19DInteractionClaimImpl,
+};
 use components::range_check_3_3_3_3_3::{
     ClaimImpl as RangeCheck_3_3_3_3_3ClaimImpl,
     InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl,
@@ -175,6 +187,18 @@ use components::range_check_8::{
 use components::range_check_9_9::{
     ClaimImpl as RangeCheck_9_9ClaimImpl,
     InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl,
+};
+use components::range_check_9_9_b::{
+    ClaimImpl as RangeCheck_9_9BClaimImpl,
+    InteractionClaimImpl as RangeCheck_9_9BInteractionClaimImpl,
+};
+use components::range_check_9_9_c::{
+    ClaimImpl as RangeCheck_9_9CClaimImpl,
+    InteractionClaimImpl as RangeCheck_9_9CInteractionClaimImpl,
+};
+use components::range_check_9_9_d::{
+    ClaimImpl as RangeCheck_9_9DClaimImpl,
+    InteractionClaimImpl as RangeCheck_9_9DInteractionClaimImpl,
 };
 use components::range_check_builtin_bits_128::{
     ClaimImpl as RangeCheckBuiltinBits128ClaimImpl,
@@ -465,8 +489,14 @@ type RangeCheck_12Elements = LookupElements<1>;
 type RangeCheck_18Elements = LookupElements<1>;
 
 type RangeCheck_19Elements = LookupElements<1>;
+type RangeCheck_19_BElements = LookupElements<1>;
+type RangeCheck_19_CElements = LookupElements<1>;
+type RangeCheck_19_DElements = LookupElements<1>;
 
 type RangeCheck_9_9Elements = LookupElements<2>;
+type RangeCheck_9_9_BElements = LookupElements<2>;
+type RangeCheck_9_9_CElements = LookupElements<2>;
+type RangeCheck_9_9_DElements = LookupElements<2>;
 
 type RangeCheck_4_3Elements = LookupElements<2>;
 
@@ -685,10 +715,16 @@ struct RangeChecksInteractionElements {
     pub rc_12: RangeCheck_12Elements,
     pub rc_18: RangeCheck_18Elements,
     pub rc_19: RangeCheck_19Elements,
+    pub rc_19_b: RangeCheck_19Elements,
+    pub rc_19_c: RangeCheck_19Elements,
+    pub rc_19_d: RangeCheck_19Elements,
     pub rc_4_3: RangeCheck_4_3Elements,
     pub rc_4_4: RangeCheck_4_4Elements,
     pub rc_5_4: RangeCheck_5_4Elements,
     pub rc_9_9: RangeCheck_9_9Elements,
+    pub rc_9_9_b: RangeCheck_9_9Elements,
+    pub rc_9_9_c: RangeCheck_9_9Elements,
+    pub rc_9_9_d: RangeCheck_9_9Elements,
     pub rc_7_2_5: RangeCheck_7_2_5Elements,
     pub rc_3_6_6_3: RangeCheck_3_6_6_3Elements,
     pub rc_4_4_4_4: RangeCheck_4_4_4_4Elements,
@@ -705,10 +741,16 @@ impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTrait {
             rc_12: LookupElementsImpl::draw(ref channel),
             rc_18: LookupElementsImpl::draw(ref channel),
             rc_19: LookupElementsImpl::draw(ref channel),
+            rc_19_b: LookupElementsImpl::draw(ref channel),
+            rc_19_c: LookupElementsImpl::draw(ref channel),
+            rc_19_d: LookupElementsImpl::draw(ref channel),
             rc_4_3: LookupElementsImpl::draw(ref channel),
             rc_4_4: LookupElementsImpl::draw(ref channel),
             rc_5_4: LookupElementsImpl::draw(ref channel),
             rc_9_9: LookupElementsImpl::draw(ref channel),
+            rc_9_9_b: LookupElementsImpl::draw(ref channel),
+            rc_9_9_c: LookupElementsImpl::draw(ref channel),
+            rc_9_9_d: LookupElementsImpl::draw(ref channel),
             rc_7_2_5: LookupElementsImpl::draw(ref channel),
             rc_3_6_6_3: LookupElementsImpl::draw(ref channel),
             rc_4_4_4_4: LookupElementsImpl::draw(ref channel),
@@ -991,10 +1033,16 @@ pub struct RangeChecksClaim {
     pub rc_12: components::range_check_12::Claim,
     pub rc_18: components::range_check_18::Claim,
     pub rc_19: components::range_check_19::Claim,
+    pub rc_19_b: components::range_check_19_b::Claim,
+    pub rc_19_c: components::range_check_19_c::Claim,
+    pub rc_19_d: components::range_check_19_d::Claim,
     pub rc_4_3: components::range_check_4_3::Claim,
     pub rc_4_4: components::range_check_4_4::Claim,
     pub rc_5_4: components::range_check_5_4::Claim,
     pub rc_9_9: components::range_check_9_9::Claim,
+    pub rc_9_9_b: components::range_check_9_9_b::Claim,
+    pub rc_9_9_c: components::range_check_9_9_c::Claim,
+    pub rc_9_9_d: components::range_check_9_9_d::Claim,
     pub rc_7_2_5: components::range_check_7_2_5::Claim,
     pub rc_3_6_6_3: components::range_check_3_6_6_3::Claim,
     pub rc_4_4_4_4: components::range_check_4_4_4_4::Claim,
@@ -1010,10 +1058,16 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
         self.rc_12.mix_into(ref channel);
         self.rc_18.mix_into(ref channel);
         self.rc_19.mix_into(ref channel);
+        self.rc_19_b.mix_into(ref channel);
+        self.rc_19_c.mix_into(ref channel);
+        self.rc_19_d.mix_into(ref channel);
         self.rc_4_3.mix_into(ref channel);
         self.rc_4_4.mix_into(ref channel);
         self.rc_5_4.mix_into(ref channel);
         self.rc_9_9.mix_into(ref channel);
+        self.rc_9_9_b.mix_into(ref channel);
+        self.rc_9_9_c.mix_into(ref channel);
+        self.rc_9_9_d.mix_into(ref channel);
         self.rc_7_2_5.mix_into(ref channel);
         self.rc_3_6_6_3.mix_into(ref channel);
         self.rc_4_4_4_4.mix_into(ref channel);
@@ -1025,8 +1079,10 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
             array![
                 self.rc_6.log_sizes(), self.rc_8.log_sizes(), self.rc_11.log_sizes(),
                 self.rc_12.log_sizes(), self.rc_18.log_sizes(), self.rc_19.log_sizes(),
+                self.rc_19_b.log_sizes(), self.rc_19_c.log_sizes(), self.rc_19_d.log_sizes(),
                 self.rc_4_3.log_sizes(), self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(),
-                self.rc_9_9.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
+                self.rc_9_9.log_sizes(), self.rc_9_9_b.log_sizes(), self.rc_9_9_c.log_sizes(),
+                self.rc_9_9_d.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
                 self.rc_4_4_4_4.log_sizes(), self.rc_3_3_3_3_3.log_sizes(),
             ],
         )
@@ -1042,10 +1098,16 @@ pub struct RangeChecksInteractionClaim {
     pub rc_12: components::range_check_12::InteractionClaim,
     pub rc_18: components::range_check_18::InteractionClaim,
     pub rc_19: components::range_check_19::InteractionClaim,
+    pub rc_19_b: components::range_check_19_b::InteractionClaim,
+    pub rc_19_c: components::range_check_19_c::InteractionClaim,
+    pub rc_19_d: components::range_check_19_d::InteractionClaim,
     pub rc_4_3: components::range_check_4_3::InteractionClaim,
     pub rc_4_4: components::range_check_4_4::InteractionClaim,
     pub rc_5_4: components::range_check_5_4::InteractionClaim,
     pub rc_9_9: components::range_check_9_9::InteractionClaim,
+    pub rc_9_9_b: components::range_check_9_9_b::InteractionClaim,
+    pub rc_9_9_c: components::range_check_9_9_c::InteractionClaim,
+    pub rc_9_9_d: components::range_check_9_9_d::InteractionClaim,
     pub rc_7_2_5: components::range_check_7_2_5::InteractionClaim,
     pub rc_3_6_6_3: components::range_check_3_6_6_3::InteractionClaim,
     pub rc_4_4_4_4: components::range_check_4_4_4_4::InteractionClaim,
@@ -1061,10 +1123,16 @@ impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         self.rc_12.mix_into(ref channel);
         self.rc_18.mix_into(ref channel);
         self.rc_19.mix_into(ref channel);
+        self.rc_19_b.mix_into(ref channel);
+        self.rc_19_c.mix_into(ref channel);
+        self.rc_19_d.mix_into(ref channel);
         self.rc_4_3.mix_into(ref channel);
         self.rc_4_4.mix_into(ref channel);
         self.rc_5_4.mix_into(ref channel);
         self.rc_9_9.mix_into(ref channel);
+        self.rc_9_9_b.mix_into(ref channel);
+        self.rc_9_9_c.mix_into(ref channel);
+        self.rc_9_9_d.mix_into(ref channel);
         self.rc_7_2_5.mix_into(ref channel);
         self.rc_3_6_6_3.mix_into(ref channel);
         self.rc_4_4_4_4.mix_into(ref channel);
@@ -1079,10 +1147,16 @@ impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         sum += *self.rc_12.claimed_sum;
         sum += *self.rc_18.claimed_sum;
         sum += *self.rc_19.claimed_sum;
+        sum += *self.rc_19_b.claimed_sum;
+        sum += *self.rc_19_c.claimed_sum;
+        sum += *self.rc_19_d.claimed_sum;
         sum += *self.rc_4_3.claimed_sum;
         sum += *self.rc_4_4.claimed_sum;
         sum += *self.rc_5_4.claimed_sum;
         sum += *self.rc_9_9.claimed_sum;
+        sum += *self.rc_9_9_b.claimed_sum;
+        sum += *self.rc_9_9_c.claimed_sum;
+        sum += *self.rc_9_9_d.claimed_sum;
         sum += *self.rc_7_2_5.claimed_sum;
         sum += *self.rc_3_6_6_3.claimed_sum;
         sum += *self.rc_4_4_4_4.claimed_sum;
@@ -3203,10 +3277,16 @@ pub struct RangeChecksComponents {
     rc_12: components::range_check_12::Component,
     rc_18: components::range_check_18::Component,
     rc_19: components::range_check_19::Component,
+    rc_19_b: components::range_check_19_b::Component,
+    rc_19_c: components::range_check_19_c::Component,
+    rc_19_d: components::range_check_19_d::Component,
     rc_4_3: components::range_check_4_3::Component,
     rc_4_4: components::range_check_4_4::Component,
     rc_5_4: components::range_check_5_4::Component,
     rc_9_9: components::range_check_9_9::Component,
+    rc_9_9_b: components::range_check_9_9_b::Component,
+    rc_9_9_c: components::range_check_9_9_c::Component,
+    rc_9_9_d: components::range_check_9_9_d::Component,
     rc_7_2_5: components::range_check_7_2_5::Component,
     rc_3_6_6_3: components::range_check_3_6_6_3::Component,
     rc_4_4_4_4: components::range_check_4_4_4_4::Component,
@@ -3251,6 +3331,21 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 interaction_claim: *interaction_claim.rc_19,
                 range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
             },
+            rc_19_b: components::range_check_19_b::Component {
+                claim: *claim.rc_19_b,
+                interaction_claim: *interaction_claim.rc_19_b,
+                range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            },
+            rc_19_c: components::range_check_19_c::Component {
+                claim: *claim.rc_19_c,
+                interaction_claim: *interaction_claim.rc_19_c,
+                range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            },
+            rc_19_d: components::range_check_19_d::Component {
+                claim: *claim.rc_19_d,
+                interaction_claim: *interaction_claim.rc_19_d,
+                range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
+            },
             rc_4_3: components::range_check_4_3::Component {
                 claim: *claim.rc_4_3,
                 interaction_claim: *interaction_claim.rc_4_3,
@@ -3270,6 +3365,30 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 claim: *claim.rc_9_9,
                 interaction_claim: *interaction_claim.rc_9_9,
                 range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            },
+            rc_9_9_b: components::range_check_9_9_b::Component {
+                claim: *claim.rc_9_9_b,
+                interaction_claim: *interaction_claim.rc_9_9_b,
+                range_check_9_9_b_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_9_9_b
+                    .clone(),
+            },
+            rc_9_9_c: components::range_check_9_9_c::Component {
+                claim: *claim.rc_9_9_c,
+                interaction_claim: *interaction_claim.rc_9_9_c,
+                range_check_9_9_c_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_9_9_c
+                    .clone(),
+            },
+            rc_9_9_d: components::range_check_9_9_d::Component {
+                claim: *claim.rc_9_9_d,
+                interaction_claim: *interaction_claim.rc_9_9_d,
+                range_check_9_9_d_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_9_9_d
+                    .clone(),
             },
             rc_7_2_5: components::range_check_7_2_5::Component {
                 claim: *claim.rc_7_2_5,
@@ -3362,6 +3481,30 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 point,
             );
         self
+            .rc_19_b
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .rc_19_c
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .rc_19_d
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
             .rc_4_3
             .mask_points(
                 ref preprocessed_column_set,
@@ -3387,6 +3530,30 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             );
         self
             .rc_9_9
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .rc_9_9_b
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .rc_9_9_c
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .rc_9_9_d
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -3435,10 +3602,16 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         max_degree = core::cmp::max(max_degree, self.rc_12.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_18.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_19.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.rc_19_b.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.rc_19_c.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.rc_19_d.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_4_3.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_4_4.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_5_4.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_9_9.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.rc_9_9_b.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.rc_9_9_c.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.rc_9_9_d.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_7_2_5.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_3_6_6_3.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_4_4_4_4.max_constraint_log_degree_bound());
@@ -3517,6 +3690,36 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 point,
             );
         self
+            .rc_19_b
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .rc_19_c
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .rc_19_d
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
             .rc_4_3
             .evaluate_constraints_at_point(
                 ref sum,
@@ -3548,6 +3751,36 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             );
         self
             .rc_9_9
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .rc_9_9_b
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .rc_9_9_c
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .rc_9_9_d
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -3696,7 +3929,13 @@ impl PedersenComponentsImpl of PedersenComponentsTrait {
                 .pedersen_points_table
                 .clone(),
             range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
             range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
         };
 
         let pedersen_points_table_component = components::pedersen_points_table::Component {
@@ -3911,7 +4150,13 @@ impl PoseidonComponentsImpl of PoseidonComponentsTrait {
             interaction_claim: *interaction_claim.cube_252,
             cube_252_lookup_elements: interaction_elements.cube_252.clone(),
             range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
             range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
         };
 
         let poseidon_round_keys_component = components::poseidon_round_keys::Component {
@@ -5102,9 +5347,33 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                             .range_checks
                             .rc_19
                             .clone(),
+                        range_check_19_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_b
+                            .clone(),
+                        range_check_19_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_c
+                            .clone(),
+                        range_check_19_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_d
+                            .clone(),
                         range_check_9_9_lookup_elements: interaction_elements
                             .range_checks
                             .rc_9_9
+                            .clone(),
+                        range_check_9_9_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_b
+                            .clone(),
+                        range_check_9_9_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_c
+                            .clone(),
+                        range_check_9_9_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_d
                             .clone(),
                     },
                 );
@@ -5301,6 +5570,18 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                         range_check_19_lookup_elements: interaction_elements
                             .range_checks
                             .rc_19
+                            .clone(),
+                        range_check_19_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_b
+                            .clone(),
+                        range_check_19_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_c
+                            .clone(),
+                        range_check_19_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_d
                             .clone(),
                     },
                 );
@@ -6039,10 +6320,16 @@ mod tests {
                 rc_12: LookupElementsDummyImpl::dummy(),
                 rc_18: LookupElementsDummyImpl::dummy(),
                 rc_19: LookupElementsDummyImpl::dummy(),
+                rc_19_b: LookupElementsDummyImpl::dummy(),
+                rc_19_c: LookupElementsDummyImpl::dummy(),
+                rc_19_d: LookupElementsDummyImpl::dummy(),
                 rc_4_3: LookupElementsDummyImpl::dummy(),
                 rc_4_4: LookupElementsDummyImpl::dummy(),
                 rc_5_4: LookupElementsDummyImpl::dummy(),
                 rc_9_9: LookupElementsDummyImpl::dummy(),
+                rc_9_9_b: LookupElementsDummyImpl::dummy(),
+                rc_9_9_c: LookupElementsDummyImpl::dummy(),
+                rc_9_9_d: LookupElementsDummyImpl::dummy(),
                 rc_7_2_5: LookupElementsDummyImpl::dummy(),
                 rc_3_6_6_3: LookupElementsDummyImpl::dummy(),
                 rc_4_4_4_4: LookupElementsDummyImpl::dummy(),

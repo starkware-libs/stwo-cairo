@@ -1,5 +1,4 @@
-// Constraints version: 9330aaaf
-
+// AIR version f1e997f6
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -51,34 +50,37 @@ pub fn verify_mul_252_evaluate(
     carry_25_col26: QM31,
     carry_26_col27: QM31,
     range_check_19_lookup_elements: @crate::RangeCheck_19Elements,
+    range_check_19_b_lookup_elements: @crate::RangeCheck_19_BElements,
+    range_check_19_c_lookup_elements: @crate::RangeCheck_19_CElements,
+    range_check_19_d_lookup_elements: @crate::RangeCheck_19_DElements,
     ref range_check_19_sum_0: QM31,
     ref range_check_19_sum_1: QM31,
-    ref range_check_19_sum_2: QM31,
-    ref range_check_19_sum_3: QM31,
-    ref range_check_19_sum_4: QM31,
+    ref range_check_19_b_sum_2: QM31,
+    ref range_check_19_c_sum_3: QM31,
+    ref range_check_19_d_sum_4: QM31,
     ref range_check_19_sum_5: QM31,
-    ref range_check_19_sum_6: QM31,
-    ref range_check_19_sum_7: QM31,
-    ref range_check_19_sum_8: QM31,
+    ref range_check_19_b_sum_6: QM31,
+    ref range_check_19_c_sum_7: QM31,
+    ref range_check_19_d_sum_8: QM31,
     ref range_check_19_sum_9: QM31,
-    ref range_check_19_sum_10: QM31,
-    ref range_check_19_sum_11: QM31,
-    ref range_check_19_sum_12: QM31,
+    ref range_check_19_b_sum_10: QM31,
+    ref range_check_19_c_sum_11: QM31,
+    ref range_check_19_d_sum_12: QM31,
     ref range_check_19_sum_13: QM31,
-    ref range_check_19_sum_14: QM31,
-    ref range_check_19_sum_15: QM31,
-    ref range_check_19_sum_16: QM31,
+    ref range_check_19_b_sum_14: QM31,
+    ref range_check_19_c_sum_15: QM31,
+    ref range_check_19_d_sum_16: QM31,
     ref range_check_19_sum_17: QM31,
-    ref range_check_19_sum_18: QM31,
-    ref range_check_19_sum_19: QM31,
-    ref range_check_19_sum_20: QM31,
+    ref range_check_19_b_sum_18: QM31,
+    ref range_check_19_c_sum_19: QM31,
+    ref range_check_19_d_sum_20: QM31,
     ref range_check_19_sum_21: QM31,
-    ref range_check_19_sum_22: QM31,
-    ref range_check_19_sum_23: QM31,
-    ref range_check_19_sum_24: QM31,
+    ref range_check_19_b_sum_22: QM31,
+    ref range_check_19_c_sum_23: QM31,
+    ref range_check_19_d_sum_24: QM31,
     ref range_check_19_sum_25: QM31,
-    ref range_check_19_sum_26: QM31,
-    ref range_check_19_sum_27: QM31,
+    ref range_check_19_b_sum_26: QM31,
+    ref range_check_19_c_sum_27: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
@@ -552,7 +554,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_2 = range_check_19_lookup_elements
+    range_check_19_b_sum_2 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_1_col2 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -561,7 +563,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_3 = range_check_19_lookup_elements
+    range_check_19_c_sum_3 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_2_col3 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -570,7 +572,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_4 = range_check_19_lookup_elements
+    range_check_19_d_sum_4 = range_check_19_d_lookup_elements
         .combine_qm31([(carry_3_col4 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -588,7 +590,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_6 = range_check_19_lookup_elements
+    range_check_19_b_sum_6 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_5_col6 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -597,7 +599,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_7 = range_check_19_lookup_elements
+    range_check_19_c_sum_7 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_6_col7 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -606,7 +608,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_8 = range_check_19_lookup_elements
+    range_check_19_d_sum_8 = range_check_19_d_lookup_elements
         .combine_qm31([(carry_7_col8 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -624,7 +626,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_10 = range_check_19_lookup_elements
+    range_check_19_b_sum_10 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_9_col10 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -633,7 +635,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_11 = range_check_19_lookup_elements
+    range_check_19_c_sum_11 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_10_col11 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -642,7 +644,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_12 = range_check_19_lookup_elements
+    range_check_19_d_sum_12 = range_check_19_d_lookup_elements
         .combine_qm31([(carry_11_col12 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -660,7 +662,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_14 = range_check_19_lookup_elements
+    range_check_19_b_sum_14 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_13_col14 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -669,7 +671,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_15 = range_check_19_lookup_elements
+    range_check_19_c_sum_15 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_14_col15 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -678,7 +680,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_16 = range_check_19_lookup_elements
+    range_check_19_d_sum_16 = range_check_19_d_lookup_elements
         .combine_qm31([(carry_15_col16 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -696,7 +698,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_18 = range_check_19_lookup_elements
+    range_check_19_b_sum_18 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_17_col18 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -705,7 +707,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_19 = range_check_19_lookup_elements
+    range_check_19_c_sum_19 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_18_col19 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -714,7 +716,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_20 = range_check_19_lookup_elements
+    range_check_19_d_sum_20 = range_check_19_d_lookup_elements
         .combine_qm31([(carry_19_col20 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -733,7 +735,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_22 = range_check_19_lookup_elements
+    range_check_19_b_sum_22 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_21_col22 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -742,7 +744,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_23 = range_check_19_lookup_elements
+    range_check_19_c_sum_23 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_22_col23 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -751,7 +753,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_24 = range_check_19_lookup_elements
+    range_check_19_d_sum_24 = range_check_19_d_lookup_elements
         .combine_qm31([(carry_23_col24 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -769,7 +771,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_26 = range_check_19_lookup_elements
+    range_check_19_b_sum_26 = range_check_19_b_lookup_elements
         .combine_qm31([(carry_25_col26 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
@@ -778,7 +780,7 @@ pub fn verify_mul_252_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_19_sum_27 = range_check_19_lookup_elements
+    range_check_19_c_sum_27 = range_check_19_c_lookup_elements
         .combine_qm31([(carry_26_col27 + qm31_const::<131072, 0, 0, 0>())]);
 
     // Constraint -
