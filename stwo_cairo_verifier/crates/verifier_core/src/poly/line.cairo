@@ -276,7 +276,9 @@ mod tests {
     use core::iter::{IntoIterator, Iterator};
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
     use crate::fields::qm31::qm31_const;
-    use super::{LineDomain, LineDomainImpl, LineDomainNewImpl, LineDomainIterator, LinePoly, LinePolyTrait};
+    use super::{
+        LineDomain, LineDomainImpl, LineDomainIterator, LineDomainNewImpl, LinePoly, LinePolyTrait,
+    };
 
     #[test]
     fn test_evaluate() {
