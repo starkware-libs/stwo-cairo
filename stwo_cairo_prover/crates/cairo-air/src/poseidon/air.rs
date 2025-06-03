@@ -252,7 +252,22 @@ impl Components {
                 claim: claim.claim.as_ref().unwrap().cube_252,
                 cube_252_lookup_elements: interaction_elements.cube_252.clone(),
                 range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+                range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+                range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+                range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
                 range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+                range_check_9_9_b_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_9_9_b
+                    .clone(),
+                range_check_9_9_c_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_9_9_c
+                    .clone(),
+                range_check_9_9_d_lookup_elements: interaction_elements
+                    .range_checks
+                    .rc_9_9_d
+                    .clone(),
             },
             interaction_claim.cube_252.claimed_sum,
         );
