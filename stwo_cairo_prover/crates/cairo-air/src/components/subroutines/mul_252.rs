@@ -1,3 +1,4 @@
+// AIR version f1e997f6
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 use crate::components::subroutines::verify_mul_252::VerifyMul252;
@@ -71,7 +72,13 @@ impl Mul252 {
         carry_25_col54: E::F,
         carry_26_col55: E::F,
         range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
+        range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
+        range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
+        range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
         range_check_19_lookup_elements: &relations::RangeCheck_19,
+        range_check_19_b_lookup_elements: &relations::RangeCheck_19_B,
+        range_check_19_c_lookup_elements: &relations::RangeCheck_19_C,
+        range_check_19_d_lookup_elements: &relations::RangeCheck_19_D,
         eval: &mut E,
     ) -> [E::F; 0] {
         RangeCheckMemValueN28::evaluate(
@@ -106,6 +113,9 @@ impl Mul252 {
                 mul_res_limb_27_col27.clone(),
             ],
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         VerifyMul252::evaluate(
@@ -224,6 +234,9 @@ impl Mul252 {
             carry_25_col54.clone(),
             carry_26_col55.clone(),
             range_check_19_lookup_elements,
+            range_check_19_b_lookup_elements,
+            range_check_19_c_lookup_elements,
+            range_check_19_d_lookup_elements,
             eval,
         );
         []

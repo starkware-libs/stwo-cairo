@@ -1,3 +1,4 @@
+// AIR version f1e997f6
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 
@@ -32,6 +33,9 @@ impl Felt252UnpackFrom27RangeCheckOutput {
         unpacked_limb_24_col16: E::F,
         unpacked_limb_25_col17: E::F,
         range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
+        range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
+        range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
+        range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
         eval: &mut E,
     ) -> [E::F; 10] {
         let M31_512 = E::F::from(M31::from(512));
@@ -125,6 +129,9 @@ impl Felt252UnpackFrom27RangeCheckOutput {
                 unpacked_tmp_4f7f8_1_limb_27.clone(),
             ],
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         [
