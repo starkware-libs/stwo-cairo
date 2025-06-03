@@ -41,6 +41,6 @@ fn test_gen_bit_mask_with_8_bits() {
 }
 
 #[test]
-fn test_gen_bit_mask_with_128_bits() {
-    assert_eq!(gen_bit_mask(128), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+fn test_gen_bit_mask_with_64_bits() {
+    assert_eq!(gen_bit_mask(64), 0xFFFFFFFFFFFFFFFF);
 }

@@ -170,12 +170,9 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 }
 
 fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
-    const U128_2_POW_32: u128 = 0x100000000;
-    let [d0, d1, d2, d3, _, _, _, _] = digest.hash.unbox();
-    let v = d3.into();
-    let v = v * U128_2_POW_32 + d2.into();
-    let v = v * U128_2_POW_32 + d1.into();
-    let v = v * U128_2_POW_32 + d0.into();
+    const U64_2_POW_32: u64 = 0x100000000;
+    let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
+    let v = d1.into() * U64_2_POW_32 + d0.into();
     v & gen_bit_mask(n_bits) == 0
 }
 
