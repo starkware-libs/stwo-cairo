@@ -324,13 +324,13 @@ impl FrameworkEval for Eval {
         let segment_id_final_word_col238 = eval.next_trace_mask();
 
         let M31_1 = E::F::from(M31::from(1));
-        let M31_shift4 = E::F::from(M31::from(1<<4));
-        let M31_shift13 = E::F::from(M31::from(1<<13));
-        let M31_shift22 = E::F::from(M31::from(1<<22));
-        let M31_shift31 = E::F::from(M31::from(1<<31));
-        let M31_9 = E::F::from(M31::from(1<<9));
-        let M31_18 = E::F::from(M31::from(1<<18));
-        let M31_27 = E::F::from(M31::from(1<<27));
+        let M31_shift4 = E::F::from(M31::from(1 << 4));
+        let M31_shift13 = E::F::from(M31::from(1 << 13));
+        let M31_shift22 = E::F::from(M31::from(1 << 22));
+        let M31_shift31 = E::F::from(M31::from(1 << 31));
+        let M31_9 = E::F::from(M31::from(1 << 9));
+        let M31_18 = E::F::from(M31::from(1 << 18));
+        let M31_27 = E::F::from(M31::from(1 << 27));
 
         let segment_id = segment_id_initial_word_col237.clone()
             + op0_limb_4_col57.clone() * M31_shift4.clone()
@@ -372,11 +372,13 @@ impl FrameworkEval for Eval {
                 &mut eval,
             );
 
-        let op0_segment_id = (M31_1.clone() - op1_imm_col8.clone()) * (
-            (decode_generic_instruction_output_tmp_57455_26_limb_22.clone() * segment_id.clone()) +
-            ((M31_1.clone() - decode_generic_instruction_output_tmp_57455_26_limb_22.clone()) * M31_1.clone())
-        );
-            
+        let op0_segment_id = (M31_1.clone() - op1_imm_col8.clone())
+            * ((decode_generic_instruction_output_tmp_57455_26_limb_22.clone()
+                * segment_id.clone())
+                + ((M31_1.clone()
+                    - decode_generic_instruction_output_tmp_57455_26_limb_22.clone())
+                    * M31_1.clone()));
+
         EvalOperands::evaluate(
             [
                 input_pc_col0.clone(),

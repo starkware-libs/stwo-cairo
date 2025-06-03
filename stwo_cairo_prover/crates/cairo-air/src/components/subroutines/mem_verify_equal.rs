@@ -19,13 +19,21 @@ impl MemVerifyEqual {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[mem_verify_equal_input_seg_id1.clone(),mem_verify_equal_input_offset1.clone(), id_col0.clone()],
+            &[
+                mem_verify_equal_input_seg_id1.clone(),
+                mem_verify_equal_input_offset1.clone(),
+                id_col0.clone(),
+            ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[mem_verify_equal_input_seg_id2.clone(),mem_verify_equal_input_offset2.clone(), id_col0.clone()],
+            &[
+                mem_verify_equal_input_seg_id2.clone(),
+                mem_verify_equal_input_offset2.clone(),
+                id_col0.clone(),
+            ],
         ));
 
         []

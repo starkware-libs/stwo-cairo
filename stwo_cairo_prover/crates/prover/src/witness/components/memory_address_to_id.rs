@@ -1,6 +1,7 @@
 use std::ops::Index;
 use std::simd::Simd;
 
+use crate::witness::utils::{AtomicMultiplicityColumn2D, TreeBuilder};
 use cairo_air::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
     N_TRACE_COLUMNS,
@@ -9,6 +10,8 @@ use cairo_air::relations;
 use itertools::{izip, Itertools};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_common::prover_types::cpu::Relocatable;
+use stwo_cairo_common::prover_types::simd::PackedRelocatable;
 use stwo_prover::constraint_framework::logup::LogupTraceGenerator;
 use stwo_prover::constraint_framework::Relation;
 use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
@@ -18,9 +21,6 @@ use stwo_prover::core::backend::{Col, Column};
 use stwo_prover::core::fields::m31::{BaseField, M31};
 use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
 use stwo_prover::core::poly::BitReversedOrder;
-use stwo_cairo_common::prover_types::cpu::Relocatable;
-use stwo_cairo_common::prover_types::simd::PackedRelocatable;
-use crate::witness::utils::{TreeBuilder, AtomicMultiplicityColumn2D};
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
@@ -34,7 +34,10 @@ pub struct RelocatableToId {
 }
 impl RelocatableToId {
     pub fn new(data: Vec<Vec<u32>>) -> Self {
-        Self { data, flattened_data: None }
+        Self {
+            data,
+            flattened_data: None,
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -46,9 +49,12 @@ impl RelocatableToId {
     }
 
     pub fn resize(&mut self, new_len: Vec<usize>, value: u32) {
-        self.data.iter_mut().zip(new_len).for_each(|(segment, new_len)| {
-            segment.resize(new_len, value);
-        });
+        self.data
+            .iter_mut()
+            .zip(new_len)
+            .for_each(|(segment, new_len)| {
+                segment.resize(new_len, value);
+            });
     }
 
     pub fn flatten(&mut self) {
@@ -86,11 +92,16 @@ impl ClaimGenerator {
                 .iter()
                 .enumerate()
                 .map(|(segment_index, segment)| {
-                    (0..segment.len()).map(|offset| memory.get_raw_id(Relocatable {
-                        segment_index,
-                        offset: offset as u32,
-                    })).collect_vec()
-                }).collect_vec(),
+                    (0..segment.len())
+                        .map(|offset| {
+                            memory.get_raw_id(Relocatable {
+                                segment_index,
+                                offset: offset as u32,
+                            })
+                        })
+                        .collect_vec()
+                })
+                .collect_vec(),
         );
         let multiplicities = AtomicMultiplicityColumn2D::new(&relocatable_to_id);
 
@@ -139,9 +150,20 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (Claim, InteractionClaimGenerator) {
         // Pad to a multiple of `N_LANES`.
-        let next_multiples_of_16 = self.relocatable_to_id.data.iter().map(|segment| segment.len().next_multiple_of(16)).collect_vec();
-        let segment_sizes = self.relocatable_to_id.data.iter().map(|segment| segment.len()).collect_vec();
-        self.relocatable_to_id.resize(next_multiples_of_16.clone(), 0);
+        let next_multiples_of_16 = self
+            .relocatable_to_id
+            .data
+            .iter()
+            .map(|segment| segment.len().next_multiple_of(16))
+            .collect_vec();
+        let segment_sizes = self
+            .relocatable_to_id
+            .data
+            .iter()
+            .map(|segment| segment.len())
+            .collect_vec();
+        self.relocatable_to_id
+            .resize(next_multiples_of_16.clone(), 0);
         self.relocatable_to_id.flatten();
 
         let id_it = self
@@ -152,38 +174,43 @@ impl ClaimGenerator {
         let multiplicities = self.multiplicities.into_simd_vec();
 
         let size = std::cmp::max(
-            ((multiplicities
-                .len() * N_LANES)
-                .div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT))
-            .next_power_of_two(),
+            ((multiplicities.len() * N_LANES).div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT))
+                .next_power_of_two(),
             N_LANES,
         );
         let n_packed_rows = size.div_ceil(N_LANES);
         let mut trace: [_; N_TRACE_COLUMNS] =
             std::array::from_fn(|_| Col::<SimdBackend, M31>::zeros(size));
-        
+
         let mut flat_segment_ids = Vec::new();
         let mut flat_offsets = Vec::new();
         for (i, segment_size) in segment_sizes.iter().enumerate() {
             flat_segment_ids.extend(std::iter::repeat(i as u32).take(*segment_size));
-            flat_segment_ids.extend(std::iter::repeat(0).take(next_multiples_of_16[i] - *segment_size));
+            flat_segment_ids
+                .extend(std::iter::repeat(0).take(next_multiples_of_16[i] - *segment_size));
             flat_offsets.extend((0..*segment_size).map(|x| x as u32));
             flat_offsets.extend(std::iter::repeat(0).take(next_multiples_of_16[i] - *segment_size));
         }
         let segment_ids = flat_segment_ids
-        .array_chunks::<N_LANES>()
-        .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
+            .array_chunks::<N_LANES>()
+            .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
         let offsets = flat_offsets
-        .array_chunks::<N_LANES>()
-        .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
-        
-        for (i, (id_packed, multiplicity_packed, segment_id_packed, offset_packed)) in izip!(id_it, multiplicities, segment_ids, offsets).enumerate() {
+            .array_chunks::<N_LANES>()
+            .map(|&chunk| unsafe { PackedM31::from_simd_unchecked(Simd::from_array(chunk)) });
+
+        for (i, (id_packed, multiplicity_packed, segment_id_packed, offset_packed)) in
+            izip!(id_it, multiplicities, segment_ids, offsets).enumerate()
+        {
             let chunk_idx_trace = i / n_packed_rows;
             let i_row_in_chunk = i % n_packed_rows;
-            trace[0 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = segment_id_packed;
-            trace[1 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = offset_packed;
-            trace[2 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = id_packed;
-            trace[3 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] = multiplicity_packed;
+            trace[0 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] =
+                segment_id_packed;
+            trace[1 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] =
+                offset_packed;
+            trace[2 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] =
+                id_packed;
+            trace[3 + chunk_idx_trace * N_ID_AND_MULT_COLUMNS_PER_CHUNK].data[i_row_in_chunk] =
+                multiplicity_packed;
         }
 
         // Lookup data.
@@ -236,16 +263,44 @@ impl InteractionClaimGenerator {
         let mut logup_gen = LogupTraceGenerator::new(log_size);
 
         for ((segment_ids0, offsets0, ids0, mults0), (segment_ids1, offsets1, ids1, mults1)) in
-            izip!(&self.segment_ids, &self.offsets, &self.ids, &self.multiplicities).tuples()
+            izip!(
+                &self.segment_ids,
+                &self.offsets,
+                &self.ids,
+                &self.multiplicities
+            )
+            .tuples()
         {
             let mut col_gen = logup_gen.new_col();
-            (col_gen.par_iter_mut(), segment_ids0, segment_ids1, offsets0, offsets1, ids0, ids1, mults0, mults1)
+            (
+                col_gen.par_iter_mut(),
+                segment_ids0,
+                segment_ids1,
+                offsets0,
+                offsets1,
+                ids0,
+                ids1,
+                mults0,
+                mults1,
+            )
                 .into_par_iter()
-                .for_each(|(writer, &segment_id0, &segment_id1, &offset0, &offset1, &id0, &id1, &mult0, &mult1)| {
-                    let p0: PackedQM31 = lookup_elements.combine(&[segment_id0, offset0, id0]);
-                    let p1: PackedQM31 = lookup_elements.combine(&[segment_id1, offset1, id1]);
-                    writer.write_frac(p0 * (-mult1) + p1 * (-mult0), p1 * p0);
-                });
+                .for_each(
+                    |(
+                        writer,
+                        &segment_id0,
+                        &segment_id1,
+                        &offset0,
+                        &offset1,
+                        &id0,
+                        &id1,
+                        &mult0,
+                        &mult1,
+                    )| {
+                        let p0: PackedQM31 = lookup_elements.combine(&[segment_id0, offset0, id0]);
+                        let p1: PackedQM31 = lookup_elements.combine(&[segment_id1, offset1, id1]);
+                        writer.write_frac(p0 * (-mult1) + p1 * (-mult0), p1 * p0);
+                    },
+                );
             col_gen.finalize_col();
         }
 

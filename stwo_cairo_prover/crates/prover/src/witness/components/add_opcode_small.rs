@@ -148,8 +148,8 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_8d553_0 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
+                let memory_address_to_id_value_tmp_8d553_0 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_8d553_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_8d553_0);
                 let offset0_tmp_8d553_2 =
@@ -459,19 +459,17 @@ fn write_trace_simd(
                 // Read Small.
 
                 let memory_address_to_id_value_tmp_8d553_23 = memory_address_to_id_state
-                    .deduce_output(
-                        PackedRelocatable {
-                            // If op1_imm_col8 is 1, use segment 0 (PC), otherwise use segment 1 (memory)
-                            segment_index: M31_1 * (M31_1 - op1_imm_col8),
-                            offset: (mem1_base_col13)
-                                + (decode_instruction_5738317e55ddadf7_output_tmp_8d553_10.0[2])
-                        }
-                    );
+                    .deduce_output(PackedRelocatable {
+                        // If op1_imm_col8 is 1, use segment 0 (PC), otherwise use segment 1 (memory)
+                        segment_index: M31_1 * (M31_1 - op1_imm_col8),
+                        offset: (mem1_base_col13)
+                            + (decode_instruction_5738317e55ddadf7_output_tmp_8d553_10.0[2]),
+                    });
                 let memory_id_to_big_value_tmp_8d553_24 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_8d553_23);
                 let op1_id_col26 = memory_address_to_id_value_tmp_8d553_23;
                 *row[26] = op1_id_col26;
-                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable{
+                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable {
                     segment_index: M31_1 * (M31_1 - op1_imm_col8),
                     offset: ((mem1_base_col13)
                         + (decode_instruction_5738317e55ddadf7_output_tmp_8d553_10.0[2])),

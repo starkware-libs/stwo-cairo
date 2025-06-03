@@ -337,8 +337,7 @@ impl EvalOperands {
                 - ((((eval_operands_input_limb_6.clone() * eval_operands_input_limb_2.clone())
                     + (eval_operands_input_limb_7.clone() * eval_operands_input_limb_1.clone()))
                     + (eval_operands_input_limb_5.clone() * eval_operands_input_limb_0.clone()))
-                    + (eval_operands_input_limb_18.clone()
-                        * op0_offset.clone()))),
+                    + (eval_operands_input_limb_18.clone() * op0_offset.clone()))),
         );
         ReadPositiveNumBits252::evaluate(
             op0_segment_id,

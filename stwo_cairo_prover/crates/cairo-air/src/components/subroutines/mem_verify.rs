@@ -20,7 +20,11 @@ impl MemVerify {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[mem_verify_input_seg_id.clone(),mem_verify_input_offset.clone(), id_col0.clone()],
+            &[
+                mem_verify_input_seg_id.clone(),
+                mem_verify_input_offset.clone(),
+                id_col0.clone(),
+            ],
         ));
 
         eval.add_to_relation(RelationEntry::new(

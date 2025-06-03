@@ -135,8 +135,8 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_90279_0 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
+                let memory_address_to_id_value_tmp_90279_0 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_90279_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_90279_0);
                 let offset0_tmp_90279_2 =
@@ -214,12 +214,10 @@ fn write_trace_simd(
                 // Mem Verify Equal.
 
                 let memory_address_to_id_value_tmp_90279_6 = memory_address_to_id_state
-                    .deduce_output(
-                        PackedRelocatable::from_ap_m31(
-                            ((mem_dst_base_col6)
-                                + (decode_instruction_7eff8da090b7d32b_output_tmp_90279_5.0[0])),
-                        ),
-                    );
+                    .deduce_output(PackedRelocatable::from_ap_m31(
+                        ((mem_dst_base_col6)
+                            + (decode_instruction_7eff8da090b7d32b_output_tmp_90279_5.0[0])),
+                    ));
                 let dst_id_col7 = memory_address_to_id_value_tmp_90279_6;
                 *row[7] = dst_id_col7;
                 *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(
@@ -232,14 +230,10 @@ fn write_trace_simd(
                         + (decode_instruction_7eff8da090b7d32b_output_tmp_90279_5.0[0])),
                     dst_id_col7,
                 ];
-                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_pc_m31(
-                    ((input_pc_col0) + (M31_1)),
-                );
-                *lookup_data.memory_address_to_id_1 = [
-                    M31_0,
-                    ((input_pc_col0) + (M31_1)),
-                    dst_id_col7,
-                ];
+                *sub_component_inputs.memory_address_to_id[1] =
+                    PackedRelocatable::from_pc_m31(((input_pc_col0) + (M31_1)));
+                *lookup_data.memory_address_to_id_1 =
+                    [M31_0, ((input_pc_col0) + (M31_1)), dst_id_col7];
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [

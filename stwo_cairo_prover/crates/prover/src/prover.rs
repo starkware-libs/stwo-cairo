@@ -77,7 +77,7 @@ where
         witness_trace_cells(&claim, &preprocessed_trace)
     );
     // Validate lookup argument.
-    debug_assert_eq!(
+    assert_eq!(
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
         SecureField::zero()
     );
@@ -102,7 +102,7 @@ where
             &component_builder,
             &claim.public_data,
         );
-        tracing::info!("Relations summary: {:?}", summary);
+        println!("Relations summary: {:?}", summary);
     }
 
     let components = component_builder.provers();
@@ -111,7 +111,6 @@ where
     let span = span!(Level::INFO, "Prove STARKs").entered();
     let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
     span.exit();
-
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
 
     Ok(CairoProof {

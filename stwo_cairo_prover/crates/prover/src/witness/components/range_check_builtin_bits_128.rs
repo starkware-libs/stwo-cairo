@@ -51,7 +51,9 @@ impl ClaimGenerator {
         (
             Claim {
                 log_size,
-                range_check_builtin_segment_start: self.range_check_builtin_segment_start.segment_index as u32,
+                range_check_builtin_segment_start: self
+                    .range_check_builtin_segment_start
+                    .segment_index as u32,
             },
             InteractionClaimGenerator {
                 log_size,
@@ -105,25 +107,25 @@ fn write_trace_simd(
         .for_each(
             |(row_index, (mut row, lookup_data, sub_component_inputs))| {
                 let seq = seq.packed_at(row_index);
-                let segment_id_packed = PackedM31::broadcast(M31::from(range_check_builtin_segment_start));
+                let segment_id_packed =
+                    PackedM31::broadcast(M31::from(range_check_builtin_segment_start));
 
                 // Read Positive Num Bits 128.
 
                 let memory_address_to_id_value_tmp_c9e8f_0 = memory_address_to_id_state
-                    .deduce_output(
-                        PackedRelocatable{segment_index: segment_id_packed, offset: seq},
-                    );
+                    .deduce_output(PackedRelocatable {
+                        segment_index: segment_id_packed,
+                        offset: seq,
+                    });
                 let memory_id_to_big_value_tmp_c9e8f_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_c9e8f_0);
                 let value_id_col0 = memory_address_to_id_value_tmp_c9e8f_0;
                 *row[0] = value_id_col0;
-                *sub_component_inputs.memory_address_to_id[0] =
-                    PackedRelocatable{segment_index: segment_id_packed, offset: seq};
-                *lookup_data.memory_address_to_id_0 = [
-                    segment_id_packed,
-                    seq,
-                    value_id_col0,
-                ];
+                *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable {
+                    segment_index: segment_id_packed,
+                    offset: seq,
+                };
+                *lookup_data.memory_address_to_id_0 = [segment_id_packed, seq, value_id_col0];
                 let value_limb_0_col1 = memory_id_to_big_value_tmp_c9e8f_1.get_m31(0);
                 *row[1] = value_limb_0_col1;
                 let value_limb_1_col2 = memory_id_to_big_value_tmp_c9e8f_1.get_m31(1);

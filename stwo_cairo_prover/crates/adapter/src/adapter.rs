@@ -30,21 +30,28 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         prover_input_info.builtins_segments.clone(),
     );
 
-    let memory = MemoryBuilder::from_relocatable_memory(MemoryConfig::default(), &prover_input_info.relocatable_memory.clone());
-    let state_transitions = StateTransitions::from_relocatables(&prover_input_info.relocatable_trace, &memory);
+    let memory = MemoryBuilder::from_relocatable_memory(
+        MemoryConfig::default(),
+        &prover_input_info.relocatable_memory.clone(),
+    );
+    let state_transitions =
+        StateTransitions::from_relocatables(&prover_input_info.relocatable_trace, &memory);
 
-    let builtins_segments = BuiltinSegments::get_builtin_segments(&prover_input_info.builtins_segments, &prover_input_info.relocatable_memory);
+    let builtins_segments = BuiltinSegments::get_builtin_segments(
+        &prover_input_info.builtins_segments,
+        &prover_input_info.relocatable_memory,
+    );
 
     let public_memory_addresses = prover_input_info
-    .public_memory_offsets
-    .iter()
-    .flat_map(|(segment_idx, offsets_in_segment)| {
-        offsets_in_segment.iter().map(move |offset_val| {
-            stwo_cairo_common::prover_types::cpu::Relocatable {
-                segment_index: *segment_idx,
-                offset: *offset_val as u32,
-            }
-        })
+        .public_memory_offsets
+        .iter()
+        .flat_map(|(segment_idx, offsets_in_segment)| {
+            offsets_in_segment.iter().map(move |offset_val| {
+                stwo_cairo_common::prover_types::cpu::Relocatable {
+                    segment_index: *segment_idx,
+                    offset: *offset_val as u32,
+                }
+            })
         })
         .collect();
 

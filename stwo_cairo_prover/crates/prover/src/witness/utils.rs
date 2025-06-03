@@ -1,9 +1,10 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use crate::witness::components::memory_address_to_id::RelocatableToId;
 use cairo_air::air::CairoClaim;
 use cairo_air::preprocessed::PreProcessedTrace;
-use stwo_cairo_common::prover_types::cpu::Relocatable;
 use num_traits::{One, Zero};
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
@@ -14,7 +15,6 @@ use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
 use stwo_prover::core::poly::circle::CircleEvaluation;
 use stwo_prover::core::poly::BitReversedOrder;
-use crate::witness::components::memory_address_to_id::RelocatableToId;
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
         .array_chunks::<N_LANES>()
@@ -64,15 +64,25 @@ impl AtomicMultiplicityColumn2D {
     /// to 0.
     pub fn new(relocatable_to_id: &RelocatableToId) -> Self {
         Self {
-            data: relocatable_to_id.data.iter().map(|segment| segment.iter().map(|_| AtomicU32::new(0)).collect()).collect(),
+            data: relocatable_to_id
+                .data
+                .iter()
+                .map(|segment| segment.iter().map(|_| AtomicU32::new(0)).collect())
+                .collect(),
         }
     }
 
     pub fn increase_at(&self, relocatable: &Relocatable) {
-        self.data.get(relocatable.segment_index)
+        self.data
+            .get(relocatable.segment_index)
             .and_then(|segment| segment.get(relocatable.offset as usize))
             .map(|atomic| atomic.fetch_add(1, Ordering::Relaxed))
-            .unwrap_or_else(|| panic!("Index out of bounds: segment_index={}, offset={}", relocatable.segment_index, relocatable.offset));
+            .unwrap_or_else(|| {
+                panic!(
+                    "Index out of bounds: segment_index={}, offset={}",
+                    relocatable.segment_index, relocatable.offset
+                )
+            });
     }
 
     pub fn resize(&mut self, new_len: Vec<usize>, value: u32) {
@@ -80,10 +90,12 @@ impl AtomicMultiplicityColumn2D {
             let current_len = segment.len();
             if nl > current_len {
                 segment.extend((current_len..nl).map(|_| AtomicU32::new(value)));
-            } 
-            else if nl == current_len {   
+            } else if nl == current_len {
             } else {
-                panic!("New length {} is smaller than current length {} for segment {:?}", nl, current_len, segment);
+                panic!(
+                    "New length {} is smaller than current length {} for segment {:?}",
+                    nl, current_len, segment
+                );
             }
         });
     }
@@ -94,11 +106,11 @@ impl AtomicMultiplicityColumn2D {
     pub fn into_simd_vec(self) -> Vec<PackedM31> {
         // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
         // multiple of N_LANES.
-        BaseColumn::from_iter(
-            self.data
+        BaseColumn::from_iter(self.data.into_iter().flat_map(|atomic_vec| {
+            atomic_vec
                 .into_iter()
-                .flat_map(|atomic_vec| atomic_vec.into_iter().map(|a| M31(a.load(Ordering::Relaxed)))),
-        )
+                .map(|a| M31(a.load(Ordering::Relaxed)))
+        }))
         .data
     }
 }

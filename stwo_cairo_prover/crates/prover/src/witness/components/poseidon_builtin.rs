@@ -106,7 +106,8 @@ impl ClaimGenerator {
         (
             Claim {
                 log_size,
-                poseidon_builtin_segment_start: self.poseidon_builtin_segment_start.segment_index as u32,
+                poseidon_builtin_segment_start: self.poseidon_builtin_segment_start.segment_index
+                    as u32,
             },
             InteractionClaimGenerator {
                 log_size,

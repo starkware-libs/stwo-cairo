@@ -136,8 +136,8 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_d6f03_0 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
+                let memory_address_to_id_value_tmp_d6f03_0 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_d6f03_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_d6f03_0);
                 let offset0_tmp_d6f03_2 =
@@ -249,12 +249,10 @@ fn write_trace_simd(
                 // Mem Verify Equal.
 
                 let memory_address_to_id_value_tmp_d6f03_8 = memory_address_to_id_state
-                    .deduce_output(
-                        PackedRelocatable::from_ap_m31(
-                            ((mem_dst_base_col8)
-                                + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[0])),
-                        ),
-                    );
+                    .deduce_output(PackedRelocatable::from_ap_m31(
+                        ((mem_dst_base_col8)
+                            + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[0])),
+                    ));
                 let dst_id_col10 = memory_address_to_id_value_tmp_d6f03_8;
                 *row[10] = dst_id_col10;
                 *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(

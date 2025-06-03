@@ -36,6 +36,8 @@ pub struct MemoryTablesSizes {
     pub id_to_big: usize,
     /// Size of memory ID to small value table.
     pub id_to_small: usize,
+    /// Size of memory ID to relocatable value table.
+    pub id_to_relocatable: usize,
 }
 
 /// Execution resources required to compute trace size.
@@ -66,6 +68,7 @@ impl ExecutionResources {
                 address_to_id: input.memory.relocatable_to_id.len(),
                 id_to_big: input.memory.f252_values.len(),
                 id_to_small: input.memory.small_values.len(),
+                id_to_relocatable: input.memory.relocatable_values.len(),
             },
             verify_instructions_count: input.inst_cache.len(),
         }

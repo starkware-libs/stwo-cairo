@@ -255,12 +255,14 @@ fn write_trace_simd(
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_16a4f_9 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_limb_0_col0));
+                let memory_address_to_id_value_tmp_16a4f_9 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_limb_0_col0));
                 let instruction_id_col15 = memory_address_to_id_value_tmp_16a4f_9;
                 *row[15] = instruction_id_col15;
-                *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_pc_m31(input_limb_0_col0);
-                *lookup_data.memory_address_to_id_0 = [M31_0, input_limb_0_col0, instruction_id_col15];
+                *sub_component_inputs.memory_address_to_id[0] =
+                    PackedRelocatable::from_pc_m31(input_limb_0_col0);
+                *lookup_data.memory_address_to_id_0 =
+                    [M31_0, input_limb_0_col0, instruction_id_col15];
                 *sub_component_inputs.memory_id_to_big[0] = instruction_id_col15;
                 *lookup_data.memory_id_to_big_0 = [
                     instruction_id_col15,

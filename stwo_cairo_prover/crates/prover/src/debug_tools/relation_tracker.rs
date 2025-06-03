@@ -59,11 +59,15 @@ where
     public_data
         .public_memory
         .get_entries(initial_pc, initial_ap, final_ap)
-        .for_each(|(addr, id, val)| {
+        .for_each(|(seg_id, offset, id, val)| {
             entries.push(RelationTrackerEntry {
                 relation: "MemoryAddressToId".to_string(),
                 mult: M31::one(),
-                values: vec![M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                values: vec![
+                    M31::from_u32_unchecked(seg_id),
+                    M31::from_u32_unchecked(offset),
+                    M31::from_u32_unchecked(id),
+                ],
             });
             entries.push(RelationTrackerEntry {
                 relation: "MemoryIdToBig".to_string(),
@@ -177,6 +181,7 @@ fn cairo_relation_entries(
         add_to_relation_entries(memory_address_to_id, trace),
         add_to_relation_entries(&memory_id_to_value.0, trace),
         add_to_relation_entries(&memory_id_to_value.1, trace),
+        add_to_relation_entries(&memory_id_to_value.2, trace),
     )
     .collect_vec();
 

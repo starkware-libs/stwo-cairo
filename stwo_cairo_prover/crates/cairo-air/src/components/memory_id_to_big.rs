@@ -2,8 +2,10 @@ use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
-use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
-use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_adapter::memory::{LARGE_MEMORY_VALUE_ID_BASE, RELOCATABLE_ID_BASE};
+use stwo_cairo_common::memory::{
+    N_M31_IN_FELT252, N_M31_IN_RELOCATABLE_FELT252, N_M31_IN_SMALL_FELT252,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_prover::constraint_framework::{
     EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
@@ -24,9 +26,11 @@ pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
+pub const RELOCATABLE_N_COLUMNS: usize = N_M31_IN_RELOCATABLE_FELT252 + N_MULTIPLICITY_COLUMNS;
 
 pub type BigComponent = FrameworkComponent<BigEval>;
 pub type SmallComponent = FrameworkComponent<SmallEval>;
+pub type RelocatableComponent = FrameworkComponent<RelocatableEval>;
 
 const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
 
@@ -36,6 +40,11 @@ pub const RELATION_USES_PER_ROW_BIG: [RelationUse; 1] = [RelationUse {
 }];
 
 pub const RELATION_USES_PER_ROW_SMALL: [RelationUse; 1] = [RelationUse {
+    relation_id: "RangeCheck_9_9",
+    uses: 4,
+}];
+
+pub const RELATION_USES_PER_ROW_RELOCATABLE: [RelationUse; 1] = [RelationUse {
     relation_id: "RangeCheck_9_9",
     uses: 4,
 }];
@@ -63,7 +72,6 @@ impl BigEval {
         }
     }
 }
-
 impl FrameworkEval for BigEval {
     fn log_size(&self) -> u32 {
         self.log_n_rows
@@ -154,16 +162,73 @@ impl FrameworkEval for SmallEval {
     }
 }
 
+pub struct RelocatableEval {
+    pub log_n_rows: u32,
+    pub lookup_elements: relations::MemoryIdToBig,
+    pub range_check_9_9_relation: relations::RangeCheck_9_9,
+}
+impl RelocatableEval {
+    pub fn new(
+        claim: Claim,
+        lookup_elements: relations::MemoryIdToBig,
+        range_check_9_9_relation: relations::RangeCheck_9_9,
+    ) -> Self {
+        Self {
+            log_n_rows: claim.relocatable_log_size,
+            lookup_elements,
+            range_check_9_9_relation,
+        }
+    }
+}
+impl FrameworkEval for RelocatableEval {
+    fn log_size(&self) -> u32 {
+        self.log_n_rows
+    }
+
+    fn max_constraint_log_degree_bound(&self) -> u32 {
+        self.log_size() + 1
+    }
+
+    fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        let value: [E::F; N_M31_IN_RELOCATABLE_FELT252] =
+            std::array::from_fn(|_| eval.next_trace_mask());
+        let multiplicity = eval.next_trace_mask();
+
+        // Range check limbs.
+        for (l, r) in value.iter().tuples() {
+            eval.add_to_relation(RelationEntry::new(
+                &self.range_check_9_9_relation,
+                E::EF::one(),
+                &[l.clone(), r.clone()],
+            ));
+        }
+
+        // Yield the value.
+        let id = seq + E::F::from(M31::from(RELOCATABLE_ID_BASE));
+        eval.add_to_relation(RelationEntry::new(
+            &self.lookup_elements,
+            E::EF::from(-multiplicity),
+            &chain!([id], value).collect_vec(),
+        ));
+
+        eval.finalize_logup();
+        eval
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Claim {
     pub big_log_size: u32,
     pub small_log_size: u32,
+    pub relocatable_log_size: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = chain!(
             vec![self.big_log_size; BIG_N_COLUMNS],
-            vec![self.small_log_size; SMALL_N_COLUMNS]
+            vec![self.small_log_size; SMALL_N_COLUMNS],
+            vec![self.relocatable_log_size; RELOCATABLE_N_COLUMNS]
         )
         .collect();
         let interaction_log_sizes = chain!(
@@ -178,6 +243,10 @@ impl Claim {
             vec![
                 self.small_log_size;
                 SECURE_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)
+            ],
+            vec![
+                self.relocatable_log_size;
+                SECURE_EXTENSION_DEGREE * (N_M31_IN_RELOCATABLE_FELT252.div_ceil(2) + 1)
             ]
         )
         .collect();
@@ -188,6 +257,7 @@ impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.big_log_size as u64);
         channel.mix_u64(self.small_log_size as u64);
+        channel.mix_u64(self.relocatable_log_size as u64);
     }
 }
 
@@ -195,11 +265,13 @@ impl Claim {
 pub struct InteractionClaim {
     pub big_claimed_sum: SecureField,
     pub small_claimed_sum: SecureField,
+    pub relocatable_claimed_sum: SecureField,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&[self.big_claimed_sum]);
         channel.mix_felts(&[self.small_claimed_sum]);
+        channel.mix_felts(&[self.relocatable_claimed_sum]);
     }
 }
 
@@ -208,9 +280,11 @@ impl CairoSerialize for InteractionClaim {
         let Self {
             big_claimed_sum,
             small_claimed_sum,
+            relocatable_claimed_sum,
         } = self;
         CairoSerialize::serialize(big_claimed_sum, output);
         CairoSerialize::serialize(small_claimed_sum, output);
+        CairoSerialize::serialize(relocatable_claimed_sum, output);
     }
 }
 

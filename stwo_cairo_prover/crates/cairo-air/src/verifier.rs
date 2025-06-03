@@ -1,4 +1,4 @@
-use num_traits::{One, Zero};
+use num_traits::Zero;
 use paste::paste;
 use stwo_cairo_adapter::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
@@ -50,16 +50,16 @@ fn verify_claim(claim: &CairoClaim) {
 
     verify_program(program);
 
-    assert_eq!(*initial_pc, BaseField::one());
+    assert_eq!(*initial_pc, BaseField::zero());
     assert!(
-        *initial_pc + BaseField::from(2) < *initial_ap,
+        *initial_pc + BaseField::from(2) <= *initial_ap,
         "Initial pc + 2 must be less than initial ap, but got initial_pc: {}, initial_ap: {}",
         initial_pc,
         initial_ap
     );
     assert_eq!(initial_fp, final_fp);
     assert_eq!(initial_fp, initial_ap);
-    assert_eq!(*final_pc, BaseField::from(5));
+    assert_eq!(*final_pc, BaseField::from(4));
     assert!(initial_ap <= final_ap);
 
     // Assert that each relation has strictly less than P uses.

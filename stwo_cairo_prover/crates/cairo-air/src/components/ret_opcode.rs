@@ -1,8 +1,9 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_15a61::DecodeInstruction15A61;
 use crate::components::subroutines::read_positive_num_bits_27::ReadPositiveNumBits27;
+use crate::components::subroutines::read_positive_num_bits_72::ReadPositiveNumBits72;
 
-pub const N_TRACE_COLUMNS: usize = 12;
+pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -87,6 +88,11 @@ impl FrameworkEval for Eval {
         let next_fp_limb_1_col9 = eval.next_trace_mask();
         let next_fp_limb_2_col10 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
+        let next_fp_limb_3_col11 = eval.next_trace_mask();
+        let next_fp_limb_4_col12 = eval.next_trace_mask();
+        let next_fp_limb_5_col13 = eval.next_trace_mask();
+        let next_fp_limb_6_col14 = eval.next_trace_mask();
+        let next_fp_limb_7_col15 = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
@@ -106,13 +112,18 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadPositiveNumBits27::evaluate(
+        ReadPositiveNumBits72::evaluate(
             M31_1.clone(),
             [(input_fp_col2.clone() - M31_2.clone())],
             next_fp_id_col7.clone(),
             next_fp_limb_0_col8.clone(),
             next_fp_limb_1_col9.clone(),
             next_fp_limb_2_col10.clone(),
+            next_fp_limb_3_col11.clone(),
+            next_fp_limb_4_col12.clone(),
+            next_fp_limb_5_col13.clone(),
+            next_fp_limb_6_col14.clone(),
+            next_fp_limb_7_col15.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,

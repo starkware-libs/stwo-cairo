@@ -65,11 +65,14 @@ impl CasmStatesByOpcode {
     ) -> Self {
         let mut res = CasmStatesByOpcode::default();
         for entry_ref in iter {
-            res.push_instr(memory, CasmState{
-                pc: entry_ref.pc.offset.into(),
-                ap: entry_ref.ap.into(),
-                fp: entry_ref.fp.into(),
-            });
+            res.push_instr(
+                memory,
+                CasmState {
+                    pc: entry_ref.pc.offset.into(),
+                    ap: entry_ref.ap.into(),
+                    fp: entry_ref.fp.into(),
+                },
+            );
         }
         res
     }
@@ -356,10 +359,13 @@ impl CasmStatesByOpcode {
                     },
                     {
                         let new_offset = op_1_addr.0.checked_add_signed(offset2 as i32).unwrap();
-                        memory.get(Relocatable{segment_index: if op_1_imm { 0 } else { 1 }, offset: new_offset as u32})
+                        memory.get(Relocatable {
+                            segment_index: if op_1_imm { 0 } else { 1 },
+                            offset: new_offset as u32,
+                        })
                     },
                 );
-                
+
                 // [ap/fp + offset0] = [ap/fp + offset1] * imm.
                 // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                 assert_eq!(
@@ -422,7 +428,10 @@ impl CasmStatesByOpcode {
                     },
                     {
                         let new_offset = op_1_addr.0.checked_add_signed(offset2 as i32).unwrap();
-                        memory.get(Relocatable{segment_index: if op_1_imm { 0 } else { 1 }, offset: new_offset as u32})
+                        memory.get(Relocatable {
+                            segment_index: if op_1_imm { 0 } else { 1 },
+                            offset: new_offset as u32,
+                        })
                     },
                 );
 
@@ -711,21 +720,22 @@ impl StateTransitions {
     pub fn from_relocatables(trace: &[TraceEntry], memory: &MemoryBuilder) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_relocatables").entered();
         let initial_state_entry = trace.first().unwrap();
-        let initial_state = CasmState{
+        let initial_state = CasmState {
             pc: initial_state_entry.pc.offset.into(),
             ap: initial_state_entry.ap.into(),
             fp: initial_state_entry.fp.into(),
         };
         let final_state_entry = trace.last().unwrap();
-        let final_state = CasmState{
+        let final_state = CasmState {
             pc: final_state_entry.pc.offset.into(),
             ap: final_state_entry.ap.into(),
             fp: final_state_entry.fp.into(),
         };
         let trace = &trace[..trace.len() - 1];
 
-        let casm_states_by_opcode = CasmStatesByOpcode::from_iter_relocatables(trace.iter(), memory);
-        
+        let casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter_relocatables(trace.iter(), memory);
+
         StateTransitions {
             initial_state,
             final_state,

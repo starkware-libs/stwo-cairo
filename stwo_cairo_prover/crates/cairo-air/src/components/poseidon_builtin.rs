@@ -454,9 +454,7 @@ impl FrameworkEval for Eval {
 
         ReadPositiveNumBits252::evaluate(
             segment_id_col341.clone(),
-            [
-                (seq.clone() * M31_6.clone()),
-            ],
+            [(seq.clone() * M31_6.clone())],
             input_state_0_id_col0.clone(),
             input_state_0_limb_0_col1.clone(),
             input_state_0_limb_1_col2.clone(),
@@ -537,9 +535,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             segment_id_col341.clone(),
-            [
-                (seq.clone() * M31_6.clone()) + M31_1.clone(),
-            ],
+            [(seq.clone() * M31_6.clone()) + M31_1.clone()],
             input_state_1_id_col29.clone(),
             input_state_1_limb_0_col30.clone(),
             input_state_1_limb_1_col31.clone(),
@@ -620,9 +616,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             segment_id_col341.clone(),
-            [
-                (seq.clone() * M31_6.clone()) + M31_2.clone(),
-            ],
+            [(seq.clone() * M31_6.clone()) + M31_2.clone()],
             input_state_2_id_col58.clone(),
             input_state_2_limb_0_col59.clone(),
             input_state_2_limb_1_col60.clone(),

@@ -32,15 +32,31 @@ fn extract_public_segments(memory: &Memory, initial_ap: u32, final_ap: u32) -> P
     let to_memory_value = |addr: Relocatable| {
         let id = memory.get_raw_id(addr);
         let value = match memory.get(addr) {
-            MemoryValue::Small(x) => MemorySmallValue { id, segment_index: 0, offset: x as u32 },
-            MemoryValue::F252(x) => MemorySmallValue { id, segment_index: 0, offset: x[0] as u32 },
-            MemoryValue::MemoryRelocatable(x) => MemorySmallValue { id, segment_index: x[0] as u32, offset: x[1] as u32 },
+            MemoryValue::Small(x) => MemorySmallValue {
+                id,
+                segment_index: 0,
+                offset: x as u32,
+            },
+            MemoryValue::F252(x) => MemorySmallValue {
+                id,
+                segment_index: 0,
+                offset: x[0] as u32,
+            },
+            MemoryValue::MemoryRelocatable(x) => MemorySmallValue {
+                id,
+                segment_index: x[0] as u32,
+                offset: x[1] as u32,
+            },
         };
         value
     };
 
-    let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(|i| Relocatable::execution(i)).map(to_memory_value);
-    let end_ptrs = (final_ap - n_public_segments..final_ap).map(|i| Relocatable::execution(i)).map(to_memory_value);    
+    let start_ptrs = (initial_ap..initial_ap + n_public_segments)
+        .map(|i| Relocatable::execution(i))
+        .map(to_memory_value);
+    let end_ptrs = (final_ap - n_public_segments..final_ap)
+        .map(|i| Relocatable::execution(i))
+        .map(to_memory_value);
     let ranges: Vec<_> = start_ptrs
         .zip(end_ptrs)
         .map(|(start_ptr, stop_ptr)| SegmentRange {
@@ -71,14 +87,18 @@ fn extract_sections_from_memory(
     final_ap: u32,
 ) -> PublicMemory {
     let public_segments = extract_public_segments(memory, initial_ap, final_ap);
-    let program_memory_addresses = (initial_pc..(memory.relocatable_to_id[0].len()) as u32).map(|i| Relocatable::program(i as u32)).collect_vec();
+    let program_memory_addresses = (initial_pc..(memory.relocatable_to_id[0].len()) as u32)
+        .map(|i| Relocatable::program(i as u32))
+        .collect_vec();
     let safe_call_addresses = vec![
         Relocatable::execution(initial_ap - 2),
-        Relocatable::execution(initial_ap - 1)
+        Relocatable::execution(initial_ap - 1),
     ];
-    let output_memory_addresses =
-        (public_segments.output.start_ptr.offset..public_segments.output.stop_ptr.offset).map(|i| Relocatable::execution(i as u32)).collect_vec();
-        // Maybe not all the output is on execution segment
+    let output_memory_addresses = (public_segments.output.start_ptr.offset
+        ..public_segments.output.stop_ptr.offset)
+        .map(|i| Relocatable::execution(i as u32))
+        .collect_vec();
+    // Maybe not all the output is on execution segment
     let [program, safe_call, output] = [
         program_memory_addresses,
         safe_call_addresses,
@@ -146,11 +166,7 @@ impl CairoClaimGenerator {
         let verify_bitwise_xor_9_trace_generator = verify_bitwise_xor_9::ClaimGenerator::new();
 
         // Yield public memory.
-        for addr in input
-            .public_memory_addresses
-            .iter()
-            .copied()
-        {
+        for addr in input.public_memory_addresses.iter().copied() {
             let id = memory_address_to_id_trace_generator.get_id(addr);
             memory_address_to_id_trace_generator.add_input(&addr);
             memory_id_to_value_trace_generator.add_input(&id);
@@ -194,13 +210,6 @@ impl CairoClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write opcode trace").entered();
-        // For each write_trace_simd method, there are three things to do:
-        // 1. Adapt the input of the deduce_output method called on memory_address_to_id for it 
-        //    to be a PackedRelocatable using from_pc_m31 or from_ap_m31 depending on the segment we are trying to read from.
-        // 2. Change the SubComponentInputs::memory_address_to_id to be a [Vec<PackedRelocatable>; 20] instead of a [Vec<memory_address_to_id::PackedInputType>; 20].
-        //    Adapt the value affected to the *sub_component_inputs.memory_address_to_id[i] variables to be a PackedRelocatable::from_ap_m31 or PackedRelocatable::from_pc_m31.
-        // 3. Change all memory_address_to_id_<i> to be a Vec<[PackedM31; 3]> instead of a Vec<[PackedM31; 2]>.
-        //    Adapt the value affected to the *lookup_data.memory_address_to_id_<i> variables by adding an M31_0 or M31_1 to the first element of the array.
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
             tree_builder,
             &mut self.blake_context_trace_generator,

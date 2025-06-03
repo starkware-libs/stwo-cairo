@@ -132,8 +132,8 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_e23a5_0 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
+                let memory_address_to_id_value_tmp_e23a5_0 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_e23a5_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_e23a5_0);
                 *sub_component_inputs.verify_instruction[0] = (
@@ -162,13 +162,14 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 27.
 
-                let memory_address_to_id_value_tmp_e23a5_3 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_1))));
+                let memory_address_to_id_value_tmp_e23a5_3 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_1))));
                 let memory_id_to_big_value_tmp_e23a5_4 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_e23a5_3);
                 let next_pc_id_col3 = memory_address_to_id_value_tmp_e23a5_3;
                 *row[3] = next_pc_id_col3;
-                *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_1)));
+                *sub_component_inputs.memory_address_to_id[0] =
+                    PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_1)));
                 *lookup_data.memory_address_to_id_0 =
                     [M31_1, ((input_fp_col2) - (M31_1)), next_pc_id_col3];
                 let next_pc_limb_0_col4 = memory_id_to_big_value_tmp_e23a5_4.get_m31(0);
@@ -245,13 +246,14 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 27.
 
-                let memory_address_to_id_value_tmp_e23a5_6 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_2))));
+                let memory_address_to_id_value_tmp_e23a5_6 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_2))));
                 let memory_id_to_big_value_tmp_e23a5_7 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_e23a5_6);
                 let next_fp_id_col7 = memory_address_to_id_value_tmp_e23a5_6;
                 *row[7] = next_fp_id_col7;
-                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_2)));
+                *sub_component_inputs.memory_address_to_id[1] =
+                    PackedRelocatable::from_ap_m31(((input_fp_col2) - (M31_2)));
                 *lookup_data.memory_address_to_id_1 =
                     [M31_1, ((input_fp_col2) - (M31_2)), next_fp_id_col7];
                 let next_fp_limb_0_col8 = memory_id_to_big_value_tmp_e23a5_7.get_m31(0);
@@ -260,17 +262,27 @@ fn write_trace_simd(
                 *row[9] = next_fp_limb_1_col9;
                 let next_fp_limb_2_col10 = memory_id_to_big_value_tmp_e23a5_7.get_m31(2);
                 *row[10] = next_fp_limb_2_col10;
+                let next_fp_limb_3_col11 = memory_id_to_big_value_tmp_e23a5_7.get_m31(3);
+                *row[12] = next_fp_limb_3_col11;
+                let next_fp_limb_4_col12 = memory_id_to_big_value_tmp_e23a5_7.get_m31(4);
+                *row[13] = next_fp_limb_4_col12;
+                let next_fp_limb_5_col13 = memory_id_to_big_value_tmp_e23a5_7.get_m31(5);
+                *row[14] = next_fp_limb_5_col13;
+                let next_fp_limb_6_col14 = memory_id_to_big_value_tmp_e23a5_7.get_m31(6);
+                *row[15] = next_fp_limb_6_col14;
+                let next_fp_limb_7_col15 = memory_id_to_big_value_tmp_e23a5_7.get_m31(7);
+                *row[16] = next_fp_limb_7_col15;
                 *sub_component_inputs.memory_id_to_big[1] = next_fp_id_col7;
                 *lookup_data.memory_id_to_big_1 = [
                     next_fp_id_col7,
                     next_fp_limb_0_col8,
                     next_fp_limb_1_col9,
                     next_fp_limb_2_col10,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
+                    next_fp_limb_3_col11,
+                    next_fp_limb_4_col12,
+                    next_fp_limb_5_col13,
+                    next_fp_limb_6_col14,
+                    next_fp_limb_7_col15,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -297,11 +309,11 @@ fn write_trace_simd(
                         next_fp_limb_0_col8,
                         next_fp_limb_1_col9,
                         next_fp_limb_2_col10,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
+                        next_fp_limb_3_col11,
+                        next_fp_limb_4_col12,
+                        next_fp_limb_5_col13,
+                        next_fp_limb_6_col14,
+                        next_fp_limb_7_col15,
                         M31_0,
                         M31_0,
                         M31_0,

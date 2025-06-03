@@ -101,10 +101,7 @@ impl BuiltinsClaimGenerator {
                     n_instances.is_power_of_two(),
                     "range_check_bits_96 instances number is not a power of two"
                 );
-                range_check_builtin_bits_96::ClaimGenerator::new(
-                    n_instances.ilog2(),
-                    segment.start,
-                )
+                range_check_builtin_bits_96::ClaimGenerator::new(n_instances.ilog2(), segment.start)
             });
         let range_check_128_builtin_trace_generator =
             builtin_segments.range_check_bits_128.map(|segment| {
@@ -114,7 +111,10 @@ impl BuiltinsClaimGenerator {
                     n_instances.is_power_of_two(),
                     "range_check_bits_128 instances number is not a power of two"
                 );
-                range_check_builtin_bits_128::ClaimGenerator::new(n_instances.ilog2(), segment.start)
+                range_check_builtin_bits_128::ClaimGenerator::new(
+                    n_instances.ilog2(),
+                    segment.start,
+                )
             });
         Self {
             add_mod_builtin_trace_generator,

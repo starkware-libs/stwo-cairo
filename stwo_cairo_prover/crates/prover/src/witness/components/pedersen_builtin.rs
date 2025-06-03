@@ -75,7 +75,8 @@ impl ClaimGenerator {
         (
             Claim {
                 log_size,
-                pedersen_builtin_segment_start: self.pedersen_builtin_segment_start.segment_index as u32,
+                pedersen_builtin_segment_start: self.pedersen_builtin_segment_start.segment_index
+                    as u32,
             },
             InteractionClaimGenerator {
                 log_size,

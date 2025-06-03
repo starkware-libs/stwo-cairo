@@ -148,8 +148,8 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_26616_0 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
+                let memory_address_to_id_value_tmp_26616_0 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_26616_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_26616_0);
                 let offset0_tmp_26616_2 =
@@ -370,7 +370,7 @@ fn write_trace_simd(
                     ]),
                     mem1_base_id_col11,
                 );
-                
+
                 let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
                 let UInt32_18 = PackedUInt32::broadcast(UInt32::from(18));
                 let UInt32_27 = PackedUInt32::broadcast(UInt32::from(27));
@@ -383,25 +383,27 @@ fn write_trace_simd(
                 let UInt32_1 = PackedUInt32::broadcast(UInt32::from(1));
 
                 // Read Positive Num Bits 27.
-                let packed_offset = (
-                    PackedUInt32::from_m31(mem1_base_limb_0_col12)
+                let packed_offset = (PackedUInt32::from_m31(mem1_base_limb_0_col12)
                     | (PackedUInt32::from_m31(mem1_base_limb_1_col13) << UInt32_9)
                     | (PackedUInt32::from_m31(mem1_base_limb_2_col14) << UInt32_18)
-                    | ((PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31) << UInt32_27)
-                ).as_m31();
-                let packed_segment_id = (
-                    (PackedUInt32::from_m31(mem1_base_limb_3_col15) >> UInt32_5)
+                    | ((PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31) << UInt32_27))
+                    .as_m31();
+                let packed_segment_id = ((PackedUInt32::from_m31(mem1_base_limb_3_col15)
+                    >> UInt32_5)
                     | (PackedUInt32::from_m31(mem1_base_limb_4_col16) << UInt32_4)
                     | (PackedUInt32::from_m31(mem1_base_limb_5_col17) << UInt32_13)
                     | (PackedUInt32::from_m31(mem1_base_limb_6_col18) << UInt32_22)
-                    | ((PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1) << UInt32_31)
-                ).as_m31();
+                    | ((PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1) << UInt32_31))
+                    .as_m31();
 
-                let offset_final_word_col20 = (PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31).as_m31();
+                let offset_final_word_col20 =
+                    (PackedUInt32::from_m31(mem1_base_limb_3_col15) & UInt32_31).as_m31();
                 *row[20] = offset_final_word_col20;
-                let segment_id_initial_word_col21 = (PackedUInt32::from_m31(mem1_base_limb_3_col15) >> UInt32_5).as_m31();
+                let segment_id_initial_word_col21 =
+                    (PackedUInt32::from_m31(mem1_base_limb_3_col15) >> UInt32_5).as_m31();
                 *row[21] = segment_id_initial_word_col21;
-                let segment_id_final_word_col22 = (PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1).as_m31();
+                let segment_id_final_word_col22 =
+                    (PackedUInt32::from_m31(mem1_base_limb_7_col19) & UInt32_1).as_m31();
                 *row[22] = segment_id_final_word_col22;
                 let memory_address_to_id_value_tmp_26616_12 = memory_address_to_id_state
                     .deduce_output(PackedRelocatable::from_ap_m31(
@@ -411,7 +413,7 @@ fn write_trace_simd(
                 let dst_id_col23 = memory_address_to_id_value_tmp_26616_12;
                 *row[23] = dst_id_col23;
 
-                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31( 
+                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31(
                     ((mem_dst_base_col9)
                         + (decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[0])),
                 );
@@ -421,16 +423,17 @@ fn write_trace_simd(
                         + (decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[0])),
                     dst_id_col23,
                 ];
-                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable{
+                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable {
                     segment_index: packed_segment_id,
-                    offset: packed_offset + decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[2],
+                    offset: packed_offset
+                        + decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[2],
                 };
                 *lookup_data.memory_address_to_id_2 = [
                     packed_segment_id,
                     packed_offset + decode_instruction_13e4f04f153b7d8c_output_tmp_26616_8.0[2],
                     dst_id_col23,
                 ];
-        
+
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
                     ((input_pc_col0) + (M31_1)),

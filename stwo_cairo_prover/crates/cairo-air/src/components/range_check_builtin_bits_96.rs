@@ -84,9 +84,7 @@ impl FrameworkEval for Eval {
 
         ReadPositiveNumBits96::evaluate(
             segment_id.clone(),
-            [
-               seq.clone(),
-            ],
+            [seq.clone()],
             value_id_col0.clone(),
             value_limb_0_col1.clone(),
             value_limb_1_col2.clone(),

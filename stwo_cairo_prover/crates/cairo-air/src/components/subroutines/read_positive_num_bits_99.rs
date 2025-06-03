@@ -32,7 +32,11 @@ impl ReadPositiveNumBits99 {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[segment_index.clone(), read_positive_num_bits_99_input.clone(), id_col0.clone()],
+            &[
+                segment_index.clone(),
+                read_positive_num_bits_99_input.clone(),
+                id_col0.clone(),
+            ],
         ));
 
         eval.add_to_relation(RelationEntry::new(

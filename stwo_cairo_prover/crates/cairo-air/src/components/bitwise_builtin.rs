@@ -169,9 +169,7 @@ impl FrameworkEval for Eval {
 
         ReadPositiveNumBits252::evaluate(
             segment_id_col89.clone(),
-            [
-                (seq.clone() * M31_5.clone()),
-            ],
+            [(seq.clone() * M31_5.clone())],
             op0_id_col0.clone(),
             op0_limb_0_col1.clone(),
             op0_limb_1_col2.clone(),
@@ -207,9 +205,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             segment_id_col89.clone(),
-            [
-                ((seq.clone() * M31_5.clone()) + M31_1.clone()),
-            ],
+            [((seq.clone() * M31_5.clone()) + M31_1.clone())],
             op1_id_col29.clone(),
             op1_limb_0_col30.clone(),
             op1_limb_1_col31.clone(),
@@ -564,7 +560,7 @@ impl FrameworkEval for Eval {
         MemVerify::evaluate(
             [
                 segment_id_col89.clone(),
-                (seq.clone() * M31_5.clone())+ M31_3.clone(),
+                (seq.clone() * M31_5.clone()) + M31_3.clone(),
                 xor_col58.clone(),
                 xor_col59.clone(),
                 xor_col60.clone(),

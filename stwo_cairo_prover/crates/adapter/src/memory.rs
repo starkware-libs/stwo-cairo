@@ -1,13 +1,13 @@
 use std::ops::{Deref, DerefMut};
 
 use bytemuck::{Pod, Zeroable};
-use cairo_vm::{stdlib::collections::HashMap};
+use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::relocatable::MaybeRelocatable as MaybeRelocatableVM;
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
-use tracing::{span, Level};
-use cairo_vm::types::relocatable::{MaybeRelocatable as MaybeRelocatableVM};
 use stwo_cairo_common::prover_types::cpu::Relocatable;
+use tracing::{span, Level};
 
 /// Prime 2^251 + 17 * 2^192 + 1 in little endian.
 pub const P_MIN_1: [u32; 8] = [
@@ -71,21 +71,33 @@ pub struct Memory {
 }
 impl Memory {
     pub fn get(&self, relocatable: Relocatable) -> MemoryValue {
-        let segment = self.relocatable_to_id.get(relocatable.segment_index as usize)
-            .unwrap_or_else(|| panic!("Memory access error: segment_index {} out of bounds", relocatable.segment_index));
-            
-        let value_id = segment.get(relocatable.offset as usize)
-            .unwrap_or_else(|| panic!("Memory access error: offset {} out of bounds for segment {}", 
-                relocatable.offset, relocatable.segment_index));
+        let segment = self
+            .relocatable_to_id
+            .get(relocatable.segment_index as usize)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Memory access error: segment_index {} out of bounds",
+                    relocatable.segment_index
+                )
+            });
+
+        let value_id = segment.get(relocatable.offset as usize).unwrap_or_else(|| {
+            panic!(
+                "Memory access error: offset {} out of bounds for segment {}",
+                relocatable.offset, relocatable.segment_index
+            )
+        });
 
         match value_id.decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
-            MemoryValueId::MemoryRelocatable(id) => MemoryValue::MemoryRelocatable(self.relocatable_values[id as usize]),
+            MemoryValueId::MemoryRelocatable(id) => {
+                MemoryValue::MemoryRelocatable(self.relocatable_values[id as usize])
+            }
             // TODO(Ohad): This case should be a panic, but at the moment there is padding on memory
             // holes, fill the holes before padding, then uncomment.
-            // MemoryValueId::Empty => panic!("Accessing empty memory cell"),
-            MemoryValueId::Empty => MemoryValue::Small(0),
+            MemoryValueId::Empty => panic!("Accessing empty memory cell"),
+            // MemoryValueId::Empty => MemoryValue::Small(0),
         }
     }
 
@@ -150,18 +162,27 @@ impl MemoryBuilder {
 
     pub fn from_relocatable_memory(
         config: MemoryConfig,
-        relocatable_memory: &Vec<Vec<Option<MaybeRelocatableVM>>>
-    ) -> MemoryBuilder{
+        relocatable_memory: &Vec<Vec<Option<MaybeRelocatableVM>>>,
+    ) -> MemoryBuilder {
         let _span = span!(Level::INFO, "MemoryBuilder::from_relocatable_memory").entered();
         let mut builder = Self::new(config);
-        for (segment_index, segment) in relocatable_memory.iter().enumerate(){
+        for (segment_index, segment) in relocatable_memory.iter().enumerate() {
             builder.relocatable_to_id.push(Vec::new());
-            for (offset, value) in segment.iter().enumerate(){
-                let relocatable = Relocatable{segment_index: segment_index as usize, offset: offset as u32};
+            for (offset, value) in segment.iter().enumerate() {
+                let relocatable = Relocatable {
+                    segment_index: segment_index as usize,
+                    offset: offset as u32,
+                };
                 match value {
                     Some(MaybeRelocatableVM::RelocatableValue(relocatable_value)) => {
-                        let relocatable_value_u32 = [relocatable_value.segment_index as u32, relocatable_value.offset as u32];
-                        builder.set(relocatable, MemoryValue::MemoryRelocatable(relocatable_value_u32));
+                        let relocatable_value_u32 = [
+                            relocatable_value.segment_index as u32,
+                            relocatable_value.offset as u32,
+                        ];
+                        builder.set(
+                            relocatable,
+                            MemoryValue::MemoryRelocatable(relocatable_value_u32),
+                        );
                     }
                     Some(MaybeRelocatableVM::Int(felt252)) => {
                         let value = value_from_felt252(bytemuck::cast(felt252.to_bytes_le()));
@@ -169,6 +190,11 @@ impl MemoryBuilder {
                     }
                     _ => {}
                 }
+            }
+        }
+        for segment in builder.relocatable_to_id.iter_mut() {
+            if !segment.is_empty() {
+                segment.pop();
             }
         }
         builder
@@ -189,9 +215,13 @@ impl MemoryBuilder {
             self.relocatable_to_id
                 .resize(relocatable.segment_index as usize + 1, Vec::new());
         }
-        if relocatable.offset as usize >= self.relocatable_to_id[relocatable.segment_index as usize].len() {
-            self.relocatable_to_id[relocatable.segment_index as usize]
-                .resize(relocatable.offset as usize + 1, EncodedMemoryValueId::default());
+        if relocatable.offset as usize
+            >= self.relocatable_to_id[relocatable.segment_index as usize].len()
+        {
+            self.relocatable_to_id[relocatable.segment_index as usize].resize(
+                relocatable.offset as usize + 1,
+                EncodedMemoryValueId::default(),
+            );
         }
         let res = EncodedMemoryValueId::encode(match value {
             MemoryValue::Small(val) => {
@@ -219,7 +249,8 @@ impl MemoryBuilder {
                 MemoryValueId::MemoryRelocatable(id as u32)
             }
         });
-        self.relocatable_to_id[relocatable.segment_index as usize].insert(relocatable.offset as usize, res);
+        self.relocatable_to_id[relocatable.segment_index as usize]
+            .insert(relocatable.offset as usize, res);
     }
 
     /// Copies a block of memory from one location to another.

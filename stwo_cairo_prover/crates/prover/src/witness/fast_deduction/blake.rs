@@ -3,8 +3,8 @@ use std::simd::u32x16;
 
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_consts::blake::{BLAKE_SIGMA, N_BLAKE_SIGMA_COLS};
-use stwo_cairo_common::prover_types::simd::{PackedUInt32, N_LANES};
 use stwo_cairo_common::prover_types::cpu::Relocatable;
+use stwo_cairo_common::prover_types::simd::{PackedUInt32, N_LANES};
 
 use crate::stwo_prover::core::backend::simd::m31::PackedM31;
 
@@ -123,7 +123,12 @@ impl BlakeRound {
 
         let message: [_; N_LANES] = from_fn(|i| {
             u32x16::from(from_fn(|j| {
-                self.memory.get(Relocatable{segment_index: 1, offset: message_pointer[j] + sigma[i][j]}).as_small() as u32
+                self.memory
+                    .get(Relocatable {
+                        segment_index: 1,
+                        offset: message_pointer[j] + sigma[i][j],
+                    })
+                    .as_small() as u32
             }))
         });
 

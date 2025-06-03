@@ -73,13 +73,13 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
-        let M31_shift9 = E::F::from(M31::from(1<<9));
-        let M31_shift18 = E::F::from(M31::from(1<<18));
-        let M31_shift27 = E::F::from(M31::from(1<<27));
-        let M31_shift4 = E::F::from(M31::from(1<<4));
-        let M31_shift13 = E::F::from(M31::from(1<<13));
-        let M31_shift22 = E::F::from(M31::from(1<<22));
-        let M31_shift31 = E::F::from(M31::from(1<<31));
+        let M31_shift9 = E::F::from(M31::from(1 << 9));
+        let M31_shift18 = E::F::from(M31::from(1 << 18));
+        let M31_shift27 = E::F::from(M31::from(1 << 27));
+        let M31_shift4 = E::F::from(M31::from(1 << 4));
+        let M31_shift13 = E::F::from(M31::from(1 << 13));
+        let M31_shift22 = E::F::from(M31::from(1 << 22));
+        let M31_shift31 = E::F::from(M31::from(1 << 31));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -152,26 +152,21 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
 
-        
-
         MemVerifyEqual::evaluate(
             [
                 M31_1.clone(),
-
                 (mem_dst_base_col9.clone()
                     + decode_instruction_cb32b_output_tmp_b1151_8_offset0.clone()),
-
                 segment_id_initial_word_col21.clone()
-                + mem1_base_limb_4_col16.clone() * M31_shift4.clone()
-                + mem1_base_limb_5_col17.clone() * M31_shift13.clone()
-                + mem1_base_limb_6_col18.clone() * M31_shift22.clone()
-                + segment_id_final_word_col22.clone() * M31_shift31.clone(),
-
-                mem1_base_limb_0_col12.clone() +
-                 mem1_base_limb_1_col13.clone() * M31_shift9.clone() + 
-                 mem1_base_limb_2_col14.clone() * M31_shift18.clone() +
-                 offset_final_word_col20.clone() * M31_shift27.clone() +
-                 decode_instruction_cb32b_output_tmp_b1151_8_offset2.clone()
+                    + mem1_base_limb_4_col16.clone() * M31_shift4.clone()
+                    + mem1_base_limb_5_col17.clone() * M31_shift13.clone()
+                    + mem1_base_limb_6_col18.clone() * M31_shift22.clone()
+                    + segment_id_final_word_col22.clone() * M31_shift31.clone(),
+                mem1_base_limb_0_col12.clone()
+                    + mem1_base_limb_1_col13.clone() * M31_shift9.clone()
+                    + mem1_base_limb_2_col14.clone() * M31_shift18.clone()
+                    + offset_final_word_col20.clone() * M31_shift27.clone()
+                    + decode_instruction_cb32b_output_tmp_b1151_8_offset2.clone(),
             ],
             dst_id_col23.clone(),
             &self.memory_address_to_id_lookup_elements,

@@ -6,7 +6,7 @@ mod json;
 // use bytemuck::{cast_slice, Pod, Zeroable};
 use bytemuck::{Pod, Zeroable};
 // use cairo_vm::air_public_input::{PublicInput, PublicInputError};
-use cairo_vm::air_public_input::{PublicInputError};
+use cairo_vm::air_public_input::PublicInputError;
 // use cairo_vm::stdlib::collections::HashMap;
 // use json::PrivateInput;
 // use memmap2::Mmap;

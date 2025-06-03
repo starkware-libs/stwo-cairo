@@ -5,9 +5,9 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::prover_types::cpu::Relocatable;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{span, Level};
-use stwo_cairo_common::prover_types::cpu::Relocatable;
 
 // use super::memory::MemoryBuilder;
 
@@ -41,7 +41,7 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, Copy)]
-pub struct Segment{
+pub struct Segment {
     pub start: Relocatable,
     pub length: u32,
 }
@@ -258,16 +258,22 @@ impl BuiltinSegments {
             }
         }
     }
-    
-    pub fn get_builtin_segments(builtins_segments_indices: &BTreeMap<usize, BuiltinName>, relocatable_memory: &Vec<Vec<Option<MaybeRelocatable>>>) -> BuiltinSegments {
+
+    pub fn get_builtin_segments(
+        builtins_segments_indices: &BTreeMap<usize, BuiltinName>,
+        relocatable_memory: &Vec<Vec<Option<MaybeRelocatable>>>,
+    ) -> BuiltinSegments {
         let _span = span!(Level::INFO, "get_builtin_segments").entered();
         let mut res = BuiltinSegments::default();
         for (segment_index, builtin_name) in builtins_segments_indices.iter() {
             let segment = if relocatable_memory[*segment_index].len() == 0 {
                 None
             } else {
-                Some(Segment{
-                    start: Relocatable{segment_index: *segment_index, offset: 0},
+                Some(Segment {
+                    start: Relocatable {
+                        segment_index: *segment_index,
+                        offset: 0,
+                    },
                     length: relocatable_memory[*segment_index].len() as u32,
                 })
             };

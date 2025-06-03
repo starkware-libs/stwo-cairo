@@ -134,8 +134,8 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_4997f_0 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
+                let memory_address_to_id_value_tmp_4997f_0 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(input_pc_col0));
                 let memory_id_to_big_value_tmp_4997f_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_4997f_0);
                 *sub_component_inputs.verify_instruction[0] = (
@@ -164,13 +164,15 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 27.
 
-                let memory_address_to_id_value_tmp_4997f_3 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_ap_m31(input_ap_col1));
+                let memory_address_to_id_value_tmp_4997f_3 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_ap_m31(input_ap_col1));
                 let memory_id_to_big_value_tmp_4997f_4 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_4997f_3);
+
                 let stored_fp_id_col3 = memory_address_to_id_value_tmp_4997f_3;
                 *row[3] = stored_fp_id_col3;
-                *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable::from_ap_m31(input_ap_col1);
+                *sub_component_inputs.memory_address_to_id[0] =
+                    PackedRelocatable::from_ap_m31(input_ap_col1);
                 *lookup_data.memory_address_to_id_0 = [M31_1, input_ap_col1, stored_fp_id_col3];
                 let stored_fp_limb_0_col4 = memory_id_to_big_value_tmp_4997f_4.get_m31(0);
                 *row[4] = stored_fp_limb_0_col4;
@@ -178,17 +180,28 @@ fn write_trace_simd(
                 *row[5] = stored_fp_limb_1_col5;
                 let stored_fp_limb_2_col6 = memory_id_to_big_value_tmp_4997f_4.get_m31(2);
                 *row[6] = stored_fp_limb_2_col6;
+                let stored_fp_limb_3_col7 = memory_id_to_big_value_tmp_4997f_4.get_m31(3);
+                *row[18] = stored_fp_limb_3_col7;
+                let stored_fp_limb_4_col8 = memory_id_to_big_value_tmp_4997f_4.get_m31(4);
+                *row[19] = stored_fp_limb_4_col8;
+                let stored_fp_limb_5_col9 = memory_id_to_big_value_tmp_4997f_4.get_m31(5);
+                *row[20] = stored_fp_limb_5_col9;
+                let stored_fp_limb_6_col10 = memory_id_to_big_value_tmp_4997f_4.get_m31(6);
+                *row[21] = stored_fp_limb_6_col10;
+                let stored_fp_limb_7_col11 = memory_id_to_big_value_tmp_4997f_4.get_m31(7);
+                *row[22] = stored_fp_limb_7_col11;
+
                 *sub_component_inputs.memory_id_to_big[0] = stored_fp_id_col3;
                 *lookup_data.memory_id_to_big_0 = [
                     stored_fp_id_col3,
                     stored_fp_limb_0_col4,
                     stored_fp_limb_1_col5,
                     stored_fp_limb_2_col6,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
-                    M31_0,
+                    stored_fp_limb_3_col7,
+                    stored_fp_limb_4_col8,
+                    stored_fp_limb_5_col9,
+                    stored_fp_limb_6_col10,
+                    stored_fp_limb_7_col11,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -215,11 +228,11 @@ fn write_trace_simd(
                         stored_fp_limb_0_col4,
                         stored_fp_limb_1_col5,
                         stored_fp_limb_2_col6,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
-                        M31_0,
+                        stored_fp_limb_3_col7,
+                        stored_fp_limb_4_col8,
+                        stored_fp_limb_5_col9,
+                        stored_fp_limb_6_col10,
+                        stored_fp_limb_7_col11,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -246,13 +259,14 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 27.
 
-                let memory_address_to_id_value_tmp_4997f_6 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_ap_m31(((input_ap_col1) + (M31_1))));
+                let memory_address_to_id_value_tmp_4997f_6 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_ap_m31(((input_ap_col1) + (M31_1))));
                 let memory_id_to_big_value_tmp_4997f_7 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_4997f_6);
                 let stored_ret_pc_id_col7 = memory_address_to_id_value_tmp_4997f_6;
                 *row[7] = stored_ret_pc_id_col7;
-                *sub_component_inputs.memory_address_to_id[1] = PackedRelocatable::from_ap_m31(((input_ap_col1) + (M31_1)));
+                *sub_component_inputs.memory_address_to_id[1] =
+                    PackedRelocatable::from_ap_m31(((input_ap_col1) + (M31_1)));
                 *lookup_data.memory_address_to_id_1 =
                     [M31_1, ((input_ap_col1) + (M31_1)), stored_ret_pc_id_col7];
                 let stored_ret_pc_limb_0_col8 = memory_id_to_big_value_tmp_4997f_7.get_m31(0);
@@ -329,15 +343,20 @@ fn write_trace_simd(
 
                 // Read Small.
 
-                let memory_address_to_id_value_tmp_4997f_9 =
-                    memory_address_to_id_state.deduce_output(PackedRelocatable::from_pc_m31(((input_pc_col0) + (M31_1))));
+                let memory_address_to_id_value_tmp_4997f_9 = memory_address_to_id_state
+                    .deduce_output(PackedRelocatable::from_pc_m31(((input_pc_col0) + (M31_1))));
                 let memory_id_to_big_value_tmp_4997f_10 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_4997f_9);
+
                 let distance_to_next_pc_id_col11 = memory_address_to_id_value_tmp_4997f_9;
                 *row[11] = distance_to_next_pc_id_col11;
-                *sub_component_inputs.memory_address_to_id[2] = PackedRelocatable::from_pc_m31(((input_pc_col0) + (M31_1)));
-                *lookup_data.memory_address_to_id_2 =
-                    [M31_0, ((input_pc_col0) + (M31_1)), distance_to_next_pc_id_col11];
+                *sub_component_inputs.memory_address_to_id[2] =
+                    PackedRelocatable::from_pc_m31(((input_pc_col0) + (M31_1)));
+                *lookup_data.memory_address_to_id_2 = [
+                    M31_0,
+                    ((input_pc_col0) + (M31_1)),
+                    distance_to_next_pc_id_col11,
+                ];
 
                 // Cond Decode Small Sign.
 

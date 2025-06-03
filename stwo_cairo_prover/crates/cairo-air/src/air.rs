@@ -198,6 +198,11 @@ impl CairoClaim {
             memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
             memory_id_to_value.small_log_size,
         );
+        accumulate_relation_uses(
+            relation_counts,
+            memory_id_to_big::RELATION_USES_PER_ROW_RELOCATABLE,
+            memory_id_to_value.relocatable_log_size,
+        );
     }
 }
 
@@ -218,11 +223,15 @@ impl PublicData {
                 self.initial_state.ap.0,
                 self.final_state.ap.0,
             )
-            .for_each(|(addr, id, val)| {
+            .for_each(|(segment_id, offset, id, val)| {
                 values_to_inverse.push(
                     <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
                         &lookup_elements.memory_address_to_id,
-                        &[M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                        &[
+                            M31::from_u32_unchecked(segment_id),
+                            M31::from_u32_unchecked(offset),
+                            M31::from_u32_unchecked(id),
+                        ],
                     ),
                 );
                 values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
@@ -281,8 +290,8 @@ impl MemorySmallValue {
 pub type PubMemoryValue = (u32, [u32; 8]);
 
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
-// (address, id, value)
-pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+// (segment_id, offset, id, value)
+pub type PubMemoryEntry = (u32, u32, u32, [u32; 8]);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
 pub struct SegmentRange {
@@ -368,12 +377,31 @@ impl PublicSegmentRanges {
                     let start_address = initial_ap + i as u32;
                     let stop_address = final_ap - n_segments + i as u32;
                     [
-                        (start_address, start_ptr.id, start_ptr.segment_index, start_ptr.offset),
-                        (stop_address, stop_ptr.id, stop_ptr.segment_index, stop_ptr.offset),
+                        (
+                            1,
+                            start_address,
+                            start_ptr.id,
+                            start_ptr.segment_index,
+                            start_ptr.offset,
+                        ),
+                        (
+                            1,
+                            stop_address,
+                            stop_ptr.id,
+                            stop_ptr.segment_index,
+                            stop_ptr.offset,
+                        ),
                     ]
                 },
             )
-            .map(|(addr, id, segment_index, offset)| (addr, id, [segment_index, offset, 0, 0, 0, 0, 0, 0]))
+            .map(|(ptr_segment_id, ptr_offset, id, segment_index, offset)| {
+                (
+                    ptr_segment_id,
+                    ptr_offset,
+                    id,
+                    [offset, segment_index, 0, 0, 0, 0, 0, 0],
+                )
+            })
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -424,10 +452,19 @@ impl PublicMemory {
     ) -> impl Iterator<Item = PubMemoryEntry> {
         let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
             .map(|section| section.clone().into_iter().enumerate());
-        let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
-        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
-        let safe_call_iter =
-            safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
+        let program_iter =
+            program.map(move |(i, (id, value))| (0, initial_pc + i as u32, id, value));
+        let output_iter = output.map(move |(i, (id, value))| (1, final_ap + i as u32, id, value));
+        let safe_call_iter = safe_call.map(move |(i, (id, value))| {
+            let modified_value = if id >> 29 == 2 {
+                let mut new_value = value;
+                new_value.swap(0, 1);
+                new_value
+            } else {
+                value
+            };
+            (1, initial_ap - 2 + i as u32, id, modified_value)
+        });
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
 
         program_iter
@@ -574,6 +611,7 @@ pub fn lookup_sum(
     sum += interaction_claim.memory_address_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.big_claimed_sum;
     sum += interaction_claim.memory_id_to_value.small_claimed_sum;
+    sum += interaction_claim.memory_id_to_value.relocatable_claimed_sum;
     sum += interaction_claim.range_checks.sum();
     sum += interaction_claim.verify_bitwise_xor_4.claimed_sum;
     sum += interaction_claim.verify_bitwise_xor_7.claimed_sum;
@@ -594,6 +632,7 @@ pub struct CairoComponents {
     pub memory_id_to_value: (
         memory_id_to_big::BigComponent,
         memory_id_to_big::SmallComponent,
+        memory_id_to_big::RelocatableComponent,
     ),
     pub range_checks: RangeChecksComponents,
     pub verify_bitwise_xor_4: verify_bitwise_xor_4::Component,
@@ -692,6 +731,18 @@ impl CairoComponents {
                 .clone()
                 .small_claimed_sum,
         );
+        let relocatable_memory_id_to_value_component = memory_id_to_big::RelocatableComponent::new(
+            tree_span_provider,
+            memory_id_to_big::RelocatableEval::new(
+                cairo_claim.memory_id_to_value.clone(),
+                interaction_elements.memory_id_to_value.clone(),
+                interaction_elements.range_checks.rc_9_9.clone(),
+            ),
+            interaction_claim
+                .memory_id_to_value
+                .clone()
+                .relocatable_claimed_sum,
+        );
         let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
             &interaction_elements.range_checks,
@@ -748,6 +799,7 @@ impl CairoComponents {
             memory_id_to_value: (
                 memory_id_to_value_component,
                 small_memory_id_to_value_component,
+                relocatable_memory_id_to_value_component,
             ),
             range_checks: range_checks_component,
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
@@ -769,6 +821,7 @@ impl CairoComponents {
                 &self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.0 as &dyn ComponentProver<SimdBackend>,
                 &self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,
+                &self.memory_id_to_value.2 as &dyn ComponentProver<SimdBackend>,
             ],
             self.range_checks.provers(),
             [
@@ -816,6 +869,11 @@ impl std::fmt::Display for CairoComponents {
             f,
             "SmallMemoryIdToValue: {}",
             indented_component_display(&self.memory_id_to_value.1)
+        )?;
+        writeln!(
+            f,
+            "RelocatableMemoryIdToValue: {}",
+            indented_component_display(&self.memory_id_to_value.2)
         )?;
         writeln!(f, "RangeChecks: {}", self.range_checks)?;
         writeln!(
