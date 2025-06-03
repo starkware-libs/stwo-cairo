@@ -8,9 +8,6 @@ use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
 use super::{PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait};
 
 
-// R = 2 + i = u^2.
-pub const R: CM31 = CM31 { a: M31 { inner: 2 }, b: M31 { inner: 1 } };
-
 // Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct QM31 {
@@ -153,7 +150,7 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
     #[inline(never)]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
-        QM31 { a: lhs.a * rhs.a + R * lhs.b * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
+        QM31 { a: lhs.a * rhs.a + mul_by_r(lhs.b) * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
     }
 }
 
@@ -354,4 +351,14 @@ pub fn qm31_const<
         a: CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } },
         b: CM31 { a: M31 { inner: W2 }, b: M31 { inner: W3 } },
     }
+}
+
+/// Returns `v * R` where `R = 2 + i = u^2`.
+#[inline(always)]
+fn mul_by_r(v: CM31) -> CM31 {
+    // = v * R
+    // = (a + bi) * (2 + i)
+    // = (2a - b) + (a + 2b)i
+    let CM31 { a, b } = v;
+    CM31 { a: a + a - b, b: a + b + b }
 }
