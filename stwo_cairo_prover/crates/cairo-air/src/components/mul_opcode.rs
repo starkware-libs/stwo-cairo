@@ -1,10 +1,11 @@
+// AIR version f1e997f6
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_4b8cf::DecodeInstruction4B8Cf;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 use crate::components::subroutines::verify_mul_252::VerifyMul252;
 
 pub const N_TRACE_COLUMNS: usize = 130;
-pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
@@ -19,7 +20,19 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     },
     RelationUse {
         relation_id: "RangeCheck_19",
-        uses: 28,
+        uses: 8,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_B",
+        uses: 7,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_C",
+        uses: 7,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_D",
+        uses: 6,
     },
     RelationUse {
         relation_id: "VerifyInstruction",
@@ -33,6 +46,9 @@ pub struct Eval {
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
+    pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
+    pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
+    pub range_check_19_d_lookup_elements: relations::RangeCheck_19_D,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -476,6 +492,9 @@ impl FrameworkEval for Eval {
             carry_25_col127.clone(),
             carry_26_col128.clone(),
             &self.range_check_19_lookup_elements,
+            &self.range_check_19_b_lookup_elements,
+            &self.range_check_19_c_lookup_elements,
+            &self.range_check_19_d_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -523,6 +542,9 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
             range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+            range_check_19_b_lookup_elements: relations::RangeCheck_19_B::dummy(),
+            range_check_19_c_lookup_elements: relations::RangeCheck_19_C::dummy(),
+            range_check_19_d_lookup_elements: relations::RangeCheck_19_D::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
