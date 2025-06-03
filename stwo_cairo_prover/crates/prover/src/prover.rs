@@ -331,15 +331,15 @@ pub mod tests {
         }
 
         #[test]
-        fn test_poseidon_e2e_prove_cairo_verify_all_opcode_components() {
+        fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_ret_opcode");
             let input = run_program_and_adapter(&compiled_program);
             let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
             let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
                 input,
                 PcsConfig {
-                    pow_bits: 26,
-                    fri_config: FriConfig::new(0, 1, 70),
+                    pow_bits: 6,
+                    fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace,
             )
