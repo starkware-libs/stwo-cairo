@@ -10,6 +10,3 @@ members = [
 
 [cairo]
 enable-gas = false
-
-[dev-dependencies]
-cairo_test = "2.11.4"
