@@ -1,8 +1,9 @@
+// AIR version 6de66a22
 use crate::components::prelude::*;
 use crate::components::subroutines::ec_add::EcAdd;
 
 pub const N_TRACE_COLUMNS: usize = 472;
-pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 10] = [
     RelationUse {
         relation_id: "PartialEcMul",
         uses: 1,
@@ -13,11 +14,35 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     },
     RelationUse {
         relation_id: "RangeCheck_19",
-        uses: 84,
+        uses: 24,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_B",
+        uses: 21,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_C",
+        uses: 21,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_19_D",
+        uses: 18,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9",
-        uses: 126,
+        uses: 36,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_B",
+        uses: 36,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_C",
+        uses: 27,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_D",
+        uses: 27,
     },
 ];
 
@@ -25,7 +50,13 @@ pub struct Eval {
     pub claim: Claim,
     pub pedersen_points_table_lookup_elements: relations::PedersenPointsTable,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
+    pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
+    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
+    pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
+    pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
+    pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
+    pub range_check_19_d_lookup_elements: relations::RangeCheck_19_D,
     pub partial_ec_mul_lookup_elements: relations::PartialEcMul,
 }
 
@@ -1071,7 +1102,13 @@ impl FrameworkEval for Eval {
             sub_res_limb_27_col469.clone(),
             sub_p_bit_col470.clone(),
             &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_b_lookup_elements,
+            &self.range_check_9_9_c_lookup_elements,
+            &self.range_check_9_9_d_lookup_elements,
             &self.range_check_19_lookup_elements,
+            &self.range_check_19_b_lookup_elements,
+            &self.range_check_19_c_lookup_elements,
+            &self.range_check_19_d_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -1257,7 +1294,13 @@ mod tests {
             claim: Claim { log_size: 4 },
             pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
             range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
+            range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
+            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
+            range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
             range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
+            range_check_19_b_lookup_elements: relations::RangeCheck_19_B::dummy(),
+            range_check_19_c_lookup_elements: relations::RangeCheck_19_C::dummy(),
+            range_check_19_d_lookup_elements: relations::RangeCheck_19_D::dummy(),
             partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
