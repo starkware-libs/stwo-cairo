@@ -10,9 +10,10 @@ use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_19,
-    range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
-    range_check_4_4_4_4, range_check_5_4, range_check_6, range_check_7_2_5, range_check_8,
-    range_check_9_9,
+    range_check_19_b, range_check_19_c, range_check_19_d, range_check_3_3_3_3_3,
+    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4,
+    range_check_6, range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b,
+    range_check_9_9_c, range_check_9_9_d,
 };
 use crate::relations;
 
@@ -24,10 +25,16 @@ pub struct RangeChecksClaim {
     pub rc_12: range_check_12::Claim,
     pub rc_18: range_check_18::Claim,
     pub rc_19: range_check_19::Claim,
+    pub rc_19_b: range_check_19_b::Claim,
+    pub rc_19_c: range_check_19_c::Claim,
+    pub rc_19_d: range_check_19_d::Claim,
     pub rc_4_3: range_check_4_3::Claim,
     pub rc_4_4: range_check_4_4::Claim,
     pub rc_5_4: range_check_5_4::Claim,
     pub rc_9_9: range_check_9_9::Claim,
+    pub rc_9_9_b: range_check_9_9_b::Claim,
+    pub rc_9_9_c: range_check_9_9_c::Claim,
+    pub rc_9_9_d: range_check_9_9_d::Claim,
     pub rc_7_2_5: range_check_7_2_5::Claim,
     pub rc_3_6_6_3: range_check_3_6_6_3::Claim,
     pub rc_4_4_4_4: range_check_4_4_4_4::Claim,
@@ -41,10 +48,16 @@ impl RangeChecksClaim {
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
         self.rc_19.mix_into(channel);
+        self.rc_19_b.mix_into(channel);
+        self.rc_19_c.mix_into(channel);
+        self.rc_19_d.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
         self.rc_5_4.mix_into(channel);
         self.rc_9_9.mix_into(channel);
+        self.rc_9_9_b.mix_into(channel);
+        self.rc_9_9_c.mix_into(channel);
+        self.rc_9_9_d.mix_into(channel);
         self.rc_7_2_5.mix_into(channel);
         self.rc_3_6_6_3.mix_into(channel);
         self.rc_4_4_4_4.mix_into(channel);
@@ -82,10 +95,16 @@ pub struct RangeChecksInteractionClaim {
     pub rc_12: range_check_12::InteractionClaim,
     pub rc_18: range_check_18::InteractionClaim,
     pub rc_19: range_check_19::InteractionClaim,
+    pub rc_19_b: range_check_19_b::InteractionClaim,
+    pub rc_19_c: range_check_19_c::InteractionClaim,
+    pub rc_19_d: range_check_19_d::InteractionClaim,
     pub rc_4_3: range_check_4_3::InteractionClaim,
     pub rc_4_4: range_check_4_4::InteractionClaim,
     pub rc_5_4: range_check_5_4::InteractionClaim,
     pub rc_9_9: range_check_9_9::InteractionClaim,
+    pub rc_9_9_b: range_check_9_9_b::InteractionClaim,
+    pub rc_9_9_c: range_check_9_9_c::InteractionClaim,
+    pub rc_9_9_d: range_check_9_9_d::InteractionClaim,
     pub rc_7_2_5: range_check_7_2_5::InteractionClaim,
     pub rc_3_6_6_3: range_check_3_6_6_3::InteractionClaim,
     pub rc_4_4_4_4: range_check_4_4_4_4::InteractionClaim,
@@ -136,10 +155,16 @@ pub struct RangeChecksInteractionElements {
     pub rc_12: relations::RangeCheck_12,
     pub rc_18: relations::RangeCheck_18,
     pub rc_19: relations::RangeCheck_19,
+    pub rc_19_b: relations::RangeCheck_19_b,
+    pub rc_19_c: relations::RangeCheck_19_c,
+    pub rc_19_d: relations::RangeCheck_19_d,
     pub rc_4_3: relations::RangeCheck_4_3,
     pub rc_4_4: relations::RangeCheck_4_4,
     pub rc_5_4: relations::RangeCheck_5_4,
     pub rc_9_9: relations::RangeCheck_9_9,
+    pub rc_9_9_b: relations::RangeCheck_9_9_c,
+    pub rc_9_9_c: relations::RangeCheck_9_9_d,
+    pub rc_9_9_d: relations::RangeCheck_9_9_b,
     pub rc_7_2_5: relations::RangeCheck_7_2_5,
     pub rc_3_6_6_3: relations::RangeCheck_3_6_6_3,
     pub rc_4_4_4_4: relations::RangeCheck_4_4_4_4,
@@ -155,10 +180,16 @@ impl RangeChecksInteractionElements {
             rc_12: relations::RangeCheck_12::draw(channel),
             rc_18: relations::RangeCheck_18::draw(channel),
             rc_19: relations::RangeCheck_19::draw(channel),
+            rc_19_b: relations::RangeCheck_19_b::draw(channel),
+            rc_19_c: relations::RangeCheck_19_c::draw(channel),
+            rc_19_d: relations::RangeCheck_19_d::draw(channel),
             rc_4_3: relations::RangeCheck_4_3::draw(channel),
             rc_4_4: relations::RangeCheck_4_4::draw(channel),
             rc_5_4: relations::RangeCheck_5_4::draw(channel),
             rc_9_9: relations::RangeCheck_9_9::draw(channel),
+            rc_9_9_b: relations::RangeCheck_9_9_b::draw(channel),
+            rc_9_9_c: relations::RangeCheck_9_9_c::draw(channel),
+            rc_9_9_d: relations::RangeCheck_9_9_d::draw(channel),
             rc_7_2_5: relations::RangeCheck_7_2_5::draw(channel),
             rc_3_6_6_3: relations::RangeCheck_3_6_6_3::draw(channel),
             rc_4_4_4_4: relations::RangeCheck_4_4_4_4::draw(channel),
