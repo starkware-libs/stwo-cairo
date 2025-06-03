@@ -138,7 +138,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
-    low & gen_bit_mask(n_bits) == 0
+    low & gen_bit_mask(n_bits).into() == 0
 }
 
 // TODO(spapini): Check that this is sound.
