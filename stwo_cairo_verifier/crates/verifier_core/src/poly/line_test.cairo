@@ -6,13 +6,13 @@ use crate::poly::line::{LineDomainImpl, LinePoly, LinePolyTrait};
 #[test]
 fn line_domain_of_size_two_works() {
     let coset = CosetImpl::new(CirclePointIndexImpl::new(0), 1);
-    LineDomainImpl::new(coset);
+    LineDomainImpl::new_unchecked(coset);
 }
 
 #[test]
 fn line_domain_of_size_one_works() {
     let coset = CosetImpl::new(CirclePointIndexImpl::new(0), 0);
-    LineDomainImpl::new(coset);
+    LineDomainImpl::new_unchecked(coset);
 }
 
 #[test]
