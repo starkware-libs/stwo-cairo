@@ -3,7 +3,7 @@ use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::Do
 use crate::components::subroutines::mod_utils::ModUtils;
 use crate::components::subroutines::mod_words_to_12_bit_array::ModWordsTo12BitArray;
 
-pub const N_TRACE_COLUMNS: usize = 411;
+pub const N_TRACE_COLUMNS: usize = 435;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -494,32 +494,32 @@ impl FrameworkEval for Eval {
         let carry_60_col408 = eval.next_trace_mask();
         let carry_61_col409 = eval.next_trace_mask();
         let segment_id_packed_col410 = eval.next_trace_mask();
+        let values_ptr_limb_3_col411 = eval.next_trace_mask();
+        let values_ptr_limb_4_col412 = eval.next_trace_mask();
+        let values_ptr_limb_5_col413 = eval.next_trace_mask();
+        let values_ptr_limb_6_col414 = eval.next_trace_mask();
+        let values_ptr_limb_7_col415 = eval.next_trace_mask();
+        let offsets_ptr_limb_3_col416 = eval.next_trace_mask();
+        let offsets_ptr_limb_4_col417 = eval.next_trace_mask();
+        let offsets_ptr_limb_5_col418 = eval.next_trace_mask();
+        let offsets_ptr_limb_6_col419 = eval.next_trace_mask();
+        let offsets_ptr_limb_7_col420 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_3_col421 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_4_col422 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_5_col423 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_6_col424 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_7_col425 = eval.next_trace_mask();
+        let prev_offsets_ptr_offset_final_word_col432 = eval.next_trace_mask();
+        let prev_offsets_ptr_segment_id_initial_word_col433 = eval.next_trace_mask();
+        let prev_offsets_ptr_segment_id_final_word_col434 = eval.next_trace_mask();
+        let offsets_ptr_offset_final_word_col426 = eval.next_trace_mask();
+        let offsets_ptr_segment_id_initial_word_col427 = eval.next_trace_mask();
+        let offsets_ptr_segment_id_final_word_col428 = eval.next_trace_mask();
+        let values_ptr_offset_final_word_col429 = eval.next_trace_mask();
+        let values_ptr_segment_id_initial_word_col430 = eval.next_trace_mask();
+        let values_ptr_segment_id_final_word_col431 = eval.next_trace_mask();
 
         ModUtils::evaluate(
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
-            segment_id_packed_col410.clone(),
             segment_id_packed_col410.clone(),
             seq.clone(),
             is_instance_0_col0.clone(),
@@ -575,14 +575,32 @@ impl FrameworkEval for Eval {
             values_ptr_limb_0_col50.clone(),
             values_ptr_limb_1_col51.clone(),
             values_ptr_limb_2_col52.clone(),
+            values_ptr_limb_3_col411.clone(),
+            values_ptr_limb_4_col412.clone(),
+            values_ptr_limb_5_col413.clone(),
+            values_ptr_limb_6_col414.clone(),
+            values_ptr_limb_7_col415.clone(),
             offsets_ptr_id_col53.clone(),
             offsets_ptr_limb_0_col54.clone(),
             offsets_ptr_limb_1_col55.clone(),
             offsets_ptr_limb_2_col56.clone(),
+            offsets_ptr_limb_3_col416.clone(),
+            offsets_ptr_limb_4_col417.clone(),
+            offsets_ptr_limb_5_col418.clone(),
+            offsets_ptr_limb_6_col419.clone(),
+            offsets_ptr_limb_7_col420.clone(),
             offsets_ptr_prev_id_col57.clone(),
             offsets_ptr_prev_limb_0_col58.clone(),
             offsets_ptr_prev_limb_1_col59.clone(),
             offsets_ptr_prev_limb_2_col60.clone(),
+            offsets_ptr_prev_limb_3_col421.clone(),
+            offsets_ptr_prev_limb_4_col422.clone(),
+            offsets_ptr_prev_limb_5_col423.clone(),
+            offsets_ptr_prev_limb_6_col424.clone(),
+            offsets_ptr_prev_limb_7_col425.clone(),
+            prev_offsets_ptr_offset_final_word_col432.clone(),
+            prev_offsets_ptr_segment_id_initial_word_col433.clone(),
+            prev_offsets_ptr_segment_id_final_word_col434.clone(),
             n_id_col61.clone(),
             n_limb_0_col62.clone(),
             n_limb_1_col63.clone(),
@@ -596,6 +614,9 @@ impl FrameworkEval for Eval {
             p_prev1_id_col71.clone(),
             p_prev2_id_col72.clone(),
             p_prev3_id_col73.clone(),
+            offsets_ptr_offset_final_word_col426.clone(),
+            offsets_ptr_segment_id_initial_word_col427.clone(),
+            offsets_ptr_segment_id_final_word_col428.clone(),
             offsets_a_id_col74.clone(),
             msb_col75.clone(),
             mid_limbs_set_col76.clone(),
@@ -614,6 +635,9 @@ impl FrameworkEval for Eval {
             offsets_c_limb_0_col89.clone(),
             offsets_c_limb_1_col90.clone(),
             offsets_c_limb_2_col91.clone(),
+            values_ptr_offset_final_word_col429.clone(),
+            values_ptr_segment_id_initial_word_col430.clone(),
+            values_ptr_segment_id_final_word_col431.clone(),
             a0_id_col92.clone(),
             a0_limb_0_col93.clone(),
             a0_limb_1_col94.clone(),
@@ -761,7 +785,7 @@ impl FrameworkEval for Eval {
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
-        );
+        ); //i=16
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_12_lookup_elements,
             E::EF::one(),
