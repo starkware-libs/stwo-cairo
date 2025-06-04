@@ -378,14 +378,95 @@ impl InteractionClaimGenerator {
 
 #[cfg(test)]
 mod tests {
+    use cairo_air::air::CairoInteractionElements;
+    use cairo_air::components::memory_id_to_big::{self, BigEval, SmallEval};
+    use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
-    use stwo_cairo_adapter::memory::{value_from_felt252, MemoryBuilder, MemoryConfig};
+    use rand::rngs::SmallRng;
+    use rand::{Rng, SeedableRng};
+    use stwo_cairo_adapter::memory::{
+        value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
+    };
     use stwo_cairo_common::memory::N_M31_IN_FELT252;
     use stwo_cairo_common::prover_types::felt::split_f252;
+    use stwo_prover::constraint_framework::TraceLocationAllocator;
     use stwo_prover::core::backend::simd::m31::PackedM31;
+    use stwo_prover::core::channel::Blake2sChannel;
     use stwo_prover::core::fields::m31::M31;
 
-    use crate::witness::components::memory_address_to_id;
+    use crate::debug_tools::assert_constraints::assert_component;
+    use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
+    use crate::witness::components::{memory_address_to_id, range_check_9_9};
+
+    #[test]
+    fn test_memory_constraints() {
+        let log_size = 10;
+        let n_values = 1 << log_size;
+        let mut rng = SmallRng::seed_from_u64(1152);
+        let mut mem = MemoryBuilder::new(MemoryConfig::default());
+        for i in 1..n_values {
+            mem.set(i, MemoryValue::F252(rng.gen()));
+        }
+        for i in 1..n_values {
+            mem.set(i, MemoryValue::Small(rng.gen()));
+        }
+        let memory = mem.build().0;
+
+        let mut commitment_scheme = MockCommitmentScheme::default();
+
+        // Preprocessed trace.
+        let mut tree_builder = commitment_scheme.tree_builder();
+        tree_builder.extend_evals(
+            PreProcessedTraceVariant::CanonicalWithoutPedersen
+                .to_preprocessed_trace()
+                .gen_trace(),
+        );
+        tree_builder.finalize_interaction();
+
+        // Base trace.
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let id_to_big = super::ClaimGenerator::new(&memory);
+        let range_check_9_9 = range_check_9_9::ClaimGenerator::new();
+        let (claim, interaction_generator) =
+            id_to_big.write_trace(&mut tree_builder, &range_check_9_9);
+        tree_builder.finalize_interaction();
+
+        // Interaction trace.
+        let mut dummy_channel = Blake2sChannel::default();
+        let interaction_elements = CairoInteractionElements::draw(&mut dummy_channel);
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let interaction_claim = interaction_generator.write_interaction_trace(
+            &mut tree_builder,
+            &interaction_elements.memory_id_to_value,
+            &interaction_elements.range_checks.rc_9_9,
+        );
+        tree_builder.finalize_interaction();
+
+        let mut location_allocator = TraceLocationAllocator::default();
+        let big_component = memory_id_to_big::BigComponent::new(
+            &mut location_allocator,
+            BigEval {
+                log_n_rows: claim.big_log_size,
+                lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                range9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            },
+            interaction_claim.big_claimed_sum,
+        );
+
+        let small_component = memory_id_to_big::SmallComponent::new(
+            &mut location_allocator,
+            SmallEval {
+                log_n_rows: claim.small_log_size,
+                lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                range_check_9_9_relation: interaction_elements.range_checks.rc_9_9.clone(),
+            },
+            interaction_claim.small_claimed_sum,
+        );
+
+        let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
+        assert_component(&big_component, &trace_domain_evaluations);
+        assert_component(&small_component, &trace_domain_evaluations);
+    }
 
     #[test]
     fn test_deduce_output_simd() {
