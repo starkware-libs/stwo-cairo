@@ -265,6 +265,7 @@ fn write_trace_simd(
             *row[29] = pedersen_a_id_col29;
             *sub_component_inputs.memory_address_to_id[0] = PackedRelocatable{segment_index: segment_id_packed, offset: instance_addr_tmp_d00c6_0};
             *lookup_data.memory_address_to_id_0 = [segment_id_packed, instance_addr_tmp_d00c6_0, pedersen_a_id_col29];
+            println!("segment_id_packed: {:#?},\ninstance_addr_tmp_d00c6_0: {:#?},\npedersen_a_id_col29: {:#?}", segment_id_packed, instance_addr_tmp_d00c6_0, pedersen_a_id_col29);
             *sub_component_inputs.memory_id_to_big[0] =
                 pedersen_a_id_col29;
             *lookup_data.memory_id_to_big_0 = [pedersen_a_id_col29, value_limb_0_col0, value_limb_1_col1, value_limb_2_col2, value_limb_3_col3, value_limb_4_col4, value_limb_5_col5, value_limb_6_col6, value_limb_7_col7, value_limb_8_col8, value_limb_9_col9, value_limb_10_col10, value_limb_11_col11, value_limb_12_col12, value_limb_13_col13, value_limb_14_col14, value_limb_15_col15, value_limb_16_col16, value_limb_17_col17, value_limb_18_col18, value_limb_19_col19, value_limb_20_col20, value_limb_21_col21, value_limb_22_col22, value_limb_23_col23, value_limb_24_col24, value_limb_25_col25, value_limb_26_col26, ((((ms_limb_high_col28) * (M31_32))) + (ms_limb_low_col27))];

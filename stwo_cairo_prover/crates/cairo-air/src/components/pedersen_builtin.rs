@@ -494,10 +494,7 @@ impl FrameworkEval for Eval {
         let pedersen_result_id_col350 = eval.next_trace_mask();
         let segment_id_col351 = eval.next_trace_mask();
 
-        let instance_addr_tmp_d00c6_0 = eval.add_intermediate(
-            ((seq.clone() * M31_3.clone())
-                + E::F::from(M31::from(self.claim.pedersen_builtin_segment_start))),
-        );
+        let instance_addr_tmp_d00c6_0 = eval.add_intermediate((seq.clone() * M31_3.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_split_output_tmp_d00c6_6_original_limb_27] = ReadSplit::evaluate(
@@ -1338,7 +1335,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        eval.finalize_logup_in_pairs();
+        eval.finalize_logup_in_pairs(); // 58 constraints enforced next constraint is #58
         eval
     }
 }
