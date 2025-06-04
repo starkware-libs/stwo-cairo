@@ -1493,12 +1493,6 @@ fn write_trace_simd(
                     values_ptr_packed_offset + (read_small_output_tmp_c1b19_41.0),
                     a0_id_col92,
                 ];
-                println!(
-                    "lookup segment_id: {:?}\nlookup offset: {:?}\nlookup id: {:?}",
-                    values_ptr_packed_segment_id,
-                    values_ptr_packed_offset + (read_small_output_tmp_c1b19_41.0),
-                    a0_id_col92
-                );
                 let a0_limb_0_col93 = memory_id_to_big_value_tmp_c1b19_56.get_m31(0);
                 *row[93] = a0_limb_0_col93;
                 let a0_limb_1_col94 = memory_id_to_big_value_tmp_c1b19_56.get_m31(1);
