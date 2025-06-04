@@ -33,16 +33,25 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
+        // More than 2^MAX_SEQUENCE_LOG_SIZE small values are not supported. Handle the overflow as
+        // big values.
+        let (small_values, small_values_overflow) =
+            mem.small_values.split_at(1 << MAX_SEQUENCE_LOG_SIZE);
+        let mut small_values = small_values.to_vec();
+        let small_size = std::cmp::max(small_values.len().next_power_of_two(), N_LANES);
+        small_values.resize(small_size, 0);
+        let small_mults = AtomicMultiplicityColumn::new(small_size);
+
         // TODO(spapini): More repetitions, for efficiency.
         let mut big_values = mem.f252_values.clone();
+        big_values.extend(small_values_overflow.iter().map(|v| {
+            let x = u128_to_4_limbs(*v);
+            [x[0], x[1], x[2], x[3], 0, 0, 0, 0]
+        }));
         let big_size = std::cmp::max(big_values.len().next_power_of_two(), N_LANES);
         big_values.resize(big_size, [0; 8]);
         let big_mults = AtomicMultiplicityColumn::new(big_size);
 
-        let mut small_values = mem.small_values.clone();
-        let small_size = std::cmp::max(small_values.len().next_power_of_two(), N_LANES);
-        small_values.resize(small_size, 0);
-        let small_mults = AtomicMultiplicityColumn::new(small_size);
         assert!(
             big_size + small_size <= MEMORY_ADDRESS_BOUND,
             "Assertion failed, condition `big_size ({big_size}) + small_size ({small_size}) <= \
