@@ -32,8 +32,7 @@ pub struct CasmStatesByOpcode {
     pub assert_eq_opcode_double_deref: Vec<CasmState>,
     pub assert_eq_opcode_imm: Vec<CasmState>,
     pub call_opcode: Vec<CasmState>,
-    pub call_opcode_rel: Vec<CasmState>,
-    pub call_opcode_op_1_base_fp: Vec<CasmState>,
+    pub call_opcode_rel_imm: Vec<CasmState>,
     pub jnz_opcode: Vec<CasmState>,
     pub jnz_opcode_taken: Vec<CasmState>,
     pub jump_opcode_rel_imm: Vec<CasmState>,
@@ -227,14 +226,10 @@ impl CasmStatesByOpcode {
                             && offset2 == 1
                             && !pc_update_jump
                     );
-                    self.call_opcode_rel.push(state);
-                } else if op_1_base_fp {
-                    // call abs [fp + offset2].
-                    assert!(!op_1_base_ap && !op_1_imm && pc_update_jump);
-                    self.call_opcode_op_1_base_fp.push(state);
+                    self.call_opcode_rel_imm.push(state);
                 } else {
-                    // call abs [ap + offset2].
-                    assert!(op_1_base_ap && !op_1_imm && pc_update_jump);
+                    // call abs [ap/fp + offset2].
+                    assert!((op_1_base_ap ^ op_1_base_fp) && !op_1_imm && pc_update_jump);
                     self.call_opcode.push(state);
                 }
             }
@@ -515,8 +510,7 @@ impl CasmStatesByOpcode {
             assert_eq_opcode_double_deref,
             assert_eq_opcode_imm,
             call_opcode,
-            call_opcode_rel,
-            call_opcode_op_1_base_fp,
+            call_opcode_rel_imm,
             jnz_opcode,
             jnz_opcode_taken,
             jump_opcode_rel_imm,
@@ -539,9 +533,7 @@ impl CasmStatesByOpcode {
             .extend(assert_eq_opcode_double_deref);
         self.assert_eq_opcode_imm.extend(assert_eq_opcode_imm);
         self.call_opcode.extend(call_opcode);
-        self.call_opcode_rel.extend(call_opcode_rel);
-        self.call_opcode_op_1_base_fp
-            .extend(call_opcode_op_1_base_fp);
+        self.call_opcode_rel_imm.extend(call_opcode_rel_imm);
         self.jnz_opcode.extend(jnz_opcode);
         self.jnz_opcode_taken.extend(jnz_opcode_taken);
         self.jump_opcode_rel_imm.extend(jump_opcode_rel_imm);
@@ -572,10 +564,9 @@ impl CasmStatesByOpcode {
                 self.assert_eq_opcode_imm.len(),
             ),
             ("call_opcode".to_string(), self.call_opcode.len()),
-            ("call_opcode_rel".to_string(), self.call_opcode_rel.len()),
             (
-                "call_opcode_op_1_base_fp".to_string(),
-                self.call_opcode_op_1_base_fp.len(),
+                "call_opcode_rel_imm".to_string(),
+                self.call_opcode_rel_imm.len(),
             ),
             ("jnz_opcode".to_string(), self.jnz_opcode.len()),
             ("jnz_opcode_taken".to_string(), self.jnz_opcode_taken.len()),
@@ -806,7 +797,7 @@ mod mappings_tests {
         let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.jump_opcode.len(), 1);
-        assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
+        assert_eq!(casm_states_by_opcode.call_opcode_rel_imm.len(), 1);
         assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 1);
     }
 
@@ -927,8 +918,8 @@ mod mappings_tests {
 
         let input = input_from_plain_casm(instructions);
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
-        assert_eq!(casm_states_by_opcode.call_opcode_op_1_base_fp.len(), 2);
-        assert_eq!(casm_states_by_opcode.call_opcode_rel.len(), 1);
+        assert_eq!(casm_states_by_opcode.call_opcode.len(), 2);
+        assert_eq!(casm_states_by_opcode.call_opcode_rel_imm.len(), 1);
     }
 
     #[test]
