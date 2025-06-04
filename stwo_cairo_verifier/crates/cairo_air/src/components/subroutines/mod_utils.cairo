@@ -20,8 +20,6 @@ use crate::components::subroutines::mem_cond_verify_equal_known_id::mem_cond_ver
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
 use crate::components::subroutines::read_positive_num_bits_99::read_positive_num_bits_99_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn mod_utils_evaluate(
     input: [QM31; 2],

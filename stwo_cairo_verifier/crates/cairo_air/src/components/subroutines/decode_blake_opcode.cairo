@@ -19,8 +19,6 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::decode_instruction_64420::decode_instruction_64420_evaluate;
 use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn decode_blake_opcode_evaluate(
     input: [QM31; 3],

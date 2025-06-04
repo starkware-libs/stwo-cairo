@@ -17,8 +17,6 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn handle_opcodes_evaluate(
     input: [QM31; 98], ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,

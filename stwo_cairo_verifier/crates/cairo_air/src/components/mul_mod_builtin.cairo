@@ -19,7 +19,6 @@ use crate::components::CairoComponent;
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
-use crate::utils::U32Impl;
 
 pub const N_TRACE_COLUMNS: usize = 410;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [

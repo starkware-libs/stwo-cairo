@@ -18,8 +18,6 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn xor_rot_32_r_16_evaluate(
     input: [QM31; 4],
