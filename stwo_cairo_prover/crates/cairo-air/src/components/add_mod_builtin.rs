@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::mod_utils::ModUtils;
 
-pub const N_TRACE_COLUMNS: usize = 252;
+pub const N_TRACE_COLUMNS: usize = 276;
 pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -317,6 +317,30 @@ impl FrameworkEval for Eval {
         let carry_12_col249 = eval.next_trace_mask();
         let carry_13_col250 = eval.next_trace_mask();
         let segment_id_packed = eval.next_trace_mask();
+        let values_ptr_limb_3_col252 = eval.next_trace_mask();
+        let values_ptr_limb_4_col253 = eval.next_trace_mask();
+        let values_ptr_limb_5_col254 = eval.next_trace_mask();
+        let values_ptr_limb_6_col255 = eval.next_trace_mask();
+        let values_ptr_limb_7_col256 = eval.next_trace_mask();
+        let offsets_ptr_limb_3_col257 = eval.next_trace_mask();
+        let offsets_ptr_limb_4_col258 = eval.next_trace_mask();
+        let offsets_ptr_limb_5_col259 = eval.next_trace_mask();
+        let offsets_ptr_limb_6_col260 = eval.next_trace_mask();
+        let offsets_ptr_limb_7_col261 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_3_col262 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_4_col263 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_5_col264 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_6_col265 = eval.next_trace_mask();
+        let offsets_ptr_prev_limb_7_col266 = eval.next_trace_mask();
+        let offsets_ptr_offset_final_word_col267 = eval.next_trace_mask();
+        let offsets_ptr_segment_id_initial_word_col268 = eval.next_trace_mask();
+        let offsets_ptr_segment_id_final_word_col269 = eval.next_trace_mask();
+        let values_ptr_offset_final_word_col270 = eval.next_trace_mask();
+        let values_ptr_segment_id_initial_word_col271 = eval.next_trace_mask();
+        let values_ptr_segment_id_final_word_col272 = eval.next_trace_mask();
+        let prev_offsets_ptr_offset_final_word_col273 = eval.next_trace_mask();
+        let prev_offsets_ptr_segment_id_initial_word_col274 = eval.next_trace_mask();
+        let prev_offsets_ptr_segment_id_final_word_col275 = eval.next_trace_mask();
 
         ModUtils::evaluate(
             segment_id_packed.clone(),
@@ -374,14 +398,32 @@ impl FrameworkEval for Eval {
             values_ptr_limb_0_col50.clone(),
             values_ptr_limb_1_col51.clone(),
             values_ptr_limb_2_col52.clone(),
+            values_ptr_limb_3_col252.clone(),
+            values_ptr_limb_4_col253.clone(),
+            values_ptr_limb_5_col254.clone(),
+            values_ptr_limb_6_col255.clone(),
+            values_ptr_limb_7_col256.clone(),
             offsets_ptr_id_col53.clone(),
             offsets_ptr_limb_0_col54.clone(),
             offsets_ptr_limb_1_col55.clone(),
             offsets_ptr_limb_2_col56.clone(),
+            offsets_ptr_limb_3_col257.clone(),
+            offsets_ptr_limb_4_col258.clone(),
+            offsets_ptr_limb_5_col259.clone(),
+            offsets_ptr_limb_6_col260.clone(),
+            offsets_ptr_limb_7_col261.clone(),
             offsets_ptr_prev_id_col57.clone(),
             offsets_ptr_prev_limb_0_col58.clone(),
             offsets_ptr_prev_limb_1_col59.clone(),
             offsets_ptr_prev_limb_2_col60.clone(),
+            offsets_ptr_prev_limb_3_col262.clone(),
+            offsets_ptr_prev_limb_4_col263.clone(),
+            offsets_ptr_prev_limb_5_col264.clone(),
+            offsets_ptr_prev_limb_6_col265.clone(),
+            offsets_ptr_prev_limb_7_col266.clone(),
+            prev_offsets_ptr_offset_final_word_col273.clone(),
+            prev_offsets_ptr_segment_id_initial_word_col274.clone(),
+            prev_offsets_ptr_segment_id_final_word_col275.clone(),
             n_id_col61.clone(),
             n_limb_0_col62.clone(),
             n_limb_1_col63.clone(),
@@ -395,6 +437,9 @@ impl FrameworkEval for Eval {
             p_prev1_id_col71.clone(),
             p_prev2_id_col72.clone(),
             p_prev3_id_col73.clone(),
+            offsets_ptr_offset_final_word_col267.clone(),
+            offsets_ptr_segment_id_initial_word_col268.clone(),
+            offsets_ptr_segment_id_final_word_col269.clone(),
             offsets_a_id_col74.clone(),
             msb_col75.clone(),
             mid_limbs_set_col76.clone(),
@@ -413,6 +458,9 @@ impl FrameworkEval for Eval {
             offsets_c_limb_0_col89.clone(),
             offsets_c_limb_1_col90.clone(),
             offsets_c_limb_2_col91.clone(),
+            values_ptr_offset_final_word_col270.clone(),
+            values_ptr_segment_id_initial_word_col271.clone(),
+            values_ptr_segment_id_final_word_col272.clone(),
             a0_id_col92.clone(),
             a0_limb_0_col93.clone(),
             a0_limb_1_col94.clone(),
@@ -645,7 +693,7 @@ impl FrameworkEval for Eval {
                     * (((a3_limb_10_col139.clone() + b3_limb_10_col187.clone())
                         - c3_limb_10_col235.clone())
                         - (p3_limb_10_col48.clone() * sub_p_bit_col236.clone())))),
-        );
+        ); // i = 33
         eval.finalize_logup_in_pairs();
         eval
     }

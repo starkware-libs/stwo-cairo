@@ -21,6 +21,20 @@ pub fn adapt_finished_runner(runner: CairoRunner) -> Result<ProverInput, VmImpor
         .get_prover_input_info()
         .expect("Unable to get prover input info");
 
+    // INSERT_YOUR_CODE
+    // Store prover_input_info into a .json file for debugging/inspection.
+    // The file will be named "prover_input_info.json" in the current directory.
+    {
+        use std::fs::File;
+        use std::io::Write;
+        let path = "prover_input_info.json";
+        if let Ok(json) = serde_json::to_string_pretty(&prover_input_info) {
+            if let Ok(mut file) = File::create(path) {
+                let _ = file.write_all(json.as_bytes());
+            }
+        }
+    }
+
     adapter(&mut prover_input_info)
 }
 
