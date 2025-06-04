@@ -5,6 +5,8 @@ edition = "2024_07"
 
 [[target.executable]]
 
+[lib]
+
 [tool.fmt]
 sort-module-level-items = true
 
