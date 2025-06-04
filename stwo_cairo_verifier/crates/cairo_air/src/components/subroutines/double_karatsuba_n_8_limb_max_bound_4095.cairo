@@ -17,8 +17,6 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::single_karatsuba_n_8::single_karatsuba_n_8_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
     input: [QM31; 64], ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,

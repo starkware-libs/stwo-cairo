@@ -76,7 +76,8 @@ use components::jump_opcode_rel_imm::{
 };
 use components::memory_address_to_id::{
     ClaimImpl as MemoryAddressToIdClaimImpl,
-    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, MEMORY_ADDRESS_TO_ID_SPLIT,
+    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
+    MEMORY_ADDRESS_TO_ID_SPLIT,
 };
 use components::memory_id_to_big::{
     ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
@@ -221,7 +222,7 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedF
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::poseidon::poseidon_hash_span;
-use stwo_cairo_air::utils::{U32Impl, construct_f252, deconstruct_f252};
+use stwo_cairo_air::utils::{construct_f252, deconstruct_f252};
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
@@ -238,7 +239,6 @@ use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
-
 pub mod components;
 pub mod utils;
 
@@ -1600,8 +1600,8 @@ fn verify_claim(claim: @CairoClaim) {
     // To verify that, one needs to check that the size of the address_to_id component <=
     // 2^(27 - log2(MEMORY_ADDRESS_TO_ID_SPLIT)), beacuse the component is split to
     // MEMORY_ADDRESS_TO_ID_SPLIT addresses in each row of the component.
-    let log_split_size: u32 = (MEMORY_ADDRESS_TO_ID_SPLIT * 2 - 1).ilog2(); // log2 rounded up.
-    assert!(*claim.memory_address_to_id.log_size <= 27_u32 - log_split_size);
+    assert!(pow2(LOG_MEMORY_ADDRESS_TO_ID_SPLIT) == MEMORY_ADDRESS_TO_ID_SPLIT);
+    assert!(*claim.memory_address_to_id.log_size <= 27_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT);
 
     // Count the number of uses of each relation.
     let mut relation_uses: RelationUsesDict = Default::default();

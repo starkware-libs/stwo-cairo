@@ -15,7 +15,6 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
-use crate::utils::U32Impl;
 
 
 pub fn decode_instruction_f1edd_evaluate(

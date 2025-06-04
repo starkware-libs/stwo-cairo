@@ -18,8 +18,6 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::linear_combination_n_1_coefs_2::linear_combination_n_1_coefs_2_evaluate;
 use crate::components::subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn poseidon_partial_round_evaluate(
     input: [QM31; 50],

@@ -17,8 +17,6 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::double_karatsuba_n_7_limb_max_bound_511_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn verify_mul_252_evaluate(
     input: [QM31; 84],

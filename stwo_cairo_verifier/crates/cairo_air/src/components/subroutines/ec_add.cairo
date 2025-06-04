@@ -20,8 +20,6 @@ use crate::components::subroutines::add_252::add_252_evaluate;
 use crate::components::subroutines::div_252::div_252_evaluate;
 use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::components::subroutines::sub_252::sub_252_evaluate;
-use crate::utils::U32Impl;
-
 
 pub fn ec_add_evaluate(
     input: [QM31; 112],
