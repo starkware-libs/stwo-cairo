@@ -454,7 +454,7 @@ impl PublicMemory {
             .map(|section| section.clone().into_iter().enumerate());
         let program_iter =
             program.map(move |(i, (id, value))| (0, initial_pc + i as u32, id, value));
-        let output_iter = output.map(move |(i, (id, value))| (1, final_ap + i as u32, id, value));
+        let output_iter = output.map(move |(i, (id, value))| (2, i as u32, id, value));
         let safe_call_iter = safe_call.map(move |(i, (id, value))| {
             let modified_value = if id >> 29 == 2 {
                 let mut new_value = value;
@@ -466,7 +466,6 @@ impl PublicMemory {
             (1, initial_ap - 2 + i as u32, id, modified_value)
         });
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
-
         program_iter
             .chain(safe_call_iter)
             .chain(segment_ranges_iter)

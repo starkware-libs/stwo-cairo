@@ -96,9 +96,12 @@ fn extract_sections_from_memory(
     ];
     let output_memory_addresses = (public_segments.output.start_ptr.offset
         ..public_segments.output.stop_ptr.offset)
-        .map(|i| Relocatable::execution(i as u32))
+        .map(|i| Relocatable {
+            segment_index: 2,
+            offset: i as u32,
+        })
         .collect_vec();
-    // Maybe not all the output is on execution segment
+
     let [program, safe_call, output] = [
         program_memory_addresses,
         safe_call_addresses,
