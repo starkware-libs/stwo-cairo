@@ -1,6 +1,7 @@
 use std::path::Path;
 use std::time::Instant;
 
+use cairo_air::utils::{ProofFormat, serialize_proof_to_file};
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_lang_runner::Arg;
@@ -24,7 +25,7 @@ fn execute_and_prove(
     let executable = serde_json::from_reader(std::fs::File::open(target_path).unwrap())
         .expect("Failed to read executable");
     let runner = execute(executable, args);
-    
+
     // Prove.
     let prover_input = prover_input_from_runner(&runner);
     prove(prover_input, pcs_config)
@@ -41,7 +42,7 @@ fn secure_pcs_config() -> PcsConfig {
     }
 }
 
-fn handle_prove(target: &Path, proof: &Path, args: ProgramArguments) {
+fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: ProgramArguments) {
     info!("Generating proof for target: {:?}", target);
     let start = Instant::now();
     let cairo_proof = execute_and_prove(
@@ -51,9 +52,9 @@ fn handle_prove(target: &Path, proof: &Path, args: ProgramArguments) {
     );
     let elapsed = start.elapsed();
 
-    // Serialize proof to file.
-    let proof_json = serde_json::to_string(&cairo_proof).unwrap();
-    std::fs::write(proof.to_str().unwrap(), proof_json).unwrap();
+    serialize_proof_to_file::<Blake2sMerkleChannel>(&cairo_proof, proof.into(), proof_format)
+        .expect("Failed to serialize proof");
+
     info!("Proof saved to: {:?}", proof);
     info!("Proof generation completed in {:.2?}", elapsed);
 }
@@ -83,9 +84,10 @@ fn main() {
         Commands::Prove {
             target,
             proof,
+            proof_format,
             program_arguments,
         } => {
-            handle_prove(&target, &proof, program_arguments);
+            handle_prove(&target, &proof, proof_format, program_arguments);
         }
         Commands::Verify {
             proof,

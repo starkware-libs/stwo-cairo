@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use cairo_air::utils::ProofFormat;
 use cairo_lang_runner::Arg;
 use cairo_lang_utils::bigint::BigUintAsHex;
 use camino::Utf8PathBuf;
@@ -21,6 +22,11 @@ pub enum Commands {
         target: PathBuf,
         /// Path to the proof file
         proof: PathBuf,
+        /// The format of the proof output.
+        /// - json: Standard JSON format (default)
+        /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+        #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
+        proof_format: ProofFormat,
         /// Program arguments
         #[command(flatten)]
         program_arguments: ProgramArguments,

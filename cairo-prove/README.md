@@ -45,6 +45,34 @@ Example:
 cairo-prove prove target/release/example.executable.json ./example_proof.json --arguments 10000
 ```
 
+#### Loading arguments from file
+
+You can also provide program arguments via JSON file using the following format (compatible with `scarb execute`):
+
+```json
+["0x01", "0x02", "0x03"]
+```
+
+Use `--arguments-file` command line option:
+
+```sh
+cairo-prove prove target/release/example.executable.json ./example_proof.json --arguments-file ./args.json
+```
+
+#### Serializing proof for recursive verification
+
+By default the proof is serialized to file using serde-json, but if you need to later use the proof as argument for Stwo Cairo verifier set `--proof-format cairo-serde` CLI option.
+
+Example:
+
+```bash
+cairo-prove prove \
+    target/release/example.executable.json \
+    ./example_proof.json \
+    --arguments-file ./args.json \
+    --proof-format cairo-serde
+```
+
 ### Verifying a Proof
 
 To verify an existing proof:
