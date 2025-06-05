@@ -1,9 +1,8 @@
-use std::fs::File;
-use std::io::Write;
 use std::path::PathBuf;
 
+use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
-use cairo_air::{CairoProof, PreProcessedTraceVariant};
+use cairo_air::PreProcessedTraceVariant;
 use serde::Serialize;
 use stwo_cairo_adapter::vm_import::VmImportError;
 use stwo_cairo_adapter::ProverInput;
@@ -20,16 +19,6 @@ use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
-use tracing::{span, Level};
-
-#[derive(Debug, Clone, clap::ValueEnum)]
-pub enum ProofFormat {
-    /// Standard JSON format.
-    Json,
-    /// Array of field elements serialized as hex strings.
-    /// Compatible with `scarb execute`
-    CairoSerde,
-}
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -112,39 +101,5 @@ pub fn create_and_serialize_proof(
         proof_format,
     )?;
 
-    Ok(())
-}
-
-pub fn serialize_proof_to_file<MC: MerkleChannel>(
-    proof: &CairoProof<MC::H>,
-    proof_path: PathBuf,
-    proof_format: ProofFormat,
-) -> Result<(), Error>
-where
-    MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
-{
-    let span = span!(Level::INFO, "Serialize proof").entered();
-
-    let mut proof_file = File::create(proof_path)?;
-
-    match proof_format {
-        ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
-        }
-        ProofFormat::CairoSerde => {
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(proof, &mut serialized);
-
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
-                .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
-        }
-    }
-
-    span.exit();
     Ok(())
 }
