@@ -42,17 +42,22 @@ pub struct MemoryEntry {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
     pub small_max: u128,
+    pub log_small_value_capacity: u32,
 }
 impl MemoryConfig {
-    pub fn new(small_max: u128) -> MemoryConfig {
+    pub fn new(small_max: u128, log_small_value_capacity: u32) -> MemoryConfig {
         assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * N_BITS_PER_FELT));
-        MemoryConfig { small_max }
+        MemoryConfig {
+            small_max,
+            log_small_value_capacity,
+        }
     }
 }
 impl Default for MemoryConfig {
     fn default() -> Self {
         MemoryConfig {
             small_max: (1 << 72) - 1,
+            log_small_value_capacity: 24,
         }
     }
 }
@@ -149,14 +154,25 @@ impl MemoryBuilder {
             self.address_to_id
                 .resize(addr as usize + 1, EncodedMemoryValueId::default());
         }
+
         let res = EncodedMemoryValueId::encode(match value {
             MemoryValue::Small(val) => {
-                let len = self.small_values.len();
-                let id = *self.small_values_cache.entry(val).or_insert(len);
-                if id == len {
-                    self.small_values.push(val);
-                };
-                MemoryValueId::Small(id as u32)
+                if self.small_values.len() < 1 << self.config.log_small_value_capacity {
+                    let len = self.small_values.len();
+                    let id = *self.small_values_cache.entry(val).or_insert(len);
+                    if id == len {
+                        self.small_values.push(val);
+                    };
+                    MemoryValueId::Small(id as u32)
+                } else {
+                    let val = value.as_u256();
+                    let len = self.f252_values.len();
+                    let id = *self.felt252_id_cache.entry(val).or_insert(len);
+                    if id == len {
+                        self.f252_values.push(val);
+                    };
+                    MemoryValueId::F252(id as u32)
+                }
             }
             MemoryValue::F252(val) => {
                 let len = self.f252_values.len();
