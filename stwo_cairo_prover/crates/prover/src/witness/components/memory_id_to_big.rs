@@ -33,7 +33,7 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
-        // TODO(spapini): More repetitions, for efficiency.
+        // TODO(Ohad): pad to a power of 2 after splitting.
         let mut big_values = mem.f252_values.clone();
         let big_size = std::cmp::max(big_values.len().next_power_of_two(), N_LANES);
         big_values.resize(big_size, [0; 8]);
@@ -463,17 +463,24 @@ mod tests {
     #[test]
     fn test_memory_constraints() {
         let log_size = 10;
-        let log_max_big_size = 8;
+        let log_max_seq_size = 8;
         let n_values = 1 << log_size;
         let mut rng = SmallRng::seed_from_u64(1152);
-        let mut mem = MemoryBuilder::new(MemoryConfig::default());
+        let mut mem = MemoryBuilder::new(MemoryConfig {
+            log_small_value_capacity: log_max_seq_size,
+            ..Default::default()
+        });
         for i in 1..n_values {
             mem.set(i, MemoryValue::F252(rng.gen()));
         }
-        for i in 1..n_values {
+        for i in n_values..n_values * 2 {
             mem.set(i, MemoryValue::Small(rng.gen()));
         }
         let memory = mem.build().0;
+        let expected_claim = super::Claim {
+            big_log_sizes: vec![log_max_seq_size; 8],
+            small_log_size: 8,
+        };
 
         let mut commitment_scheme = MockCommitmentScheme::default();
 
@@ -491,7 +498,7 @@ mod tests {
         let id_to_big = super::ClaimGenerator::new(&memory);
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new();
         let (claim, interaction_generator) =
-            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_big_size);
+            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
         tree_builder.finalize_interaction();
 
         // Interaction trace.
@@ -526,8 +533,10 @@ mod tests {
 
         let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
 
-        // 4 components 2**8 each.
-        assert_eq!(big_components.len(), 1 << (log_size - log_max_big_size));
+        // 2 ** 8 small values -> 1 SmallComponent.
+        // 4 * 2 ** 8 + 3  * 2 ** 8 big values -> 8 BigComponents (padded to a power of 2).
+        assert_eq!(claim.small_log_size, expected_claim.small_log_size);
+        assert_eq!(claim.big_log_sizes, expected_claim.big_log_sizes);
         for component in big_components {
             assert_component(&component, &trace_domain_evaluations);
         }

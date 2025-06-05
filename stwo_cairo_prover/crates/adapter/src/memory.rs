@@ -39,20 +39,32 @@ pub struct MemoryEntry {
     pub value: [u32; 8],
 }
 
+/// Configuration for the memory.
+///
+/// # Attributes
+///
+/// - `small_max` the maximum value that can be stored in a small value.
+/// - `log_small_value_capacity` maximal capacity for small values. Leftover values will be handled
+///   as big values.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemoryConfig {
     pub small_max: u128,
+    pub log_small_value_capacity: u32,
 }
 impl MemoryConfig {
-    pub fn new(small_max: u128) -> MemoryConfig {
+    pub fn new(small_max: u128, log_small_value_capacity: u32) -> MemoryConfig {
         assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * N_BITS_PER_FELT));
-        MemoryConfig { small_max }
+        MemoryConfig {
+            small_max,
+            log_small_value_capacity,
+        }
     }
 }
 impl Default for MemoryConfig {
     fn default() -> Self {
         MemoryConfig {
             small_max: (1 << 72) - 1,
+            log_small_value_capacity: 24,
         }
     }
 }
@@ -86,12 +98,7 @@ impl Memory {
 // TODO(spapini): Optimize. This should be SIMD.
 pub fn value_from_felt252(felt252: F252) -> MemoryValue {
     if felt252[3..8] == [0; 5] && felt252[2] < (1 << 8) {
-        MemoryValue::Small(
-            felt252[0] as u128
-                + ((felt252[1] as u128) << 32)
-                + ((felt252[2] as u128) << 64)
-                + ((felt252[3] as u128) << 96),
-        )
+        MemoryValue::Small(limbs_to_u128(felt252[0..4].try_into().unwrap()))
     } else {
         MemoryValue::F252(felt252)
     }
@@ -149,25 +156,38 @@ impl MemoryBuilder {
             self.address_to_id
                 .resize(addr as usize + 1, EncodedMemoryValueId::default());
         }
+
         let res = EncodedMemoryValueId::encode(match value {
             MemoryValue::Small(val) => {
-                let len = self.small_values.len();
-                let id = *self.small_values_cache.entry(val).or_insert(len);
-                if id == len {
-                    self.small_values.push(val);
-                };
-                MemoryValueId::Small(id as u32)
+                if self.small_values.len() < 1 << self.config.log_small_value_capacity {
+                    self.push_small_value(val)
+                } else {
+                    let val = value.as_u256();
+                    self.push_f252_value(val)
+                }
             }
-            MemoryValue::F252(val) => {
-                let len = self.f252_values.len();
-                let id = *self.felt252_id_cache.entry(val).or_insert(len);
-                if id == len {
-                    self.f252_values.push(val);
-                };
-                MemoryValueId::F252(id as u32)
-            }
+            MemoryValue::F252(val) => self.push_f252_value(val),
         });
         self.address_to_id[addr as usize] = res;
+    }
+
+    // Assumes value is smaller than `config.small_max`.
+    fn push_small_value(&mut self, val: u128) -> MemoryValueId {
+        let len = self.small_values.len();
+        let id = *self.small_values_cache.entry(val).or_insert(len);
+        if id == len {
+            self.small_values.push(val);
+        };
+        MemoryValueId::Small(id as u32)
+    }
+
+    fn push_f252_value(&mut self, val: [u32; 8]) -> MemoryValueId {
+        let len = self.f252_values.len();
+        let id = *self.felt252_id_cache.entry(val).or_insert(len);
+        if id == len {
+            self.f252_values.push(val);
+        };
+        MemoryValueId::F252(id as u32)
     }
 
     /// Copies a block of memory from one location to another.
@@ -264,7 +284,10 @@ impl MemoryValue {
     pub fn as_small(&self) -> u128 {
         match self {
             MemoryValue::Small(x) => *x,
-            MemoryValue::F252(_) => panic!("Cannot convert F252 to u128"),
+            MemoryValue::F252(felt252) => {
+                assert_eq!(felt252[4..8], [0; 4], "Cannot convert F252 to u128");
+                limbs_to_u128(felt252[0..4].try_into().unwrap())
+            }
         }
     }
 
@@ -277,6 +300,13 @@ impl MemoryValue {
             MemoryValue::F252(x) => x,
         }
     }
+
+    pub fn is_zero(&self) -> bool {
+        match *self {
+            MemoryValue::Small(x) => x == 0,
+            MemoryValue::F252(x) => x == [0; 8],
+        }
+    }
 }
 
 pub fn u128_to_4_limbs(x: u128) -> [u32; 4] {
@@ -286,6 +316,13 @@ pub fn u128_to_4_limbs(x: u128) -> [u32; 4] {
         (x >> 64) as u32,
         (x >> 96) as u32,
     ]
+}
+
+pub fn limbs_to_u128(limbs: [u32; 4]) -> u128 {
+    limbs[0] as u128
+        + ((limbs[1] as u128) << 32)
+        + ((limbs[2] as u128) << 64)
+        + ((limbs[3] as u128) << 96)
 }
 
 #[cfg(test)]

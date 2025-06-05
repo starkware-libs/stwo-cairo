@@ -5879,6 +5879,7 @@
       7
     ],
     "config": {
+      "log_small_value_capacity": 24,
       "small_max": 4722366482869645213695
     },
     "f252_values": [
