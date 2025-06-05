@@ -181,9 +181,6 @@ pub mod tests {
     use stwo_cairo_adapter::test_utils::{
         get_compiled_cairo_program, prover_input_from_compiled_cairo_program,
     };
-    // use std::fs::File;
-    // use std::io::Write;
-    // use serde_json;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     #[test]
@@ -191,9 +188,6 @@ pub mod tests {
         let compiled_program_path =
             get_compiled_cairo_program("test_prove_verify_all_opcode_components");
         let input = prover_input_from_compiled_cairo_program(&compiled_program_path);
-        // let mut file = File::create("prover_input_2D.json").unwrap();
-        // let json_string = serde_json::to_string_pretty(&input).unwrap();
-        // file.write_all(json_string.as_bytes()).unwrap();
         let pp_tree = testing_preprocessed_tree(20);
         assert_cairo_constraints(input, pp_tree);
     }

@@ -11,7 +11,6 @@ pub mod builtins;
 pub mod decode;
 pub mod memory;
 pub mod opcodes;
-pub mod relocator;
 pub mod test_utils;
 pub mod vm_import;
 
