@@ -10,6 +10,7 @@ use tracing::{span, Level};
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::RelocatedTraceEntry;
+use crate::memory::limbs_to_u128;
 
 // Small add operands are 27 bits.
 const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
@@ -259,7 +260,7 @@ impl CasmStatesByOpcode {
                 // jump rel imm if [ap/fp + offset0] != 0.
                 let dst_addr = if dst_base_fp { fp } else { ap };
                 let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                let taken = dst != MemoryValue::Small(0);
+                let taken = !dst.is_zero();
                 if taken {
                     self.jnz_opcode_taken.push(state);
                 } else {
@@ -683,7 +684,14 @@ impl StateTransitions {
 }
 
 fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
-    matches!(val, MemoryValue::Small(val) if (val as i128 >= min) && (val as i128 <= max))
+    match val {
+        MemoryValue::Small(val) => (val as i128 >= min) && (val as i128 <= max),
+        MemoryValue::F252(felt252) if felt252[4..8] == [0; 4] => {
+            let val = limbs_to_u128(felt252[0..4].try_into().unwrap());
+            (val as i128 >= min) && (val as i128 <= max)
+        }
+        MemoryValue::F252(_) => false,
+    }
 }
 
 // Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
