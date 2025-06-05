@@ -136,6 +136,13 @@ macro_rules! generate_range_check_witness {
             }
         }
     };
+    ([$($log_range:expr),+], $suffix:ident) => {
+        paste::paste!{
+            pub mod [<range_check_$($log_range) _ $suffix>] {
+                $crate::range_check_prover!($($log_range),+);
+            }
+        }
+    };
 }
 
 pub mod range_check_trace_generators {
@@ -144,11 +151,11 @@ pub mod range_check_trace_generators {
     generate_range_check_witness!([11]);
     generate_range_check_witness!([12]);
     generate_range_check_witness!([18]);
-    generate_range_check_witness!([19]);
+    generate_range_check_witness!([19]); //
     generate_range_check_witness!([4, 3]);
     generate_range_check_witness!([4, 4]);
     generate_range_check_witness!([5, 4]);
-    generate_range_check_witness!([9, 9]);
+    generate_range_check_witness!([9, 9]); //
     generate_range_check_witness!([7, 2, 5]);
     generate_range_check_witness!([3, 6, 6, 3]);
     generate_range_check_witness!([4, 4, 4, 4]);
