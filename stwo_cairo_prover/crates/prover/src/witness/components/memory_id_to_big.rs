@@ -14,7 +14,9 @@ use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
-use crate::witness::components::range_check_9_9;
+use crate::witness::components::{
+    range_check_9_9, range_check_9_9_b, range_check_9_9_c, range_check_9_9_d,
+};
 use crate::witness::prelude::*;
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
@@ -113,6 +115,9 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
+        range_check_9_9_b_trace_generator: &range_check_9_9_b::ClaimGenerator,
+        range_check_9_9_c_trace_generator: &range_check_9_9_c::ClaimGenerator,
+        range_check_9_9_d_trace_generator: &range_check_9_9_d::ClaimGenerator,
         log_max_big_size: u32,
     ) -> (Claim, InteractionClaimGenerator) {
         let big_table_traces = gen_big_memory_traces(
@@ -138,20 +143,69 @@ impl ClaimGenerator {
 
         // Add inputs to range check that all the values are 9-bit felts.
         for values in &big_components_values {
-            for (col0, col1) in values.iter().tuples() {
-                col0.par_iter()
+            for (i, (col0, col1)) in values.iter().tuples().enumerate() {
+                match i % 4 {
+                    0 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    1 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_b_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    2 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_c_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    3 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_d_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    _ => {
+                        unreachable!("There are only 4 possible values for i % 4.",)
+                    }
+                };
+            }
+        }
+
+        for (i, (col0, col1)) in small_values.iter().tuples().enumerate() {
+            match i % 4 {
+                0 => col0
+                    .par_iter()
                     .zip(col1.par_iter())
                     .for_each(|(val0, val1)| {
                         range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
-                    });
-            }
-        }
-        for (col0, col1) in small_values.iter().tuples() {
-            col0.par_iter()
-                .zip(col1.par_iter())
-                .for_each(|(val0, val1)| {
-                    range_check_9_9_trace_generator.add_packed_m31(&[*val0, *val1]);
-                });
+                    }),
+                1 => col0
+                    .par_iter()
+                    .zip(col1.par_iter())
+                    .for_each(|(val0, val1)| {
+                        range_check_9_9_b_trace_generator.add_packed_m31(&[*val0, *val1]);
+                    }),
+                2 => col0
+                    .par_iter()
+                    .zip(col1.par_iter())
+                    .for_each(|(val0, val1)| {
+                        range_check_9_9_c_trace_generator.add_packed_m31(&[*val0, *val1]);
+                    }),
+                3 => col0
+                    .par_iter()
+                    .zip(col1.par_iter())
+                    .for_each(|(val0, val1)| {
+                        range_check_9_9_d_trace_generator.add_packed_m31(&[*val0, *val1]);
+                    }),
+                _ => {
+                    unreachable!("There are only 4 possible values for i % 4.",)
+                }
+            };
         }
 
         // Extend trace.
@@ -308,6 +362,9 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
+        range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
+        range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
+        range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
     ) -> InteractionClaim {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
@@ -321,6 +378,9 @@ impl InteractionClaimGenerator {
                     offset,
                     lookup_elements,
                     range9_9_lookup_elements,
+                    range9_9_b_lookup_elements,
+                    range9_9_c_lookup_elements,
+                    range9_9_d_lookup_elements,
                 );
                 offset += big_multiplicities.len() as u32 * N_LANES as u32;
                 res
@@ -330,8 +390,13 @@ impl InteractionClaimGenerator {
             tree_builder.extend_evals(big_trace);
         }
 
-        let (small_trace, small_claimed_sum) =
-            self.gen_small_memory_interaction_trace(lookup_elements, range9_9_lookup_elements);
+        let (small_trace, small_claimed_sum) = self.gen_small_memory_interaction_trace(
+            lookup_elements,
+            range9_9_lookup_elements,
+            range9_9_b_lookup_elements,
+            range9_9_c_lookup_elements,
+            range9_9_d_lookup_elements,
+        );
         tree_builder.extend_evals(small_trace);
 
         InteractionClaim {
@@ -346,6 +411,9 @@ impl InteractionClaimGenerator {
         offset: u32,
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
+        range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
+        range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
+        range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         QM31,
@@ -357,13 +425,22 @@ impl InteractionClaimGenerator {
         let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
 
         // Every element is 9-bit.
-        for (limb0, limb1, limb2, lim3) in big_components_values.iter().tuples() {
+        for (i, (limb0, limb1, limb2, limb3)) in big_components_values.iter().tuples().enumerate() {
             let mut col_gen = big_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, lim3)
+            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
                 .into_par_iter()
                 .for_each(|(writer, limb0, limb1, limb2, limb3)| {
-                    let denom0: PackedQM31 = range9_9_lookup_elements.combine(&[*limb0, *limb1]);
-                    let denom1: PackedQM31 = range9_9_lookup_elements.combine(&[*limb2, *limb3]);
+                    let (denom0, denom1): (PackedQM31, PackedQM31) = if i % 2 == 0 {
+                        (
+                            range9_9_lookup_elements.combine(&[*limb0, *limb1]),
+                            range9_9_b_lookup_elements.combine(&[*limb2, *limb3]),
+                        )
+                    } else {
+                        (
+                            range9_9_c_lookup_elements.combine(&[*limb0, *limb1]),
+                            range9_9_d_lookup_elements.combine(&[*limb2, *limb3]),
+                        )
+                    };
                     writer.write_frac(denom0 + denom1, denom0 * denom1);
                 });
             col_gen.finalize_col();
@@ -398,6 +475,9 @@ impl InteractionClaimGenerator {
         &self,
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
+        range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
+        range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
+        range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         QM31,
@@ -406,16 +486,22 @@ impl InteractionClaimGenerator {
         let mut small_values_logup_gen = LogupTraceGenerator::new(small_table_log_size);
 
         // Every element is 9-bit.
-        for (l, r) in self.small_values.iter().tuples() {
+        for (i, (l, r)) in self.small_values.iter().tuples().enumerate() {
             let mut col_gen = small_values_logup_gen.new_col();
             (col_gen.par_iter_mut(), l, r)
                 .into_par_iter()
                 .for_each(|(writer, l1, l2)| {
-                    // TOOD(alont) Add 2-batching.
-                    writer.write_frac(
-                        PackedQM31::broadcast(M31(1).into()),
-                        range9_9_lookup_elements.combine(&[*l1, *l2]),
-                    );
+                    // TODO(alont) Add 2-batching.
+                    let denom = match i % 4 {
+                        0 => range9_9_lookup_elements.combine(&[*l1, *l2]),
+                        1 => range9_9_b_lookup_elements.combine(&[*l1, *l2]),
+                        2 => range9_9_c_lookup_elements.combine(&[*l1, *l2]),
+                        3 => range9_9_d_lookup_elements.combine(&[*l1, *l2]),
+                        _ => {
+                            unreachable!("There are only 4 possible values for i % 4.",)
+                        }
+                    };
+                    writer.write_frac(PackedQM31::broadcast(M31(1).into()), denom);
                 });
             col_gen.finalize_col();
         }
@@ -464,7 +550,10 @@ mod tests {
 
     use crate::debug_tools::assert_constraints::assert_component;
     use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
-    use crate::witness::components::{memory_address_to_id, range_check_9_9};
+    use crate::witness::components::{
+        memory_address_to_id, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
+        range_check_9_9_d,
+    };
 
     #[test]
     fn test_memory_constraints() {
@@ -499,8 +588,17 @@ mod tests {
         let mut tree_builder = commitment_scheme.tree_builder();
         let id_to_big = super::ClaimGenerator::new(&memory);
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new();
-        let (claim, interaction_generator) =
-            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
+        let range_check_9_9_b = range_check_9_9_b::ClaimGenerator::new();
+        let range_check_9_9_c = range_check_9_9_c::ClaimGenerator::new();
+        let range_check_9_9_d = range_check_9_9_d::ClaimGenerator::new();
+        let (claim, interaction_generator) = id_to_big.write_trace(
+            &mut tree_builder,
+            &range_check_9_9,
+            &range_check_9_9_b,
+            &range_check_9_9_c,
+            &range_check_9_9_d,
+            log_max_seq_size,
+        );
         tree_builder.finalize_interaction();
 
         // Interaction trace.
@@ -511,6 +609,9 @@ mod tests {
             &mut tree_builder,
             &interaction_elements.memory_id_to_value,
             &interaction_elements.range_checks.rc_9_9,
+            &interaction_elements.range_checks.rc_9_9_b,
+            &interaction_elements.range_checks.rc_9_9_c,
+            &interaction_elements.range_checks.rc_9_9_d,
         );
         tree_builder.finalize_interaction();
 
@@ -520,6 +621,9 @@ mod tests {
             &interaction_claim.big_claimed_sums,
             &interaction_elements.memory_id_to_value,
             &interaction_elements.range_checks.rc_9_9,
+            &interaction_elements.range_checks.rc_9_9_b,
+            &interaction_elements.range_checks.rc_9_9_c,
+            &interaction_elements.range_checks.rc_9_9_d,
             &mut location_allocator,
         );
 
@@ -529,6 +633,9 @@ mod tests {
                 log_n_rows: claim.small_log_size,
                 lookup_elements: interaction_elements.memory_id_to_value.clone(),
                 range_check_9_9_relation: interaction_elements.range_checks.rc_9_9.clone(),
+                range_check_9_9_b_relation: interaction_elements.range_checks.rc_9_9_b.clone(),
+                range_check_9_9_c_relation: interaction_elements.range_checks.rc_9_9_c.clone(),
+                range_check_9_9_d_relation: interaction_elements.range_checks.rc_9_9_d.clone(),
             },
             interaction_claim.small_claimed_sum,
         );
@@ -562,6 +669,9 @@ mod tests {
         let mut tree_builder = commitment_scheme.tree_builder();
         let id_to_big = super::ClaimGenerator::new(&memory);
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new();
+        let range_check_9_9_b = range_check_9_9_b::ClaimGenerator::new();
+        let range_check_9_9_c = range_check_9_9_c::ClaimGenerator::new();
+        let range_check_9_9_d = range_check_9_9_d::ClaimGenerator::new();
         let expected_small_log_size = log_max_seq_size;
         let expected_first_big_log_size = log_max_seq_size;
         let big_value_overflow = n_large_values - (1 << log_max_seq_size);
@@ -572,8 +682,14 @@ mod tests {
         let expected_big_log_sizes =
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
-        let (claim, ..) =
-            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
+        let (claim, ..) = id_to_big.write_trace(
+            &mut tree_builder,
+            &range_check_9_9,
+            &range_check_9_9_b,
+            &range_check_9_9_c,
+            &range_check_9_9_d,
+            log_max_seq_size,
+        );
 
         assert_eq!(claim.small_log_size, expected_small_log_size);
         assert_eq!(claim.big_log_sizes, expected_big_log_sizes);

@@ -654,6 +654,9 @@ impl CairoComponents {
             &interaction_claim.memory_id_to_value.big_claimed_sums,
             &interaction_elements.memory_id_to_value,
             &interaction_elements.range_checks.rc_9_9,
+            &interaction_elements.range_checks.rc_9_9_b,
+            &interaction_elements.range_checks.rc_9_9_c,
+            &interaction_elements.range_checks.rc_9_9_d,
             tree_span_provider,
         );
         let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
@@ -662,6 +665,9 @@ impl CairoComponents {
                 cairo_claim.memory_id_to_value.clone(),
                 interaction_elements.memory_id_to_value.clone(),
                 interaction_elements.range_checks.rc_9_9.clone(),
+                interaction_elements.range_checks.rc_9_9_b.clone(),
+                interaction_elements.range_checks.rc_9_9_c.clone(),
+                interaction_elements.range_checks.rc_9_9_d.clone(),
             ),
             interaction_claim
                 .memory_id_to_value
