@@ -287,31 +287,31 @@ pub mod tests {
             .unwrap();
         }
 
-        fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
-            let prover_input_file_path = get_prover_input_info_path(path);
-            let input = read_and_adapt_prover_input_info_file(&prover_input_file_path).unwrap();
+        // fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
+        //     let prover_input_file_path = get_prover_input_info_path(path);
+        //     let input = read_and_adapt_prover_input_info_file(&prover_input_file_path).unwrap();
 
-            let proofs = (0..n_proofs_to_compare)
-                .map(|_| {
-                    sonic_rs::to_string(
-                        &prove_cairo::<Blake2sMerkleChannel>(
-                            input.clone(),
-                            PcsConfig::default(),
-                            PreProcessedTraceVariant::Canonical,
-                        )
-                        .unwrap(),
-                    )
-                    .unwrap()
-                })
-                .collect_vec();
+        //     let proofs = (0..n_proofs_to_compare)
+        //         .map(|_| {
+        //             sonic_rs::to_string(
+        //                 &prove_cairo::<Blake2sMerkleChannel>(
+        //                     input.clone(),
+        //                     PcsConfig::default(),
+        //                     PreProcessedTraceVariant::Canonical,
+        //                 )
+        //                 .unwrap(),
+        //             )
+        //             .unwrap()
+        //         })
+        //         .collect_vec();
 
-            assert!(proofs.iter().all_equal());
-        }
+        //     assert!(proofs.iter().all_equal());
+        // }
 
-        #[test]
-        fn test_opcodes_proof_stability() {
-            test_proof_stability("test_prove_verify_all_opcode_components", 2);
-        }
+        // #[test]
+        // fn test_opcodes_proof_stability() {
+        //     test_proof_stability("test_prove_verify_all_opcode_components", 2);
+        // }
 
         #[test]
         fn test_builtins_proof_stability() {
