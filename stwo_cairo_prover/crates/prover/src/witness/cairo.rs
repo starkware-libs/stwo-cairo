@@ -278,6 +278,9 @@ impl CairoClaimGenerator {
             self.memory_id_to_value_trace_generator.write_trace(
                 tree_builder,
                 &self.range_checks_trace_generator.rc_9_9_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_b_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_c_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_d_trace_generator,
                 LOG_MAX_BIG_SIZE,
             );
         let (range_checks_claim, range_checks_interaction_gen) =
@@ -387,6 +390,9 @@ impl CairoInteractionClaimGenerator {
                 tree_builder,
                 &interaction_elements.memory_id_to_value,
                 &interaction_elements.range_checks.rc_9_9,
+                &interaction_elements.range_checks.rc_9_9_b,
+                &interaction_elements.range_checks.rc_9_9_c,
+                &interaction_elements.range_checks.rc_9_9_d,
             );
 
         let range_checks_interaction_claim = self
