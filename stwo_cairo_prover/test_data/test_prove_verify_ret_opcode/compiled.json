@@ -1,0 +1,1134 @@
+{
+    "attributes": [],
+    "builtins": [
+        "output",
+        "pedersen",
+        "range_check",
+        "ecdsa",
+        "bitwise",
+        "ec_op",
+        "keccak",
+        "poseidon",
+        "range_check96",
+        "add_mod",
+        "mul_mod"
+    ],
+    "compiler_version": "0.14.0",
+    "data": [
+        "0x40780017fff7fff",
+        "0xb",
+        "0x1104800180018000",
+        "0x4",
+        "0x10780017fff7fff",
+        "0x0",
+        "0x480a7ff37fff8000",
+        "0x480a7ff47fff8000",
+        "0x480a7ff57fff8000",
+        "0x480a7ff67fff8000",
+        "0x480a7ff77fff8000",
+        "0x480a7ff87fff8000",
+        "0x480a7ff97fff8000",
+        "0x480a7ffa7fff8000",
+        "0x480a7ffb7fff8000",
+        "0x480a7ffc7fff8000",
+        "0x480a7ffd7fff8000",
+        "0x208b7fff7fff7ffe"
+    ],
+    "debug_info": {
+        "file_contents": {
+            "<start>": "__start__:\nap += main.Args.SIZE + main.ImplicitArgs.SIZE;\ncall main;\n\n__end__:\njmp rel 0;\n"
+        },
+        "instruction_locations": {
+            "0": {
+                "accessible_scopes": [
+                    "__main__"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 0,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 46,
+                    "end_line": 2,
+                    "input_file": {
+                        "filename": "<start>"
+                    },
+                    "start_col": 1,
+                    "start_line": 2
+                }
+            },
+            "2": {
+                "accessible_scopes": [
+                    "__main__"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 0,
+                        "offset": 11
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 10,
+                    "end_line": 3,
+                    "input_file": {
+                        "filename": "<start>"
+                    },
+                    "start_col": 1,
+                    "start_line": 3
+                }
+            },
+            "4": {
+                "accessible_scopes": [
+                    "__main__"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 1,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 10,
+                    "end_line": 6,
+                    "input_file": {
+                        "filename": "<start>"
+                    },
+                    "start_col": 1,
+                    "start_line": 6
+                }
+            },
+            "6": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 6,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 15,
+                            "end_line": 6,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'output_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 6
+                        },
+                        "While expanding the reference 'output_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 6
+                }
+            },
+            "7": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 17,
+                    "end_line": 7,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 17,
+                            "end_line": 7,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 7
+                        },
+                        "While expanding the reference 'pedersen_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 7
+                }
+            },
+            "8": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 20,
+                    "end_line": 8,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 20,
+                            "end_line": 8,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 8
+                        },
+                        "While expanding the reference 'range_check_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 8
+                }
+            },
+            "9": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 14,
+                    "end_line": 9,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 14,
+                            "end_line": 9,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'ecdsa_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 9
+                        },
+                        "While expanding the reference 'ecdsa_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 9
+                }
+            },
+            "10": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 4
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 10,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 10,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'bitwise_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 10
+                        },
+                        "While expanding the reference 'bitwise_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 10
+                }
+            },
+            "11": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 5
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 14,
+                    "end_line": 11,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 14,
+                            "end_line": 11,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'ec_op_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 11
+                        },
+                        "While expanding the reference 'ec_op_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 11
+                }
+            },
+            "12": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 12,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 15,
+                            "end_line": 12,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'keccak_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 12
+                        },
+                        "While expanding the reference 'keccak_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 12
+                }
+            },
+            "13": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 7
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 17,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 17,
+                            "end_line": 13,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 13
+                        },
+                        "While expanding the reference 'poseidon_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "14": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 8
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 14,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 22,
+                            "end_line": 14,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'range_check96_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 14
+                        },
+                        "While expanding the reference 'range_check96_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "15": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 15,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 15,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'add_mod_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 15
+                        },
+                        "While expanding the reference 'add_mod_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 15
+                }
+            },
+            "16": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 16,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 16,
+                            "input_file": {
+                                "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 18,
+                                    "input_file": {
+                                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 18
+                                },
+                                "While trying to retrieve the implicit argument 'mul_mod_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 16
+                        },
+                        "While expanding the reference 'mul_mod_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 16
+                }
+            },
+            "17": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 11
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 9,
+                        "__main__.main.bitwise_ptr": 4,
+                        "__main__.main.ec_op_ptr": 5,
+                        "__main__.main.ecdsa_ptr": 3,
+                        "__main__.main.keccak_ptr": 6,
+                        "__main__.main.mul_mod_ptr": 10,
+                        "__main__.main.output_ptr": 0,
+                        "__main__.main.pedersen_ptr": 1,
+                        "__main__.main.poseidon_ptr": 7,
+                        "__main__.main.range_check96_ptr": 8,
+                        "__main__.main.range_check_ptr": 2
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 18,
+                    "input_file": {
+                        "filename": "test_prove_verify_ret_opcode/builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 18
+                }
+            }
+        }
+    },
+    "hints": {},
+    "identifiers": {
+        "__main__.__end__": {
+            "pc": 4,
+            "type": "label"
+        },
+        "__main__.__start__": {
+            "pc": 0,
+            "type": "label"
+        },
+        "__main__.main": {
+            "decorators": [],
+            "pc": 6,
+            "type": "function"
+        },
+        "__main__.main.Args": {
+            "full_name": "__main__.main.Args",
+            "members": {},
+            "size": 0,
+            "type": "struct"
+        },
+        "__main__.main.ImplicitArgs": {
+            "full_name": "__main__.main.ImplicitArgs",
+            "members": {
+                "add_mod_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 9
+                },
+                "bitwise_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "ec_op_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 5
+                },
+                "ecdsa_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "keccak_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "mul_mod_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 10
+                },
+                "output_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "pedersen_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "poseidon_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 7
+                },
+                "range_check96_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 8
+                },
+                "range_check_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                }
+            },
+            "size": 11,
+            "type": "struct"
+        },
+        "__main__.main.Return": {
+            "cairo_type": "()",
+            "type": "type_definition"
+        },
+        "__main__.main.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 0
+        },
+        "__main__.main.add_mod_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.add_mod_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-4), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.bitwise_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.bitwise_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-9), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.ec_op_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.ec_op_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-8), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.ecdsa_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.ecdsa_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-10), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.keccak_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.keccak_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-7), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.mul_mod_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.mul_mod_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-3), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.output_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.output_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-13), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.pedersen_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.pedersen_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-12), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.poseidon_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.poseidon_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-6), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.range_check96_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.range_check96_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-5), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.range_check_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.range_check_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "pc": 6,
+                    "value": "[cast(fp + (-11), felt*)]"
+                }
+            ],
+            "type": "reference"
+        }
+    },
+    "main_scope": "__main__",
+    "prime": "0x800000000000011000000000000000000000000000000000000000000000001",
+    "reference_manager": {
+        "references": [
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-13), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-12), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-11), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-10), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-9), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-8), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-7), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-6), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-5), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-4), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 2,
+                    "offset": 0
+                },
+                "pc": 6,
+                "value": "[cast(fp + (-3), felt*)]"
+            }
+        ]
+    }
+}

@@ -80,6 +80,8 @@ pub fn double_karatsuba_n_7_limb_max_bound_511_evaluate(
     ] =
         input;
 
+    core::internal::revoke_ap_tracking();
+
     let output: [QM31; 27] = single_karatsuba_n_7_evaluate(
         [
             double_karatsuba_n_7_limb_max_bound_511_input_limb_0,
@@ -315,6 +317,8 @@ pub fn double_karatsuba_n_7_limb_max_bound_511_evaluate(
         single_karatsuba_n_7_output_tmp_7fe18_16_limb_26,
     ] =
         output;
+
+    core::internal::revoke_ap_tracking();
 
     [
         single_karatsuba_n_7_output_tmp_7fe18_4_limb_0,

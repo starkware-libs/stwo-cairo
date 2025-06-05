@@ -278,10 +278,12 @@ mod tests {
     use core::nullable::NullableTrait;
     use core::result::ResultTrait;
     use crate::fields::m31::m31;
+    #[cfg(feature: "poseidon252_verifier")]
     use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
     use super::{MerkleDecommitment, MerkleVerifier, MerkleVerifierImpl};
 
     #[test]
+    #[cfg(feature: "poseidon252_verifier")]
     fn test_verifier() {
         let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
         let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];

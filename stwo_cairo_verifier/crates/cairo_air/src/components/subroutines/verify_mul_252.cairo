@@ -169,6 +169,8 @@ pub fn verify_mul_252_evaluate(
     ] =
         input;
 
+    core::internal::revoke_ap_tracking();
+
     let output: [QM31; 55] = double_karatsuba_n_7_limb_max_bound_511_evaluate(
         [
             verify_mul_252_input_a_limb_0, verify_mul_252_input_a_limb_1,
