@@ -77,10 +77,10 @@ where
         witness_trace_cells(&claim, &preprocessed_trace)
     );
     // Validate lookup argument.
-    // assert_eq!(
-    //     lookup_sum(&claim, &interaction_elements, &interaction_claim),
-    //     SecureField::zero()
-    // );
+    assert_eq!(
+        lookup_sum(&claim, &interaction_elements, &interaction_claim),
+        SecureField::zero()
+    );
 
     interaction_claim.mix_into(channel);
     tree_builder.commit(channel);
