@@ -1,3 +1,4 @@
+// AIR version f1e997f6
 use crate::components::prelude::*;
 use crate::components::subroutines::add_252::Add252;
 use crate::components::subroutines::div_252::Div252;
@@ -359,7 +360,13 @@ impl EcAdd {
         sub_res_limb_27_col340: E::F,
         sub_p_bit_col341: E::F,
         range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
+        range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
+        range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
+        range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
         range_check_19_lookup_elements: &relations::RangeCheck_19,
+        range_check_19_b_lookup_elements: &relations::RangeCheck_19_B,
+        range_check_19_c_lookup_elements: &relations::RangeCheck_19_C,
+        range_check_19_d_lookup_elements: &relations::RangeCheck_19_D,
         eval: &mut E,
     ) -> [E::F; 0] {
         Sub252::evaluate(
@@ -451,6 +458,9 @@ impl EcAdd {
             sub_res_limb_27_col27.clone(),
             sub_p_bit_col28.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         Add252::evaluate(
@@ -542,6 +552,9 @@ impl EcAdd {
             add_res_limb_27_col56.clone(),
             sub_p_bit_col57.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         Sub252::evaluate(
@@ -633,6 +646,9 @@ impl EcAdd {
             sub_res_limb_27_col85.clone(),
             sub_p_bit_col86.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         Div252::evaluate(
@@ -751,7 +767,13 @@ impl EcAdd {
             carry_25_col141.clone(),
             carry_26_col142.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             range_check_19_lookup_elements,
+            range_check_19_b_lookup_elements,
+            range_check_19_c_lookup_elements,
+            range_check_19_d_lookup_elements,
             eval,
         );
         Mul252::evaluate(
@@ -870,7 +892,13 @@ impl EcAdd {
             carry_25_col197.clone(),
             carry_26_col198.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             range_check_19_lookup_elements,
+            range_check_19_b_lookup_elements,
+            range_check_19_c_lookup_elements,
+            range_check_19_d_lookup_elements,
             eval,
         );
         Sub252::evaluate(
@@ -962,6 +990,9 @@ impl EcAdd {
             sub_res_limb_27_col226.clone(),
             sub_p_bit_col227.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         Sub252::evaluate(
@@ -1053,6 +1084,9 @@ impl EcAdd {
             sub_res_limb_27_col255.clone(),
             sub_p_bit_col256.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         Mul252::evaluate(
@@ -1171,7 +1205,13 @@ impl EcAdd {
             carry_25_col311.clone(),
             carry_26_col312.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             range_check_19_lookup_elements,
+            range_check_19_b_lookup_elements,
+            range_check_19_c_lookup_elements,
+            range_check_19_d_lookup_elements,
             eval,
         );
         Sub252::evaluate(
@@ -1263,6 +1303,9 @@ impl EcAdd {
             sub_res_limb_27_col340.clone(),
             sub_p_bit_col341.clone(),
             range_check_9_9_lookup_elements,
+            range_check_9_9_b_lookup_elements,
+            range_check_9_9_c_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             eval,
         );
         []
