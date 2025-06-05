@@ -1952,6 +1952,7 @@ name = "stwo-cairo-common"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
+ "cairo-vm",
  "itertools 0.12.1",
  "rand",
  "ruint",
