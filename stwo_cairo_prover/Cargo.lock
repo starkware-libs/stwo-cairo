@@ -402,6 +402,7 @@ checksum = "f61dac84819c6588b558454b194026eb1f09c293b9036ae9b159e74e73ab6cf9"
 name = "cairo-air"
 version = "0.1.1"
 dependencies = [
+ "clap",
  "itertools 0.12.1",
  "log",
  "num-traits",
@@ -410,6 +411,7 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
+ "sonic-rs",
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
@@ -418,6 +420,7 @@ dependencies = [
  "stwo-cairo-serialize",
  "stwo-prover",
  "thiserror 2.0.11",
+ "tracing",
 ]
 
 [[package]]
