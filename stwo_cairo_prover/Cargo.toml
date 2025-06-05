@@ -1,14 +1,14 @@
 [workspace]
 members = [
-    "crates/adapted_prover",
-    "crates/adapter",
-    "crates/prover",
-    "crates/cairo-serialize",
-    "crates/cairo-serialize-derive",
-    "crates/utils",
-    "crates/common",
-    "crates/recursion_bridge",
-    "crates/cairo-air",
+  "crates/adapted_prover",
+  "crates/adapter",
+  "crates/prover",
+  "crates/cairo-serialize",
+  "crates/cairo-serialize-derive",
+  "crates/utils",
+  "crates/common",
+  "crates/recursion_bridge",
+  "crates/cairo-air",
 ]
 resolver = "2"
 
@@ -22,7 +22,7 @@ cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
 cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = [
-    "mod_builtin",
+  "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = { version = "0.11.5", default-features = false }
@@ -43,10 +43,9 @@ stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
-stwo-cairo-continuation = { path = "crates/continuation", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "8b5436d", features = [
-    "parallel",
+  "parallel",
 ], default-features = false }
 stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "8b5436d" }
 stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "8b5436d" }
