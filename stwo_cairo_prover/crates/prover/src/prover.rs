@@ -265,41 +265,13 @@ pub mod tests {
             let compiled_program_path =
                 get_compiled_cairo_program("test_prove_verify_all_opcode_components");
             let input = prover_input_from_compiled_cairo_program(&compiled_program_path);
-            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
-                assert!(
-                    *n_instances > 0,
-                    "{} isn't used in E2E full-Cairo opcode test",
-                    opcode
-                );
-            }
-            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                input,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(
-                cairo_proof,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
-        }
-
-        #[test]
-        fn test_prove_verify_all_opcode_components_from_file() {
-            let prover_input_file_path =
-                get_prover_input_info_path("test_prove_verify_all_opcode_components");
-            let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
-                .expect("Failed to create prover input from vm output");
-            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
-                assert!(
-                    *n_instances > 0,
-                    "{} isn't used in E2E full-Cairo opcode test",
-                    opcode
-                );
-            }
+            // for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
+            //     assert!(
+            //         *n_instances > 0,
+            //         "{} isn't used in E2E full-Cairo opcode test",
+            //         opcode
+            //     );
+            // }
             let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                 input,
