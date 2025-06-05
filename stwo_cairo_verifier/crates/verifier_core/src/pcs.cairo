@@ -13,7 +13,8 @@ pub struct PcsConfig {
 pub impl PcsConfigImpl of PcsConfigTrait {
     fn mix_into(self: @PcsConfig, ref channel: Channel) {
         let PcsConfig { pow_bits, fri_config } = self;
-        channel.mix_u64((*pow_bits).into());
+    channel.mix_u64((*pow_bits).into());
+
         fri_config.mix_into(ref channel);
     }
     fn security_bits(self: @PcsConfig) -> u32 {

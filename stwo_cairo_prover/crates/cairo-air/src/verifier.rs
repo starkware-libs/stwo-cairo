@@ -284,7 +284,10 @@ pub fn verify_cairo<MC: MerkleChannel>(
     verify_claim(&claim);
 
     let channel = &mut MC::C::default();
+    println!("{}", channel.draw_felt());
     pcs_config.mix_into(channel);
+    println!("{}", channel.draw_felt());
+
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
     let mut log_sizes = claim.log_sizes();
@@ -297,6 +300,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
 
     // Proof of work.
+    println!("{}", channel.draw_felt());
     channel.mix_u64(interaction_pow);
     if channel.trailing_zeros() < INTERACTION_POW_BITS {
         return Err(CairoVerificationError::ProofOfWork);
