@@ -33,7 +33,10 @@ pub const SMALL_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_SMALL_FELT252;
 
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
-pub const RELATION_USES_PER_ROW_BIG: [(felt252, u32); 1] = [('RangeCheck_9_9', 14)];
+pub const RELATION_USES_PER_ROW_BIG: [(felt252, u32); 4] = [
+    ('RangeCheck_9_9', 4), ('RangeCheck_9_9_B', 4), ('RangeCheck_9_9_C', 3),
+    ('RangeCheck_9_9_D', 3),
+];
 pub const RELATION_USES_PER_ROW_SMALL: [(felt252, u32); 1] = [('RangeCheck_9_9', 4)];
 
 #[derive(Drop, Serde)]
@@ -117,6 +120,9 @@ pub struct BigComponent {
     pub claimed_sum: QM31,
     pub lookup_elements: super::super::MemoryIdToBigElements,
     pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
+    pub range_9_9_b_lookup_elements: super::super::RangeCheck_9_9_BElements,
+    pub range_9_9_c_lookup_elements: super::super::RangeCheck_9_9_CElements,
+    pub range_9_9_d_lookup_elements: super::super::RangeCheck_9_9_DElements,
 }
 
 pub impl BigComponentImpl of CairoComponent<BigComponent> {
@@ -186,6 +192,27 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
         let range_check_9_9_alpha_0 = *range_check_9_9_alpha_powers.pop_front().unwrap();
         let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
 
+        let mut range_check_9_9_b_alpha_powers = self
+            .range_9_9_b_lookup_elements
+            .alpha_powers
+            .span();
+        let range_check_9_9_b_alpha_0 = *range_check_9_9_b_alpha_powers.pop_front().unwrap();
+        let range_check_9_9_b_alpha_1 = *range_check_9_9_b_alpha_powers.pop_front().unwrap();
+
+        let mut range_check_9_9_c_alpha_powers = self
+            .range_9_9_c_lookup_elements
+            .alpha_powers
+            .span();
+        let range_check_9_9_c_alpha_0 = *range_check_9_9_c_alpha_powers.pop_front().unwrap();
+        let range_check_9_9_c_alpha_1 = *range_check_9_9_c_alpha_powers.pop_front().unwrap();
+
+        let mut range_check_9_9_d_alpha_powers = self
+            .range_9_9_d_lookup_elements
+            .alpha_powers
+            .span();
+        let range_check_9_9_d_alpha_0 = *range_check_9_9_d_alpha_powers.pop_front().unwrap();
+        let range_check_9_9_d_alpha_1 = *range_check_9_9_d_alpha_powers.pop_front().unwrap();
+
         let params = constraints_big::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
             offset: (*self.offset).try_into().unwrap(),
@@ -222,6 +249,15 @@ pub impl BigComponentImpl of CairoComponent<BigComponent> {
             RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
             RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
             RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
+            RangeCheck_9_9_b_alpha0: range_check_9_9_b_alpha_0,
+            RangeCheck_9_9_b_alpha1: range_check_9_9_b_alpha_1,
+            RangeCheck_9_9_b_z: *self.range_9_9_b_lookup_elements.z,
+            RangeCheck_9_9_c_alpha0: range_check_9_9_c_alpha_0,
+            RangeCheck_9_9_c_alpha1: range_check_9_9_c_alpha_1,
+            RangeCheck_9_9_c_z: *self.range_9_9_c_lookup_elements.z,
+            RangeCheck_9_9_d_alpha0: range_check_9_9_d_alpha_0,
+            RangeCheck_9_9_d_alpha1: range_check_9_9_d_alpha_1,
+            RangeCheck_9_9_d_z: *self.range_9_9_d_lookup_elements.z,
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
         };
