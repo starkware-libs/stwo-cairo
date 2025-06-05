@@ -10,7 +10,7 @@ use rayon::iter::{
 use stwo_cairo_adapter::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
 };
-use stwo_cairo_common::memory::{MEMORY_ADDRESS_BOUND, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
@@ -35,19 +35,14 @@ impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
         // TODO(Ohad): pad to a power of 2 after splitting.
         let mut big_values = mem.f252_values.clone();
-        let big_size = std::cmp::max(big_values.len().next_power_of_two(), N_LANES);
-        big_values.resize(big_size, [0; 8]);
-        let big_mults = AtomicMultiplicityColumn::new(big_size);
+        let simd_padded_big_size = big_values.len().next_multiple_of(N_LANES);
+        big_values.resize(simd_padded_big_size, [0; 8]);
+        let big_mults = AtomicMultiplicityColumn::new(simd_padded_big_size);
 
         let mut small_values = mem.small_values.clone();
-        let small_size = std::cmp::max(small_values.len().next_power_of_two(), N_LANES);
-        small_values.resize(small_size, 0);
-        let small_mults = AtomicMultiplicityColumn::new(small_size);
-        assert!(
-            big_size + small_size <= MEMORY_ADDRESS_BOUND,
-            "Assertion failed, condition `big_size ({big_size}) + small_size ({small_size}) <= \
-            MEMORY_ADDRESS_BOUND ({MEMORY_ADDRESS_BOUND})` is not satisfied."
-        );
+        let simd_padded_small_size = small_values.len().next_multiple_of(N_LANES);
+        small_values.resize(simd_padded_small_size, 0);
+        let small_mults = AtomicMultiplicityColumn::new(simd_padded_small_size);
 
         Self {
             small_values,
@@ -218,7 +213,7 @@ fn gen_big_memory_traces(
         .chunks(max_big_size)
         .zip(mults.chunks(max_big_size / N_LANES))
     {
-        let trace = gen_single_big_memory_trace(values, mults.to_vec());
+        let trace = gen_single_big_memory_trace(values, mults);
         traces.push(trace);
     }
 
@@ -226,10 +221,14 @@ fn gen_big_memory_traces(
 }
 
 // Generates the trace of the large value memory table.
-fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: Vec<PackedM31>) -> Vec<BaseColumn> {
+fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: &[PackedM31]) -> Vec<BaseColumn> {
     assert_eq!(values.len(), mults.len() * N_LANES);
-    let column_length = values.len();
+    let column_length = values.len().next_power_of_two();
+
     let packed_values = values
+        .iter()
+        .chain(std::iter::repeat(&[0; 8]))
+        .take(column_length)
         .array_chunks::<N_LANES>()
         .map(|chunk| {
             std::array::from_fn(|i| Simd::from_array(std::array::from_fn(|j| chunk[j][i])))
@@ -247,16 +246,21 @@ fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: Vec<PackedM31>) -> Ve
         }
     }
 
+    let mut mults = mults.to_vec();
+    mults.resize(column_length / N_LANES, PackedM31::zero());
     let multiplicities = BaseColumn::from_simd(mults);
 
     chain!(value_trace, [multiplicities]).collect_vec()
 }
 
 // Generates the trace of the small value memory table.
-fn gen_small_memory_trace(values: Vec<u128>, mults: Vec<PackedM31>) -> Vec<BaseColumn> {
-    let column_length = values.len();
+fn gen_small_memory_trace(values: Vec<u128>, mut mults: Vec<PackedM31>) -> Vec<BaseColumn> {
+    assert_eq!(values.len(), mults.len() * N_LANES);
+    let column_length = values.len().next_power_of_two();
     let packed_values: Vec<[Simd<u32, N_LANES>; 4]> = values
         .into_iter()
+        .chain(std::iter::repeat(0))
+        .take(column_length)
         .map(u128_to_4_limbs)
         .array_chunks::<N_LANES>()
         .map(|chunk| {
@@ -284,6 +288,7 @@ fn gen_small_memory_trace(values: Vec<u128>, mults: Vec<PackedM31>) -> Vec<BaseC
         }
     }
 
+    mults.resize(column_length / N_LANES, PackedM31::zero());
     let multiplicities = BaseColumn::from_simd(mults);
 
     chain!(values_trace, [multiplicities]).collect_vec()
@@ -477,10 +482,6 @@ mod tests {
             mem.set(i, MemoryValue::Small(rng.gen()));
         }
         let memory = mem.build().0;
-        let expected_claim = super::Claim {
-            big_log_sizes: vec![log_max_seq_size; 8],
-            small_log_size: 8,
-        };
 
         let mut commitment_scheme = MockCommitmentScheme::default();
 
@@ -533,14 +534,48 @@ mod tests {
 
         let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
 
-        // 2 ** 8 small values -> 1 SmallComponent.
-        // 4 * 2 ** 8 + 3  * 2 ** 8 big values -> 8 BigComponents (padded to a power of 2).
-        assert_eq!(claim.small_log_size, expected_claim.small_log_size);
-        assert_eq!(claim.big_log_sizes, expected_claim.big_log_sizes);
         for component in big_components {
             assert_component(&component, &trace_domain_evaluations);
         }
         assert_component(&small_component, &trace_domain_evaluations);
+    }
+
+    #[test]
+    fn test_memory_splits_correctly() {
+        let n_large_values = 300;
+        let n_small_values = 300;
+        let log_max_seq_size = 8;
+        let mut rng = SmallRng::seed_from_u64(1152);
+        let mut mem = MemoryBuilder::new(MemoryConfig {
+            log_small_value_capacity: log_max_seq_size,
+            ..Default::default()
+        });
+        for i in 1..n_large_values {
+            mem.set(i, MemoryValue::F252(rng.gen()));
+        }
+        for i in n_large_values..n_large_values + n_small_values {
+            mem.set(i, MemoryValue::Small(rng.gen()));
+        }
+        let memory = mem.build().0;
+        let mut commitment_scheme = MockCommitmentScheme::default();
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let id_to_big = super::ClaimGenerator::new(&memory);
+        let range_check_9_9 = range_check_9_9::ClaimGenerator::new();
+        let expected_small_log_size = log_max_seq_size;
+        let expected_first_big_log_size = log_max_seq_size;
+        let big_value_overflow = n_large_values - (1 << log_max_seq_size);
+        let small_value_overflow = n_small_values - (1 << log_max_seq_size);
+        let expected_second_big_log_size = (big_value_overflow + small_value_overflow)
+            .next_power_of_two()
+            .ilog2();
+        let expected_big_log_sizes =
+            vec![expected_first_big_log_size, expected_second_big_log_size];
+
+        let (claim, ..) =
+            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
+
+        assert_eq!(claim.small_log_size, expected_small_log_size);
+        assert_eq!(claim.big_log_sizes, expected_big_log_sizes);
     }
 
     #[test]
