@@ -66,6 +66,15 @@ pub struct ConstraintParams {
     pub RangeCheck_9_9_alpha0: QM31,
     pub RangeCheck_9_9_alpha1: QM31,
     pub RangeCheck_9_9_z: QM31,
+    pub RangeCheck_9_9_b_alpha0: QM31,
+    pub RangeCheck_9_9_b_alpha1: QM31,
+    pub RangeCheck_9_9_b_z: QM31,
+    pub RangeCheck_9_9_c_alpha0: QM31,
+    pub RangeCheck_9_9_c_alpha1: QM31,
+    pub RangeCheck_9_9_c_z: QM31,
+    pub RangeCheck_9_9_d_alpha0: QM31,
+    pub RangeCheck_9_9_d_alpha1: QM31,
+    pub RangeCheck_9_9_d_z: QM31,
     pub claimed_sum: QM31,
     pub seq: QM31,
     pub column_size: M31,
@@ -93,6 +102,15 @@ pub fn evaluate_constraints_at_point(
         RangeCheck_9_9_alpha0,
         RangeCheck_9_9_alpha1,
         RangeCheck_9_9_z,
+        RangeCheck_9_9_b_alpha0,
+        RangeCheck_9_9_b_alpha1,
+        RangeCheck_9_9_b_z,
+        RangeCheck_9_9_c_alpha0,
+        RangeCheck_9_9_c_alpha1,
+        RangeCheck_9_9_c_z,
+        RangeCheck_9_9_d_alpha0,
+        RangeCheck_9_9_d_alpha1,
+        RangeCheck_9_9_d_z,
         claimed_sum,
         seq,
         column_size,
@@ -230,6 +248,15 @@ pub fn evaluate_constraints_at_point(
         RangeCheck_9_9_alpha0,
         RangeCheck_9_9_alpha1,
         RangeCheck_9_9_z,
+        RangeCheck_9_9_b_alpha0,
+        RangeCheck_9_9_b_alpha1,
+        RangeCheck_9_9_b_z,
+        RangeCheck_9_9_c_alpha0,
+        RangeCheck_9_9_c_alpha1,
+        RangeCheck_9_9_c_z,
+        RangeCheck_9_9_d_alpha0,
+        RangeCheck_9_9_d_alpha1,
+        RangeCheck_9_9_d_z,
         seq,
         trace_1_column_0_offset_0,
         trace_1_column_1_offset_0,
@@ -354,6 +381,15 @@ fn intermediates(
     RangeCheck_9_9_alpha0: QM31,
     RangeCheck_9_9_alpha1: QM31,
     RangeCheck_9_9_z: QM31,
+    RangeCheck_9_9_b_alpha0: QM31,
+    RangeCheck_9_9_b_alpha1: QM31,
+    RangeCheck_9_9_b_z: QM31,
+    RangeCheck_9_9_c_alpha0: QM31,
+    RangeCheck_9_9_c_alpha1: QM31,
+    RangeCheck_9_9_c_z: QM31,
+    RangeCheck_9_9_d_alpha0: QM31,
+    RangeCheck_9_9_d_alpha1: QM31,
+    RangeCheck_9_9_d_z: QM31,
     seq: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_1_offset_0: QM31,
@@ -386,14 +422,6 @@ fn intermediates(
         trace_1_column_7_offset_0,
     );
 
-    let intermediate3 = intermediate3(
-        RangeCheck_9_9_alpha0,
-        RangeCheck_9_9_alpha1,
-        RangeCheck_9_9_z,
-        trace_1_column_6_offset_0,
-        trace_1_column_7_offset_0,
-    );
-
     let intermediate0 = intermediate0(
         RangeCheck_9_9_alpha0,
         RangeCheck_9_9_alpha1,
@@ -403,19 +431,27 @@ fn intermediates(
     );
 
     let intermediate1 = intermediate1(
-        RangeCheck_9_9_alpha0,
-        RangeCheck_9_9_alpha1,
-        RangeCheck_9_9_z,
+        RangeCheck_9_9_b_alpha0,
+        RangeCheck_9_9_b_alpha1,
+        RangeCheck_9_9_b_z,
         trace_1_column_2_offset_0,
         trace_1_column_3_offset_0,
     );
 
     let intermediate2 = intermediate2(
-        RangeCheck_9_9_alpha0,
-        RangeCheck_9_9_alpha1,
-        RangeCheck_9_9_z,
+        RangeCheck_9_9_c_alpha0,
+        RangeCheck_9_9_c_alpha1,
+        RangeCheck_9_9_c_z,
         trace_1_column_4_offset_0,
         trace_1_column_5_offset_0,
+    );
+
+    let intermediate3 = intermediate3(
+        RangeCheck_9_9_d_alpha0,
+        RangeCheck_9_9_d_alpha1,
+        RangeCheck_9_9_d_z,
+        trace_1_column_6_offset_0,
+        trace_1_column_7_offset_0,
     );
     array![intermediate0, intermediate1, intermediate2, intermediate3, intermediate4]
 }
@@ -454,18 +490,6 @@ pub fn intermediate4(
         - (MemoryIdToBig_z)
 }
 
-pub fn intermediate3(
-    RangeCheck_9_9_alpha0: QM31,
-    RangeCheck_9_9_alpha1: QM31,
-    RangeCheck_9_9_z: QM31,
-    trace_1_column_6_offset_0: QM31,
-    trace_1_column_7_offset_0: QM31,
-) -> QM31 {
-    (RangeCheck_9_9_alpha0) * (trace_1_column_6_offset_0)
-        + (RangeCheck_9_9_alpha1) * (trace_1_column_7_offset_0)
-        - (RangeCheck_9_9_z)
-}
-
 pub fn intermediate0(
     RangeCheck_9_9_alpha0: QM31,
     RangeCheck_9_9_alpha1: QM31,
@@ -479,26 +503,38 @@ pub fn intermediate0(
 }
 
 pub fn intermediate1(
-    RangeCheck_9_9_alpha0: QM31,
-    RangeCheck_9_9_alpha1: QM31,
-    RangeCheck_9_9_z: QM31,
+    RangeCheck_9_9_b_alpha0: QM31,
+    RangeCheck_9_9_b_alpha1: QM31,
+    RangeCheck_9_9_b_z: QM31,
     trace_1_column_2_offset_0: QM31,
     trace_1_column_3_offset_0: QM31,
 ) -> QM31 {
-    (RangeCheck_9_9_alpha0) * (trace_1_column_2_offset_0)
-        + (RangeCheck_9_9_alpha1) * (trace_1_column_3_offset_0)
-        - (RangeCheck_9_9_z)
+    (RangeCheck_9_9_b_alpha0) * (trace_1_column_2_offset_0)
+        + (RangeCheck_9_9_b_alpha1) * (trace_1_column_3_offset_0)
+        - (RangeCheck_9_9_b_z)
 }
 
 pub fn intermediate2(
-    RangeCheck_9_9_alpha0: QM31,
-    RangeCheck_9_9_alpha1: QM31,
-    RangeCheck_9_9_z: QM31,
+    RangeCheck_9_9_c_alpha0: QM31,
+    RangeCheck_9_9_c_alpha1: QM31,
+    RangeCheck_9_9_c_z: QM31,
     trace_1_column_4_offset_0: QM31,
     trace_1_column_5_offset_0: QM31,
 ) -> QM31 {
-    (RangeCheck_9_9_alpha0) * (trace_1_column_4_offset_0)
-        + (RangeCheck_9_9_alpha1) * (trace_1_column_5_offset_0)
-        - (RangeCheck_9_9_z)
+    (RangeCheck_9_9_c_alpha0) * (trace_1_column_4_offset_0)
+        + (RangeCheck_9_9_c_alpha1) * (trace_1_column_5_offset_0)
+        - (RangeCheck_9_9_c_z)
+}
+
+pub fn intermediate3(
+    RangeCheck_9_9_d_alpha0: QM31,
+    RangeCheck_9_9_d_alpha1: QM31,
+    RangeCheck_9_9_d_z: QM31,
+    trace_1_column_6_offset_0: QM31,
+    trace_1_column_7_offset_0: QM31,
+) -> QM31 {
+    (RangeCheck_9_9_d_alpha0) * (trace_1_column_6_offset_0)
+        + (RangeCheck_9_9_d_alpha1) * (trace_1_column_7_offset_0)
+        - (RangeCheck_9_9_d_z)
 }
 
