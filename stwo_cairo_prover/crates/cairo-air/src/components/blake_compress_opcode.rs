@@ -4,7 +4,7 @@ use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundIn
 use crate::components::subroutines::decode_blake_opcode::DecodeBlakeOpcode;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
 
-pub const N_TRACE_COLUMNS: usize = 169;
+pub const N_TRACE_COLUMNS: usize = 194;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
     RelationUse {
         relation_id: "BlakeRound",
@@ -284,12 +284,37 @@ impl FrameworkEval for Eval {
         let high_5_ms_bits_col166 = eval.next_trace_mask();
         let new_state_7_id_col167 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
+        let op0_limb_3_col169 = eval.next_trace_mask();
+        let op0_limb_4_col170 = eval.next_trace_mask();
+        let op0_limb_5_col171 = eval.next_trace_mask();
+        let op0_limb_6_col172 = eval.next_trace_mask();
+        let op0_limb_7_col173 = eval.next_trace_mask();
+        let op1_limb_3_col174 = eval.next_trace_mask();
+        let op1_limb_4_col175 = eval.next_trace_mask();
+        let op1_limb_5_col176 = eval.next_trace_mask();
+        let op1_limb_6_col177 = eval.next_trace_mask();
+        let op1_limb_7_col178 = eval.next_trace_mask();
+        let ap_limb_3_col179 = eval.next_trace_mask();
+        let ap_limb_4_col180 = eval.next_trace_mask();
+        let ap_limb_5_col181 = eval.next_trace_mask();
+        let ap_limb_6_col182 = eval.next_trace_mask();
+        let ap_limb_7_col183 = eval.next_trace_mask();
+        let blake_round_output_limb_33_col184 = eval.next_trace_mask();
+        let op0_offset_final_word_col185 = eval.next_trace_mask();
+        let op0_segment_id_initial_word_col186 = eval.next_trace_mask();
+        let op0_segment_id_final_word_col187 = eval.next_trace_mask();
+        let op1_offset_final_word_col188 = eval.next_trace_mask();
+        let op1_segment_id_initial_word_col189 = eval.next_trace_mask();
+        let op1_segment_id_final_word_col190 = eval.next_trace_mask();
+        let ap_offset_final_word_col191 = eval.next_trace_mask();
+        let ap_segment_id_initial_word_col192 = eval.next_trace_mask();
+        let ap_segment_id_final_word_col193 = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_blake_opcode_output_tmp_53f39_29_limb_0, decode_blake_opcode_output_tmp_53f39_29_limb_1, decode_blake_opcode_output_tmp_53f39_29_limb_2, decode_blake_opcode_output_tmp_53f39_29_limb_6] =
+        let [op0_segment_id, op0_offset, op1_segment_id, op1_offset, ap_segment_id, ap_offset, opcode_extension] =
             DecodeBlakeOpcode::evaluate(
                 [
                     input_pc_col0.clone(),
@@ -310,15 +335,30 @@ impl FrameworkEval for Eval {
                 op0_limb_0_col14.clone(),
                 op0_limb_1_col15.clone(),
                 op0_limb_2_col16.clone(),
+                op0_limb_3_col169.clone(),
+                op0_limb_4_col170.clone(),
+                op0_limb_5_col171.clone(),
+                op0_limb_6_col172.clone(),
+                op0_limb_7_col173.clone(),
                 mem1_base_col17.clone(),
                 op1_id_col18.clone(),
                 op1_limb_0_col19.clone(),
                 op1_limb_1_col20.clone(),
                 op1_limb_2_col21.clone(),
+                op1_limb_3_col174.clone(),
+                op1_limb_4_col175.clone(),
+                op1_limb_5_col176.clone(),
+                op1_limb_6_col177.clone(),
+                op1_limb_7_col178.clone(),
                 ap_id_col22.clone(),
                 ap_limb_0_col23.clone(),
                 ap_limb_1_col24.clone(),
                 ap_limb_2_col25.clone(),
+                ap_limb_3_col179.clone(),
+                ap_limb_4_col180.clone(),
+                ap_limb_5_col181.clone(),
+                ap_limb_6_col182.clone(),
+                ap_limb_7_col183.clone(),
                 mem_dst_base_col26.clone(),
                 low_16_bits_col27.clone(),
                 high_16_bits_col28.clone(),
@@ -326,6 +366,15 @@ impl FrameworkEval for Eval {
                 high_14_ms_bits_col30.clone(),
                 high_5_ms_bits_col31.clone(),
                 dst_id_col32.clone(),
+                op0_segment_id_initial_word_col186.clone(),
+                op0_segment_id_final_word_col187.clone(),
+                op1_segment_id_initial_word_col189.clone(),
+                op1_segment_id_final_word_col190.clone(),
+                ap_segment_id_initial_word_col192.clone(),
+                ap_segment_id_final_word_col193.clone(),
+                op0_offset_final_word_col185.clone(),
+                op1_offset_final_word_col188.clone(),
+                ap_offset_final_word_col191.clone(),
                 &self.verify_instruction_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
@@ -337,10 +386,11 @@ impl FrameworkEval for Eval {
         let [create_blake_round_input_output_tmp_53f39_114_limb_24, create_blake_round_input_output_tmp_53f39_114_limb_25, create_blake_round_input_output_tmp_53f39_114_limb_28, create_blake_round_input_output_tmp_53f39_114_limb_29] =
             CreateBlakeRoundInput::evaluate(
                 [
-                    decode_blake_opcode_output_tmp_53f39_29_limb_0.clone(),
+                    op0_segment_id.clone(),
+                    op0_offset.clone(),
                     low_16_bits_col27.clone(),
                     high_16_bits_col28.clone(),
-                    decode_blake_opcode_output_tmp_53f39_29_limb_6.clone(),
+                    opcode_extension.clone(),
                 ],
                 low_16_bits_col33.clone(),
                 high_16_bits_col34.clone(),
@@ -440,7 +490,8 @@ impl FrameworkEval for Eval {
                 create_blake_round_input_output_tmp_53f39_114_limb_29.clone(),
                 M31_52505.clone(),
                 M31_23520.clone(),
-                decode_blake_opcode_output_tmp_53f39_29_limb_1.clone(),
+                op1_segment_id.clone(),
+                op1_offset.clone(),
             ],
         ));
 
@@ -483,6 +534,7 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_30_col117.clone(),
                 blake_round_output_limb_31_col118.clone(),
                 blake_round_output_limb_32_col119.clone(),
+                blake_round_output_limb_33_col184.clone(),
             ],
         ));
 
@@ -558,7 +610,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_29_limb_2.clone(),
+                ap_segment_id.clone(),
+                ap_offset.clone(),
                 triple_xor_32_output_limb_0_col120.clone(),
                 triple_xor_32_output_limb_1_col121.clone(),
             ],
@@ -573,7 +626,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_1.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_1.clone()),
                 triple_xor_32_output_limb_0_col122.clone(),
                 triple_xor_32_output_limb_1_col123.clone(),
             ],
@@ -588,7 +642,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_2.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_2.clone()),
                 triple_xor_32_output_limb_0_col124.clone(),
                 triple_xor_32_output_limb_1_col125.clone(),
             ],
@@ -603,7 +658,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_3.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_3.clone()),
                 triple_xor_32_output_limb_0_col126.clone(),
                 triple_xor_32_output_limb_1_col127.clone(),
             ],
@@ -618,7 +674,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_4.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_4.clone()),
                 triple_xor_32_output_limb_0_col128.clone(),
                 triple_xor_32_output_limb_1_col129.clone(),
             ],
@@ -633,7 +690,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_5.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_5.clone()),
                 triple_xor_32_output_limb_0_col130.clone(),
                 triple_xor_32_output_limb_1_col131.clone(),
             ],
@@ -648,7 +706,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_6.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_6.clone()),
                 triple_xor_32_output_limb_0_col132.clone(),
                 triple_xor_32_output_limb_1_col133.clone(),
             ],
@@ -663,7 +722,8 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_7.clone()),
+                ap_segment_id.clone(),
+                (ap_offset.clone() + M31_7.clone()),
                 triple_xor_32_output_limb_0_col134.clone(),
                 triple_xor_32_output_limb_1_col135.clone(),
             ],
@@ -695,7 +755,7 @@ impl FrameworkEval for Eval {
                 input_fp_col2.clone(),
             ],
         ));
-
+        // i_constraint = 10
         eval.finalize_logup_in_pairs();
         eval
     }

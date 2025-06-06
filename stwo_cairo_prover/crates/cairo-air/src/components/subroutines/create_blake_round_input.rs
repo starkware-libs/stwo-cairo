@@ -14,7 +14,7 @@ impl CreateBlakeRoundInput {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [create_blake_round_input_input_limb_0, create_blake_round_input_input_limb_1, create_blake_round_input_input_limb_2, create_blake_round_input_input_limb_3]: [E::F; 4],
+        [create_blake_round_input_segment_id, create_blake_round_input_offset, create_blake_round_input_input_limb_1, create_blake_round_input_input_limb_2, create_blake_round_input_input_limb_3]: [E::F; 5],
         low_16_bits_col0: E::F,
         high_16_bits_col1: E::F,
         low_7_ms_bits_col2: E::F,
@@ -93,7 +93,10 @@ impl CreateBlakeRoundInput {
         let M31_9812 = E::F::from(M31::from(9812));
 
         ReadBlakeWord::evaluate(
-            [create_blake_round_input_input_limb_0.clone()],
+            [
+                create_blake_round_input_segment_id.clone(),
+                create_blake_round_input_offset.clone(),
+            ],
             low_16_bits_col0.clone(),
             high_16_bits_col1.clone(),
             low_7_ms_bits_col2.clone(),
@@ -106,7 +109,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_1.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_1.clone()),
+            ],
             low_16_bits_col6.clone(),
             high_16_bits_col7.clone(),
             low_7_ms_bits_col8.clone(),
@@ -119,7 +125,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_2.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_2.clone()),
+            ],
             low_16_bits_col12.clone(),
             high_16_bits_col13.clone(),
             low_7_ms_bits_col14.clone(),
@@ -132,7 +141,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_3.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_3.clone()),
+            ],
             low_16_bits_col18.clone(),
             high_16_bits_col19.clone(),
             low_7_ms_bits_col20.clone(),
@@ -145,7 +157,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_4.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_4.clone()),
+            ],
             low_16_bits_col24.clone(),
             high_16_bits_col25.clone(),
             low_7_ms_bits_col26.clone(),
@@ -158,7 +173,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_5.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_5.clone()),
+            ],
             low_16_bits_col30.clone(),
             high_16_bits_col31.clone(),
             low_7_ms_bits_col32.clone(),
@@ -171,7 +189,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_6.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_6.clone()),
+            ],
             low_16_bits_col36.clone(),
             high_16_bits_col37.clone(),
             low_7_ms_bits_col38.clone(),
@@ -184,7 +205,10 @@ impl CreateBlakeRoundInput {
             eval,
         );
         ReadBlakeWord::evaluate(
-            [(create_blake_round_input_input_limb_0.clone() + M31_7.clone())],
+            [
+                create_blake_round_input_segment_id.clone(),
+                (create_blake_round_input_offset.clone() + M31_7.clone()),
+            ],
             low_16_bits_col42.clone(),
             high_16_bits_col43.clone(),
             low_7_ms_bits_col44.clone(),

@@ -94,13 +94,26 @@ impl BlakeRound {
         &self,
         chain: PackedM31,
         round: PackedM31,
-        (state, message_pointer): ([PackedUInt32; 16], PackedM31),
-    ) -> (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)) {
-        let (chain, round, (state, message_pointer)) = self.blake_round(
-            chain.into_simd(),
-            round.into_simd(),
-            (state.map(|x| x.simd), message_pointer.into_simd()),
-        );
+        (state, message_pointer_segment_id, message_pointer_offset): (
+            [PackedUInt32; 16],
+            PackedM31,
+            PackedM31,
+        ),
+    ) -> (
+        PackedM31,
+        PackedM31,
+        ([PackedUInt32; 16], PackedM31, PackedM31),
+    ) {
+        let (chain, round, (state, message_pointer_segment_id, message_pointer_offset)) = self
+            .blake_round(
+                chain.into_simd(),
+                round.into_simd(),
+                (
+                    state.map(|x| x.simd),
+                    message_pointer_segment_id.into_simd(),
+                    message_pointer_offset.into_simd(),
+                ),
+            );
 
         unsafe {
             (
@@ -108,7 +121,8 @@ impl BlakeRound {
                 PackedM31::from_simd_unchecked(round),
                 (
                     state.map(|simd| PackedUInt32 { simd }),
-                    PackedM31::from_simd_unchecked(message_pointer),
+                    PackedM31::from_simd_unchecked(message_pointer_segment_id),
+                    PackedM31::from_simd_unchecked(message_pointer_offset),
                 ),
             )
         }
@@ -117,16 +131,16 @@ impl BlakeRound {
         &self,
         chain: u32x16,
         round: u32x16,
-        (state, message_pointer): ([u32x16; 16], u32x16),
-    ) -> (u32x16, u32x16, ([u32x16; 16], u32x16)) {
+        (state, message_pointer_segment_id, message_pointer_offset): ([u32x16; 16], u32x16, u32x16),
+    ) -> (u32x16, u32x16, ([u32x16; 16], u32x16, u32x16)) {
         let sigma = PackedBlakeRoundSigma::packed_sigma(round);
 
         let message: [_; N_LANES] = from_fn(|i| {
             u32x16::from(from_fn(|j| {
                 self.memory
                     .get(Relocatable {
-                        segment_index: 1,
-                        offset: message_pointer[j] + sigma[i][j],
+                        segment_index: message_pointer_segment_id[j] as usize,
+                        offset: message_pointer_offset[j] + sigma[i][j],
                     })
                     .as_small() as u32
             }))
@@ -144,6 +158,10 @@ impl BlakeRound {
             ]);
         }
 
-        (chain, round + u32x16::splat(1), (state, message_pointer))
+        (
+            chain,
+            round + u32x16::splat(1),
+            (state, message_pointer_segment_id, message_pointer_offset),
+        )
     }
 }

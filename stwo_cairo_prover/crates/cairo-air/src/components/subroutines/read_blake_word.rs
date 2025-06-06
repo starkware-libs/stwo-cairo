@@ -12,7 +12,7 @@ impl ReadBlakeWord {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [read_blake_word_input]: [E::F; 1],
+        [read_blake_word_input_segment_index, read_blake_word_input_offset]: [E::F; 2],
         low_16_bits_col0: E::F,
         high_16_bits_col1: E::F,
         low_7_ms_bits_col2: E::F,
@@ -26,7 +26,8 @@ impl ReadBlakeWord {
     ) -> [E::F; 0] {
         VerifyBlakeWord::evaluate(
             [
-                read_blake_word_input.clone(),
+                read_blake_word_input_segment_index.clone(),
+                read_blake_word_input_offset.clone(),
                 low_16_bits_col0.clone(),
                 high_16_bits_col1.clone(),
             ],

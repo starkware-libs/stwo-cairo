@@ -17,8 +17,8 @@ func main{
     add_mod_ptr,
     mul_mod_ptr,
 }() {
-    // blake2s();
-    // ap+=1;
+    blake2s();
+    ap+=1;
     add_ap();
     ap+=1;
     jump_rel_imm();

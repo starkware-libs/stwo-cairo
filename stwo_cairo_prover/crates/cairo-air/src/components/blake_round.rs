@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 
-pub const N_TRACE_COLUMNS: usize = 212;
+pub const N_TRACE_COLUMNS: usize = 213;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     RelationUse {
         relation_id: "BlakeG",
@@ -293,6 +293,7 @@ impl FrameworkEval for Eval {
         let blake_g_output_limb_6_col209 = eval.next_trace_mask();
         let blake_g_output_limb_7_col210 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
+        let input_limb_35_col212 = eval.next_trace_mask(); // offset
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
@@ -321,7 +322,10 @@ impl FrameworkEval for Eval {
         ));
 
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_0_col35.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_0_col35.clone(),
+            ],
             low_16_bits_col51.clone(),
             high_16_bits_col52.clone(),
             low_7_ms_bits_col53.clone(),
@@ -334,7 +338,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_1_col36.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_1_col36.clone(),
+            ],
             low_16_bits_col57.clone(),
             high_16_bits_col58.clone(),
             low_7_ms_bits_col59.clone(),
@@ -347,7 +354,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_2_col37.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_2_col37.clone(),
+            ],
             low_16_bits_col63.clone(),
             high_16_bits_col64.clone(),
             low_7_ms_bits_col65.clone(),
@@ -360,7 +370,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_3_col38.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_3_col38.clone(),
+            ],
             low_16_bits_col69.clone(),
             high_16_bits_col70.clone(),
             low_7_ms_bits_col71.clone(),
@@ -373,7 +386,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_4_col39.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_4_col39.clone(),
+            ],
             low_16_bits_col75.clone(),
             high_16_bits_col76.clone(),
             low_7_ms_bits_col77.clone(),
@@ -386,7 +402,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_5_col40.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_5_col40.clone(),
+            ],
             low_16_bits_col81.clone(),
             high_16_bits_col82.clone(),
             low_7_ms_bits_col83.clone(),
@@ -399,7 +418,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_6_col41.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_6_col41.clone(),
+            ],
             low_16_bits_col87.clone(),
             high_16_bits_col88.clone(),
             low_7_ms_bits_col89.clone(),
@@ -412,7 +434,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_7_col42.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_7_col42.clone(),
+            ],
             low_16_bits_col93.clone(),
             high_16_bits_col94.clone(),
             low_7_ms_bits_col95.clone(),
@@ -425,7 +450,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_8_col43.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_8_col43.clone(),
+            ],
             low_16_bits_col99.clone(),
             high_16_bits_col100.clone(),
             low_7_ms_bits_col101.clone(),
@@ -438,7 +466,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_9_col44.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_9_col44.clone(),
+            ],
             low_16_bits_col105.clone(),
             high_16_bits_col106.clone(),
             low_7_ms_bits_col107.clone(),
@@ -451,7 +482,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_10_col45.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_10_col45.clone(),
+            ],
             low_16_bits_col111.clone(),
             high_16_bits_col112.clone(),
             low_7_ms_bits_col113.clone(),
@@ -464,7 +498,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_11_col46.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_11_col46.clone(),
+            ],
             low_16_bits_col117.clone(),
             high_16_bits_col118.clone(),
             low_7_ms_bits_col119.clone(),
@@ -477,7 +514,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_12_col47.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_12_col47.clone(),
+            ],
             low_16_bits_col123.clone(),
             high_16_bits_col124.clone(),
             low_7_ms_bits_col125.clone(),
@@ -490,7 +530,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_13_col48.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_13_col48.clone(),
+            ],
             low_16_bits_col129.clone(),
             high_16_bits_col130.clone(),
             low_7_ms_bits_col131.clone(),
@@ -503,7 +546,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_14_col49.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_14_col49.clone(),
+            ],
             low_16_bits_col135.clone(),
             high_16_bits_col136.clone(),
             low_7_ms_bits_col137.clone(),
@@ -516,7 +562,10 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadBlakeWord::evaluate(
-            [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_15_col50.clone())],
+            [
+                input_limb_34_col34.clone(),
+                input_limb_35_col212.clone() + blake_round_sigma_output_limb_15_col50.clone(),
+            ],
             low_16_bits_col141.clone(),
             high_16_bits_col142.clone(),
             low_7_ms_bits_col143.clone(),
@@ -783,6 +832,7 @@ impl FrameworkEval for Eval {
                 input_limb_32_col32.clone(),
                 input_limb_33_col33.clone(),
                 input_limb_34_col34.clone(),
+                input_limb_35_col212.clone(),
             ],
         ));
 
@@ -825,6 +875,7 @@ impl FrameworkEval for Eval {
                 blake_g_output_limb_6_col185.clone(),
                 blake_g_output_limb_7_col186.clone(),
                 input_limb_34_col34.clone(),
+                input_limb_35_col212.clone(),
             ],
         ));
 
