@@ -325,7 +325,13 @@ impl OpcodesClaimGenerator {
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
                     &range_checks_trace_generator.rc_19_trace_generator,
+                    &range_checks_trace_generator.rc_19_b_trace_generator,
+                    &range_checks_trace_generator.rc_19_c_trace_generator,
+                    &range_checks_trace_generator.rc_19_d_trace_generator,
                     &range_checks_trace_generator.rc_9_9_trace_generator,
+                    &range_checks_trace_generator.rc_9_9_b_trace_generator,
+                    &range_checks_trace_generator.rc_9_9_c_trace_generator,
+                    &range_checks_trace_generator.rc_9_9_d_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -411,6 +417,9 @@ impl OpcodesClaimGenerator {
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
                     &range_checks_trace_generator.rc_19_trace_generator,
+                    &range_checks_trace_generator.rc_19_b_trace_generator,
+                    &range_checks_trace_generator.rc_19_c_trace_generator,
+                    &range_checks_trace_generator.rc_19_d_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -661,7 +670,13 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.memory_id_to_value,
                     &interaction_elements.opcodes,
                     &interaction_elements.range_checks.rc_19,
+                    &interaction_elements.range_checks.rc_19_b,
+                    &interaction_elements.range_checks.rc_19_c,
+                    &interaction_elements.range_checks.rc_19_d,
                     &interaction_elements.range_checks.rc_9_9,
+                    &interaction_elements.range_checks.rc_9_9_b,
+                    &interaction_elements.range_checks.rc_9_9_c,
+                    &interaction_elements.range_checks.rc_9_9_d,
                     &interaction_elements.verify_instruction,
                 )
             })
@@ -754,6 +769,9 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.memory_id_to_value,
                     &interaction_elements.opcodes,
                     &interaction_elements.range_checks.rc_19,
+                    &interaction_elements.range_checks.rc_19_b,
+                    &interaction_elements.range_checks.rc_19_c,
+                    &interaction_elements.range_checks.rc_19_d,
                     &interaction_elements.verify_instruction,
                 )
             })
