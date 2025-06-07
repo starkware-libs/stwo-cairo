@@ -2948,6 +2948,18 @@ impl CairoAirNewImpl of CairoAirNewTrait {
                         claimed_sum: claimed_sum,
                         lookup_elements: interaction_elements.memory_id_to_value.clone(),
                         range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+                        range_9_9_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_b
+                            .clone(),
+                        range_9_9_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_c
+                            .clone(),
+                        range_9_9_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_d
+                            .clone(),
                     },
                 );
             offset = offset + pow2(log_size);
@@ -2958,6 +2970,9 @@ impl CairoAirNewImpl of CairoAirNewTrait {
             claimed_sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
             lookup_elements: interaction_elements.memory_id_to_value.clone(),
             range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
         };
 
         let range_checks_components = RangeChecksComponentsImpl::new(
