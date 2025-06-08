@@ -14,10 +14,10 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::components::{CairoComponent, RANGE_CHECK_19_B_LOG_SIZE};
+use crate::components::{CairoComponent, RANGE_CHECK_19_E_LOG_SIZE};
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = RANGE_CHECK_19_B_LOG_SIZE;
+pub const LOG_SIZE: u32 = RANGE_CHECK_19_E_LOG_SIZE;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
@@ -52,7 +52,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_19_b_lookup_elements: crate::RangeCheck_19_BElements,
+    pub range_check_19_e_lookup_elements: crate::RangeCheck_19_EElements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
@@ -92,7 +92,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let mut range_check_19_b_sum_0: QM31 = Zero::zero();
+        let mut range_check_19_e_sum_0: QM31 = Zero::zero();
         let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(LOG_SIZE));
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
@@ -100,7 +100,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        range_check_19_b_sum_0 = self.range_check_19_b_lookup_elements.combine_qm31([seq]);
+        range_check_19_e_sum_0 = self.range_check_19_e_lookup_elements.combine_qm31([seq]);
 
         lookup_constraints(
             ref sum,
@@ -110,7 +110,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             enabler,
             column_size,
             ref interaction_trace_mask_values,
-            range_check_19_b_sum_0,
+            range_check_19_e_sum_0,
         );
     }
 }
@@ -124,7 +124,7 @@ fn lookup_constraints(
     enabler: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    range_check_19_b_sum_0: QM31,
+    range_check_19_e_sum_0: QM31,
 ) {
     let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
         (*interaction_trace_mask_values
@@ -146,7 +146,7 @@ fn lookup_constraints(
             [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * range_check_19_b_sum_0)
+        * range_check_19_e_sum_0)
         + enabler)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;

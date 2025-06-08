@@ -1,5 +1,4 @@
-// Constraints version: fc694d80
-
+// AIR version 6b635ec3
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -133,10 +132,22 @@ fn lookup_constraints(
         .unwrap())
         .unbox();
 
-    let [trace_2_col0_neg1, trace_2_col0]: [QM31; 2] = (*trace_2_col0.try_into().unwrap()).unbox();
-    let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().unwrap()).unbox();
-    let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().unwrap()).unbox();
-    let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().unwrap()).unbox();
+    let [trace_2_col0_neg1, trace_2_col0]: [QM31; N_SAMPLES_FOR_PREFIX_SUM] = (*trace_2_col0
+        .try_into()
+        .unwrap())
+        .unbox();
+    let [trace_2_col1_neg1, trace_2_col1]: [QM31; N_SAMPLES_FOR_PREFIX_SUM] = (*trace_2_col1
+        .try_into()
+        .unwrap())
+        .unbox();
+    let [trace_2_col2_neg1, trace_2_col2]: [QM31; N_SAMPLES_FOR_PREFIX_SUM] = (*trace_2_col2
+        .try_into()
+        .unwrap())
+        .unbox();
+    let [trace_2_col3_neg1, trace_2_col3]: [QM31; N_SAMPLES_FOR_PREFIX_SUM] = (*trace_2_col3
+        .try_into()
+        .unwrap())
+        .unbox();
 
     core::internal::revoke_ap_tracking();
 
