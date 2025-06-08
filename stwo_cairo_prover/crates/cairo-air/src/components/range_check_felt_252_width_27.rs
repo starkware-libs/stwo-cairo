@@ -1,21 +1,47 @@
+// AIR version d4d3b5d6
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
-pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 7] = [
     RelationUse {
         relation_id: "RangeCheck_18",
-        uses: 9,
+        uses: 7,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_18_B",
+        uses: 2,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9",
-        uses: 5,
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_B",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_C",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_D",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_9_9_E",
+        uses: 1,
     },
 ];
 
 pub struct Eval {
     pub claim: Claim,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
+    pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
+    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
+    pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
+    pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
     pub range_check_18_lookup_elements: relations::RangeCheck_18,
+    pub range_check_18_b_lookup_elements: relations::RangeCheck_18_B,
     pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
 }
 
@@ -107,7 +133,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_b_lookup_elements,
             E::EF::one(),
             &[
                 limb_2_high_part_col12.clone(),
@@ -116,7 +142,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_18_lookup_elements,
+            &self.range_check_18_b_lookup_elements,
             E::EF::one(),
             &[(input_limb_2_col2.clone() - (limb_2_high_part_col12.clone() * M31_262144.clone()))],
         ));
@@ -128,7 +154,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_c_lookup_elements,
             E::EF::one(),
             &[
                 limb_4_high_part_col14.clone(),
@@ -149,7 +175,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_d_lookup_elements,
             E::EF::one(),
             &[
                 limb_6_high_part_col16.clone(),
@@ -158,7 +184,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_18_lookup_elements,
+            &self.range_check_18_b_lookup_elements,
             E::EF::one(),
             &[(input_limb_6_col6.clone() - (limb_6_high_part_col16.clone() * M31_262144.clone()))],
         ));
@@ -170,7 +196,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_e_lookup_elements,
             E::EF::one(),
             &[limb_8_high_part_col18.clone(), input_limb_9_col9.clone()],
         ));
@@ -221,6 +247,11 @@ mod tests {
             claim: Claim { log_size: 4 },
             range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
             range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
+            range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
+            range_check_18_b_lookup_elements: relations::RangeCheck_18_B::dummy(),
+            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
+            range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
+            range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
             range_check_felt_252_width_27_lookup_elements:
                 relations::RangeCheckFelt252Width27::dummy(),
         };

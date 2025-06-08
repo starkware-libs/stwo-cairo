@@ -281,6 +281,10 @@ impl CairoClaimGenerator {
                 &self.range_checks_trace_generator.rc_9_9_b_trace_generator,
                 &self.range_checks_trace_generator.rc_9_9_c_trace_generator,
                 &self.range_checks_trace_generator.rc_9_9_d_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_e_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_f_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_g_trace_generator,
+                &self.range_checks_trace_generator.rc_9_9_h_trace_generator,
                 LOG_MAX_BIG_SIZE,
             );
         let (range_checks_claim, range_checks_interaction_gen) =
@@ -393,6 +397,10 @@ impl CairoInteractionClaimGenerator {
                 &interaction_elements.range_checks.rc_9_9_b,
                 &interaction_elements.range_checks.rc_9_9_c,
                 &interaction_elements.range_checks.rc_9_9_d,
+                &interaction_elements.range_checks.rc_9_9_e,
+                &interaction_elements.range_checks.rc_9_9_f,
+                &interaction_elements.range_checks.rc_9_9_g,
+                &interaction_elements.range_checks.rc_9_9_h,
             );
 
         let range_checks_interaction_claim = self

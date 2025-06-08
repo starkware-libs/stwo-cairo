@@ -15,7 +15,8 @@ use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
 use crate::witness::components::{
-    range_check_9_9, range_check_9_9_b, range_check_9_9_c, range_check_9_9_d,
+    range_check_9_9, range_check_9_9_b, range_check_9_9_c, range_check_9_9_d, range_check_9_9_e,
+    range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
 };
 use crate::witness::prelude::*;
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
@@ -118,6 +119,10 @@ impl ClaimGenerator {
         range_check_9_9_b_trace_generator: &range_check_9_9_b::ClaimGenerator,
         range_check_9_9_c_trace_generator: &range_check_9_9_c::ClaimGenerator,
         range_check_9_9_d_trace_generator: &range_check_9_9_d::ClaimGenerator,
+        range_check_9_9_e_trace_generator: &range_check_9_9_e::ClaimGenerator,
+        range_check_9_9_f_trace_generator: &range_check_9_9_f::ClaimGenerator,
+        range_check_9_9_g_trace_generator: &range_check_9_9_g::ClaimGenerator,
+        range_check_9_9_h_trace_generator: &range_check_9_9_h::ClaimGenerator,
         log_max_big_size: u32,
     ) -> (Claim, InteractionClaimGenerator) {
         let big_table_traces = gen_big_memory_traces(
@@ -144,7 +149,7 @@ impl ClaimGenerator {
         // Add inputs to range check that all the values are 9-bit felts.
         for values in &big_components_values {
             for (i, (col0, col1)) in values.iter().tuples().enumerate() {
-                match i % 4 {
+                match i % 8 {
                     0 => col0
                         .par_iter()
                         .zip(col1.par_iter())
@@ -169,8 +174,32 @@ impl ClaimGenerator {
                         .for_each(|(val0, val1)| {
                             range_check_9_9_d_trace_generator.add_packed_m31(&[*val0, *val1]);
                         }),
+                    4 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_e_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    5 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_f_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    6 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_g_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
+                    7 => col0
+                        .par_iter()
+                        .zip(col1.par_iter())
+                        .for_each(|(val0, val1)| {
+                            range_check_9_9_h_trace_generator.add_packed_m31(&[*val0, *val1]);
+                        }),
                     _ => {
-                        unreachable!("There are only 4 possible values for i % 4.",)
+                        unreachable!("There are only 8 possible values for i % 8.",)
                     }
                 };
             }
@@ -365,6 +394,10 @@ impl InteractionClaimGenerator {
         range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
         range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
         range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
+        range9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
+        range9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
+        range9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
+        range9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
     ) -> InteractionClaim {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
@@ -381,6 +414,10 @@ impl InteractionClaimGenerator {
                     range9_9_b_lookup_elements,
                     range9_9_c_lookup_elements,
                     range9_9_d_lookup_elements,
+                    range9_9_e_lookup_elements,
+                    range9_9_f_lookup_elements,
+                    range9_9_g_lookup_elements,
+                    range9_9_h_lookup_elements,
                 );
                 offset += big_multiplicities.len() as u32 * N_LANES as u32;
                 res
@@ -414,6 +451,10 @@ impl InteractionClaimGenerator {
         range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
         range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
         range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
+        range9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
+        range9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
+        range9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
+        range9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         QM31,
@@ -430,16 +471,26 @@ impl InteractionClaimGenerator {
             (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
                 .into_par_iter()
                 .for_each(|(writer, limb0, limb1, limb2, limb3)| {
-                    let (denom0, denom1): (PackedQM31, PackedQM31) = if i % 2 == 0 {
-                        (
+                    let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
+                        0 => (
                             range9_9_lookup_elements.combine(&[*limb0, *limb1]),
                             range9_9_b_lookup_elements.combine(&[*limb2, *limb3]),
-                        )
-                    } else {
-                        (
+                        ),
+                        1 => (
                             range9_9_c_lookup_elements.combine(&[*limb0, *limb1]),
                             range9_9_d_lookup_elements.combine(&[*limb2, *limb3]),
-                        )
+                        ),
+                        2 => (
+                            range9_9_e_lookup_elements.combine(&[*limb0, *limb1]),
+                            range9_9_f_lookup_elements.combine(&[*limb2, *limb3]),
+                        ),
+                        3 => (
+                            range9_9_g_lookup_elements.combine(&[*limb0, *limb1]),
+                            range9_9_h_lookup_elements.combine(&[*limb2, *limb3]),
+                        ),
+                        _ => {
+                            unreachable!("There are only 4 possible values for i % 4.",)
+                        }
                     };
                     writer.write_frac(denom0 + denom1, denom0 * denom1);
                 });
@@ -552,7 +603,8 @@ mod tests {
     use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
     use crate::witness::components::{
         memory_address_to_id, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
-        range_check_9_9_d,
+        range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g,
+        range_check_9_9_h,
     };
 
     #[test]
@@ -591,12 +643,20 @@ mod tests {
         let range_check_9_9_b = range_check_9_9_b::ClaimGenerator::new();
         let range_check_9_9_c = range_check_9_9_c::ClaimGenerator::new();
         let range_check_9_9_d = range_check_9_9_d::ClaimGenerator::new();
+        let range_check_9_9_e = range_check_9_9_e::ClaimGenerator::new();
+        let range_check_9_9_f = range_check_9_9_f::ClaimGenerator::new();
+        let range_check_9_9_g = range_check_9_9_g::ClaimGenerator::new();
+        let range_check_9_9_h = range_check_9_9_h::ClaimGenerator::new();
         let (claim, interaction_generator) = id_to_big.write_trace(
             &mut tree_builder,
             &range_check_9_9,
             &range_check_9_9_b,
             &range_check_9_9_c,
             &range_check_9_9_d,
+            &range_check_9_9_e,
+            &range_check_9_9_f,
+            &range_check_9_9_g,
+            &range_check_9_9_h,
             log_max_seq_size,
         );
         tree_builder.finalize_interaction();
@@ -612,6 +672,10 @@ mod tests {
             &interaction_elements.range_checks.rc_9_9_b,
             &interaction_elements.range_checks.rc_9_9_c,
             &interaction_elements.range_checks.rc_9_9_d,
+            &interaction_elements.range_checks.rc_9_9_e,
+            &interaction_elements.range_checks.rc_9_9_f,
+            &interaction_elements.range_checks.rc_9_9_g,
+            &interaction_elements.range_checks.rc_9_9_h,
         );
         tree_builder.finalize_interaction();
 
@@ -624,6 +688,10 @@ mod tests {
             &interaction_elements.range_checks.rc_9_9_b,
             &interaction_elements.range_checks.rc_9_9_c,
             &interaction_elements.range_checks.rc_9_9_d,
+            &interaction_elements.range_checks.rc_9_9_e,
+            &interaction_elements.range_checks.rc_9_9_f,
+            &interaction_elements.range_checks.rc_9_9_g,
+            &interaction_elements.range_checks.rc_9_9_h,
             &mut location_allocator,
         );
 
@@ -672,6 +740,10 @@ mod tests {
         let range_check_9_9_b = range_check_9_9_b::ClaimGenerator::new();
         let range_check_9_9_c = range_check_9_9_c::ClaimGenerator::new();
         let range_check_9_9_d = range_check_9_9_d::ClaimGenerator::new();
+        let range_check_9_9_e = range_check_9_9_e::ClaimGenerator::new();
+        let range_check_9_9_f = range_check_9_9_f::ClaimGenerator::new();
+        let range_check_9_9_g = range_check_9_9_g::ClaimGenerator::new();
+        let range_check_9_9_h = range_check_9_9_h::ClaimGenerator::new();
         let expected_small_log_size = log_max_seq_size;
         let expected_first_big_log_size = log_max_seq_size;
         let big_value_overflow = n_large_values - (1 << log_max_seq_size);
@@ -688,6 +760,10 @@ mod tests {
             &range_check_9_9_b,
             &range_check_9_9_c,
             &range_check_9_9_d,
+            &range_check_9_9_e,
+            &range_check_9_9_f,
+            &range_check_9_9_g,
+            &range_check_9_9_h,
             log_max_seq_size,
         );
 
