@@ -1,5 +1,3 @@
-// Constraints version: 9330aaaf
-
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
