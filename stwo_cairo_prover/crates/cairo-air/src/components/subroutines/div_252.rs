@@ -1,4 +1,4 @@
-// AIR version f1e997f6
+// AIR version d4d3b5d6
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 use crate::components::subroutines::verify_mul_252::VerifyMul252;
@@ -75,10 +75,18 @@ impl Div252 {
         range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
         range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
         range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
+        range_check_9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
+        range_check_9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
+        range_check_9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
+        range_check_9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
+        range_check_19_h_lookup_elements: &relations::RangeCheck_19_H,
         range_check_19_lookup_elements: &relations::RangeCheck_19,
         range_check_19_b_lookup_elements: &relations::RangeCheck_19_B,
         range_check_19_c_lookup_elements: &relations::RangeCheck_19_C,
         range_check_19_d_lookup_elements: &relations::RangeCheck_19_D,
+        range_check_19_e_lookup_elements: &relations::RangeCheck_19_E,
+        range_check_19_f_lookup_elements: &relations::RangeCheck_19_F,
+        range_check_19_g_lookup_elements: &relations::RangeCheck_19_G,
         eval: &mut E,
     ) -> [E::F; 0] {
         RangeCheckMemValueN28::evaluate(
@@ -116,6 +124,10 @@ impl Div252 {
             range_check_9_9_b_lookup_elements,
             range_check_9_9_c_lookup_elements,
             range_check_9_9_d_lookup_elements,
+            range_check_9_9_e_lookup_elements,
+            range_check_9_9_f_lookup_elements,
+            range_check_9_9_g_lookup_elements,
+            range_check_9_9_h_lookup_elements,
             eval,
         );
         VerifyMul252::evaluate(
@@ -233,10 +245,14 @@ impl Div252 {
             carry_24_col53.clone(),
             carry_25_col54.clone(),
             carry_26_col55.clone(),
+            range_check_19_h_lookup_elements,
             range_check_19_lookup_elements,
             range_check_19_b_lookup_elements,
             range_check_19_c_lookup_elements,
             range_check_19_d_lookup_elements,
+            range_check_19_e_lookup_elements,
+            range_check_19_f_lookup_elements,
+            range_check_19_g_lookup_elements,
             eval,
         );
         []
