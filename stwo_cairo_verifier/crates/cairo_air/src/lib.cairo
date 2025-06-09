@@ -1,3 +1,4 @@
+use components::CairoComponent;
 use components::add_ap_opcode::{
     ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
@@ -275,12 +276,13 @@ use components::verify_instruction::{
     ClaimImpl as VerifyInstructionClaimImpl,
     InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
 };
-use components::{CairoComponent, memory_id_to_big, verify_instruction};
+#[cfg(not(feature: "poseidon252_verifier"))]
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
+#[cfg(feature: "poseidon252_verifier")]
 use core::poseidon::poseidon_hash_span;
 use stwo_cairo_air::utils::{construct_f252, deconstruct_f252};
 use stwo_constraint_framework::{
@@ -288,6 +290,8 @@ use stwo_constraint_framework::{
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -298,7 +302,7 @@ use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 pub mod components;
 pub mod utils;
 
@@ -319,6 +323,7 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
+#[cfg(not(feature: "poseidon252_verifier"))]
 const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
     PreprocessedColumn::Seq(24), //
     PreprocessedColumn::Seq(23), //
@@ -378,6 +383,119 @@ const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
     PreprocessedColumn::PedersenPoints(53), //
     PreprocessedColumn::PedersenPoints(54), //
     PreprocessedColumn::PedersenPoints(55), //
+    PreprocessedColumn::Seq(22), //
+    PreprocessedColumn::Seq(21), //
+    PreprocessedColumn::Seq(20), //
+    PreprocessedColumn::BitwiseXor((10, 0)), //
+    PreprocessedColumn::BitwiseXor((10, 1)), //
+    PreprocessedColumn::BitwiseXor((10, 2)), //
+    PreprocessedColumn::Seq(19), //
+    PreprocessedColumn::Seq(18), //
+    PreprocessedColumn::BitwiseXor((9, 0)), //
+    PreprocessedColumn::BitwiseXor((9, 1)), //
+    PreprocessedColumn::BitwiseXor((9, 2)), //
+    PreprocessedColumn::RangeCheck2(([9, 9], 0)), //
+    PreprocessedColumn::RangeCheck2(([9, 9], 1)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 0)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 1)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 2)), //
+    PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3)), //
+    PreprocessedColumn::Seq(17), //
+    PreprocessedColumn::Seq(16), //
+    PreprocessedColumn::BitwiseXor((8, 0)), //
+    PreprocessedColumn::BitwiseXor((8, 1)), //
+    PreprocessedColumn::BitwiseXor((8, 2)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)), //
+    PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)), //
+    PreprocessedColumn::Seq(15), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 2)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 3)), //
+    PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 4)), //
+    PreprocessedColumn::Seq(14), //
+    PreprocessedColumn::BitwiseXor((7, 0)), //
+    PreprocessedColumn::BitwiseXor((7, 1)), //
+    PreprocessedColumn::BitwiseXor((7, 2)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 0)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 1)), //
+    PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)), //
+    PreprocessedColumn::Seq(13), //
+    PreprocessedColumn::Seq(12), //
+    PreprocessedColumn::Seq(11), //
+    PreprocessedColumn::Seq(10), //
+    PreprocessedColumn::Seq(9), //
+    PreprocessedColumn::RangeCheck2(([5, 4], 0)), //
+    PreprocessedColumn::RangeCheck2(([5, 4], 1)), //
+    PreprocessedColumn::Seq(8), //
+    PreprocessedColumn::BitwiseXor((4, 0)), //
+    PreprocessedColumn::BitwiseXor((4, 1)), //
+    PreprocessedColumn::BitwiseXor((4, 2)), //
+    PreprocessedColumn::RangeCheck2(([4, 4], 0)), //
+    PreprocessedColumn::RangeCheck2(([4, 4], 1)), //
+    PreprocessedColumn::Seq(7), //
+    PreprocessedColumn::RangeCheck2(([4, 3], 0)), //
+    PreprocessedColumn::RangeCheck2(([4, 3], 1)), //
+    PreprocessedColumn::Seq(6), //
+    PreprocessedColumn::PoseidonRoundKeys(0), //
+    PreprocessedColumn::PoseidonRoundKeys(1), //
+    PreprocessedColumn::PoseidonRoundKeys(2), //
+    PreprocessedColumn::PoseidonRoundKeys(3), //
+    PreprocessedColumn::PoseidonRoundKeys(4), //
+    PreprocessedColumn::PoseidonRoundKeys(5), //
+    PreprocessedColumn::PoseidonRoundKeys(6), //
+    PreprocessedColumn::PoseidonRoundKeys(7), //
+    PreprocessedColumn::PoseidonRoundKeys(8), //
+    PreprocessedColumn::PoseidonRoundKeys(9), //
+    PreprocessedColumn::PoseidonRoundKeys(10), //
+    PreprocessedColumn::PoseidonRoundKeys(11), //
+    PreprocessedColumn::PoseidonRoundKeys(12), //
+    PreprocessedColumn::PoseidonRoundKeys(13), //
+    PreprocessedColumn::PoseidonRoundKeys(14), //
+    PreprocessedColumn::PoseidonRoundKeys(15), //
+    PreprocessedColumn::PoseidonRoundKeys(16), //
+    PreprocessedColumn::PoseidonRoundKeys(17), //
+    PreprocessedColumn::PoseidonRoundKeys(18), //
+    PreprocessedColumn::PoseidonRoundKeys(19), //
+    PreprocessedColumn::PoseidonRoundKeys(20), //
+    PreprocessedColumn::PoseidonRoundKeys(21), //
+    PreprocessedColumn::PoseidonRoundKeys(22), //
+    PreprocessedColumn::PoseidonRoundKeys(23), //
+    PreprocessedColumn::PoseidonRoundKeys(24), //
+    PreprocessedColumn::PoseidonRoundKeys(25), //
+    PreprocessedColumn::PoseidonRoundKeys(26), //
+    PreprocessedColumn::PoseidonRoundKeys(27), //
+    PreprocessedColumn::PoseidonRoundKeys(28), //
+    PreprocessedColumn::PoseidonRoundKeys(29), //
+    PreprocessedColumn::Seq(5), //
+    PreprocessedColumn::Seq(4), //
+    PreprocessedColumn::BlakeSigma(0), //
+    PreprocessedColumn::BlakeSigma(1), //
+    PreprocessedColumn::BlakeSigma(2), //
+    PreprocessedColumn::BlakeSigma(3), //
+    PreprocessedColumn::BlakeSigma(4), //
+    PreprocessedColumn::BlakeSigma(5), //
+    PreprocessedColumn::BlakeSigma(6), //
+    PreprocessedColumn::BlakeSigma(7), //
+    PreprocessedColumn::BlakeSigma(8), //
+    PreprocessedColumn::BlakeSigma(9), //
+    PreprocessedColumn::BlakeSigma(10), //
+    PreprocessedColumn::BlakeSigma(11), //
+    PreprocessedColumn::BlakeSigma(12), //
+    PreprocessedColumn::BlakeSigma(13), //
+    PreprocessedColumn::BlakeSigma(14), //
+    PreprocessedColumn::BlakeSigma(15) //
+];
+
+// IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
+// trace declaration. If the function changes, this array must be updated to stay in sync.
+// https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
+#[cfg(feature: "poseidon252_verifier")]
+const PREPROCESSED_COLUMNS: [PreprocessedColumn; 106] = [
+    PreprocessedColumn::Seq(24), //
+    PreprocessedColumn::Seq(23), //
     PreprocessedColumn::Seq(22), //
     PreprocessedColumn::Seq(21), //
     PreprocessedColumn::Seq(20), //
@@ -576,11 +694,9 @@ type RelationUse = (felt252, u32);
 
 /// Returns PreProcessedTrace::canonical root for the given blowup factor.
 #[cfg(not(feature: "poseidon252_verifier"))]
-fn preprocessed_root(
-    log_blowup_factor: u32,
-) -> stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        0 => Hash {
             hash: BoxImpl::new(
                 [
                     0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
@@ -588,7 +704,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        1 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        1 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
@@ -596,7 +712,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        2 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        2 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
@@ -604,7 +720,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        3 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        3 => Hash {
             hash: BoxImpl::new(
                 [
                     0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
@@ -612,7 +728,7 @@ fn preprocessed_root(
                 ],
             ),
         },
-        4 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+        4 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
@@ -626,7 +742,7 @@ fn preprocessed_root(
 
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 #[cfg(feature: "poseidon252_verifier")]
-fn preprocessed_root(log_blowup_factor: u32) -> felt252 {
+fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
         0 => 0x053be12b3503460f6657c5a46ed1b56719f91e45530a869327b39b7b8a20e0e6,
         1 => 0x009c3ff379acfd021edc6424e1db4efeaf89dcc33454f3dc4ebe4cab8eedf6b9,
@@ -1697,6 +1813,7 @@ impl CairoClaimImpl of CairoClaimTrait {
         self.verify_bitwise_xor_8.mix_into(ref channel);
         self.verify_bitwise_xor_9.mix_into(ref channel);
     }
+
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
         let CairoClaim {
             public_data: _,
@@ -1727,17 +1844,19 @@ impl CairoClaimImpl of CairoClaimTrait {
 
         accumulate_relation_uses(
             ref relation_uses,
-            verify_instruction::RELATION_USES_PER_ROW.span(),
+            components::verify_instruction::RELATION_USES_PER_ROW.span(),
             *verify_instruction.log_size,
         );
         for log_size in memory_id_to_value.big_log_sizes.span() {
             accumulate_relation_uses(
-                ref relation_uses, memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(), *log_size,
+                ref relation_uses,
+                components::memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
+                *log_size,
             );
         }
         accumulate_relation_uses(
             ref relation_uses,
-            memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
+            components::memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
             *memory_id_to_value.small_log_size,
         );
     }
@@ -2353,8 +2472,9 @@ pub type MemorySection = Array<PubMemoryValue>;
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    let mut state = BoxTrait::new(stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE);
+    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
+
     let mut buffer = array![];
     for entry in section {
         // Compress whenever the buffer reaches capacity.
@@ -2975,6 +3095,7 @@ pub enum CairoVerificationError {
 }
 
 #[derive(Drop)]
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub struct CairoAir {
     opcodes: OpcodeComponents,
     verify_instruction: components::verify_instruction::Component,
@@ -2995,6 +3116,7 @@ pub struct CairoAir {
 }
 
 #[generate_trait]
+#[cfg(not(feature: "poseidon252_verifier"))]
 impl CairoAirNewImpl of CairoAirNewTrait {
     fn new(
         cairo_claim: @CairoClaim,
@@ -3148,6 +3270,7 @@ impl CairoAirNewImpl of CairoAirNewTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
         let mut max_degree = self.opcodes.max_constraint_log_degree_bound();
@@ -3387,6 +3510,432 @@ impl CairoAirImpl of Air<CairoAir> {
             );
         self
             .poseidon_context
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .memory_address_to_id
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
+            memory_id_to_value_big_component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        memory_id_to_value_small
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .range_checks
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .verify_bitwise_xor_4
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .verify_bitwise_xor_7
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .verify_bitwise_xor_8
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .verify_bitwise_xor_9
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        sum
+    }
+}
+
+#[derive(Drop)]
+#[cfg(feature: "poseidon252_verifier")]
+pub struct CairoAir {
+    opcodes: OpcodeComponents,
+    verify_instruction: components::verify_instruction::Component,
+    blake_context: BlakeContextComponents,
+    builtins: BuiltinComponents,
+    memory_address_to_id: components::memory_address_to_id::Component,
+    memory_id_to_value: (
+        Array<components::memory_id_to_big::BigComponent>,
+        components::memory_id_to_big::SmallComponent,
+    ),
+    range_checks: RangeChecksComponents,
+    verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
+    verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
+    verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
+    verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+}
+
+#[generate_trait]
+#[cfg(feature: "poseidon252_verifier")]
+impl CairoAirNewImpl of CairoAirNewTrait {
+    fn new(
+        cairo_claim: @CairoClaim,
+        interaction_elements: @CairoInteractionElements,
+        interaction_claim: @CairoInteractionClaim,
+    ) -> CairoAir {
+        let opcode_components = OpcodeComponentsImpl::new(
+            cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
+        );
+
+        let blake_context_component = BlakeContextComponentsImpl::new(
+            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
+        );
+
+        let builtins_components = BuiltinComponentsImpl::new(
+            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
+        );
+
+        let verifyinstruction_component = components::verify_instruction::Component {
+            claim: *cairo_claim.verify_instruction,
+            interaction_claim: *interaction_claim.verify_instruction,
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
+            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
+            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+        };
+
+        let memory_address_to_id_component = components::memory_address_to_id::Component {
+            claim: *cairo_claim.memory_address_to_id,
+            interaction_claim: *interaction_claim.memory_address_to_id,
+            lookup_elements: interaction_elements.memory_address_to_id.clone(),
+        };
+
+        assert!(
+            cairo_claim
+                .memory_id_to_value
+                .big_log_sizes
+                .len() == interaction_claim
+                .memory_id_to_value
+                .big_claimed_sums
+                .len(),
+        );
+        let mut memory_id_to_value_components = array![];
+        let mut offset = 0;
+        for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
+            let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
+            let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
+            memory_id_to_value_components
+                .append(
+                    components::memory_id_to_big::BigComponent {
+                        log_n_rows: log_size,
+                        offset: offset,
+                        claimed_sum: claimed_sum,
+                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+                    },
+                );
+            offset = offset + pow2(log_size);
+        }
+
+        let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
+            log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
+            claimed_sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
+            lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+        };
+
+        let range_checks_components = RangeChecksComponentsImpl::new(
+            cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
+        );
+
+        let verify_bitwise_xor_4_component = components::verify_bitwise_xor_4::Component {
+            claim: *cairo_claim.verify_bitwise_xor_4,
+            interaction_claim: *interaction_claim.verify_bitwise_xor_4,
+            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
+        };
+
+        let verify_bitwise_xor_7_component = components::verify_bitwise_xor_7::Component {
+            claim: *cairo_claim.verify_bitwise_xor_7,
+            interaction_claim: *interaction_claim.verify_bitwise_xor_7,
+            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
+        };
+
+        let verify_bitwise_xor_8_component = components::verify_bitwise_xor_8::Component {
+            claim: *cairo_claim.verify_bitwise_xor_8,
+            interaction_claim: *interaction_claim.verify_bitwise_xor_8,
+            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+        };
+
+        let verify_bitwise_xor_9_component = components::verify_bitwise_xor_9::Component {
+            claim: *cairo_claim.verify_bitwise_xor_9,
+            interaction_claim: *interaction_claim.verify_bitwise_xor_9,
+            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
+        };
+
+        CairoAir {
+            opcodes: opcode_components,
+            verify_instruction: verifyinstruction_component,
+            blake_context: blake_context_component,
+            builtins: builtins_components,
+            memory_address_to_id: memory_address_to_id_component,
+            memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
+            range_checks: range_checks_components,
+            verify_bitwise_xor_4: verify_bitwise_xor_4_component,
+            verify_bitwise_xor_7: verify_bitwise_xor_7_component,
+            verify_bitwise_xor_8: verify_bitwise_xor_8_component,
+            verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+        }
+    }
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+impl CairoAirImpl of Air<CairoAir> {
+    fn composition_log_degree_bound(self: @CairoAir) -> u32 {
+        let mut max_degree = self.opcodes.max_constraint_log_degree_bound();
+        max_degree =
+            core::cmp::max(max_degree, self.verify_instruction.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.blake_context.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, self.builtins.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.memory_address_to_id.max_constraint_log_degree_bound());
+        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
+            max_degree =
+                core::cmp::max(
+                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
+                );
+        }
+        max_degree =
+            core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.range_checks.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.verify_bitwise_xor_4.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.verify_bitwise_xor_7.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.verify_bitwise_xor_8.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, self.verify_bitwise_xor_9.max_constraint_log_degree_bound());
+        max_degree
+    }
+
+    fn mask_points(
+        self: @CairoAir, point: CirclePoint<QM31>,
+    ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>> {
+        let mut preprocessed_column_set: PreprocessedColumnSet = Default::default();
+        let mut trace_mask_points = array![];
+        let mut interaction_trace_mask_points = array![];
+        self
+            .opcodes
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .verify_instruction
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .blake_context
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .builtins
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .memory_address_to_id
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+
+        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
+            memory_id_to_value_big_component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+        memory_id_to_value_small
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .range_checks
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .verify_bitwise_xor_4
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .verify_bitwise_xor_7
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .verify_bitwise_xor_8
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        self
+            .verify_bitwise_xor_9
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+
+        let preprocessed_trace_mask_points = preprocessed_trace_mask_points(
+            preprocessed_column_set, point,
+        );
+
+        array![preprocessed_trace_mask_points, trace_mask_points, interaction_trace_mask_points]
+    }
+
+    fn eval_composition_polynomial_at_point(
+        self: @CairoAir,
+        point: CirclePoint<QM31>,
+        mask_values: TreeSpan<ColumnSpan<Span<QM31>>>,
+        random_coeff: QM31,
+    ) -> QM31 {
+        let mut sum = Zero::zero();
+
+        let [
+            preprocessed_mask_values,
+            mut trace_mask_values,
+            mut interaction_trace_mask_values,
+            _composition_trace_mask_values,
+        ]: [ColumnSpan<Span<QM31>>; 4] =
+            (*mask_values
+            .try_into()
+            .unwrap())
+            .unbox();
+
+        let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
+            preprocessed_mask_values, PREPROCESSED_COLUMNS.span(),
+        );
+
+        self
+            .opcodes
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .verify_instruction
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .blake_context
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        self
+            .builtins
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -4308,12 +4857,14 @@ impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PedersenContextComponents {
     components: Option<PedersenComponents>,
 }
 
 #[generate_trait]
+#[cfg(not(feature: "poseidon252_verifier"))]
 impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
     fn new(
         claim: @PedersenContextClaim,
@@ -4384,12 +4935,14 @@ impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 struct PedersenComponents {
     pub partial_ec_mul: components::partial_ec_mul::Component,
     pub pedersen_points_table: components::pedersen_points_table::Component,
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[generate_trait]
 impl PedersenComponentsImpl of PedersenComponentsTrait {
     fn new(
@@ -4504,12 +5057,14 @@ impl PedersenComponentsImpl of PedersenComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PoseidonContextComponents {
     components: Option<PoseidonComponents>,
 }
 
 #[generate_trait]
+#[cfg(not(feature: "poseidon252_verifier"))]
 impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     fn new(
         claim: @PoseidonContextClaim,
@@ -4580,6 +5135,7 @@ impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 struct PoseidonComponents {
     pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::Component,
@@ -4589,6 +5145,7 @@ struct PoseidonComponents {
     pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Component,
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[generate_trait]
 impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
@@ -5086,6 +5643,7 @@ impl BlakeComponentsImpl of BlakeComponentsTrait {
 }
 
 #[derive(Drop)]
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub struct BuiltinComponents {
     pub add_mod_builtin: Option<components::add_mod_builtin::Component>,
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
@@ -5096,7 +5654,15 @@ pub struct BuiltinComponents {
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
 }
 
+#[derive(Drop)]
+#[cfg(feature: "poseidon252_verifier")]
+pub struct BuiltinComponents {
+    pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
+    pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
+}
+
 #[generate_trait]
+#[cfg(not(feature: "poseidon252_verifier"))]
 impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         claim: @BuiltinsClaim,
@@ -5104,7 +5670,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
         let mut add_mod_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.add_mod_builtin {
             add_mod_builtin_component =
                 Option::Some(
@@ -5122,7 +5687,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut bitwise_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.bitwise_builtin {
             bitwise_builtin_component =
                 Option::Some(
@@ -5143,7 +5707,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut mul_mod_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.mul_mod_builtin {
             mul_mod_builtin_component =
                 Option::Some(
@@ -5173,7 +5736,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut pedersen_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.pedersen_builtin {
             pedersen_builtin_component =
                 Option::Some(
@@ -5200,7 +5762,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut poseidon_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.poseidon_builtin {
             poseidon_builtin_component =
                 Option::Some(
@@ -5240,7 +5801,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut range_check_96_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.range_check_96_builtin {
             range_check_96_builtin_component =
                 Option::Some(
@@ -5262,7 +5822,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut range_check_128_builtin_component = Option::None;
-
         if let Option::Some(claim) = claim.range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
@@ -5289,7 +5848,6 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             range_check_128_builtin: range_check_128_builtin_component,
         }
     }
-
 
     fn mask_points(
         self: @BuiltinComponents,
@@ -5474,6 +6032,135 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = self.range_check_96_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+    }
+}
+
+#[generate_trait]
+#[cfg(feature: "poseidon252_verifier")]
+impl BuiltinComponentsImpl of BuiltinComponentsTrait {
+    fn new(
+        claim: @BuiltinsClaim,
+        interaction_elements: @CairoInteractionElements,
+        interaction_claim: @BuiltinsInteractionClaim,
+    ) -> BuiltinComponents {
+        let mut bitwise_builtin_component = Option::None;
+        if let Option::Some(claim) = claim.bitwise_builtin {
+            bitwise_builtin_component =
+                Option::Some(
+                    components::bitwise_builtin::Component {
+                        claim: *claim,
+                        interaction_claim: (*interaction_claim.bitwise_builtin).unwrap(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        verify_bitwise_xor_9_lookup_elements: interaction_elements
+                            .verify_bitwise_xor_9
+                            .clone(),
+                    },
+                );
+        }
+
+        let mut range_check_128_builtin_component = Option::None;
+        if let Option::Some(claim) = claim.range_check_128_builtin {
+            range_check_128_builtin_component =
+                Option::Some(
+                    components::range_check_builtin_bits_128::Component {
+                        claim: *claim,
+                        interaction_claim: (*interaction_claim.range_check_128_builtin).unwrap(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                    },
+                );
+        }
+
+        BuiltinComponents {
+            bitwise_builtin: bitwise_builtin_component,
+            range_check_128_builtin: range_check_128_builtin_component,
+        }
+    }
+
+    fn mask_points(
+        self: @BuiltinComponents,
+        ref preprocessed_column_set: PreprocessedColumnSet,
+        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
+        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
+        point: CirclePoint<QM31>,
+    ) {
+        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+    }
+
+    fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
+        let mut max_degree = 0;
+
+        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        max_degree
+    }
+
+
+    fn evaluate_constraints_at_point(
+        self: @BuiltinComponents,
+        ref sum: QM31,
+        ref preprocessed_mask_values: PreprocessedMaskValues,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+        random_coeff: QM31,
+        point: CirclePoint<QM31>,
+    ) {
+        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -6754,7 +7441,6 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         };
     }
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -30,7 +30,8 @@ jobs:
           scarb-version: "nightly-2025-05-17"
       - run: scarb fmt --check
       - run: scarb test
-
+      - run: scarb test --features=poseidon252_verifier --no-default-features --package stwo_verifier_core
+      - run: scarb test --features=poseidon252_verifier --no-default-features --package stwo_cairo_air
   run-tests:
     runs-on: stwo-cairo-avx-l
     defaults:
@@ -119,7 +120,7 @@ jobs:
         uses: upsidr/merge-gatekeeper@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          timeout: 2500
+          timeout: 7200
           interval: 30
           ignored: "code-review/reviewable"
 
@@ -129,6 +130,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{github.ref}}
-          timeout: 2500
+          timeout: 7200
           interval: 30
           ignored: "code-review/reviewable"
