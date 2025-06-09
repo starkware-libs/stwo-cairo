@@ -47,13 +47,13 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             match (felts.pop_front(), felts.pop_front()) {
                 (None, _) => { break; },
                 (Some(x), None) => {
-                    res.append(pack4(0, (*x).to_fixed_array()));
+                    res.append(pack4(1, (*x).to_fixed_array()));
                     break;
                 },
                 (
                     Some(x), Some(y),
                 ) => {
-                    let cur = pack4(0, (*x).to_fixed_array());
+                    let cur = pack4(1, (*x).to_fixed_array());
                     res.append(pack4(cur, (*y).to_fixed_array()));
                 },
             };
