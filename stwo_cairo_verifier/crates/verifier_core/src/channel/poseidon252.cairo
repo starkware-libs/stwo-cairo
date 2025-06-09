@@ -332,6 +332,18 @@ mod tests {
     }
 
     #[test]
+    pub fn test_mix_u64() {
+        let initial_digest = 0;
+        let mut channel = new_channel(initial_digest);
+
+        channel.mix_u64(0x1111222233334444);
+
+        assert_eq!(
+            channel.digest, 0x07cecc0ee3d858c843fe63165f038353f9f80f52dd8d32eead9f635e2f7d8b8e,
+        );
+    }
+
+    #[test]
     pub fn test_draw_random_bytes_1() {
         let initial_digest = 0;
         let mut channel = new_channel(initial_digest);
