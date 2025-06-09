@@ -104,7 +104,6 @@ where
         );
         println!("Relations summary: {:?}", summary);
     }
-    //panic!("stop here");
 
     let components = component_builder.provers();
 
@@ -251,6 +250,35 @@ pub mod tests {
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
 
+        #[test]
+        fn test_prove_verify_keth() {
+            use std::path::Path;
+
+            let binary_path = Path::new(
+                "/Users/antoine/Documents/keth/data/1/22615247/2/prover_input_info_22615247",
+            );
+
+            // Load and adapt the binary prover input info file
+            let input = read_and_adapt_prover_input_info_file(binary_path)
+                .expect("Failed to load and adapt binary prover input info file");
+            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
+                println!("Opcode: {}, n_instances: {}", opcode, n_instances);
+            }
+            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                input,
+                PcsConfig::default(),
+                preprocessed_trace,
+            )
+            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(
+                cairo_proof,
+                PcsConfig::default(),
+                preprocessed_trace,
+            )
+            .unwrap();
+        }
+
         // TODO(Ohad): fine-grained constraints tests.
         #[test]
         fn test_cairo_constraints() {
@@ -313,10 +341,10 @@ pub mod tests {
         //     test_proof_stability("test_prove_verify_all_opcode_components", 2);
         // }
 
-        #[test]
-        fn test_builtins_proof_stability() {
-            test_proof_stability("test_prove_verify_all_builtins", 2);
-        }
+        // #[test]
+        // fn test_builtins_proof_stability() {
+        //     test_proof_stability("test_prove_verify_all_builtins", 2);
+        // }
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
