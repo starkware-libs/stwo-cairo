@@ -57,8 +57,7 @@ macro_rules! range_check_eval{
             use stwo_prover::constraint_framework::{EvalAtRow, FrameworkComponent};
             use stwo_prover::constraint_framework::FrameworkEval;
             use stwo_prover::core::channel::Channel;
-            use stwo_prover::core::fields::qm31::QM31;
-            use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+            use stwo_prover::core::fields::qm31::{QM31, SECURE_EXTENSION_DEGREE};
             use stwo_prover::constraint_framework::RelationEntry;
             use stwo_prover::core::pcs::TreeVec;
 
