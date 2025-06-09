@@ -5,8 +5,7 @@ use stwo_prover::constraint_framework::{
 };
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fields::secure_column::SECURE_EXTENSION_DEGREE;
+use stwo_prover::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo_prover::core::pcs::TreeVec;
 
 use crate::preprocessed::{PreProcessedColumn, Seq};
