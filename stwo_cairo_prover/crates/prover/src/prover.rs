@@ -193,35 +193,60 @@ pub mod tests {
     #[cfg(feature = "nightly")]
     mod nightly_tests {
         use std::io::Write;
+        use std::process::Command;
 
-        use cairo_air::verifier::verify_cairo;
         use cairo_air::PreProcessedTraceVariant;
-        use itertools::Itertools;
         use stwo_cairo_serialize::CairoSerialize;
+        use stwo_prover::core::fri::FriConfig;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+        use tempfile::NamedTempFile;
         use test_log::test;
 
         use super::*;
         use crate::prover::prove_cairo;
 
         #[test]
-        fn generate_and_serialise_proof() {
-            let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
+        fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
+            let compiled_program = get_test_program("test_prove_verify_ret_opcode");
             let input = run_program_and_adapter(&compiled_program);
-            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
             let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
                 input,
-                PcsConfig::default(),
+                PcsConfig {
+                    pow_bits: 6,
+                    fri_config: FriConfig::new(0, 1, 90),
+                },
                 preprocessed_trace,
             )
             .unwrap();
-            let mut output = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut output);
-            let proof_str = output.iter().map(|v| v.to_string()).join(",");
-            let mut file = std::fs::File::create("proof.cairo").unwrap();
-            file.write_all(proof_str.as_bytes()).unwrap();
-            verify_cairo::<Poseidon252MerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
+
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            let proof_hex: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{:x}", felt))
+                .collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
+
+            let status = Command::new("bash")
+                .arg("-c")
+                .arg(format!(
+                    "(cd ../../../stwo_cairo_verifier; \
+                    scarb execute --package stwo_cairo_verifier \
+                    --arguments-file {} --output standard --target standalone \
+                    --features poseidon252_verifier
+                    )",
+                    proof_file.path().to_str().unwrap()
+                ))
+                .current_dir(env!("CARGO_MANIFEST_DIR"))
+                .status()
+                .unwrap();
+
+            assert!(status.success());
         }
     }
 
@@ -241,7 +266,6 @@ pub mod tests {
         use stwo_prover::core::fri::FriConfig;
         use stwo_prover::core::pcs::PcsConfig;
         use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-        use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
         use tempfile::NamedTempFile;
         use test_log::test;
 
@@ -322,49 +346,6 @@ pub mod tests {
         }
 
         #[ignore = "TODO: move to nightly"]
-        #[test]
-        fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
-            let compiled_program = get_test_program("test_prove_verify_ret_opcode");
-            let input = run_program_and_adapter(&compiled_program);
-            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
-                input,
-                PcsConfig {
-                    pow_bits: 6,
-                    fri_config: FriConfig::new(0, 1, 90),
-                },
-                preprocessed_trace,
-            )
-            .unwrap();
-
-            let mut proof_file = NamedTempFile::new().unwrap();
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
-            let proof_hex: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
-                .collect();
-            proof_file
-                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
-                .unwrap();
-
-            let status = Command::new("bash")
-                .arg("-c")
-                .arg(format!(
-                    "(cd ../../../stwo_cairo_verifier; \
-                    scarb execute --package stwo_cairo_verifier \
-                    --arguments-file {} --output standard --target standalone \
-                    --features poseidon252_verifier
-                    )",
-                    proof_file.path().to_str().unwrap()
-                ))
-                .current_dir(env!("CARGO_MANIFEST_DIR"))
-                .status()
-                .unwrap();
-
-            assert!(status.success());
-        }
-
         #[test]
         fn test_prove_verify_all_opcode_components_from_file() {
             let prover_input_file_path =
