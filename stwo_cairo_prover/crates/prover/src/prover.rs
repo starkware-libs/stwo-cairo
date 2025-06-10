@@ -330,7 +330,6 @@ pub mod tests {
             assert!(status.success());
         }
 
-        #[ignore = "TODO: move to nightly"]
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_ret_opcode");
