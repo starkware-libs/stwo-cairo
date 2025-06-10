@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::fmt::Display;
 
 use rayon::iter::ParallelIterator;
@@ -10,11 +11,10 @@ use tracing::{span, Level};
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::RelocatedTraceEntry;
-use crate::memory::limbs_to_u128;
+use crate::memory::{limbs_to_u128, P_MIN_1, P_MIN_2_TO_27};
 
 // Small add operands are 27 bits.
-const SMALL_ADD_MAX_VALUE: i32 = 2_i32.pow(27) - 1;
-const SMALL_ADD_MIN_VALUE: i32 = -(2_i32.pow(27));
+const SMALL_ADD_MAX_VALUE: u128 = 2_u128.pow(27) - 1;
 
 // Small mul operands are 36 bits.
 const SMALL_MUL_MAX_VALUE: u64 = 2_u64.pow(36) - 1;
@@ -697,11 +697,27 @@ fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
 // Returns 'true' if all the operands are within the range of [-2^27, 2^27 - 1].
 fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
     [dst, op0, op_1].iter().all(|val| {
-        is_within_range(
-            *val,
-            SMALL_ADD_MIN_VALUE as i128,
-            SMALL_ADD_MAX_VALUE as i128,
-        )
+        match val {
+            // small value must be positive.
+            MemoryValue::Small(val) => val <= &SMALL_ADD_MAX_VALUE,
+            MemoryValue::F252(felt252) if felt252[4..8] == [0; 4] => {
+                // Small values that stored in F252 and positive.
+                let val = limbs_to_u128(felt252[0..4].try_into().unwrap());
+                val <= SMALL_ADD_MAX_VALUE
+            }
+            MemoryValue::F252(val) => {
+                // Reverse arrays to big-endian representation.
+                let val_be = val.iter().rev();
+                let p_min_1_be = P_MIN_1.iter().rev();
+                let p_min_2_to_27_be = P_MIN_2_TO_27.iter().rev();
+
+                // For small negative we check that operands are in the range [P-2^27, P-1].
+                matches!(
+                    val_be.clone().cmp(p_min_2_to_27_be),
+                    Ordering::Greater | Ordering::Equal
+                ) && matches!(val_be.cmp(p_min_1_be), Ordering::Less | Ordering::Equal)
+            }
+        }
     })
 }
 
@@ -730,7 +746,7 @@ mod mappings_tests {
     use crate::adapter::adapter;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
-    use crate::opcodes::{CasmStatesByOpcode, StateTransitions};
+    use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions, SMALL_ADD_MAX_VALUE};
     use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
     use crate::test_utils::program_from_casm;
     use crate::vm_import::RelocatedTraceEntry;
@@ -758,6 +774,37 @@ mod mappings_tests {
                 .expect("Failed to get prover input info from finished runner"),
         )
         .expect("Failed to run adapter")
+    }
+
+    #[test]
+    fn test_is_small_add() {
+        let mut dst = MemoryValue::Small(SMALL_ADD_MAX_VALUE);
+        let mut op0 = MemoryValue::Small(SMALL_ADD_MAX_VALUE);
+        let mut op1 = MemoryValue::Small(SMALL_ADD_MAX_VALUE);
+        assert!(is_small_add(dst, op0, op1));
+
+        dst = MemoryValue::Small(SMALL_ADD_MAX_VALUE + 1);
+        assert!(!is_small_add(dst, op0, op1));
+
+        dst = MemoryValue::F252(P_MIN_2_TO_27);
+        op0 = MemoryValue::F252(P_MIN_2_TO_27);
+        op1 = MemoryValue::F252(P_MIN_2_TO_27);
+        assert!(is_small_add(dst, op0, op1));
+
+        let mut big_negative = P_MIN_2_TO_27;
+        // big negative = P -2^27 -1
+        big_negative[0] -= 1;
+
+        op1 = MemoryValue::F252(big_negative);
+        assert!(!is_small_add(dst, op0, op1));
+
+        let p_min_2_to_10 = [
+            0xfffffc01, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000010,
+            0x08000000,
+        ];
+        op1 = MemoryValue::F252(p_min_2_to_10);
+        op0 = MemoryValue::F252(p_min_2_to_10);
+        assert!(is_small_add(dst, op0, op1));
     }
 
     #[test]
@@ -1034,6 +1081,69 @@ mod mappings_tests {
         let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
         assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 2);
         assert_eq!(casm_states_by_opcode.assert_eq_opcode_imm.len(), 2);
+    }
+
+    #[test]
+    fn test_add_small_negative() {
+        // Encoding for the instruction `[fp + 2] = [fp] + Imm`.
+        // Flags: dst_base_fp, op0_base_fp, op1_imm
+        // Offsets: offset2 = 1, offset1 = 0, offset0 = 0
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b0100000000100111100000000000000110000000000000001000000000000010;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        memory_builder.set(pc + 1, MemoryValue::F252(P_MIN_1));
+        memory_builder.set(fp, MemoryValue::F252(P_MIN_1));
+        memory_builder.set(fp + 2, MemoryValue::F252(P_MIN_2));
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+
+        let casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+
+        assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 1);
+    }
+
+    #[test]
+    fn test_add_small_max_negative() {
+        // Encoding for the instruction `[fp + 2] = [fp] + Imm`.
+        // Flags: dst_base_fp, op0_base_fp, op1_imm
+        // Offsets: offset2 = 1, offset1 = 0, offset0 = 0
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b0100000000100111100000000000000110000000000000001000000000000010;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+        memory_builder.set(pc + 1, MemoryValue::F252(P_MIN_2_TO_27));
+        memory_builder.set(fp, MemoryValue::F252(P_MIN_2_TO_27));
+        memory_builder.set(fp + 2, MemoryValue::F252(P_MIN_2_TO_27));
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+
+        let casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+
+        assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 1);
+    }
+
+    #[test]
+    fn test_add_big_f252() {
+        let [ap, fp, pc] = [7, 20, 1];
+        let encoded_instr = 0b0100000000100111100000000000000110000000000000001000000000000010;
+        let x = u128_to_4_limbs(encoded_instr);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let mut value = [0; 8];
+        value[0..4].copy_from_slice(&u128_to_4_limbs((1 << 127) + 346));
+        memory_builder.set(pc + 1, MemoryValue::F252(value));
+        memory_builder.set(fp, MemoryValue::F252(value));
+        memory_builder.set(fp + 2, MemoryValue::F252(value));
+        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
+
+        let casm_states_by_opcode =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+
+        assert_eq!(casm_states_by_opcode.add_opcode.len(), 1);
     }
 
     #[test]
