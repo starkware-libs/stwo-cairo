@@ -1,3 +1,4 @@
+// AIR version 9f50a80b
 #![allow(unused_parens)]
 use cairo_air::components::call_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -12,10 +13,6 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
-    pub fn new(inputs: Vec<InputType>) -> Self {
-        Self { inputs }
-    }
-
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
@@ -499,78 +496,82 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        verify_instruction: &relations::VerifyInstruction,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         opcodes: &relations::Opcodes,
-        verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
-        logup_gen.col_from_par_iter(
-            (
-                &self.lookup_data.verify_instruction_0,
-                &self.lookup_data.memory_address_to_id_0,
-            )
-                .into_par_iter()
-                .map(|(values0, values1)| {
-                    let denom0: PackedQM31 = verify_instruction.combine(values0);
-                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                    (denom0 + denom1, denom0 * denom1)
-                }),
-        );
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_instruction_0,
+            &self.lookup_data.memory_address_to_id_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_instruction.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter(
-            (
-                &self.lookup_data.memory_id_to_big_0,
-                &self.lookup_data.memory_address_to_id_1,
-            )
-                .into_par_iter()
-                .map(|(values0, values1)| {
-                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                    (denom0 + denom1, denom0 * denom1)
-                }),
-        );
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.memory_id_to_big_0,
+            &self.lookup_data.memory_address_to_id_1,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter(
-            (
-                &self.lookup_data.memory_id_to_big_1,
-                &self.lookup_data.memory_address_to_id_2,
-            )
-                .into_par_iter()
-                .map(|(values0, values1)| {
-                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                    (denom0 + denom1, denom0 * denom1)
-                }),
-        );
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.memory_id_to_big_1,
+            &self.lookup_data.memory_address_to_id_2,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter(
-            (
-                &self.lookup_data.memory_id_to_big_2,
-                &self.lookup_data.opcodes_0,
-            )
-                .into_par_iter()
-                .enumerate()
-                .map(|(i, (values0, values1))| {
-                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                    let denom1: PackedQM31 = opcodes.combine(values1);
-                    (denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1)
-                }),
-        );
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.memory_id_to_big_2,
+            &self.lookup_data.opcodes_0,
+        )
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values0, values1))| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                let denom1: PackedQM31 = opcodes.combine(values1);
+                writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
 
         // Sum last logup term.
-        logup_gen.col_from_par_iter(
-            (&self.lookup_data.opcodes_1)
-                .into_par_iter()
-                .enumerate()
-                .map(|(i, (values))| {
-                    let denom = opcodes.combine(values);
-                    (-PackedQM31::one() * enabler_col.packed_at(i), denom)
-                }),
-        );
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(), &self.lookup_data.opcodes_1)
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values))| {
+                let denom = opcodes.combine(values);
+                writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
+            });
+        col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);

@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version 9f50a80b
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
 use cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
@@ -12,32 +12,10 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
-    pub fn new(inputs: Vec<InputType>,) -> Self {
-        Self { inputs, }
-    }
-
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
-        memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_19_state: &range_check_19::ClaimGenerator,
-        range_check_19_b_state: &range_check_19_b::ClaimGenerator,
-        range_check_19_c_state: &range_check_19_c::ClaimGenerator,
-        range_check_19_d_state: &range_check_19_d::ClaimGenerator,
-        range_check_19_e_state: &range_check_19_e::ClaimGenerator,
-        range_check_19_f_state: &range_check_19_f::ClaimGenerator,
-        range_check_19_g_state: &range_check_19_g::ClaimGenerator,
-        range_check_19_h_state: &range_check_19_h::ClaimGenerator,
-        range_check_9_9_state: &range_check_9_9::ClaimGenerator,
-        range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
-        range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
-        range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
-        range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
-        range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
-        range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
-        range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
-        verify_instruction_state: &verify_instruction::ClaimGenerator,
+        memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,range_check_19_state: &range_check_19::ClaimGenerator,range_check_19_b_state: &range_check_19_b::ClaimGenerator,range_check_19_c_state: &range_check_19_c::ClaimGenerator,range_check_19_d_state: &range_check_19_d::ClaimGenerator,range_check_19_e_state: &range_check_19_e::ClaimGenerator,range_check_19_f_state: &range_check_19_f::ClaimGenerator,range_check_19_g_state: &range_check_19_g::ClaimGenerator,range_check_19_h_state: &range_check_19_h::ClaimGenerator,range_check_9_9_state: &range_check_9_9::ClaimGenerator,range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator)
     {
         let n_rows = self.inputs.len();
@@ -57,7 +35,7 @@ impl ClaimGenerator {
             log_size,
         },
         InteractionClaimGenerator {
-            n_rows, log_size,
+            n_rows,log_size,
             lookup_data,
         },
         )
@@ -75,7 +53,7 @@ struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,n_rows: usize,memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,range_check_19_state: &range_check_19::ClaimGenerator,range_check_19_b_state: &range_check_19_b::ClaimGenerator,range_check_19_c_state: &range_check_19_c::ClaimGenerator,range_check_19_d_state: &range_check_19_d::ClaimGenerator,range_check_19_e_state: &range_check_19_e::ClaimGenerator,range_check_19_f_state: &range_check_19_f::ClaimGenerator,range_check_19_g_state: &range_check_19_g::ClaimGenerator,range_check_19_h_state: &range_check_19_h::ClaimGenerator,range_check_9_9_state: &range_check_9_9::ClaimGenerator,range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,verify_instruction_state: &verify_instruction::ClaimGenerator,
-) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs,) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData,SubComponentInputs,) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data,mut sub_component_inputs,) = unsafe {
@@ -668,7 +646,7 @@ struct LookupData
 {memory_address_to_id_0: Vec<[PackedM31; 2]>,memory_address_to_id_1: Vec<[PackedM31; 2]>,memory_address_to_id_2: Vec<[PackedM31; 2]>,memory_id_to_big_0: Vec<[PackedM31; 29]>,memory_id_to_big_1: Vec<[PackedM31; 29]>,memory_id_to_big_2: Vec<[PackedM31; 29]>,opcodes_0: Vec<[PackedM31; 3]>,opcodes_1: Vec<[PackedM31; 3]>,range_check_19_0: Vec<[PackedM31; 1]>,range_check_19_1: Vec<[PackedM31; 1]>,range_check_19_2: Vec<[PackedM31; 1]>,range_check_19_3: Vec<[PackedM31; 1]>,range_check_19_b_0: Vec<[PackedM31; 1]>,range_check_19_b_1: Vec<[PackedM31; 1]>,range_check_19_b_2: Vec<[PackedM31; 1]>,range_check_19_b_3: Vec<[PackedM31; 1]>,range_check_19_c_0: Vec<[PackedM31; 1]>,range_check_19_c_1: Vec<[PackedM31; 1]>,range_check_19_c_2: Vec<[PackedM31; 1]>,range_check_19_c_3: Vec<[PackedM31; 1]>,range_check_19_d_0: Vec<[PackedM31; 1]>,range_check_19_d_1: Vec<[PackedM31; 1]>,range_check_19_d_2: Vec<[PackedM31; 1]>,range_check_19_e_0: Vec<[PackedM31; 1]>,range_check_19_e_1: Vec<[PackedM31; 1]>,range_check_19_e_2: Vec<[PackedM31; 1]>,range_check_19_f_0: Vec<[PackedM31; 1]>,range_check_19_f_1: Vec<[PackedM31; 1]>,range_check_19_f_2: Vec<[PackedM31; 1]>,range_check_19_g_0: Vec<[PackedM31; 1]>,range_check_19_g_1: Vec<[PackedM31; 1]>,range_check_19_g_2: Vec<[PackedM31; 1]>,range_check_19_h_0: Vec<[PackedM31; 1]>,range_check_19_h_1: Vec<[PackedM31; 1]>,range_check_19_h_2: Vec<[PackedM31; 1]>,range_check_19_h_3: Vec<[PackedM31; 1]>,range_check_9_9_0: Vec<[PackedM31; 2]>,range_check_9_9_1: Vec<[PackedM31; 2]>,range_check_9_9_2: Vec<[PackedM31; 2]>,range_check_9_9_3: Vec<[PackedM31; 2]>,range_check_9_9_b_0: Vec<[PackedM31; 2]>,range_check_9_9_b_1: Vec<[PackedM31; 2]>,range_check_9_9_b_2: Vec<[PackedM31; 2]>,range_check_9_9_b_3: Vec<[PackedM31; 2]>,range_check_9_9_c_0: Vec<[PackedM31; 2]>,range_check_9_9_c_1: Vec<[PackedM31; 2]>,range_check_9_9_c_2: Vec<[PackedM31; 2]>,range_check_9_9_c_3: Vec<[PackedM31; 2]>,range_check_9_9_d_0: Vec<[PackedM31; 2]>,range_check_9_9_d_1: Vec<[PackedM31; 2]>,range_check_9_9_d_2: Vec<[PackedM31; 2]>,range_check_9_9_d_3: Vec<[PackedM31; 2]>,range_check_9_9_e_0: Vec<[PackedM31; 2]>,range_check_9_9_e_1: Vec<[PackedM31; 2]>,range_check_9_9_e_2: Vec<[PackedM31; 2]>,range_check_9_9_e_3: Vec<[PackedM31; 2]>,range_check_9_9_f_0: Vec<[PackedM31; 2]>,range_check_9_9_f_1: Vec<[PackedM31; 2]>,range_check_9_9_f_2: Vec<[PackedM31; 2]>,range_check_9_9_f_3: Vec<[PackedM31; 2]>,range_check_9_9_g_0: Vec<[PackedM31; 2]>,range_check_9_9_g_1: Vec<[PackedM31; 2]>,range_check_9_9_h_0: Vec<[PackedM31; 2]>,range_check_9_9_h_1: Vec<[PackedM31; 2]>,verify_instruction_0: Vec<[PackedM31; 7]>,}
 
 pub struct InteractionClaimGenerator {
-    n_rows: usize, log_size: u32,
+    n_rows: usize,log_size: u32,
     lookup_data: LookupData,
 }
 impl InteractionClaimGenerator {
@@ -676,364 +654,412 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        memory_address_to_id: &relations::MemoryAddressToId,
-        memory_id_to_big: &relations::MemoryIdToBig,
-        opcodes: &relations::Opcodes,
-        range_check_19: &relations::RangeCheck_19,
-        range_check_19_b: &relations::RangeCheck_19_B,
-        range_check_19_c: &relations::RangeCheck_19_C,
-        range_check_19_d: &relations::RangeCheck_19_D,
-        range_check_19_e: &relations::RangeCheck_19_E,
-        range_check_19_f: &relations::RangeCheck_19_F,
-        range_check_19_g: &relations::RangeCheck_19_G,
-        range_check_19_h: &relations::RangeCheck_19_H,
-        range_check_9_9: &relations::RangeCheck_9_9,
-        range_check_9_9_b: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h: &relations::RangeCheck_9_9_H,
-        verify_instruction: &relations::VerifyInstruction,
+        verify_instruction: &relations::VerifyInstruction,memory_address_to_id: &relations::MemoryAddressToId,memory_id_to_big: &relations::MemoryIdToBig,range_check_9_9: &relations::RangeCheck_9_9,range_check_9_9_b: &relations::RangeCheck_9_9_B,range_check_9_9_c: &relations::RangeCheck_9_9_C,range_check_9_9_d: &relations::RangeCheck_9_9_D,range_check_9_9_e: &relations::RangeCheck_9_9_E,range_check_9_9_f: &relations::RangeCheck_9_9_F,range_check_9_9_g: &relations::RangeCheck_9_9_G,range_check_9_9_h: &relations::RangeCheck_9_9_H,range_check_19_h: &relations::RangeCheck_19_H,range_check_19: &relations::RangeCheck_19,range_check_19_b: &relations::RangeCheck_19_B,range_check_19_c: &relations::RangeCheck_19_C,range_check_19_d: &relations::RangeCheck_19_D,range_check_19_e: &relations::RangeCheck_19_E,range_check_19_f: &relations::RangeCheck_19_F,range_check_19_g: &relations::RangeCheck_19_G,opcodes: &relations::Opcodes,
     ) -> InteractionClaim
     {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         //Sum logup terms in pairs.
-logup_gen.col_from_par_iter((
+let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.verify_instruction_0,
         &self.lookup_data.memory_address_to_id_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = verify_instruction.combine(values0);
         let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.memory_id_to_big_0,
         &self.lookup_data.memory_address_to_id_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = memory_id_to_big.combine(values0);
         let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.memory_id_to_big_1,
         &self.lookup_data.memory_address_to_id_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = memory_id_to_big.combine(values0);
         let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.memory_id_to_big_2,
         &self.lookup_data.range_check_9_9_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = memory_id_to_big.combine(values0);
         let denom1: PackedQM31 = range_check_9_9.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_b_0,
         &self.lookup_data.range_check_9_9_c_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_d_0,
         &self.lookup_data.range_check_9_9_e_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_f_0,
         &self.lookup_data.range_check_9_9_g_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_g.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_h_0,
         &self.lookup_data.range_check_9_9_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_h.combine(values0);
         let denom1: PackedQM31 = range_check_9_9.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_b_1,
         &self.lookup_data.range_check_9_9_c_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_d_1,
         &self.lookup_data.range_check_9_9_e_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_f_1,
         &self.lookup_data.range_check_9_9_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
         let denom1: PackedQM31 = range_check_9_9.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_b_2,
         &self.lookup_data.range_check_9_9_c_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_d_2,
         &self.lookup_data.range_check_9_9_e_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_f_2,
         &self.lookup_data.range_check_9_9_g_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_g.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_h_1,
         &self.lookup_data.range_check_9_9_3
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_h.combine(values0);
         let denom1: PackedQM31 = range_check_9_9.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_b_3,
         &self.lookup_data.range_check_9_9_c_3
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_d_3,
         &self.lookup_data.range_check_9_9_e_3
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
         let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_9_9_f_3,
         &self.lookup_data.range_check_19_h_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
         let denom1: PackedQM31 = range_check_19_h.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_0,
         &self.lookup_data.range_check_19_b_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19.combine(values0);
         let denom1: PackedQM31 = range_check_19_b.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_c_0,
         &self.lookup_data.range_check_19_d_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_c.combine(values0);
         let denom1: PackedQM31 = range_check_19_d.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_e_0,
         &self.lookup_data.range_check_19_f_0
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_e.combine(values0);
         let denom1: PackedQM31 = range_check_19_f.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_g_0,
         &self.lookup_data.range_check_19_h_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_g.combine(values0);
         let denom1: PackedQM31 = range_check_19_h.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_1,
         &self.lookup_data.range_check_19_b_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19.combine(values0);
         let denom1: PackedQM31 = range_check_19_b.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_c_1,
         &self.lookup_data.range_check_19_d_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_c.combine(values0);
         let denom1: PackedQM31 = range_check_19_d.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_e_1,
         &self.lookup_data.range_check_19_f_1
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_e.combine(values0);
         let denom1: PackedQM31 = range_check_19_f.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_g_1,
         &self.lookup_data.range_check_19_h_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_g.combine(values0);
         let denom1: PackedQM31 = range_check_19_h.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_2,
         &self.lookup_data.range_check_19_b_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19.combine(values0);
         let denom1: PackedQM31 = range_check_19_b.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_c_2,
         &self.lookup_data.range_check_19_d_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_c.combine(values0);
         let denom1: PackedQM31 = range_check_19_d.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_e_2,
         &self.lookup_data.range_check_19_f_2
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_e.combine(values0);
         let denom1: PackedQM31 = range_check_19_f.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_g_2,
         &self.lookup_data.range_check_19_h_3
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19_g.combine(values0);
         let denom1: PackedQM31 = range_check_19_h.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_3,
         &self.lookup_data.range_check_19_b_3
         )
-        .into_par_iter().map(|(values0, values1)| {
+        .into_par_iter().for_each(|(writer, values0, values1)| {
         let denom0: PackedQM31 = range_check_19.combine(values0);
         let denom1: PackedQM31 = range_check_19_b.combine(values1);
-        (denom0 + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
         &self.lookup_data.range_check_19_c_3,
         &self.lookup_data.opcodes_0
         )
-        .into_par_iter().enumerate().map(|(i, (values0, values1))| {
+        .into_par_iter().enumerate().for_each(|(i, (writer, values0, values1))| {
         let denom0: PackedQM31 = range_check_19_c.combine(values0);
         let denom1: PackedQM31 = opcodes.combine(values1);
-        (denom0 * enabler_col.packed_at(i) + denom1 , denom0 * denom1)
-        }));
+        writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1 , denom0 * denom1);
+        });
+        col_gen.finalize_col();
 
         //Sum last logup term.
-        logup_gen.col_from_par_iter((
+        let mut col_gen = logup_gen.new_col();
+        (col_gen.par_iter_mut(),
             &self.lookup_data
             .opcodes_1
             )
-            .into_par_iter().enumerate().map(|(i, (values))| {
+            .into_par_iter().enumerate().for_each(|(i, (writer, values))| {
             let denom =
                 opcodes.combine(values);
-                (-PackedQM31::one()* enabler_col.packed_at(i),
-                denom)
-
-        }));
+            writer.write_frac(
+                -PackedQM31::one()* enabler_col.packed_at(i),
+                denom
+            );
+        });
+        col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
