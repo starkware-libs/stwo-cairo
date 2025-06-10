@@ -255,7 +255,7 @@ pub mod tests {
             use std::path::Path;
 
             let binary_path = Path::new(
-                "/Users/antoine/Documents/keth/data/1/22615247/2/prover_input_info_22615247",
+                "/Users/antoine/Documents/keth/data/1/22615247/6/prover_input_info_22615247_body_0_5",
             );
 
             // Load and adapt the binary prover input info file
