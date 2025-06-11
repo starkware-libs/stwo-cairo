@@ -1999,6 +1999,7 @@ dependencies = [
  "itertools 0.12.1",
  "log",
  "memmap2",
+ "primitive-types",
  "rand",
  "rayon",
  "serde",
