@@ -1,3 +1,4 @@
+use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use core::traits::DivRem;
@@ -15,6 +16,13 @@ const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
 pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
+
+type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
+
+const U32_SHIFT: felt252 = 0x100000000; // 2**32
+
+const NZ_U32_SHIFT: NonZero<ConstValue<U32_SHIFT>> = 0x100000000;
+
 
 // TODO: Stone uses a different initial state with the key set to 0.
 // Consider using this initial state instead.
@@ -38,6 +46,11 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
             digest: Blake2sHash { hash: BoxImpl::new([0; 8]) }, channel_time: Default::default(),
         }
     }
+}
+
+impl DivRemU64ByU32Shift of DivRemHelper<u64, ConstValue<U32_SHIFT>> {
+    type DivT = BoundedInt<0, { U32_SHIFT - 1 }>;
+    type RemT = BoundedInt<0, { U32_SHIFT - 1 }>;
 }
 
 pub impl Blake2sChannelImpl of ChannelTrait {
@@ -79,10 +92,9 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn mix_u64(ref self: Blake2sChannel, nonce: u64) {
-        const NZ_2_POW_32: NonZero<u64> = 0x100000000;
-        let (q, r) = DivRem::div_rem(nonce, NZ_2_POW_32);
-        let nonce_hi = q.try_into().unwrap();
-        let nonce_lo = r.try_into().unwrap();
+        let (q, r) = div_rem(nonce, NZ_U32_SHIFT);
+        let nonce_hi = upcast(q);
+        let nonce_lo = upcast(r);
         self.mix_u32s(array![nonce_lo, nonce_hi].span());
     }
 
