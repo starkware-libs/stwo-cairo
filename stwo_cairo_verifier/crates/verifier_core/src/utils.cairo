@@ -96,56 +96,6 @@ pub impl ArrayImpl<T, +Drop<T>> of ArrayExTrait<T> {
         self.span().max()
     }
 
-    /// Sorts an array in ascending order. Uses quicksort algorithm.
-    fn sort_ascending<+Clone<T>, +PartialOrd<T>>(self: Array<T>) -> Array<T> {
-        if self.len() <= 1 {
-            return self;
-        }
-
-        let mut lhs = array![];
-        let mut rhs = array![];
-        let mut iter = self.into_iter();
-        let pivot = iter.next().unwrap();
-
-        for v in iter {
-            if v.clone() >= pivot.clone() {
-                rhs.append(v);
-            } else {
-                lhs.append(v);
-            }
-        }
-
-        let mut res = lhs.sort_ascending();
-        res.append(pivot);
-
-        for v in rhs.sort_ascending() {
-            res.append(v);
-        }
-
-        res
-    }
-
-    /// Removes consecutive repeated elements.
-    ///
-    /// If the vector is sorted, this removes all duplicates.
-    fn dedup<+PartialEq<T>>(self: Array<T>) -> Array<T> {
-        if self.len() == 0 {
-            return array![];
-        }
-
-        let mut iter = self.into_iter();
-        let mut res = array![iter.next().unwrap()];
-        let mut last_value = res[0];
-        for value in iter {
-            if @value != last_value {
-                last_value = @value;
-                res.append(value);
-            }
-        }
-
-        res
-    }
-
     fn new_repeated<+Clone<T>>(n: usize, v: T) -> Array<T> {
         let mut res = array![];
         for _ in 0..n {
