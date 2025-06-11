@@ -5,8 +5,8 @@ use crate::BaseField;
 use crate::fields::m31::M31_SHIFT;
 use super::hasher::MerkleHasher;
 
-/// 8 M31 elements fit in a hash, since 31*8 = 242 < 252.
-const M31_ELEMENETS_IN_HASH: usize = 8;
+/// 8 M31 elements fit in a hash, since 31*8 = 248 < 252.
+const M31_ELEMENTS_IN_HASH: usize = 8;
 
 /// Equals `(2^31)^4`.
 const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
@@ -14,6 +14,7 @@ const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
 pub impl PoseidonMerkleHasher of MerkleHasher {
     type Hash = felt252;
 
+    // consider domain separation
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
@@ -32,6 +33,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         } else {
             // Most often a single QM31 column commitment due to FRI.
             // TODO(andrew): Implement non-mixed degree merkle for FRI decommitments.
+            // TODO: put column_values.try_into() in a typed variable for readability.
             if let Some(values) = column_values.try_into() {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
                 let [v0, v1, v2, v3]: [BaseField; 4] = (*values).unbox();
@@ -60,18 +62,14 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             hash_array.append(word);
         }
 
-        if !column_values.is_empty() {
-            let mut word = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
-                .inner
-                .into();
-
-            for _ in 1..M31_ELEMENETS_IN_HASH {
-                let v = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
-                    .inner
-                    .into();
-                word = word * M31_SHIFT + v;
+        // TODO: nonexisting values are equivalent to zero values
+        if let Some(x) = column_values.pop_front() {
+            // consider changing to this code:
+            // note that this changes the alignment in the prover
+            let mut word = x.inner.into();
+            for v in column_values {
+                word = word * M31_SHIFT + v.inner.into();
             }
-
             hash_array.append(word);
         }
 

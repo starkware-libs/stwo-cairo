@@ -7,7 +7,7 @@ use crate::fields::m31::M31Zero;
 use crate::utils::SpanExTrait;
 use crate::vcs::hasher::MerkleHasher;
 
-const M31_ELEMENETS_IN_MSG: usize = 16;
+const M31_ELEMENTS_IN_MSG: usize = 16;
 
 /// State for Blake2s hash.
 type Blake2sState = Box<[u32; 8]>;
@@ -15,6 +15,7 @@ type Blake2sState = Box<[u32; 8]>;
 pub impl Blake2sMerkleHasher of MerkleHasher {
     type Hash = Blake2sHash;
 
+    // TODO: consider adding domain separation (two collisions, one per if)
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
@@ -23,9 +24,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         // No column values.
         if column_values.is_empty() {
             let (msg, byte_count) = match children_hashes {
-                Some((
-                    x, y,
-                )) => {
+                Some((x, y)) => {
                     let [x0, x1, x2, x3, x4, x5, x6, x7] = x.hash.unbox();
                     let [y0, y1, y2, y3, y4, y5, y6, y7] = y.hash.unbox();
                     (
@@ -35,9 +34,10 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                         64,
                     )
                 },
+                // should panic?
                 None => (BoxImpl::new([0; 16]), 0_u32),
             };
-            return Blake2sHash { hash: blake2s_finalize(:state, byte_count: byte_count, :msg) };
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
         }
 
         let mut byte_count = 0_u32;
@@ -48,23 +48,23 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                 [x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, y6, y7],
             );
             byte_count = 64;
-            state = blake2s_compress(:state, byte_count: byte_count, :msg);
+            state = blake2s_compress(:state, :byte_count, :msg);
         }
 
         // This loop doesn't handle padding.
         // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
         // functionality here to do all packing and hashing in a single pass.
         // TODO(andrew): Consider handling single column case (used lots due to FRI).
-        let rem = column_values.len() % M31_ELEMENETS_IN_MSG;
+        let rem = column_values.len() % M31_ELEMENTS_IN_MSG;
         let last_block_length = match rem {
-            0 => M31_ELEMENETS_IN_MSG,
+            0 => M31_ELEMENTS_IN_MSG,
             _ => rem,
         };
 
         let (mut column_values, last_block) = column_values
             .split_at(column_values.len() - last_block_length);
 
-        while let Some(values) = column_values.multi_pop_front::<M31_ELEMENETS_IN_MSG>() {
+        while let Some(values) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
             let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
                 .unbox();
             let msg = BoxImpl::new(
@@ -75,7 +75,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                 ],
             );
             byte_count += 64;
-            state = blake2s_compress(:state, byte_count: byte_count, :msg);
+            state = blake2s_compress(:state, :byte_count, :msg);
         }
 
         // Padding last column_values with zeros.
@@ -83,13 +83,13 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         for value in last_block {
             padded_column_values.append((*value).into());
         }
-        for _ in 0..M31_ELEMENETS_IN_MSG - last_block_length {
+        for _ in last_block_length..M31_ELEMENTS_IN_MSG {
             padded_column_values.append(0);
         }
 
         byte_count += last_block_length * 4;
         let msg = *padded_column_values.span().try_into().unwrap();
-        state = blake2s_finalize(:state, byte_count: byte_count, :msg);
+        state = blake2s_finalize(:state, :byte_count, :msg);
 
         Blake2sHash { hash: state }
     }

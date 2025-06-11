@@ -15,6 +15,7 @@ use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::{ColumnArray, Hash};
 
+// TODO: simplify the file by assuming the FOLD_STEP is always 1
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 
@@ -37,6 +38,7 @@ pub struct FriConfig {
 pub impl FriConfigImpl of FriConfigTrait {
     fn mix_into(self: @FriConfig, ref channel: Channel) {
         let FriConfig { log_blowup_factor, log_last_layer_degree_bound, n_queries } = self;
+        // consider change to mix_u32s
         channel.mix_u64((*log_blowup_factor).into());
         channel.mix_u64((*n_queries).into());
         channel.mix_u64((*log_last_layer_degree_bound).into());
@@ -95,6 +97,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             CosetImpl::half_odds(layer_log_bound + config.log_blowup_factor),
         );
 
+        //for loop
         loop {
             let proof = match inner_layer_proofs.pop_front() {
                 Some(proof) => proof,
@@ -220,8 +223,10 @@ fn decommit_inner_layers(
     let mut first_layer_sparse_evals = first_layer_sparse_evals.span();
     let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
     let mut first_layer_column_domains = *verifier.first_layer.column_commitment_domains;
+    // first folding_alpha should be part of FriVerifier, not verifier.first_layer
     let mut prev_fold_alpha = *verifier.first_layer.folding_alpha;
 
+    // for loop
     loop {
         let layer = match inner_layers.pop_front() {
             Some(layer) => layer,
@@ -329,9 +334,9 @@ pub struct FriProof {
 
 #[derive(Drop)]
 struct FriFirstLayerVerifier {
-    /// The list of degree bounds of all circle polynomials commited in the first layer.
+    /// The list of degree bounds of all circle polynomials committed in the first layer.
     column_log_bounds: Span<u32>,
-    /// The commitment domain all the circle polynomials in the first layer.
+    /// The commitment domains of all the circle polynomials in the first layer sorted in decreasing order.
     column_commitment_domains: Span<CircleDomain>,
     folding_alpha: QM31,
     proof: FriLayerProof,
@@ -339,20 +344,23 @@ struct FriFirstLayerVerifier {
 
 #[generate_trait]
 impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
-    /// Verifies the first layer's merkle decommitment, and returns the evaluations needed for
+    /// Verifies the first layer's Merkle decommitment, and returns the evaluations needed for
     /// folding the columns to their corresponding layer.
     ///
     /// # Errors
+    /// // panic instead of Error
     ///
     /// An `Err` will be returned if:
     /// * The proof doesn't store enough evaluations.
-    /// * The merkle decommitment is invalid.
+    /// * The Merkle decommitment is invalid.
     ///
     /// # Panics
     ///
     /// Panics if:
     /// * The queries are sampled on the wrong domain.
     /// * There are an invalid number of provided column evals.
+    ///
+    /// TODO: document and assert that the function assumes it gets distinct column sizes
     fn verify(
         self: @FriFirstLayerVerifier,
         queries: Queries,
@@ -369,7 +377,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         // For decommitment, each QM31 col must be split into its constituent M31 coordinate cols.
         let mut decommitment_coordinate_column_log_sizes = array![];
         let mut sparse_evals_by_column = array![];
-        let mut decommitmented_values = array![];
+        let mut decommitted_values = array![];
 
         loop {
             let (column_domain, column_query_evals) =
@@ -387,12 +395,9 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             }
 
             let (column_decommitment_positions, sparse_evaluation) =
-                match compute_decommitment_positions_and_rebuild_evals(
+                compute_decommitment_positions_and_rebuild_evals(
                     column_queries, column_query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
-                ) {
-                Ok(res) => res,
-                Err(_) => { break Err(FriVerificationError::FirstLayerEvaluationsInvalid); },
-            };
+                ).unwrap();
 
             // Columns of the same size have the same decommitment positions.
             // TODO(andrew): Do without nullable.
@@ -402,14 +407,15 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                     NullableTrait::new(column_decommitment_positions),
                 );
 
+            // why flatten here if it can be flat from the beginning?
             for subset_eval in sparse_evaluation.subset_evals.span() {
                 for eval in subset_eval.span() {
                     // Split the QM31 into its M31 coordinate values.
                     let [v0, v1, v2, v3] = (*eval).to_fixed_array();
-                    decommitmented_values.append(v0.into());
-                    decommitmented_values.append(v1.into());
-                    decommitmented_values.append(v2.into());
-                    decommitmented_values.append(v3.into());
+                    decommitted_values.append(v0.into());
+                    decommitted_values.append(v1.into());
+                    decommitted_values.append(v2.into());
+                    decommitted_values.append(v3.into());
                 };
             }
 
@@ -434,7 +440,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         if let Err(_) = merkle_verifier
             .verify(
                 decommitment_positions_by_log_size,
-                decommitmented_values.span(),
+                decommitted_values.span(),
                 self.proof.decommitment.clone(),
             ) {
             return Err(FriVerificationError::FirstLayerCommitmentInvalid);
@@ -476,15 +482,16 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             return Err(FriVerificationError::InnerLayerEvaluationsInvalid);
         }
 
-        let mut decommitmented_values = array![];
+        let mut decommitted_values = array![];
+        // subset_evals can be flat from the beginning.
         for subset_eval in sparse_evaluation.subset_evals.span() {
             for eval in subset_eval.span() {
                 // Split the QM31 into its M31 coordinate values.
                 let [v0, v1, v2, v3] = (*eval).to_fixed_array();
-                decommitmented_values.append(v0.into());
-                decommitmented_values.append(v1.into());
-                decommitmented_values.append(v2.into());
-                decommitmented_values.append(v3.into());
+                decommitted_values.append(v0.into());
+                decommitted_values.append(v1.into());
+                decommitted_values.append(v2.into());
+                decommitted_values.append(v3.into());
             };
         }
 
@@ -502,7 +509,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         if let Err(_) = merkle_verifier
             .verify(
                 decommitment_positions_dict,
-                decommitmented_values.span(),
+                decommitted_values.span(),
                 (*self.proof.decommitment).clone(),
             ) {
             return Err(FriVerificationError::InnerLayerCommitmentInvalid);
@@ -562,25 +569,15 @@ fn compute_decommitment_positions_and_rebuild_evals(
             subset_eval
                 .append(
                     *match query_positions.next_if_eq(@decommitment_position) {
-                        Some(_) => {
-                            let res = query_evals_iter.next().unwrap();
-                            res
-                        },
-                        None => match witness_evals_iter.next() {
-                            Some(witness_eval) => { witness_eval },
-                            None => { break Err(InsufficientWitnessError {}); },
-                        },
+                        Some(_) => query_evals_iter.next().unwrap(),
+                        None => witness_evals_iter.next().unwrap(),
                     },
                 );
         };
-
-        if let Err(error) = loop_res {
-            break Err(error);
-        }
-
+        // build it flat
         subset_evals.append(subset_eval);
 
-        subset_domain_index_initials
+        subset_domain_start_indices
             .append(bit_reverse_index(subset_start, queries.log_domain_size));
     }?;
 
@@ -589,7 +586,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
     assert!(query_evals_iter.next().is_none());
 
     let sparse_evaluation = SparseEvaluationImpl::new(
-        subset_evals, subset_domain_index_initials.span(),
+        subset_evals, subset_domain_start_indices.span(),
     );
 
     Ok((decommitment_positions.span(), sparse_evaluation))
@@ -632,6 +629,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         for subset_eval in self.subset_evals.span() {
             let x_inv = domain_initials_inv.pop_front().unwrap();
             let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
+            // this enforced FOLD_FACTOR = 2, if you assume it all over the file many parts become simpler.
             let [f_at_x, f_at_neg_x] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
             res.append(f0 + fold_alpha * f1);
@@ -660,6 +658,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
                 .span()
                 .try_into()
                 .unwrap();
+            // this enforced CIRCLE_TO_LINE_FOLD_FACTOR = 2, if you assume it all over the file many parts become simpler.
             let [f_at_p, f_at_neg_p] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, y_inv);
             res.append(f0 + fold_alpha * f1);
