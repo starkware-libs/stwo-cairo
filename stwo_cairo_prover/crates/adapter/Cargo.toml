@@ -27,6 +27,7 @@ bincode = { version = "2.0.1", features = [
 ] }
 dashmap = "6.1.0"
 rayon.workspace = true
+primitive-types = "0.12"
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
