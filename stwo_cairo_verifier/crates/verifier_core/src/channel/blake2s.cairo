@@ -70,7 +70,8 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
         for felt in felts {
             // Compress whenever the buffer reaches capacity.
-            if let Some(msg) = buffer.span().try_into() {
+            let msg_opt: Option<@Box<[u32; 16]>> = buffer.span().try_into();
+            if let Some(msg) = msg_opt {
                 state = blake2s_compress(state, byte_count, *msg);
                 buffer = array![];
             }
