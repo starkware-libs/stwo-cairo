@@ -221,12 +221,7 @@ pub mod tests {
             let proof_str = output.iter().map(|v| v.to_string()).join(",");
             let mut file = std::fs::File::create("proof.cairo").unwrap();
             file.write_all(proof_str.as_bytes()).unwrap();
-            verify_cairo::<Poseidon252MerkleChannel>(
-                cairo_proof,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
+            verify_cairo::<Poseidon252MerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
         }
     }
 
@@ -280,12 +275,7 @@ pub mod tests {
                 preprocessed_trace,
             )
             .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(
-                cairo_proof,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
         }
 
         #[test]
@@ -394,12 +384,7 @@ pub mod tests {
                 preprocessed_trace,
             )
             .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(
-                cairo_proof,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
         }
 
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
@@ -468,12 +453,7 @@ pub mod tests {
                     preprocessed_trace,
                 )
                 .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
             }
 
             #[test]
@@ -490,12 +470,7 @@ pub mod tests {
                     preprocessed_trace,
                 )
                 .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
             }
 
             #[test]
