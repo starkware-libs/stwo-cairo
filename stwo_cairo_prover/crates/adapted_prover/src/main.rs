@@ -187,7 +187,7 @@ where
     }
     span.exit();
     if verify {
-        verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
+        verify_cairo::<MC>(proof, preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
 

@@ -13,7 +13,7 @@ use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::pcs::{CommitmentSchemeVerifier, PcsConfig};
+use stwo_prover::core::pcs::CommitmentSchemeVerifier;
 use stwo_prover::core::prover::{verify, VerificationError};
 use thiserror::Error;
 
@@ -284,7 +284,6 @@ pub fn verify_cairo<MC: MerkleChannel>(
         interaction_claim,
         stark_proof,
     }: CairoProof<MC::H>,
-    pcs_config: PcsConfig,
     preprocessed_trace: PreProcessedTraceVariant,
 ) -> Result<(), CairoVerificationError> {
     // Auxiliary verifications.
@@ -297,6 +296,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     verify_claim(&claim);
 
     let channel = &mut MC::C::default();
+    let pcs_config = stark_proof.config;
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 

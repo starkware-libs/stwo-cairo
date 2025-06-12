@@ -57,7 +57,7 @@ where
     serialize_proof_to_file::<MC>(&proof, proof_path, proof_format)?;
 
     if verify {
-        verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
+        verify_cairo::<MC>(proof, preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
 
