@@ -120,7 +120,7 @@ jobs:
         uses: upsidr/merge-gatekeeper@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          timeout: 2500
+          timeout: 7200
           interval: 30
           ignored: "code-review/reviewable"
 
@@ -130,6 +130,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{github.ref}}
-          timeout: 2500
+          timeout: 7200
           interval: 30
           ignored: "code-review/reviewable"
