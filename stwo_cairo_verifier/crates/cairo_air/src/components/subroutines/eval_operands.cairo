@@ -564,6 +564,7 @@ pub fn eval_operands_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
+    core::internal::revoke_ap_tracking();
 
     mul_252_evaluate(
         [
@@ -862,6 +863,7 @@ pub fn eval_operands_evaluate(
             + (eval_operands_input_res_mul * (res_limb_19_col194 - mul_res_limb_19_col138)))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
+    core::internal::revoke_ap_tracking();
 
     // Constraint -
     let constraint_quotient = ((res_constrained_tmp_3172c_64

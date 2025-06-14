@@ -1438,6 +1438,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
+        core::internal::revoke_ap_tracking();
 
         handle_opcodes_evaluate(
             [

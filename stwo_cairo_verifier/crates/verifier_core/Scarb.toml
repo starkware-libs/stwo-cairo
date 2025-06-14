@@ -7,7 +7,7 @@ edition = "2024_07"
 casm = true
 
 [features]
-default = ["qm31_opcode"]
+default = []
 poseidon252_verifier = []
 qm31_opcode = []
 
