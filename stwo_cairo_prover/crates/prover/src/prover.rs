@@ -320,6 +320,7 @@ pub mod tests {
                     "(cd ../../../stwo_cairo_verifier; \
                     scarb execute --package stwo_cairo_verifier \
                     --arguments-file {} --output standard --target standalone \
+                    --features qm31_opcode
                     )",
                     proof_file.path().to_str().unwrap()
                 ))
@@ -363,7 +364,7 @@ pub mod tests {
                     "(cd ../../../stwo_cairo_verifier; \
                     scarb execute --package stwo_cairo_verifier \
                     --arguments-file {} --output standard --target standalone \
-                    --no-default-features --features poseidon252_verifier
+                    --features poseidon252_verifier
                     )",
                     proof_file.path().to_str().unwrap()
                 ))
