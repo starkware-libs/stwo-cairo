@@ -1,10 +1,10 @@
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
+use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
-use crate::{BaseField, SecureField};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
 /// Equals `2^31`.
@@ -117,7 +117,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
     /// `self.draw_felt252()` in little endian.
-    /// TODO: check that this distribution is good enough, as it is only close to uniform.
+    /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
     fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
         let mut cur: u256 = draw_felt252(ref self).into();
         let mut bytes = array![];
@@ -143,7 +143,7 @@ fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
 
 // TODO(spapini): Check that this is sound.
 fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
-    let mut cur = draw_felt252(ref channel).into();
+    let mut cur: u256 = draw_felt252(ref channel).into();
     [
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
@@ -166,9 +166,7 @@ fn extract_m31(ref num: u256) -> M31 {
 #[cfg(test)]
 mod tests {
     use crate::fields::qm31::qm31_const;
-    use super::{
-        ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work, gen_bit_mask,
-    };
+    use super::{ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work};
 
     #[test]
     fn test_initialize_channel() {
