@@ -115,6 +115,12 @@ fn main() -> ExitCode {
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
+    let collector = SpanAccumulator::default();
+
+    let layer = collector.clone();
+    let subscriber = Registry::default().with(layer);
+    let _guard = tracing::subscriber::set_default(subscriber);
+
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
@@ -149,6 +155,9 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         args.proof_format,
     )?;
 
+    let csv = collector.export_csv();
+    println!("{}", csv);
+
     Ok(())
 }
 
@@ -168,12 +177,6 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let collector = SpanAccumulator::default();
-
-    let layer = collector.clone();
-    let subscriber = Registry::default().with(layer);
-    let _guard = tracing::subscriber::set_default(subscriber);
-    
     let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
     let mut proof_file = create_file(&proof_path)?;
 
@@ -195,9 +198,6 @@ where
         }
     }
     span.exit();
-
-    let csv = collector.export_csv();
-    println!("{}", csv);
     if verify {
         verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
         log::info!("Proof verified successfully");
