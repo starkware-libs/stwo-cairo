@@ -22,8 +22,11 @@ use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+use stwo_prover::tracing::SpanAccumulator;
 use thiserror::Error;
 use tracing::{span, Level};
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::Registry;
 
 /// Command line arguments for adapted_stwo.
 /// Example command line:
@@ -165,6 +168,12 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
+    let collector = SpanAccumulator::default();
+
+    let layer = collector.clone();
+    let subscriber = Registry::default().with(layer);
+    let _guard = tracing::subscriber::set_default(subscriber);
+    
     let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
     let mut proof_file = create_file(&proof_path)?;
 
@@ -186,6 +195,9 @@ where
         }
     }
     span.exit();
+
+    let csv = collector.export_csv();
+    println!("{}", csv);
     if verify {
         verify_cairo::<MC>(proof, pcs_config, preprocessed_trace)?;
         log::info!("Proof verified successfully");
