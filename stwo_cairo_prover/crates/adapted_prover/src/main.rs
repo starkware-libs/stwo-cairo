@@ -22,8 +22,11 @@ use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+use stwo_prover::tracing::SpanAccumulator;
 use thiserror::Error;
 use tracing::{span, Level};
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::Registry;
 
 /// Command line arguments for adapted_stwo.
 /// Example command line:
@@ -112,6 +115,12 @@ fn main() -> ExitCode {
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
+    let collector = SpanAccumulator::default();
+
+    let layer = collector.clone();
+    let subscriber = Registry::default().with(layer);
+    let _guard = tracing::subscriber::set_default(subscriber);
+
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
@@ -145,6 +154,9 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         args.proof_path,
         args.proof_format,
     )?;
+
+    let csv = collector.export_csv();
+    println!("{}", csv);
 
     Ok(())
 }

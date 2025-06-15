@@ -8,7 +8,8 @@ members = [
     "crates/utils",
     "crates/common",
     "crates/cairo-air",
-    "crates/dev_utils"]
+    "crates/dev_utils",
+]
 resolver = "2"
 
 [workspace.package]
@@ -46,6 +47,7 @@ stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(ShaharS): take stwo version from the source repository.
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83", features = [
     "parallel",
+    "tracing",
 ], default-features = false }
 stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83" }
 stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83" }
