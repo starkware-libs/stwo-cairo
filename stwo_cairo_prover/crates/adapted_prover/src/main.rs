@@ -14,6 +14,7 @@ use stwo::core::vcs::MerkleHasher;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::ProvingError;
+use stwo::tracing::SpanAccumulator;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
 use stwo_cairo_adapter::{log_prover_input, ProverInput};
 use stwo_cairo_prover::prover::{
@@ -24,6 +25,8 @@ use stwo_cairo_utils::binary_utils::run_binary;
 use stwo_cairo_utils::file_utils::{create_file, read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::Registry;
 
 /// Command line arguments for adapted_stwo.
 /// Example command line:
@@ -112,6 +115,12 @@ fn main() -> ExitCode {
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
+    let collector = SpanAccumulator::default();
+
+    let layer = collector.clone();
+    let subscriber = Registry::default().with(layer);
+    let _guard = tracing::subscriber::set_default(subscriber);
+
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
@@ -142,6 +151,9 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         args.proof_path,
         args.proof_format,
     )?;
+
+    let csv = collector.export_csv();
+    println!("{}", csv);
 
     Ok(())
 }
