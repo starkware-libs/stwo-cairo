@@ -9,8 +9,8 @@ edition = "2024_07"
 sort-module-level-items = true
 
 [features]
-default = []
 poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
+qm31_opcode = ["stwo_cairo_air/qm31_opcode"]
 
 [cairo]
 enable-gas = false
