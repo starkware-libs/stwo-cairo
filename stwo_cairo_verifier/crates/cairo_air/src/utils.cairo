@@ -7,7 +7,6 @@ use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::utils::pow2;
 use super::components::memory_id_to_big;
 
-
 #[generate_trait]
 pub impl UsizeImpl of UsizeExTrait {
     /// Calculates the quotient of `self` and `other`, rounding the result towards positive
@@ -97,6 +96,64 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
             l6.try_into().unwrap(), l7.try_into().unwrap(),
         ],
     )
+}
+
+
+/// Holds the columns indices grouped by log size for each tree.
+/// Note that the index of the first column in the i'th tree is the number of columns in the
+/// previous trees.
+struct ColumnsByLogSize {
+    columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
+}
+
+/// Groups the columns by log size for each tree.
+///
+/// # Arguments
+///
+/// * `log_size_per_column_per_tree`: the log sizes of the columns for each tree.
+pub fn group_columns_by_log_size(
+    mut log_size_per_column_per_tree: TreeSpan<@Array<usize>>,
+) -> ColumnsByLogSize {
+    // Return the array of columns behind a nullable or an empty array.
+    let get_columns_array = |nullable: Nullable<Array<usize>>| {
+        match match_nullable(nullable) {
+            FromNullableResult::Null => array![],
+            FromNullableResult::NotNull(value) => value.unbox(),
+        }
+    };
+
+    let mut column = 0_usize;
+    let mut columns_by_log_size_per_tree: TreeArray<Span<Span<usize>>> = array![];
+    for interaction_column_sizes in log_size_per_column {
+        let mut columns_by_size = Default::default();
+
+        for column_log_size in interaction_column_sizes.span() {
+            let (dict_entry, value) = columns_by_size.entry((*column_log_size).into());
+            let mut columns_of_size = get_columns_array(value);
+            columns_of_size.append(column);
+            columns_by_size = dict_entry.finalize(NullableTrait::new(columns_of_size));
+            column += 1;
+        }
+
+        let mut columns_by_log_size: Array<Span<usize>> = array![];
+        for log_size in (0..31_u32) {
+            let (dict_entry, value) = columns_by_size.entry(log_size.into());
+            let mut columns_of_size = get_columns_array(value);
+            columns_by_log_size.append(columns_of_size.span());
+            // Clear the value of the dict entry, note that the entry would still appear in the
+            // squashed dict.
+            columns_by_size = dict_entry.finalize(null());
+        }
+
+        // Make sure that the dict has only 30 entries.
+        // Since the loop above accessed the entries [0, 30]
+        // This guarantees that there were no columns with log size > 30.
+        assert!(columns_by_size.squash().into_entries().len() == 31);
+
+        columns_by_log_size_per_tree.append(columns_by_log_size.span());
+    }
+
+    ColumnsByLogSize { columns_by_log_size_per_tree: columns_by_log_size_per_tree.span() }
 }
 
 
