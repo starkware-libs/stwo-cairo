@@ -1,10 +1,10 @@
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
+use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
-use crate::{BaseField, SecureField};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
 /// Equals `2^31`.
@@ -117,14 +117,14 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
     /// `self.draw_felt252()` in little endian.
-    /// TODO: check that this distribution is good enough, as it is only close to uniform.
+    /// The distribution for each byte epsilon close to uniform with epsilon <= 2^(-60).
     fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
         let mut cur: u256 = draw_felt252(ref self).into();
         let mut bytes = array![];
         for _ in 0_usize..BYTES_PER_HASH {
-            let (q, r) = DivRem::div_rem(cur, 0x100);
+            let r = cur & gen_bit_mask(8_u32).into();
             bytes.append(r.try_into().unwrap());
-            cur = q;
+            cur = cur / 256_u256;
         }
         bytes
     }
@@ -166,9 +166,7 @@ fn extract_m31(ref num: u256) -> M31 {
 #[cfg(test)]
 mod tests {
     use crate::fields::qm31::qm31_const;
-    use super::{
-        ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work, gen_bit_mask,
-    };
+    use super::{ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work};
 
     #[test]
     fn test_initialize_channel() {
