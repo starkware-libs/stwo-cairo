@@ -1,5 +1,5 @@
 use core::array::ArrayImpl;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait};
+use core::dict::{Felt252Dict, Felt252DictEntryTrait, SquashedFelt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::nullable::{Nullable, NullableTrait, null};
 use core::num::traits::{One, Zero};
@@ -9,7 +9,10 @@ use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
+use crate::utils::{
+    ArrayImpl as ArrayUtilImpl, ColumnsByLogSize, SpanImpl, bit_reverse_index,
+    group_columns_by_log_size, pack4,
+};
 use crate::verifier::VerificationError;
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
@@ -30,167 +33,55 @@ pub fn fri_answers(
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeArray<Span<M31>>,
 ) -> Result<Array<Span<QM31>>, VerificationError> {
-    // Group columns by log size.
-    // TODO(andrew): Refactor. When columns are in descending order this is not needed.
-    let mut log_size_00_columns = array![];
-    let mut log_size_01_columns = array![];
-    let mut log_size_02_columns = array![];
-    let mut log_size_03_columns = array![];
-    let mut log_size_04_columns = array![];
-    let mut log_size_05_columns = array![];
-    let mut log_size_06_columns = array![];
-    let mut log_size_07_columns = array![];
-    let mut log_size_08_columns = array![];
-    let mut log_size_09_columns = array![];
-    let mut log_size_10_columns = array![];
-    let mut log_size_11_columns = array![];
-    let mut log_size_12_columns = array![];
-    let mut log_size_13_columns = array![];
-    let mut log_size_14_columns = array![];
-    let mut log_size_15_columns = array![];
-    let mut log_size_16_columns = array![];
-    let mut log_size_17_columns = array![];
-    let mut log_size_18_columns = array![];
-    let mut log_size_19_columns = array![];
-    let mut log_size_20_columns = array![];
-    let mut log_size_21_columns = array![];
-    let mut log_size_22_columns = array![];
-    let mut log_size_23_columns = array![];
-    let mut log_size_24_columns = array![];
-    let mut log_size_25_columns = array![];
-    let mut log_size_26_columns = array![];
-    let mut log_size_27_columns = array![];
-    let mut log_size_28_columns = array![];
-    let mut log_size_29_columns = array![];
-    let mut log_size_30_columns = array![];
-
-    let mut n_columns_per_tree = array![];
-    let mut column = 0;
-    loop {
-        let mut interaction_column_sizes = if let Some(interaction_column_sizes) =
-            log_size_per_column
-            .pop_front() {
-            (*interaction_column_sizes).span()
-        } else {
-            break Ok(());
-        };
-
-        let mut res_dict = Default::default();
-        let loop_res = loop {
-            let column_log_size = if let Some(column_log_size) = interaction_column_sizes
-                .pop_front() {
-                column_log_size
-            } else {
-                break Ok(());
-            };
-
-            let (res_dict_entry, value) = res_dict.entry((*column_log_size).into());
-            res_dict = res_dict_entry.finalize(NullableTrait::new(value.deref_or(0) + 1));
-
-            // TODO(andrew): Order by most common for performance. i.e. check log size 16->26 first.
-            match *column_log_size {
-                00 => log_size_00_columns.append(column),
-                01 => log_size_01_columns.append(column),
-                02 => log_size_02_columns.append(column),
-                03 => log_size_03_columns.append(column),
-                04 => log_size_04_columns.append(column),
-                05 => log_size_05_columns.append(column),
-                06 => log_size_06_columns.append(column),
-                07 => log_size_07_columns.append(column),
-                08 => log_size_08_columns.append(column),
-                09 => log_size_09_columns.append(column),
-                10 => log_size_10_columns.append(column),
-                11 => log_size_11_columns.append(column),
-                12 => log_size_12_columns.append(column),
-                13 => log_size_13_columns.append(column),
-                14 => log_size_14_columns.append(column),
-                15 => log_size_15_columns.append(column),
-                16 => log_size_16_columns.append(column),
-                17 => log_size_17_columns.append(column),
-                18 => log_size_18_columns.append(column),
-                19 => log_size_19_columns.append(column),
-                20 => log_size_20_columns.append(column),
-                21 => log_size_21_columns.append(column),
-                22 => log_size_22_columns.append(column),
-                23 => log_size_23_columns.append(column),
-                24 => log_size_24_columns.append(column),
-                25 => log_size_25_columns.append(column),
-                26 => log_size_26_columns.append(column),
-                27 => log_size_27_columns.append(column),
-                28 => log_size_28_columns.append(column),
-                29 => log_size_29_columns.append(column),
-                30 => log_size_30_columns.append(column),
-                _ => { break Err(VerificationError::InvalidStructure('invalid size')); },
-            }
-            column += 1;
-        };
-
-        if loop_res.is_err() {
-            break loop_res;
-        }
-
-        let mut n_columns_per_log_size: Array<usize> = array![];
-        for log_size in (0..31_u32) {
-            n_columns_per_log_size
-                .append(res_dict.get(30_felt252 - log_size.into()).deref_or(0))
-                .try_into()
-                .unwrap();
-        }
-        n_columns_per_tree.append(n_columns_per_log_size.span());
-    }?;
-
-    let mut columns_per_log_size_rev = array![
-        log_size_30_columns, log_size_29_columns, log_size_28_columns, log_size_27_columns,
-        log_size_26_columns, log_size_25_columns, log_size_24_columns, log_size_23_columns,
-        log_size_22_columns, log_size_21_columns, log_size_20_columns, log_size_19_columns,
-        log_size_18_columns, log_size_17_columns, log_size_16_columns, log_size_15_columns,
-        log_size_14_columns, log_size_13_columns, log_size_12_columns, log_size_11_columns,
-        log_size_10_columns, log_size_09_columns, log_size_08_columns, log_size_07_columns,
-        log_size_06_columns, log_size_05_columns, log_size_04_columns, log_size_03_columns,
-        log_size_02_columns, log_size_01_columns, log_size_00_columns,
-    ]
-        .into_iter();
+    let ColumnsByLogSize {
+        mut columns_by_log_size_per_tree,
+    } = group_columns_by_log_size(log_size_per_column);
 
     let mut answers = array![];
-    let mut log_size = M31_CIRCLE_LOG_ORDER;
-    let mut one_per_tree = array![];
-    for _ in 0..n_columns_per_tree.len() {
-        one_per_tree.append(1);
-    }
-    loop {
-        let columns = match columns_per_log_size_rev.next() {
-            Some(columns) => columns,
-            None => { break Ok(()); },
-        };
-        log_size -= 1;
+    for i in (0..31_u32) {
+        let log_size = 30 - i;
 
-        let n_columns = tree_take_n(ref n_columns_per_tree, one_per_tree.span());
+        // `columns_by_log_size_per_tree` for the next iteration of the loop, in each iteration we
+        // pop the columns of the from each tree.
+        let mut next_columns_by_log_size_per_tree = array![];
+        let mut n_columns_per_tree = array![];
+        let mut columns_per_tree = array![];
 
-        if columns.is_empty() {
+        for columns_per_log_size in columns_by_log_size_per_tree {
+            let mut columns_per_log_size = *columns_per_log_size;
+            let columns = columns_per_log_size.pop_back().expect('c');
+
+            n_columns_per_tree.append(columns.len());
+            columns_per_tree.append(columns);
+            next_columns_by_log_size_per_tree.append(columns_per_log_size);
+        }
+        columns_by_log_size_per_tree = next_columns_by_log_size_per_tree.span();
+
+        // Collect samples the columns.
+        let mut samples = array![];
+        for tree_columns in columns_per_tree {
+            for column in tree_columns {
+                samples.append(samples_per_column[*column]);
+            }
+        }
+
+        if samples.is_empty() {
             continue;
         }
 
-        // Collect samples and queried values for the columns.
-        let mut samples = array![];
-
-        for column in columns {
-            samples.append(samples_per_column[column]);
-        }
-
-        let answer = fri_answers_for_log_size(
-            log_size,
-            samples,
-            random_coeff,
-            query_positions_per_log_size.get(log_size.into()).deref(),
-            ref queried_values,
-            n_columns,
-        );
-
-        match answer {
-            Ok(answer) => answers.append(answer),
-            Err(err) => { break Err(err); },
-        };
-    }?;
+        answers
+            .append(
+                fri_answers_for_log_size(
+                    log_size,
+                    samples,
+                    random_coeff,
+                    query_positions_per_log_size.get(log_size.into()).deref(),
+                    ref queried_values,
+                    n_columns_per_tree,
+                )
+                    .expect('fri_answers_for_log_size'),
+            );
+    }
 
     Ok(answers)
 }
