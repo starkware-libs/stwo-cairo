@@ -7,7 +7,8 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
 use tracing::{span, Level};
 
-/// Prime 2^251 + 17 * 2^192 + 1 in little endian.
+/// P is 2^251 + 17 * 2^192 - 1.
+/// All constants below are in little endian.
 pub const P_MIN_1: [u32; 8] = [
     0x0000_0000,
     0x0000_0000,
@@ -18,6 +19,7 @@ pub const P_MIN_1: [u32; 8] = [
     0x0000_0011,
     0x0800_0000,
 ];
+
 pub const P_MIN_2: [u32; 8] = [
     0xFFFF_FFFF,
     0xFFFF_FFFF,
