@@ -625,6 +625,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0dc92fb57ca44df6db8059111ab3af99a63d5d0f8375d9972e319a379c6bab76"
 dependencies = [
  "generic-array",
+ "rand_core",
  "subtle",
  "zeroize",
 ]
@@ -1995,6 +1996,7 @@ dependencies = [
  "bytemuck",
  "cairo-lang-casm",
  "cairo-vm",
+ "crypto-bigint",
  "dashmap",
  "itertools 0.12.1",
  "log",
