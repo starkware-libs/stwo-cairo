@@ -6217,6 +6217,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct OpcodeComponents {
     add: Array<components::add_opcode::Component>,
@@ -6241,6 +6242,31 @@ pub struct OpcodeComponents {
     ret: Array<components::ret_opcode::Component>,
 }
 
+#[cfg(feature: "poseidon252_verifier")]
+#[derive(Drop)]
+pub struct OpcodeComponents {
+    add: Array<components::add_opcode::Component>,
+    add_small: Array<components::add_opcode_small::Component>,
+    add_ap: Array<components::add_ap_opcode::Component>,
+    assert_eq: Array<components::assert_eq_opcode::Component>,
+    assert_eq_imm: Array<components::assert_eq_opcode_imm::Component>,
+    assert_eq_double_deref: Array<components::assert_eq_opcode_double_deref::Component>,
+    blake: Array<components::blake_compress_opcode::Component>,
+    call: Array<components::call_opcode::Component>,
+    call_rel_imm: Array<components::call_opcode_rel_imm::Component>,
+    jnz: Array<components::jnz_opcode::Component>,
+    jnz_taken: Array<components::jnz_opcode_taken::Component>,
+    jump: Array<components::jump_opcode::Component>,
+    jump_double_deref: Array<components::jump_opcode_double_deref::Component>,
+    jump_rel: Array<components::jump_opcode_rel::Component>,
+    jump_rel_imm: Array<components::jump_opcode_rel_imm::Component>,
+    mul: Array<components::mul_opcode::Component>,
+    mul_small: Array<components::mul_opcode_small::Component>,
+    qm31: Array<components::qm_31_add_mul_opcode::Component>,
+    ret: Array<components::ret_opcode::Component>,
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
 #[generate_trait]
 impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     fn new(
@@ -7341,6 +7367,1121 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         }
 
         for component in self.generic.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.jnz.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.jnz_taken.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.jump.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.jump_double_deref.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.jump_rel.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.jump_rel_imm.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.mul.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        for component in self.mul_small.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.qm31.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.ret.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        };
+    }
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+#[generate_trait]
+impl OpcodeComponentsImpl of OpcodeComponentsTrait {
+    fn new(
+        claim: @OpcodeClaim,
+        interaction_elements: @CairoInteractionElements,
+        interaction_claim: @OpcodeInteractionClaim,
+    ) -> OpcodeComponents {
+        // Add components
+        let mut add_components = array![];
+        let mut add_claims = claim.add.span();
+        let mut add_interaction_claims = interaction_claim.add.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (add_claims.pop_front(), add_interaction_claims.pop_front()) {
+            add_components
+                .append(
+                    components::add_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(add_claims.is_empty());
+        assert!(add_interaction_claims.is_empty());
+
+        // Add Small components
+        let mut add_small_components = array![];
+        let mut add_small_claims = claim.add_small.span();
+        let mut add_small_interaction_claims = interaction_claim.add_small.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (add_small_claims.pop_front(), add_small_interaction_claims.pop_front()) {
+            add_small_components
+                .append(
+                    components::add_opcode_small::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(add_small_claims.is_empty());
+        assert!(add_small_interaction_claims.is_empty());
+
+        // Add AP components
+        let mut add_ap_components = array![];
+        let mut add_ap_claims = claim.add_ap.span();
+        let mut add_ap_interaction_claims = interaction_claim.add_ap.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (add_ap_claims.pop_front(), add_ap_interaction_claims.pop_front()) {
+            add_ap_components
+                .append(
+                    components::add_ap_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        range_check_19_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19
+                            .clone(),
+                        range_check_8_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_8
+                            .clone(),
+                    },
+                );
+        }
+        assert!(add_ap_claims.is_empty());
+        assert!(add_ap_interaction_claims.is_empty());
+
+        // Assert Eq components
+        let mut assert_eq_components = array![];
+        let mut assert_eq_claims = claim.assert_eq.span();
+        let mut assert_eq_interaction_claims = interaction_claim.assert_eq.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (assert_eq_claims.pop_front(), assert_eq_interaction_claims.pop_front()) {
+            assert_eq_components
+                .append(
+                    components::assert_eq_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(assert_eq_claims.is_empty());
+        assert!(assert_eq_interaction_claims.is_empty());
+
+        // Assert Eq Imm components
+        let mut assert_eq_imm_components = array![];
+        let mut assert_eq_imm_claims = claim.assert_eq_imm.span();
+        let mut assert_eq_imm_interaction_claims = interaction_claim.assert_eq_imm.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (assert_eq_imm_claims.pop_front(), assert_eq_imm_interaction_claims.pop_front()) {
+            assert_eq_imm_components
+                .append(
+                    components::assert_eq_opcode_imm::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(assert_eq_imm_claims.is_empty());
+        assert!(assert_eq_imm_interaction_claims.is_empty());
+
+        // Assert Eq Double Deref components
+        let mut assert_eq_double_deref_components = array![];
+        let mut assert_eq_double_deref_claims = claim.assert_eq_double_deref.span();
+        let mut assert_eq_double_deref_interaction_claims = interaction_claim
+            .assert_eq_double_deref
+            .span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (
+                assert_eq_double_deref_claims.pop_front(),
+                assert_eq_double_deref_interaction_claims.pop_front(),
+            ) {
+            assert_eq_double_deref_components
+                .append(
+                    components::assert_eq_opcode_double_deref::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(assert_eq_double_deref_claims.is_empty());
+        assert!(assert_eq_double_deref_interaction_claims.is_empty());
+
+        let mut blake_components = array![];
+        let mut blake_claims = claim.blake.span();
+        let mut blake_interaction_claims = interaction_claim.blake.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (blake_claims.pop_front(), blake_interaction_claims.pop_front()) {
+            blake_components
+                .append(
+                    components::blake_compress_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        range_check_7_2_5_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_7_2_5
+                            .clone(),
+                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+                        verify_bitwise_xor_8_lookup_elements: interaction_elements
+                            .verify_bitwise_xor_8
+                            .clone(),
+                        blake_round_lookup_elements: interaction_elements.blake_round.clone(),
+                    },
+                );
+        }
+        assert!(blake_claims.is_empty());
+        assert!(blake_interaction_claims.is_empty());
+
+        // Call components
+        let mut call_components = array![];
+        let mut call_claims = claim.call.span();
+        let mut call_interaction_claims = interaction_claim.call.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (call_claims.pop_front(), call_interaction_claims.pop_front()) {
+            call_components
+                .append(
+                    components::call_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(call_claims.is_empty());
+        assert!(call_interaction_claims.is_empty());
+
+        // Call Rel_imm components
+        let mut call_rel_imm_components = array![];
+        let mut call_rel_imm_claims = claim.call_rel_imm.span();
+        let mut call_rel_imm_interaction_claims = interaction_claim.call_rel_imm.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (call_rel_imm_claims.pop_front(), call_rel_imm_interaction_claims.pop_front()) {
+            call_rel_imm_components
+                .append(
+                    components::call_opcode_rel_imm::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(call_rel_imm_claims.is_empty());
+        assert!(call_rel_imm_interaction_claims.is_empty());
+
+        // Jnz components
+        let mut jnz_components = array![];
+        let mut jnz_claims = claim.jnz.span();
+        let mut jnz_interaction_claims = interaction_claim.jnz.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (jnz_claims.pop_front(), jnz_interaction_claims.pop_front()) {
+            jnz_components
+                .append(
+                    components::jnz_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(jnz_claims.is_empty());
+        assert!(jnz_interaction_claims.is_empty());
+
+        // Jnz Taken components
+        let mut jnz_taken_components = array![];
+        let mut jnz_taken_claims = claim.jnz_taken.span();
+        let mut jnz_taken_interaction_claims = interaction_claim.jnz_taken.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (jnz_taken_claims.pop_front(), jnz_taken_interaction_claims.pop_front()) {
+            jnz_taken_components
+                .append(
+                    components::jnz_opcode_taken::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(jnz_taken_claims.is_empty());
+        assert!(jnz_taken_interaction_claims.is_empty());
+
+        // Jump components
+        let mut jump_components = array![];
+        let mut jump_claims = claim.jump.span();
+        let mut jump_interaction_claims = interaction_claim.jump.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (jump_claims.pop_front(), jump_interaction_claims.pop_front()) {
+            jump_components
+                .append(
+                    components::jump_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(jump_claims.is_empty());
+        assert!(jump_interaction_claims.is_empty());
+
+        // Jump Double Deref components
+        let mut jump_double_deref_components = array![];
+        let mut jump_double_deref_claims = claim.jump_double_deref.span();
+        let mut jump_double_deref_interaction_claims = interaction_claim.jump_double_deref.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (
+                jump_double_deref_claims.pop_front(),
+                jump_double_deref_interaction_claims.pop_front(),
+            ) {
+            jump_double_deref_components
+                .append(
+                    components::jump_opcode_double_deref::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(jump_double_deref_claims.is_empty());
+        assert!(jump_double_deref_interaction_claims.is_empty());
+
+        // Jump Rel components
+        let mut jump_rel_components = array![];
+        let mut jump_rel_claims = claim.jump_rel.span();
+        let mut jump_rel_interaction_claims = interaction_claim.jump_rel.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (jump_rel_claims.pop_front(), jump_rel_interaction_claims.pop_front()) {
+            jump_rel_components
+                .append(
+                    components::jump_opcode_rel::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(jump_rel_claims.is_empty());
+        assert!(jump_rel_interaction_claims.is_empty());
+
+        // Jump Rel Imm components
+        let mut jump_rel_imm_components = array![];
+        let mut jump_rel_imm_claims = claim.jump_rel_imm.span();
+        let mut jump_rel_imm_interaction_claims = interaction_claim.jump_rel_imm.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (jump_rel_imm_claims.pop_front(), jump_rel_imm_interaction_claims.pop_front()) {
+            jump_rel_imm_components
+                .append(
+                    components::jump_opcode_rel_imm::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(jump_rel_imm_claims.is_empty());
+        assert!(jump_rel_imm_interaction_claims.is_empty());
+
+        // Mul components
+        let mut mul_components = array![];
+        let mut mul_claims = claim.mul.span();
+        let mut mul_interaction_claims = interaction_claim.mul.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (mul_claims.pop_front(), mul_interaction_claims.pop_front()) {
+            mul_components
+                .append(
+                    components::mul_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        range_check_19_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19
+                            .clone(),
+                        range_check_19_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_b
+                            .clone(),
+                        range_check_19_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_c
+                            .clone(),
+                        range_check_19_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_d
+                            .clone(),
+                        range_check_19_e_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_e
+                            .clone(),
+                        range_check_19_f_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_f
+                            .clone(),
+                        range_check_19_g_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_g
+                            .clone(),
+                        range_check_19_h_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_19_h
+                            .clone(),
+                    },
+                );
+        }
+        assert!(mul_claims.is_empty());
+        assert!(mul_interaction_claims.is_empty());
+
+        // Mul Small components
+        let mut mul_small_components = array![];
+        let mut mul_small_claims = claim.mul_small.span();
+        let mut mul_small_interaction_claims = interaction_claim.mul_small.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (mul_small_claims.pop_front(), mul_small_interaction_claims.pop_front()) {
+            mul_small_components
+                .append(
+                    components::mul_opcode_small::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        range_check_11_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_11
+                            .clone(),
+                    },
+                );
+        }
+        assert!(mul_small_claims.is_empty());
+        assert!(mul_small_interaction_claims.is_empty());
+
+        // QM31 components
+        let mut qm31_components = array![];
+        let mut qm31_claims = claim.qm31.span();
+        let mut qm31_interaction_claims = interaction_claim.qm31.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (qm31_claims.pop_front(), qm31_interaction_claims.pop_front()) {
+            qm31_components
+                .append(
+                    components::qm_31_add_mul_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        range_check_4_4_4_4_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_4_4_4_4
+                            .clone(),
+                    },
+                );
+        }
+        assert!(qm31_claims.is_empty());
+        assert!(qm31_interaction_claims.is_empty());
+
+        // Ret components
+        let mut ret_components = array![];
+        let mut ret_claims = claim.ret.span();
+        let mut ret_interaction_claims = interaction_claim.ret.span();
+        while let (Option::Some(claim), Option::Some(interaction_claim)) =
+            (ret_claims.pop_front(), ret_interaction_claims.pop_front()) {
+            ret_components
+                .append(
+                    components::ret_opcode::Component {
+                        claim: *claim,
+                        interaction_claim: *interaction_claim,
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                    },
+                );
+        }
+        assert!(ret_claims.is_empty());
+        assert!(ret_interaction_claims.is_empty());
+
+        OpcodeComponents {
+            add: add_components,
+            add_small: add_small_components,
+            add_ap: add_ap_components,
+            assert_eq: assert_eq_components,
+            assert_eq_imm: assert_eq_imm_components,
+            assert_eq_double_deref: assert_eq_double_deref_components,
+            blake: blake_components,
+            call: call_components,
+            call_rel_imm: call_rel_imm_components,
+            jnz: jnz_components,
+            jnz_taken: jnz_taken_components,
+            jump: jump_components,
+            jump_double_deref: jump_double_deref_components,
+            jump_rel: jump_rel_components,
+            jump_rel_imm: jump_rel_imm_components,
+            mul: mul_components,
+            mul_small: mul_small_components,
+            qm31: qm31_components,
+            ret: ret_components,
+        }
+    }
+
+    fn mask_points(
+        self: @OpcodeComponents,
+        ref preprocessed_column_set: PreprocessedColumnSet,
+        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
+        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
+        point: CirclePoint<QM31>,
+    ) {
+        for component in self.add.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.add_small.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.add_ap.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.assert_eq.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.assert_eq_imm.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.assert_eq_double_deref.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.blake.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.call.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.call_rel_imm.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.jnz.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.jnz_taken.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.jump.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.jump_double_deref.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.jump_rel.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.jump_rel_imm.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.mul.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.mul_small.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.qm31.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        for component in self.ret.span() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        };
+    }
+
+    fn max_constraint_log_degree_bound(self: @OpcodeComponents) -> u32 {
+        let mut max_degree = 0;
+
+        for component in self.add.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.add_small.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.add_ap.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.assert_eq.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.assert_eq_imm.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.assert_eq_double_deref.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.blake.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.call.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.call_rel_imm.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.jnz.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.jnz_taken.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.jump.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.jump_double_deref.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.jump_rel.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.jump_rel_imm.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.mul.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.mul_small.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.qm31.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        for component in self.ret.span() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        max_degree
+    }
+
+    fn evaluate_constraints_at_point(
+        self: @OpcodeComponents,
+        ref sum: QM31,
+        ref preprocessed_mask_values: PreprocessedMaskValues,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+        random_coeff: QM31,
+        point: CirclePoint<QM31>,
+    ) {
+        for component in self.add.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        for component in self.add_small.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        for component in self.add_ap.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        for component in self.assert_eq.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        for component in self.assert_eq_imm.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        for component in self.assert_eq_double_deref.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.blake.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.call.span() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        for component in self.call_rel_imm.span() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
