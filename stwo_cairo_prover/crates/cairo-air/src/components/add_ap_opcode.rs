@@ -1,5 +1,7 @@
+// AIR version 0eff9446
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_d2a10::DecodeInstructionD2A10;
+use crate::components::subroutines::range_check_ap::RangeCheckAp;
 use crate::components::subroutines::read_small::ReadSmall;
 
 pub const N_TRACE_COLUMNS: usize = 15;
@@ -82,7 +84,6 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
-        let M31_8388608 = E::F::from(M31::from(8388608));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -96,7 +97,7 @@ impl FrameworkEval for Eval {
         let op1_limb_0_col10 = eval.next_trace_mask();
         let op1_limb_1_col11 = eval.next_trace_mask();
         let op1_limb_2_col12 = eval.next_trace_mask();
-        let next_ap_bot8bits_col13 = eval.next_trace_mask();
+        let range_check_ap_bot8bits_col13 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -143,21 +144,13 @@ impl FrameworkEval for Eval {
         let next_ap_tmp_c921e_12 = eval.add_intermediate(
             (input_ap_col1.clone() + read_small_output_tmp_c921e_11_limb_0.clone()),
         );
-        eval.add_to_relation(RelationEntry::new(
+        RangeCheckAp::evaluate(
+            [next_ap_tmp_c921e_12.clone()],
+            range_check_ap_bot8bits_col13.clone(),
             &self.range_check_19_lookup_elements,
-            E::EF::one(),
-            &[
-                ((next_ap_tmp_c921e_12.clone() - next_ap_bot8bits_col13.clone())
-                    * M31_8388608.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
             &self.range_check_8_lookup_elements,
-            E::EF::one(),
-            &[next_ap_bot8bits_col13.clone()],
-        ));
-
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
             E::EF::from(enabler.clone()),
