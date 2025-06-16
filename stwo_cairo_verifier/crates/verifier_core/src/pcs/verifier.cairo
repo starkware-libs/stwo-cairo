@@ -94,7 +94,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         channel.mix_felts(flattened_sampled_values.span());
 
-        let random_coeff = channel.draw_felt();
+        let random_coeff = channel.draw_secure_felt();
         let column_log_sizes = self.column_log_sizes();
         let fri_config = self.config.fri_config;
         let log_blowup_factor = fri_config.log_blowup_factor;

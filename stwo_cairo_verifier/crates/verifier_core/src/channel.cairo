@@ -43,10 +43,10 @@ pub trait ChannelTrait {
 
     fn mix_u32s(ref self: Channel, data: Span<u32>);
 
-    fn draw_felt(ref self: Channel) -> SecureField;
+    fn draw_secure_felt(ref self: Channel) -> SecureField;
 
     /// Generates a uniform random vector of SecureField elements.
-    fn draw_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
+    fn draw_secure_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
 
     /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
     fn draw_random_bytes(ref self: Channel) -> Array<u8>;

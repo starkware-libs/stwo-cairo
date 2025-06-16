@@ -43,7 +43,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
 ) -> Result<(), VerificationError> {
-    let random_coeff = channel.draw_felt();
+    let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Check that there are enough security bits.
