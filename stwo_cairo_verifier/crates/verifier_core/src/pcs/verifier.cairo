@@ -49,6 +49,16 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         res
     }
 
+
+    /// Returns the log sizes of each column in each commitment tree.
+    fn columns_by_log_sizes(self: @CommitmentSchemeVerifier) -> TreeSpan<Span<Span<usize>>> {
+        let mut res = array![];
+        for tree in self.trees.span() {
+            res.append(*tree.columns_by_log_size);
+        }
+        res.span()
+    }
+
     /// Reads a commitment from the prover.
     fn commit(
         ref self: CommitmentSchemeVerifier,
@@ -154,8 +164,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let samples = get_flattened_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
-            column_log_sizes.span(),
-            samples.span(),
+            self.columns_by_log_sizes(),
+            samples,
             random_coeff,
             query_positions_by_log_size,
             queried_values,
@@ -203,41 +213,23 @@ fn get_column_log_bounds(
 #[inline]
 fn get_flattened_samples(
     sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
-    sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> ColumnArray<Array<PointSample>> {
+    mut sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
+) -> TreeSpan<ColumnSpan<Array<PointSample>>> {
     let mut res = array![];
-    let n_trees = sampled_points.len();
     assert!(sampled_points.len() == sampled_values.len());
-
-    let mut tree_i = 0;
-    while tree_i < n_trees {
-        let tree_points = sampled_points[tree_i];
-        let tree_values = *sampled_values[tree_i];
+    for (tree_points, tree_values) in sampled_points.span().into_iter().zip(sampled_values) {
+        let mut tree_samples = array![];
         assert!(tree_points.len() == tree_values.len());
-        let n_columns = tree_points.len();
-
-        let mut column_i = 0;
-        while column_i < n_columns {
-            let column_points = tree_points[column_i];
-            let column_values = *tree_values[column_i];
-
-            let n_samples = column_points.len();
-            assert!(column_points.len() == column_values.len());
+        for (column_points, column_values) in tree_points.into_iter().zip(tree_values) {
             let mut column_samples = array![];
-
-            let mut sample_i = 0;
-            while sample_i < n_samples {
-                let point = *column_points[sample_i];
-                let value = *column_values[sample_i];
-                column_samples.append(PointSample { point, value });
-                sample_i += 1;
+            assert!(column_points.len() == column_values.len());
+            for (point, value) in column_points.into_iter().zip(column_values) {
+                column_samples.append(PointSample { point: *point, value: *value });
             }
 
-            res.append(column_samples);
-            column_i += 1;
+            tree_samples.append(column_samples);
         }
-
-        tree_i += 1;
+        res.append(tree_samples.span());
     }
-    res
+    res.span()
 }
