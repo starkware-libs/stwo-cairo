@@ -2,7 +2,7 @@ use stwo_cairo_common::preprocessed_consts::blake::{
     BLAKE_SIGMA, N_BLAKE_ROUNDS, N_BLAKE_SIGMA_COLS,
 };
 use stwo_cairo_common::prover_types::cpu::M31;
-use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::BaseField;

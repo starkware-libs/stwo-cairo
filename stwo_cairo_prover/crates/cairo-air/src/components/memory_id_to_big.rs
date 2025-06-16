@@ -5,14 +5,13 @@ use starknet_ff::FieldElement;
 use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
+use stwo_constraint_framework::{
+    relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
 };
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo_prover::core::pcs::TreeVec;
-use stwo_prover::relation;
 
 use super::prelude::RelationUse;
 use crate::preprocessed::{PreProcessedColumn, Seq};
@@ -412,7 +411,7 @@ mod tests {
     use num_traits::Zero;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_constraint_framework::expr::ExprEvaluator;
     use stwo_prover::core::fields::qm31::QM31;
 
     use super::*;

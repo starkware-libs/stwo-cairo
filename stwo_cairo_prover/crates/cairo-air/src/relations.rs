@@ -1,5 +1,5 @@
 #![allow(non_camel_case_types)]
-use stwo_prover::relation;
+use stwo_constraint_framework::relation;
 
 relation!(BlakeG, 20);
 relation!(BlakeRound, 35);

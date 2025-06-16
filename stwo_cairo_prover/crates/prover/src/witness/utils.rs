@@ -5,7 +5,7 @@ use cairo_air::preprocessed::PreProcessedTrace;
 use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
 use num_traits::{One, Zero};
-use stwo_prover::constraint_framework::PREPROCESSED_TRACE_IDX;
+use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::conversion::Pack;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
