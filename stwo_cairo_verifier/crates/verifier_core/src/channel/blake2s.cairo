@@ -215,7 +215,7 @@ fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
 
 fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
     channel.digest = new_digest;
-    channel.channel_time.inc_challenges();
+    channel.channel_time.next_challenges();
 }
 
 // TODO: Consider just returning secure felts.
