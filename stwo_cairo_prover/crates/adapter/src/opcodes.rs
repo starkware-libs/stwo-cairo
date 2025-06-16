@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crypto_bigint::U256;
+use crypto_bigint::{CheckedAdd, CheckedSub, U256};
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
@@ -12,10 +12,6 @@ use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::RelocatedTraceEntry;
 use crate::memory::limbs_to_u128;
-
-// Small mul operands are 36 bits.
-const SMALL_MUL_MAX_VALUE: u64 = 2_u64.pow(36) - 1;
-const SMALL_MUL_MIN_VALUE: u64 = 0;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -126,12 +122,8 @@ impl CasmStatesByOpcode {
                     ap
                 };
                 let op_1 = memory.get(mem1_base.0.checked_add_signed(offset2 as i32).unwrap());
-                // next ap = ap + op1 must be in the range [0, 2^27 - 1].
-                if !is_within_range(op_1, -(ap.0 as i128), ((1 << 27) - 1) - ap.0 as i128) {
-                    panic!(
-                        "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
-                    );
-                }
+                check_next_ap_in_range(op_1, ap);
+
                 self.add_ap_opcode.push(state);
             }
             // jump.
@@ -680,17 +672,6 @@ impl StateTransitions {
     }
 }
 
-fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
-    match val {
-        MemoryValue::Small(val) => (val as i128 >= min) && (val as i128 <= max),
-        MemoryValue::F252(felt252) if felt252[4..8] == [0; 4] => {
-            let val = limbs_to_u128(felt252[0..4].try_into().unwrap());
-            (val as i128 >= min) && (val as i128 <= max)
-        }
-        MemoryValue::F252(_) => false,
-    }
-}
-
 fn u256_from_le_array(arr: [u32; 8]) -> U256 {
     let mut buf = [0u8; 32];
     for (i, x) in arr.iter().enumerate() {
@@ -726,15 +707,36 @@ fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
     })
 }
 
-// Returns 'true' the multiplication factors are in the range [0, 2^36-1].
+const SMALL_MUL_MAX_VALUE: u128 = 2u128.pow(36) - 1;
+// Returns 'true' if the multiplication factors are in the range [0, 2^36-1].
 fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
     [op0, op_1].iter().all(|val| {
-        is_within_range(
-            *val,
-            SMALL_MUL_MIN_VALUE as i128,
-            SMALL_MUL_MAX_VALUE as i128,
-        )
+        let value = val.as_u256();
+        value[4..].iter().all(|&x| x == 0)
+            && limbs_to_u128(value[..4].try_into().unwrap()) <= SMALL_MUL_MAX_VALUE
     })
+}
+
+const P: U256 = U256::from_words([
+    0x0000000000000001,
+    0x0000000000000000,
+    0x0000000000000000,
+    0x0800000000000011,
+]);
+
+// Checks that the next ap value, which is `ap + op1`, is within the range of [0, 2^27 - 1].
+fn check_next_ap_in_range(op1: MemoryValue, ap: M31) {
+    let op1_val = u256_from_le_array(op1.as_u256());
+    assert!(
+        op1_val <= U256::from(2_u128.pow(27) - 1 - ap.0 as u128)
+            || (op1_val
+                >= P.checked_sub(&U256::from(ap.0))
+                    .expect("underflow in subtraction")
+                && op1_val
+                    <= P.checked_add(&U256::from(2_u128.pow(27) - 1 - ap.0 as u128))
+                        .expect("overflow in addition")),
+        "next_ap = ap + op1 need to within the range of [0, 2^27 - 1]"
+    );
 }
 
 /// Tests instructions mapping.
@@ -751,7 +753,9 @@ mod mappings_tests {
     use crate::adapter::adapter;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
-    use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions};
+    use crate::opcodes::{
+        check_next_ap_in_range, is_small_add, CasmStatesByOpcode, StateTransitions,
+    };
     use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
     use crate::test_utils::program_from_casm;
     use crate::vm_import::RelocatedTraceEntry;
@@ -908,6 +912,108 @@ mod mappings_tests {
         assert!(!is_small_add(dst, op0, op1));
     }
 
+    // Next ap = ap + op1 must be within the range of [0, 2^27 - 1], meaning op1 must be in the
+    // range of [0, 2^27 - 1 - ap] or [P - ap, P - 1] or [P, P + 2^27 - 1 - ap].
+    #[test]
+    fn test_next_ap_in_range_postive() {
+        let ap = M31(2_u32.pow(27) - 5);
+
+        // lower bound
+        let mut op1 = MemoryValue::Small(0);
+        check_next_ap_in_range(op1, ap);
+
+        // upper bound
+        op1 = MemoryValue::Small(2_u128.pow(27) - 1 - ap.0 as u128);
+        check_next_ap_in_range(op1, ap);
+
+        // value in the range
+        op1 = MemoryValue::Small(3);
+        check_next_ap_in_range(op1, ap);
+    }
+
+    #[test]
+    fn test_next_ap_in_range_negative() {
+        let ap = M31(2_u32.pow(27) - 5);
+
+        // lower bound
+        let p_min_ap = [
+            0xF8000006, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000010,
+            0x08000000,
+        ];
+        let mut op1 = MemoryValue::F252(p_min_ap);
+        check_next_ap_in_range(op1, ap);
+
+        // upper bound
+        op1 = MemoryValue::F252(P_MIN_1);
+        check_next_ap_in_range(op1, ap);
+
+        // value in the range
+        let mut p_min_ap_plus_1 = p_min_ap;
+        p_min_ap_plus_1[0] += 1;
+        check_next_ap_in_range(op1, ap);
+    }
+
+    #[test]
+    fn test_next_ap_in_range_positive_over_p() {
+        let ap = M31(2_u32.pow(27) - 5);
+
+        // lower bound
+        let p = [
+            0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000011,
+            0x08000000,
+        ];
+        let mut op1 = MemoryValue::F252(p);
+        check_next_ap_in_range(op1, ap);
+
+        // upper bound
+        let mut p_plus_4 = p;
+        p_plus_4[0] += 4;
+        op1 = MemoryValue::F252(p_plus_4);
+        check_next_ap_in_range(op1, ap);
+
+        // value in the range
+        let mut p_plus_3 = p;
+        p_plus_3[0] += 3;
+        op1 = MemoryValue::F252(p_plus_3);
+        check_next_ap_in_range(op1, ap);
+    }
+
+    #[test]
+    #[should_panic(expected = "next_ap = ap + op1 need to within the range of [0, 2^27 - 1]")]
+    fn test_next_ap_not_in_range1() {
+        let ap = M31(2_u32.pow(27) - 5);
+
+        let op1 = MemoryValue::Small(2_u128.pow(27) - ap.0 as u128);
+        check_next_ap_in_range(op1, ap);
+    }
+
+    #[test]
+    #[should_panic(expected = "next_ap = ap + op1 need to within the range of [0, 2^27 - 1]")]
+    fn test_next_ap_not_in_range2() {
+        let ap = M31(2_u32.pow(27) - 5);
+
+        let p_min_ap_min_1 = [
+            0xF8000005, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000010,
+            0x08000000,
+        ];
+
+        check_next_ap_in_range(MemoryValue::F252(p_min_ap_min_1), ap);
+    }
+
+    #[test]
+    #[should_panic(expected = "next_ap = ap + op1 need to within the range of [0, 2^27 - 1]")]
+    fn test_next_ap_not_in_range3() {
+        let ap = M31(2_u32.pow(27) - 5);
+
+        // lower bound
+        let p_plus_5 = [
+            0x00000006, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000011,
+            0x08000000,
+        ];
+
+        check_next_ap_in_range(MemoryValue::F252(p_plus_5), ap);
+    }
+
     #[test]
     fn test_jmp_rel() {
         // Encoding for the instruction `jmp rel [fp]`.
@@ -1006,9 +1112,7 @@ mod mappings_tests {
     }
 
     #[test]
-    #[should_panic(
-        expected = "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
-    )]
+    #[should_panic(expected = "next_ap = ap + op1 need to within the range of [0, 2^27 - 1]")]
     fn test_add_ap_rangecheck_panic() {
         // Encoding for the instruction `ap += [fp]`.
         // Flags: dst_base_fp, op0_base_fp, op1_base_fp, ap_update_add
@@ -1035,7 +1139,17 @@ mod mappings_tests {
         let x = u128_to_4_limbs(encoded_instr);
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
         memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
-        memory_builder.set(pc + 1, MemoryValue::Small((-(ap as i128)) as u128));
+        let p_min_ap = [
+            0xFFFF_FFFA,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0x0000_0010,
+            0x0800_0000,
+        ];
+        memory_builder.set(pc + 1, MemoryValue::F252(p_min_ap));
 
         let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
         let casm_states_by_opcode =
@@ -1044,9 +1158,7 @@ mod mappings_tests {
     }
 
     #[test]
-    #[should_panic(
-        expected = "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
-    )]
+    #[should_panic(expected = "next_ap = ap + op1 need to within the range of [0, 2^27 - 1]")]
     fn test_add_ap_rangecheck_panic_neg() {
         // Encoding for the instruction `ap += imm`.
         // Flags: dst_base_fp, op0_base_fp, op1_imm, ap_update_add
@@ -1057,7 +1169,17 @@ mod mappings_tests {
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
         memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
         memory_builder.set(pc + 1, MemoryValue::Small((-(ap as i128 + 1)) as u128));
-
+        let p_min_ap_min_1 = [
+            0xFFFF_FFF9,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0xFFFF_FFFF,
+            0x0000_0010,
+            0x0800_0000,
+        ];
+        memory_builder.set(pc + 1, MemoryValue::F252(p_min_ap_min_1));
         let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
         let _casm_states_by_opcode =
             CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
