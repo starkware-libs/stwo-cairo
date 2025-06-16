@@ -22,7 +22,8 @@ pub struct LookupElements<const N: usize> {
 pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
     fn draw(ref channel: Channel) -> LookupElements<N> {
         assert!(N != 0);
-        let [z, alpha]: [QM31; 2] = (*channel.draw_felts(2).span().try_into().unwrap()).unbox();
+        let [z, alpha]: [QM31; 2] = (*channel.draw_secure_felts(2).span().try_into().unwrap())
+            .unbox();
 
         let mut acc = One::one();
         let mut alpha_powers = array![acc];

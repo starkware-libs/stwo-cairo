@@ -98,7 +98,7 @@ pub impl CirclePointQM31Impl of CirclePointTrait<QM31> {}
 pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     /// Returns a random QM31 circle point.
     fn get_random_point(ref self: Channel) -> CirclePoint<QM31> {
-        let t: QM31 = self.draw_felt();
+        let t: QM31 = self.draw_secure_felt();
         let t_squared = t * t;
         let t_squared_plus_1_inv = (t_squared + One::one()).inverse();
         let x = (One::one() - t_squared) * t_squared_plus_1_inv;

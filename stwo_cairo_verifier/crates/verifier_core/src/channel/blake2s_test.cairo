@@ -22,10 +22,10 @@ fn test_blake_bytes() {
 }
 
 #[test]
-fn test_draw_felt() {
+fn test_draw_secure_felt() {
     let mut channel: Blake2sChannel = Default::default();
 
-    let felt = channel.draw_felt();
+    let felt = channel.draw_secure_felt();
 
     // Tested against values produced from Rust code.
     // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
@@ -33,10 +33,10 @@ fn test_draw_felt() {
 }
 
 #[test]
-fn test_draw_felts() {
+fn test_draw_secure_felts() {
     let mut channel: Blake2sChannel = Default::default();
 
-    let felts = channel.draw_felts(8);
+    let felts = channel.draw_secure_felts(8);
 
     // Tested against values produced from Rust code.
     // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs

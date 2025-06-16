@@ -81,7 +81,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             column_log_bounds,
             column_commitment_domains: column_commitment_domains.span(),
             proof: first_layer_proof,
-            folding_alpha: channel.draw_felt(),
+            folding_alpha: channel.draw_secure_felt(),
         };
 
         // Bounds are stored in descending order.
@@ -108,7 +108,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                     FriInnerLayerVerifier {
                         log_degree_bound: layer_log_bound,
                         domain: layer_domain,
-                        folding_alpha: channel.draw_felt(),
+                        folding_alpha: channel.draw_secure_felt(),
                         layer_index,
                         proof,
                     },
