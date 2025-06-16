@@ -59,6 +59,7 @@ impl MerkleDecommitmentSerde<
 
 pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,
+    // document
     pub column_log_sizes: Array<u32>,
 }
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
@@ -75,6 +76,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     /// * `decommitment` - The decommitment object containing the witness and column values.
     ///
     /// # Errors
+    /// // TODO: panic instead of returning errors
     ///
     /// Returns an error if any of the following conditions are met:
     ///
@@ -113,6 +115,8 @@ impl MerkleVerifierImpl<
             None => { return Ok(()); },
         };
 
+        // consider returning the layer_log_size from this function instead of computing it separately (it should save steps)
+        // you only use the lengths, don't create and return the list of indices
         let mut cols_by_size = Self::cols_by_size(self);
 
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
@@ -123,12 +127,14 @@ impl MerkleVerifierImpl<
             let mut layer_total_queries = array![];
 
             // Prepare read buffer for queried values to the current layer.
+            // use get()
             let mut layer_cols = cols_by_size
                 .replace(layer_log_size.into(), Default::default())
                 .deref_or(array![]);
             let n_columns_in_layer = layer_cols.len();
 
             // Extract the requested queries to the current layer.
+            // use get() (if possible)
             let mut layer_column_queries = queries_per_log_size
                 .replace(layer_log_size.into(), Default::default())
                 .deref_or(array![].span());
@@ -170,6 +176,7 @@ impl MerkleVerifierImpl<
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
+                    // Is this else ever entered?
                     column_witness.pop_front_n(n_columns_in_layer)
                 };
 
@@ -213,8 +220,10 @@ impl MerkleVerifierImpl<
         let mut column_log_sizes = self.column_log_sizes.span();
         let mut res_dict = Default::default();
         let mut col_index = 0;
+        // TODO: change to for loop
         while let Some(col_size) = column_log_sizes.pop_front() {
             let (res_dict_entry, value) = res_dict.entry((*col_size).into());
+            // TODO: note that array![] is created for every iteration, consider changing the code to an if
             let mut value = value.deref_or(array![]);
             value.append(col_index);
             res_dict = res_dict_entry.finalize(NullableTrait::new(value));
@@ -237,6 +246,7 @@ fn next_decommitment_node<H>(
     };
 
     match (layer_query_head, prev_query_head) {
+        // when is prev_query not None and *column_query != prev_query ?
         (None, None) => { None },
         (Some(column_query), None) => { Some(*column_query) },
         (None, Some(prev_query)) => { Some(prev_query) },
