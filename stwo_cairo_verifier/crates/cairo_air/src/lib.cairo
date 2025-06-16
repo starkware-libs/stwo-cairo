@@ -6617,6 +6617,10 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                             .range_checks
                             .rc_9_9_h
                             .clone(),
+                        range_check_8_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_8
+                            .clone(),
                     },
                 );
         }
