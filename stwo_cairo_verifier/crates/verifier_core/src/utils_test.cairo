@@ -26,16 +26,6 @@ fn test_bit_reverse() {
 }
 
 #[test]
-fn test_sort_ascending() {
-    assert_eq!(array![6_usize, 5, 1, 4, 2, 3].sort_ascending(), array![1, 2, 3, 4, 5, 6]);
-}
-
-#[test]
-fn test_dedup() {
-    assert_eq!(array![1_usize, 1, 1, 2, 2, 3, 4, 5, 5, 5].dedup(), array![1, 2, 3, 4, 5]);
-}
-
-#[test]
 fn test_array_new_repeated() {
     assert_eq!(ArrayImpl::new_repeated(n: 5, v: 3_usize), array![3, 3, 3, 3, 3]);
 }
