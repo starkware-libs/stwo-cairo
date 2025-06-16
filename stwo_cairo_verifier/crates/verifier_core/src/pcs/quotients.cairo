@@ -1,3 +1,4 @@
+use bounded_int::BoundedInt;
 use core::array::ArrayImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, SquashedFelt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
@@ -9,13 +10,58 @@ use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-use crate::utils::{
-    ArrayImpl as ArrayUtilImpl, ColumnsByLogSize, SpanImpl, bit_reverse_index,
-    group_column_trees_by_log_size, pack4,
-};
+use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::verifier::VerificationError;
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
+/// Pads all the trees in `columns_by_log_size_per_tree` to the length of the longest tree.
+/// and transposes it so that such that the i'th element holds a trees where each entry is the span
+/// of column of size 2**i in that tree.
+///
+/// # Arguments
+///
+/// * `columns_by_log_size_per_tree`: The columns by log size per tree.
+///
+/// # Returns
+///
+/// * `columns_per_tree_by_log_size`: The columns per tree by log size.
+fn pad_and_transpose_columns_by_log_size_per_tree(
+    mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
+) -> Array<TreeArray<Span<usize>>> {
+    let mut empty_span = array![].span();
+    let mut columns_per_tree_by_log_size = array![];
+
+    loop {
+        // In each iteration we pop the the columns corresponding to `log_size` from each tree, so
+        // we need to prepare `columns_by_log_size_per_tree` for the next iteration.
+        let mut next_columns_by_log_size_per_tree = array![];
+
+        let mut done = true;
+        let mut columns_per_tree = array![];
+        for columns_by_log_size in columns_by_log_size_per_tree {
+            let mut columns_by_log_size = *columns_by_log_size;
+            columns_per_tree
+                .append(
+                    if let Some(columns) = columns_by_log_size.pop_front() {
+                        done = false;
+                        *columns
+                    } else {
+                        empty_span
+                    },
+                );
+            next_columns_by_log_size_per_tree.append(columns_by_log_size);
+        }
+
+        if done {
+            break;
+        }
+
+        columns_by_log_size_per_tree = next_columns_by_log_size_per_tree.span();
+        columns_per_tree_by_log_size.append(columns_per_tree);
+    }
+
+    columns_per_tree_by_log_size
+}
 
 /// Computes the OOD quotients at the query positions.
 ///
@@ -26,39 +72,38 @@ use crate::{ColumnSpan, TreeArray, TreeSpan};
 /// * `random_coeff`: Verifier randomness for folding multiple columns quotients together.
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
 /// * `queried_values`: Evals of each column at the columns corresponding query positions.
+/// Transposes and pads columns_by_log_size_per_tree.
+/// Trees that have fewer log sizes will be padded with empty spans.
 pub fn fri_answers(
-    mut log_size_per_column: TreeSpan<@Array<u32>>,
-    samples_per_column: ColumnSpan<Array<PointSample>>,
+    mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
+    samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeArray<Span<M31>>,
 ) -> Result<Array<Span<QM31>>, VerificationError> {
-    let ColumnsByLogSize {
-        mut columns_by_log_size_per_tree,
-    } = group_column_trees_by_log_size(log_size_per_column);
+    let columns_per_tree_by_log_size = pad_and_transpose_columns_by_log_size_per_tree(
+        columns_by_log_size_per_tree,
+    );
 
+    let mut log_size = columns_per_tree_by_log_size.len();
+    assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
+
+    let mut columns_per_tree_by_log_size = columns_per_tree_by_log_size.span();
     let mut answers = array![];
-    for i in (0..M31_CIRCLE_LOG_ORDER) {
-        let log_size = (M31_CIRCLE_LOG_ORDER - 1) - i;
+    while let Some(columns_per_tree) = columns_per_tree_by_log_size.pop_back() {
+        log_size = log_size - 1;
 
         // Collect the column samples and the number of columns in each tree.
         let mut samples = array![];
         let mut n_columns_per_tree = array![];
-
-        // In each iteration we pop the the columns corresponding to `log_size` from each tree, so
-        // we need to prepare `columns_by_log_size_per_tree` for the next iteration.
-        let mut next_columns_by_log_size_per_tree = array![];
-        for columns_by_log_size in columns_by_log_size_per_tree {
-            let mut columns_by_log_size = *columns_by_log_size;
-            let columns = columns_by_log_size.pop_back().unwrap();
-            next_columns_by_log_size_per_tree.append(columns_by_log_size);
-
+        for (columns, samples_per_column) in columns_per_tree
+            .into_iter()
+            .zip(samples_per_column_per_tree) {
             for column in columns {
                 samples.append(samples_per_column[*column]);
             }
             n_columns_per_tree.append(columns.len());
         }
-        columns_by_log_size_per_tree = next_columns_by_log_size_per_tree.span();
 
         if samples.is_empty() {
             continue;
@@ -379,7 +424,7 @@ mod tests {
     use crate::fields::m31::m31;
     use crate::fields::qm31::{PackedUnreducedQM31Trait, QM31, qm31_const};
     use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-    use crate::utils::DictImpl;
+    use crate::utils::{DictImpl, group_columns_by_log_size};
     use super::{
         ColumnSampleBatch, ColumnSampleBatchImpl, ComplexConjugateLineCoeffsImpl, PointSample,
         QuotientConstantsImpl, accumulate_row_quotients, fri_answers, fri_answers_for_log_size,
@@ -426,14 +471,22 @@ mod tests {
     fn test_fri_answers() {
         let col0_log_size = 5;
         let col1_log_size = 7;
-        let log_size_tree = array![@array![], @array![], @array![col0_log_size, col1_log_size]];
+        let tree2_log_sizes = array![col0_log_size, col1_log_size];
+        let columns_by_log_sizes_per_tree = array![
+            array![].span(), array![].span(), group_columns_by_log_size(tree2_log_sizes.span()),
+        ]
+            .span();
         let p0 = qm31_circle_gen();
         let p1 = qm31_circle_gen() + qm31_circle_gen();
         let sample0 = PointSample { point: p0, value: qm31_const::<0, 1, 2, 3>() };
         let sample1 = PointSample { point: p1, value: qm31_const::<1, 2, 3, 4>() };
         let col0_samples = array![sample0, sample1];
         let col1_samples = array![sample0];
-        let samples_per_column = array![col0_samples, col1_samples];
+        let samples_per_column_per_tree = array![
+            array![].span(), array![].span(), array![col0_samples, col1_samples].span(),
+        ]
+            .span();
+
         let random_coeff = qm31_const::<9, 8, 7, 6>();
         let col0_query_positions = array![4, 5].span();
         let col1_query_positions = array![6, 7].span();
@@ -446,8 +499,8 @@ mod tests {
         ];
 
         let res = fri_answers(
-            log_size_tree.span(),
-            samples_per_column.span(),
+            columns_by_log_sizes_per_tree,
+            samples_per_column_per_tree,
             random_coeff,
             query_domain_per_log_size,
             query_evals,
