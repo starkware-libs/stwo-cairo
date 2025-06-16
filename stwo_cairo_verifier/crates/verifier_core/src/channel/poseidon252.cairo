@@ -94,12 +94,12 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.channel_time.inc_challenges();
     }
 
-    fn draw_felt(ref self: Poseidon252Channel) -> SecureField {
+    fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self);
         QM31Trait::from_fixed_array([r0, r1, r2, r3])
     }
 
-    fn draw_felts(ref self: Poseidon252Channel, mut n_felts: usize) -> Array<SecureField> {
+    fn draw_secure_felts(ref self: Poseidon252Channel, mut n_felts: usize) -> Array<SecureField> {
         let mut res: Array = Default::default();
 
         while n_felts != 0 {
@@ -116,10 +116,10 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
-    /// `self.draw_felt252()` in little endian.
+    /// `self.draw_secure_felt252()` in little endian.
     /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
     fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
-        let mut cur: u256 = draw_felt252(ref self).into();
+        let mut cur: u256 = draw_secure_felt252(ref self).into();
         let mut bytes = array![];
         for _ in 0_usize..BYTES_PER_HASH {
             let (q, r) = DivRem::div_rem(cur, 0x100);
@@ -143,14 +143,14 @@ fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
 
 // TODO(spapini): Check that this is sound.
 fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
-    let mut cur: u256 = draw_felt252(ref channel).into();
+    let mut cur: u256 = draw_secure_felt252(ref channel).into();
     [
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
         extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
     ]
 }
 
-fn draw_felt252(ref channel: Poseidon252Channel) -> felt252 {
+fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
     let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 2);
     channel.channel_time.inc_sent();
     res
@@ -185,11 +185,11 @@ mod tests {
         assert_eq!(channel.channel_time.n_challenges, 0);
         assert_eq!(channel.channel_time.n_sent, 0);
 
-        channel.draw_felt();
+        channel.draw_secure_felt();
         assert_eq!(channel.channel_time.n_challenges, 0);
         assert_eq!(channel.channel_time.n_sent, 1);
 
-        channel.draw_felts(9);
+        channel.draw_secure_felts(9);
         assert_eq!(channel.channel_time.n_challenges, 0);
         assert_eq!(channel.channel_time.n_sent, 6);
 
@@ -197,7 +197,7 @@ mod tests {
         assert_eq!(channel.channel_time.n_challenges, 1);
         assert_eq!(channel.channel_time.n_sent, 0);
 
-        channel.draw_felt();
+        channel.draw_secure_felt();
         assert_eq!(channel.channel_time.n_challenges, 1);
         assert_eq!(channel.channel_time.n_sent, 1);
         assert_ne!(channel.digest, 0);
@@ -205,23 +205,23 @@ mod tests {
 
 
     #[test]
-    pub fn test_draw_felt() {
+    pub fn test_draw_secure_felt() {
         let initial_digest = 0;
         let mut channel = new_channel(initial_digest);
 
-        let first_random_felt = channel.draw_felt();
+        let first_random_felt = channel.draw_secure_felt();
 
         // Assert that next random felt is different.
-        assert_ne!(first_random_felt, channel.draw_felt());
+        assert_ne!(first_random_felt, channel.draw_secure_felt());
     }
 
     #[test]
-    pub fn test_draw_felts() {
+    pub fn test_draw_secure_felts() {
         let initial_digest = 0;
         let mut channel = new_channel(initial_digest);
 
-        let mut random_felts = channel.draw_felts(5);
-        random_felts.append_span(channel.draw_felts(4).span());
+        let mut random_felts = channel.draw_secure_felts(5);
+        random_felts.append_span(channel.draw_secure_felts(4).span());
 
         // Assert that all the random felts are unique.
         assert_ne!(random_felts[0], random_felts[5]);
@@ -233,7 +233,7 @@ mod tests {
         let mut channel = new_channel(initial_digest);
 
         for _ in 0_usize..10 {
-            channel.draw_felt();
+            channel.draw_secure_felt();
         }
 
         let prev_digest = channel.digest;
