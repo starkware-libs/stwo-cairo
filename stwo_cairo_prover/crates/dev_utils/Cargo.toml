@@ -3,6 +3,9 @@ name = "dev-utils"
 version.workspace = true
 edition.workspace = true
 
+[features]
+std = ["stwo-cairo-adapter/std"]
+
 [dependencies]
 cairo-air.workspace = true
 clap.workspace = true
