@@ -30,7 +30,7 @@ impl ChannelTimeImpl of ChannelTimeTrait {
         self.n_sent += 1;
     }
 
-    fn inc_challenges(ref self: ChannelTime) {
+    fn next_challenges(ref self: ChannelTime) {
         self.n_challenges += 1;
         self.n_sent = 0;
     }
