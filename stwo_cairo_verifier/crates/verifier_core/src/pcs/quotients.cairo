@@ -11,7 +11,7 @@ use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, Q
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
     ArrayImpl as ArrayUtilImpl, ColumnsByLogSize, SpanImpl, bit_reverse_index,
-    group_columns_by_log_size, pack4,
+    group_column_trees_by_log_size, pack4,
 };
 use crate::verifier::VerificationError;
 use crate::{ColumnSpan, TreeArray, TreeSpan};
@@ -35,7 +35,7 @@ pub fn fri_answers(
 ) -> Result<Array<Span<QM31>>, VerificationError> {
     let ColumnsByLogSize {
         mut columns_by_log_size_per_tree,
-    } = group_columns_by_log_size(log_size_per_column);
+    } = group_column_trees_by_log_size(log_size_per_column);
 
     let mut answers = array![];
     for i in (0..M31_CIRCLE_LOG_ORDER) {
