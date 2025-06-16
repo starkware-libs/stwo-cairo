@@ -255,67 +255,6 @@ pub fn gen_bit_mask(n_bits: u32) -> u64 {
     *BIT_MASKS.span()[n_bits]
 }
 
-
-/// Holds the columns indices grouped by log size for each tree.
-///  for each tree the columns are grouped by thier log size, where the log_size is in the range [0,
-///  M31_CIRCLE_LOG_ORDER).
-///
-/// Note that the index of the first column in the i'th tree is the number of columns in the
-/// previous trees.
-pub struct ColumnsByLogSize {
-    pub columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
-}
-
-/// Groups the columns by log size for each tree.
-///
-/// # Arguments
-///
-/// * `log_size_per_column_per_tree`: the log sizes of the columns for each tree.
-pub fn group_column_trees_by_log_size(
-    mut log_size_per_column_per_tree: TreeSpan<@Array<usize>>,
-) -> ColumnsByLogSize {
-    // Return the array of columns behind a nullable or an empty array.
-    let get_columns_array = |nullable: Nullable<Array<usize>>| {
-        match match_nullable(nullable) {
-            FromNullableResult::Null => array![],
-            FromNullableResult::NotNull(value) => value.unbox(),
-        }
-    };
-
-    let mut column = 0_usize;
-    let mut columns_by_log_size_per_tree: TreeArray<Span<Span<usize>>> = array![];
-    for interaction_column_sizes in log_size_per_column_per_tree {
-        let mut columns_by_size = Default::default();
-
-        for column_log_size in interaction_column_sizes.span() {
-            let (dict_entry, value) = columns_by_size.entry((*column_log_size).into());
-            let mut columns_of_size = get_columns_array(value);
-            columns_of_size.append(column);
-            columns_by_size = dict_entry.finalize(NullableTrait::new(columns_of_size));
-            column += 1;
-        }
-
-        let mut columns_by_log_size: Array<Span<usize>> = array![];
-        for log_size in (0..M31_CIRCLE_LOG_ORDER) {
-            let (dict_entry, value) = columns_by_size.entry(log_size.into());
-            let mut columns_of_size = get_columns_array(value);
-            columns_by_log_size.append(columns_of_size.span());
-            // Clear the value of the dict entry, note that the entry would still appear in the
-            // squashed dict.
-            columns_by_size = dict_entry.finalize(null());
-        }
-
-        // Make sure that the dict has only M31_CIRCLE_LOG_ORDER entries.
-        // Since the loop above accessed the entries [0, M31_CIRCLE_LOG_ORDER), this guarantees that
-        // there were no columns with log size > M31_CIRCLE_LOG_ORDER - 1.
-        assert!(columns_by_size.squash().into_entries().len() == M31_CIRCLE_LOG_ORDER);
-
-        columns_by_log_size_per_tree.append(columns_by_log_size.span());
-    }
-
-    ColumnsByLogSize { columns_by_log_size_per_tree: columns_by_log_size_per_tree.span() }
-}
-
 /// Given a span of column log sizes, Return a span of the column indicies grouped by their log
 /// size.
 ///
