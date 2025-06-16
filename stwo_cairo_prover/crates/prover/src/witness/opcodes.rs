@@ -340,6 +340,7 @@ impl OpcodesClaimGenerator {
                     &range_checks_trace_generator.rc_9_9_f_trace_generator,
                     &range_checks_trace_generator.rc_9_9_g_trace_generator,
                     &range_checks_trace_generator.rc_9_9_h_trace_generator,
+                    &range_checks_trace_generator.rc_8_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -697,6 +698,7 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.range_checks.rc_9_9_f,
                     &interaction_elements.range_checks.rc_9_9_g,
                     &interaction_elements.range_checks.rc_9_9_h,
+                    &interaction_elements.range_checks.rc_8,
                     &interaction_elements.verify_instruction,
                 )
             })
