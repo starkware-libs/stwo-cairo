@@ -38,7 +38,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     fn mix_root(ref self: Poseidon252Channel, root: felt252) {
         let (s0, _, _) = hades_permutation(self.digest, root, 2);
         self.digest = s0;
-        self.channel_time.inc_challenges();
+        self.channel_time.next_challenges();
     }
 
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
@@ -62,7 +62,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.digest = poseidon_hash_span(res.span());
 
         // TODO(spapini): do we need length padding?
-        self.channel_time.inc_challenges();
+        self.channel_time.next_challenges();
     }
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
@@ -90,7 +90,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.digest = poseidon_hash_span(res.span());
 
         // TODO(spapini): do we need length padding?
-        self.channel_time.inc_challenges();
+        self.channel_time.next_challenges();
     }
 
     fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {
