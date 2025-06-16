@@ -159,12 +159,12 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
-    fn draw_felt(ref self: Blake2sChannel) -> SecureField {
+    fn draw_secure_felt(ref self: Blake2sChannel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
         QM31Trait::from_fixed_array([r0, r1, r2, r3])
     }
 
-    fn draw_felts(ref self: Blake2sChannel, mut n_felts: usize) -> Array<SecureField> {
+    fn draw_secure_felts(ref self: Blake2sChannel, mut n_felts: usize) -> Array<SecureField> {
         let mut res = array![];
 
         while n_felts != 0 {
