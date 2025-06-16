@@ -10,7 +10,9 @@ use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
-use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
+use crate::utils::{
+    ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, columns_by_log_size, pow2,
+};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::{ColumnArray, Hash};
@@ -426,9 +428,13 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             return Err(FriVerificationError::FirstLayerEvaluationsInvalid);
         }
 
+        let columns_by_log_size = columns_by_log_size(
+            decommitment_coordinate_column_log_sizes.span(),
+        );
         let merkle_verifier = MerkleVerifier {
             root: self.proof.commitment.clone(),
             column_log_sizes: decommitment_coordinate_column_log_sizes,
+            columns_by_log_size,
         };
 
         if let Err(_) = merkle_verifier
@@ -489,9 +495,12 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         }
 
         let column_log_size = self.domain.log_size();
+        let column_log_sizes = ArrayImpl::new_repeated(
+            n: QM31_EXTENSION_DEGREE, v: column_log_size,
+        );
+        let columns_by_log_size = columns_by_log_size(column_log_sizes.span());
         let merkle_verifier = MerkleVerifier {
-            root: (*self.proof.commitment).clone(),
-            column_log_sizes: ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: column_log_size),
+            root: (*self.proof.commitment).clone(), column_log_sizes, columns_by_log_size,
         };
 
         let mut decommitment_positions_dict: Felt252Dict<Nullable<Span<usize>>> =

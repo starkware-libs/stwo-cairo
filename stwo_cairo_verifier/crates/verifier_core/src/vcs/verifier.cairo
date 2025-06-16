@@ -60,6 +60,7 @@ impl MerkleDecommitmentSerde<
 pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,
     pub column_log_sizes: Array<u32>,
+    pub columns_by_log_size: Span<Span<usize>>,
 }
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
@@ -93,8 +94,6 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
         queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     ) -> Result<(), MerkleVerificationError>;
-
-    fn cols_by_size(self: @MerkleVerifier<H>) -> Felt252Dict<Nullable<Array<u32>>>;
 }
 
 impl MerkleVerifierImpl<
@@ -108,33 +107,28 @@ impl MerkleVerifierImpl<
     ) -> Result<(), MerkleVerificationError> {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
-        let mut layer_log_size = match self.column_log_sizes.max() {
-            Some(max_log_size) => *max_log_size,
-            None => { return Ok(()); },
-        };
-
-        let mut cols_by_size = Self::cols_by_size(self);
-
+        let mut columns_by_log_size = self.columns_by_log_size.clone();
+        let mut layer_log_size: felt252 = columns_by_log_size.len().into();
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
         let mut is_first_layer = true;
-        loop {
+
+        while let Some(layer_cols) = columns_by_log_size.pop_back() {
+            let n_columns_in_layer = layer_cols.len();
+            layer_log_size -= 1;
+
             // Prepare write buffer for queries to the current layer. This will propagate to the
             // next layer.
             let mut layer_total_queries = array![];
 
             // Prepare read buffer for queried values to the current layer.
-            let mut layer_cols = cols_by_size
-                .replace(layer_log_size.into(), Default::default())
-                .deref_or(array![]);
-            let n_columns_in_layer = layer_cols.len();
 
             // Extract the requested queries to the current layer.
             let mut layer_column_queries = queries_per_log_size
-                .replace(layer_log_size.into(), Default::default())
+                .replace(layer_log_size, Default::default())
                 .deref_or(array![].span());
 
             // Merge previous layer queries and column queries.
-            let res = loop {
+            loop {
                 // Fetch the next query.
                 let current_query = if let Some(current_query) =
                     next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
@@ -179,18 +173,12 @@ impl MerkleVerifierImpl<
 
                 layer_total_queries
                     .append((current_query, H::hash_node(node_hashes, column_values)));
-            };
-            if let Err(err) = res {
-                break Err(err);
             }
+                .unwrap();
 
             prev_layer_hashes = layer_total_queries;
-            if layer_log_size == 0 {
-                break Ok(());
-            }
             is_first_layer = false;
-            layer_log_size -= 1;
-        }?;
+        }
 
         // Check that all witnesses and values have been consumed.
         if !hash_witness.is_empty() {
@@ -207,21 +195,6 @@ impl MerkleVerifierImpl<
         }
 
         Ok(())
-    }
-
-    fn cols_by_size(self: @MerkleVerifier<H>) -> Felt252Dict<Nullable<Array<u32>>> {
-        let mut column_log_sizes = self.column_log_sizes.span();
-        let mut res_dict = Default::default();
-        let mut col_index = 0;
-        while let Some(col_size) = column_log_sizes.pop_front() {
-            let (res_dict_entry, value) = res_dict.entry((*col_size).into());
-            let mut value = value.deref_or(array![]);
-            value.append(col_index);
-            res_dict = res_dict_entry.finalize(NullableTrait::new(value));
-            col_index += 1;
-        }
-
-        res_dict
     }
 }
 
@@ -319,7 +292,8 @@ mod tests {
             m31(992269493), m31(967997322), m31(287489501), m31(310081088), m31(409791388),
         ]
             .span();
-        MerkleVerifier { root, column_log_sizes }
+        let columns_by_log_size = columns_by_log_size(column_log_sizes.span());
+        MerkleVerifier { root, column_log_sizes, columns_by_log_size }
             .verify(queries_per_log_size, queried_values, decommitment)
             .expect('verification failed');
     }

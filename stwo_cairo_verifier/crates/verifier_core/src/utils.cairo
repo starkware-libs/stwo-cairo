@@ -316,3 +316,31 @@ pub fn group_columns_by_log_size(
     ColumnsByLogSize { columns_by_log_size_per_tree: columns_by_log_size_per_tree.span() }
 }
 
+/// Given a span of column log sizes, Return a span of the column indicies grouped by their log
+/// size.
+pub fn columns_by_log_size(column_log_sizes: Span<u32>) -> Span<Span<usize>> {
+    let mut columns_by_log_size = Default::default();
+    let mut col_index = 0_usize;
+    for col_size in column_log_sizes {
+        let (columns_by_log_size_entry, value) = columns_by_log_size.entry((*col_size).into());
+        let mut columns_of_size = match match_nullable(value) {
+            FromNullableResult::Null => array![],
+            FromNullableResult::NotNull(value) => value.unbox(),
+        };
+        columns_of_size.append(col_index);
+        columns_by_log_size = columns_by_log_size_entry
+            .finalize(NullableTrait::new(columns_of_size));
+        col_index += 1;
+    }
+
+    let mut res = array![];
+    let empty_span = array![].span();
+
+    for (columns_log_size, _, columns) in columns_by_log_size.squash().into_entries() {
+        while res.len().into() != columns_log_size {
+            res.append(empty_span);
+        }
+        res.append(columns.deref().span());
+    }
+    res.span()
+}
