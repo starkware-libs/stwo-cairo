@@ -1,3 +1,4 @@
+// AIR version d3fb930e
 #![allow(unused_parens)]
 use cairo_air::components::add_ap_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -332,16 +333,23 @@ fn write_trace_simd(
                 );
 
                 let next_ap_tmp_c921e_12 = ((input_ap_col1) + (read_small_output_tmp_c921e_11.0));
-                let next_ap_bot8bits_u32_tmp_c921e_13 =
+
+                // Range Check Ap.
+
+                let range_check_ap_bot8bits_u32_tmp_c921e_13 =
                     ((PackedUInt32::from_m31(next_ap_tmp_c921e_12)) & (UInt32_255));
-                let next_ap_bot8bits_col13 = next_ap_bot8bits_u32_tmp_c921e_13.low().as_m31();
-                *row[13] = next_ap_bot8bits_col13;
-                *sub_component_inputs.range_check_19[0] =
-                    [(((next_ap_tmp_c921e_12) - (next_ap_bot8bits_col13)) * (M31_8388608))];
-                *lookup_data.range_check_19_0 =
-                    [(((next_ap_tmp_c921e_12) - (next_ap_bot8bits_col13)) * (M31_8388608))];
-                *sub_component_inputs.range_check_8[0] = [next_ap_bot8bits_col13];
-                *lookup_data.range_check_8_0 = [next_ap_bot8bits_col13];
+                let range_check_ap_bot8bits_col13 =
+                    range_check_ap_bot8bits_u32_tmp_c921e_13.low().as_m31();
+                *row[13] = range_check_ap_bot8bits_col13;
+                *sub_component_inputs.range_check_19[0] = [(((next_ap_tmp_c921e_12)
+                    - (range_check_ap_bot8bits_col13))
+                    * (M31_8388608))];
+                *lookup_data.range_check_19_0 = [(((next_ap_tmp_c921e_12)
+                    - (range_check_ap_bot8bits_col13))
+                    * (M31_8388608))];
+                *sub_component_inputs.range_check_8[0] = [range_check_ap_bot8bits_col13];
+                *lookup_data.range_check_8_0 = [range_check_ap_bot8bits_col13];
+
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
                     ((input_pc_col0) + ((M31_1) + (op1_imm_col4))),
