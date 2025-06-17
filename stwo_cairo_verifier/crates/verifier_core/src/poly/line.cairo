@@ -178,8 +178,9 @@ pub struct LineDomain {
     pub coset: Coset,
 }
 
+#[cfg(test)]
 #[generate_trait]
-pub impl LineDomainImpl of LineDomainTrait {
+pub impl LineDomainNewImpl of LineDomainNewTrait {
     /// Returns a domain comprising of the x-coordinates of points in a coset.
     fn new(coset: Coset) -> LineDomain {
         let coset_size = coset.size();
@@ -197,10 +198,13 @@ pub impl LineDomainImpl of LineDomainTrait {
         }
         LineDomain { coset: coset }
     }
+}
 
+#[generate_trait]
+pub impl LineDomainImpl of LineDomainTrait {
     /// Returns a domain comprising of the x-coordinates of points in a coset.
     ///
-    /// # Saftey
+    /// # Safety
     ///
     /// All coset points must have unique `x` coordinates.
     fn new_unchecked(coset: Coset) -> LineDomain {
@@ -272,12 +276,14 @@ mod tests {
     use core::iter::{IntoIterator, Iterator};
     use crate::circle::{CirclePointIndexImpl, CosetImpl};
     use crate::fields::qm31::qm31_const;
-    use super::{LineDomain, LineDomainImpl, LineDomainIterator, LinePoly, LinePolyTrait};
+    use super::{
+        LineDomain, LineDomainImpl, LineDomainIterator, LineDomainNewImpl, LinePoly, LinePolyTrait,
+    };
 
     #[test]
     fn test_evaluate() {
         let log_size = 3;
-        let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size));
+        let domain = LineDomainImpl::new_unchecked(CosetImpl::half_odds(log_size));
         let poly = LinePoly {
             coeffs: array![
                 qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
@@ -298,7 +304,7 @@ mod tests {
     #[test]
     fn test_evaluate_with_large_domain() {
         let log_size = 3;
-        let domain = LineDomainImpl::new(CosetImpl::half_odds(log_size + 2));
+        let domain = LineDomainImpl::new_unchecked(CosetImpl::half_odds(log_size + 2));
         let poly = LinePoly {
             coeffs: array![
                 qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
