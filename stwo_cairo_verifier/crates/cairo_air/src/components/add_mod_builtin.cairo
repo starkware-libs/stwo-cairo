@@ -1,5 +1,4 @@
-// Constraints version: bc855610
-
+// AIR version b1a6231d
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -1360,9 +1359,38 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_0
+        let constraint_quotient = ((carry_0_col237
+            - ((((((a0_limb_0_col93 + b0_limb_0_col141) - c0_limb_0_col189)
+                - (p0_limb_0_col2 * sub_p_bit_col236))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a0_limb_1_col94 + b0_limb_1_col142) - c0_limb_1_col190)
+                        - (p0_limb_1_col3 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a0_limb_2_col95 + b0_limb_2_col143) - c0_limb_2_col191)
+                        - (p0_limb_2_col4 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_0_col237
             * ((carry_0_col237 * carry_0_col237) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_1
+        let constraint_quotient = ((carry_1_col238
+            - ((((carry_0_col237
+                + (((a0_limb_3_col96 + b0_limb_3_col144) - c0_limb_3_col192)
+                    - (p0_limb_3_col5 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a0_limb_4_col97 + b0_limb_4_col145) - c0_limb_4_col193)
+                        - (p0_limb_4_col6 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a0_limb_5_col98 + b0_limb_5_col146) - c0_limb_5_col194)
+                        - (p0_limb_5_col7 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
@@ -1372,9 +1400,39 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_2
+        let constraint_quotient = ((carry_2_col239
+            - ((((carry_1_col238
+                + (((a0_limb_6_col99 + b0_limb_6_col147) - c0_limb_6_col195)
+                    - (p0_limb_6_col8 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a0_limb_7_col100 + b0_limb_7_col148) - c0_limb_7_col196)
+                        - (p0_limb_7_col9 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a0_limb_8_col101 + b0_limb_8_col149) - c0_limb_8_col197)
+                        - (p0_limb_8_col10 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_2_col239
             * ((carry_2_col239 * carry_2_col239) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_3
+        let constraint_quotient = ((carry_3_col240
+            - ((((carry_2_col239
+                + (((a0_limb_9_col102 + b0_limb_9_col150) - c0_limb_9_col198)
+                    - (p0_limb_9_col11 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a0_limb_10_col103 + b0_limb_10_col151) - c0_limb_10_col199)
+                        - (p0_limb_10_col12 * sub_p_bit_col236))))
+                + (qm31_const::<32768, 0, 0, 0>()
+                    * (((a1_limb_0_col105 + b1_limb_0_col153) - c1_limb_0_col201)
+                        - (p1_limb_0_col14 * sub_p_bit_col236))))
+                * qm31_const::<128, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
@@ -1384,9 +1442,39 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_4
+        let constraint_quotient = ((carry_4_col241
+            - ((((carry_3_col240
+                + (((a1_limb_1_col106 + b1_limb_1_col154) - c1_limb_1_col202)
+                    - (p1_limb_1_col15 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a1_limb_2_col107 + b1_limb_2_col155) - c1_limb_2_col203)
+                        - (p1_limb_2_col16 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a1_limb_3_col108 + b1_limb_3_col156) - c1_limb_3_col204)
+                        - (p1_limb_3_col17 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_4_col241
             * ((carry_4_col241 * carry_4_col241) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_5
+        let constraint_quotient = ((carry_5_col242
+            - ((((carry_4_col241
+                + (((a1_limb_4_col109 + b1_limb_4_col157) - c1_limb_4_col205)
+                    - (p1_limb_4_col18 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a1_limb_5_col110 + b1_limb_5_col158) - c1_limb_5_col206)
+                        - (p1_limb_5_col19 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a1_limb_6_col111 + b1_limb_6_col159) - c1_limb_6_col207)
+                        - (p1_limb_6_col20 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
@@ -1396,9 +1484,39 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_6
+        let constraint_quotient = ((carry_6_col243
+            - ((((carry_5_col242
+                + (((a1_limb_7_col112 + b1_limb_7_col160) - c1_limb_7_col208)
+                    - (p1_limb_7_col21 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a1_limb_8_col113 + b1_limb_8_col161) - c1_limb_8_col209)
+                        - (p1_limb_8_col22 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a1_limb_9_col114 + b1_limb_9_col162) - c1_limb_9_col210)
+                        - (p1_limb_9_col23 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_6_col243
             * ((carry_6_col243 * carry_6_col243) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_7
+        let constraint_quotient = ((carry_7_col244
+            - ((((carry_6_col243
+                + (((a1_limb_10_col115 + b1_limb_10_col163) - c1_limb_10_col211)
+                    - (p1_limb_10_col24 * sub_p_bit_col236)))
+                + (qm31_const::<64, 0, 0, 0>()
+                    * (((a2_limb_0_col117 + b2_limb_0_col165) - c2_limb_0_col213)
+                        - (p2_limb_0_col26 * sub_p_bit_col236))))
+                + (qm31_const::<32768, 0, 0, 0>()
+                    * (((a2_limb_1_col118 + b2_limb_1_col166) - c2_limb_1_col214)
+                        - (p2_limb_1_col27 * sub_p_bit_col236))))
+                * qm31_const::<128, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
@@ -1408,9 +1526,39 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_8
+        let constraint_quotient = ((carry_8_col245
+            - ((((carry_7_col244
+                + (((a2_limb_2_col119 + b2_limb_2_col167) - c2_limb_2_col215)
+                    - (p2_limb_2_col28 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a2_limb_3_col120 + b2_limb_3_col168) - c2_limb_3_col216)
+                        - (p2_limb_3_col29 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a2_limb_4_col121 + b2_limb_4_col169) - c2_limb_4_col217)
+                        - (p2_limb_4_col30 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_8_col245
             * ((carry_8_col245 * carry_8_col245) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_9
+        let constraint_quotient = ((carry_9_col246
+            - ((((carry_8_col245
+                + (((a2_limb_5_col122 + b2_limb_5_col170) - c2_limb_5_col218)
+                    - (p2_limb_5_col31 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a2_limb_6_col123 + b2_limb_6_col171) - c2_limb_6_col219)
+                        - (p2_limb_6_col32 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a2_limb_7_col124 + b2_limb_7_col172) - c2_limb_7_col220)
+                        - (p2_limb_7_col33 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
@@ -1420,9 +1568,39 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_10
+        let constraint_quotient = ((carry_10_col247
+            - ((((carry_9_col246
+                + (((a2_limb_8_col125 + b2_limb_8_col173) - c2_limb_8_col221)
+                    - (p2_limb_8_col34 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a2_limb_9_col126 + b2_limb_9_col174) - c2_limb_9_col222)
+                        - (p2_limb_9_col35 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a2_limb_10_col127 + b2_limb_10_col175) - c2_limb_10_col223)
+                        - (p2_limb_10_col36 * sub_p_bit_col236))))
+                * qm31_const::<128, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_10_col247
             * ((carry_10_col247 * carry_10_col247) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_11
+        let constraint_quotient = ((carry_11_col248
+            - ((((carry_10_col247
+                + (((a3_limb_0_col129 + b3_limb_0_col177) - c3_limb_0_col225)
+                    - (p3_limb_0_col38 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a3_limb_1_col130 + b3_limb_1_col178) - c3_limb_1_col226)
+                        - (p3_limb_1_col39 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a3_limb_2_col131 + b3_limb_2_col179) - c3_limb_2_col227)
+                        - (p3_limb_2_col40 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
@@ -1432,9 +1610,39 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // Constraint - carry_12
+        let constraint_quotient = ((carry_12_col249
+            - ((((carry_11_col248
+                + (((a3_limb_3_col132 + b3_limb_3_col180) - c3_limb_3_col228)
+                    - (p3_limb_3_col41 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a3_limb_4_col133 + b3_limb_4_col181) - c3_limb_4_col229)
+                        - (p3_limb_4_col42 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a3_limb_5_col134 + b3_limb_5_col182) - c3_limb_5_col230)
+                        - (p3_limb_5_col43 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
         // Constraint - carry is 0 or 1 or -1.
         let constraint_quotient = ((carry_12_col249
             * ((carry_12_col249 * carry_12_col249) - qm31_const::<1, 0, 0, 0>())))
+            * domain_vanishing_eval_inv;
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - carry_13
+        let constraint_quotient = ((carry_13_col250
+            - ((((carry_12_col249
+                + (((a3_limb_6_col135 + b3_limb_6_col183) - c3_limb_6_col231)
+                    - (p3_limb_6_col44 * sub_p_bit_col236)))
+                + (qm31_const::<512, 0, 0, 0>()
+                    * (((a3_limb_7_col136 + b3_limb_7_col184) - c3_limb_7_col232)
+                        - (p3_limb_7_col45 * sub_p_bit_col236))))
+                + (qm31_const::<262144, 0, 0, 0>()
+                    * (((a3_limb_8_col137 + b3_limb_8_col185) - c3_limb_8_col233)
+                        - (p3_limb_8_col46 * sub_p_bit_col236))))
+                * qm31_const::<16, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
