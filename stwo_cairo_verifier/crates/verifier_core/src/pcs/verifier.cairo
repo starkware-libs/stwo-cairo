@@ -6,7 +6,7 @@ use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
-use crate::utils::{ArrayImpl, DictImpl};
+use crate::utils::{ArrayImpl, DictImpl, group_columns_by_log_size};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
@@ -61,9 +61,15 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         for log_size in log_sizes {
             extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
         }
+
+        let columns_by_log_size = group_columns_by_log_size(extended_log_sizes.span());
         self
             .trees
-            .append(MerkleVerifier { root: commitment, column_log_sizes: extended_log_sizes });
+            .append(
+                MerkleVerifier {
+                    root: commitment, column_log_sizes: extended_log_sizes, columns_by_log_size,
+                },
+            );
     }
 
     fn verify_values(
