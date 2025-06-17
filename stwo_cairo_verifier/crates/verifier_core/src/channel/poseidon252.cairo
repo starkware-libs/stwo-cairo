@@ -34,11 +34,19 @@ pub struct Poseidon252Channel {
     channel_time: ChannelTime,
 }
 
-pub impl Poseidon252ChannelImpl of ChannelTrait {
-    fn mix_root(ref self: Poseidon252Channel, root: felt252) {
-        let (s0, _, _) = hades_permutation(self.digest, root, 2);
+#[generate_trait]
+impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
+    /// Helper function to mix a single `felt252` into the channel.
+    #[inline(always)]
+    fn mix_felt252(ref self: Poseidon252Channel, x: felt252) {
+        let (s0, _, _) = hades_permutation(self.digest, x, 2);
         self.digest = s0;
         self.channel_time.inc_challenges();
+    }
+}
+pub impl Poseidon252ChannelImpl of ChannelTrait {
+    fn mix_root(ref self: Poseidon252Channel, root: felt252) {
+        self.mix_felt252(root);
     }
 
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
@@ -66,7 +74,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
-        self.mix_root(nonce.into())
+        self.mix_felt252(nonce.into());
     }
 
     fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
