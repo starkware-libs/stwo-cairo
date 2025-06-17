@@ -1,3 +1,4 @@
+// AIR version b1a6231d
 #![allow(unused_parens)]
 use cairo_air::components::add_mod_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -2801,382 +2802,351 @@ impl InteractionClaimGenerator {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_0,
-            &self.lookup_data.memory_id_to_big_0,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_0,
+                &self.lookup_data.memory_id_to_big_0,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_1,
-            &self.lookup_data.memory_id_to_big_1,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_1,
+                &self.lookup_data.memory_id_to_big_1,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_2,
-            &self.lookup_data.memory_id_to_big_2,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_2,
+                &self.lookup_data.memory_id_to_big_2,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_3,
-            &self.lookup_data.memory_id_to_big_3,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_3,
+                &self.lookup_data.memory_id_to_big_3,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_4,
-            &self.lookup_data.memory_id_to_big_4,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_4,
+                &self.lookup_data.memory_id_to_big_4,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_5,
-            &self.lookup_data.memory_id_to_big_5,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_5,
+                &self.lookup_data.memory_id_to_big_5,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_6,
-            &self.lookup_data.memory_id_to_big_6,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_6,
+                &self.lookup_data.memory_id_to_big_6,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_7,
-            &self.lookup_data.memory_id_to_big_7,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_7,
+                &self.lookup_data.memory_id_to_big_7,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_8,
-            &self.lookup_data.memory_id_to_big_8,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_8,
+                &self.lookup_data.memory_id_to_big_8,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_9,
-            &self.lookup_data.memory_address_to_id_10,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_9,
+                &self.lookup_data.memory_address_to_id_10,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_11,
-            &self.lookup_data.memory_address_to_id_12,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_11,
+                &self.lookup_data.memory_address_to_id_12,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_13,
-            &self.lookup_data.memory_address_to_id_14,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_address_to_id_13,
+                &self.lookup_data.memory_address_to_id_14,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_address_to_id.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_9,
-            &self.lookup_data.memory_address_to_id_15,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_9,
+                &self.lookup_data.memory_address_to_id_15,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_10,
-            &self.lookup_data.memory_address_to_id_16,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_10,
+                &self.lookup_data.memory_address_to_id_16,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_11,
-            &self.lookup_data.memory_address_to_id_17,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_11,
+                &self.lookup_data.memory_address_to_id_17,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_12,
-            &self.lookup_data.memory_address_to_id_18,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_12,
+                &self.lookup_data.memory_address_to_id_18,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_13,
-            &self.lookup_data.memory_address_to_id_19,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_13,
+                &self.lookup_data.memory_address_to_id_19,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_14,
-            &self.lookup_data.memory_address_to_id_20,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_14,
+                &self.lookup_data.memory_address_to_id_20,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_15,
-            &self.lookup_data.memory_address_to_id_21,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_15,
+                &self.lookup_data.memory_address_to_id_21,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_16,
-            &self.lookup_data.memory_address_to_id_22,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_16,
+                &self.lookup_data.memory_address_to_id_22,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_17,
-            &self.lookup_data.memory_address_to_id_23,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_17,
+                &self.lookup_data.memory_address_to_id_23,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_18,
-            &self.lookup_data.memory_address_to_id_24,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_18,
+                &self.lookup_data.memory_address_to_id_24,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_19,
-            &self.lookup_data.memory_address_to_id_25,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_19,
+                &self.lookup_data.memory_address_to_id_25,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_20,
-            &self.lookup_data.memory_address_to_id_26,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_20,
+                &self.lookup_data.memory_address_to_id_26,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_21,
-            &self.lookup_data.memory_address_to_id_27,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_21,
+                &self.lookup_data.memory_address_to_id_27,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_22,
-            &self.lookup_data.memory_address_to_id_28,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
+        logup_gen.col_from_par_iter(
+            (
+                &self.lookup_data.memory_id_to_big_22,
+                &self.lookup_data.memory_address_to_id_28,
+            )
+                .into_par_iter()
+                .map(|(values0, values1)| {
+                    let denom0: PackedQM31 = memory_id_to_big.combine(values0);
+                    let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+                    (denom0 + denom1, denom0 * denom1)
+                }),
+        );
 
         // Sum last logup term.
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_23,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values)| {
+        logup_gen.col_from_par_iter((&self.lookup_data.memory_id_to_big_23).into_par_iter().map(
+            |(values)| {
                 let denom = memory_id_to_big.combine(values);
-                writer.write_frac(PackedQM31::one(), denom);
-            });
-        col_gen.finalize_col();
+                (PackedQM31::one(), denom)
+            },
+        ));
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
         tree_builder.extend_evals(trace);
