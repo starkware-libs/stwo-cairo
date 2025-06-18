@@ -1,3 +1,5 @@
+use crate::fields::m31::M31;
+use crate::fields::qm31::QM31Trait;
 use crate::{Hash, SecureField};
 
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -17,6 +19,9 @@ pub type Channel = poseidon252::Poseidon252Channel;
 pub use blake2s::Blake2sChannelImpl as ChannelImpl;
 #[cfg(feature: "poseidon252_verifier")]
 pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
+
+/// Number of `M31` per hash.
+pub const FELTS_PER_HASH: usize = 8;
 
 #[derive(Default, Drop)]
 pub struct ChannelTime {
@@ -43,10 +48,36 @@ pub trait ChannelTrait {
 
     fn mix_u32s(ref self: Channel, data: Span<u32>);
 
-    fn draw_felt(ref self: Channel) -> SecureField;
+    fn draw_random_base_felts(ref self: Channel) -> [M31; FELTS_PER_HASH];
+
+    fn draw_felt(
+        ref self: Channel,
+    ) -> SecureField {
+        let [r0, r1, r2, r3, _, _, _, _] = self.draw_random_base_felts();
+        QM31Trait::from_fixed_array([r0, r1, r2, r3])
+    }
 
     /// Generates a uniform random vector of SecureField elements.
-    fn draw_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
+    fn draw_felts(
+        ref self: Channel, n_felts: usize,
+    ) -> Array<
+        SecureField,
+    > {
+        let mut res = array![];
+        let mut n_felts = n_felts;
+
+        while n_felts != 0 {
+            let [r0, r1, r2, r3, r4, r5, r6, r7] = self.draw_random_base_felts();
+            res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
+            if n_felts == 1 {
+                break;
+            }
+            res.append(QM31Trait::from_fixed_array([r4, r5, r6, r7]));
+            n_felts -= 2;
+        }
+
+        res
+    }
 
     /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
     fn draw_random_bytes(ref self: Channel) -> Array<u8>;

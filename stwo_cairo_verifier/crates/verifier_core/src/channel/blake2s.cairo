@@ -7,13 +7,10 @@ use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::gen_bit_mask;
 use crate::vcs::blake2s_hasher::Blake2sHash;
-use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
+use super::{ChannelTime, ChannelTimeImpl, ChannelTrait, FELTS_PER_HASH};
 
 /// Equals `2^31`.
 const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
-
-/// Number of `M31` per hash.
-pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
 
@@ -159,27 +156,6 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
-    fn draw_felt(ref self: Blake2sChannel) -> SecureField {
-        let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
-        QM31Trait::from_fixed_array([r0, r1, r2, r3])
-    }
-
-    fn draw_felts(ref self: Blake2sChannel, mut n_felts: usize) -> Array<SecureField> {
-        let mut res = array![];
-
-        while n_felts != 0 {
-            let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_random_base_felts(ref self).unbox();
-            res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
-            if n_felts == 1 {
-                break;
-            }
-            res.append(QM31Trait::from_fixed_array([r4, r5, r6, r7]));
-            n_felts -= 2;
-        }
-
-        res
-    }
-
     fn draw_random_bytes(ref self: Blake2sChannel) -> Array<u8> {
         let words = draw_random_words(ref self).hash.unbox();
         let mut bytes = array![];
@@ -201,6 +177,29 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         self.mix_u64(nonce);
         check_proof_of_work(self.digest, n_bits)
     }
+
+    fn draw_random_base_felts(ref self: Blake2sChannel) -> [M31; FELTS_PER_HASH] {
+        loop {
+            let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref self).hash.unbox();
+
+            // Retry if not all the u32 are in the range [0, 2P).
+            const P2: u32 = 0x7FFFFFFF * 2;
+            if w0 < P2
+                && w1 < P2
+                && w2 < P2
+                && w3 < P2
+                && w4 < P2
+                && w5 < P2
+                && w6 < P2
+                && w7 < P2 {
+                break [
+                    M31Trait::reduce_u32(w0), M31Trait::reduce_u32(w1), M31Trait::reduce_u32(w2),
+                    M31Trait::reduce_u32(w3), M31Trait::reduce_u32(w4), M31Trait::reduce_u32(w5),
+                    M31Trait::reduce_u32(w6), M31Trait::reduce_u32(w7),
+                ];
+            }
+        }
+    }
 }
 
 fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
@@ -213,25 +212,6 @@ fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
 fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
     channel.digest = new_digest;
     channel.channel_time.inc_challenges();
-}
-
-// TODO: Consider just returning secure felts.
-fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
-    loop {
-        let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();
-
-        // Retry if not all the u32 are in the range [0, 2P).
-        const P2: u32 = 0x7FFFFFFF * 2;
-        if w0 < P2 && w1 < P2 && w2 < P2 && w3 < P2 && w4 < P2 && w5 < P2 && w6 < P2 && w7 < P2 {
-            break BoxImpl::new(
-                [
-                    M31Trait::reduce_u32(w0), M31Trait::reduce_u32(w1), M31Trait::reduce_u32(w2),
-                    M31Trait::reduce_u32(w3), M31Trait::reduce_u32(w4), M31Trait::reduce_u32(w5),
-                    M31Trait::reduce_u32(w6), M31Trait::reduce_u32(w7),
-                ],
-            );
-        }
-    }
 }
 
 fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {

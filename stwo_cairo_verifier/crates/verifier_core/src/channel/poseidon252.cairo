@@ -5,13 +5,10 @@ use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
-use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
+use super::{ChannelTime, ChannelTimeImpl, ChannelTrait, FELTS_PER_HASH};
 
 /// Equals `2^31`.
 const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
-
-/// Number of `M31` per hash.
-pub const FELTS_PER_HASH: usize = 8;
 
 pub const BYTES_PER_HASH: usize = 31;
 
@@ -93,28 +90,6 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.channel_time.inc_challenges();
     }
 
-    fn draw_felt(ref self: Poseidon252Channel) -> SecureField {
-        let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self);
-        QM31Trait::from_fixed_array([r0, r1, r2, r3])
-    }
-
-    fn draw_felts(ref self: Poseidon252Channel, mut n_felts: usize) -> Array<SecureField> {
-        let mut res: Array = Default::default();
-        loop {
-            if n_felts == 0 {
-                break;
-            }
-            let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_base_felts(ref self);
-            res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
-            if n_felts == 1 {
-                break;
-            }
-            res.append(QM31Trait::from_fixed_array([r4, r5, r6, r7]));
-            n_felts -= 2;
-        }
-        res
-    }
-
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
     /// `self.draw_felt252()` in little endian.
     /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
@@ -134,20 +109,20 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.mix_u64(nonce);
         check_proof_of_work(self.digest, n_bits)
     }
+
+    // TODO(spapini): Check that this is sound.
+    fn draw_random_base_felts(ref self: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
+        let mut cur: u256 = draw_felt252(ref self).into();
+        [
+            extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
+            extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
+        ]
+    }
 }
 
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
     low & gen_bit_mask(n_bits).into() == 0
-}
-
-// TODO(spapini): Check that this is sound.
-fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
-    let mut cur: u256 = draw_felt252(ref channel).into();
-    [
-        extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
-        extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
-    ]
 }
 
 fn draw_felt252(ref channel: Poseidon252Channel) -> felt252 {
