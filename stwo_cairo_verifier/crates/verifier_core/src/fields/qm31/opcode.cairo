@@ -22,8 +22,7 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn to_fixed_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE] {
-        let [a, b, c, d] = core::qm31::QM31Trait::unpack(self.inner);
-        [M31Trait::new(a), M31Trait::new(b), M31Trait::new(c), M31Trait::new(d)]
+        core::qm31::QM31Trait::unpack(self.inner)
     }
 
     #[inline]
