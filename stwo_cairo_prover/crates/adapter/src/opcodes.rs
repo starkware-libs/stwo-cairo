@@ -598,6 +598,11 @@ impl Display for CasmStatesByOpcode {
 
 impl From<RelocatedTraceEntry> for CasmState {
     fn from(entry: RelocatedTraceEntry) -> Self {
+        assert!(
+            entry.ap < 2_usize.pow(27),
+            "ap value : {} exceeds 2^27 -1.",
+            entry.ap,
+        );
         Self {
             pc: M31(entry.pc as u32),
             ap: M31(entry.ap as u32),
@@ -1509,5 +1514,14 @@ mod mappings_tests {
         );
         assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
         assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
+    }
+
+    #[test]
+    fn test_ap_out_of_rage() {
+        let reloctated_trace = [relocated_trace_entry!(2 ^ 27, 1, 1)];
+        StateTransitions::from_iter(
+            reloctated_trace.into_iter(),
+            &MemoryBuilder::new(MemoryConfig::default()),
+        );
     }
 }
