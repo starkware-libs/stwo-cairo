@@ -6,12 +6,14 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
 use crate::fields::Invertible;
-use crate::fields::m31::{M31, M31InnerT, M31Trait};
+use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].
-pub const M31_CIRCLE_GEN: CirclePoint<M31InnerT> = CirclePoint { x: 0x2, y: 0x4B94532F };
+pub const M31_CIRCLE_GEN: CirclePoint<M31> = CirclePoint {
+    x: M31 { inner: 0x2 }, y: M31 { inner: 0x4B94532F },
+};
 
 pub const M31_CIRCLE_LOG_ORDER: u32 = 31;
 
@@ -26,12 +28,6 @@ pub const M31_CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
 pub struct CirclePoint<F> {
     pub x: F,
     pub y: F,
-}
-
-impl CirclePointM31InnerTIntoCirclePointM31 of Into<CirclePoint<M31InnerT>, CirclePoint<M31>> {
-    fn into(self: CirclePoint<M31InnerT>) -> CirclePoint<M31> {
-        CirclePoint { x: M31Trait::new(self.x), y: M31Trait::new(self.y) }
-    }
 }
 
 pub trait CirclePointTrait<
@@ -57,7 +53,7 @@ pub trait CirclePointTrait<
         // we only need the x-coordinate to check order since the only point
         // with x=1 is the circle's identity.
         let mut res = 0;
-        let mut cur = self.x.clone();
+        let mut cur = *self.x;
         while !cur.is_one() {
             cur = Self::double_x(cur);
             res += 1;
@@ -216,22 +212,19 @@ pub impl CirclePointIndexImpl of CirclePointIndexTrait {
         // Start with MSBs since small domains (more common) have LSBs equal 0.
         let (bits_24_to_31, bits_0_to_23) = DivRem::div_rem(*self.index, NZ_2_POW_24);
         let (bits_30_to_31, bits_24_to_29) = DivRem::div_rem(bits_24_to_31, NZ_2_POW_6);
-        let mut res: CirclePoint<M31> = (*M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29
-            .span()[bits_24_to_29])
-            .into();
+        let mut res: CirclePoint<M31> = *M31_CIRCLE_GEN_MUL_TABLE_BITS_24_TO_29
+            .span()[bits_24_to_29];
         if bits_0_to_23 != 0 {
             let (bits_18_to_23, bits_0_to_17) = DivRem::div_rem(bits_0_to_23, NZ_2_POW_18);
-            res = res + (*M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23.span()[bits_18_to_23]).into();
+            res = res + *M31_CIRCLE_GEN_MUL_TABLE_BITS_18_TO_23.span()[bits_18_to_23];
             if bits_0_to_17 != 0 {
                 let (bits_12_to_17, bits_0_to_11) = DivRem::div_rem(bits_0_to_17, NZ_2_POW_12);
-                res = res + (*M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17.span()[bits_12_to_17]).into();
+                res = res + *M31_CIRCLE_GEN_MUL_TABLE_BITS_12_TO_17.span()[bits_12_to_17];
                 if bits_0_to_11 != 0 {
                     let (bits_6_to_11, bits_0_to_5) = DivRem::div_rem(bits_0_to_11, NZ_2_POW_6);
-                    res = res
-                        + (*M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11.span()[bits_6_to_11]).into();
+                    res = res + *M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11.span()[bits_6_to_11];
                     if bits_0_to_5 != 0 {
-                        res = res
-                            + (*M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5.span()[bits_0_to_5]).into();
+                        res = res + *M31_CIRCLE_GEN_MUL_TABLE_BITS_0_TO_5.span()[bits_0_to_5];
                     }
                 }
             }
