@@ -55,8 +55,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     commitment_scheme
         .commit(
             commitment_scheme_proof.commitments.last().unwrap().clone(),
-            ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: air.composition_log_degree_bound())
-                .span(),
+            [air.composition_log_degree_bound();  QM31_EXTENSION_DEGREE].span(),
             ref channel,
         );
 
