@@ -101,10 +101,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     fn draw_felts(ref self: Poseidon252Channel, mut n_felts: usize) -> Array<SecureField> {
         let mut res: Array = Default::default();
-        loop {
-            if n_felts == 0 {
-                break;
-            }
+
+        while n_felts != 0 {
             let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_base_felts(ref self);
             res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
             if n_felts == 1 {
@@ -113,6 +111,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             res.append(QM31Trait::from_fixed_array([r4, r5, r6, r7]));
             n_felts -= 2;
         }
+
         res
     }
 
