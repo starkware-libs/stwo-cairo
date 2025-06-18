@@ -18,11 +18,6 @@ use tracing_subscriber::fmt::format::FmtSpan;
 ///     ```
 ///   RUSTFLAGS="-C target-cpu=native -C opt-level=3"
 ///     ```
-///
-/// Standard library features is off by default, to enable it, further improving performance, use:
-///     ```
-///     --features=std
-///     ```
 #[derive(Parser, Debug)]
 struct Args {
     #[structopt(long = "compiled_program")]
