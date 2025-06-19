@@ -3,6 +3,7 @@ use std::ops::Deref;
 use builtins::BuiltinSegments;
 pub use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
+use indoc::formatdoc;
 use memory::Memory;
 use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
@@ -142,4 +143,49 @@ macro_rules! relocated_trace_entry {
             pc: $val3,
         }
     };
+}
+
+pub fn log_prover_input(
+    ProverInput {
+        state_transitions,
+        memory,
+        inst_cache: _,
+        public_memory_addresses: _,
+        builtins_segments: _,
+        public_segment_context: _,
+    }: &ProverInput,
+) {
+    log_memory(memory);
+    log::info!(
+        "Casm states by opcode:\n{}",
+        state_transitions.casm_states_by_opcode
+    );
+}
+
+fn log_memory(memory: &Memory) {
+    let n_address_to_id = memory.address_to_id.len();
+    let log_n_address_to_id = (n_address_to_id as f64).log2();
+    let n_big_values = memory.f252_values.len();
+    let log_n_big_values = (n_big_values as f64).log2();
+    let n_small_values = memory.small_values.len();
+    let log_n_small_values = (n_small_values as f64).log2();
+    let n_id_to_value = n_big_values + n_small_values;
+    let log_n_id_to_value = (n_id_to_value as f64).log2();
+    let log = formatdoc! {
+        "Memory resources:
+        Address to ID: {:?}, 2 ** {:.2?}
+        ID to VALUE, big values: {:?}, 2 ** {:.2?}
+        ID to VALUE, small values: {:?}, 2 ** {:.2?}
+        ID to VALUE (big + small): {:?}, 2 ** {:.2?}
+        ",
+        n_address_to_id,
+        log_n_address_to_id,
+        n_big_values,
+        log_n_big_values,
+        n_small_values,
+        log_n_small_values,
+        n_id_to_value,
+        log_n_id_to_value,
+    };
+    log::info!("{}", log);
 }
