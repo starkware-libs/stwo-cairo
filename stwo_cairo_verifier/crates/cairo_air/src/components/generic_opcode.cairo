@@ -1439,6 +1439,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
+        core::internal::revoke_ap_tracking();
+
         handle_opcodes_evaluate(
             [
                 input_pc_col0, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7, op1_base_fp_col9,
