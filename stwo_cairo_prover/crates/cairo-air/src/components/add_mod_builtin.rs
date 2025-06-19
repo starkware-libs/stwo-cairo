@@ -1,3 +1,4 @@
+// AIR version b1a6231d
 use crate::components::prelude::*;
 use crate::components::subroutines::mod_utils::ModUtils;
 
@@ -63,7 +64,12 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_128 = E::F::from(M31::from(128));
+        let M31_16 = E::F::from(M31::from(16));
+        let M31_262144 = E::F::from(M31::from(262144));
+        let M31_32768 = E::F::from(M31::from(32768));
         let M31_512 = E::F::from(M31::from(512));
+        let M31_64 = E::F::from(M31::from(64));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let is_instance_0_col0 = eval.next_trace_mask();
         let p0_id_col1 = eval.next_trace_mask();
@@ -566,70 +572,307 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             ((sub_p_bit_col236.clone() - M31_1.clone()) * sub_p_bit_col236.clone()),
         );
+        // carry_0.
+        eval.add_constraint(
+            (carry_0_col237.clone()
+                - ((((((a0_limb_0_col93.clone() + b0_limb_0_col141.clone())
+                    - c0_limb_0_col189.clone())
+                    - (p0_limb_0_col2.clone() * sub_p_bit_col236.clone()))
+                    + (M31_512.clone()
+                        * (((a0_limb_1_col94.clone() + b0_limb_1_col142.clone())
+                            - c0_limb_1_col190.clone())
+                            - (p0_limb_1_col3.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a0_limb_2_col95.clone() + b0_limb_2_col143.clone())
+                            - c0_limb_2_col191.clone())
+                            - (p0_limb_2_col4.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_0_col237.clone()
                 * ((carry_0_col237.clone() * carry_0_col237.clone()) - M31_1.clone())),
+        );
+        // carry_1.
+        eval.add_constraint(
+            (carry_1_col238.clone()
+                - ((((carry_0_col237.clone()
+                    + (((a0_limb_3_col96.clone() + b0_limb_3_col144.clone())
+                        - c0_limb_3_col192.clone())
+                        - (p0_limb_3_col5.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a0_limb_4_col97.clone() + b0_limb_4_col145.clone())
+                            - c0_limb_4_col193.clone())
+                            - (p0_limb_4_col6.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a0_limb_5_col98.clone() + b0_limb_5_col146.clone())
+                            - c0_limb_5_col194.clone())
+                            - (p0_limb_5_col7.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_1_col238.clone()
                 * ((carry_1_col238.clone() * carry_1_col238.clone()) - M31_1.clone())),
         );
+        // carry_2.
+        eval.add_constraint(
+            (carry_2_col239.clone()
+                - ((((carry_1_col238.clone()
+                    + (((a0_limb_6_col99.clone() + b0_limb_6_col147.clone())
+                        - c0_limb_6_col195.clone())
+                        - (p0_limb_6_col8.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a0_limb_7_col100.clone() + b0_limb_7_col148.clone())
+                            - c0_limb_7_col196.clone())
+                            - (p0_limb_7_col9.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a0_limb_8_col101.clone() + b0_limb_8_col149.clone())
+                            - c0_limb_8_col197.clone())
+                            - (p0_limb_8_col10.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_2_col239.clone()
                 * ((carry_2_col239.clone() * carry_2_col239.clone()) - M31_1.clone())),
+        );
+        // carry_3.
+        eval.add_constraint(
+            (carry_3_col240.clone()
+                - ((((carry_2_col239.clone()
+                    + (((a0_limb_9_col102.clone() + b0_limb_9_col150.clone())
+                        - c0_limb_9_col198.clone())
+                        - (p0_limb_9_col11.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a0_limb_10_col103.clone() + b0_limb_10_col151.clone())
+                            - c0_limb_10_col199.clone())
+                            - (p0_limb_10_col12.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_32768.clone()
+                        * (((a1_limb_0_col105.clone() + b1_limb_0_col153.clone())
+                            - c1_limb_0_col201.clone())
+                            - (p1_limb_0_col14.clone() * sub_p_bit_col236.clone()))))
+                    * M31_128.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_3_col240.clone()
                 * ((carry_3_col240.clone() * carry_3_col240.clone()) - M31_1.clone())),
         );
+        // carry_4.
+        eval.add_constraint(
+            (carry_4_col241.clone()
+                - ((((carry_3_col240.clone()
+                    + (((a1_limb_1_col106.clone() + b1_limb_1_col154.clone())
+                        - c1_limb_1_col202.clone())
+                        - (p1_limb_1_col15.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a1_limb_2_col107.clone() + b1_limb_2_col155.clone())
+                            - c1_limb_2_col203.clone())
+                            - (p1_limb_2_col16.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a1_limb_3_col108.clone() + b1_limb_3_col156.clone())
+                            - c1_limb_3_col204.clone())
+                            - (p1_limb_3_col17.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_4_col241.clone()
                 * ((carry_4_col241.clone() * carry_4_col241.clone()) - M31_1.clone())),
+        );
+        // carry_5.
+        eval.add_constraint(
+            (carry_5_col242.clone()
+                - ((((carry_4_col241.clone()
+                    + (((a1_limb_4_col109.clone() + b1_limb_4_col157.clone())
+                        - c1_limb_4_col205.clone())
+                        - (p1_limb_4_col18.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a1_limb_5_col110.clone() + b1_limb_5_col158.clone())
+                            - c1_limb_5_col206.clone())
+                            - (p1_limb_5_col19.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a1_limb_6_col111.clone() + b1_limb_6_col159.clone())
+                            - c1_limb_6_col207.clone())
+                            - (p1_limb_6_col20.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_5_col242.clone()
                 * ((carry_5_col242.clone() * carry_5_col242.clone()) - M31_1.clone())),
         );
+        // carry_6.
+        eval.add_constraint(
+            (carry_6_col243.clone()
+                - ((((carry_5_col242.clone()
+                    + (((a1_limb_7_col112.clone() + b1_limb_7_col160.clone())
+                        - c1_limb_7_col208.clone())
+                        - (p1_limb_7_col21.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a1_limb_8_col113.clone() + b1_limb_8_col161.clone())
+                            - c1_limb_8_col209.clone())
+                            - (p1_limb_8_col22.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a1_limb_9_col114.clone() + b1_limb_9_col162.clone())
+                            - c1_limb_9_col210.clone())
+                            - (p1_limb_9_col23.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_6_col243.clone()
                 * ((carry_6_col243.clone() * carry_6_col243.clone()) - M31_1.clone())),
+        );
+        // carry_7.
+        eval.add_constraint(
+            (carry_7_col244.clone()
+                - ((((carry_6_col243.clone()
+                    + (((a1_limb_10_col115.clone() + b1_limb_10_col163.clone())
+                        - c1_limb_10_col211.clone())
+                        - (p1_limb_10_col24.clone() * sub_p_bit_col236.clone())))
+                    + (M31_64.clone()
+                        * (((a2_limb_0_col117.clone() + b2_limb_0_col165.clone())
+                            - c2_limb_0_col213.clone())
+                            - (p2_limb_0_col26.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_32768.clone()
+                        * (((a2_limb_1_col118.clone() + b2_limb_1_col166.clone())
+                            - c2_limb_1_col214.clone())
+                            - (p2_limb_1_col27.clone() * sub_p_bit_col236.clone()))))
+                    * M31_128.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_7_col244.clone()
                 * ((carry_7_col244.clone() * carry_7_col244.clone()) - M31_1.clone())),
         );
+        // carry_8.
+        eval.add_constraint(
+            (carry_8_col245.clone()
+                - ((((carry_7_col244.clone()
+                    + (((a2_limb_2_col119.clone() + b2_limb_2_col167.clone())
+                        - c2_limb_2_col215.clone())
+                        - (p2_limb_2_col28.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a2_limb_3_col120.clone() + b2_limb_3_col168.clone())
+                            - c2_limb_3_col216.clone())
+                            - (p2_limb_3_col29.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a2_limb_4_col121.clone() + b2_limb_4_col169.clone())
+                            - c2_limb_4_col217.clone())
+                            - (p2_limb_4_col30.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_8_col245.clone()
                 * ((carry_8_col245.clone() * carry_8_col245.clone()) - M31_1.clone())),
+        );
+        // carry_9.
+        eval.add_constraint(
+            (carry_9_col246.clone()
+                - ((((carry_8_col245.clone()
+                    + (((a2_limb_5_col122.clone() + b2_limb_5_col170.clone())
+                        - c2_limb_5_col218.clone())
+                        - (p2_limb_5_col31.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a2_limb_6_col123.clone() + b2_limb_6_col171.clone())
+                            - c2_limb_6_col219.clone())
+                            - (p2_limb_6_col32.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a2_limb_7_col124.clone() + b2_limb_7_col172.clone())
+                            - c2_limb_7_col220.clone())
+                            - (p2_limb_7_col33.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_9_col246.clone()
                 * ((carry_9_col246.clone() * carry_9_col246.clone()) - M31_1.clone())),
         );
+        // carry_10.
+        eval.add_constraint(
+            (carry_10_col247.clone()
+                - ((((carry_9_col246.clone()
+                    + (((a2_limb_8_col125.clone() + b2_limb_8_col173.clone())
+                        - c2_limb_8_col221.clone())
+                        - (p2_limb_8_col34.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a2_limb_9_col126.clone() + b2_limb_9_col174.clone())
+                            - c2_limb_9_col222.clone())
+                            - (p2_limb_9_col35.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a2_limb_10_col127.clone() + b2_limb_10_col175.clone())
+                            - c2_limb_10_col223.clone())
+                            - (p2_limb_10_col36.clone() * sub_p_bit_col236.clone()))))
+                    * M31_128.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_10_col247.clone()
                 * ((carry_10_col247.clone() * carry_10_col247.clone()) - M31_1.clone())),
+        );
+        // carry_11.
+        eval.add_constraint(
+            (carry_11_col248.clone()
+                - ((((carry_10_col247.clone()
+                    + (((a3_limb_0_col129.clone() + b3_limb_0_col177.clone())
+                        - c3_limb_0_col225.clone())
+                        - (p3_limb_0_col38.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a3_limb_1_col130.clone() + b3_limb_1_col178.clone())
+                            - c3_limb_1_col226.clone())
+                            - (p3_limb_1_col39.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a3_limb_2_col131.clone() + b3_limb_2_col179.clone())
+                            - c3_limb_2_col227.clone())
+                            - (p3_limb_2_col40.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_11_col248.clone()
                 * ((carry_11_col248.clone() * carry_11_col248.clone()) - M31_1.clone())),
         );
+        // carry_12.
+        eval.add_constraint(
+            (carry_12_col249.clone()
+                - ((((carry_11_col248.clone()
+                    + (((a3_limb_3_col132.clone() + b3_limb_3_col180.clone())
+                        - c3_limb_3_col228.clone())
+                        - (p3_limb_3_col41.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a3_limb_4_col133.clone() + b3_limb_4_col181.clone())
+                            - c3_limb_4_col229.clone())
+                            - (p3_limb_4_col42.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a3_limb_5_col134.clone() + b3_limb_5_col182.clone())
+                            - c3_limb_5_col230.clone())
+                            - (p3_limb_5_col43.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
+        );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
             (carry_12_col249.clone()
                 * ((carry_12_col249.clone() * carry_12_col249.clone()) - M31_1.clone())),
+        );
+        // carry_13.
+        eval.add_constraint(
+            (carry_13_col250.clone()
+                - ((((carry_12_col249.clone()
+                    + (((a3_limb_6_col135.clone() + b3_limb_6_col183.clone())
+                        - c3_limb_6_col231.clone())
+                        - (p3_limb_6_col44.clone() * sub_p_bit_col236.clone())))
+                    + (M31_512.clone()
+                        * (((a3_limb_7_col136.clone() + b3_limb_7_col184.clone())
+                            - c3_limb_7_col232.clone())
+                            - (p3_limb_7_col45.clone() * sub_p_bit_col236.clone()))))
+                    + (M31_262144.clone()
+                        * (((a3_limb_8_col137.clone() + b3_limb_8_col185.clone())
+                            - c3_limb_8_col233.clone())
+                            - (p3_limb_8_col46.clone() * sub_p_bit_col236.clone()))))
+                    * M31_16.clone())),
         );
         // carry is 0 or 1 or -1..
         eval.add_constraint(
