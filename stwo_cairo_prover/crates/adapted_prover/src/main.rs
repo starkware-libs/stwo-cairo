@@ -7,7 +7,7 @@ use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde::Serialize;
 use stwo_cairo_adapter::vm_import::{adapt_vm_output, VmImportError};
-use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_adapter::{log_prover_input, ProverInput};
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };
@@ -118,10 +118,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
     let vm_output: ProverInput =
         adapt_vm_output(args.pub_json.as_path(), args.priv_json.as_path())?;
 
-    log::info!(
-        "Casm states by opcode:\n{}",
-        vm_output.state_transitions.casm_states_by_opcode
-    );
+    log_prover_input(&vm_output);
 
     let ProverParameters {
         channel_hash,

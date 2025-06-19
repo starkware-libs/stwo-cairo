@@ -56,6 +56,7 @@ tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 serde_arrays = "0.1.0"
 rayon = "1.10.0"
+indoc = "2.0.6"
 
 [profile.bench]
 codegen-units = 1

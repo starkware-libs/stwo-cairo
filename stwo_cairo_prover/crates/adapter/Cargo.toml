@@ -12,6 +12,7 @@ std = ["dep:sonic-rs"]
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
 cairo-vm.workspace = true
+indoc.workspace = true
 itertools.workspace = true
 log.workspace = true
 serde.workspace = true
