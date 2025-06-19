@@ -143,3 +143,56 @@ macro_rules! relocated_trace_entry {
         }
     };
 }
+
+pub fn log_prover_input(
+    ProverInput {
+        state_transitions,
+        memory,
+        inst_cache,
+        public_memory_addresses,
+        builtins_segments,
+        public_segment_context,
+    }: &ProverInput,
+) {
+    log_memory(memory);
+    log::info!(
+        "Casm states by opcode:\n{}",
+        state_transitions.casm_states_by_opcode
+    );
+
+    let _ = public_memory_addresses;
+    let _ = inst_cache;
+    let _ = public_segment_context;
+    let _ = builtins_segments;
+}
+
+fn log_memory(memory: &Memory) {
+    let mut msg = String::new();
+    let n_address_to_id = memory.address_to_id.len();
+    let n_big_values = memory.f252_values.len();
+    let n_id_to_value = n_big_values + memory.small_values.len();
+    msg.push_str(&format!(
+        "Address to ID: {:?}, 2 ** {:.2?}",
+        n_address_to_id,
+        (memory.address_to_id.len() as f64).log2()
+    ));
+    msg.push('\n');
+    msg.push_str(&format!(
+        "ID to VALUE, big values: {:?}, 2 ** {:.2?}",
+        n_big_values,
+        (n_big_values as f64).log2()
+    ));
+    msg.push('\n');
+    msg.push_str(&format!(
+        "ID to VALUE, small values: {:?}, 2 ** {:.2?}",
+        n_id_to_value - n_big_values,
+        ((n_id_to_value - n_big_values) as f64).log2()
+    ));
+    msg.push('\n');
+    msg.push_str(&format!(
+        "ID to VALUE (big + small): {:?}, 2 ** {:.2?}",
+        n_id_to_value,
+        (n_id_to_value as f64).log2()
+    ));
+    log::info!("Memory resources:\n{}", msg);
+}
