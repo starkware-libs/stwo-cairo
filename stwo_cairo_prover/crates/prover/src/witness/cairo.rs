@@ -260,6 +260,7 @@ impl CairoClaimGenerator {
             &self
                 .range_checks_trace_generator
                 .rc_3_3_3_3_3_trace_generator,
+            &self.verify_bitwise_xor_8_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
         let (pedersen_context_claim, pedersen_context_interaction_gen) = self
