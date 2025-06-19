@@ -28,12 +28,12 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
         }
 
         // Collect array `z, zy, ..., zy..b`.
-        let mut prefix_product_rev = array![];
+        let mut suffix_product_rev = array![];
         let mut values_span = values.span();
         let mut cumulative_product = *values_span.pop_back().unwrap();
 
         while let Some(value) = values_span.pop_back() {
-            prefix_product_rev.append(cumulative_product);
+            suffix_product_rev.append(cumulative_product);
             cumulative_product = cumulative_product * *value;
         }
 
@@ -42,12 +42,12 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
 
         // Collect all `1/a = zy..b/zy..a, 1/b = zy..c/zy..b, ..., 1/y = z/zy`.
         let mut inverses = array![];
-        let mut prefix_product_rev_span = prefix_product_rev.span();
+        let mut suffix_product_rev_span = suffix_product_rev.span();
         let mut values = values;
 
-        while let (Some(prefix_product), Some(value)) =
-            (prefix_product_rev_span.pop_back(), values.pop_front()) {
-            inverses.append(cumulative_product_inv * *prefix_product);
+        while let (Some(suffix_product), Some(value)) =
+            (suffix_product_rev_span.pop_back(), values.pop_front()) {
+            inverses.append(cumulative_product_inv * *suffix_product);
             cumulative_product_inv = cumulative_product_inv * value;
         }
 
