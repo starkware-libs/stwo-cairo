@@ -44,17 +44,18 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
         let mut res = array![self.digest];
         loop {
-            match (felts.pop_front(), felts.pop_front()) {
-                (None, _) => { break; },
-                (Some(x), None) => {
-                    res.append(pack4(1, (*x).to_fixed_array()));
-                    break;
+            match felts.multi_pop_front::<2>() {
+                Option::Some(pair) => {
+                    let [x, y] = (*pair).unbox();
+                    let cur = pack4(1, x.to_fixed_array());
+                    res.append(pack4(cur, y.to_fixed_array()));
                 },
-                (
-                    Some(x), Some(y),
-                ) => {
-                    let cur = pack4(1, (*x).to_fixed_array());
-                    res.append(pack4(cur, (*y).to_fixed_array()));
+                Option::None => {
+                    if !felts.is_empty() {
+                        let x = felts.pop_front().unwrap();
+                        res.append(pack4(1, (*x).to_fixed_array()));
+                    }
+                    break;
                 },
             };
         }
