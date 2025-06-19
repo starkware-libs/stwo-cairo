@@ -192,6 +192,8 @@ pub fn update_registers_evaluate(
     );
     let [cond_felt_252_as_addr_output_tmp_783d5_1] = output;
 
+    core::internal::revoke_ap_tracking();
+
     let output: [QM31; 1] = cond_felt_252_as_rel_imm_evaluate(
         [
             update_registers_input_res_limb_0, update_registers_input_res_limb_1,
@@ -332,6 +334,8 @@ pub fn update_registers_evaluate(
         * ((dst_sum_tmp_783d5_9 * dst_sum_inv_col3) - qm31_const::<1, 0, 0, 0>())))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     // Constraint - next_pc
     let constraint_quotient = ((next_pc_col8
