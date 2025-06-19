@@ -597,9 +597,11 @@ impl Display for CasmStatesByOpcode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let counts = self.counts();
         let total_steps = counts.iter().map(|(_, count)| count).sum::<usize>();
-        writeln!(f, "Total steps: {total_steps}")?;
+        let log_total_steps = (total_steps as f64).log2();
+        writeln!(f, "Total steps: {total_steps}, 2 ** {log_total_steps:.3?}")?;
         for (name, count) in &counts {
-            writeln!(f, "{name}: {count}")?;
+            let log_count = (*count as f64).log2();
+            writeln!(f, "{name}: {count}, 2 ** {log_count:.3?}")?;
         }
         Ok(())
     }
