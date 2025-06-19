@@ -1,10 +1,12 @@
+// AIR version 4b9ba23e
 use crate::components::prelude::*;
+use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
 use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
 pub const N_TRACE_COLUMNS: usize = 89;
-pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 5,
@@ -14,8 +16,16 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
         uses: 5,
     },
     RelationUse {
+        relation_id: "RangeCheck_8",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_8",
+        uses: 1,
+    },
+    RelationUse {
         relation_id: "VerifyBitwiseXor_9",
-        uses: 28,
+        uses: 27,
     },
 ];
 
@@ -24,6 +34,8 @@ pub struct Eval {
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9,
+    pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+    pub range_check_8_lookup_elements: relations::RangeCheck_8,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -34,7 +46,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 19];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 20];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -513,16 +525,22 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_26_col27.clone() + op1_limb_26_col56.clone()) - xor_col84.clone())),
         );
-        BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits8::evaluate(
             [op0_limb_27_col28.clone(), op1_limb_27_col57.clone()],
             xor_col85.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.verify_bitwise_xor_8_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_89 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_27_col28.clone() + op1_limb_27_col57.clone()) - xor_col85.clone())),
         );
+        eval.add_to_relation(RelationEntry::new(
+            &self.range_check_8_lookup_elements,
+            E::EF::one(),
+            &[(and_tmp_efb2a_89.clone() + xor_col85.clone())],
+        ));
+
         MemVerify::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
@@ -667,6 +685,8 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
             verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
+            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
