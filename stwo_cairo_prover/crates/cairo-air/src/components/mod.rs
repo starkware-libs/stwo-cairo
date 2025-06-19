@@ -58,7 +58,7 @@ pub use range_check_vector::{
     range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
     range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
 };
-use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
+use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
 
 #[cfg(test)]
 pub mod constraints_regression_test_values;

@@ -3,10 +3,10 @@ use cairo_air::opcodes_air::OpcodeComponents;
 use itertools::{chain, Itertools};
 use num_traits::One;
 use stwo_cairo_common::prover_types::felt::split_f252;
-use stwo_prover::constraint_framework::relation_tracker::{
+use stwo_constraint_framework::relation_tracker::{
     add_to_relation_entries, RelationSummary, RelationTrackerEntry,
 };
-use stwo_prover::constraint_framework::{FrameworkComponent, FrameworkEval};
+use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
 use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::backend::{BackendForChannel, Column};
 use stwo_prover::core::channel::MerkleChannel;

@@ -5,7 +5,7 @@ use itertools::{chain, Itertools};
 use stwo_cairo_common::preprocessed_consts::blake::N_BLAKE_SIGMA_COLS;
 use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS as POSEIDON_N_WORDS;
 use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
-use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;

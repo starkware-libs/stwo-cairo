@@ -5,7 +5,7 @@ use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::preprocessed::PreProcessedTrace;
 use itertools::Itertools;
 use stwo_cairo_adapter::ProverInput;
-use stwo_prover::constraint_framework::{
+use stwo_constraint_framework::{
     assert_constraints_on_trace, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
 };
 use stwo_prover::core::channel::Blake2sChannel;
