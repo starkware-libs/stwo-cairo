@@ -1,5 +1,4 @@
-// Constraints version: bc855610
-
+// AIR version f2356326
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -16,13 +15,15 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
+use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate;
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
 
 pub const N_TRACE_COLUMNS: usize = 89;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
-    ('MemoryAddressToId', 5), ('MemoryIdToBig', 5), ('VerifyBitwiseXor_9', 28),
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
+    ('MemoryAddressToId', 5), ('MemoryIdToBig', 5), ('VerifyBitwiseXor_9', 27),
+    ('VerifyBitwiseXor_8', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -67,6 +68,7 @@ pub struct Component {
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
     pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor_9Elements,
+    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
@@ -302,7 +304,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let mut verify_bitwise_xor_9_sum_28: QM31 = Zero::zero();
         let mut verify_bitwise_xor_9_sum_29: QM31 = Zero::zero();
         let mut verify_bitwise_xor_9_sum_30: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_9_sum_31: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_31: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_32: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_33: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_34: QM31 = Zero::zero();
@@ -905,11 +907,11 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let and_tmp_efb2a_86: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_26_col27 + op1_limb_26_col56) - xor_col84));
 
-        bitwise_xor_num_bits_9_evaluate(
+        bitwise_xor_num_bits_8_evaluate(
             [op0_limb_27_col28, op1_limb_27_col57],
             xor_col85,
-            self.verify_bitwise_xor_9_lookup_elements,
-            ref verify_bitwise_xor_9_sum_31,
+            self.verify_bitwise_xor_8_lookup_elements,
+            ref verify_bitwise_xor_8_sum_31,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -1025,7 +1027,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             verify_bitwise_xor_9_sum_28,
             verify_bitwise_xor_9_sum_29,
             verify_bitwise_xor_9_sum_30,
-            verify_bitwise_xor_9_sum_31,
+            verify_bitwise_xor_8_sum_31,
             memory_address_to_id_sum_32,
             memory_id_to_big_sum_33,
             memory_address_to_id_sum_34,
@@ -1075,7 +1077,7 @@ fn lookup_constraints(
     verify_bitwise_xor_9_sum_28: QM31,
     verify_bitwise_xor_9_sum_29: QM31,
     verify_bitwise_xor_9_sum_30: QM31,
-    verify_bitwise_xor_9_sum_31: QM31,
+    verify_bitwise_xor_8_sum_31: QM31,
     memory_address_to_id_sum_32: QM31,
     memory_id_to_big_sum_33: QM31,
     memory_address_to_id_sum_34: QM31,
@@ -1442,9 +1444,9 @@ fn lookup_constraints(
             [trace_2_col56, trace_2_col57, trace_2_col58, trace_2_col59],
         ))
         * verify_bitwise_xor_9_sum_30
-        * verify_bitwise_xor_9_sum_31)
+        * verify_bitwise_xor_8_sum_31)
         - verify_bitwise_xor_9_sum_30
-        - verify_bitwise_xor_9_sum_31)
+        - verify_bitwise_xor_8_sum_31)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
