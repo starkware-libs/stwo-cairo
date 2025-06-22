@@ -12,6 +12,8 @@ use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::RelocatedTraceEntry;
 
+pub const MAX_AP: u32 = 2_u32.pow(27) - 1;
+
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
 /// and should match the opcode's air used by `stwo-cairo-air`.
@@ -50,9 +52,11 @@ impl CasmStatesByOpcode {
         res
     }
 
-    /// Pushes the state transition at pc into the appropriate opcode component.
+    /// Pushes the state transition at pc into the appropriate opcode component and checks that the
+    /// given ap is within the allowed range.
     fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
         let CasmState { ap, fp, pc } = state;
+        assert!(ap.0 <= MAX_AP, "AP out of range: {}", ap.0);
         let encoded_instruction = memory.get_inst(pc.0);
         let instruction = Instruction::decode(encoded_instruction);
 
@@ -621,10 +625,20 @@ impl StateTransitions {
         let _span = span!(Level::INFO, "StateTransitions::from_iter").entered();
         let mut iter = iter.peekable();
 
-        let initial_state = (*iter.peek().expect("Must have an initial state.")).into();
+        let initial_state: CasmState = (*iter.peek().expect("Must have an initial state.")).into();
+        assert!(
+            initial_state.ap.0 <= MAX_AP,
+            "Initial ap out of range: {}",
+            initial_state.ap.0
+        );
 
         // Assuming the last instruction is jrl0, no need to push it.
-        let final_state = iter.next_back().unwrap().into();
+        let final_state: CasmState = iter.next_back().unwrap().into();
+        assert!(
+            final_state.ap.0 <= MAX_AP,
+            "Final ap out of range: {}",
+            final_state.ap.0
+        );
 
         let states = CasmStatesByOpcode::from_iter(iter, memory);
 
@@ -637,10 +651,20 @@ impl StateTransitions {
 
     pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_slice_parallel").entered();
-        let initial_state = trace.first().copied().unwrap().into();
+        let initial_state: CasmState = trace.first().copied().unwrap().into();
+        assert!(
+            initial_state.ap.0 <= MAX_AP,
+            "Initial ap out of range: {}",
+            initial_state.ap.0
+        );
 
         // Assuming the last instruction is jrl0, no need to push it.
-        let final_state = trace.last().copied().unwrap().into();
+        let final_state: CasmState = trace.last().copied().unwrap().into();
+        assert!(
+            final_state.ap.0 <= MAX_AP,
+            "Final ap out of range: {}",
+            final_state.ap.0
+        );
         let trace = &trace[..trace.len() - 1];
 
         let n_workers = rayon::current_num_threads();
@@ -1301,5 +1325,30 @@ mod mappings_tests {
         );
         assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
         assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
+    }
+
+    #[test]
+    #[should_panic(expected = "Initial ap out of range: 134217728")]
+    fn test_ap_out_of_range_from_iter() {
+        let reloctated_trace = [relocated_trace_entry!(2usize.pow(27), 1, 1)];
+        StateTransitions::from_iter(
+            reloctated_trace.into_iter(),
+            &MemoryBuilder::new(MemoryConfig::default()),
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "AP out of range: 134217728")]
+    fn test_ap_out_of_range_from_slice() {
+        let mut reloctated_trace = [relocated_trace_entry!(2, 1, 1); 80];
+        reloctated_trace[68] = relocated_trace_entry!(2usize.pow(27), 1, 1);
+
+        let encoded_blake_finalize_inst =
+            0b10000000000001011011111111111110101111111111111000111111111111011;
+        let x = u128_to_4_limbs(encoded_blake_finalize_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        StateTransitions::from_slice_parallel(&reloctated_trace, &memory_builder);
     }
 }
