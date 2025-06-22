@@ -4,6 +4,7 @@ use crypto_bigint::U256;
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_prover::core::fields::m31::M31;
 use tracing::{span, Level};
@@ -52,6 +53,7 @@ impl CasmStatesByOpcode {
 
     /// Pushes the state transition at pc into the appropriate opcode component.
     fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
+        assert_state_in_address_space(state);
         let CasmState { ap, fp, pc } = state;
         let encoded_instruction = memory.get_inst(pc.0);
         let instruction = Instruction::decode(encoded_instruction);
@@ -596,6 +598,24 @@ impl From<RelocatedTraceEntry> for CasmState {
     }
 }
 
+fn assert_state_in_address_space(casm_state: CasmState) {
+    assert!(
+        (casm_state.ap.0 as usize) < MEMORY_ADDRESS_BOUND,
+        "AP out of address range: {}",
+        casm_state.ap.0
+    );
+    assert!(
+        (casm_state.fp.0 as usize) < MEMORY_ADDRESS_BOUND,
+        "FP out of address range: {}",
+        casm_state.fp.0
+    );
+    assert!(
+        (casm_state.pc.0 as usize) < MEMORY_ADDRESS_BOUND,
+        "PC out of address range: {}",
+        casm_state.pc.0
+    );
+}
+
 /// Holds the state transitions of a Cairo program, split according to the components responsible
 /// for proving each transition.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -622,9 +642,11 @@ impl StateTransitions {
         let mut iter = iter.peekable();
 
         let initial_state = (*iter.peek().expect("Must have an initial state.")).into();
+        assert_state_in_address_space(initial_state);
 
         // Assuming the last instruction is jrl0, no need to push it.
         let final_state = iter.next_back().unwrap().into();
+        assert_state_in_address_space(final_state);
 
         let states = CasmStatesByOpcode::from_iter(iter, memory);
 
@@ -638,9 +660,12 @@ impl StateTransitions {
     pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_slice_parallel").entered();
         let initial_state = trace.first().copied().unwrap().into();
+        assert_state_in_address_space(initial_state);
 
         // Assuming the last instruction is jrl0, no need to push it.
         let final_state = trace.last().copied().unwrap().into();
+        assert_state_in_address_space(final_state);
+
         let trace = &trace[..trace.len() - 1];
 
         let n_workers = rayon::current_num_threads();
@@ -1301,5 +1326,30 @@ mod mappings_tests {
         );
         assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
         assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
+    }
+
+    #[test]
+    #[should_panic(expected = "AP out of address range: 134217728")]
+    fn test_ap_out_of_range_from_iter() {
+        let reloctated_trace = [relocated_trace_entry!(2usize.pow(27), 1, 1)];
+        StateTransitions::from_iter(
+            reloctated_trace.into_iter(),
+            &MemoryBuilder::new(MemoryConfig::default()),
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "AP out of address range: 134217728")]
+    fn test_ap_out_of_range_from_slice() {
+        let mut reloctated_trace = [relocated_trace_entry!(2, 1, 1); 80];
+        reloctated_trace[68] = relocated_trace_entry!(2usize.pow(27), 1, 1);
+
+        let encoded_blake_finalize_inst =
+            0b10000000000001011011111111111110101111111111111000111111111111011;
+        let x = u128_to_4_limbs(encoded_blake_finalize_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        StateTransitions::from_slice_parallel(&reloctated_trace, &memory_builder);
     }
 }
