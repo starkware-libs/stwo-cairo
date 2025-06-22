@@ -107,13 +107,6 @@ pub impl ChannelGetRandomCirclePointImpl of ChannelGetRandomCirclePointTrait {
     }
 }
 
-#[generate_trait]
-pub impl ComplexConjugateImpl of ComplexConjugateTrait {
-    fn complex_conjugate(self: CirclePoint<QM31>) -> CirclePoint<QM31> {
-        CirclePoint { x: self.x.complex_conjugate(), y: self.y.complex_conjugate() }
-    }
-}
-
 /// Represents the coset `initial + <step>`.
 #[derive(Copy, Clone, Debug, PartialEq, Drop)]
 pub struct Coset {
