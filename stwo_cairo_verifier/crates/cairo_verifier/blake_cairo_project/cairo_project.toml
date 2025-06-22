@@ -30,6 +30,7 @@ discriminator = "stwo_verifier_core"
 negative_impls = false
 associated_item_constraints = false
 coupons = false
+user_defined_inline_macros = false
 
 [config.override."bounded_int"]
 name = "bounded_int"
@@ -43,6 +44,7 @@ discriminator = "bounded_int"
 negative_impls = false
 associated_item_constraints = false
 coupons = false
+user_defined_inline_macros = false
 
 [config.override."stwo_cairo_air"]
 name = "stwo_cairo_air"
@@ -66,6 +68,8 @@ discriminator = "stwo_verifier_core"
 negative_impls = false
 associated_item_constraints = false
 coupons = false
+user_defined_inline_macros = false
+
 
 [config.override."stwo_constraint_framework"]
 name = "stwo_constraint_framework"
@@ -82,6 +86,8 @@ discriminator = "stwo_verifier_core"
 negative_impls = false
 associated_item_constraints = false
 coupons = false
+user_defined_inline_macros = false
+
 
 [config.override."stwo_verifier_core"]
 name = "stwo_verifier_core"
@@ -102,6 +108,7 @@ discriminator = "stwo_verifier_core"
 negative_impls = false
 associated_item_constraints = false
 coupons = false
+user_defined_inline_macros = false
 
 
 [config.override."stwo_cairo_verifier"]
