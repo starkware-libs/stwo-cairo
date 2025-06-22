@@ -31,6 +31,7 @@ starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 cairo-air.workspace = true
 stwo-prover.workspace = true
+stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
 
 [dev-dependencies]

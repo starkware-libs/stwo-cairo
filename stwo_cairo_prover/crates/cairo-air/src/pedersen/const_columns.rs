@@ -13,7 +13,7 @@ use stwo_cairo_common::preprocessed_consts::pedersen::{
     BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
 use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
-use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
 use stwo_prover::core::backend::simd::SimdBackend;
