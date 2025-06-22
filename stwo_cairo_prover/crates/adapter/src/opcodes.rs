@@ -11,11 +11,6 @@ use tracing::{span, Level};
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
 use super::vm_import::RelocatedTraceEntry;
-use crate::memory::limbs_to_u128;
-
-// Small mul operands are 36 bits.
-const SMALL_MUL_MAX_VALUE: u64 = 2_u64.pow(36) - 1;
-const SMALL_MUL_MIN_VALUE: u64 = 0;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -118,20 +113,6 @@ impl CasmStatesByOpcode {
                     (!op_1_imm) || offset2 == 1,
                     "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
-                let mem1_base = if op_1_imm {
-                    pc
-                } else if op_1_base_fp {
-                    fp
-                } else {
-                    ap
-                };
-                let op_1 = memory.get(mem1_base.0.checked_add_signed(offset2 as i32).unwrap());
-                // next ap = ap + op1 must be in the range [0, 2^27 - 1].
-                if !is_within_range(op_1, -(ap.0 as i128), ((1 << 27) - 1) - ap.0 as i128) {
-                    panic!(
-                        "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
-                    );
-                }
                 self.add_ap_opcode.push(state);
             }
             // jump.
@@ -680,17 +661,6 @@ impl StateTransitions {
     }
 }
 
-fn is_within_range(val: MemoryValue, min: i128, max: i128) -> bool {
-    match val {
-        MemoryValue::Small(val) => (val as i128 >= min) && (val as i128 <= max),
-        MemoryValue::F252(felt252) if felt252[4..8] == [0; 4] => {
-            let val = limbs_to_u128(felt252[0..4].try_into().unwrap());
-            (val as i128 >= min) && (val as i128 <= max)
-        }
-        MemoryValue::F252(_) => false,
-    }
-}
-
 fn u256_from_le_array(arr: [u32; 8]) -> U256 {
     let mut buf = [0u8; 32];
     for (i, x) in arr.iter().enumerate() {
@@ -726,14 +696,13 @@ fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
     })
 }
 
-// Returns 'true' the multiplication factors are in the range [0, 2^36-1].
+const SMALL_MUL_MAX_VALUE: u64 = 2u64.pow(36) - 1;
+// Returns 'true' if the multiplication factors are in the range [0, 2^36-1].
 fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
     [op0, op_1].iter().all(|val| {
-        is_within_range(
-            *val,
-            SMALL_MUL_MIN_VALUE as i128,
-            SMALL_MUL_MAX_VALUE as i128,
-        )
+        let value = val.as_u256();
+        value[2..8] == [0; 6]
+            && (value[0] as u64 + ((value[1] as u64) << 32) <= SMALL_MUL_MAX_VALUE)
     })
 }
 
@@ -1003,64 +972,6 @@ mod mappings_tests {
         let casm_states_by_opcode =
             CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
         assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
-    }
-
-    #[test]
-    #[should_panic(
-        expected = "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
-    )]
-    fn test_add_ap_rangecheck_panic() {
-        // Encoding for the instruction `ap += [fp]`.
-        // Flags: dst_base_fp, op0_base_fp, op1_base_fp, ap_update_add
-        // Offsets: offset2 = 0, offset1 = -1, offset0 = -1
-        let [ap, fp, pc] = [7, 20, 1];
-        let encoded_instr = 0b000010000001011100000000000000001111111111111110111111111111111;
-        let x = u128_to_4_limbs(encoded_instr);
-        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
-        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
-        memory_builder.set(fp, MemoryValue::Small(((1 << 27) - ap) as u128));
-
-        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
-        let _casm_states_by_opcode =
-            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
-    }
-
-    #[test]
-    fn test_add_ap_lower_edge_case() {
-        // Encoding for the instruction `ap += imm`.
-        // Flags: dst_base_fp, op0_base_fp, op1_imm, ap_update_add
-        // Offsets: offset2 = 1, offset1 = -1, offset0 = -1
-        let [ap, fp, pc] = [7, 20, 1];
-        let encoded_instr = 0b000010000000111100000000000000101111111111111110111111111111111;
-        let x = u128_to_4_limbs(encoded_instr);
-        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
-        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
-        memory_builder.set(pc + 1, MemoryValue::Small((-(ap as i128)) as u128));
-
-        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
-        let casm_states_by_opcode =
-            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
-        assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
-    }
-
-    #[test]
-    #[should_panic(
-        expected = "add_ap opcode requires that next_ap is within the range of [0, 2^27 - 1]"
-    )]
-    fn test_add_ap_rangecheck_panic_neg() {
-        // Encoding for the instruction `ap += imm`.
-        // Flags: dst_base_fp, op0_base_fp, op1_imm, ap_update_add
-        // Offsets: offset2 = 1, offset1 = -1, offset0 = -1
-        let [ap, fp, pc] = [7, 20, 1];
-        let encoded_instr = 0b000010000000111100000000000000101111111111111110111111111111111;
-        let x = u128_to_4_limbs(encoded_instr);
-        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
-        memory_builder.set(pc, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
-        memory_builder.set(pc + 1, MemoryValue::Small((-(ap as i128 + 1)) as u128));
-
-        let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
-        let _casm_states_by_opcode =
-            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
     }
 
     #[test]
