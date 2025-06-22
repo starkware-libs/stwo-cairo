@@ -91,18 +91,10 @@ impl PoseidonContextClaimGenerator {
             &range_checks_trace_generator.rc_19_b_trace_generator,
             &range_checks_trace_generator.rc_19_c_trace_generator,
             &range_checks_trace_generator.rc_19_d_trace_generator,
-            &range_checks_trace_generator.rc_19_e_trace_generator,
-            &range_checks_trace_generator.rc_19_f_trace_generator,
-            &range_checks_trace_generator.rc_19_g_trace_generator,
-            &range_checks_trace_generator.rc_19_h_trace_generator,
             &range_checks_trace_generator.rc_9_9_trace_generator,
             &range_checks_trace_generator.rc_9_9_b_trace_generator,
             &range_checks_trace_generator.rc_9_9_c_trace_generator,
             &range_checks_trace_generator.rc_9_9_d_trace_generator,
-            &range_checks_trace_generator.rc_9_9_e_trace_generator,
-            &range_checks_trace_generator.rc_9_9_f_trace_generator,
-            &range_checks_trace_generator.rc_9_9_g_trace_generator,
-            &range_checks_trace_generator.rc_9_9_h_trace_generator,
         );
         let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
             .poseidon_round_keys_trace_generator
@@ -112,12 +104,7 @@ impl PoseidonContextClaimGenerator {
                 .write_trace(
                     tree_builder,
                     &range_checks_trace_generator.rc_18_trace_generator,
-                    &range_checks_trace_generator.rc_18_b_trace_generator,
                     &range_checks_trace_generator.rc_9_9_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_b_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_c_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_d_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_e_trace_generator,
                 );
         span.exit();
 
@@ -201,18 +188,10 @@ impl InteractionClaimGenerator {
             &interaction_elements.range_checks.rc_19_b,
             &interaction_elements.range_checks.rc_19_c,
             &interaction_elements.range_checks.rc_19_d,
-            &interaction_elements.range_checks.rc_19_e,
-            &interaction_elements.range_checks.rc_19_f,
-            &interaction_elements.range_checks.rc_19_g,
-            &interaction_elements.range_checks.rc_19_h,
             &interaction_elements.range_checks.rc_9_9,
             &interaction_elements.range_checks.rc_9_9_b,
             &interaction_elements.range_checks.rc_9_9_c,
             &interaction_elements.range_checks.rc_9_9_d,
-            &interaction_elements.range_checks.rc_9_9_e,
-            &interaction_elements.range_checks.rc_9_9_f,
-            &interaction_elements.range_checks.rc_9_9_g,
-            &interaction_elements.range_checks.rc_9_9_h,
         );
         let poseidon_round_keys_interaction_claim = self
             .poseidon_round_keys_interaction_gen
@@ -223,12 +202,7 @@ impl InteractionClaimGenerator {
                 tree_builder,
                 &interaction_elements.range_check_felt_252_width_27,
                 &interaction_elements.range_checks.rc_18,
-                &interaction_elements.range_checks.rc_18_b,
                 &interaction_elements.range_checks.rc_9_9,
-                &interaction_elements.range_checks.rc_9_9_b,
-                &interaction_elements.range_checks.rc_9_9_c,
-                &interaction_elements.range_checks.rc_9_9_d,
-                &interaction_elements.range_checks.rc_9_9_e,
             );
 
         InteractionClaim {

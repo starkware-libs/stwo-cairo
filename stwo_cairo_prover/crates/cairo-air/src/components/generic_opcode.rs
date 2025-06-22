@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version f1e997f6
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_generic_instruction::DecodeGenericInstruction;
 use crate::components::subroutines::eval_operands::EvalOperands;
@@ -6,7 +6,7 @@ use crate::components::subroutines::handle_opcodes::HandleOpcodes;
 use crate::components::subroutines::update_registers::UpdateRegisters;
 
 pub const N_TRACE_COLUMNS: usize = 236;
-pub const RELATION_USES_PER_ROW: [RelationUse; 20] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 12] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
@@ -21,67 +21,35 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 20] = [
     },
     RelationUse {
         relation_id: "RangeCheck_19",
-        uses: 4,
+        uses: 8,
     },
     RelationUse {
         relation_id: "RangeCheck_19_B",
-        uses: 4,
+        uses: 7,
     },
     RelationUse {
         relation_id: "RangeCheck_19_C",
-        uses: 4,
+        uses: 7,
     },
     RelationUse {
         relation_id: "RangeCheck_19_D",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_19_E",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_19_F",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_19_G",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_19_H",
-        uses: 4,
+        uses: 6,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9",
-        uses: 4,
+        uses: 8,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9_B",
-        uses: 4,
+        uses: 8,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9_C",
-        uses: 4,
+        uses: 6,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9_D",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_F",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_G",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_H",
-        uses: 2,
+        uses: 6,
     },
     RelationUse {
         relation_id: "VerifyInstruction",
@@ -98,18 +66,10 @@ pub struct Eval {
     pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
     pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
     pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-    pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-    pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-    pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
     pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
     pub range_check_19_d_lookup_elements: relations::RangeCheck_19_D,
-    pub range_check_19_e_lookup_elements: relations::RangeCheck_19_E,
-    pub range_check_19_f_lookup_elements: relations::RangeCheck_19_F,
-    pub range_check_19_g_lookup_elements: relations::RangeCheck_19_G,
-    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -647,18 +607,10 @@ impl FrameworkEval for Eval {
             &self.range_check_9_9_b_lookup_elements,
             &self.range_check_9_9_c_lookup_elements,
             &self.range_check_9_9_d_lookup_elements,
-            &self.range_check_9_9_e_lookup_elements,
-            &self.range_check_9_9_f_lookup_elements,
-            &self.range_check_9_9_g_lookup_elements,
-            &self.range_check_9_9_h_lookup_elements,
-            &self.range_check_19_h_lookup_elements,
             &self.range_check_19_lookup_elements,
             &self.range_check_19_b_lookup_elements,
             &self.range_check_19_c_lookup_elements,
             &self.range_check_19_d_lookup_elements,
-            &self.range_check_19_e_lookup_elements,
-            &self.range_check_19_f_lookup_elements,
-            &self.range_check_19_g_lookup_elements,
             &mut eval,
         );
         HandleOpcodes::evaluate(
@@ -925,18 +877,10 @@ mod tests {
             range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
             range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
             range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
-            range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
-            range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F::dummy(),
-            range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G::dummy(),
-            range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H::dummy(),
-            range_check_19_h_lookup_elements: relations::RangeCheck_19_H::dummy(),
             range_check_19_lookup_elements: relations::RangeCheck_19::dummy(),
             range_check_19_b_lookup_elements: relations::RangeCheck_19_B::dummy(),
             range_check_19_c_lookup_elements: relations::RangeCheck_19_C::dummy(),
             range_check_19_d_lookup_elements: relations::RangeCheck_19_D::dummy(),
-            range_check_19_e_lookup_elements: relations::RangeCheck_19_E::dummy(),
-            range_check_19_f_lookup_elements: relations::RangeCheck_19_F::dummy(),
-            range_check_19_g_lookup_elements: relations::RangeCheck_19_G::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

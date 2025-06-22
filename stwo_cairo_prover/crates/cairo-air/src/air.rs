@@ -657,10 +657,6 @@ impl CairoComponents {
             &interaction_elements.range_checks.rc_9_9_b,
             &interaction_elements.range_checks.rc_9_9_c,
             &interaction_elements.range_checks.rc_9_9_d,
-            &interaction_elements.range_checks.rc_9_9_e,
-            &interaction_elements.range_checks.rc_9_9_f,
-            &interaction_elements.range_checks.rc_9_9_g,
-            &interaction_elements.range_checks.rc_9_9_h,
             tree_span_provider,
         );
         let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(

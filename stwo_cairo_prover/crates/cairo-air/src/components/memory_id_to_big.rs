@@ -29,38 +29,22 @@ pub type SmallComponent = FrameworkComponent<SmallEval>;
 
 const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
 
-pub const RELATION_USES_PER_ROW_BIG: [RelationUse; 8] = [
+pub const RELATION_USES_PER_ROW_BIG: [RelationUse; 4] = [
     RelationUse {
         relation_id: "RangeCheck_9_9",
-        uses: 2,
+        uses: 4,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9_B",
-        uses: 2,
+        uses: 4,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9_C",
-        uses: 2,
+        uses: 3,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9_D",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_F",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_G",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_H",
-        uses: 1,
+        uses: 3,
     },
 ];
 
@@ -97,12 +81,7 @@ pub struct BigEval {
     pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
     pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
     pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-    pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-    pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-    pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
 }
-#[allow(clippy::too_many_arguments)]
 impl BigEval {
     pub fn new(
         log_n_rows: u32,
@@ -112,10 +91,6 @@ impl BigEval {
         range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
         range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
         range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-        range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-        range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-        range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-        range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
     ) -> Self {
         Self {
             log_n_rows,
@@ -125,10 +100,6 @@ impl BigEval {
             range_check_9_9_b_lookup_elements,
             range_check_9_9_c_lookup_elements,
             range_check_9_9_d_lookup_elements,
-            range_check_9_9_e_lookup_elements,
-            range_check_9_9_f_lookup_elements,
-            range_check_9_9_g_lookup_elements,
-            range_check_9_9_h_lookup_elements,
         }
     }
 }
@@ -150,7 +121,7 @@ impl FrameworkEval for BigEval {
         // Range check limbs.
         for (i, (l, r)) in value.iter().tuples().enumerate() {
             let limb_pair = [l.clone(), r.clone()];
-            match i % 8 {
+            match i % 4 {
                 0 => eval.add_to_relation(RelationEntry::new(
                     &self.range_check_9_9_lookup_elements,
                     E::EF::one(),
@@ -171,28 +142,8 @@ impl FrameworkEval for BigEval {
                     E::EF::one(),
                     &limb_pair,
                 )),
-                4 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_e_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                5 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_f_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                6 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_g_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                7 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_h_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
                 _ => {
-                    unreachable!("There are only 8 possible values for i % 8.",)
+                    unreachable!("There are only 4 possible values for i % 4.",)
                 }
             };
         }
@@ -221,10 +172,6 @@ pub fn big_components_from_claim(
     range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
     range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
     range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-    range_check_9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-    range_check_9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-    range_check_9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-    range_check_9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
     tree_span_provider: &mut TraceLocationAllocator,
 ) -> Vec<BigComponent> {
     // Every component is responsible for a range of memory ids. The ids must not overlap. Use an
@@ -242,10 +189,6 @@ pub fn big_components_from_claim(
                 range_check_9_9_b_lookup_elements.clone(),
                 range_check_9_9_c_lookup_elements.clone(),
                 range_check_9_9_d_lookup_elements.clone(),
-                range_check_9_9_e_lookup_elements.clone(),
-                range_check_9_9_f_lookup_elements.clone(),
-                range_check_9_9_g_lookup_elements.clone(),
-                range_check_9_9_h_lookup_elements.clone(),
             ),
             claimed_sum,
         ));
@@ -431,10 +374,6 @@ mod tests {
             range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
             range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
             range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
-            range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
-            range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F::dummy(),
-            range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G::dummy(),
-            range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H::dummy(),
         };
         let small_eval = SmallEval {
             log_n_rows: 4,

@@ -1,4 +1,5 @@
-// AIR version a85719a7
+// Constraints version: bc855610
+
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -17,9 +18,8 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 
 pub const N_TRACE_COLUMNS: usize = 20;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 7] = [
-    ('RangeCheck_9_9', 1), ('RangeCheck_18', 7), ('RangeCheck_9_9_B', 1), ('RangeCheck_18_B', 2),
-    ('RangeCheck_9_9_C', 1), ('RangeCheck_9_9_D', 1), ('RangeCheck_9_9_E', 1),
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
+    ('RangeCheck_9_9', 5), ('RangeCheck_18', 9),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -61,11 +61,6 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
     pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
-    pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
-    pub range_check_18_b_lookup_elements: crate::RangeCheck_18_BElements,
-    pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
-    pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
-    pub range_check_9_9_e_lookup_elements: crate::RangeCheck_9_9_EElements,
     pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
 }
 
@@ -155,16 +150,16 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let mut range_check_9_9_sum_0: QM31 = Zero::zero();
         let mut range_check_18_sum_1: QM31 = Zero::zero();
         let mut range_check_18_sum_2: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_3: QM31 = Zero::zero();
-        let mut range_check_18_b_sum_4: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_3: QM31 = Zero::zero();
+        let mut range_check_18_sum_4: QM31 = Zero::zero();
         let mut range_check_18_sum_5: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_6: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_6: QM31 = Zero::zero();
         let mut range_check_18_sum_7: QM31 = Zero::zero();
         let mut range_check_18_sum_8: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_9: QM31 = Zero::zero();
-        let mut range_check_18_b_sum_10: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_9: QM31 = Zero::zero();
+        let mut range_check_18_sum_10: QM31 = Zero::zero();
         let mut range_check_18_sum_11: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_12: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_12: QM31 = Zero::zero();
         let mut range_check_18_sum_13: QM31 = Zero::zero();
         let mut range_check_felt_252_width_27_sum_14: QM31 = Zero::zero();
 
@@ -245,12 +240,12 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 [((input_limb_1_col1 - limb_1_low_part_col11) * qm31_const::<4194304, 0, 0, 0>())],
             );
 
-        range_check_9_9_b_sum_3 = self
-            .range_check_9_9_b_lookup_elements
+        range_check_9_9_sum_3 = self
+            .range_check_9_9_lookup_elements
             .combine_qm31([limb_2_high_part_col12, limb_3_low_part_col13]);
 
-        range_check_18_b_sum_4 = self
-            .range_check_18_b_lookup_elements
+        range_check_18_sum_4 = self
+            .range_check_18_lookup_elements
             .combine_qm31(
                 [(input_limb_2_col2 - (limb_2_high_part_col12 * qm31_const::<262144, 0, 0, 0>()))],
             );
@@ -261,8 +256,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 [((input_limb_3_col3 - limb_3_low_part_col13) * qm31_const::<4194304, 0, 0, 0>())],
             );
 
-        range_check_9_9_c_sum_6 = self
-            .range_check_9_9_c_lookup_elements
+        range_check_9_9_sum_6 = self
+            .range_check_9_9_lookup_elements
             .combine_qm31([limb_4_high_part_col14, limb_5_low_part_col15]);
 
         range_check_18_sum_7 = self
@@ -277,12 +272,12 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 [((input_limb_5_col5 - limb_5_low_part_col15) * qm31_const::<4194304, 0, 0, 0>())],
             );
 
-        range_check_9_9_d_sum_9 = self
-            .range_check_9_9_d_lookup_elements
+        range_check_9_9_sum_9 = self
+            .range_check_9_9_lookup_elements
             .combine_qm31([limb_6_high_part_col16, limb_7_low_part_col17]);
 
-        range_check_18_b_sum_10 = self
-            .range_check_18_b_lookup_elements
+        range_check_18_sum_10 = self
+            .range_check_18_lookup_elements
             .combine_qm31(
                 [(input_limb_6_col6 - (limb_6_high_part_col16 * qm31_const::<262144, 0, 0, 0>()))],
             );
@@ -293,8 +288,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 [((input_limb_7_col7 - limb_7_low_part_col17) * qm31_const::<4194304, 0, 0, 0>())],
             );
 
-        range_check_9_9_e_sum_12 = self
-            .range_check_9_9_e_lookup_elements
+        range_check_9_9_sum_12 = self
+            .range_check_9_9_lookup_elements
             .combine_qm31([limb_8_high_part_col18, input_limb_9_col9]);
 
         range_check_18_sum_13 = self
@@ -324,16 +319,16 @@ pub impl ComponentImpl of CairoComponent<Component> {
             range_check_9_9_sum_0,
             range_check_18_sum_1,
             range_check_18_sum_2,
-            range_check_9_9_b_sum_3,
-            range_check_18_b_sum_4,
+            range_check_9_9_sum_3,
+            range_check_18_sum_4,
             range_check_18_sum_5,
-            range_check_9_9_c_sum_6,
+            range_check_9_9_sum_6,
             range_check_18_sum_7,
             range_check_18_sum_8,
-            range_check_9_9_d_sum_9,
-            range_check_18_b_sum_10,
+            range_check_9_9_sum_9,
+            range_check_18_sum_10,
             range_check_18_sum_11,
-            range_check_9_9_e_sum_12,
+            range_check_9_9_sum_12,
             range_check_18_sum_13,
             range_check_felt_252_width_27_sum_14,
         );
@@ -352,16 +347,16 @@ fn lookup_constraints(
     range_check_9_9_sum_0: QM31,
     range_check_18_sum_1: QM31,
     range_check_18_sum_2: QM31,
-    range_check_9_9_b_sum_3: QM31,
-    range_check_18_b_sum_4: QM31,
+    range_check_9_9_sum_3: QM31,
+    range_check_18_sum_4: QM31,
     range_check_18_sum_5: QM31,
-    range_check_9_9_c_sum_6: QM31,
+    range_check_9_9_sum_6: QM31,
     range_check_18_sum_7: QM31,
     range_check_18_sum_8: QM31,
-    range_check_9_9_d_sum_9: QM31,
-    range_check_18_b_sum_10: QM31,
+    range_check_9_9_sum_9: QM31,
+    range_check_18_sum_10: QM31,
     range_check_18_sum_11: QM31,
-    range_check_9_9_e_sum_12: QM31,
+    range_check_9_9_sum_12: QM31,
     range_check_18_sum_13: QM31,
     range_check_felt_252_width_27_sum_14: QM31,
 ) {
@@ -458,9 +453,9 @@ fn lookup_constraints(
     )
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * range_check_18_sum_2
-        * range_check_9_9_b_sum_3)
+        * range_check_9_9_sum_3)
         - range_check_18_sum_2
-        - range_check_9_9_b_sum_3)
+        - range_check_9_9_sum_3)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -468,9 +463,9 @@ fn lookup_constraints(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
-        * range_check_18_b_sum_4
+        * range_check_18_sum_4
         * range_check_18_sum_5)
-        - range_check_18_b_sum_4
+        - range_check_18_sum_4
         - range_check_18_sum_5)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -479,9 +474,9 @@ fn lookup_constraints(
         [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
     )
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
-        * range_check_9_9_c_sum_6
+        * range_check_9_9_sum_6
         * range_check_18_sum_7)
-        - range_check_9_9_c_sum_6
+        - range_check_9_9_sum_6
         - range_check_18_sum_7)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -493,9 +488,9 @@ fn lookup_constraints(
             [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
         ))
         * range_check_18_sum_8
-        * range_check_9_9_d_sum_9)
+        * range_check_9_9_sum_9)
         - range_check_18_sum_8
-        - range_check_9_9_d_sum_9)
+        - range_check_9_9_sum_9)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -505,9 +500,9 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
         ))
-        * range_check_18_b_sum_10
+        * range_check_18_sum_10
         * range_check_18_sum_11)
-        - range_check_18_b_sum_10
+        - range_check_18_sum_10
         - range_check_18_sum_11)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -518,9 +513,9 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
         ))
-        * range_check_9_9_e_sum_12
+        * range_check_9_9_sum_12
         * range_check_18_sum_13)
-        - range_check_9_9_e_sum_12
+        - range_check_9_9_sum_12
         - range_check_18_sum_13)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;

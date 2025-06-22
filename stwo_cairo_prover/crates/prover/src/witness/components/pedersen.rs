@@ -53,18 +53,10 @@ impl PedersenContextClaimGenerator {
                 &range_checks_trace_generator.rc_19_b_trace_generator,
                 &range_checks_trace_generator.rc_19_c_trace_generator,
                 &range_checks_trace_generator.rc_19_d_trace_generator,
-                &range_checks_trace_generator.rc_19_e_trace_generator,
-                &range_checks_trace_generator.rc_19_f_trace_generator,
-                &range_checks_trace_generator.rc_19_g_trace_generator,
-                &range_checks_trace_generator.rc_19_h_trace_generator,
                 &range_checks_trace_generator.rc_9_9_trace_generator,
                 &range_checks_trace_generator.rc_9_9_b_trace_generator,
                 &range_checks_trace_generator.rc_9_9_c_trace_generator,
                 &range_checks_trace_generator.rc_9_9_d_trace_generator,
-                &range_checks_trace_generator.rc_9_9_e_trace_generator,
-                &range_checks_trace_generator.rc_9_9_f_trace_generator,
-                &range_checks_trace_generator.rc_9_9_g_trace_generator,
-                &range_checks_trace_generator.rc_9_9_h_trace_generator,
             );
         let (pedersen_points_table_claim, pedersen_points_table_interaction_gen) = self
             .pedersen_points_table_trace_generator
@@ -122,18 +114,10 @@ impl InteractionClaimGenerator {
                 &interaction_elements.range_checks.rc_19_b,
                 &interaction_elements.range_checks.rc_19_c,
                 &interaction_elements.range_checks.rc_19_d,
-                &interaction_elements.range_checks.rc_19_e,
-                &interaction_elements.range_checks.rc_19_f,
-                &interaction_elements.range_checks.rc_19_g,
-                &interaction_elements.range_checks.rc_19_h,
                 &interaction_elements.range_checks.rc_9_9,
                 &interaction_elements.range_checks.rc_9_9_b,
                 &interaction_elements.range_checks.rc_9_9_c,
                 &interaction_elements.range_checks.rc_9_9_d,
-                &interaction_elements.range_checks.rc_9_9_e,
-                &interaction_elements.range_checks.rc_9_9_f,
-                &interaction_elements.range_checks.rc_9_9_g,
-                &interaction_elements.range_checks.rc_9_9_h,
             );
         let pedersen_points_table_interaction_claim = self
             .pedersen_points_table_interaction_gen

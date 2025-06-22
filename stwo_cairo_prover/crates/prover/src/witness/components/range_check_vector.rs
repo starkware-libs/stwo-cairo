@@ -151,15 +151,10 @@ pub mod range_check_trace_generators {
     generate_range_check_witness!([11]);
     generate_range_check_witness!([12]);
     generate_range_check_witness!([18]);
-    generate_range_check_witness!([18], b, B);
     generate_range_check_witness!([19]);
     generate_range_check_witness!([19], b, B);
     generate_range_check_witness!([19], c, C);
     generate_range_check_witness!([19], d, D);
-    generate_range_check_witness!([19], e, E);
-    generate_range_check_witness!([19], f, F);
-    generate_range_check_witness!([19], g, G);
-    generate_range_check_witness!([19], h, H);
     generate_range_check_witness!([4, 3]);
     generate_range_check_witness!([4, 4]);
     generate_range_check_witness!([5, 4]);
@@ -167,10 +162,6 @@ pub mod range_check_trace_generators {
     generate_range_check_witness!([9, 9], b, B);
     generate_range_check_witness!([9, 9], c, C);
     generate_range_check_witness!([9, 9], d, D);
-    generate_range_check_witness!([9, 9], e, E);
-    generate_range_check_witness!([9, 9], f, F);
-    generate_range_check_witness!([9, 9], g, G);
-    generate_range_check_witness!([9, 9], h, H);
     generate_range_check_witness!([7, 2, 5]);
     generate_range_check_witness!([3, 6, 6, 3]);
     generate_range_check_witness!([4, 4, 4, 4]);

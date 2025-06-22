@@ -563,22 +563,6 @@ impl OpcodeComponents {
                             .range_checks
                             .rc_19_d
                             .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_e
-                            .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_f
-                            .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_g
-                            .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_h
-                            .clone(),
                         range_check_9_9_lookup_elements: interaction_elements
                             .range_checks
                             .rc_9_9
@@ -594,22 +578,6 @@ impl OpcodeComponents {
                         range_check_9_9_d_lookup_elements: interaction_elements
                             .range_checks
                             .rc_9_9_d
-                            .clone(),
-                        range_check_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_check_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_check_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_check_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
                             .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
@@ -794,22 +762,6 @@ impl OpcodeComponents {
                         range_check_19_d_lookup_elements: interaction_elements
                             .range_checks
                             .rc_19_d
-                            .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_e
-                            .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_f
-                            .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_g
-                            .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_h
                             .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction

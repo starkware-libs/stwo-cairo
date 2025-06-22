@@ -1,4 +1,4 @@
-// AIR version a85719a7
+// AIR version f1e997f6
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,

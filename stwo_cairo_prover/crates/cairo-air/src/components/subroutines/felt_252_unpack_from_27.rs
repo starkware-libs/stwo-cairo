@@ -1,4 +1,3 @@
-// AIR version d4d3b5d6
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]

@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version f1e997f6
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -17,10 +17,6 @@ impl RangeCheckMemValueN28 {
         range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
         range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
         range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
         eval: &mut E,
     ) -> [E::F; 0] {
         eval.add_to_relation(RelationEntry::new(
@@ -60,7 +56,7 @@ impl RangeCheckMemValueN28 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_e_lookup_elements,
+            range_check_9_9_lookup_elements,
             E::EF::one(),
             &[
                 range_check_mem_value_n_28_input_limb_8.clone(),
@@ -69,7 +65,7 @@ impl RangeCheckMemValueN28 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_f_lookup_elements,
+            range_check_9_9_b_lookup_elements,
             E::EF::one(),
             &[
                 range_check_mem_value_n_28_input_limb_10.clone(),
@@ -78,7 +74,7 @@ impl RangeCheckMemValueN28 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_g_lookup_elements,
+            range_check_9_9_c_lookup_elements,
             E::EF::one(),
             &[
                 range_check_mem_value_n_28_input_limb_12.clone(),
@@ -87,7 +83,7 @@ impl RangeCheckMemValueN28 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_h_lookup_elements,
+            range_check_9_9_d_lookup_elements,
             E::EF::one(),
             &[
                 range_check_mem_value_n_28_input_limb_14.clone(),
@@ -132,7 +128,7 @@ impl RangeCheckMemValueN28 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_e_lookup_elements,
+            range_check_9_9_lookup_elements,
             E::EF::one(),
             &[
                 range_check_mem_value_n_28_input_limb_24.clone(),
@@ -141,7 +137,7 @@ impl RangeCheckMemValueN28 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_f_lookup_elements,
+            range_check_9_9_b_lookup_elements,
             E::EF::one(),
             &[
                 range_check_mem_value_n_28_input_limb_26.clone(),
