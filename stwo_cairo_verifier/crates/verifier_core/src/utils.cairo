@@ -145,13 +145,9 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
 
     fn max<+PartialOrd<T>, +Copy<T>>(mut self: Span<T>) -> Option<@T> {
         let mut max = self.pop_front()?;
-        loop {
-            if let Some(next) = self.pop_front() {
-                if *next > *max {
-                    max = next;
-                }
-            } else {
-                break;
+        while let Some(next) = self.pop_front() {
+            if *next > *max {
+                max = next;
             }
         }
         Some(max)

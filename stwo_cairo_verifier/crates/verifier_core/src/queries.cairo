@@ -23,7 +23,7 @@ pub impl QueriesImpl of QueriesImplTrait {
         let mut positions_dict: Felt252Dict<felt252> = Default::default();
         let mut n_dict_entries = 0;
         let max_query_mask = pow2(log_domain_size) - 1;
-        loop {
+        while n_dict_entries < n_queries {
             // In each iteration, random_bytes is truncated to multiples of 4 bytes.
             let mut random_bytes = channel.draw_random_bytes().span();
             while let Some(bytes_chunk) = random_bytes.multi_pop_front() {
@@ -37,9 +37,6 @@ pub impl QueriesImpl of QueriesImplTrait {
                 if n_dict_entries == n_queries {
                     break;
                 }
-            }
-            if n_dict_entries == n_queries {
-                break;
             }
         }
 
