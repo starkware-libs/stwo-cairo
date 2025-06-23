@@ -137,11 +137,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         let n_trees = self.trees.len();
         let mut tree_i = 0;
-        loop {
-            if tree_i == n_trees {
-                break Ok(());
-            }
-
+        while tree_i < n_trees {
             let tree = self.trees[tree_i];
             let decommitment = decommitments.next().unwrap();
             let queried_values = *queried_values[tree_i];
@@ -150,12 +146,10 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             // duplicated.
             let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
 
-            if let Err(err) = tree.verify(query_positions, queried_values, decommitment) {
-                break Err(VerificationError::Merkle(err));
-            }
+            tree.verify(query_positions, queried_values, decommitment);
 
             tree_i += 1;
-        }?;
+        }
 
         // Check iterators have been fully consumed.
         assert!(decommitments.next().is_none());
