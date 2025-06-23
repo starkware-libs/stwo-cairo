@@ -75,25 +75,21 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     /// span of queried values to that column.
     /// * `decommitment` - The decommitment object containing the witness and column values.
     ///
-    /// # Errors
+    /// # Panics
     ///
-    /// Returns an error if any of the following conditions are met:
+    /// Panics if any of the following conditions are met:
     ///
     /// * The witness is too long (not fully consumed).
     /// * The witness is too short (missing values).
     /// * The column values are too long (not fully consumed).
     /// * The column values are too short (missing values).
     /// * The computed root does not match the expected root.
-    ///
-    /// # Returns
-    ///
-    /// Returns `Ok(())` if the decommitment is successfully verified.
     fn verify(
         self: @MerkleVerifier<H>,
         queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
-    ) -> Result<(), MerkleVerificationError>;
+    );
 }
 
 impl MerkleVerifierImpl<
@@ -104,7 +100,7 @@ impl MerkleVerifierImpl<
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         mut queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
-    ) -> Result<(), MerkleVerificationError> {
+    ) {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
         let mut columns_by_log_size = self.columns_by_log_size.clone();
@@ -134,7 +130,7 @@ impl MerkleVerifierImpl<
                     next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
                     current_query
                 } else {
-                    break Ok(());
+                    break;
                 };
 
                 let node_hashes = if is_first_layer {
@@ -146,7 +142,7 @@ impl MerkleVerifierImpl<
                         ) {
                         val
                     } else {
-                        break Err(MerkleVerificationError::WitnessTooShort);
+                        break panic!("MerkleVerificationError::WitnessTooShort");
                     };
 
                     let right_hash = if let Some(val) =
@@ -155,7 +151,7 @@ impl MerkleVerifierImpl<
                         ) {
                         val
                     } else {
-                        break Err(MerkleVerificationError::WitnessTooShort);
+                        break panic!("MerkleVerificationError::WitnessTooShort");
                     };
                     Some((left_hash.clone(), right_hash.clone()))
                 };
@@ -168,13 +164,12 @@ impl MerkleVerifierImpl<
                 };
 
                 if column_values.len() != n_columns_in_layer {
-                    break Err(MerkleVerificationError::WitnessTooShort);
+                    panic!("MerkleVerificationError::WitnessTooShort");
                 }
 
                 layer_total_queries
                     .append((current_query, H::hash_node(node_hashes, column_values)));
             }
-                .unwrap();
 
             prev_layer_hashes = layer_total_queries;
             is_first_layer = false;
@@ -182,19 +177,17 @@ impl MerkleVerifierImpl<
 
         // Check that all witnesses and values have been consumed.
         if !hash_witness.is_empty() {
-            return Err(MerkleVerificationError::WitnessTooLong);
+            panic!("MerkleVerificationError::WitnessTooLong");
         }
         if !column_witness.is_empty() {
-            return Err(MerkleVerificationError::WitnessTooLong);
+            panic!("MerkleVerificationError::WitnessTooLong");
         }
 
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
 
         if @computed_root != self.root {
-            return Err(MerkleVerificationError::RootMismatch);
+            panic!("MerkleVerificationError::RootMismatch");
         }
-
-        Ok(())
     }
 }
 
@@ -295,7 +288,6 @@ mod tests {
             .span();
         let columns_by_log_size = group_columns_by_log_size(column_log_sizes.span());
         MerkleVerifier { root, column_log_sizes, columns_by_log_size }
-            .verify(queries_per_log_size, queried_values, decommitment)
-            .expect('verification failed');
+            .verify(queries_per_log_size, queried_values, decommitment);
     }
 }

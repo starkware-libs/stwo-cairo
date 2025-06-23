@@ -348,13 +348,13 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     ///
     /// An `Err` will be returned if:
     /// * The proof doesn't store enough evaluations.
-    /// * The merkle decommitment is invalid.
     ///
     /// # Panics
     ///
     /// Panics if:
     /// * The queries are sampled on the wrong domain.
     /// * There are an invalid number of provided column evals.
+    /// * The merkle decommitment is invalid.
     fn verify(
         self: @FriFirstLayerVerifier,
         queries: Queries,
@@ -437,14 +437,12 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             columns_by_log_size,
         };
 
-        if let Err(_) = merkle_verifier
+        merkle_verifier
             .verify(
                 decommitment_positions_by_log_size,
                 decommitmented_values.span(),
                 self.proof.decommitment.clone(),
-            ) {
-            return Err(FriVerificationError::FirstLayerCommitmentInvalid);
-        }
+            );
 
         Ok(sparse_evals_by_column)
     }
@@ -462,6 +460,10 @@ struct FriInnerLayerVerifier {
 #[generate_trait]
 impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
     /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the merkle decommitment is invalid.
     fn verify_and_fold(
         self: @FriInnerLayerVerifier, queries: Queries, evals_at_queries: Span<QM31>,
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
@@ -508,14 +510,12 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         decommitment_positions_dict
             .insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions));
 
-        if let Err(_) = merkle_verifier
+        merkle_verifier
             .verify(
                 decommitment_positions_dict,
                 decommitmented_values.span(),
                 (*self.proof.decommitment).clone(),
-            ) {
-            return Err(FriVerificationError::InnerLayerCommitmentInvalid);
-        }
+            );
 
         let folded_queries = queries.fold(FOLD_STEP);
         let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
