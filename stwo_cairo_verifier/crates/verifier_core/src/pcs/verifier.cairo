@@ -135,27 +135,15 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Verify merkle decommitments.
         let mut decommitments = decommitments.into_iter();
 
-        let n_trees = self.trees.len();
-        let mut tree_i = 0;
-        loop {
-            if tree_i == n_trees {
-                break Ok(());
-            }
-
-            let tree = self.trees[tree_i];
+        for (tree, queried_values) in self.trees.span().into_iter().zip(queried_values.span()) {
             let decommitment = decommitments.next().unwrap();
-            let queried_values = *queried_values[tree_i];
 
-            // The merkle implementation pops values from the query position dict so it has to be
-            // duplicated.
+            // The merkle implementation pops values from the query position dict so it has to
+            // be duplicated.
             let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
 
-            if let Err(err) = tree.verify(query_positions, queried_values, decommitment) {
-                break Err(VerificationError::Merkle(err));
-            }
-
-            tree_i += 1;
-        }?;
+            tree.verify(query_positions, *queried_values, decommitment);
+        }
 
         // Check iterators have been fully consumed.
         assert!(decommitments.next().is_none());
