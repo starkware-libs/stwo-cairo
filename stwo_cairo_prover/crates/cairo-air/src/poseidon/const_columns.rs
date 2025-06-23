@@ -1,7 +1,7 @@
 use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, N_ROUNDS, N_WORDS};
 use stwo_cairo_common::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
 use stwo_cairo_common::prover_types::simd::N_LANES;
-use stwo_prover::constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_prover::core::backend::simd::column::BaseColumn;
 use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::backend::simd::SimdBackend;

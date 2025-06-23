@@ -191,7 +191,7 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::{
+    use stwo_constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
     use stwo_prover::core::backend::simd::column::BaseColumn;
@@ -273,7 +273,7 @@ mod tests {
             .map(|t| t.polynomials.iter().cloned().collect_vec());
 
         let component_eval = component.deref();
-        stwo_prover::constraint_framework::assert_constraints_on_polys(
+        stwo_constraint_framework::assert_constraints_on_polys(
             &trace_polys,
             CanonicCoset::new(LOG_HEIGHT),
             |eval| {

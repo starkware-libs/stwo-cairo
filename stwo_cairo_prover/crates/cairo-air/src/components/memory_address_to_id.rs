@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::constraint_framework::{
-    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry,
-};
+use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
@@ -107,7 +105,7 @@ mod tests {
     use num_traits::Zero;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::constraint_framework::expr::ExprEvaluator;
+    use stwo_constraint_framework::expr::ExprEvaluator;
     use stwo_prover::core::fields::qm31::QM31;
 
     use super::*;
