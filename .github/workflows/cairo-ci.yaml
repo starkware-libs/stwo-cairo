@@ -24,7 +24,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "nightly-2025-05-17"
@@ -41,7 +41,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
@@ -68,7 +68,7 @@ jobs:
       run:
         working-directory: ./cairo-prove
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
@@ -88,7 +88,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
@@ -102,7 +102,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           components: clippy
