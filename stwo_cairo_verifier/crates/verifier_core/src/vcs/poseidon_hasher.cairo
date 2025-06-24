@@ -5,8 +5,8 @@ use crate::BaseField;
 use crate::fields::m31::M31_SHIFT;
 use super::hasher::MerkleHasher;
 
-/// 8 M31 elements fit in a hash, since 31*8 = 242 < 252.
-const M31_ELEMENETS_IN_HASH: usize = 8;
+/// Pack 8 M31 elements into a hash, since 252 // 31 = 8.
+const M31_ELEMENTS_IN_HASH: usize = 8;
 
 /// Equals `(2^31)^4`.
 const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
