@@ -124,7 +124,7 @@ impl MerkleVerifierImpl<
 
             // Extract the requested queries to the current layer.
             let mut layer_column_queries = queries_per_log_size
-                .replace(layer_log_size, Default::default())
+                .get(layer_log_size)
                 .deref_or(array![].span());
 
             // Merge previous layer queries and column queries.
