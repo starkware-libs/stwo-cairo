@@ -31,4 +31,4 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: "stwo_cairo_prover/target/release/adapted_stwo"
-          destination: "adapted_stwo_artifacts/${{ env.SHORT_HASH }}/release"
+          destination: "adapted_stwo_artifacts/6f7913b/release"
