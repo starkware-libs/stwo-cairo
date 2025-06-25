@@ -20,8 +20,8 @@ pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
 #[derive(Default, Drop)]
 pub struct ChannelTime {
-    n_challenges: usize,
-    n_sent: usize,
+    n_challenges: usize, // Number of mixes.
+    n_sent: usize, // Number of hashes in the current challenge.
 }
 
 #[generate_trait]
