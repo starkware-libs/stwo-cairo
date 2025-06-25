@@ -1,6 +1,6 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -19,7 +19,7 @@ use crate::components::{
 };
 use crate::relations;
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeChecksClaim {
     pub rc_6: range_check_6::Claim,
     pub rc_8: range_check_8::Claim,
@@ -122,7 +122,7 @@ impl RangeChecksClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeChecksInteractionClaim {
     pub rc_6: range_check_6::InteractionClaim,
     pub rc_8: range_check_8::InteractionClaim,

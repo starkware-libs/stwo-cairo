@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct HandleOpcodes {}
 
 impl HandleOpcodes {

@@ -11,7 +11,7 @@ use crate::components::{
     poseidon_full_round_chain, poseidon_round_keys, range_check_felt_252_width_27,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PoseidonContextClaim {
     pub claim: Option<Claim>,
 }
@@ -36,7 +36,7 @@ impl PoseidonContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::Claim,
     pub poseidon_full_round_chain: poseidon_full_round_chain::Claim,
@@ -101,7 +101,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PoseidonContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -120,7 +120,7 @@ impl PoseidonContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::InteractionClaim,
     pub poseidon_full_round_chain: poseidon_full_round_chain::InteractionClaim,
