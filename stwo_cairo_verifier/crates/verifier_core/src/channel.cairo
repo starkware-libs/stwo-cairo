@@ -20,7 +20,9 @@ pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
 #[derive(Default, Drop)]
 pub struct ChannelTime {
+    // Number of digest updates.
     n_challenges: usize,
+    // Number of hashes in the current challenge.
     n_sent: usize,
 }
 
