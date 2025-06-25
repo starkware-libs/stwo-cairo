@@ -1,14 +1,12 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
 use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
-use crate::fri::FriVerificationError;
 use crate::pcs::PcsConfigTrait;
 use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
-use crate::vcs::verifier::MerkleVerificationError;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 /// Arithmetic Intermediate Representation (AIR).
@@ -42,14 +40,15 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
-) -> Result<(), VerificationError> {
+) {
     let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Check that there are enough security bits.
-    if commitment_scheme_proof.config.security_bits() < min_security_bits {
-        return Err(VerificationError::SecurityBitsTooLow);
-    }
+    assert!(
+        commitment_scheme_proof.config.security_bits() >= min_security_bits,
+        "VerificationError::SecurityBitsTooLow",
+    );
 
     // Read composition polynomial commitment.
     commitment_scheme
@@ -70,33 +69,28 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
-    let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
-        Ok(composition_oods_eval) => composition_oods_eval,
-        Err(_) => { return Err(VerificationError::InvalidStructure('Invalid sampled_values')); },
-    };
+    let composition_oods_eval = extract_composition_eval(sampled_oods_values);
 
     // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
-    if composition_oods_eval != air
-        .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff) {
-        return Err(VerificationError::OodsNotMatching);
-    }
+    assert!(
+        composition_oods_eval == air
+            .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff),
+        "VerificationError::OodsNotMatching",
+    );
 
-    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)?;
-
-    Ok(())
+    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel);
 }
 
 /// Extracts the composition trace evaluation from the mask.
-fn extract_composition_eval(
-    mask: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> Result<QM31, InvalidOodsSampleStructure> {
-    let cols = *mask.last().ok_or(InvalidOodsSampleStructure {})?;
-    let [c0, c1, c2, c3] = (*cols.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v0] = (*c0.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v1] = (*c1.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v2] = (*c2.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v3] = (*c3.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    Ok(QM31Trait::from_partial_evals([v0, v1, v2, v3]))
+fn extract_composition_eval(mask: TreeSpan<ColumnSpan<Span<QM31>>>) -> QM31 {
+    let cols = *mask.last().unwrap_or(panic!("InvalidOodsSampleStructure"));
+    let [c0, c1, c2, c3] = (*cols.try_into().unwrap_or(panic!("InvalidOodsSampleStructure")))
+        .unbox();
+    let [v0] = (*c0.try_into().unwrap_or(panic!("InvalidOodsSampleStructure"))).unbox();
+    let [v1] = (*c1.try_into().unwrap_or(panic!("InvalidOodsSampleStructure"))).unbox();
+    let [v2] = (*c2.try_into().unwrap_or(panic!("InvalidOodsSampleStructure"))).unbox();
+    let [v3] = (*c3.try_into().unwrap_or(panic!("InvalidOodsSampleStructure"))).unbox();
+    QM31Trait::from_partial_evals([v0, v1, v2, v3])
 }
 
 /// Error when the sampled values have an invalid structure.
@@ -106,30 +100,4 @@ pub struct InvalidOodsSampleStructure {}
 #[derive(Drop, Serde)]
 pub struct StarkProof {
     pub commitment_scheme_proof: CommitmentSchemeProof,
-}
-
-#[derive(Drop, Debug)]
-pub enum VerificationError {
-    /// Proof has invalid structure.
-    InvalidStructure: felt252,
-    /// Lookup values do not match.
-    InvalidLookup: felt252,
-    /// Merkle proof invalid.
-    Merkle: MerkleVerificationError,
-    /// Proof of work verification failed.
-    QueriesProofOfWork,
-    /// FRI proof is invalid.
-    Fri: FriVerificationError,
-    /// Invalid OODS eval.
-    OodsNotMatching,
-    /// Security bits are too low.
-    SecurityBitsTooLow,
-}
-
-pub impl FriVerificationErrorIntoVerificationError of Into<
-    FriVerificationError, VerificationError,
-> {
-    fn into(self: FriVerificationError) -> VerificationError {
-        VerificationError::Fri(self)
-    }
 }

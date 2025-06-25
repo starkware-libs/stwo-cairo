@@ -228,15 +228,6 @@ fn fetch_prev_node_hash<H, +Clone<H>, +Drop<H>>(
     hash_witness.pop_front()
 }
 
-#[derive(Drop, Debug)]
-pub enum MerkleVerificationError {
-    WitnessTooShort,
-    WitnessTooLong,
-    ColumnValuesTooLong,
-    ColumnValuesTooShort,
-    RootMismatch,
-}
-
 #[cfg(test)]
 mod tests {
     use core::array::ToSpanTrait;

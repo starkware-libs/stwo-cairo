@@ -11,7 +11,6 @@ use crate::fields::m31::{M31, M31Zero, UnreducedM31};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
-use crate::verifier::VerificationError;
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
 /// Pads all the trees in `columns_by_log_size_per_tree` to the length of the longest tree
@@ -77,7 +76,7 @@ pub fn fri_answers(
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeArray<Span<M31>>,
-) -> Result<Array<Span<QM31>>, VerificationError> {
+) -> Array<Span<QM31>> {
     let columns_per_tree_by_log_size = pad_and_transpose_columns_by_log_size_per_tree(
         columns_by_log_size_per_tree,
     );
@@ -115,12 +114,11 @@ pub fn fri_answers(
                     query_positions_per_log_size.get(log_size.into()).deref(),
                     ref queried_values,
                     n_columns_per_tree,
-                )
-                    .expect('fri_answers_for_log_size'),
+                ),
             );
     }
 
-    Ok(answers)
+    answers
 }
 
 /// Takes `n[i]` elements from the i'th `tree` and returns them as a single array.
@@ -145,7 +143,7 @@ fn fri_answers_for_log_size(
     mut query_positions: Span<usize>,
     ref queried_values: TreeArray<Span<M31>>,
     n_columns: TreeArray<usize>,
-) -> Result<Span<QM31>, VerificationError> {
+) -> Span<QM31> {
     let sample_batches = ColumnSampleBatchImpl::group_by_point(samples_per_column);
     let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, random_coeff);
     let commitment_domain = CanonicCosetImpl::new(log_size).circle_domain();
@@ -164,7 +162,7 @@ fn fri_answers_for_log_size(
             );
     }
 
-    Ok(quotient_evals_at_queries.span())
+    quotient_evals_at_queries.span()
 }
 
 /// Computes the OOD quotients for a single query and single column size.
@@ -450,8 +448,7 @@ mod tests {
 
         let res = fri_answers_for_log_size(
             log_size, samples_by_column, random_coeff, query_positions, ref query_evals, n_columns,
-        )
-            .unwrap();
+        );
 
         assert!(
             res == array![
@@ -503,8 +500,7 @@ mod tests {
             random_coeff,
             query_domain_per_log_size,
             query_evals,
-        )
-            .unwrap();
+        );
 
         assert!(
             res == array![
