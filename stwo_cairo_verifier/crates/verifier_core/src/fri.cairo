@@ -63,7 +63,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// degree bounds in descending order.
     fn commit(
         ref channel: Channel, config: FriConfig, proof: FriProof, column_log_bounds: Span<u32>,
-    ) -> Result<FriVerifier, FriVerificationError> {
+    ) -> FriVerifier {
         let FriProof {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
@@ -97,12 +97,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             CosetImpl::half_odds(layer_log_bound + config.log_blowup_factor),
         );
 
-        loop {
-            let proof = match inner_layer_proofs.pop_front() {
-                Some(proof) => proof,
-                None => { break Ok(()); },
-            };
-
+        while let Some(proof) = inner_layer_proofs.pop_front() {
             channel.mix_root(proof.commitment.clone());
 
             inner_layers
@@ -116,59 +111,55 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                     },
                 );
 
-            layer_log_bound = match layer_log_bound.checked_sub(FOLD_STEP) {
-                Some(layer_log_bound) => layer_log_bound,
-                None => { break Err(FriVerificationError::InvalidNumFriLayers); },
-            };
+            layer_log_bound = layer_log_bound
+                .checked_sub(FOLD_STEP)
+                .unwrap_or(panic!("FriVerificationError::InvalidNumFriLayers"));
 
             layer_index += 1;
             layer_domain = layer_domain.double();
-        }?;
-
-        if layer_log_bound != config.log_last_layer_degree_bound {
-            return Err(FriVerificationError::InvalidNumFriLayers);
         }
+        assert!(
+            layer_log_bound == config.log_last_layer_degree_bound,
+            "FriVerificationError::InvalidNumFriLayers",
+        );
 
-        if last_layer_poly.len() != pow2(config.log_last_layer_degree_bound) {
-            return Err(FriVerificationError::LastLayerDegreeInvalid);
-        }
+        assert!(
+            last_layer_poly.len() == pow2(config.log_last_layer_degree_bound),
+            "FriVerificationError::LastLayerDegreeInvalid",
+        );
 
         channel.mix_felts(last_layer_poly.coeffs.span());
 
-        Ok(
-            FriVerifier {
-                config,
-                first_layer,
-                inner_layers,
-                last_layer_domain: layer_domain,
-                last_layer_poly,
-                queries: None,
-            },
-        )
+        FriVerifier {
+            config,
+            first_layer,
+            inner_layers,
+            last_layer_domain: layer_domain,
+            last_layer_poly,
+            queries: None,
+        }
     }
 
     /// Verifies the decommitment stage of FRI.
     ///
     /// The query evals need to be provided in the same order as their commitment.
-    fn decommit(
-        self: FriVerifier, first_layer_query_evals: ColumnArray<Span<QM31>>,
-    ) -> Result<(), FriVerificationError> {
+    fn decommit(self: FriVerifier, first_layer_query_evals: ColumnArray<Span<QM31>>) {
         let queries = self.queries.expect('queries not sampled');
         self.decommit_on_queries(queries, first_layer_query_evals)
     }
 
     fn decommit_on_queries(
         self: FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
-    ) -> Result<(), FriVerificationError> {
+    ) {
         let first_layer_sparse_evals = decommit_first_layer(
             @self, queries, first_layer_query_evals,
-        )?;
+        );
 
         let inner_layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
 
         let (last_layer_queries, last_layer_query_evals) = decommit_inner_layers(
             @self, inner_layer_queries, first_layer_sparse_evals,
-        )?;
+        );
 
         decommit_last_layer(self, last_layer_queries, last_layer_query_evals)
     }
@@ -204,7 +195,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 /// verifying the remaining layers.
 fn decommit_first_layer(
     verifier: @FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
-) -> Result<ColumnArray<SparseEvaluation>, FriVerificationError> {
+) -> ColumnArray<SparseEvaluation> {
     verifier.first_layer.verify(queries, first_layer_query_evals)
 }
 
@@ -215,7 +206,7 @@ fn decommit_inner_layers(
     verifier: @FriVerifier,
     queries: Queries,
     mut first_layer_sparse_evals: ColumnArray<SparseEvaluation>,
-) -> Result<(Queries, Array<QM31>), FriVerificationError> {
+) -> (Queries, Array<QM31>) {
     let mut inner_layers = verifier.inner_layers.span();
     let mut layer_queries = queries;
     let mut layer_query_evals = ArrayImpl::new_repeated(n: layer_queries.len(), v: Zero::zero());
@@ -224,12 +215,7 @@ fn decommit_inner_layers(
     let mut first_layer_column_domains = *verifier.first_layer.column_commitment_domains;
     let mut prev_fold_alpha = *verifier.first_layer.folding_alpha;
 
-    loop {
-        let layer = match inner_layers.pop_front() {
-            Some(layer) => layer,
-            None => { break Ok(()); },
-        };
-
+    while let Some(layer) = inner_layers.pop_front() {
         let circle_poly_degree_bound = *layer.log_degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
 
         // Check for evals committed in the first layer that need to be folded into this layer.
@@ -250,31 +236,23 @@ fn decommit_inner_layers(
             layer_query_evals = updated_layer_query_evals;
         }
 
-        match layer
-            .verify_and_fold(queries: layer_queries, evals_at_queries: layer_query_evals.span()) {
-            Ok((
-                next_layer_queries, next_layer_query_evals,
-            )) => {
-                layer_queries = next_layer_queries;
-                layer_query_evals = next_layer_query_evals;
-                prev_fold_alpha = *layer.folding_alpha;
-            },
-            Err(error) => { break Err(error); },
-        };
-    }?;
+        let (next_layer_queries, next_layer_query_evals) = layer
+            .verify_and_fold(queries: layer_queries, evals_at_queries: layer_query_evals.span());
+        layer_queries = next_layer_queries;
+        layer_query_evals = next_layer_query_evals;
+        prev_fold_alpha = *layer.folding_alpha;
+    }
 
     // Check all values have been consumed.
     assert!(first_layer_column_bounds.is_empty());
     assert!(first_layer_column_domains.is_empty());
     assert!(first_layer_sparse_evals.is_empty());
 
-    Ok((layer_queries, layer_query_evals))
+    (layer_queries, layer_query_evals)
 }
 
 /// Verifies the last layer.
-fn decommit_last_layer(
-    verifier: FriVerifier, mut queries: Queries, mut query_evals: Array<QM31>,
-) -> Result<(), FriVerificationError> {
+fn decommit_last_layer(verifier: FriVerifier, mut queries: Queries, mut query_evals: Array<QM31>) {
     let FriVerifier { last_layer_domain, last_layer_poly, .. } = verifier;
 
     // TODO(andrew): Note depending on the proof parameters, doing FFT on the last layer poly vs
@@ -285,7 +263,7 @@ fn decommit_last_layer(
     loop {
         let (query, query_eval) = match (queries.positions.pop_front(), query_evals.pop_front()) {
             (Some(query), Some(query_eval)) => (query, query_eval),
-            _ => { break Ok(()); },
+            _ => { break; },
         };
 
         // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
@@ -293,7 +271,7 @@ fn decommit_last_layer(
         let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
 
         if query_eval != *last_layer_evals[last_layer_eval_i] {
-            break Err(FriVerificationError::LastLayerEvaluationsInvalid);
+            break panic!("FriVerificationError::LastLayerEvaluationsInvalid");
         }
     }
 }
@@ -344,14 +322,10 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     /// Verifies the first layer's merkle decommitment, and returns the evaluations needed for
     /// folding the columns to their corresponding layer.
     ///
-    /// # Errors
-    ///
-    /// An `Err` will be returned if:
-    /// * The proof doesn't store enough evaluations.
-    ///
     /// # Panics
     ///
     /// Panics if:
+    /// * The proof doesn't store enough evaluations.
     /// * The queries are sampled on the wrong domain.
     /// * There are an invalid number of provided column evals.
     /// * The merkle decommitment is invalid.
@@ -359,7 +333,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         self: @FriFirstLayerVerifier,
         queries: Queries,
         mut query_evals_by_column: ColumnArray<Span<QM31>>,
-    ) -> Result<ColumnArray<SparseEvaluation>, FriVerificationError> {
+    ) -> ColumnArray<SparseEvaluation> {
         // Columns are provided in descending order by size.
         let max_column_log_size = (*self.column_commitment_domains).first().unwrap().log_size();
         assert!(queries.log_domain_size == max_column_log_size);
@@ -377,7 +351,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             let (column_domain, column_query_evals) =
                 match (column_commitment_domains.pop_front(), query_evals_by_column.pop_front()) {
                 (Some(domain), Some(evals)) => (domain, evals),
-                (None, None) => { break Ok(()); },
+                (None, None) => { break; },
                 _ => { panic!() },
             };
 
@@ -389,12 +363,9 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             }
 
             let (column_decommitment_positions, sparse_evaluation) =
-                match compute_decommitment_positions_and_rebuild_evals(
-                    column_queries, column_query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
-                ) {
-                Ok(res) => res,
-                Err(_) => { break Err(FriVerificationError::FirstLayerEvaluationsInvalid); },
-            };
+                compute_decommitment_positions_and_rebuild_evals(
+                column_queries, column_query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
+            );
 
             // Columns of the same size have the same decommitment positions.
             // TODO(andrew): Do without nullable.
@@ -421,12 +392,9 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
 
             sparse_evals_by_column.append(sparse_evaluation);
-        }?;
-
-        // Check all proof evals have been consumed.
-        if fri_witness.next().is_some() {
-            return Err(FriVerificationError::FirstLayerEvaluationsInvalid);
         }
+        // Check all proof evals have been consumed.
+        assert!(fri_witness.next().is_none(), "FriVerificationError::FirstLayerEvaluationsInvalid");
 
         let columns_by_log_size = group_columns_by_log_size(
             decommitment_coordinate_column_log_sizes.span(),
@@ -444,7 +412,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                 self.proof.decommitment.clone(),
             );
 
-        Ok(sparse_evals_by_column)
+        sparse_evals_by_column
     }
 }
 
@@ -466,23 +434,18 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
     /// Panics if the merkle decommitment is invalid.
     fn verify_and_fold(
         self: @FriInnerLayerVerifier, queries: Queries, evals_at_queries: Span<QM31>,
-    ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
+    ) -> (Queries, Array<QM31>) {
         assert!(queries.log_domain_size == self.domain.log_size());
 
         let mut fri_witness = (**self.proof.fri_witness).into_iter();
 
         let (decommitment_positions, sparse_evaluation) =
-            match compute_decommitment_positions_and_rebuild_evals(
-                queries, evals_at_queries, ref fri_witness, FOLD_STEP,
-            ) {
-            Ok(res) => res,
-            Err(_) => { return Err(FriVerificationError::InnerLayerEvaluationsInvalid); },
-        };
+            compute_decommitment_positions_and_rebuild_evals(
+            queries, evals_at_queries, ref fri_witness, FOLD_STEP,
+        );
 
         // Check all proof evals have been consumed.
-        if fri_witness.next().is_some() {
-            return Err(FriVerificationError::InnerLayerEvaluationsInvalid);
-        }
+        assert!(fri_witness.next().is_none(), "FriVerificationError::InnerLayerEvaluationsInvalid");
 
         let mut decommitmented_values = array![];
         for subset_eval in sparse_evaluation.subset_evals.span() {
@@ -520,7 +483,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         let folded_queries = queries.fold(FOLD_STEP);
         let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
 
-        Ok((folded_queries, folded_evals))
+        (folded_queries, folded_evals)
     }
 }
 
@@ -535,7 +498,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
     mut query_evals: Span<QM31>,
     ref witness_evals_iter: SpanIter<QM31>,
     fold_step: u32,
-) -> Result<(Span<usize>, SparseEvaluation), InsufficientWitnessError> {
+) -> (Span<usize>, SparseEvaluation) {
     let fold_factor = pow2(fold_step);
     let mut query_evals_iter = query_evals.into_iter();
 
@@ -549,7 +512,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
     loop {
         let folded_query_position = match folded_query_positions.pop_front() {
             Some(position) => *position,
-            None => { break Ok(()); },
+            None => { break; },
         };
 
         let subset_start = folded_query_position * fold_factor;
@@ -558,12 +521,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
         let mut subset_eval = array![];
 
         // Extract the subset eval and decommitment positions.
-        let loop_res = loop {
-            let decommitment_position = match subset_decommitment_positions.next() {
-                Some(position) => position,
-                None => { break Ok(()); },
-            };
-
+        while let Some(decommitment_position) = subset_decommitment_positions.next() {
             decommitment_positions.append(decommitment_position);
 
             // If the decommitment position is a query position: take the value from `query_evals`,
@@ -571,27 +529,19 @@ fn compute_decommitment_positions_and_rebuild_evals(
             subset_eval
                 .append(
                     *match query_positions.next_if_eq(@decommitment_position) {
-                        Some(_) => {
-                            let res = query_evals_iter.next().unwrap();
-                            res
-                        },
-                        None => match witness_evals_iter.next() {
-                            Some(witness_eval) => { witness_eval },
-                            None => { break Err(InsufficientWitnessError {}); },
-                        },
+                        Some(_) => query_evals_iter.next().unwrap(),
+                        None => witness_evals_iter
+                            .next()
+                            .unwrap_or(panic!("InsufficientWitnessError")),
                     },
                 );
-        };
-
-        if let Err(error) = loop_res {
-            break Err(error);
         }
 
         subset_evals.append(subset_eval);
 
         subset_domain_index_initials
             .append(bit_reverse_index(subset_start, queries.log_domain_size));
-    }?;
+    }
 
     // Sanity check all the values have been consumed.
     assert!(query_positions.is_empty());
@@ -601,11 +551,8 @@ fn compute_decommitment_positions_and_rebuild_evals(
         subset_evals, subset_domain_index_initials.span(),
     );
 
-    Ok((decommitment_positions.span(), sparse_evaluation))
+    (decommitment_positions.span(), sparse_evaluation)
 }
-
-#[derive(Drop)]
-struct InsufficientWitnessError {}
 
 /// Foldable subsets of evaluations on a circle polynomial or univariate polynomial.
 #[derive(Drop)]
@@ -687,15 +634,4 @@ pub struct FriLayerProof {
     pub fri_witness: Span<QM31>,
     pub decommitment: MerkleDecommitment<MerkleHasher>,
     pub commitment: Hash,
-}
-
-#[derive(Debug, Drop)]
-pub enum FriVerificationError {
-    InvalidNumFriLayers,
-    FirstLayerEvaluationsInvalid,
-    FirstLayerCommitmentInvalid,
-    InnerLayerEvaluationsInvalid,
-    InnerLayerCommitmentInvalid,
-    LastLayerDegreeInvalid,
-    LastLayerEvaluationsInvalid,
 }

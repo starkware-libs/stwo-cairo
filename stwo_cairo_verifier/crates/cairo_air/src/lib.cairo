@@ -301,7 +301,7 @@ use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
-use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
+use stwo_verifier_core::verifier::{Air, StarkProof, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 pub mod components;
 pub mod utils;
@@ -785,7 +785,7 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     VerificationOutput { program_hash, output }
 }
 
-pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
+pub fn verify_cairo(proof: CairoProof) {
     let CairoProof { claim, interaction_pow, interaction_claim, stark_proof } = proof;
 
     // Verify.
@@ -810,16 +810,16 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
         .commit(
             stark_proof.commitment_scheme_proof.commitments[1].clone(), *log_sizes[1], ref channel,
         );
-
-    if !channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow) {
-        return Err(CairoVerificationError::InteractionProofOfWork);
-    }
+    assert!(
+        channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
+        "CairoVerificationError::InteractionProofOfWork",
+    );
 
     let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
-
-    if lookup_sum(@claim, @interaction_elements, @interaction_claim).is_non_zero() {
-        return Result::Err(CairoVerificationError::InvalidLogupSum);
-    }
+    assert!(
+        lookup_sum(@claim, @interaction_elements, @interaction_claim).is_zero(),
+        "CairoVerificationError::InvalidLogupSum",
+    );
 
     interaction_claim.mix_into(ref channel);
     commitment_scheme
@@ -828,12 +828,7 @@ pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
         );
 
     let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
-    if let Result::Err(err) =
-        verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS) {
-        return Result::Err(CairoVerificationError::Stark(err));
-    }
-
-    Result::Ok(())
+    verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS);
 }
 
 pub fn lookup_sum(
@@ -3084,14 +3079,6 @@ pub fn accumulate_relation_uses(
         let (entry, prev_uses) = relation_uses.entry(relation_id);
         relation_uses = entry.finalize(prev_uses + uses.into() * component_size.into());
     }
-}
-
-#[derive(Drop, Debug)]
-pub enum CairoVerificationError {
-    InteractionProofOfWork,
-    InvalidLogupSum,
-    InvalidClaim,
-    Stark: VerificationError,
 }
 
 #[derive(Drop)]
