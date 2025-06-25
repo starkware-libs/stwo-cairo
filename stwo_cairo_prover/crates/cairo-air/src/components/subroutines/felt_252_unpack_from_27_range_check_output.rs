@@ -2,7 +2,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Felt252UnpackFrom27RangeCheckOutput {}
 
 impl Felt252UnpackFrom27RangeCheckOutput {

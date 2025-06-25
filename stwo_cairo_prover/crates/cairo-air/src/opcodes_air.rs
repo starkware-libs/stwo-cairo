@@ -1,7 +1,7 @@
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -19,7 +19,7 @@ use crate::components::{
     jump_opcode_rel_imm, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct OpcodeClaim {
     pub add: Vec<add_opcode::Claim>,
     pub add_small: Vec<add_opcode_small::Claim>,
@@ -158,7 +158,7 @@ impl OpcodeClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct OpcodeInteractionClaim {
     pub add: Vec<add_opcode::InteractionClaim>,
     pub add_small: Vec<add_opcode_small::InteractionClaim>,

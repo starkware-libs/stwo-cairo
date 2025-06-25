@@ -1,10 +1,9 @@
 use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
-use starknet_ff::FieldElement;
 use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{
     relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
 };
@@ -337,7 +336,7 @@ impl FrameworkEval for SmallEval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub big_log_sizes: Vec<u32>,
     pub small_log_size: u32,
@@ -379,7 +378,7 @@ impl Claim {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub big_claimed_sums: Vec<SecureField>,
     pub small_claimed_sum: SecureField,
@@ -392,17 +391,6 @@ impl InteractionClaim {
 
     pub fn claimed_sum(&self) -> SecureField {
         self.small_claimed_sum + self.big_claimed_sums.iter().sum::<SecureField>()
-    }
-}
-
-impl CairoSerialize for InteractionClaim {
-    fn serialize(&self, output: &mut Vec<FieldElement>) {
-        let Self {
-            big_claimed_sums,
-            small_claimed_sum,
-        } = self;
-        CairoSerialize::serialize(big_claimed_sums, output);
-        CairoSerialize::serialize(small_claimed_sum, output);
     }
 }
 
