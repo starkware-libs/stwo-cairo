@@ -15,7 +15,7 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::components::CairoComponent;
+use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::linear_combination_n_1_coefs_2::linear_combination_n_1_coefs_2_evaluate;
 use crate::components::subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate;
 

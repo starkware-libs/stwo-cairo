@@ -1,4 +1,4 @@
-use components::CairoComponent;
+use cairo_component::CairoComponent;
 use components::add_ap_opcode::{
     ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
@@ -303,7 +303,10 @@ use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+
+pub mod cairo_component;
 pub mod components;
+pub mod const_component_sizes;
 pub mod utils;
 
 // Security constants.
