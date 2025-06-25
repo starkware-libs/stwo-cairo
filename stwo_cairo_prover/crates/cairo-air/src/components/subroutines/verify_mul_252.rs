@@ -2,7 +2,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::DoubleKaratsubaN7LimbMaxBound511;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct VerifyMul252 {}
 
 impl VerifyMul252 {

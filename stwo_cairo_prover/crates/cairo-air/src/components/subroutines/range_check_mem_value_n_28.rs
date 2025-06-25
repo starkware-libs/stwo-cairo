@@ -1,7 +1,7 @@
 // AIR version d4d3b5d6
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeCheckMemValueN28 {}
 
 impl RangeCheckMemValueN28 {

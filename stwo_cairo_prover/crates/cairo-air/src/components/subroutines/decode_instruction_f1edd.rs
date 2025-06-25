@@ -1,7 +1,7 @@
 // AIR version 1d0330d7
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DecodeInstructionF1Edd {}
 
 impl DecodeInstructionF1Edd {

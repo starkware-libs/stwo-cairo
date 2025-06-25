@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_df7a6::DecodeInstructionDf7A6;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DecodeGenericInstruction {}
 
 impl DecodeGenericInstruction {
