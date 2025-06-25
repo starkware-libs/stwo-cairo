@@ -1,4 +1,4 @@
-// AIR version eb424657
+// AIR version aca38612
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -15,7 +15,7 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::PreprocessedColumnTrait;
-use crate::components::CairoComponent;
+use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::decode_instruction_3802d::decode_instruction_3802d_evaluate;
 use crate::components::subroutines::qm_31_read_reduced::qm_31_read_reduced_evaluate;
 
