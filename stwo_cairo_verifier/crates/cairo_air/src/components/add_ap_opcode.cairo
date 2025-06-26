@@ -1,5 +1,4 @@
-// Constraints version: bc855610
-
+// AIR version 0eff9446
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -17,6 +16,7 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::components::CairoComponent;
 use crate::components::subroutines::decode_instruction_d2a10::decode_instruction_d2a10_evaluate;
+use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 
 pub const N_TRACE_COLUMNS: usize = 15;
@@ -154,7 +154,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             op1_limb_0_col10,
             op1_limb_1_col11,
             op1_limb_2_col12,
-            next_ap_bot8bits_col13,
+            range_check_ap_bot8bits_col13,
             enabler,
         ]: [Span<QM31>; 15] =
             (*trace_mask_values
@@ -174,7 +174,9 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let [op1_limb_0_col10]: [QM31; 1] = (*op1_limb_0_col10.try_into().unwrap()).unbox();
         let [op1_limb_1_col11]: [QM31; 1] = (*op1_limb_1_col11.try_into().unwrap()).unbox();
         let [op1_limb_2_col12]: [QM31; 1] = (*op1_limb_2_col12.try_into().unwrap()).unbox();
-        let [next_ap_bot8bits_col13]: [QM31; 1] = (*next_ap_bot8bits_col13.try_into().unwrap())
+        let [range_check_ap_bot8bits_col13]: [QM31; 1] = (*range_check_ap_bot8bits_col13
+            .try_into()
+            .unwrap())
             .unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
@@ -232,18 +234,17 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let [read_small_output_tmp_c921e_11_limb_0] = output;
         let next_ap_tmp_c921e_12: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_11_limb_0);
 
-        range_check_19_sum_3 = self
-            .range_check_19_lookup_elements
-            .combine_qm31(
-                [
-                    ((next_ap_tmp_c921e_12 - next_ap_bot8bits_col13)
-                        * qm31_const::<8388608, 0, 0, 0>())
-                ],
-            );
-
-        range_check_8_sum_4 = self
-            .range_check_8_lookup_elements
-            .combine_qm31([next_ap_bot8bits_col13]);
+        range_check_ap_evaluate(
+            [next_ap_tmp_c921e_12],
+            range_check_ap_bot8bits_col13,
+            self.range_check_19_lookup_elements,
+            self.range_check_8_lookup_elements,
+            ref range_check_19_sum_3,
+            ref range_check_8_sum_4,
+            ref sum,
+            domain_vanishing_eval_inv,
+            random_coeff,
+        );
 
         opcodes_sum_5 = self
             .opcodes_lookup_elements

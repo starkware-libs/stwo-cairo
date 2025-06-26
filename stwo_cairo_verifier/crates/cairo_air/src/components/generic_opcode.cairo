@@ -1,4 +1,4 @@
-// AIR version a85719a7
+// AIR version 0eff9446
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -20,14 +20,14 @@ use crate::components::subroutines::eval_operands::eval_operands_evaluate;
 use crate::components::subroutines::handle_opcodes::handle_opcodes_evaluate;
 use crate::components::subroutines::update_registers::update_registers_evaluate;
 
-pub const N_TRACE_COLUMNS: usize = 236;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 20] = [
+pub const N_TRACE_COLUMNS: usize = 237;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 21] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('RangeCheck_9_9', 4),
     ('RangeCheck_9_9_B', 4), ('RangeCheck_9_9_C', 4), ('RangeCheck_9_9_D', 4),
     ('RangeCheck_9_9_E', 4), ('RangeCheck_9_9_F', 4), ('RangeCheck_9_9_G', 2),
-    ('RangeCheck_9_9_H', 2), ('RangeCheck_19_H', 4), ('RangeCheck_19', 4), ('RangeCheck_19_B', 4),
+    ('RangeCheck_9_9_H', 2), ('RangeCheck_19_H', 4), ('RangeCheck_19', 5), ('RangeCheck_19_B', 4),
     ('RangeCheck_19_C', 4), ('RangeCheck_19_D', 3), ('RangeCheck_19_E', 3), ('RangeCheck_19_F', 3),
-    ('RangeCheck_19_G', 3), ('Opcodes', 1),
+    ('RangeCheck_19_G', 3), ('RangeCheck_8', 1), ('Opcodes', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -41,7 +41,7 @@ pub impl ClaimImpl of ClaimTrait {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = ArrayImpl::new_repeated(N_TRACE_COLUMNS, log_size).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(132, log_size).span();
+        let interaction_log_sizes = ArrayImpl::new_repeated(136, log_size).span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -86,6 +86,7 @@ pub struct Component {
     pub range_check_19_e_lookup_elements: crate::RangeCheck_19_EElements,
     pub range_check_19_f_lookup_elements: crate::RangeCheck_19_FElements,
     pub range_check_19_g_lookup_elements: crate::RangeCheck_19_GElements,
+    pub range_check_8_lookup_elements: crate::RangeCheck_8Elements,
     pub opcodes_lookup_elements: crate::OpcodesElements,
 }
 
@@ -336,6 +337,11 @@ pub impl ComponentImpl of CairoComponent<Component> {
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
@@ -551,8 +557,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let mut range_check_19_sum_60: QM31 = Zero::zero();
         let mut range_check_19_b_sum_61: QM31 = Zero::zero();
         let mut range_check_19_c_sum_62: QM31 = Zero::zero();
-        let mut opcodes_sum_63: QM31 = Zero::zero();
-        let mut opcodes_sum_64: QM31 = Zero::zero();
+        let mut range_check_19_sum_63: QM31 = Zero::zero();
+        let mut range_check_8_sum_64: QM31 = Zero::zero();
+        let mut opcodes_sum_65: QM31 = Zero::zero();
+        let mut opcodes_sum_66: QM31 = Zero::zero();
 
         let [
             input_pc_col0,
@@ -789,9 +797,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
             next_pc_jnz_col231,
             next_pc_col232,
             next_ap_col233,
-            next_fp_col234,
+            range_check_ap_bot8bits_col234,
+            next_fp_col235,
             enabler,
-        ]: [Span<QM31>; 236] =
+        ]: [Span<QM31>; 237] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -1095,7 +1104,11 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let [next_pc_jnz_col231]: [QM31; 1] = (*next_pc_jnz_col231.try_into().unwrap()).unbox();
         let [next_pc_col232]: [QM31; 1] = (*next_pc_col232.try_into().unwrap()).unbox();
         let [next_ap_col233]: [QM31; 1] = (*next_ap_col233.try_into().unwrap()).unbox();
-        let [next_fp_col234]: [QM31; 1] = (*next_fp_col234.try_into().unwrap()).unbox();
+        let [range_check_ap_bot8bits_col234]: [QM31; 1] = (*range_check_ap_bot8bits_col234
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [next_fp_col235]: [QM31; 1] = (*next_fp_col235.try_into().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -1515,19 +1528,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             next_pc_jnz_col231,
             next_pc_col232,
             next_ap_col233,
-            next_fp_col234,
+            range_check_ap_bot8bits_col234,
+            next_fp_col235,
+            self.range_check_19_lookup_elements,
+            self.range_check_8_lookup_elements,
+            ref range_check_19_sum_63,
+            ref range_check_8_sum_64,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
 
-        opcodes_sum_63 = self
+        opcodes_sum_65 = self
             .opcodes_lookup_elements
             .combine_qm31([input_pc_col0, input_ap_col1, input_fp_col2]);
 
-        opcodes_sum_64 = self
+        opcodes_sum_66 = self
             .opcodes_lookup_elements
-            .combine_qm31([next_pc_col232, next_ap_col233, next_fp_col234]);
+            .combine_qm31([next_pc_col232, next_ap_col233, next_fp_col235]);
 
         lookup_constraints(
             ref sum,
@@ -1600,8 +1618,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
             range_check_19_sum_60,
             range_check_19_b_sum_61,
             range_check_19_c_sum_62,
-            opcodes_sum_63,
-            opcodes_sum_64,
+            range_check_19_sum_63,
+            range_check_8_sum_64,
+            opcodes_sum_65,
+            opcodes_sum_66,
         );
     }
 }
@@ -1678,8 +1698,10 @@ fn lookup_constraints(
     range_check_19_sum_60: QM31,
     range_check_19_b_sum_61: QM31,
     range_check_19_c_sum_62: QM31,
-    opcodes_sum_63: QM31,
-    opcodes_sum_64: QM31,
+    range_check_19_sum_63: QM31,
+    range_check_8_sum_64: QM31,
+    opcodes_sum_65: QM31,
+    opcodes_sum_66: QM31,
 ) {
     let [
         trace_2_col0,
@@ -1814,7 +1836,11 @@ fn lookup_constraints(
         trace_2_col129,
         trace_2_col130,
         trace_2_col131,
-    ]: [Span<QM31>; 132] =
+        trace_2_col132,
+        trace_2_col133,
+        trace_2_col134,
+        trace_2_col135,
+    ]: [Span<QM31>; 136] =
         (*interaction_trace_mask_values
         .multi_pop_front()
         .unwrap())
@@ -1948,13 +1974,17 @@ fn lookup_constraints(
     let [trace_2_col125]: [QM31; 1] = (*trace_2_col125.try_into().unwrap()).unbox();
     let [trace_2_col126]: [QM31; 1] = (*trace_2_col126.try_into().unwrap()).unbox();
     let [trace_2_col127]: [QM31; 1] = (*trace_2_col127.try_into().unwrap()).unbox();
-    let [trace_2_col128_neg1, trace_2_col128]: [QM31; 2] = (*trace_2_col128.try_into().unwrap())
+    let [trace_2_col128]: [QM31; 1] = (*trace_2_col128.try_into().unwrap()).unbox();
+    let [trace_2_col129]: [QM31; 1] = (*trace_2_col129.try_into().unwrap()).unbox();
+    let [trace_2_col130]: [QM31; 1] = (*trace_2_col130.try_into().unwrap()).unbox();
+    let [trace_2_col131]: [QM31; 1] = (*trace_2_col131.try_into().unwrap()).unbox();
+    let [trace_2_col132_neg1, trace_2_col132]: [QM31; 2] = (*trace_2_col132.try_into().unwrap())
         .unbox();
-    let [trace_2_col129_neg1, trace_2_col129]: [QM31; 2] = (*trace_2_col129.try_into().unwrap())
+    let [trace_2_col133_neg1, trace_2_col133]: [QM31; 2] = (*trace_2_col133.try_into().unwrap())
         .unbox();
-    let [trace_2_col130_neg1, trace_2_col130]: [QM31; 2] = (*trace_2_col130.try_into().unwrap())
+    let [trace_2_col134_neg1, trace_2_col134]: [QM31; 2] = (*trace_2_col134.try_into().unwrap())
         .unbox();
-    let [trace_2_col131_neg1, trace_2_col131]: [QM31; 2] = (*trace_2_col131.try_into().unwrap())
+    let [trace_2_col135_neg1, trace_2_col135]: [QM31; 2] = (*trace_2_col135.try_into().unwrap())
         .unbox();
 
     core::internal::revoke_ap_tracking();
@@ -2360,9 +2390,9 @@ fn lookup_constraints(
             [trace_2_col120, trace_2_col121, trace_2_col122, trace_2_col123],
         ))
         * range_check_19_c_sum_62
-        * opcodes_sum_63)
-        - (range_check_19_c_sum_62 * enabler)
-        - opcodes_sum_63)
+        * range_check_19_sum_63)
+        - range_check_19_c_sum_62
+        - range_check_19_sum_63)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2371,12 +2401,25 @@ fn lookup_constraints(
     )
         - QM31Impl::from_partial_evals(
             [trace_2_col124, trace_2_col125, trace_2_col126, trace_2_col127],
+        ))
+        * range_check_8_sum_64
+        * opcodes_sum_65)
+        - (range_check_8_sum_64 * enabler)
+        - opcodes_sum_65)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col132, trace_2_col133, trace_2_col134, trace_2_col135],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col128, trace_2_col129, trace_2_col130, trace_2_col131],
         )
         - QM31Impl::from_partial_evals(
-            [trace_2_col128_neg1, trace_2_col129_neg1, trace_2_col130_neg1, trace_2_col131_neg1],
+            [trace_2_col132_neg1, trace_2_col133_neg1, trace_2_col134_neg1, trace_2_col135_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * opcodes_sum_64)
+        * opcodes_sum_66)
         + enabler)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
