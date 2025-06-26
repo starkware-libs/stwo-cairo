@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
-use tracing::{span, Level};
+use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::vm_import::VmImportError;
@@ -12,6 +12,7 @@ use crate::test_utils::read_prover_input_info_file;
 use crate::{PublicSegmentContext, StateTransitions};
 
 pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
+    let _span = span!(Level::INFO, "adapter").entered();
     BuiltinSegments::pad_relocatble_builtin_segments(
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
@@ -26,8 +27,13 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
     let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
+    info!(
+        "Opcode counts: {:?}",
+        state_transitions.casm_states_by_opcode.counts()
+    );
 
     let builtins_segments = relocator.get_builtin_segments();
+    info!("Builtin segments: {:?}", builtins_segments);
 
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
