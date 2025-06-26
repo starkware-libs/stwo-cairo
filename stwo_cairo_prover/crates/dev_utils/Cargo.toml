@@ -17,3 +17,4 @@ tracing-subscriber.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 log.workspace = true
+regex = "1.11.1"

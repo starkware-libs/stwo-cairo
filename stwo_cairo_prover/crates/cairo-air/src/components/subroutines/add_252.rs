@@ -3,7 +3,7 @@ use crate::components::prelude::*;
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 use crate::components::subroutines::verify_add_252::VerifyAdd252;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Add252 {}
 
 impl Add252 {

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
 use stwo_prover::core::air::{Component, ComponentProver};
@@ -64,6 +64,25 @@ where
     }
 }
 
+impl<H: MerkleHasher> CairoDeserialize for CairoProof<H>
+where
+    H::Hash: CairoDeserialize,
+{
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+        let claim = CairoDeserialize::deserialize(data);
+        let interaction_pow = CairoDeserialize::deserialize(data);
+        let interaction_claim = CairoDeserialize::deserialize(data);
+        let stark_proof = CairoDeserialize::deserialize(data);
+
+        Self {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            stark_proof,
+        }
+    }
+}
+
 pub type RelationUsesDict = HashMap<&'static str, u64>;
 
 /// Accumulates the number of uses of each relation in a map.
@@ -80,7 +99,7 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
@@ -205,7 +224,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -266,7 +285,7 @@ impl PublicData {
 }
 
 // TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
@@ -286,7 +305,7 @@ pub type PubMemoryValue = (u32, [u32; 8]);
 // (address, id, value)
 pub type PubMemoryEntry = (u32, u32, [u32; 8]);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
     pub stop_ptr: MemorySmallValue,
@@ -303,7 +322,7 @@ impl SegmentRange {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
     pub pedersen: Option<SegmentRange>,
@@ -391,7 +410,7 @@ impl PublicSegmentRanges {
 
 pub type MemorySection = Vec<PubMemoryValue>;
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
@@ -500,7 +519,7 @@ impl CairoInteractionElements {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,

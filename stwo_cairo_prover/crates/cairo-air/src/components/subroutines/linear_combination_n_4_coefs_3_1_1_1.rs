@@ -1,6 +1,6 @@
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct LinearCombinationN4Coefs3111 {}
 
 impl LinearCombinationN4Coefs3111 {

@@ -1,6 +1,6 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 use stwo_prover::core::air::ComponentProver;
 use stwo_prover::core::backend::simd::SimdBackend;
@@ -13,7 +13,7 @@ use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BlakeContextClaim {
     pub claim: Option<Claim>,
 }
@@ -38,7 +38,7 @@ impl BlakeContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub blake_round: blake_round::Claim,
     pub blake_g: blake_g::Claim,
@@ -99,7 +99,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BlakeContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -118,7 +118,7 @@ impl BlakeContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub blake_round: blake_round::InteractionClaim,
     pub blake_g: blake_g::InteractionClaim,

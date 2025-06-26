@@ -673,6 +673,7 @@ dependencies = [
  "cairo-air",
  "clap",
  "log",
+ "regex",
  "serde",
  "sonic-rs",
  "starknet-ff",

@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::single_karatsuba_n_8::SingleKaratsubaN8;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DoubleKaratsubaN8LimbMaxBound4095 {}
 
 impl DoubleKaratsubaN8LimbMaxBound4095 {

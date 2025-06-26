@@ -1,6 +1,6 @@
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DecodeInstruction3B105 {}
 
 impl DecodeInstruction3B105 {

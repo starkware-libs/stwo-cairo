@@ -1,6 +1,6 @@
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BitwiseXorNumBits12 {}
 
 impl BitwiseXorNumBits12 {

@@ -3,7 +3,7 @@ use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CreateBlakeRoundInput {}
 
 impl CreateBlakeRoundInput {

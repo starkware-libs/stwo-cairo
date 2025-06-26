@@ -1,6 +1,6 @@
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CondFelt252AsAddr {}
 
 impl CondFelt252AsAddr {

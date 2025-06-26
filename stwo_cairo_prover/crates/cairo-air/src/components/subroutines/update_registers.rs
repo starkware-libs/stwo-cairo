@@ -2,7 +2,7 @@ use crate::components::prelude::*;
 use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
 use crate::components::subroutines::cond_felt_252_as_rel_imm::CondFelt252AsRelImm;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct UpdateRegisters {}
 
 impl UpdateRegisters {

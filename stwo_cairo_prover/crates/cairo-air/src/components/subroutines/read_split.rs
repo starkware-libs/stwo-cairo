@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::mem_verify::MemVerify;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct ReadSplit {}
 
 impl ReadSplit {

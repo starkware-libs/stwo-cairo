@@ -8,7 +8,7 @@ use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUse
 use crate::components::prelude::*;
 use crate::components::{indented_component_display, partial_ec_mul, pedersen_points_table};
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PedersenContextClaim {
     pub claim: Option<Claim>,
 }
@@ -33,7 +33,7 @@ impl PedersenContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub partial_ec_mul: partial_ec_mul::Claim,
     pub pedersen_points_table: pedersen_points_table::Claim,
@@ -71,7 +71,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PedersenContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -90,7 +90,7 @@ impl PedersenContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub partial_ec_mul: partial_ec_mul::InteractionClaim,
     pub pedersen_points_table: pedersen_points_table::InteractionClaim,

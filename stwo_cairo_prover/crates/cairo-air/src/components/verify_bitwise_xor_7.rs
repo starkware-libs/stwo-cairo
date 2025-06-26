@@ -9,7 +9,7 @@ pub struct Eval {
     pub verify_bitwise_xor_7_lookup_elements: relations::VerifyBitwiseXor_7,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -21,7 +21,7 @@ impl Claim {
     pub fn mix_into(&self, _channel: &mut impl Channel) {}
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }

@@ -1,6 +1,6 @@
 pub use num_traits::One;
 pub use serde::{Deserialize, Serialize};
-pub use stwo_cairo_serialize::CairoSerialize;
+pub use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 pub use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 pub use stwo_prover::core::channel::Channel;
 pub use stwo_prover::core::fields::m31::M31;

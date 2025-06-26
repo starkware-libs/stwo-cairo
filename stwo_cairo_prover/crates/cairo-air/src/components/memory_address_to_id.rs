@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::m31::M31;
@@ -73,7 +73,7 @@ impl FrameworkEval for Eval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -90,7 +90,7 @@ impl Claim {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }

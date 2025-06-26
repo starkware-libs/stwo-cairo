@@ -39,7 +39,7 @@ pub struct Eval {
     pub poseidon_3_partial_rounds_chain_lookup_elements: relations::Poseidon3PartialRoundsChain,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -55,7 +55,7 @@ impl Claim {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }
