@@ -9,7 +9,6 @@ use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{ArrayImpl, DictImpl, group_columns_by_log_size};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::verifier::{FriVerificationErrorIntoVerificationError, VerificationError};
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
 
@@ -87,7 +86,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
         proof: CommitmentSchemeProof,
         ref channel: Channel,
-    ) -> Result<(), VerificationError> {
+    ) {
         let CommitmentSchemeProof {
             config: _,
             commitments: _,
@@ -117,16 +116,15 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor).span();
 
         // FRI commitment phase on OODS quotients.
-        let mut fri_verifier =
-            match FriVerifierImpl::commit(ref channel, fri_config, fri_proof, column_log_bounds) {
-            Ok(fri_verifier) => fri_verifier,
-            Err(err) => { return Err(VerificationError::Fri(err)); },
-        };
+        let mut fri_verifier = FriVerifierImpl::commit(
+            ref channel, fri_config, fri_proof, column_log_bounds,
+        );
 
         // Verify proof of work.
-        if !channel.mix_and_check_pow_nonce(self.config.pow_bits, proof_of_work_nonce) {
-            return Err(VerificationError::QueriesProofOfWork);
-        }
+        assert!(
+            channel.mix_and_check_pow_nonce(self.config.pow_bits, proof_of_work_nonce),
+            "VerificationError::QueriesProofOfWork",
+        );
 
         // Get FRI query positions.
         let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
@@ -157,13 +155,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             random_coeff,
             query_positions_by_log_size,
             queried_values,
-        )?;
+        );
 
-        if let Err(err) = fri_verifier.decommit(fri_answers) {
-            return Err(VerificationError::Fri(err));
-        }
-
-        Ok(())
+        fri_verifier.decommit(fri_answers);
     }
 }
 

@@ -4,9 +4,7 @@ use stwo_cairo_air::{CairoProof, VerificationOutput, get_verification_output, ve
 fn main(proof: CairoProof) -> VerificationOutput {
     let verification_output = get_verification_output(proof: @proof);
 
-    if let Result::Err(err) = verify_cairo(:proof) {
-        panic!("Verification failed: {:?}", err);
-    }
+    verify_cairo(:proof);
 
     verification_output
 }
