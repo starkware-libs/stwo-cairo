@@ -17,3 +17,8 @@ tracing-subscriber.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 log.workspace = true
+serde_json.workspace = true
+cairo-prove = {path= "../../../cairo-prove"}
+cairo-vm.workspace = true
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
