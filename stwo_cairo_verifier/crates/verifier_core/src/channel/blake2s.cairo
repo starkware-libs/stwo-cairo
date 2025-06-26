@@ -1,7 +1,7 @@
-use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
+use bounded_int::impls::*;
+use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use core::traits::DivRem;
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -9,27 +9,10 @@ use crate::utils::gen_bit_mask;
 use crate::vcs::blake2s_hasher::Blake2sHash;
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
-/// Equals `2^31`.
-const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
-
 /// Number of `M31` per hash.
 pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
-
-type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
-
-
-const U8_SHIFT: felt252 = 0x100; // 2**8
-const U32_SHIFT: felt252 = 0x100000000; // 2**32
-
-const NZ_U8_SHIFT: NonZero<ConstValue<U8_SHIFT>> = 0x100;
-const NZ_U32_SHIFT: NonZero<ConstValue<U32_SHIFT>> = 0x100000000;
-
-type U8_BOUNDED_INT = BoundedInt<0, { U8_SHIFT - 1 }>;
-type U16_BOUNDED_INT = BoundedInt<0, { 0x10000 - 1 }>; // 2**16 - 1
-type U24_BOUNDED_INT = BoundedInt<0, { 0x1000000 - 1 }>; // 2**24 - 1
-
 
 // TODO: Stone uses a different initial state with the key set to 0.
 // Consider using this initial state instead.
@@ -53,26 +36,6 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
             digest: Blake2sHash { hash: BoxImpl::new([0; 8]) }, channel_time: Default::default(),
         }
     }
-}
-
-impl DivRemU64ByU32Shift of DivRemHelper<u64, ConstValue<U32_SHIFT>> {
-    type DivT = BoundedInt<0, { U32_SHIFT - 1 }>;
-    type RemT = BoundedInt<0, { U32_SHIFT - 1 }>;
-}
-
-impl DivRemU32ByU8Shift of DivRemHelper<u32, ConstValue<U8_SHIFT>> {
-    type DivT = U24_BOUNDED_INT;
-    type RemT = U8_BOUNDED_INT;
-}
-
-impl DivRemU24ByU8Shift of DivRemHelper<U24_BOUNDED_INT, ConstValue<U8_SHIFT>> {
-    type DivT = U16_BOUNDED_INT;
-    type RemT = U8_BOUNDED_INT;
-}
-
-impl DivRemU16ByU8Shift of DivRemHelper<U16_BOUNDED_INT, ConstValue<U8_SHIFT>> {
-    type DivT = U8_BOUNDED_INT;
-    type RemT = U8_BOUNDED_INT;
 }
 
 pub impl Blake2sChannelImpl of ChannelTrait {

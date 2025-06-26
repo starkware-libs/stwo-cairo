@@ -1,3 +1,5 @@
+use bounded_int::impls::*;
+use bounded_int::{M31_SHIFT_NZ_U256, NZ_U8_SHIFT, div_rem, upcast};
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
@@ -6,9 +8,6 @@ use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
-
-/// Equals `2^31`.
-const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
 
 /// Number of `M31` per hash.
 pub const FELTS_PER_HASH: usize = 8;
@@ -119,13 +118,75 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     /// `self.draw_secure_felt252()` in little endian.
     /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
     fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
-        let mut cur: u256 = draw_secure_felt252(ref self).into();
+        let u256 { low, high } = draw_secure_felt252(ref self).into();
+
         let mut bytes = array![];
-        for _ in 0_usize..BYTES_PER_HASH {
-            let (q, r) = DivRem::div_rem(cur, 0x100);
-            bytes.append(r.try_into().unwrap());
-            cur = q;
-        }
+
+        // Extract the 16 bytes from the low 128 bits of the felt 252.
+        let (q, r) = div_rem(low, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        bytes.append(upcast(q));
+
+        // Extract the first 15 bytes from the high 128 bits of the felt 252.
+        let (q, r) = div_rem(high, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (q, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+        let (_, r) = div_rem(q, NZ_U8_SHIFT);
+        bytes.append(upcast(r));
+
         bytes
     }
 
