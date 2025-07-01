@@ -40,9 +40,9 @@ fn valid_proof_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds).unwrap();
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals).unwrap();
+    verifier.decommit_on_queries(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -76,9 +76,9 @@ fn valid_proof_with_constant_last_layer_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds).unwrap();
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals).unwrap();
+    verifier.decommit_on_queries(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -147,9 +147,9 @@ fn valid_mixed_degree_proof_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds).unwrap();
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals_by_column).unwrap();
+    verifier.decommit_on_queries(queries, query_evals_by_column);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -240,15 +240,15 @@ fn mixed_degree_proof_with_queries_sampled_from_channel_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
-        .unwrap();
+    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
     let _query_positions_per_log_size = verifier.sample_query_positions(ref channel);
 
-    verifier.decommit(query_evals_by_column).unwrap();
+    verifier.decommit(query_evals_by_column);
 }
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
+#[should_panic(expected: "Invalid inner layer evaluations")]
 #[ignore]
 fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 2, log_blowup_factor: 2, n_queries: 1 };
@@ -293,21 +293,14 @@ fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds).unwrap();
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    let verification_result = verifier.decommit_on_queries(queries, query_evals);
-
-    match verification_result {
-        Err(error) => match error {
-            FriVerificationError::InnerLayerEvaluationsInvalid => {},
-            _ => panic!("wrong error"),
-        },
-        _ => panic!("should error"),
-    }
+    verifier.decommit_on_queries(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
+#[should_panic(expected: "Invalid number of FRI layers")]
 #[ignore]
 fn proof_with_added_layer_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 3, log_blowup_factor: 2, n_queries: 1 };
@@ -351,19 +344,12 @@ fn proof_with_added_layer_fails_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
 
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
-
-    match verifier {
-        Err(error) => match error {
-            FriVerificationError::InvalidNumFriLayers => {},
-            _ => panic!("wrong error"),
-        },
-        _ => panic!("should error"),
-    }
+    FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 }
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
+#[should_panic(expected: "Invalid number of FRI layers")]
 #[ignore]
 fn proof_with_removed_layer_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 1, log_blowup_factor: 2, n_queries: 1 };
@@ -407,19 +393,12 @@ fn proof_with_removed_layer_fails_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
 
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
-
-    match verifier {
-        Err(error) => match error {
-            FriVerificationError::InvalidNumFriLayers => {},
-            _ => panic!("wrong error"),
-        },
-        _ => panic!("should error"),
-    }
+    FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 }
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
+#[should_panic(expected: "Invalid last layer degree")]
 #[ignore]
 fn proof_with_invalid_last_layer_degree_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 2, log_blowup_factor: 2, n_queries: 3 };
@@ -446,19 +425,12 @@ fn proof_with_invalid_last_layer_degree_fails_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
 
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
-
-    match verifier {
-        Err(err) => match err {
-            FriVerificationError::LastLayerDegreeInvalid => {},
-            _ => panic!("wrong error"),
-        },
-        _ => panic!("should error"),
-    }
+    FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 }
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
+#[should_panic(expected: "Invalid last layer evaluations")]
 #[ignore]
 fn proof_with_invalid_last_layer_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 2, log_blowup_factor: 2, n_queries: 3 };
@@ -494,18 +466,9 @@ fn proof_with_invalid_last_layer_fails_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
-        .unwrap();
+    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    let verification_result = verifier.decommit_on_queries(queries, query_evals);
-
-    match verification_result {
-        Err(err) => match err {
-            FriVerificationError::LastLayerEvaluationsInvalid => {},
-            _ => panic!("wrong error"),
-        },
-        _ => panic!("should error"),
-    }
+    verifier.decommit_on_queries(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -539,8 +502,7 @@ fn decommit_queries_on_invalid_domain_fails_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds)
-        .unwrap();
+    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(invalid_queries, query_evals).unwrap();
+    verifier.decommit_on_queries(invalid_queries, query_evals);
 }
