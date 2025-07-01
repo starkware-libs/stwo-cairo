@@ -2,7 +2,7 @@ use core::array::{ArrayTrait, SpanTrait, ToSpanTrait};
 use core::cmp::min;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
 use core::fmt::{Debug, Error, Formatter};
-use core::nullable::NullableTrait;
+use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
 use core::option::OptionTrait;
 use crate::BaseField;
 use crate::utils::{ArrayExTrait, DictTrait, SpanExTrait};
@@ -118,6 +118,7 @@ impl MerkleVerifierImpl<
             }
         }
 
+        let empty_span = array![].span();
         while let Some(layer_cols) = columns_by_log_size.pop_back() {
             let n_columns_in_layer = layer_cols.len();
             layer_log_size -= 1;
@@ -129,49 +130,40 @@ impl MerkleVerifierImpl<
             // Prepare read buffer for queried values to the current layer.
 
             // Extract the requested queries to the current layer.
-            let mut layer_column_queries = queries_per_log_size
-                .get(layer_log_size)
-                .deref_or(array![].span());
 
-            // Merge previous layer queries and column queries.
-            loop {
-                // Fetch the next query.
-                let current_query = if let Some(current_query) =
-                    next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
-                    current_query
-                } else {
-                    break;
-                };
+            let mut columns_of_size =
+                match match_nullable(queries_per_log_size.get(layer_log_size)) {
+                FromNullableResult::Null => {
+                    // No queries to this layer.
+                    while let Some((idx, _)) = prev_layer_hashes.span().first() {
+                        let current_query = *idx / 2;
 
-                let left_hash = if let Some(val) =
-                    fetch_prev_node_hash(
-                        ref prev_layer_hashes, ref hash_witness, current_query * 2,
-                    ) {
-                    val
-                } else {
-                    break panic!("MerkleVerificationError::WitnessTooShort");
-                };
+                        handle_node(
+                            ref prev_layer_hashes,
+                            ref hash_witness,
+                            current_query,
+                            empty_span,
+                            ref layer_total_queries,
+                        )
+                            .unwrap_or_else(|| panic!("MerkleVerificationError::WitnessTooShort"));
+                    }
+                },
+                FromNullableResult::NotNull(layer_column_queries) => {
+                    for current_query in layer_column_queries.unbox() {
+                        // If the column values were queried, read them from `queried_value`.
+                        let column_values = queried_values.pop_front_n(n_columns_in_layer);
 
-                let right_hash = if let Some(val) =
-                    fetch_prev_node_hash(
-                        ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
-                    ) {
-                    val
-                } else {
-                    break panic!("MerkleVerificationError::WitnessTooShort");
-                };
-                let node_hashes = Some((left_hash.clone(), right_hash.clone()));
-
-                // If the column values were queried, read them from `queried_value`.
-                let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
-                    queried_values.pop_front_n(n_columns_in_layer)
-                } else {
-                    column_witness.pop_front_n(n_columns_in_layer)
-                };
-
-                layer_total_queries
-                    .append((current_query, H::hash_node(node_hashes, column_values)));
-            }
+                        handle_node(
+                            ref prev_layer_hashes,
+                            ref hash_witness,
+                            *current_query,
+                            column_values,
+                            ref layer_total_queries,
+                        )
+                            .unwrap_or_else(|| panic!("MerkleVerificationError::WitnessTooShort"));
+                    }
+                },
+            };
 
             prev_layer_hashes = layer_total_queries;
         }
@@ -191,6 +183,27 @@ impl MerkleVerifierImpl<
         }
     }
 }
+
+#[inline]
+fn handle_node<impl H: MerkleHasher, +Clone<H::Hash>, +Drop<H::Hash>>(
+    ref prev_layer_hashes: Array<(u32, H::Hash)>,
+    ref hash_witness: Span<H::Hash>,
+    current_query: u32,
+    column_values: Span<BaseField>,
+    ref next_layer_hashes: Array<(u32, H::Hash)>,
+) -> Option<()> {
+    let left_hash = fetch_prev_node_hash(
+        ref prev_layer_hashes, ref hash_witness, current_query * 2,
+    )?;
+    let right_hash = fetch_prev_node_hash(
+        ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
+    )?;
+    let node_hashes = Some((left_hash.clone(), right_hash.clone()));
+
+    next_layer_hashes.append((current_query, H::hash_node(node_hashes, column_values)));
+    Some(())
+}
+
 
 fn next_decommitment_node<H>(
     layer_queries: Span<u32>, prev_queries: Span<(u32, H)>,
