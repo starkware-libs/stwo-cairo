@@ -333,7 +333,8 @@ pub struct FriProof {
 struct FriFirstLayerVerifier {
     /// The list of degree bounds of all circle polynomials commited in the first layer.
     column_log_bounds: Span<u32>,
-    /// The commitment domain all the circle polynomials in the first layer.
+    /// The commitment domains of all the circle polynomials in the first layer, sorted in
+    /// descending order by size.
     column_commitment_domains: Span<CircleDomain>,
     folding_alpha: QM31,
     proof: FriLayerProof,
