@@ -371,7 +371,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         // For decommitment, each QM31 col must be split into its constituent M31 coordinate cols.
         let mut decommitment_coordinate_column_log_sizes = array![];
         let mut sparse_evals_by_column = array![];
-        let mut decommitmented_values = array![];
+        let mut decommitted_values = array![];
 
         loop {
             let (column_domain, column_query_evals) =
@@ -408,10 +408,10 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                 for eval in subset_eval.span() {
                     // Split the QM31 into its M31 coordinate values.
                     let [v0, v1, v2, v3] = (*eval).to_fixed_array();
-                    decommitmented_values.append(v0.into());
-                    decommitmented_values.append(v1.into());
-                    decommitmented_values.append(v2.into());
-                    decommitmented_values.append(v3.into());
+                    decommitted_values.append(v0.into());
+                    decommitted_values.append(v1.into());
+                    decommitted_values.append(v2.into());
+                    decommitted_values.append(v3.into());
                 };
             }
 
@@ -440,7 +440,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         merkle_verifier
             .verify(
                 decommitment_positions_by_log_size,
-                decommitmented_values.span(),
+                decommitted_values.span(),
                 self.proof.decommitment.clone(),
             );
 
@@ -484,15 +484,15 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             return Err(FriVerificationError::InnerLayerEvaluationsInvalid);
         }
 
-        let mut decommitmented_values = array![];
+        let mut decommitted_values = array![];
         for subset_eval in sparse_evaluation.subset_evals.span() {
             for eval in subset_eval.span() {
                 // Split the QM31 into its M31 coordinate values.
                 let [v0, v1, v2, v3] = (*eval).to_fixed_array();
-                decommitmented_values.append(v0.into());
-                decommitmented_values.append(v1.into());
-                decommitmented_values.append(v2.into());
-                decommitmented_values.append(v3.into());
+                decommitted_values.append(v0.into());
+                decommitted_values.append(v1.into());
+                decommitted_values.append(v2.into());
+                decommitted_values.append(v3.into());
             };
         }
 
@@ -513,7 +513,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         merkle_verifier
             .verify(
                 decommitment_positions_dict,
-                decommitmented_values.span(),
+                decommitted_values.span(),
                 (*self.proof.decommitment).clone(),
             );
 
