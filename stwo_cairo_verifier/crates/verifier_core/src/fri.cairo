@@ -541,7 +541,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
 
     let mut decommitment_positions = array![];
     let mut subset_evals = array![];
-    let mut subset_domain_index_initials = array![];
+    let mut subset_domain_start_indices = array![];
 
     let mut query_positions = queries.positions;
     let mut folded_query_positions = queries.fold(fold_step).positions;
@@ -589,7 +589,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
 
         subset_evals.append(subset_eval);
 
-        subset_domain_index_initials
+        subset_domain_start_indices
             .append(bit_reverse_index(subset_start, queries.log_domain_size));
     }?;
 
@@ -598,7 +598,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
     assert!(query_evals_iter.next().is_none());
 
     let sparse_evaluation = SparseEvaluationImpl::new(
-        subset_evals, subset_domain_index_initials.span(),
+        subset_evals, subset_domain_start_indices.span(),
     );
 
     Ok((decommitment_positions.span(), sparse_evaluation))
