@@ -124,35 +124,27 @@ impl MerkleVerifierImpl<
                 .deref_or(array![].span());
 
             // Merge previous layer queries and column queries.
-            loop {
-                // Fetch the next query.
-                let current_query = if let Some(current_query) =
-                    next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
-                    current_query
-                } else {
-                    break;
-                };
-
+            while let Some(current_query) =
+                next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
                 let node_hashes = if is_first_layer {
                     None
                 } else {
-                    let left_hash = if let Some(val) =
-                        fetch_prev_node_hash(
+                    let left_hash =
+                        match fetch_prev_node_hash(
                             ref prev_layer_hashes, ref hash_witness, current_query * 2,
                         ) {
-                        val
-                    } else {
-                        break panic!("MerkleVerificationError::WitnessTooShort");
+                        Some(val) => val,
+                        None => panic!("{}", MerkleVerificationError::WitnessTooShort),
                     };
 
-                    let right_hash = if let Some(val) =
-                        fetch_prev_node_hash(
+                    let right_hash =
+                        match fetch_prev_node_hash(
                             ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
                         ) {
-                        val
-                    } else {
-                        break panic!("MerkleVerificationError::WitnessTooShort");
+                        Some(val) => val,
+                        None => panic!("{}", MerkleVerificationError::WitnessTooShort),
                     };
+
                     Some((left_hash.clone(), right_hash.clone()))
                 };
 
@@ -163,9 +155,11 @@ impl MerkleVerifierImpl<
                     column_witness.pop_front_n(n_columns_in_layer)
                 };
 
-                if column_values.len() != n_columns_in_layer {
-                    panic!("MerkleVerificationError::WitnessTooShort");
-                }
+                assert!(
+                    column_values.len() == n_columns_in_layer,
+                    "{}",
+                    MerkleVerificationError::WitnessTooShort,
+                );
 
                 layer_total_queries
                     .append((current_query, H::hash_node(node_hashes, column_values)));
@@ -176,17 +170,13 @@ impl MerkleVerifierImpl<
         }
 
         // Check that all witnesses and values have been consumed.
-        if !hash_witness.is_empty() {
-            panic!("MerkleVerificationError::WitnessTooLong");
-        }
-        if !column_witness.is_empty() {
-            panic!("MerkleVerificationError::WitnessTooLong");
-        }
+        assert!(hash_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
+        assert!(column_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
 
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
 
         if @computed_root != self.root {
-            panic!("MerkleVerificationError::RootMismatch");
+            panic!("{}", MerkleVerificationError::RootMismatch);
         }
     }
 }
@@ -236,6 +226,31 @@ pub enum MerkleVerificationError {
     ColumnValuesTooShort,
     RootMismatch,
 }
+
+impl MerkleVerificationErrorDisplay of core::fmt::Display<MerkleVerificationError> {
+    fn fmt(
+        self: @MerkleVerificationError, ref f: core::fmt::Formatter,
+    ) -> Result<(), core::fmt::Error> {
+        match self {
+            MerkleVerificationError::WitnessTooShort => write!(
+                f, "Merkle Verification Error: Witness Too Short",
+            ),
+            MerkleVerificationError::WitnessTooLong => write!(
+                f, "Merkle Verification Error: Witness Too Long",
+            ),
+            MerkleVerificationError::ColumnValuesTooLong => write!(
+                f, "Merkle Verification Error: Column Values Too Long",
+            ),
+            MerkleVerificationError::ColumnValuesTooShort => write!(
+                f, "Merkle Verification Error: Column Values Too Short",
+            ),
+            MerkleVerificationError::RootMismatch => write!(
+                f, "Merkle Verification Error: Root Mismatch",
+            ),
+        }
+    }
+}
+
 
 #[cfg(test)]
 mod tests {

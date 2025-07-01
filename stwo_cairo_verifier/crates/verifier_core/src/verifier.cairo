@@ -42,14 +42,16 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
-) -> Result<(), VerificationError> {
+) {
     let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Check that there are enough security bits.
-    if commitment_scheme_proof.config.security_bits() < min_security_bits {
-        return Err(VerificationError::SecurityBitsTooLow);
-    }
+    assert!(
+        commitment_scheme_proof.config.security_bits() >= min_security_bits,
+        "{}",
+        VerificationError::SecurityBitsTooLow,
+    );
 
     // Read composition polynomial commitment.
     commitment_scheme
@@ -72,18 +74,18 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
     let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
         Ok(composition_oods_eval) => composition_oods_eval,
-        Err(_) => { return Err(VerificationError::InvalidStructure('Invalid sampled_values')); },
+        Err(_) => panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
     };
 
     // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
-    if composition_oods_eval != air
-        .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff) {
-        return Err(VerificationError::OodsNotMatching);
-    }
+    assert!(
+        composition_oods_eval == air
+            .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff),
+        "{}",
+        VerificationError::OodsNotMatching,
+    );
 
-    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel)?;
-
-    Ok(())
+    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel);
 }
 
 /// Extracts the composition trace evaluation from the mask.
@@ -126,10 +128,20 @@ pub enum VerificationError {
     SecurityBitsTooLow,
 }
 
-pub impl FriVerificationErrorIntoVerificationError of Into<
-    FriVerificationError, VerificationError,
-> {
-    fn into(self: FriVerificationError) -> VerificationError {
-        VerificationError::Fri(self)
+impl VerificationErrorDisplay of core::fmt::Display<VerificationError> {
+    fn fmt(self: @VerificationError, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        match self {
+            VerificationError::InvalidStructure(error) => write!(
+                f, "Proof has invalid structure: {}", error,
+            ),
+            VerificationError::InvalidLookup(error) => write!(
+                f, "Lookup values do not match: {}", error,
+            ),
+            VerificationError::Merkle(error) => write!(f, "Merkle proof invalid: {}", error),
+            VerificationError::QueriesProofOfWork => write!(f, "Proof of work verification failed"),
+            VerificationError::Fri(error) => write!(f, "Fri proof is invalid: {}", error),
+            VerificationError::OodsNotMatching => write!(f, "Invalid OODS eval"),
+            VerificationError::SecurityBitsTooLow => write!(f, "Security bits are too low"),
+        }
     }
 }
