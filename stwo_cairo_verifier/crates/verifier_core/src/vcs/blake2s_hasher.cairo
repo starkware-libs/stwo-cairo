@@ -83,7 +83,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         for value in last_block {
             padded_column_values.append((*value).into());
         }
-        for _ in 0..M31_ELEMENETS_IN_MSG - last_block_length {
+        for _ in last_block_length..M31_ELEMENETS_IN_MSG {
             padded_column_values.append(0);
         }
 
