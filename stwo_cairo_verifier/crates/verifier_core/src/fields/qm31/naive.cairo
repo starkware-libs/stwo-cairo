@@ -123,7 +123,7 @@ pub impl QM31Impl of QM31Trait {
         }
     }
 
-    fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
+    fn combine(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [e0, e1, e2, e3] = evals;
         e0
             + e1 * qm31_const::<0, 1, 0, 0>()
