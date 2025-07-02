@@ -349,6 +349,14 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let mut sparse_evals_by_column = array![];
         let mut decommitted_values = array![];
 
+        // Check that the column commitment domains are sorted in descending order.
+        for i in 1..column_commitment_domains.len() {
+            assert!(
+                column_commitment_domains[i].log_size() < column_commitment_domains[i
+                    - 1].log_size(),
+            );
+        }
+
         while let (Some(column_domain), Some(column_query_evals)) =
             (column_commitment_domains.pop_front(), query_evals_by_column.pop_front()) {
             let column_domain_log_size = column_domain.log_size();
