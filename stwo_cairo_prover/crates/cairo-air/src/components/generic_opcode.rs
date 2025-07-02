@@ -1,12 +1,12 @@
-// AIR version d4d3b5d6
+// AIR version d3fb930e
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_generic_instruction::DecodeGenericInstruction;
 use crate::components::subroutines::eval_operands::EvalOperands;
 use crate::components::subroutines::handle_opcodes::HandleOpcodes;
 use crate::components::subroutines::update_registers::UpdateRegisters;
 
-pub const N_TRACE_COLUMNS: usize = 236;
-pub const RELATION_USES_PER_ROW: [RelationUse; 20] = [
+pub const N_TRACE_COLUMNS: usize = 237;
+pub const RELATION_USES_PER_ROW: [RelationUse; 21] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
@@ -21,7 +21,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 20] = [
     },
     RelationUse {
         relation_id: "RangeCheck_19",
-        uses: 4,
+        uses: 5,
     },
     RelationUse {
         relation_id: "RangeCheck_19_B",
@@ -50,6 +50,10 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 20] = [
     RelationUse {
         relation_id: "RangeCheck_19_H",
         uses: 4,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_8",
+        uses: 1,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9",
@@ -102,6 +106,7 @@ pub struct Eval {
     pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
     pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
     pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
+    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
     pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
@@ -109,7 +114,7 @@ pub struct Eval {
     pub range_check_19_e_lookup_elements: relations::RangeCheck_19_E,
     pub range_check_19_f_lookup_elements: relations::RangeCheck_19_F,
     pub range_check_19_g_lookup_elements: relations::RangeCheck_19_G,
-    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
+    pub range_check_8_lookup_elements: relations::RangeCheck_8,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -120,7 +125,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 33];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 34];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -388,7 +393,8 @@ impl FrameworkEval for Eval {
         let next_pc_jnz_col231 = eval.next_trace_mask();
         let next_pc_col232 = eval.next_trace_mask();
         let next_ap_col233 = eval.next_trace_mask();
-        let next_fp_col234 = eval.next_trace_mask();
+        let range_check_ap_bot8bits_col234 = eval.next_trace_mask();
+        let next_fp_col235 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -874,7 +880,10 @@ impl FrameworkEval for Eval {
             next_pc_jnz_col231.clone(),
             next_pc_col232.clone(),
             next_ap_col233.clone(),
-            next_fp_col234.clone(),
+            range_check_ap_bot8bits_col234.clone(),
+            next_fp_col235.clone(),
+            &self.range_check_19_lookup_elements,
+            &self.range_check_8_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -893,7 +902,7 @@ impl FrameworkEval for Eval {
             &[
                 next_pc_col232.clone(),
                 next_ap_col233.clone(),
-                next_fp_col234.clone(),
+                next_fp_col235.clone(),
             ],
         ));
 
@@ -937,6 +946,7 @@ mod tests {
             range_check_19_e_lookup_elements: relations::RangeCheck_19_E::dummy(),
             range_check_19_f_lookup_elements: relations::RangeCheck_19_F::dummy(),
             range_check_19_g_lookup_elements: relations::RangeCheck_19_G::dummy(),
+            range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
