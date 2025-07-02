@@ -31,7 +31,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             hash_array.append(y);
         } else {
             // Most often a single QM31 column commitment due to FRI.
-            // TODO(andrew): Implement non-mixed degree merkle for FRI decommitments.
+            // TODO(andrew): Implement non-mixed degree Merkle for FRI decommitments.
             if let Some(values) = column_values.try_into() {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
                 let [v0, v1, v2, v3]: [BaseField; 4] = (*values).unbox();

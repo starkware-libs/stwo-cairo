@@ -132,13 +132,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
             .sample_query_positions(ref channel);
 
-        // Verify merkle decommitments.
+        // Verify Merkle decommitments.
         let mut decommitments = decommitments.into_iter();
 
         for (tree, queried_values) in self.trees.span().into_iter().zip(queried_values.span()) {
             let decommitment = decommitments.next().unwrap();
 
-            // The merkle implementation pops values from the query position dict so it has to
+            // The Merkle implementation pops values from the query position dict so it has to
             // be duplicated.
             let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
 
