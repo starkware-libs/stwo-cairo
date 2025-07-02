@@ -16,7 +16,7 @@ use super::super::Invertible;
 mod constraints;
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
-/// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
+/// during The Merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
 ///
 /// 1. The ID and Multiplicity vectors are split to 'MEMORY_ADDRESS_TO_ID_SPLIT' chunks of size
 ///    `ids.len()`/`MEMORY_ADDRESS_TO_ID_SPLIT`.

@@ -342,7 +342,7 @@ struct FriFirstLayerVerifier {
 
 #[generate_trait]
 impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
-    /// Verifies the first layer's merkle decommitment, and returns the evaluations needed for
+    /// Verifies the first layer's Merkle decommitment, and returns the evaluations needed for
     /// folding the columns to their corresponding layer.
     ///
     /// # Errors
@@ -355,7 +355,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     /// Panics if:
     /// * The queries are sampled on the wrong domain.
     /// * There are an invalid number of provided column evals.
-    /// * The merkle decommitment is invalid.
+    /// * The Merkle decommitment is invalid.
     fn verify(
         self: @FriFirstLayerVerifier,
         queries: Queries,
@@ -460,11 +460,11 @@ struct FriInnerLayerVerifier {
 
 #[generate_trait]
 impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
-    /// Verifies the layer's merkle decommitment and returns the the folded queries and query evals.
+    /// Verifies the layer's Merkle decommitment and returns the the folded queries and query evals.
     ///
     /// # Panics
     ///
-    /// Panics if the merkle decommitment is invalid.
+    /// Panics if the Merkle decommitment is invalid.
     fn verify_and_fold(
         self: @FriInnerLayerVerifier, queries: Queries, evals_at_queries: Span<QM31>,
     ) -> Result<(Queries, Array<QM31>), FriVerificationError> {
@@ -525,7 +525,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
     }
 }
 
-/// Returns a column's merkle tree decommitment positions and re-builds the evaluations needed by
+/// Returns a column's Merkle tree decommitment positions and re-builds the evaluations needed by
 /// the verifier for folding and decommitment.
 ///
 /// # Panics
