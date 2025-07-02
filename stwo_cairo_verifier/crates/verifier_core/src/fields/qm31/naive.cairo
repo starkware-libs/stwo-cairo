@@ -62,10 +62,6 @@ pub impl QM31Impl of QM31Trait {
         (Self::mul_unreduced(a, b) - c.into()).reduce()
     }
 
-    // TODO(andrew): May be net worse performance doing unreduced arithmetic due to all felt252
-    // multiplications (which are expensive for the M31 prover to simulate). Measure overall
-    // prove+verify performance differences with unreduced felt252 vs reduced u32. If prover
-    // performance is an issue consider Karatsuba.
     #[inline]
     fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
         /// Equals `P * P * 16`.
