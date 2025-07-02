@@ -2610,10 +2610,10 @@ pub struct PublicData {
 #[generate_trait]
 impl PublicDataImpl of PublicDataTrait {
     fn logup_sum(self: @PublicData, lookup_elements: @CairoInteractionElements) -> QM31 {
-        // TODO(Ohad): Optimized inverse.
         let mut sum = Zero::zero();
 
-        // TODO(andrew): Consider batch inverse here.
+        // Gather values to be inverted and summed.
+        let mut values: Array<QM31> = array![];
         for entry in self
             .public_memory
             .get_entries(
@@ -2626,20 +2626,18 @@ impl PublicDataImpl of PublicDataTrait {
 
             let addr_m31 = addr.try_into().unwrap();
             let id_m31 = id.try_into().unwrap();
-            let addr_to_id = lookup_elements
-                .memory_address_to_id
-                .combine([addr_m31, id_m31])
-                .inverse();
+            let addr_to_id = lookup_elements.memory_address_to_id.combine([addr_m31, id_m31]);
+            values.append(addr_to_id);
 
             let mut elements = array![id_m31];
             elements.append_span(utils::split_f252(val).span());
             let id_to_value = lookup_elements
                 .memory_id_to_value
-                .combine((*elements.span().try_into().unwrap()).unbox())
-                .inverse();
-
-            sum += addr_to_id + id_to_value;
+                .combine((*elements.span().try_into().unwrap()).unbox());
+            values.append(id_to_value);
         }
+
+        sum += sum_inverses_qm31(@values);
 
         // Yield initial state and use the final.
         let CasmState { pc, ap, fp } = *self.final_state;
@@ -2655,6 +2653,34 @@ impl PublicDataImpl of PublicDataTrait {
         self.initial_state.mix_into(ref channel);
         self.final_state.mix_into(ref channel);
     }
+}
+
+pub fn sum_inverses_qm31(values: @Array<QM31>) -> QM31 {
+    let length = values.len();
+    assert!(length != 0);
+    let mut prefix_mul = array![*values[0]];
+
+    // First pass.
+    let mut curr_mul = *values[0];
+    for i in 1..length {
+        let mul = curr_mul * *values[i];
+        prefix_mul.append(mul);
+        curr_mul = mul;
+    }
+    let prefix_mul = prefix_mul.span();
+
+    // Inverse cumulative product.
+    let mut curr_inverse = prefix_mul[length - 1].inverse();
+
+    // Second pass.
+    let mut sum = Zero::zero();
+    let mut i = length - 1;
+    for _ in 1..length {
+        sum += *prefix_mul[i - 1] * curr_inverse;
+        curr_inverse *= *values[i];
+        i -= 1;
+    }
+    sum + curr_inverse
 }
 
 #[derive(Drop, Serde, Copy)]
@@ -8618,6 +8644,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 mod tests {
     use core::num::traits::one::One;
     use stwo_constraint_framework::LookupElements;
+    use stwo_verifier_core::fields::Invertible;
     use stwo_verifier_core::fields::qm31::qm31_const;
     use stwo_verifier_core::utils::ArrayImpl;
     use super::{
@@ -8758,5 +8785,19 @@ mod tests {
 
         assert_eq!(relation_uses.get('relation_1'), 12);
         assert_eq!(relation_uses.get('relation_2'), 26);
+    }
+
+    #[test]
+    fn test_sum_inverses_qm31() {
+        let a = qm31_const::<1, 2, 3, 4>();
+        let b = qm31_const::<5, 6, 7, 8>();
+        let c = qm31_const::<9, 10, 11, 12>();
+        let d = qm31_const::<13, 14, 15, 16>();
+        let expected = a.inverse() + b.inverse() + c.inverse() + d.inverse();
+        let array = array![a, b, c, d];
+
+        let sum = super::sum_inverses_qm31(@array);
+
+        assert_eq!(sum, expected);
     }
 }
