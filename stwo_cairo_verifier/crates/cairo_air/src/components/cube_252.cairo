@@ -1945,7 +1945,7 @@ fn lookup_constraints(
 
     core::internal::revoke_ap_tracking();
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
     ))
         * range_check_9_9_sum_0
@@ -1955,10 +1955,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7],
     )
-        - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
+        - QM31Impl::combine([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * range_check_9_9_c_sum_2
         * range_check_9_9_d_sum_3)
         - range_check_9_9_c_sum_2
@@ -1966,10 +1966,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
-        - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
+        - QM31Impl::combine([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * range_check_9_9_e_sum_4
         * range_check_9_9_f_sum_5)
         - range_check_9_9_e_sum_4
@@ -1977,10 +1977,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
     )
-        - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
+        - QM31Impl::combine([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
         * range_check_9_9_g_sum_6
         * range_check_9_9_h_sum_7)
         - range_check_9_9_g_sum_6
@@ -1988,12 +1988,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
-        ))
+        - QM31Impl::combine([trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15]))
         * range_check_9_9_sum_8
         * range_check_9_9_b_sum_9)
         - range_check_9_9_sum_8
@@ -2001,12 +1999,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
-        ))
+        - QM31Impl::combine([trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19]))
         * range_check_9_9_c_sum_10
         * range_check_9_9_d_sum_11)
         - range_check_9_9_c_sum_10
@@ -2014,12 +2010,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
-        ))
+        - QM31Impl::combine([trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23]))
         * range_check_9_9_e_sum_12
         * range_check_9_9_f_sum_13)
         - range_check_9_9_e_sum_12
@@ -2027,12 +2021,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col28, trace_2_col29, trace_2_col30, trace_2_col31],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27],
-        ))
+        - QM31Impl::combine([trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27]))
         * range_check_9_9_sum_14
         * range_check_9_9_b_sum_15)
         - range_check_9_9_sum_14
@@ -2040,12 +2032,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col32, trace_2_col33, trace_2_col34, trace_2_col35],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col28, trace_2_col29, trace_2_col30, trace_2_col31],
-        ))
+        - QM31Impl::combine([trace_2_col28, trace_2_col29, trace_2_col30, trace_2_col31]))
         * range_check_9_9_c_sum_16
         * range_check_9_9_d_sum_17)
         - range_check_9_9_c_sum_16
@@ -2053,12 +2043,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col36, trace_2_col37, trace_2_col38, trace_2_col39],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col32, trace_2_col33, trace_2_col34, trace_2_col35],
-        ))
+        - QM31Impl::combine([trace_2_col32, trace_2_col33, trace_2_col34, trace_2_col35]))
         * range_check_9_9_e_sum_18
         * range_check_9_9_f_sum_19)
         - range_check_9_9_e_sum_18
@@ -2066,12 +2054,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col40, trace_2_col41, trace_2_col42, trace_2_col43],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col36, trace_2_col37, trace_2_col38, trace_2_col39],
-        ))
+        - QM31Impl::combine([trace_2_col36, trace_2_col37, trace_2_col38, trace_2_col39]))
         * range_check_9_9_g_sum_20
         * range_check_9_9_h_sum_21)
         - range_check_9_9_g_sum_20
@@ -2079,12 +2065,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col44, trace_2_col45, trace_2_col46, trace_2_col47],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col40, trace_2_col41, trace_2_col42, trace_2_col43],
-        ))
+        - QM31Impl::combine([trace_2_col40, trace_2_col41, trace_2_col42, trace_2_col43]))
         * range_check_9_9_sum_22
         * range_check_9_9_b_sum_23)
         - range_check_9_9_sum_22
@@ -2092,12 +2076,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col48, trace_2_col49, trace_2_col50, trace_2_col51],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col44, trace_2_col45, trace_2_col46, trace_2_col47],
-        ))
+        - QM31Impl::combine([trace_2_col44, trace_2_col45, trace_2_col46, trace_2_col47]))
         * range_check_9_9_c_sum_24
         * range_check_9_9_d_sum_25)
         - range_check_9_9_c_sum_24
@@ -2105,12 +2087,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col52, trace_2_col53, trace_2_col54, trace_2_col55],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col48, trace_2_col49, trace_2_col50, trace_2_col51],
-        ))
+        - QM31Impl::combine([trace_2_col48, trace_2_col49, trace_2_col50, trace_2_col51]))
         * range_check_9_9_e_sum_26
         * range_check_9_9_f_sum_27)
         - range_check_9_9_e_sum_26
@@ -2118,12 +2098,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col56, trace_2_col57, trace_2_col58, trace_2_col59],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col52, trace_2_col53, trace_2_col54, trace_2_col55],
-        ))
+        - QM31Impl::combine([trace_2_col52, trace_2_col53, trace_2_col54, trace_2_col55]))
         * range_check_19_h_sum_28
         * range_check_19_sum_29)
         - range_check_19_h_sum_28
@@ -2131,12 +2109,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col60, trace_2_col61, trace_2_col62, trace_2_col63],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col56, trace_2_col57, trace_2_col58, trace_2_col59],
-        ))
+        - QM31Impl::combine([trace_2_col56, trace_2_col57, trace_2_col58, trace_2_col59]))
         * range_check_19_b_sum_30
         * range_check_19_c_sum_31)
         - range_check_19_b_sum_30
@@ -2144,12 +2120,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col64, trace_2_col65, trace_2_col66, trace_2_col67],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col60, trace_2_col61, trace_2_col62, trace_2_col63],
-        ))
+        - QM31Impl::combine([trace_2_col60, trace_2_col61, trace_2_col62, trace_2_col63]))
         * range_check_19_d_sum_32
         * range_check_19_e_sum_33)
         - range_check_19_d_sum_32
@@ -2157,12 +2131,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col68, trace_2_col69, trace_2_col70, trace_2_col71],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col64, trace_2_col65, trace_2_col66, trace_2_col67],
-        ))
+        - QM31Impl::combine([trace_2_col64, trace_2_col65, trace_2_col66, trace_2_col67]))
         * range_check_19_f_sum_34
         * range_check_19_g_sum_35)
         - range_check_19_f_sum_34
@@ -2170,12 +2142,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col72, trace_2_col73, trace_2_col74, trace_2_col75],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col68, trace_2_col69, trace_2_col70, trace_2_col71],
-        ))
+        - QM31Impl::combine([trace_2_col68, trace_2_col69, trace_2_col70, trace_2_col71]))
         * range_check_19_h_sum_36
         * range_check_19_sum_37)
         - range_check_19_h_sum_36
@@ -2183,12 +2153,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col76, trace_2_col77, trace_2_col78, trace_2_col79],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col72, trace_2_col73, trace_2_col74, trace_2_col75],
-        ))
+        - QM31Impl::combine([trace_2_col72, trace_2_col73, trace_2_col74, trace_2_col75]))
         * range_check_19_b_sum_38
         * range_check_19_c_sum_39)
         - range_check_19_b_sum_38
@@ -2196,12 +2164,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col80, trace_2_col81, trace_2_col82, trace_2_col83],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col76, trace_2_col77, trace_2_col78, trace_2_col79],
-        ))
+        - QM31Impl::combine([trace_2_col76, trace_2_col77, trace_2_col78, trace_2_col79]))
         * range_check_19_d_sum_40
         * range_check_19_e_sum_41)
         - range_check_19_d_sum_40
@@ -2209,12 +2175,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col84, trace_2_col85, trace_2_col86, trace_2_col87],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col80, trace_2_col81, trace_2_col82, trace_2_col83],
-        ))
+        - QM31Impl::combine([trace_2_col80, trace_2_col81, trace_2_col82, trace_2_col83]))
         * range_check_19_f_sum_42
         * range_check_19_g_sum_43)
         - range_check_19_f_sum_42
@@ -2222,12 +2186,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col88, trace_2_col89, trace_2_col90, trace_2_col91],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col84, trace_2_col85, trace_2_col86, trace_2_col87],
-        ))
+        - QM31Impl::combine([trace_2_col84, trace_2_col85, trace_2_col86, trace_2_col87]))
         * range_check_19_h_sum_44
         * range_check_19_sum_45)
         - range_check_19_h_sum_44
@@ -2235,12 +2197,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col92, trace_2_col93, trace_2_col94, trace_2_col95],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col88, trace_2_col89, trace_2_col90, trace_2_col91],
-        ))
+        - QM31Impl::combine([trace_2_col88, trace_2_col89, trace_2_col90, trace_2_col91]))
         * range_check_19_b_sum_46
         * range_check_19_c_sum_47)
         - range_check_19_b_sum_46
@@ -2248,12 +2208,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col96, trace_2_col97, trace_2_col98, trace_2_col99],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col92, trace_2_col93, trace_2_col94, trace_2_col95],
-        ))
+        - QM31Impl::combine([trace_2_col92, trace_2_col93, trace_2_col94, trace_2_col95]))
         * range_check_19_d_sum_48
         * range_check_19_e_sum_49)
         - range_check_19_d_sum_48
@@ -2261,12 +2219,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col100, trace_2_col101, trace_2_col102, trace_2_col103],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col96, trace_2_col97, trace_2_col98, trace_2_col99],
-        ))
+        - QM31Impl::combine([trace_2_col96, trace_2_col97, trace_2_col98, trace_2_col99]))
         * range_check_19_f_sum_50
         * range_check_19_g_sum_51)
         - range_check_19_f_sum_50
@@ -2274,12 +2230,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col104, trace_2_col105, trace_2_col106, trace_2_col107],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col100, trace_2_col101, trace_2_col102, trace_2_col103],
-        ))
+        - QM31Impl::combine([trace_2_col100, trace_2_col101, trace_2_col102, trace_2_col103]))
         * range_check_19_h_sum_52
         * range_check_19_sum_53)
         - range_check_19_h_sum_52
@@ -2287,12 +2241,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col108, trace_2_col109, trace_2_col110, trace_2_col111],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col104, trace_2_col105, trace_2_col106, trace_2_col107],
-        ))
+        - QM31Impl::combine([trace_2_col104, trace_2_col105, trace_2_col106, trace_2_col107]))
         * range_check_19_b_sum_54
         * range_check_19_c_sum_55)
         - range_check_19_b_sum_54
@@ -2300,12 +2252,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col112, trace_2_col113, trace_2_col114, trace_2_col115],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col108, trace_2_col109, trace_2_col110, trace_2_col111],
-        ))
+        - QM31Impl::combine([trace_2_col108, trace_2_col109, trace_2_col110, trace_2_col111]))
         * range_check_9_9_sum_56
         * range_check_9_9_b_sum_57)
         - range_check_9_9_sum_56
@@ -2313,12 +2263,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col116, trace_2_col117, trace_2_col118, trace_2_col119],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col112, trace_2_col113, trace_2_col114, trace_2_col115],
-        ))
+        - QM31Impl::combine([trace_2_col112, trace_2_col113, trace_2_col114, trace_2_col115]))
         * range_check_9_9_c_sum_58
         * range_check_9_9_d_sum_59)
         - range_check_9_9_c_sum_58
@@ -2326,12 +2274,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col120, trace_2_col121, trace_2_col122, trace_2_col123],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col116, trace_2_col117, trace_2_col118, trace_2_col119],
-        ))
+        - QM31Impl::combine([trace_2_col116, trace_2_col117, trace_2_col118, trace_2_col119]))
         * range_check_9_9_e_sum_60
         * range_check_9_9_f_sum_61)
         - range_check_9_9_e_sum_60
@@ -2339,12 +2285,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col124, trace_2_col125, trace_2_col126, trace_2_col127],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col120, trace_2_col121, trace_2_col122, trace_2_col123],
-        ))
+        - QM31Impl::combine([trace_2_col120, trace_2_col121, trace_2_col122, trace_2_col123]))
         * range_check_9_9_g_sum_62
         * range_check_9_9_h_sum_63)
         - range_check_9_9_g_sum_62
@@ -2352,12 +2296,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col128, trace_2_col129, trace_2_col130, trace_2_col131],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col124, trace_2_col125, trace_2_col126, trace_2_col127],
-        ))
+        - QM31Impl::combine([trace_2_col124, trace_2_col125, trace_2_col126, trace_2_col127]))
         * range_check_9_9_sum_64
         * range_check_9_9_b_sum_65)
         - range_check_9_9_sum_64
@@ -2365,12 +2307,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col132, trace_2_col133, trace_2_col134, trace_2_col135],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col128, trace_2_col129, trace_2_col130, trace_2_col131],
-        ))
+        - QM31Impl::combine([trace_2_col128, trace_2_col129, trace_2_col130, trace_2_col131]))
         * range_check_9_9_c_sum_66
         * range_check_9_9_d_sum_67)
         - range_check_9_9_c_sum_66
@@ -2378,12 +2318,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col136, trace_2_col137, trace_2_col138, trace_2_col139],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col132, trace_2_col133, trace_2_col134, trace_2_col135],
-        ))
+        - QM31Impl::combine([trace_2_col132, trace_2_col133, trace_2_col134, trace_2_col135]))
         * range_check_9_9_e_sum_68
         * range_check_9_9_f_sum_69)
         - range_check_9_9_e_sum_68
@@ -2391,12 +2329,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col140, trace_2_col141, trace_2_col142, trace_2_col143],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col136, trace_2_col137, trace_2_col138, trace_2_col139],
-        ))
+        - QM31Impl::combine([trace_2_col136, trace_2_col137, trace_2_col138, trace_2_col139]))
         * range_check_19_h_sum_70
         * range_check_19_sum_71)
         - range_check_19_h_sum_70
@@ -2404,12 +2340,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col144, trace_2_col145, trace_2_col146, trace_2_col147],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col140, trace_2_col141, trace_2_col142, trace_2_col143],
-        ))
+        - QM31Impl::combine([trace_2_col140, trace_2_col141, trace_2_col142, trace_2_col143]))
         * range_check_19_b_sum_72
         * range_check_19_c_sum_73)
         - range_check_19_b_sum_72
@@ -2417,12 +2351,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col148, trace_2_col149, trace_2_col150, trace_2_col151],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col144, trace_2_col145, trace_2_col146, trace_2_col147],
-        ))
+        - QM31Impl::combine([trace_2_col144, trace_2_col145, trace_2_col146, trace_2_col147]))
         * range_check_19_d_sum_74
         * range_check_19_e_sum_75)
         - range_check_19_d_sum_74
@@ -2430,12 +2362,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col152, trace_2_col153, trace_2_col154, trace_2_col155],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col148, trace_2_col149, trace_2_col150, trace_2_col151],
-        ))
+        - QM31Impl::combine([trace_2_col148, trace_2_col149, trace_2_col150, trace_2_col151]))
         * range_check_19_f_sum_76
         * range_check_19_g_sum_77)
         - range_check_19_f_sum_76
@@ -2443,12 +2373,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col156, trace_2_col157, trace_2_col158, trace_2_col159],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col152, trace_2_col153, trace_2_col154, trace_2_col155],
-        ))
+        - QM31Impl::combine([trace_2_col152, trace_2_col153, trace_2_col154, trace_2_col155]))
         * range_check_19_h_sum_78
         * range_check_19_sum_79)
         - range_check_19_h_sum_78
@@ -2456,12 +2384,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col160, trace_2_col161, trace_2_col162, trace_2_col163],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col156, trace_2_col157, trace_2_col158, trace_2_col159],
-        ))
+        - QM31Impl::combine([trace_2_col156, trace_2_col157, trace_2_col158, trace_2_col159]))
         * range_check_19_b_sum_80
         * range_check_19_c_sum_81)
         - range_check_19_b_sum_80
@@ -2469,12 +2395,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col164, trace_2_col165, trace_2_col166, trace_2_col167],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col160, trace_2_col161, trace_2_col162, trace_2_col163],
-        ))
+        - QM31Impl::combine([trace_2_col160, trace_2_col161, trace_2_col162, trace_2_col163]))
         * range_check_19_d_sum_82
         * range_check_19_e_sum_83)
         - range_check_19_d_sum_82
@@ -2482,12 +2406,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col168, trace_2_col169, trace_2_col170, trace_2_col171],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col164, trace_2_col165, trace_2_col166, trace_2_col167],
-        ))
+        - QM31Impl::combine([trace_2_col164, trace_2_col165, trace_2_col166, trace_2_col167]))
         * range_check_19_f_sum_84
         * range_check_19_g_sum_85)
         - range_check_19_f_sum_84
@@ -2495,12 +2417,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col172, trace_2_col173, trace_2_col174, trace_2_col175],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col168, trace_2_col169, trace_2_col170, trace_2_col171],
-        ))
+        - QM31Impl::combine([trace_2_col168, trace_2_col169, trace_2_col170, trace_2_col171]))
         * range_check_19_h_sum_86
         * range_check_19_sum_87)
         - range_check_19_h_sum_86
@@ -2508,12 +2428,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col176, trace_2_col177, trace_2_col178, trace_2_col179],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col172, trace_2_col173, trace_2_col174, trace_2_col175],
-        ))
+        - QM31Impl::combine([trace_2_col172, trace_2_col173, trace_2_col174, trace_2_col175]))
         * range_check_19_b_sum_88
         * range_check_19_c_sum_89)
         - range_check_19_b_sum_88
@@ -2521,12 +2439,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col180, trace_2_col181, trace_2_col182, trace_2_col183],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col176, trace_2_col177, trace_2_col178, trace_2_col179],
-        ))
+        - QM31Impl::combine([trace_2_col176, trace_2_col177, trace_2_col178, trace_2_col179]))
         * range_check_19_d_sum_90
         * range_check_19_e_sum_91)
         - range_check_19_d_sum_90
@@ -2534,12 +2450,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col184, trace_2_col185, trace_2_col186, trace_2_col187],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col180, trace_2_col181, trace_2_col182, trace_2_col183],
-        ))
+        - QM31Impl::combine([trace_2_col180, trace_2_col181, trace_2_col182, trace_2_col183]))
         * range_check_19_f_sum_92
         * range_check_19_g_sum_93)
         - range_check_19_f_sum_92
@@ -2547,12 +2461,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col188, trace_2_col189, trace_2_col190, trace_2_col191],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col184, trace_2_col185, trace_2_col186, trace_2_col187],
-        ))
+        - QM31Impl::combine([trace_2_col184, trace_2_col185, trace_2_col186, trace_2_col187]))
         * range_check_19_h_sum_94
         * range_check_19_sum_95)
         - range_check_19_h_sum_94
@@ -2560,12 +2472,10 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col192, trace_2_col193, trace_2_col194, trace_2_col195],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col188, trace_2_col189, trace_2_col190, trace_2_col191],
-        ))
+        - QM31Impl::combine([trace_2_col188, trace_2_col189, trace_2_col190, trace_2_col191]))
         * range_check_19_b_sum_96
         * range_check_19_c_sum_97)
         - range_check_19_b_sum_96
@@ -2573,13 +2483,11 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
+    let constraint_quotient = (((QM31Impl::combine(
         [trace_2_col196, trace_2_col197, trace_2_col198, trace_2_col199],
     )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col192, trace_2_col193, trace_2_col194, trace_2_col195],
-        )
-        - QM31Impl::from_partial_evals(
+        - QM31Impl::combine([trace_2_col192, trace_2_col193, trace_2_col194, trace_2_col195])
+        - QM31Impl::combine(
             [trace_2_col196_neg1, trace_2_col197_neg1, trace_2_col198_neg1, trace_2_col199_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
