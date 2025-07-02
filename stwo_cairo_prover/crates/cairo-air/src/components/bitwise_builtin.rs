@@ -1,10 +1,12 @@
+// AIR version f2356326
 use crate::components::prelude::*;
+use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
 use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
 pub const N_TRACE_COLUMNS: usize = 89;
-pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 5,
@@ -14,8 +16,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
         uses: 5,
     },
     RelationUse {
+        relation_id: "VerifyBitwiseXor_8",
+        uses: 1,
+    },
+    RelationUse {
         relation_id: "VerifyBitwiseXor_9",
-        uses: 28,
+        uses: 27,
     },
 ];
 
@@ -24,6 +30,7 @@ pub struct Eval {
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9,
+    pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -513,10 +520,10 @@ impl FrameworkEval for Eval {
             (M31_1073741824.clone()
                 * ((op0_limb_26_col27.clone() + op1_limb_26_col56.clone()) - xor_col84.clone())),
         );
-        BitwiseXorNumBits9::evaluate(
+        BitwiseXorNumBits8::evaluate(
             [op0_limb_27_col28.clone(), op1_limb_27_col57.clone()],
             xor_col85.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.verify_bitwise_xor_8_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_89 = eval.add_intermediate(
@@ -667,6 +674,7 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
             verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
+            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
