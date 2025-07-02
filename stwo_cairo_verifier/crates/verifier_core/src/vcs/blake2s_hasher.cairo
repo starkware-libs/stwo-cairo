@@ -37,7 +37,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                 },
                 None => (BoxImpl::new([0; 16]), 0_u32),
             };
-            return Blake2sHash { hash: blake2s_finalize(:state, byte_count: byte_count, :msg) };
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
         }
 
         let mut byte_count = 0_u32;
@@ -48,7 +48,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                 [x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, y6, y7],
             );
             byte_count = 64;
-            state = blake2s_compress(:state, byte_count: byte_count, :msg);
+            state = blake2s_compress(:state, :byte_count, :msg);
         }
 
         // This loop doesn't handle padding.
@@ -75,7 +75,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                 ],
             );
             byte_count += 64;
-            state = blake2s_compress(:state, byte_count: byte_count, :msg);
+            state = blake2s_compress(:state, :byte_count, :msg);
         }
 
         // Padding last column_values with zeros.
@@ -89,7 +89,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
 
         byte_count += last_block_length * 4;
         let msg = *padded_column_values.span().try_into().unwrap();
-        state = blake2s_finalize(:state, byte_count: byte_count, :msg);
+        state = blake2s_finalize(:state, :byte_count, :msg);
 
         Blake2sHash { hash: state }
     }
