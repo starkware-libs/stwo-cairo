@@ -14,8 +14,6 @@ pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
 
-// TODO: Stone uses a different initial state with the key set to 0.
-// Consider using this initial state instead.
 pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
     0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
 ];
@@ -33,7 +31,8 @@ pub fn new_channel(digest: Blake2sHash) -> Blake2sChannel {
 impl Blake2sChannelDefault of Default<Blake2sChannel> {
     fn default() -> Blake2sChannel {
         Blake2sChannel {
-            digest: Blake2sHash { hash: BoxImpl::new([0; 8]) }, channel_time: Default::default(),
+            digest: Blake2sHash { hash: BoxImpl::new([0_u32; 8]) },
+            channel_time: Default::default(),
         }
     }
 }
