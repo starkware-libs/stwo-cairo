@@ -699,40 +699,70 @@ fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
-                    0x1e720385, 0x70f00ad4,
+                    0x8a2202ef,
+                    0x477c9959,
+                    0x79655388,
+                    0x958a3409,
+                    0x87ec09fd,
+                    0x7034f8ab,
+                    0x1e720385,
+                    0x70f00ad4,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
-                    0x5553d795, 0x3fc5a18a,
+                    0x1966f0a8,
+                    0xa0059272,
+                    0x9eca2f06,
+                    0x82791af7,
+                    0x9a2c1522,
+                    0x2fbdff33,
+                    0x5553d795,
+                    0x3fc5a18a,
                 ],
             ),
         },
         2 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
-                    0xc80ca41a, 0xc757f720,
+                    0x1d553a98,
+                    0x78da025b,
+                    0x87686d83,
+                    0xce0aa49a,
+                    0x9c5752d8,
+                    0xc3954c47,
+                    0xc80ca41a,
+                    0xc757f720,
                 ],
             ),
         },
         3 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
-                    0x19d8fff5, 0x9e792495,
+                    0x6bd0149a,
+                    0x786401f3,
+                    0x98edb866,
+                    0x53b8113b,
+                    0xa18ef714,
+                    0x155b1183,
+                    0x19d8fff5,
+                    0x9e792495,
                 ],
             ),
         },
         4 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
-                    0xe13c2956, 0x66aeb325,
+                    0x1bfe4fde,
+                    0xeddf6d4b,
+                    0x2bf346c4,
+                    0x8332fe5f,
+                    0x43ce2525,
+                    0x55611509,
+                    0xe13c2956,
+                    0x66aeb325,
                 ],
             ),
         },
@@ -765,7 +795,7 @@ pub struct CairoProof {
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
-    pub output: Array<felt252>,
+    pub output_hash: felt252,
 }
 
 /// Given a proof, returns the output of the verifier.
@@ -776,13 +806,11 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
         hash_memory_section(proof.claim.public_data.public_memory.program),
     );
 
-    let mut output = array![];
-    for entry in proof.claim.public_data.public_memory.output {
-        let (_, val) = entry;
-        output.append(construct_f252(BoxTrait::new(*val)));
-    }
+    let output_hash = construct_f252(
+        hash_memory_section(proof.claim.public_data.public_memory.output),
+    );
 
-    VerificationOutput { program_hash, output }
+    VerificationOutput { program_hash, output_hash }
 }
 
 pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
@@ -1065,15 +1093,14 @@ impl BuiltinsClaimImpl of BuiltinsClaimTrait {
     }
 
     fn accumulate_relation_uses(self: @BuiltinsClaim, ref relation_uses: RelationUsesDict) {
-        let BuiltinsClaim {
-            add_mod_builtin,
-            bitwise_builtin,
-            mul_mod_builtin,
-            pedersen_builtin,
-            poseidon_builtin,
-            range_check_96_builtin,
-            range_check_128_builtin,
-        } = self;
+        let BuiltinsClaim { add_mod_builtin,
+        bitwise_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin, } =
+            self;
 
         if let Some(claim) = add_mod_builtin {
             accumulate_relation_uses(
@@ -1269,16 +1296,35 @@ impl RangeChecksClaimImpl of RangeChecksClaimTrait {
     fn log_sizes(self: @RangeChecksClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.rc_6.log_sizes(), self.rc_8.log_sizes(), self.rc_11.log_sizes(),
-                self.rc_12.log_sizes(), self.rc_18.log_sizes(), self.rc_18_b.log_sizes(),
-                self.rc_19.log_sizes(), self.rc_19_b.log_sizes(), self.rc_19_c.log_sizes(),
-                self.rc_19_d.log_sizes(), self.rc_19_e.log_sizes(), self.rc_19_f.log_sizes(),
-                self.rc_19_g.log_sizes(), self.rc_19_h.log_sizes(), self.rc_4_3.log_sizes(),
-                self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(), self.rc_9_9.log_sizes(),
-                self.rc_9_9_b.log_sizes(), self.rc_9_9_c.log_sizes(), self.rc_9_9_d.log_sizes(),
-                self.rc_9_9_e.log_sizes(), self.rc_9_9_f.log_sizes(), self.rc_9_9_g.log_sizes(),
-                self.rc_9_9_h.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
-                self.rc_4_4_4_4.log_sizes(), self.rc_3_3_3_3_3.log_sizes(),
+                self.rc_6.log_sizes(),
+                self.rc_8.log_sizes(),
+                self.rc_11.log_sizes(),
+                self.rc_12.log_sizes(),
+                self.rc_18.log_sizes(),
+                self.rc_18_b.log_sizes(),
+                self.rc_19.log_sizes(),
+                self.rc_19_b.log_sizes(),
+                self.rc_19_c.log_sizes(),
+                self.rc_19_d.log_sizes(),
+                self.rc_19_e.log_sizes(),
+                self.rc_19_f.log_sizes(),
+                self.rc_19_g.log_sizes(),
+                self.rc_19_h.log_sizes(),
+                self.rc_4_3.log_sizes(),
+                self.rc_4_4.log_sizes(),
+                self.rc_5_4.log_sizes(),
+                self.rc_9_9.log_sizes(),
+                self.rc_9_9_b.log_sizes(),
+                self.rc_9_9_c.log_sizes(),
+                self.rc_9_9_d.log_sizes(),
+                self.rc_9_9_e.log_sizes(),
+                self.rc_9_9_f.log_sizes(),
+                self.rc_9_9_g.log_sizes(),
+                self.rc_9_9_h.log_sizes(),
+                self.rc_7_2_5.log_sizes(),
+                self.rc_3_6_6_3.log_sizes(),
+                self.rc_4_4_4_4.log_sizes(),
+                self.rc_3_3_3_3_3.log_sizes(),
             ],
         )
     }
@@ -1514,7 +1560,8 @@ impl PoseidonClaimImpl of PoseidonClaimTrait {
         utils::tree_array_concat_cols(
             array![
                 self.poseidon_3_partial_rounds_chain.log_sizes(),
-                self.poseidon_full_round_chain.log_sizes(), self.cube_252.log_sizes(),
+                self.poseidon_full_round_chain.log_sizes(),
+                self.cube_252.log_sizes(),
                 self.poseidon_round_keys.log_sizes(),
                 self.range_check_felt_252_width_27.log_sizes(),
             ],
@@ -1522,13 +1569,12 @@ impl PoseidonClaimImpl of PoseidonClaimTrait {
     }
 
     fn accumulate_relation_uses(self: @PoseidonClaim, ref relation_uses: RelationUsesDict) {
-        let PoseidonClaim {
-            poseidon_3_partial_rounds_chain,
-            poseidon_full_round_chain,
-            cube_252,
-            poseidon_round_keys: _,
-            range_check_felt_252_width_27,
-        } = self;
+        let PoseidonClaim { poseidon_3_partial_rounds_chain,
+        poseidon_full_round_chain,
+        cube_252,
+        poseidon_round_keys: _,
+        range_check_felt_252_width_27, } =
+            self;
 
         // NOTE: The following components do not USE relations:
         // - poseidon_round_keys
@@ -1658,17 +1704,22 @@ impl BlakeClaimImpl of BlakeClaimTrait {
     fn log_sizes(self: @BlakeClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.blake_round.log_sizes(), self.blake_g.log_sizes(),
-                self.blake_round_sigma.log_sizes(), self.triple_xor_32.log_sizes(),
+                self.blake_round.log_sizes(),
+                self.blake_g.log_sizes(),
+                self.blake_round_sigma.log_sizes(),
+                self.triple_xor_32.log_sizes(),
                 self.verify_bitwise_xor_12.log_sizes(),
             ],
         )
     }
 
     fn accumulate_relation_uses(self: @BlakeClaim, ref relation_uses: RelationUsesDict) {
-        let BlakeClaim {
-            blake_round, blake_g, blake_round_sigma: _, triple_xor_32, verify_bitwise_xor_12: _,
-        } = self;
+        let BlakeClaim { blake_round,
+        blake_g,
+        blake_round_sigma: _,
+        triple_xor_32,
+        verify_bitwise_xor_12: _, } =
+            self;
         // NOTE: The following components do not USE relations:
         // - blake_sigma
         // - verify_bitwise_xor_12
@@ -1771,12 +1822,18 @@ impl CairoClaimImpl of CairoClaimTrait {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
         let mut aggregated_log_sizes = utils::tree_array_concat_cols(
             array![
-                self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
-                self.blake_context.log_sizes(), self.builtins.log_sizes(),
-                self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
+                self.opcodes.log_sizes(),
+                self.verify_instruction.log_sizes(),
+                self.blake_context.log_sizes(),
+                self.builtins.log_sizes(),
+                self.pedersen_context.log_sizes(),
+                self.poseidon_context.log_sizes(),
+                self.memory_address_to_id.log_sizes(),
+                self.memory_id_to_value.log_sizes(),
+                self.range_checks.log_sizes(),
+                self.verify_bitwise_xor_4.log_sizes(),
+                self.verify_bitwise_xor_7.log_sizes(),
+                self.verify_bitwise_xor_8.log_sizes(),
                 self.verify_bitwise_xor_9.log_sizes(),
             ],
         );
@@ -1786,9 +1843,10 @@ impl CairoClaimImpl of CairoClaimTrait {
 
         let mut preprocessed_trace_log_sizes = array![];
 
-        for preprocessed_column in PREPROCESSED_COLUMNS.span() {
-            preprocessed_trace_log_sizes.append(preprocessed_column.log_size());
-        }
+        for preprocessed_column in PREPROCESSED_COLUMNS
+            .span() {
+                preprocessed_trace_log_sizes.append(preprocessed_column.log_size());
+            }
 
         let trace_log_sizes = aggregated_log_sizes.pop_front().unwrap();
         let interaction_log_sizes = aggregated_log_sizes.pop_front().unwrap();
@@ -1815,22 +1873,21 @@ impl CairoClaimImpl of CairoClaimTrait {
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
-        let CairoClaim {
-            public_data: _,
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id: _,
-            memory_id_to_value,
-            range_checks: _,
-            verify_bitwise_xor_4: _,
-            verify_bitwise_xor_7: _,
-            verify_bitwise_xor_8: _,
-            verify_bitwise_xor_9: _,
-        } = self;
+        let CairoClaim { public_data: _,
+        opcodes,
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id: _,
+        memory_id_to_value,
+        range_checks: _,
+        verify_bitwise_xor_4: _,
+        verify_bitwise_xor_7: _,
+        verify_bitwise_xor_8: _,
+        verify_bitwise_xor_9: _, } =
+            self;
         // NOTE: The following components do not USE relations:
         // - range_checks
         // - verify_bitwise_xor_*
@@ -1847,13 +1904,15 @@ impl CairoClaimImpl of CairoClaimTrait {
             components::verify_instruction::RELATION_USES_PER_ROW.span(),
             *verify_instruction.log_size,
         );
-        for log_size in memory_id_to_value.big_log_sizes.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
-                *log_size,
-            );
-        }
+        for log_size in memory_id_to_value
+            .big_log_sizes
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
+                    *log_size,
+                );
+            }
         accumulate_relation_uses(
             ref relation_uses,
             components::memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
@@ -1868,15 +1927,14 @@ impl CairoClaimImpl of CairoClaimTrait {
 ///
 /// Panics if the claim is invalid.
 fn verify_claim(claim: @CairoClaim) {
-    let PublicData {
-        public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call: _safe_call,
-            }, initial_state: CasmState {
-            pc: initial_pc, ap: initial_ap, fp: initial_fp,
-            }, final_state: CasmState {
-            pc: final_pc, ap: final_ap, fp: final_fp,
-        },
-    } = claim.public_data;
+    let PublicData { public_memory: PublicMemory { program,
+    public_segments,
+    output: _output,
+    safe_call: _safe_call, },
+    initial_state: CasmState { pc: initial_pc, ap: initial_ap, fp: initial_fp, },
+    final_state: CasmState { pc: final_pc, ap: final_ap, fp: final_fp, }, } =
+        claim
+        .public_data;
 
     verify_builtins(claim.builtins, public_segments);
 
@@ -1929,9 +1987,12 @@ fn verify_claim(claim: @CairoClaim) {
     // Large value IDs reside in [2^30..P).
     // Check that IDs in (ID -> Value) do not overflow P.
     let mut n_unique_large_values = 0;
-    for log_size in claim.memory_id_to_value.big_log_sizes.span() {
-        n_unique_large_values += pow2(*log_size);
-    }
+    for log_size in claim
+        .memory_id_to_value
+        .big_log_sizes
+        .span() {
+            n_unique_large_values += pow2(*log_size);
+        }
     let large_id_offset = pow2(30);
     let largest_id = n_unique_large_values + large_id_offset - 1;
     assert!(largest_id < P_U32);
@@ -1954,21 +2015,18 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
 
     // All other supported builtins.
-    let BuiltinsClaim {
-        range_check_128_builtin,
-        range_check_96_builtin,
-        bitwise_builtin,
-        add_mod_builtin,
-        mul_mod_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-    } = builtins_claim;
+    let BuiltinsClaim { range_check_128_builtin,
+    range_check_96_builtin,
+    bitwise_builtin,
+    add_mod_builtin,
+    mul_mod_builtin,
+    pedersen_builtin,
+    poseidon_builtin, } =
+        builtins_claim;
     check_builtin(
         range_check_128_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.range_check_builtin_segment_start,
                     log_size: claim.log_size,
                 },
@@ -1979,9 +2037,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     check_builtin(
         range_check_96_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.range_check96_builtin_segment_start,
                     log_size: claim.log_size,
                 },
@@ -1992,9 +2048,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     check_builtin(
         bitwise_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.bitwise_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
@@ -2004,9 +2058,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     check_builtin(
         add_mod_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.add_mod_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
@@ -2016,9 +2068,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     check_builtin(
         mul_mod_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.mul_mod_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
@@ -2028,9 +2078,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     check_builtin(
         pedersen_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.pedersen_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
@@ -2040,9 +2088,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     check_builtin(
         poseidon_builtin
             .map(
-                |
-                    claim,
-                | BuiltinClaim {
+                |claim,| BuiltinClaim {
                     segment_start: claim.poseidon_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
@@ -2207,13 +2253,17 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             interaction_claim.mix_into(ref channel);
         }
 
-        for interaction_claim in self.assert_eq_imm.span() {
-            interaction_claim.mix_into(ref channel);
-        }
+        for interaction_claim in self
+            .assert_eq_imm
+            .span() {
+                interaction_claim.mix_into(ref channel);
+            }
 
-        for interaction_claim in self.assert_eq_double_deref.span() {
-            interaction_claim.mix_into(ref channel);
-        }
+        for interaction_claim in self
+            .assert_eq_double_deref
+            .span() {
+                interaction_claim.mix_into(ref channel);
+            }
 
         for interaction_claim in self.blake.span() {
             interaction_claim.mix_into(ref channel);
@@ -2223,9 +2273,11 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             interaction_claim.mix_into(ref channel);
         }
 
-        for interaction_claim in self.call_rel_imm.span() {
-            interaction_claim.mix_into(ref channel);
-        }
+        for interaction_claim in self
+            .call_rel_imm
+            .span() {
+                interaction_claim.mix_into(ref channel);
+            }
 
         for interaction_claim in self.generic.span() {
             interaction_claim.mix_into(ref channel);
@@ -2243,17 +2295,21 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             interaction_claim.mix_into(ref channel);
         }
 
-        for interaction_claim in self.jump_double_deref.span() {
-            interaction_claim.mix_into(ref channel);
-        }
+        for interaction_claim in self
+            .jump_double_deref
+            .span() {
+                interaction_claim.mix_into(ref channel);
+            }
 
         for interaction_claim in self.jump_rel.span() {
             interaction_claim.mix_into(ref channel);
         }
 
-        for interaction_claim in self.jump_rel_imm.span() {
-            interaction_claim.mix_into(ref channel);
-        }
+        for interaction_claim in self
+            .jump_rel_imm
+            .span() {
+                interaction_claim.mix_into(ref channel);
+            }
 
         for interaction_claim in self.mul.span() {
             interaction_claim.mix_into(ref channel);
@@ -2291,13 +2347,17 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             sum += *interaction_claim.claimed_sum;
         }
 
-        for interaction_claim in self.assert_eq_imm.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
+        for interaction_claim in self
+            .assert_eq_imm
+            .span() {
+                sum += *interaction_claim.claimed_sum;
+            }
 
-        for interaction_claim in self.assert_eq_double_deref.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
+        for interaction_claim in self
+            .assert_eq_double_deref
+            .span() {
+                sum += *interaction_claim.claimed_sum;
+            }
 
         for interaction_claim in self.blake.span() {
             sum += *interaction_claim.claimed_sum;
@@ -2327,9 +2387,11 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
             sum += *interaction_claim.claimed_sum;
         }
 
-        for interaction_claim in self.jump_double_deref.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
+        for interaction_claim in self
+            .jump_double_deref
+            .span() {
+                sum += *interaction_claim.claimed_sum;
+            }
 
         for interaction_claim in self.jump_rel.span() {
             sum += *interaction_claim.claimed_sum;
@@ -2527,17 +2589,21 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         // Program.
         let mut i: u32 = 0;
-        for (id, value) in self.program.span() {
-            entries.append((initial_pc + i, *id, *value));
-            i += 1;
-        }
+        for (id, value) in self
+            .program
+            .span() {
+                entries.append((initial_pc + i, *id, *value));
+                i += 1;
+            }
 
         // Output.
         i = 0;
-        for (id, value) in self.output.span() {
-            entries.append((final_ap + i, *id, *value));
-            i += 1;
-        }
+        for (id, value) in self
+            .output
+            .span() {
+                entries.append((final_ap + i, *id, *value));
+                i += 1;
+            }
 
         // Safe call.
         let (id, value) = self.safe_call[0];
@@ -2552,17 +2618,17 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
             entries
                 .append(
                     (
-                        initial_ap + i,
-                        *segment.start_ptr.id,
-                        [*segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                        initial_ap + i, *segment.start_ptr.id, [
+                            *segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0
+                        ],
                     ),
                 );
             entries
                 .append(
                     (
-                        final_ap - n_segments + i,
-                        *segment.stop_ptr.id,
-                        [*segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                        final_ap - n_segments + i, *segment.stop_ptr.id, [
+                            *segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0
+                        ],
                     ),
                 );
             i += 1;
@@ -2589,13 +2655,14 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         // Mix safe_call memory section.
         channel.mix_u64(safe_call.len().into());
-        for (id, value) in safe_call.span() {
-            channel.mix_u64((*id).into());
-            // Mix each element of the array individually
-            for val_element in (*value).span() {
-                channel.mix_u64((*val_element).into());
+        for (id, value) in safe_call
+            .span() {
+                channel.mix_u64((*id).into());
+                // Mix each element of the array individually
+                for val_element in (*value).span() {
+                    channel.mix_u64((*val_element).into());
+                }
             }
-        }
     }
 }
 
@@ -2622,24 +2689,24 @@ impl PublicDataImpl of PublicDataTrait {
                 final_ap: (*self.final_state.ap).into(),
             )
             .span() {
-            let (addr, id, val) = *entry;
+                let (addr, id, val) = *entry;
 
-            let addr_m31 = addr.try_into().unwrap();
-            let id_m31 = id.try_into().unwrap();
-            let addr_to_id = lookup_elements
-                .memory_address_to_id
-                .combine([addr_m31, id_m31])
-                .inverse();
+                let addr_m31 = addr.try_into().unwrap();
+                let id_m31 = id.try_into().unwrap();
+                let addr_to_id = lookup_elements
+                    .memory_address_to_id
+                    .combine([addr_m31, id_m31])
+                    .inverse();
 
-            let mut elements = array![id_m31];
-            elements.append_span(utils::split_f252(val).span());
-            let id_to_value = lookup_elements
-                .memory_id_to_value
-                .combine((*elements.span().try_into().unwrap()).unbox())
-                .inverse();
+                let mut elements = array![id_m31];
+                elements.append_span(utils::split_f252(val).span());
+                let id_to_value = lookup_elements
+                    .memory_id_to_value
+                    .combine((*elements.span().try_into().unwrap()).unbox())
+                    .inverse();
 
-            sum += addr_to_id + id_to_value;
-        }
+                sum += addr_to_id + id_to_value;
+            }
 
         // Yield initial state and use the final.
         let CasmState { pc, ap, fp } = *self.final_state;
@@ -2891,187 +2958,206 @@ impl OpcodeClaimImpl of OpcodeClaimTrait {
     }
 
     fn accumulate_relation_uses(self: @OpcodeClaim, ref relation_uses: RelationUsesDict) {
-        let OpcodeClaim {
-            add,
-            add_small,
-            add_ap,
-            assert_eq,
-            assert_eq_imm,
-            assert_eq_double_deref,
-            blake,
-            call,
-            call_rel_imm,
-            generic,
-            jnz,
-            jnz_taken,
-            jump,
-            jump_double_deref,
-            jump_rel,
-            jump_rel_imm,
-            mul,
-            mul_small,
-            qm31,
-            ret,
-        } = self;
-        for claim in add.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        let OpcodeClaim { add,
+        add_small,
+        add_ap,
+        assert_eq,
+        assert_eq_imm,
+        assert_eq_double_deref,
+        blake,
+        call,
+        call_rel_imm,
+        generic,
+        jnz,
+        jnz_taken,
+        jump,
+        jump_double_deref,
+        jump_rel,
+        jump_rel_imm,
+        mul,
+        mul_small,
+        qm31,
+        ret, } =
+            self;
+        for claim in add
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::add_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in add_small.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_opcode_small::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in add_small
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::add_opcode_small::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in add_ap.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_ap_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in add_ap
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::add_ap_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in assert_eq.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::assert_eq_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in assert_eq
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::assert_eq_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in assert_eq_imm.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::assert_eq_opcode_imm::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in assert_eq_imm
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::assert_eq_opcode_imm::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in assert_eq_double_deref.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::assert_eq_opcode_double_deref::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in assert_eq_double_deref
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::assert_eq_opcode_double_deref::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in blake.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::blake_compress_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in blake
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::blake_compress_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in call.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::call_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in call
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::call_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in call_rel_imm.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::call_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in call_rel_imm
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::call_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in generic.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::generic_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in generic
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::generic_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in jnz.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jnz_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in jnz
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::jnz_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in jnz_taken.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jnz_opcode_taken::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in jnz_taken
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::jnz_opcode_taken::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in jump.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in jump
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::jump_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in jump_double_deref.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode_double_deref::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in jump_double_deref
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::jump_opcode_double_deref::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in jump_rel.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode_rel::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in jump_rel
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::jump_opcode_rel::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in jump_rel_imm.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in jump_rel_imm
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::jump_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in mul.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::mul_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in mul
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::mul_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in mul_small.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::mul_opcode_small::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in mul_small
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::mul_opcode_small::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in qm31.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::qm_31_add_mul_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in qm31
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::qm_31_add_mul_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
 
-        for claim in ret.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::ret_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
-        }
+        for claim in ret
+            .span() {
+                accumulate_relation_uses(
+                    ref relation_uses,
+                    components::ret_opcode::RELATION_USES_PER_ROW.span(),
+                    *claim.log_size,
+                );
+            }
     }
 }
 
@@ -3170,49 +3256,56 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         );
         let mut memory_id_to_value_components = array![];
         let mut offset = 0;
-        for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
-            let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
-            let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::BigComponent {
-                        log_n_rows: log_size,
-                        offset: offset,
-                        claimed_sum: claimed_sum,
-                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-                        range_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                    },
-                );
-            offset = offset + pow2(log_size);
-        }
+        for i in 0
+            ..cairo_claim
+                .memory_id_to_value
+                .big_log_sizes
+                .len() {
+                    let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
+                    let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
+                    memory_id_to_value_components
+                        .append(
+                            components::memory_id_to_big::BigComponent {
+                                log_n_rows: log_size,
+                                offset: offset,
+                                claimed_sum: claimed_sum,
+                                lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                                range_9_9_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9
+                                    .clone(),
+                                range_9_9_b_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_b
+                                    .clone(),
+                                range_9_9_c_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_c
+                                    .clone(),
+                                range_9_9_d_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_d
+                                    .clone(),
+                                range_9_9_e_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_e
+                                    .clone(),
+                                range_9_9_f_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_f
+                                    .clone(),
+                                range_9_9_g_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_g
+                                    .clone(),
+                                range_9_9_h_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_h
+                                    .clone(),
+                            },
+                        );
+                    offset = offset + pow2(log_size);
+                }
 
         let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
@@ -3286,12 +3379,14 @@ impl CairoAirImpl of Air<CairoAir> {
         max_degree =
             core::cmp::max(max_degree, self.memory_address_to_id.max_constraint_log_degree_bound());
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            max_degree =
-                core::cmp::max(
-                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
-                );
-        }
+        for memory_id_to_value_big_component in memory_id_to_value_big
+            .span() {
+                max_degree =
+                    core::cmp::max(
+                        max_degree,
+                        memory_id_to_value_big_component.max_constraint_log_degree_bound(),
+                    );
+            }
         max_degree =
             core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
         max_degree =
@@ -3371,15 +3466,16 @@ impl CairoAirImpl of Air<CairoAir> {
             );
 
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for memory_id_to_value_big_component in memory_id_to_value_big
+            .span() {
+                memory_id_to_value_big_component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
         memory_id_to_value_small
             .mask_points(
                 ref preprocessed_column_set,
@@ -3529,17 +3625,18 @@ impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for memory_id_to_value_big_component in memory_id_to_value_big
+            .span() {
+                memory_id_to_value_big_component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
         memory_id_to_value_small
             .evaluate_constraints_at_point(
                 ref sum,
@@ -3669,49 +3766,56 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         );
         let mut memory_id_to_value_components = array![];
         let mut offset = 0;
-        for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
-            let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
-            let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::BigComponent {
-                        log_n_rows: log_size,
-                        offset: offset,
-                        claimed_sum: claimed_sum,
-                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-                        range_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                    },
-                );
-            offset = offset + pow2(log_size);
-        }
+        for i in 0
+            ..cairo_claim
+                .memory_id_to_value
+                .big_log_sizes
+                .len() {
+                    let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
+                    let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
+                    memory_id_to_value_components
+                        .append(
+                            components::memory_id_to_big::BigComponent {
+                                log_n_rows: log_size,
+                                offset: offset,
+                                claimed_sum: claimed_sum,
+                                lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                                range_9_9_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9
+                                    .clone(),
+                                range_9_9_b_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_b
+                                    .clone(),
+                                range_9_9_c_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_c
+                                    .clone(),
+                                range_9_9_d_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_d
+                                    .clone(),
+                                range_9_9_e_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_e
+                                    .clone(),
+                                range_9_9_f_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_f
+                                    .clone(),
+                                range_9_9_g_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_g
+                                    .clone(),
+                                range_9_9_h_lookup_elements: interaction_elements
+                                    .range_checks
+                                    .rc_9_9_h
+                                    .clone(),
+                            },
+                        );
+                    offset = offset + pow2(log_size);
+                }
 
         let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
@@ -3779,12 +3883,14 @@ impl CairoAirImpl of Air<CairoAir> {
         max_degree =
             core::cmp::max(max_degree, self.memory_address_to_id.max_constraint_log_degree_bound());
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            max_degree =
-                core::cmp::max(
-                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
-                );
-        }
+        for memory_id_to_value_big_component in memory_id_to_value_big
+            .span() {
+                max_degree =
+                    core::cmp::max(
+                        max_degree,
+                        memory_id_to_value_big_component.max_constraint_log_degree_bound(),
+                    );
+            }
         max_degree =
             core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
         max_degree =
@@ -3848,15 +3954,16 @@ impl CairoAirImpl of Air<CairoAir> {
             );
 
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for memory_id_to_value_big_component in memory_id_to_value_big
+            .span() {
+                memory_id_to_value_big_component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
         memory_id_to_value_small
             .mask_points(
                 ref preprocessed_column_set,
@@ -3986,17 +4093,18 @@ impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for memory_id_to_value_big_component in memory_id_to_value_big
+            .span() {
+                memory_id_to_value_big_component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
         memory_id_to_value_small
             .evaluate_constraints_at_point(
                 ref sum,
@@ -4067,17 +4175,18 @@ fn preprocessed_trace_mask_points(
 
     let PreprocessedColumnSet { values: original_values, mut contains } = preprocessed_column_set;
 
-    for preprocessed_column in PREPROCESSED_COLUMNS.span() {
-        let preprocessed_column_key = PreprocessedColumnKey::encode(preprocessed_column);
+    for preprocessed_column in PREPROCESSED_COLUMNS
+        .span() {
+            let preprocessed_column_key = PreprocessedColumnKey::encode(preprocessed_column);
 
-        if contains.get(preprocessed_column_key) {
-            mask_points.append(array![point]);
-            // Remove the item from the set.
-            contains.insert(preprocessed_column_key, false);
-        } else {
-            mask_points.append(array![]);
+            if contains.get(preprocessed_column_key) {
+                mask_points.append(array![point]);
+                // Remove the item from the set.
+                contains.insert(preprocessed_column_key, false);
+            } else {
+                mask_points.append(array![]);
+            }
         }
-    }
 
     // Sanity check all the original values have been handled.
     for value in original_values {
@@ -6977,289 +7086,389 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        for component in self.add.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .add
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.add_small.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .add_small
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.add_ap.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .add_ap
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.assert_eq.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .assert_eq
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.assert_eq_imm.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .assert_eq_imm
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.assert_eq_double_deref.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .assert_eq_double_deref
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.blake.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .blake
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.call.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .call
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.call_rel_imm.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .call_rel_imm
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.generic.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .generic
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jnz.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jnz
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jnz_taken.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jnz_taken
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump_double_deref.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump_double_deref
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel_imm.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel_imm
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.mul.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .mul
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.mul_small.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .mul_small
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.qm31.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .qm31
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.ret.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        };
+        for component in self
+            .ret
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            };
     }
 
     fn max_constraint_log_degree_bound(self: @OpcodeComponents) -> u32 {
         let mut max_degree = 0;
 
-        for component in self.add.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .add
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.add_small.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .add_small
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.add_ap.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .add_ap
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.assert_eq.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .assert_eq
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.assert_eq_imm.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .assert_eq_imm
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.assert_eq_double_deref.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .assert_eq_double_deref
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.blake.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .blake
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.call.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .call
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.call_rel_imm.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .call_rel_imm
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.generic.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .generic
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jnz.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jnz
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jnz_taken.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jnz_taken
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump_double_deref.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump_double_deref
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump_rel.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump_rel
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump_rel_imm.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump_rel_imm
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.mul.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .mul
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.mul_small.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .mul_small
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.qm31.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .qm31
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.ret.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .ret
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
         max_degree
     }
@@ -7273,239 +7482,279 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        for component in self.add.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.add_small.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.add_ap.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.assert_eq.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.assert_eq_imm.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.assert_eq_double_deref.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .add
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .add_small
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .add_ap
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .assert_eq
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .assert_eq_imm
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .assert_eq_double_deref
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.blake.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .blake
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.call.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .call
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.call_rel_imm.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .call_rel_imm
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.generic.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .generic
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jnz.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jnz
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jnz_taken.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jnz_taken
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump_double_deref.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump_double_deref
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel_imm.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel_imm
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.mul.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.mul_small.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .mul
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .mul_small
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.qm31.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .qm31
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.ret.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        };
+        for component in self
+            .ret
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            };
     }
 }
 
@@ -8118,275 +8367,370 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        for component in self.add.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .add
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.add_small.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .add_small
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.add_ap.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .add_ap
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.assert_eq.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .assert_eq
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.assert_eq_imm.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .assert_eq_imm
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.assert_eq_double_deref.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .assert_eq_double_deref
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.blake.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .blake
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.call.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .call
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.call_rel_imm.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .call_rel_imm
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jnz.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jnz
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jnz_taken.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jnz_taken
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump_double_deref.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump_double_deref
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel_imm.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel_imm
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.mul.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .mul
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.mul_small.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .mul_small
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.qm31.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
+        for component in self
+            .qm31
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            }
 
-        for component in self.ret.span() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        };
+        for component in self
+            .ret
+            .span() {
+                component
+                    .mask_points(
+                        ref preprocessed_column_set,
+                        ref trace_mask_points,
+                        ref interaction_trace_mask_points,
+                        point,
+                    );
+            };
     }
 
     fn max_constraint_log_degree_bound(self: @OpcodeComponents) -> u32 {
         let mut max_degree = 0;
 
-        for component in self.add.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .add
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.add_small.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .add_small
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.add_ap.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .add_ap
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.assert_eq.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .assert_eq
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.assert_eq_imm.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .assert_eq_imm
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.assert_eq_double_deref.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .assert_eq_double_deref
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.blake.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .blake
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.call.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .call
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.call_rel_imm.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .call_rel_imm
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jnz.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jnz
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jnz_taken.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jnz_taken
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump_double_deref.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump_double_deref
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump_rel.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump_rel
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.jump_rel_imm.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .jump_rel_imm
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.mul.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .mul
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.mul_small.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .mul_small
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.qm31.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .qm31
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
-        for component in self.ret.span() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
+        for component in self
+            .ret
+            .span() {
+                max_degree =
+                    core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+            }
 
         max_degree
     }
@@ -8400,227 +8744,265 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        for component in self.add.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.add_small.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.add_ap.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.assert_eq.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.assert_eq_imm.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.assert_eq_double_deref.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .add
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .add_small
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .add_ap
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .assert_eq
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .assert_eq_imm
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .assert_eq_double_deref
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.blake.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .blake
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.call.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .call
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.call_rel_imm.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .call_rel_imm
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jnz.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jnz
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jnz_taken.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jnz_taken
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump_double_deref.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump_double_deref
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.jump_rel_imm.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .jump_rel_imm
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.mul.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-        for component in self.mul_small.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .mul
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
+        for component in self
+            .mul_small
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.qm31.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
+        for component in self
+            .qm31
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            }
 
-        for component in self.ret.span() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        };
+        for component in self
+            .ret
+            .span() {
+                component
+                    .evaluate_constraints_at_point(
+                        ref sum,
+                        ref preprocessed_mask_values,
+                        ref trace_mask_values,
+                        ref interaction_trace_mask_values,
+                        random_coeff,
+                        point,
+                    );
+            };
     }
 }
 
@@ -8638,11 +9020,11 @@ mod tests {
     #[cairofmt::skip]
     fn test_public_data_logup_sum() {
         let mut public_data_felts = array![
-            0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520, 0, 228, 
-            2520, 228, 2520, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 
-            2520, 0, 5, 0, 5, 0, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 2520, 
+            0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520, 0, 228,
+            2520, 228, 2520, 0, 5, 0, 5, 0, 0, 228, 2520, 228,
+            2520, 0, 5, 0, 5, 0, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 2520,
             0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520,
-            0, 228, 2520, 228, 2520, 0, 2, 227, 1336, 0, 0, 0, 0, 0, 
+            0, 228, 2520, 228, 2520, 0, 2, 227, 1336, 0, 0, 0, 0, 0,
             0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1336, 1336, 5, 2520, 1336]
         .span();
         let public_data: PublicData = Serde::deserialize(ref public_data_felts).unwrap();
@@ -8713,14 +9095,21 @@ mod tests {
     #[test]
     fn test_hash_memory_section() {
         let section = array![
-            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
+            (0, [1, 2, 3, 4, 5, 6, 7, 8]),
+            (0, [2, 3, 4, 5, 6, 7, 8, 9]),
             (0, [3, 4, 5, 6, 7, 8, 9, 10]),
         ];
 
         assert_eq!(
             hash_memory_section(@section).unbox(),
             [
-                3098114871, 843612567, 2372208999, 1823639248, 1136624132, 2551058277, 1389013608,
+                3098114871,
+                843612567,
+                2372208999,
+                1823639248,
+                1136624132,
+                2551058277,
+                1389013608,
                 1207876589,
             ],
         );
@@ -8730,14 +9119,21 @@ mod tests {
     #[test]
     fn test_hash_memory_section() {
         let section = array![
-            (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
+            (0, [1, 2, 3, 4, 5, 6, 7, 8]),
+            (0, [2, 3, 4, 5, 6, 7, 8, 9]),
             (0, [3, 4, 5, 6, 7, 8, 9, 10]),
         ];
 
         assert_eq!(
             hash_memory_section(@section).unbox(),
             [
-                2433336977, 2153250057, 881002283, 2835163344, 2300811583, 376217666, 1436681392,
+                2433336977,
+                2153250057,
+                881002283,
+                2835163344,
+                2300811583,
+                376217666,
+                1436681392,
                 91789842,
             ],
         );
