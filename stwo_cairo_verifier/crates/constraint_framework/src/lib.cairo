@@ -18,9 +18,13 @@ pub struct LookupElements<const N: usize> {
     pub alpha_powers: Array<QM31>,
 }
 
-#[generate_trait]
-pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
-    fn draw(ref channel: Channel) -> LookupElements<N> {
+
+pub trait LookupElementsTrait<const N: usize> {
+    fn draw(
+        ref channel: Channel,
+    ) -> LookupElements<
+        N,
+    > {
         assert!(N != 0);
         let [z, alpha]: [QM31; 2] = (*channel.draw_secure_felts(2).span().try_into().unwrap())
             .unbox();
@@ -36,6 +40,45 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
         LookupElements { z, alpha, alpha_powers }
     }
 
+
+    fn combine<impl IntoSpan: ToSpanTrait<[M31; N], M31>>(
+        self: @LookupElements<N>, values: [M31; N],
+    ) -> QM31;
+
+    fn combine_qm31<impl IntoSpan: ToSpanTrait<[QM31; N], QM31>>(
+        self: @LookupElements<N>, values: [QM31; N],
+    ) -> QM31 {
+        let alpha = *self.alpha;
+        let mut values_span = IntoSpan::span(@values);
+        let mut sum = *values_span.pop_back().unwrap();
+
+        while let Some(value) = values_span.pop_back() {
+            sum = sum * alpha + *value;
+        }
+
+        sum - *self.z
+    }
+}
+
+#[cfg(feature: "qm31_opcode")]
+pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
+    fn combine<impl IntoSpan: ToSpanTrait<[M31; N], M31>>(
+        self: @LookupElements<N>, values: [M31; N],
+    ) -> QM31 {
+        let alpha = *self.alpha;
+        let mut values_span = IntoSpan::span(@values);
+        let mut sum = (*values_span.pop_back().unwrap()).into();
+
+        while let Some(value) = values_span.pop_back() {
+            sum = sum * alpha + (*value).into();
+        }
+
+        sum - *self.z
+    }
+}
+
+#[cfg(not(feature: "qm31_opcode"))]
+pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
     fn combine<impl IntoSpan: ToSpanTrait<[M31; N], M31>>(
         self: @LookupElements<N>, values: [M31; N],
     ) -> QM31 {
@@ -45,20 +88,6 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
 
         while let (Some(alpha), Some(value)) = (alpha_powers.pop_front(), values_span.pop_front()) {
             sum += (*alpha).mul_m31(*value);
-        }
-
-        sum
-    }
-
-    fn combine_qm31<impl IntoSpan: ToSpanTrait<[QM31; N], QM31>>(
-        self: @LookupElements<N>, values: [QM31; N],
-    ) -> QM31 {
-        let mut alpha_powers = self.alpha_powers.span();
-        let mut values_span = IntoSpan::span(@values);
-        let mut sum = -*self.z;
-
-        while let (Some(alpha), Some(value)) = (alpha_powers.pop_front(), values_span.pop_front()) {
-            sum += (*alpha) * (*value);
         }
 
         sum
