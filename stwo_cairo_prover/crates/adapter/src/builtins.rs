@@ -6,7 +6,7 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::prover_types::simd::N_LANES;
-use tracing::{span, Level};
+use tracing::{info, span, Level};
 
 use super::memory::MemoryBuilder;
 
@@ -249,6 +249,13 @@ impl BuiltinSegments {
                 current_buitlin_segment[i] =
                     current_buitlin_segment[last_instance_start + (i % cells_per_instance)].clone();
             }
+
+            info!(
+                "Padded builtin segment '{}' from {} to {} instances.",
+                builtin_name,
+                original_segment_len / cells_per_instance,
+                new_segment_size / cells_per_instance
+            );
         }
     }
 
