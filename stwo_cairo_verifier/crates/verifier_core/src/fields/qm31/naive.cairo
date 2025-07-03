@@ -284,8 +284,6 @@ impl QM31IntoUnreducedQM31 of Into<QM31, UnreducedQM31> {
 ///
 /// Is more efficient than [`UnreducedQM31`] since only requires two felt252 operations per addition
 /// or M31 multiplication vs 4.
-// TODO: Determine if performance difference between UnreducedQM31 and PackedUnreducedQM31 is worth
-// keeping around both types.
 #[derive(Copy, Drop, Debug)]
 pub struct PackedUnreducedQM31 {
     pub a: PackedUnreducedCM31,
