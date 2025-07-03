@@ -122,6 +122,38 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
+    fn mix_memory_section(ref self: Blake2sChannel, data: @Array<(u32, [u32; 8])>) {
+        assert!(!data.is_empty(), "Memory section must not be empty");
+        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
+        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+
+        let mut data = data.span();
+        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *data.pop_front().unwrap();
+        let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7];
+        let mut byte_count = 64;
+
+        while let Some(head) = data.multi_pop_front::<2>() {
+            state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
+            let [
+                (_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15]),
+            ] =
+                head
+                .unbox();
+            buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
+            byte_count += 64;
+        }
+
+        if !data.is_empty() {
+            state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
+            let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *data.pop_front().unwrap();
+            buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
+            byte_count += 32;
+        }
+
+        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+        update_digest(ref self, Blake2sHash { hash: res });
+    }
+
     fn draw_secure_felt(ref self: Blake2sChannel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
         QM31Trait::from_fixed_array([r0, r1, r2, r3])
