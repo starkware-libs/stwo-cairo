@@ -9,18 +9,22 @@ use core::internal::bounded_int::{
 type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
 
 const U8_SHIFT: felt252 = 0x100; // 2**8
+const U9_SHIFT: felt252 = 0x200; // 2**9
 const U32_SHIFT: felt252 = 0x100000000; // 2**32
 
 const NZ_U8_SHIFT: NonZero<ConstValue<U8_SHIFT>> = 0x100;
+const NZ_U9_SHIFT: NonZero<ConstValue<U9_SHIFT>> = 0x200;
 const NZ_U32_SHIFT: NonZero<ConstValue<U32_SHIFT>> = 0x100000000;
 
 const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31
 
 pub mod impls {
-    use super::{BoundedInt, ConstValue, DivRemHelper, U32_SHIFT, U8_SHIFT};
+    use super::{BoundedInt, ConstValue, DivRemHelper, U32_SHIFT, U8_SHIFT, U9_SHIFT};
 
     type U8_BOUNDED_INT = BoundedInt<0, { U8_SHIFT - 1 }>;
+    type U9_BOUNDED_INT = BoundedInt<0, { U9_SHIFT - 1 }>;
     type U16_BOUNDED_INT = BoundedInt<0, { 0x10000 - 1 }>; // 2**16 - 1
+    type U23_BOUNDED_INT = BoundedInt<0, { 0x800000 - 1 }>; // 2**23 - 1
     type U24_BOUNDED_INT = BoundedInt<0, { 0x1000000 - 1 }>; // 2**24 - 1
     type U32_BOUNDED_INT = BoundedInt<0, { 0x100000000 - 1 }>; // 2**32 - 1
     type U40_BOUNDED_INT = BoundedInt<0, { 0x10000000000 - 1 }>; // 2**40 - 1
@@ -123,5 +127,16 @@ pub mod impls {
     pub impl DivRemBoundedU120ByU8Shift of DivRemHelper<U120_BOUNDED_INT, ConstValue<U8_SHIFT>> {
         type DivT = U112_BOUNDED_INT;
         type RemT = U8_BOUNDED_INT;
+    }
+
+
+    pub impl DivRemU32ByU9Shift of DivRemHelper<u32, ConstValue<U9_SHIFT>> {
+        type DivT = U23_BOUNDED_INT;
+        type RemT = BoundedInt<0, { U9_SHIFT - 1 }>;
+    }
+
+    pub impl DivRemU32ByU9 of DivRemHelper<u32, U9_BOUNDED_INT> {
+        type DivT = U32_BOUNDED_INT;
+        type RemT = BoundedInt<0, { U9_SHIFT - 2 }>;
     }
 }
