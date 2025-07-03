@@ -42,6 +42,12 @@ pub trait ChannelTrait {
 
     fn mix_u32s(ref self: Channel, data: Span<u32>);
 
+    /// Mixes the values of a memory section (id-value pairs) into the channel.
+    // The type MemorySection for a memory section is not present in this crate, therefore the
+    // explicit definition of MemorySection is provided.
+    // TODO(Gali): Move MemorySection and other types to a seperate defs crate.
+    fn mix_memory_section(ref self: Channel, data: @Array<(u32, [u32; 8])>);
+
     fn draw_secure_felt(ref self: Channel) -> SecureField;
 
     /// Generates a uniform random vector of SecureField elements.
