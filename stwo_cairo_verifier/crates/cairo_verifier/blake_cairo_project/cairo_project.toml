@@ -75,6 +75,11 @@ user_defined_inline_macros = false
 name = "stwo_constraint_framework"
 edition = "2024_07"
 version = "0.1.0"
+cfg_set = [
+    ["target", "lib"],
+    ["feature", "qm31_opcode"],
+]
+
 
 [config.override."stwo_constraint_framework".dependencies.stwo_constraint_framework]
 discriminator = "stwo_constraint_framework"
