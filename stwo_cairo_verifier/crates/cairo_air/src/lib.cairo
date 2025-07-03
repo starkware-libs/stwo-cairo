@@ -765,7 +765,7 @@ pub struct CairoProof {
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
-    pub output: Array<felt252>,
+    pub output_hash: felt252,
 }
 
 /// Given a proof, returns the output of the verifier.
@@ -776,13 +776,11 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
         hash_memory_section(proof.claim.public_data.public_memory.program),
     );
 
-    let mut output = array![];
-    for entry in proof.claim.public_data.public_memory.output {
-        let (_, val) = entry;
-        output.append(construct_f252(BoxTrait::new(*val)));
-    }
+    let output_hash = construct_f252(
+        hash_memory_section(proof.claim.public_data.public_memory.output),
+    );
 
-    VerificationOutput { program_hash, output }
+    VerificationOutput { program_hash, output_hash }
 }
 
 pub fn verify_cairo(proof: CairoProof) -> Result<(), CairoVerificationError> {
@@ -8638,11 +8636,11 @@ mod tests {
     #[cairofmt::skip]
     fn test_public_data_logup_sum() {
         let mut public_data_felts = array![
-            0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520, 0, 228, 
-            2520, 228, 2520, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 
-            2520, 0, 5, 0, 5, 0, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 2520, 
+            0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520, 0, 228,
+            2520, 228, 2520, 0, 5, 0, 5, 0, 0, 228, 2520, 228,
+            2520, 0, 5, 0, 5, 0, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 2520,
             0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520,
-            0, 228, 2520, 228, 2520, 0, 2, 227, 1336, 0, 0, 0, 0, 0, 
+            0, 228, 2520, 228, 2520, 0, 2, 227, 1336, 0, 0, 0, 0, 0,
             0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1336, 1336, 5, 2520, 1336]
         .span();
         let public_data: PublicData = Serde::deserialize(ref public_data_felts).unwrap();
