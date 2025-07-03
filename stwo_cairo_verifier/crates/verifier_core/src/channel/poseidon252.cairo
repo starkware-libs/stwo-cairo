@@ -101,6 +101,16 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.channel_time.next_challenges();
     }
 
+    fn mix_memory_section(ref self: Poseidon252Channel, data: @Array<(u32, [u32; 8])>) {
+        // TODO(Gali): Make this more efficient.
+        let mut flat_data = array![];
+        for entry in data.span() {
+            let (_, val) = entry;
+            flat_data.append_span((*val).span());
+        }
+        self.mix_u32s(flat_data.span());
+    }
+
     fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {
         let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self);
         QM31Trait::from_fixed_array([r0, r1, r2, r3])
