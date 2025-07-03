@@ -215,6 +215,9 @@ impl BuiltinComponents {
                     verify_bitwise_xor_9_lookup_elements: interaction_elements
                         .verify_bitwise_xor_9
                         .clone(),
+                    verify_bitwise_xor_8_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_8
+                        .clone(),
                 },
                 interaction_claim.bitwise_builtin.unwrap().claimed_sum,
             )

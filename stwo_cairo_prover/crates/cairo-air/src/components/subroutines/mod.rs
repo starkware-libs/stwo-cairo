@@ -54,6 +54,7 @@ pub mod mul_252;
 pub mod poseidon_hades_permutation;
 pub mod poseidon_partial_round;
 pub mod qm_31_read_reduced;
+pub mod range_check_ap;
 pub mod range_check_last_limb_bits_in_ms_limb_2;
 pub mod range_check_last_limb_bits_in_ms_limb_6;
 pub mod range_check_mem_value_n_28;

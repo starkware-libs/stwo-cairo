@@ -12,7 +12,8 @@ use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_3_3_3_3,
     range_check_3_6_6_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
-    range_check_8, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_9,
+    range_check_8, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_8,
+    verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
 pub struct BuiltinsClaimGenerator {
@@ -146,6 +147,7 @@ impl BuiltinsClaimGenerator {
         range_check_3_6_6_3_trace_generator: &range_check_3_6_6_3::ClaimGenerator,
         range_check_4_4_4_4_trace_generator: &range_check_4_4_4_4::ClaimGenerator,
         range_check_3_3_3_3_3_trace_generator: &range_check_3_3_3_3_3::ClaimGenerator,
+        verify_bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
         let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
@@ -165,6 +167,7 @@ impl BuiltinsClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
+                    verify_bitwise_xor_8_trace_generator,
                     verify_bitwise_xor_9_trace_generator,
                 )
             })
@@ -294,6 +297,7 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
                         &interaction_elements.verify_bitwise_xor_9,
+                        &interaction_elements.verify_bitwise_xor_8,
                     )
                 });
         let mul_mod_builtin_interaction_claim =
