@@ -1,0 +1,15 @@
+# Cross compilation configuration for cross-rs
+# See: https://github.com/cross-rs/cross
+
+# Note: Cross is used for cross compilation of rust projects to diffrent architechtures.
+#       This file doesn't currently have any special configurations.
+#       To cross compile for arm do: cargo install cross &&
+#       cross build --release --target aarch64-unknown-linux-gnu
+
+
+[target.aarch64-unknown-linux-gnu]
+# Uncomment and set if you need to pass environment variables to the build
+# env = { "FOO" = "bar" }
+# Uncomment to use QEMU for running built binaries
+# runner = "qemu-aarch64"
+# You can add more options here if you need to link to system libraries or mount volumes
