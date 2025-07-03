@@ -17,8 +17,10 @@ enable-gas = false
 sort-module-level-items = true
 
 [dependencies]
+bounded_int = { path = "../bounded_int" }
 stwo_verifier_core = { path = "../verifier_core" }
 stwo_constraint_framework = { path = "../constraint_framework" }
+
 
 [dev-dependencies]
 cairo_test = "2.11.4"
