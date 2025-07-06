@@ -2,12 +2,13 @@ use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, N_ROUNDS, N_W
 use stwo_cairo_common::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::PackedM31;
-use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
+use stwo_prover::core::poly::circle::CanonicCoset;
+use stwo_prover::prover::backend::simd::column::BaseColumn;
+use stwo_prover::prover::backend::simd::m31::PackedM31;
+use stwo_prover::prover::backend::simd::SimdBackend;
+use stwo_prover::prover::poly::circle::CircleEvaluation;
+use stwo_prover::prover::poly::BitReversedOrder;
 
 use crate::preprocessed::PreProcessedColumn;
 use crate::preprocessed_utils::pad;
@@ -69,7 +70,7 @@ mod tests {
 
     use stwo_cairo_common::preprocessed_consts::poseidon::N_FELT252WIDTH27;
     use stwo_cairo_common::prover_types::cpu::Felt252Width27;
-    use stwo_prover::core::backend::simd::m31::N_LANES;
+    use stwo_prover::prover::backend::simd::m31::N_LANES;
 
     use super::*;
 

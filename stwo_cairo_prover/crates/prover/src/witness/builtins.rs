@@ -4,7 +4,7 @@ use stwo_cairo_adapter::builtins::{
     BuiltinSegments, ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS,
     PEDERSEN_MEMORY_CELLS, POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
-use stwo_prover::core::backend::simd::SimdBackend;
+use stwo_prover::prover::backend::simd::SimdBackend;
 
 use super::components::pedersen::PedersenContextClaimGenerator;
 use super::components::poseidon::PoseidonContextClaimGenerator;

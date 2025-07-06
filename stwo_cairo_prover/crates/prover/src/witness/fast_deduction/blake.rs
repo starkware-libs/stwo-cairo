@@ -5,7 +5,7 @@ use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_consts::blake::{BLAKE_SIGMA, N_BLAKE_SIGMA_COLS};
 use stwo_cairo_common::prover_types::simd::{PackedUInt32, N_LANES};
 
-use crate::stwo_prover::core::backend::simd::m31::PackedM31;
+use crate::stwo_prover::prover::backend::simd::m31::PackedM31;
 
 const NUM_INPUT_WORDS_G: usize = 6;
 const NUM_OUTPUT_WORDS_G: usize = 4;

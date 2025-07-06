@@ -6,9 +6,9 @@ use std::simd::Simd;
 
 use bytemuck::Zeroable;
 use itertools::Itertools;
-use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
-use stwo_prover::core::backend::simd::m31::PackedM31;
 use stwo_prover::core::fields::FieldExpOps;
+use stwo_prover::prover::backend::simd::conversion::{Pack, Unpack};
+use stwo_prover::prover::backend::simd::m31::PackedM31;
 
 use super::cpu::{
     BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,

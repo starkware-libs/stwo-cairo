@@ -6,18 +6,18 @@ use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
 use num_traits::{One, Zero};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::conversion::Pack;
-use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
-use stwo_prover::core::backend::{Backend, BackendForChannel};
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
-use stwo_prover::core::poly::circle::CircleEvaluation;
-use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+use stwo_prover::core::vcs::MerkleHasher;
+use stwo_prover::prover::backend::simd::column::BaseColumn;
+use stwo_prover::prover::backend::simd::conversion::Pack;
+use stwo_prover::prover::backend::simd::m31::{PackedM31, N_LANES};
+use stwo_prover::prover::backend::{Backend, BackendForChannel};
+use stwo_prover::prover::poly::circle::CircleEvaluation;
+use stwo_prover::prover::poly::BitReversedOrder;
 
 use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
 
@@ -100,7 +100,7 @@ pub trait TreeBuilder<B: Backend> {
 }
 
 impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
-    for stwo_prover::core::pcs::TreeBuilder<'_, '_, B, MC>
+    for stwo_prover::prover::TreeBuilder<'_, '_, B, MC>
 {
     fn extend_evals(
         &mut self,
@@ -135,7 +135,7 @@ fn get_preprocessed_roots<MC: MerkleChannel>(
     preprocessed_trace: PreProcessedTraceVariant,
 ) -> Vec<<MC::H as MerkleHasher>::Hash>
 where
-    stwo_prover::core::backend::simd::SimdBackend: BackendForChannel<MC>,
+    stwo_prover::prover::backend::simd::SimdBackend: BackendForChannel<MC>,
 {
     (1..=max_log_blowup_factor)
         .map(|i| generate_preprocessed_commitment_root::<MC>(i, preprocessed_trace))
@@ -185,9 +185,9 @@ mod tests {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
     use rayon::iter::{IntoParallelIterator, ParallelIterator};
-    use stwo_prover::core::backend::simd::m31::N_LANES;
     use stwo_prover::core::fields::m31::M31;
     use stwo_prover::core::pcs::TreeVec;
+    use stwo_prover::prover::backend::simd::m31::N_LANES;
 
     use super::Enabler;
     use crate::witness::utils::tree_trace_cells;

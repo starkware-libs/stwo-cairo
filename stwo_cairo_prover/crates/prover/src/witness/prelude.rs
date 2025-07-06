@@ -11,18 +11,18 @@ pub use stwo_air_utils::trace::component_trace::ComponentTrace;
 pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
 pub use stwo_cairo_common::prover_types::cpu::*;
 pub use stwo_cairo_common::prover_types::simd::*;
-pub use stwo_constraint_framework::logup::LogupTraceGenerator;
-pub use stwo_constraint_framework::Relation;
-pub use stwo_prover::core::backend::simd::column::BaseColumn;
-pub use stwo_prover::core::backend::simd::conversion::Unpack;
-pub use stwo_prover::core::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-pub use stwo_prover::core::backend::simd::qm31::PackedQM31;
-pub use stwo_prover::core::backend::simd::SimdBackend;
-pub use stwo_prover::core::backend::Column;
+pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 pub use stwo_prover::core::fields::m31::M31;
 pub use stwo_prover::core::fields::FieldExpOps;
-pub use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-pub use stwo_prover::core::poly::BitReversedOrder;
+pub use stwo_prover::core::poly::circle::CanonicCoset;
+pub use stwo_prover::prover::backend::simd::column::BaseColumn;
+pub use stwo_prover::prover::backend::simd::conversion::Unpack;
+pub use stwo_prover::prover::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+pub use stwo_prover::prover::backend::simd::qm31::PackedQM31;
+pub use stwo_prover::prover::backend::simd::SimdBackend;
+pub use stwo_prover::prover::backend::Column;
+pub use stwo_prover::prover::poly::circle::CircleEvaluation;
+pub use stwo_prover::prover::poly::BitReversedOrder;
 
 pub use crate::witness::fast_deduction::blake::{
     BlakeRound, PackedBlakeG, PackedBlakeRoundSigma, PackedTripleXor32,

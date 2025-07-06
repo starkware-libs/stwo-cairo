@@ -7,8 +7,8 @@ use starknet_types_core::curve::ProjectivePoint;
 use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
-use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
-use stwo_prover::core::backend::simd::m31::PackedM31;
+use stwo_prover::prover::backend::simd::conversion::{Pack, Unpack};
+use stwo_prover::prover::backend::simd::m31::PackedM31;
 
 type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
 

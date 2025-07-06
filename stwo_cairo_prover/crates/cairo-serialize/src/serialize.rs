@@ -4,12 +4,13 @@ pub use stwo_cairo_serialize_derive::CairoSerialize;
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::fri::{FriConfig, FriLayerProof, FriProof};
-use stwo_prover::core::pcs::{CommitmentSchemeProof, PcsConfig};
+use stwo_prover::core::pcs::quotients::CommitmentSchemeProof;
+use stwo_prover::core::pcs::PcsConfig;
 use stwo_prover::core::poly::line::LinePoly;
-use stwo_prover::core::prover::StarkProof;
+use stwo_prover::core::proof::StarkProof;
 use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
-use stwo_prover::core::vcs::ops::MerkleHasher;
-use stwo_prover::core::vcs::prover::MerkleDecommitment;
+use stwo_prover::core::vcs::verifier::MerkleDecommitment;
+use stwo_prover::core::vcs::MerkleHasher;
 
 /// Serializes types into a format for deserialization by corresponding types in a Cairo program.
 pub trait CairoSerialize {

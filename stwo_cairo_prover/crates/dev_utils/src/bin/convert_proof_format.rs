@@ -8,8 +8,8 @@ use serde::Serialize;
 use starknet_ff::FieldElement;
 use stwo_cairo_serialize::CairoDeserialize;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
-use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleHasher;
+use stwo_prover::core::vcs::MerkleHasher;
 
 #[derive(Parser, Debug)]
 #[command(

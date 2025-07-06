@@ -1,10 +1,10 @@
 use itertools::Itertools;
-use stwo_prover::core::backend::{Backend, Column};
 use stwo_prover::core::fields::m31::M31;
 use stwo_prover::core::pcs::{TreeSubspan, TreeVec};
-use stwo_prover::core::poly::circle::CircleEvaluation;
-use stwo_prover::core::poly::BitReversedOrder;
 use stwo_prover::core::ColumnVec;
+use stwo_prover::prover::backend::{Backend, Column};
+use stwo_prover::prover::poly::circle::CircleEvaluation;
+use stwo_prover::prover::poly::BitReversedOrder;
 
 use crate::witness::utils::TreeBuilder;
 

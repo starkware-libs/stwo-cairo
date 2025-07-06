@@ -14,7 +14,7 @@ use stwo_prover::core::channel::{Channel, MerkleChannel};
 use stwo_prover::core::fields::m31::BaseField;
 use stwo_prover::core::fields::qm31::SecureField;
 use stwo_prover::core::pcs::CommitmentSchemeVerifier;
-use stwo_prover::core::prover::{verify, VerificationError};
+use stwo_prover::core::verifier::{verify, VerificationError};
 use thiserror::Error;
 
 use crate::air::{

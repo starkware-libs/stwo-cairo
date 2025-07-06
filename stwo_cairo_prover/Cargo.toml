@@ -8,7 +8,8 @@ members = [
     "crates/utils",
     "crates/common",
     "crates/cairo-air",
-    "crates/dev_utils"]
+    "crates/dev_utils",
+]
 resolver = "2"
 
 [workspace.package]
@@ -43,13 +44,18 @@ stwo-cairo-adapter = { path = "crates/adapter" }
 stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
-# TODO(ShaharS): take stwo version from the source repository.
-stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83", features = [
+# TODO(Ohad): re export stwo from constraint-framework.
+# TODO(Ohad): separate cairo-air from prover code and use prover features only in the prover crate.
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", rev = "3544f7b", features = [
     "parallel",
+    "prover",
 ], default-features = false }
-stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83" }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "21e1d83" }
+stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "3544f7b", features = [
+    "parallel",
+    "prover",
+] }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "3544f7b" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "3544f7b" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.10", default-features = false }
 tracing = "0.1.40"

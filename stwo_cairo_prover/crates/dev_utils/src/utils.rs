@@ -10,14 +10,14 @@ use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
 use stwo_prover::core::pcs::PcsConfig;
-use stwo_prover::core::prover::ProvingError;
 use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo_prover::core::vcs::ops::MerkleHasher;
 use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+use stwo_prover::core::vcs::MerkleHasher;
+use stwo_prover::prover::backend::simd::SimdBackend;
+use stwo_prover::prover::backend::BackendForChannel;
+use stwo_prover::prover::ProvingError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]

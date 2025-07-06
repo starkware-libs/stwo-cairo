@@ -1,10 +1,11 @@
 use cairo_air::PreProcessedTraceVariant;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
 use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::pcs::CommitmentTreeProver;
-use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-use stwo_prover::core::vcs::ops::MerkleHasher;
+use stwo_prover::core::poly::circle::CanonicCoset;
+use stwo_prover::core::vcs::MerkleHasher;
+use stwo_prover::prover::backend::simd::SimdBackend;
+use stwo_prover::prover::backend::BackendForChannel;
+use stwo_prover::prover::poly::circle::PolyOps;
+use stwo_prover::prover::CommitmentTreeProver;
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
 // TODO(Shahars): remove allow.

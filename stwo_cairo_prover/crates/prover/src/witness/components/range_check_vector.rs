@@ -194,14 +194,16 @@ mod tests {
     use stwo_constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
-    use stwo_prover::core::backend::simd::column::BaseColumn;
-    use stwo_prover::core::backend::simd::m31::PackedM31;
-    use stwo_prover::core::backend::simd::SimdBackend;
     use stwo_prover::core::channel::Blake2sChannel;
     use stwo_prover::core::fields::m31::M31;
-    use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
-    use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
+    use stwo_prover::core::pcs::PcsConfig;
+    use stwo_prover::core::poly::circle::CanonicCoset;
     use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+    use stwo_prover::prover::backend::simd::column::BaseColumn;
+    use stwo_prover::prover::backend::simd::m31::PackedM31;
+    use stwo_prover::prover::backend::simd::SimdBackend;
+    use stwo_prover::prover::poly::circle::PolyOps;
+    use stwo_prover::prover::CommitmentSchemeProver;
 
     use crate::witness::components::range_check_7_2_5;
     #[test]

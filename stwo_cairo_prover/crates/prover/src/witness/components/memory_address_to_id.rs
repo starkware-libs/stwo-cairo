@@ -11,15 +11,15 @@ use cairo_air::relations;
 use itertools::{izip, Itertools};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use stwo_cairo_adapter::memory::Memory;
-use stwo_constraint_framework::logup::LogupTraceGenerator;
-use stwo_constraint_framework::Relation;
-use stwo_prover::core::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
-use stwo_prover::core::backend::simd::qm31::PackedQM31;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{Col, Column};
+use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 use stwo_prover::core::fields::m31::{BaseField, M31};
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
+use stwo_prover::core::poly::circle::CanonicCoset;
+use stwo_prover::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
+use stwo_prover::prover::backend::simd::qm31::PackedQM31;
+use stwo_prover::prover::backend::simd::SimdBackend;
+use stwo_prover::prover::backend::{Col, Column};
+use stwo_prover::prover::poly::circle::CircleEvaluation;
+use stwo_prover::prover::poly::BitReversedOrder;
 
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 

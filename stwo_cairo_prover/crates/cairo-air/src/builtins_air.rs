@@ -3,11 +3,11 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
-use stwo_prover::core::air::ComponentProver;
-use stwo_prover::core::backend::simd::SimdBackend;
 use stwo_prover::core::channel::Channel;
 use stwo_prover::core::fields::qm31::{SecureField, QM31};
 use stwo_prover::core::pcs::TreeVec;
+use stwo_prover::prover::backend::simd::SimdBackend;
+use stwo_prover::prover::ComponentProver;
 
 use super::air::CairoInteractionElements;
 use crate::air::{accumulate_relation_uses, RelationUsesDict};
