@@ -6,9 +6,9 @@ use std::simd::Simd;
 
 use bytemuck::Zeroable;
 use itertools::Itertools;
-use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
-use stwo_prover::core::backend::simd::m31::PackedM31;
-use stwo_prover::core::fields::FieldExpOps;
+use stwo::core::fields::FieldExpOps;
+use stwo::prover::backend::simd::conversion::{Pack, Unpack};
+use stwo::prover::backend::simd::m31::PackedM31;
 
 use super::cpu::{
     BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
@@ -708,7 +708,7 @@ impl Unpack for PackedFelt252 {
 mod tests {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_prover::core::fields::m31::{M31, P};
+    use stwo::core::fields::m31::{M31, P};
     type BigUInt384 = BigUInt<384, 6, 32>;
     type PackedBigUInt384 = PackedBigUInt<384, 6, 32>;
     type BigUInt768 = BigUInt<768, 12, 64>;

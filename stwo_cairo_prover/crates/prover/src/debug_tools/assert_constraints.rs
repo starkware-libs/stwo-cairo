@@ -4,13 +4,13 @@ use cairo_air::air::{CairoComponents, CairoInteractionElements};
 use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::preprocessed::PreProcessedTrace;
 use itertools::Itertools;
+use stwo::core::channel::Blake2sChannel;
+use stwo::core::fields::m31::M31;
+use stwo::core::pcs::TreeVec;
 use stwo_cairo_adapter::ProverInput;
 use stwo_constraint_framework::{
     assert_constraints_on_trace, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
 };
-use stwo_prover::core::channel::Blake2sChannel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::pcs::TreeVec;
 
 use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
 use crate::witness::cairo::CairoClaimGenerator;

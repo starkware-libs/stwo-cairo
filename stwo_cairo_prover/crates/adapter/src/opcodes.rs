@@ -4,9 +4,9 @@ use crypto_bigint::U256;
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
+use stwo::core::fields::m31::M31;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::CasmState;
-use stwo_prover::core::fields::m31::M31;
 use tracing::{span, Level};
 
 use super::decode::{Instruction, OpcodeExtension};
@@ -741,8 +741,8 @@ mod mappings_tests {
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
     use cairo_vm::types::layout_name::LayoutName;
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+    use stwo::core::fields::m31::M31;
     use stwo_cairo_common::prover_types::cpu::CasmState;
-    use stwo_prover::core::fields::m31::M31;
 
     use crate::adapter::adapter;
     use crate::decode::{Instruction, OpcodeExtension};

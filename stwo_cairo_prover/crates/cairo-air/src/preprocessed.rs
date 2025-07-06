@@ -2,17 +2,18 @@ use std::iter::zip;
 use std::simd::{u32x16, Simd};
 
 use itertools::{chain, Itertools};
+use stwo::core::fields::m31::{BaseField, M31, MODULUS_BITS};
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::backend::simd::column::BaseColumn;
+use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::Col;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_consts::blake::N_BLAKE_SIGMA_COLS;
 use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS as POSEIDON_N_WORDS;
 use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::Col;
-use stwo_prover::core::fields::m31::{BaseField, M31, MODULUS_BITS};
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
 use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::const_columns::PoseidonRoundKeys;
@@ -330,7 +331,7 @@ pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
 pub mod tests {
     use super::*;
     const LOG_SIZE: u32 = 8;
-    use stwo_prover::core::backend::Column;
+    use stwo::prover::backend::Column;
 
     #[test]
     fn test_columns_are_in_decending_order() {

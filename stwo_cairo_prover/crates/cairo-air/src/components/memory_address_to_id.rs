@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
+use stwo::core::channel::Channel;
+use stwo::core::fields::m31::M31;
+use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
+use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
-use stwo_prover::core::channel::Channel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
-use stwo_prover::core::pcs::TreeVec;
 
 use crate::preprocessed::{PreProcessedColumn, Seq};
 use crate::relations;
@@ -105,8 +105,8 @@ mod tests {
     use num_traits::Zero;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo::core::fields::qm31::QM31;
     use stwo_constraint_framework::expr::ExprEvaluator;
-    use stwo_prover::core::fields::qm31::QM31;
 
     use super::*;
     use crate::components::constraints_regression_test_values::MEMORY_ADDRESS_TO_ID;

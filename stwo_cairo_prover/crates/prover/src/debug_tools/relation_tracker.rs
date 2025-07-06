@@ -2,17 +2,18 @@ use cairo_air::air::{CairoComponents, PublicData};
 use cairo_air::opcodes_air::OpcodeComponents;
 use itertools::{chain, Itertools};
 use num_traits::One;
+use stwo::core::channel::MerkleChannel;
+use stwo::core::fields::m31::M31;
+use stwo::core::pcs::TreeVec;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::{BackendForChannel, Column};
+use stwo::prover::CommitmentSchemeProver;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_constraint_framework::relation_tracker::{
     add_to_relation_entries, RelationSummary, RelationTrackerEntry,
 };
 use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::{BackendForChannel, Column};
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::fields::m31::M31;
-use stwo_prover::core::pcs::{CommitmentSchemeProver, TreeVec};
-use stwo_prover::core::poly::circle::CanonicCoset;
 
 pub fn track_and_summarize_cairo_relations<MC: MerkleChannel>(
     commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,

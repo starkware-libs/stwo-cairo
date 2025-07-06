@@ -1,13 +1,14 @@
+use stwo::core::fields::m31::BaseField;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::backend::simd::column::BaseColumn;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_consts::blake::{
     BLAKE_SIGMA, N_BLAKE_ROUNDS, N_BLAKE_SIGMA_COLS,
 };
 use stwo_cairo_common::prover_types::cpu::M31;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
 use crate::preprocessed::PreProcessedColumn;
 use crate::preprocessed_utils::pad;

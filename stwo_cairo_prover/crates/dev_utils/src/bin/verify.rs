@@ -4,11 +4,9 @@ use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use clap::Parser;
 use dev_utils::utils::Error;
+use stwo::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
+use stwo::core::vcs::poseidon252_merkle::{Poseidon252MerkleChannel, Poseidon252MerkleHasher};
 use stwo_cairo_prover::prover::ChannelHash;
-use stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
-use stwo_prover::core::vcs::poseidon252_merkle::{
-    Poseidon252MerkleChannel, Poseidon252MerkleHasher,
-};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 

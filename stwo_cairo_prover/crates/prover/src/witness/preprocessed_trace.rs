@@ -1,10 +1,11 @@
 use cairo_air::PreProcessedTraceVariant;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::pcs::CommitmentTreeProver;
-use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-use stwo_prover::core::vcs::ops::MerkleHasher;
+use stwo::core::channel::MerkleChannel;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::core::vcs::MerkleHasher;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::BackendForChannel;
+use stwo::prover::poly::circle::PolyOps;
+use stwo::prover::CommitmentTreeProver;
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
 // TODO(Shahars): remove allow.
@@ -41,8 +42,8 @@ where
 #[cfg(feature = "slow-tests")]
 #[test]
 fn test_canonical_preprocessed_root_regression() {
-    use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
-    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+    use stwo::core::vcs::blake2_hash::Blake2sHash;
+    use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     let log_blowup_factor = 1;
     let expected = Blake2sHash::from(

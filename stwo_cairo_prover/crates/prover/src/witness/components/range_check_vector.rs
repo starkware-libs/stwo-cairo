@@ -191,17 +191,19 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo::core::channel::Blake2sChannel;
+    use stwo::core::fields::m31::M31;
+    use stwo::core::pcs::PcsConfig;
+    use stwo::core::poly::circle::CanonicCoset;
+    use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+    use stwo::prover::backend::simd::column::BaseColumn;
+    use stwo::prover::backend::simd::m31::PackedM31;
+    use stwo::prover::backend::simd::SimdBackend;
+    use stwo::prover::poly::circle::PolyOps;
+    use stwo::prover::CommitmentSchemeProver;
     use stwo_constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
-    use stwo_prover::core::backend::simd::column::BaseColumn;
-    use stwo_prover::core::backend::simd::m31::PackedM31;
-    use stwo_prover::core::backend::simd::SimdBackend;
-    use stwo_prover::core::channel::Blake2sChannel;
-    use stwo_prover::core::fields::m31::M31;
-    use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
-    use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-    use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     use crate::witness::components::range_check_7_2_5;
     #[test]

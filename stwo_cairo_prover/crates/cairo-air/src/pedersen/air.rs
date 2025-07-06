@@ -1,8 +1,8 @@
 use num_traits::Zero;
+use stwo::core::fields::qm31::QM31;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
-use stwo_prover::core::air::ComponentProver;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::fields::qm31::QM31;
 
 use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
 use crate::components::prelude::*;

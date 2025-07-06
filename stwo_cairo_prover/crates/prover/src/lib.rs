@@ -5,5 +5,5 @@
 pub mod debug_tools;
 pub mod prover;
 
-pub use stwo_prover;
+pub use stwo;
 pub mod witness;

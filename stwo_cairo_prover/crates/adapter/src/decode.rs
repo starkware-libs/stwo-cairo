@@ -1,4 +1,4 @@
-use stwo_prover::core::fields::m31::M31;
+use stwo::core::fields::m31::M31;
 
 #[derive(Clone, Debug)]
 pub enum OpcodeExtension {
@@ -129,7 +129,7 @@ pub fn deconstruct_instruction(mut encoded_instr: u128) -> ([M31; 3], [M31; 2], 
 
 #[cfg(test)]
 mod tests {
-    use stwo_prover::core::fields::m31::M31;
+    use stwo::core::fields::m31::M31;
 
     use crate::decode::deconstruct_instruction;
 

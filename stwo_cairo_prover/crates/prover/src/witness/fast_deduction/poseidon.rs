@@ -1,9 +1,9 @@
 use starknet_ff::FieldElement;
+use stwo::prover::backend::simd::conversion::{Pack, Unpack};
+use stwo::prover::backend::simd::m31::PackedM31;
 use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, POSEIDON_ROUND_KEYS};
 use stwo_cairo_common::prover_types::cpu::{Felt252Width27, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252Width27;
-use stwo_prover::core::backend::simd::conversion::{Pack, Unpack};
-use stwo_prover::core::backend::simd::m31::PackedM31;
 
 pub fn round_keys_field_elements(round: usize) -> [FieldElement; 3] {
     POSEIDON_ROUND_KEYS[round].map(FieldElement::from_mont)

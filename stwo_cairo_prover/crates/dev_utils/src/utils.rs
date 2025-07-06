@@ -4,20 +4,20 @@ use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use serde::Serialize;
+use stwo::core::channel::MerkleChannel;
+use stwo::core::pcs::PcsConfig;
+use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+use stwo::core::vcs::MerkleHasher;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::BackendForChannel;
+use stwo::prover::ProvingError;
 use stwo_cairo_adapter::vm_import::VmImportError;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::pcs::PcsConfig;
-use stwo_prover::core::prover::ProvingError;
-use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo_prover::core::vcs::ops::MerkleHasher;
-use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
