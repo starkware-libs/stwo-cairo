@@ -6,6 +6,9 @@ use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
 
+#[cfg(test)]
+mod test;
+
 /// Represents the value of the prefix sum column at some index.
 /// Should be used to eliminate padded rows for the logup sum.
 // Copied from:
@@ -298,23 +301,4 @@ pub fn range_check_encode<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u
     }
     total = total * FELT252_2_POW_32 + discriminant;
     total
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl};
-
-    #[test]
-    fn test_preprocessed_column_set() {
-        let mut set: PreprocessedColumnSet = Default::default();
-        let seq_16_column = PreprocessedColumn::Seq(16);
-        let seq_10_column = PreprocessedColumn::Seq(10);
-
-        set.insert(seq_16_column);
-        set.insert(seq_16_column);
-
-        assert!(set.contains(seq_16_column));
-        assert!(!set.contains(seq_10_column));
-        assert_eq!(set.values, array![seq_16_column]);
-    }
 }
