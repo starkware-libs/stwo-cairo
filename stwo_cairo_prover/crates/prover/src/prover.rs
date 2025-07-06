@@ -329,6 +329,9 @@ pub mod tests {
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
                 .unwrap();
 
+            let (_file, path) = proof_file.keep().unwrap();
+            eprintln!("path: {}", path.to_str().unwrap());
+
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
@@ -337,7 +340,7 @@ pub mod tests {
                     --arguments-file {} --output standard --target standalone \
                     --features qm31_opcode
                     )",
-                    proof_file.path().to_str().unwrap()
+                    path.to_str().unwrap()
                 ))
                 .current_dir(env!("CARGO_MANIFEST_DIR"))
                 .status()
