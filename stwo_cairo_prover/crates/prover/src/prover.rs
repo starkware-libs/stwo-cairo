@@ -3,16 +3,17 @@ use cairo_air::verifier::INTERACTION_POW_BITS;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo::core::channel::{Channel, MerkleChannel};
+use stwo::core::fields::qm31::SecureField;
+use stwo::core::fri::FriConfig;
+use stwo::core::pcs::PcsConfig;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::core::proof_of_work::GrindOps;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::BackendForChannel;
+use stwo::prover::poly::circle::PolyOps;
+use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::backend::BackendForChannel;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fri::FriConfig;
-use stwo_prover::core::pcs::{CommitmentSchemeProver, PcsConfig};
-use stwo_prover::core::poly::circle::{CanonicCoset, PolyOps};
-use stwo_prover::core::proof_of_work::GrindOps;
-use stwo_prover::core::prover::{prove, ProvingError};
 use tracing::{event, span, Level};
 
 use crate::witness::cairo::CairoClaimGenerator;
@@ -196,10 +197,10 @@ pub mod tests {
         use std::process::Command;
 
         use cairo_air::PreProcessedTraceVariant;
+        use stwo::core::fri::FriConfig;
+        use stwo::core::pcs::PcsConfig;
+        use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
         use stwo_cairo_serialize::CairoSerialize;
-        use stwo_prover::core::fri::FriConfig;
-        use stwo_prover::core::pcs::PcsConfig;
-        use stwo_prover::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
         use tempfile::NamedTempFile;
         use test_log::test;
 
@@ -260,12 +261,12 @@ pub mod tests {
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
+        use stwo::core::fri::FriConfig;
+        use stwo::core::pcs::PcsConfig;
+        use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
         use stwo_cairo_adapter::adapter::read_and_adapt_prover_input_info_file;
         use stwo_cairo_adapter::test_utils::{get_prover_input_info_path, get_test_program};
         use stwo_cairo_serialize::CairoSerialize;
-        use stwo_prover::core::fri::FriConfig;
-        use stwo_prover::core::pcs::PcsConfig;
-        use stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
         use tempfile::NamedTempFile;
         use test_log::test;
 

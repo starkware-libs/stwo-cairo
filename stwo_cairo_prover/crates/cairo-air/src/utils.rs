@@ -3,9 +3,9 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use serde::Serialize;
+use stwo::core::channel::MerkleChannel;
+use stwo::core::vcs::MerkleHasher;
 use stwo_cairo_serialize::CairoSerialize;
-use stwo_prover::core::channel::MerkleChannel;
-use stwo_prover::core::vcs::ops::MerkleHasher;
 use tracing::{span, Level};
 
 use crate::CairoProof;

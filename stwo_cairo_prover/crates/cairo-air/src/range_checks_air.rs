@@ -1,12 +1,12 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo::core::channel::Channel;
+use stwo::core::fields::qm31::{SecureField, QM31};
+use stwo::core::pcs::TreeVec;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
-use stwo_prover::core::air::ComponentProver;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::channel::Channel;
-use stwo_prover::core::fields::qm31::{SecureField, QM31};
-use stwo_prover::core::pcs::TreeVec;
 
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_18_b,

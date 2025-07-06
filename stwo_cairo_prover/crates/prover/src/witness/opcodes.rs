@@ -1,7 +1,7 @@
 use cairo_air::air::CairoInteractionElements;
 use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
+use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::StateTransitions;
-use stwo_prover::core::backend::simd::SimdBackend;
 
 use super::blake_context::BlakeContextClaimGenerator;
 use super::range_checks::RangeChecksClaimGenerator;

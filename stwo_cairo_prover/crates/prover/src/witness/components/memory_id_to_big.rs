@@ -589,15 +589,15 @@ mod tests {
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo::core::channel::Blake2sChannel;
+    use stwo::core::fields::m31::M31;
+    use stwo::prover::backend::simd::m31::PackedM31;
     use stwo_cairo_adapter::memory::{
         value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
     };
     use stwo_cairo_common::memory::N_M31_IN_FELT252;
     use stwo_cairo_common::prover_types::felt::split_f252;
     use stwo_constraint_framework::TraceLocationAllocator;
-    use stwo_prover::core::backend::simd::m31::PackedM31;
-    use stwo_prover::core::channel::Blake2sChannel;
-    use stwo_prover::core::fields::m31::M31;
 
     use crate::debug_tools::assert_constraints::assert_component;
     use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;

@@ -9,17 +9,18 @@ use starknet_curve::curve_params::{
 };
 use starknet_types_core::curve::{AffinePoint, ProjectivePoint};
 use starknet_types_core::felt::Felt;
+use stwo::core::fields::m31::BaseField;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::backend::simd::column::BaseColumn;
+use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_consts::pedersen::{
     BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
 };
 use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
 use super::utils::felt_batch_inverse;
 use crate::preprocessed::PreProcessedColumn;

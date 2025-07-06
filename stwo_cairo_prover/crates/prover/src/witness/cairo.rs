@@ -3,10 +3,10 @@ use cairo_air::air::{
     PublicMemory, PublicSegmentRanges, SegmentRange,
 };
 use itertools::Itertools;
+use stwo::core::fields::m31::M31;
+use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::fields::m31::M31;
 use tracing::{span, Level};
 
 use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};

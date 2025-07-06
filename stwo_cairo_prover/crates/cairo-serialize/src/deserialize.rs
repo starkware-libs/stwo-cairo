@@ -1,17 +1,18 @@
 use std::array;
 
 use starknet_ff::FieldElement;
+use stwo::core::fields::m31::BaseField;
+use stwo::core::fields::qm31::SecureField;
+use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
+use stwo::core::pcs::quotients::CommitmentSchemeProof;
+use stwo::core::pcs::{PcsConfig, TreeVec};
+use stwo::core::poly::line::LinePoly;
+use stwo::core::proof::StarkProof;
+use stwo::core::vcs::blake2_hash::Blake2sHash;
+use stwo::core::vcs::verifier::MerkleDecommitment;
+use stwo::core::vcs::MerkleHasher;
+use stwo::core::ColumnVec;
 pub use stwo_cairo_serialize_derive::CairoDeserialize;
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::fri::{FriConfig, FriLayerProof, FriProof};
-use stwo_prover::core::pcs::{CommitmentSchemeProof, PcsConfig, TreeVec};
-use stwo_prover::core::poly::line::LinePoly;
-use stwo_prover::core::prover::StarkProof;
-use stwo_prover::core::vcs::blake2_hash::Blake2sHash;
-use stwo_prover::core::vcs::ops::MerkleHasher;
-use stwo_prover::core::vcs::prover::MerkleDecommitment;
-use stwo_prover::core::ColumnVec;
 
 /// Deserializes types from a format serialized by corresponding `CairoSerialize` implementations.
 pub trait CairoDeserialize: Sized {

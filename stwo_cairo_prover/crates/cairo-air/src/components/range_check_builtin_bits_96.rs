@@ -113,8 +113,8 @@ mod tests {
     use num_traits::Zero;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo::core::fields::qm31::QM31;
     use stwo_constraint_framework::expr::ExprEvaluator;
-    use stwo_prover::core::fields::qm31::QM31;
 
     use super::*;
     use crate::components::constraints_regression_test_values::RANGE_CHECK_BUILTIN_BITS_96;

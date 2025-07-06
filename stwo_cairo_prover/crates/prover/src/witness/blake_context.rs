@@ -2,8 +2,8 @@ use cairo_air::air::CairoInteractionElements;
 use cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
+use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
-use stwo_prover::core::backend::simd::SimdBackend;
 use tracing::{span, Level};
 
 use crate::witness::components::{

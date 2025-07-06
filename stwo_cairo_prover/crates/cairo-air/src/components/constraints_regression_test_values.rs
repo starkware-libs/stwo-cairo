@@ -1,4 +1,4 @@
-use stwo_prover::core::fields::qm31::QM31;
+use stwo::core::fields::qm31::QM31;
 
 macro_rules! qm31 {
     ($m0:expr, $m1:expr, $m2:expr, $m3:expr) => {{

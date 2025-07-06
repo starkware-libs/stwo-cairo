@@ -1,6 +1,11 @@
 use num_traits::{One, Zero};
 use paste::paste;
 use serde_json::to_string_pretty;
+use stwo::core::channel::{Channel, MerkleChannel};
+use stwo::core::fields::m31::BaseField;
+use stwo::core::fields::qm31::SecureField;
+use stwo::core::pcs::CommitmentSchemeVerifier;
+use stwo::core::verifier::{verify, VerificationError};
 use stwo_cairo_adapter::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
@@ -10,11 +15,6 @@ use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
-use stwo_prover::core::channel::{Channel, MerkleChannel};
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::fields::qm31::SecureField;
-use stwo_prover::core::pcs::CommitmentSchemeVerifier;
-use stwo_prover::core::prover::{verify, VerificationError};
 use thiserror::Error;
 
 use crate::air::{

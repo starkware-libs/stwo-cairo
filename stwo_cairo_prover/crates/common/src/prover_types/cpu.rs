@@ -6,11 +6,11 @@ use ruint::Uint;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use starknet_types_core::felt::Felt as StarknetTypesFelt;
+use stwo::core::channel::Channel;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
-use stwo_prover::core::channel::Channel;
 
-pub type M31 = stwo_prover::core::fields::m31::M31;
-pub type QM31 = stwo_prover::core::fields::qm31::QM31;
+pub type M31 = stwo::core::fields::m31::M31;
+pub type QM31 = stwo::core::fields::qm31::QM31;
 
 pub const PRIME: u32 = 2_u32.pow(31) - 1;
 

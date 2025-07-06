@@ -1,13 +1,14 @@
+use stwo::core::fields::m31::BaseField;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::backend::simd::column::BaseColumn;
+use stwo::prover::backend::simd::m31::PackedM31;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, N_ROUNDS, N_WORDS};
 use stwo_cairo_common::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use stwo_prover::core::backend::simd::column::BaseColumn;
-use stwo_prover::core::backend::simd::m31::PackedM31;
-use stwo_prover::core::backend::simd::SimdBackend;
-use stwo_prover::core::fields::m31::BaseField;
-use stwo_prover::core::poly::circle::{CanonicCoset, CircleEvaluation};
-use stwo_prover::core::poly::BitReversedOrder;
 
 use crate::preprocessed::PreProcessedColumn;
 use crate::preprocessed_utils::pad;
@@ -67,9 +68,9 @@ impl PreProcessedColumn for PoseidonRoundKeys {
 mod tests {
     use std::array::from_fn;
 
+    use stwo::prover::backend::simd::m31::N_LANES;
     use stwo_cairo_common::preprocessed_consts::poseidon::N_FELT252WIDTH27;
     use stwo_cairo_common::prover_types::cpu::Felt252Width27;
-    use stwo_prover::core::backend::simd::m31::N_LANES;
 
     use super::*;
 

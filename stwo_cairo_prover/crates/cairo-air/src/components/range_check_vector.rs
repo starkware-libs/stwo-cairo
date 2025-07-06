@@ -65,10 +65,10 @@ macro_rules! range_check_eval{
             use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
             use stwo_constraint_framework::{EvalAtRow, FrameworkComponent};
             use stwo_constraint_framework::FrameworkEval;
-            use stwo_prover::core::channel::Channel;
-            use stwo_prover::core::fields::qm31::{QM31, SECURE_EXTENSION_DEGREE};
+            use stwo::core::channel::Channel;
+            use stwo::core::fields::qm31::{QM31, SECURE_EXTENSION_DEGREE};
             use stwo_constraint_framework::RelationEntry;
-            use stwo_prover::core::pcs::TreeVec;
+            use stwo::core::pcs::TreeVec;
 
             use $crate::preprocessed::RangeCheck;
             use $crate::preprocessed::Seq;
@@ -151,7 +151,7 @@ macro_rules! range_check_eval{
                 use rand::rngs::SmallRng;
                 use rand::{Rng, SeedableRng};
                 use stwo_constraint_framework::expr::ExprEvaluator;
-                use stwo_prover::core::fields::qm31::QM31;
+                use stwo::core::fields::qm31::QM31;
 
                 use super::*;
                 use $crate::components::constraints_regression_test_values::[<RANGE_CHECK$suffix_upper>];

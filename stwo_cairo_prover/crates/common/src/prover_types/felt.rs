@@ -1,8 +1,8 @@
 use std::ops::{BitAnd, BitOrAssign, Shl, ShrAssign};
 use std::simd::u32x16;
 
-use stwo_prover::core::backend::simd::m31::{PackedM31, N_LANES};
-use stwo_prover::core::fields::m31::M31;
+use stwo::core::fields::m31::M31;
+use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
 
 use crate::memory::{N_BITS_PER_FELT, N_M31_IN_FELT252};
 
