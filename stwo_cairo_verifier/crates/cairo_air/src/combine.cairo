@@ -1,8 +1,10 @@
-use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
+use bounded_int::{
+    AddHelper, BoundedInt, DivRemHelper, MulHelper, add, bounded_int_mul, div_rem, upcast,
+};
 
 type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
 const U9_SHIFT: felt252 = 0x200; // 2**9
-use stwo_verifier_core::fields::m31::M31Trait;
+use stwo_verifier_core::fields::m31::{M31InnerT, M31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
 
 
@@ -24,6 +26,18 @@ type U32_BOUNDED = BoundedInt<0, 0xffffffff>;
 pub impl DivRemU32ByU9 of DivRemHelper<U32_BOUNDED, u9> {
     type DivT = U32_BOUNDED;
     type RemT = BoundedInt<0, { U9_SHIFT - 2 }>;
+}
+
+// (U9_SHIFT - 1)**2 = 0x3fc01.
+type U9_BB_U9_BOUNDED = BoundedInt<0, 0x3fc01>;
+
+pub impl MulU9ByU9 of MulHelper<u9, u9> {
+    type Result = U9_BB_U9_BOUNDED;
+}
+
+
+pub impl ADD_U9_BB_U9_BOUNDED_TO_U23 of AddHelper<U9_BB_U9_BOUNDED, u23> {
+    type Result = BoundedInt<0, 0x83fc00>;
 }
 
 /// Splits input into (msb, 2*u9, lsb) where lsb has log_2(shift) bits.
@@ -50,11 +64,8 @@ fn add_to_sum(ref sum: QM31, val: u9, alpha: QM31) {
 
 /// Ignoring types, this is the same as `add_to_sum(ref sum, msb * shift + lsb, alpha)`.
 fn add_to_sum_with_shift(ref sum: QM31, msb: u9, lsb: u23, shift: u9, alpha: QM31) {
-    let msb: u32 = upcast(msb);
-    let lsb: u32 = upcast(lsb);
-    let shift = upcast(shift);
-    // TODO(ilya): Avoid using reduce_u32.
-    sum = sum * alpha + M31Trait::reduce_u32(msb * shift + lsb).into();
+    sum = sum * alpha
+        + M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(msb, shift), lsb))).into();
 }
 
 /// An unrolled implementation for combining a felt252 value as part of the combine_id_to_value
