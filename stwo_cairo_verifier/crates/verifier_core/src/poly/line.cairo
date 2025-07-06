@@ -1,6 +1,5 @@
 use core::iter::{IntoIterator, Iterator};
-use core::num::traits::Zero;
-use crate::circle::{CirclePoint, CirclePointIndexImpl, CirclePointTrait, Coset, CosetImpl};
+use crate::circle::{CirclePoint, CirclePointIndexImpl, Coset, CosetImpl};
 use crate::fields::m31::{M31, m31};
 use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fields::{BaseField, SecureField};
@@ -178,28 +177,6 @@ pub struct LineDomain {
     pub coset: Coset,
 }
 
-#[cfg(test)]
-#[generate_trait]
-pub impl LineDomainNewImpl of LineDomainNewTrait {
-    /// Returns a domain comprising of the x-coordinates of points in a coset.
-    fn new(coset: Coset) -> LineDomain {
-        let coset_size = coset.size();
-        if (coset_size == 2) {
-            // If the coset with two points contains (0, y) then the coset is {(0, y), (0, -y)}.
-            assert!(!coset.at(0).x.is_zero(), "coset x-coordinates not unique");
-        } else if (coset_size > 2) {
-            // Let our coset be `E = c + <G>` with `|E| > 2` then:
-            // 1. if `ord(c) <= ord(G)` the coset contains two points at x=0
-            // 2. if `ord(c) = 2 * ord(G)` then `c` and `-c` are in our coset
-            assert!(
-                coset.initial_index.to_point().log_order() >= coset.log_size + 2,
-                "coset x-coordinates not unique",
-            );
-        }
-        LineDomain { coset: coset }
-    }
-}
-
 #[generate_trait]
 pub impl LineDomainImpl of LineDomainTrait {
     /// Returns a domain comprising of the x-coordinates of points in a coset.
@@ -250,7 +227,7 @@ pub impl LineEvaluationImpl of LineEvaluationTrait {
 }
 
 #[derive(Drop, Clone)]
-struct LineDomainIterator {
+pub(crate) struct LineDomainIterator {
     pub cur: CirclePoint<M31>,
     pub step: CirclePoint<M31>,
     pub remaining: usize,
@@ -267,70 +244,5 @@ impl LineDomainIteratorImpl of Iterator<LineDomainIterator> {
         let res = self.cur.x;
         self.cur = self.cur + self.step;
         Some(res)
-    }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use core::iter::{IntoIterator, Iterator};
-    use crate::circle::{CirclePointIndexImpl, CosetImpl};
-    use crate::fields::qm31::qm31_const;
-    use super::{
-        LineDomain, LineDomainImpl, LineDomainIterator, LineDomainNewImpl, LinePoly, LinePolyTrait,
-    };
-
-    #[test]
-    fn test_evaluate() {
-        let log_size = 3;
-        let domain = LineDomainImpl::new_unchecked(CosetImpl::half_odds(log_size));
-        let poly = LinePoly {
-            coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
-            ],
-            log_size,
-        };
-
-        let result = poly.evaluate(domain);
-        let mut result_iter = result.values.into_iter();
-
-        for x in domain.into_iter() {
-            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-        }
-    }
-
-    #[test]
-    fn test_evaluate_with_large_domain() {
-        let log_size = 3;
-        let domain = LineDomainImpl::new_unchecked(CosetImpl::half_odds(log_size + 2));
-        let poly = LinePoly {
-            coeffs: array![
-                qm31_const::<1, 8, 0, 1>(), qm31_const::<2, 7, 1, 2>(), qm31_const::<3, 6, 0, 1>(),
-                qm31_const::<4, 5, 1, 3>(), qm31_const::<5, 4, 0, 1>(), qm31_const::<6, 3, 1, 4>(),
-                qm31_const::<7, 2, 0, 1>(), qm31_const::<8, 1, 1, 5>(),
-            ],
-            log_size,
-        };
-
-        let result = poly.evaluate(domain);
-        let mut result_iter = result.values.into_iter();
-
-        for x in domain.into_iter() {
-            assert_eq!(result_iter.next().unwrap(), poly.eval_at_point(x));
-        }
-    }
-
-    impl LineDomainIntoIterator of IntoIterator<LineDomain> {
-        type IntoIter = LineDomainIterator;
-
-        fn into_iter(self: LineDomain) -> LineDomainIterator {
-            LineDomainIterator {
-                cur: self.coset.initial_index.to_point(),
-                step: self.coset.step.to_point(),
-                remaining: self.size(),
-            }
-        }
     }
 }

@@ -2,9 +2,6 @@ use crate::{Hash, SecureField};
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s;
-#[cfg(test)]
-#[cfg(not(feature: "poseidon252_verifier"))]
-mod blake2s_test;
 
 #[cfg(feature: "poseidon252_verifier")]
 pub mod poseidon252;
