@@ -1,5 +1,4 @@
-// Constraints version: fc694d80
-
+// AIR version eb424657
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -15,10 +14,11 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::components::{CairoComponent, RANGE_CHECK_9_9_LOG_SIZE};
+use crate::PreprocessedColumnTrait;
+use crate::components::CairoComponent;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = RANGE_CHECK_9_9_LOG_SIZE;
+const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::RangeCheck2(([9, 9], 0));
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
@@ -26,7 +26,7 @@ pub struct Claim {}
 #[generate_trait]
 pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = LOG_SIZE;
+        let log_size = SOME_COLUMN.log_size();
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = ArrayImpl::new_repeated(N_TRACE_COLUMNS, log_size).span();
         let interaction_log_sizes = ArrayImpl::new_repeated(4, log_size).span();
@@ -64,7 +64,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = LOG_SIZE;
+        let log_size = SOME_COLUMN.log_size();
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
         preprocessed_column_set.insert(PreprocessedColumn::RangeCheck2(([9, 9], 0)));
@@ -77,7 +77,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        LOG_SIZE + 1
+        SOME_COLUMN.log_size() + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -89,7 +89,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = LOG_SIZE;
+        let log_size = SOME_COLUMN.log_size();
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;

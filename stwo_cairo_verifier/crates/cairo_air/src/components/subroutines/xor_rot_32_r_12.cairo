@@ -1,5 +1,4 @@
-// Constraints version: 9330aaaf
-
+// AIR version eb424657
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -15,10 +14,12 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::PreprocessedColumnTrait;
 use crate::components::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_12::bitwise_xor_num_bits_12_evaluate;
 use crate::components::subroutines::bitwise_xor_num_bits_4::bitwise_xor_num_bits_4_evaluate;
 use crate::components::subroutines::split_16_low_part_size_12::split_16_low_part_size_12_evaluate;
+
 
 pub fn xor_rot_32_r_12_evaluate(
     input: [QM31; 4],
