@@ -36,7 +36,6 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new(mem: &Memory) -> Self {
-        // TODO(Ohad): pad to a power of 2 after splitting.
         let mut big_values = mem.f252_values.clone();
         let simd_padded_big_size = big_values.len().next_multiple_of(N_LANES);
         big_values.resize(simd_padded_big_size, [0; 8]);
