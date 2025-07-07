@@ -439,8 +439,6 @@ mod tests {
         assert_eq!(memory.get(85), MemoryValue::Small(2));
     }
 
-    // TODO(Ohad): unignore.
-    #[ignore = "poseidon has holes"]
     #[should_panic = "Accessing empty memory cell"]
     #[test]
     fn test_access_invalid_address() {
