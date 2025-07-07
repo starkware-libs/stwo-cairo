@@ -331,7 +331,7 @@ impl FrameworkEval for SmallEval {
             &chain!([id], value).collect_vec(),
         ));
 
-        eval.finalize_logup();
+        eval.finalize_logup_in_pairs();
         eval
     }
 }
@@ -361,11 +361,11 @@ impl Claim {
             ]
         });
         // TODO(Ohad): Batch.
-        let small_interaction_log_sizes = vec![
-            self.small_log_size;
-            SECURE_EXTENSION_DEGREE
-                * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)
-        ];
+        let small_interaction_log_sizes =
+            vec![
+                self.small_log_size;
+                SECURE_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1).div_ceil(2)
+            ];
         let interaction_log_sizes =
             chain!(big_interaction_log_sizes, small_interaction_log_sizes).collect_vec();
 
