@@ -536,22 +536,25 @@ impl InteractionClaimGenerator {
         let mut small_values_logup_gen = LogupTraceGenerator::new(small_table_log_size);
 
         // Every element is 9-bit.
-        for (i, (l, r)) in self.small_values.iter().tuples().enumerate() {
+        for (i, (limb0, limb1, limb2, limb3)) in self.small_values.iter().tuples().enumerate() {
             let mut col_gen = small_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), l, r)
+            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
                 .into_par_iter()
-                .for_each(|(writer, l1, l2)| {
-                    // TODO(alont) Add 2-batching.
-                    let denom = match i % 4 {
-                        0 => range9_9_lookup_elements.combine(&[*l1, *l2]),
-                        1 => range9_9_b_lookup_elements.combine(&[*l1, *l2]),
-                        2 => range9_9_c_lookup_elements.combine(&[*l1, *l2]),
-                        3 => range9_9_d_lookup_elements.combine(&[*l1, *l2]),
+                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+                    let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 2 {
+                        0 => (
+                            range9_9_lookup_elements.combine(&[*limb0, *limb1]),
+                            range9_9_b_lookup_elements.combine(&[*limb2, *limb3]),
+                        ),
+                        1 => (
+                            range9_9_c_lookup_elements.combine(&[*limb0, *limb1]),
+                            range9_9_d_lookup_elements.combine(&[*limb2, *limb3]),
+                        ),
                         _ => {
-                            unreachable!("There are only 4 possible values for i % 4.",)
+                            unreachable!()
                         }
                     };
-                    writer.write_frac(PackedQM31::broadcast(M31(1).into()), denom);
+                    writer.write_frac(denom0 + denom1, denom0 * denom1);
                 });
             col_gen.finalize_col();
         }
