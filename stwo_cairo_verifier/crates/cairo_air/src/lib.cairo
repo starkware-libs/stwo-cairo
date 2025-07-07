@@ -304,6 +304,8 @@ use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 pub mod components;
+mod profiling;
+pub mod test_utils;
 pub mod utils;
 
 // Security constants.
@@ -2535,13 +2537,11 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
             entries.append((final_ap + i, *id, *value));
             i += 1;
         }
-
         // Safe call.
         let (id, value) = self.safe_call[0];
         entries.append((initial_ap - 2, *id, *value));
         let (id, value) = self.safe_call[1];
         entries.append((initial_ap - 1, *id, *value));
-
         let present_segments = self.public_segments.present_segments();
         let n_segments = present_segments.len();
         i = 0;
@@ -8634,7 +8634,7 @@ impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use core::num::traits::one::One;
     use stwo_constraint_framework::LookupElements;
     use stwo_verifier_core::fields::qm31::qm31_const;
@@ -8662,61 +8662,6 @@ mod tests {
         assert_eq!(sum, qm31_const::<971792689, 636659210, 1237675822, 245392094>());
     }
 
-    fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
-        CairoInteractionElements {
-            opcodes: LookupElementsDummyImpl::dummy(),
-            verify_instruction: LookupElementsDummyImpl::dummy(),
-            blake_round: LookupElementsDummyImpl::dummy(),
-            blake_g: LookupElementsDummyImpl::dummy(),
-            blake_round_sigma: LookupElementsDummyImpl::dummy(),
-            triple_xor_32: LookupElementsDummyImpl::dummy(),
-            poseidon_3_partial_rounds_chain: LookupElementsDummyImpl::dummy(),
-            poseidon_full_round_chain: LookupElementsDummyImpl::dummy(),
-            cube_252: LookupElementsDummyImpl::dummy(),
-            poseidon_round_keys: LookupElementsDummyImpl::dummy(),
-            range_check_felt_252_width_27: LookupElementsDummyImpl::dummy(),
-            partial_ec_mul: LookupElementsDummyImpl::dummy(),
-            pedersen_points_table: LookupElementsDummyImpl::dummy(),
-            memory_address_to_id: LookupElementsDummyImpl::dummy(),
-            memory_id_to_value: LookupElementsDummyImpl::dummy(),
-            range_checks: RangeChecksInteractionElements {
-                rc_6: LookupElementsDummyImpl::dummy(),
-                rc_8: LookupElementsDummyImpl::dummy(),
-                rc_11: LookupElementsDummyImpl::dummy(),
-                rc_12: LookupElementsDummyImpl::dummy(),
-                rc_18: LookupElementsDummyImpl::dummy(),
-                rc_18_b: LookupElementsDummyImpl::dummy(),
-                rc_19: LookupElementsDummyImpl::dummy(),
-                rc_19_b: LookupElementsDummyImpl::dummy(),
-                rc_19_c: LookupElementsDummyImpl::dummy(),
-                rc_19_d: LookupElementsDummyImpl::dummy(),
-                rc_19_e: LookupElementsDummyImpl::dummy(),
-                rc_19_f: LookupElementsDummyImpl::dummy(),
-                rc_19_g: LookupElementsDummyImpl::dummy(),
-                rc_19_h: LookupElementsDummyImpl::dummy(),
-                rc_4_3: LookupElementsDummyImpl::dummy(),
-                rc_4_4: LookupElementsDummyImpl::dummy(),
-                rc_5_4: LookupElementsDummyImpl::dummy(),
-                rc_9_9: LookupElementsDummyImpl::dummy(),
-                rc_9_9_b: LookupElementsDummyImpl::dummy(),
-                rc_9_9_c: LookupElementsDummyImpl::dummy(),
-                rc_9_9_d: LookupElementsDummyImpl::dummy(),
-                rc_9_9_e: LookupElementsDummyImpl::dummy(),
-                rc_9_9_f: LookupElementsDummyImpl::dummy(),
-                rc_9_9_g: LookupElementsDummyImpl::dummy(),
-                rc_9_9_h: LookupElementsDummyImpl::dummy(),
-                rc_7_2_5: LookupElementsDummyImpl::dummy(),
-                rc_3_6_6_3: LookupElementsDummyImpl::dummy(),
-                rc_4_4_4_4: LookupElementsDummyImpl::dummy(),
-                rc_3_3_3_3_3: LookupElementsDummyImpl::dummy(),
-            },
-            verify_bitwise_xor_4: LookupElementsDummyImpl::dummy(),
-            verify_bitwise_xor_7: LookupElementsDummyImpl::dummy(),
-            verify_bitwise_xor_8: LookupElementsDummyImpl::dummy(),
-            verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
-            verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
-        }
-    }
 
     #[cfg(not(feature: "poseidon252_verifier"))]
     #[test]
@@ -8752,18 +8697,6 @@ mod tests {
         );
     }
 
-    #[generate_trait]
-    impl LookupElementsDummyImpl<const N: usize> of LookupElementsDummyTrait<N> {
-        fn dummy() -> LookupElements<N> {
-            LookupElements::<
-                N,
-            > {
-                z: qm31_const::<1, 2, 3, 4>(),
-                alpha: One::one(),
-                alpha_powers: ArrayImpl::new_repeated(N, One::one()),
-            }
-        }
-    }
 
     #[test]
     fn test_accumulate_relation_uses() {
