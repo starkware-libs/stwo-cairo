@@ -85,10 +85,7 @@ impl Memory {
         match self.address_to_id[addr as usize].decode() {
             MemoryValueId::Small(id) => MemoryValue::Small(self.small_values[id as usize]),
             MemoryValueId::F252(id) => MemoryValue::F252(self.f252_values[id as usize]),
-            // TODO(Ohad): This case should be a panic, but at the moment there is padding on memory
-            // holes, fill the holes before padding, then uncomment.
-            // MemoryValueId::Empty => panic!("Accessing empty memory cell"),
-            MemoryValueId::Empty => MemoryValue::Small(0),
+            MemoryValueId::Empty => panic!("Accessing empty memory cell"),
         }
     }
 
