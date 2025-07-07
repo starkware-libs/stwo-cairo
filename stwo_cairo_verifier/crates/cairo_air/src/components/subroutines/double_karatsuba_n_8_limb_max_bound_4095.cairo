@@ -1,5 +1,4 @@
-// Constraints version: 9330aaaf
-
+// AIR version eb424657
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -15,8 +14,10 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::PreprocessedColumnTrait;
 use crate::components::CairoComponent;
 use crate::components::subroutines::single_karatsuba_n_8::single_karatsuba_n_8_evaluate;
+
 
 pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
     input: [QM31; 64], ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,

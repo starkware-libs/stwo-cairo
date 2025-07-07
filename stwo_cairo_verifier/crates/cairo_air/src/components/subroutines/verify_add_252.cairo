@@ -1,5 +1,4 @@
-// Constraints version: 9330aaaf
-
+// AIR version eb424657
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
@@ -15,6 +14,7 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::PreprocessedColumnTrait;
 use crate::components::CairoComponent;
 
 
@@ -416,6 +416,8 @@ pub fn verify_add_252_evaluate(
         - (qm31_const::<256, 0, 0, 0>() * sub_p_bit_col0)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
+
+    core::internal::revoke_ap_tracking();
 
     []
 }
