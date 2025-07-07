@@ -151,8 +151,6 @@ impl MemoryBuilder {
         })
     }
 
-    // TODO(ohadn): settle on an address integer type, and use it consistently.
-    // TODO(Ohad): add debug sanity checks.
     pub fn set(&mut self, addr: u32, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
             self.address_to_id
