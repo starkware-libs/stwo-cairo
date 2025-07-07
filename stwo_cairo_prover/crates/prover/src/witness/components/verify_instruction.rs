@@ -43,7 +43,6 @@ impl ClaimGenerator {
         range_check_4_3_state: &range_check_4_3::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        // TODO(Ohad): use opcode_extension as it is used in stwo-air-cairo.
         let (mut inputs, mut mults) = self
             .multiplicities
             .into_iter()
