@@ -35,7 +35,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                         64,
                     )
                 },
-                None => (BoxImpl::new([0; 16]), 0_u32),
+                None => panic!("No children hashes"),
             };
             return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
         }
