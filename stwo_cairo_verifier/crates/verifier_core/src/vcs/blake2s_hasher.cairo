@@ -35,7 +35,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                         64,
                     )
                 },
-                None => (BoxImpl::new([0; 16]), 0_u32),
+                None => panic!("Empty nodes are not supported"),
             };
             return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
         }
