@@ -20,11 +20,14 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         prover_input_info.builtins_segments.clone(),
     );
     let relocator = Relocator::new(
-        prover_input_info.relocatable_memory.clone(),
-        prover_input_info.builtins_segments.clone(),
+        prover_input_info
+            .relocatable_memory
+            .iter()
+            .map(|segment| segment.len() as u32)
+            .collect::<Vec<u32>>(),
     );
 
-    let relocated_memory = relocator.get_relocated_memory();
+    let relocated_memory = relocator.relocate_memory(&prover_input_info.relocatable_memory);
     let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
@@ -34,7 +37,8 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         state_transitions.casm_states_by_opcode.counts()
     );
 
-    let builtins_segments = relocator.get_builtin_segments();
+    let builtins_segments =
+        relocator.relocate_builtin_segments(&prover_input_info.builtins_segments);
     info!("Builtin segments: {:?}", builtins_segments);
 
     // TODO(spapini): Add output builtin to public memory.
