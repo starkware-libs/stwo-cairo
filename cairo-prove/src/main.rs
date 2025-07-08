@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::time::Instant;
 
-use cairo_air::utils::{ProofFormat, serialize_proof_to_file};
+use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_lang_runner::Arg;
@@ -67,8 +67,7 @@ fn handle_verify(proof: &Path, with_pedersen: bool) {
         true => PreProcessedTraceVariant::Canonical,
         false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
     };
-    let result =
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, secure_pcs_config(), preprocessed_trace);
+    let result = verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace);
     match result {
         Ok(_) => info!("Verification successful"),
         Err(e) => error!("Verification failed: {:?}", e),
@@ -110,9 +109,8 @@ mod tests {
         let target_path = "./example/target/release/example.executable.json";
         let args = vec![Arg::Value(Felt252::from(BigInt::from(100)))];
         let proof = execute_and_prove(target_path, args, PcsConfig::default());
-        let pcs_config = PcsConfig::default();
         let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-        let result = verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace);
+        let result = verify_cairo::<Blake2sMerkleChannel>(proof, preprocessed_trace);
         assert!(result.is_ok());
     }
 }
