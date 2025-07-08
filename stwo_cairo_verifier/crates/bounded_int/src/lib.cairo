@@ -3,7 +3,8 @@
 
 use core::integer::upcast;
 use core::internal::bounded_int::{
-    AddHelper, BoundedInt, ConstrainHelper, DivRemHelper, SubHelper, add, constrain, div_rem, sub,
+    AddHelper, BoundedInt, ConstrainHelper, DivRemHelper, MulHelper, SubHelper, add,
+    bounded_int_mul, constrain, div_rem, sub,
 };
 
 type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
