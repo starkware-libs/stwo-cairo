@@ -27,26 +27,30 @@ pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
             return array![];
         }
 
-        // Collect array `z, zy, ..., zy..b`.
-        let mut suffix_product_rev = array![];
+        // Collect array of products: `z, z*y, ..., z*y*..*b`.
+        let mut suffix_products = array![];
         let mut values_span = values.span();
         let mut cumulative_product = *values_span.pop_back().unwrap();
 
         while let Some(value) = values_span.pop_back() {
-            suffix_product_rev.append(cumulative_product);
+            suffix_products.append(cumulative_product);
             cumulative_product = cumulative_product * *value;
         }
 
-        // Compute `1/zy..a`.
+        // Compute `1/(z*y*..*b*a)`.
         let mut cumulative_product_inv = cumulative_product.inverse();
 
-        // Collect all `1/a = zy..b/zy..a, 1/b = zy..c/zy..b, ..., 1/y = z/zy`.
+        // Collect all:
+        //   `1/a = (z*y*..*b)/(z*y*..*a)`,
+        //   `1/b = (z*y*..*c)/(z*y*..*b)`,
+        //   ...,
+        //   `1/y = z/(z*y)`.
         let mut inverses = array![];
-        let mut suffix_product_rev_span = suffix_product_rev.span();
+        let mut suffix_products = suffix_products.span();
         let mut values = values;
 
         while let (Some(suffix_product), Some(value)) =
-            (suffix_product_rev_span.pop_back(), values.pop_front()) {
+            (suffix_products.pop_back(), values.pop_front()) {
             inverses.append(cumulative_product_inv * *suffix_product);
             cumulative_product_inv = cumulative_product_inv * value;
         }
