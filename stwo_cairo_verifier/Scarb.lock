@@ -9,6 +9,7 @@ version = "0.1.0"
 name = "stwo_cairo_air"
 version = "0.1.0"
 dependencies = [
+ "bounded_int",
  "stwo_constraint_framework",
  "stwo_verifier_core",
 ]

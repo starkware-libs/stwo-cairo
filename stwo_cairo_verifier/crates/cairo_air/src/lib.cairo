@@ -2597,6 +2597,9 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 }
 
 
+mod combine;
+
+
 #[derive(Drop, Serde)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
@@ -2628,12 +2631,13 @@ impl PublicDataImpl of PublicDataTrait {
                 .combine([addr_m31, id_m31])
                 .inverse();
 
-            let mut elements = array![id_m31];
-            elements.append_span(utils::split_f252(val).span());
-            let id_to_value = lookup_elements
-                .memory_id_to_value
-                .combine((*elements.span().try_into().unwrap()).unbox())
-                .inverse();
+            // Use handwritten implementation of combine_id_to_value to improve performance.
+            let alpha = *lookup_elements.memory_id_to_value.alpha;
+            let mut combine_sum = combine::combine_felt252(val, alpha);
+            combine_sum = combine_sum * alpha
+                + id_m31.into()
+                - *lookup_elements.memory_id_to_value.z;
+            let id_to_value = combine_sum.inverse();
 
             sum += addr_to_id + id_to_value;
         }
