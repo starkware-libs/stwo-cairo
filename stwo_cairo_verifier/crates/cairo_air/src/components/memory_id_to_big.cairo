@@ -75,7 +75,7 @@ pub impl ClaimImpl of ClaimTrait {
             }
         }
 
-        for _ in 0..(QM31_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1)) {
+        for _ in 0..(QM31_EXTENSION_DEGREE * (N_M31_IN_SMALL_FELT252.div_ceil(2) + 1).div_ceil(2)) {
             interaction_log_sizes.append(*small_log_size);
         }
 

@@ -37,14 +37,6 @@ pub fn mask_points(
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -162,15 +154,7 @@ pub fn evaluate_constraints_at_point(
         trace_2_column_18,
         trace_2_column_19,
         trace_2_column_20,
-        trace_2_column_21,
-        trace_2_column_22,
-        trace_2_column_23,
-        trace_2_column_24,
-        trace_2_column_25,
-        trace_2_column_26,
-        trace_2_column_27,
-        trace_2_column_28,
-    ]: [Span<QM31>; 20] =
+    ]: [Span<QM31>; 12] =
         (*interaction_mask_values
         .multi_pop_front()
         .unwrap())
@@ -192,42 +176,26 @@ pub fn evaluate_constraints_at_point(
 
     let [trace_2_column_16_offset_0]: [QM31; 1] = (*trace_2_column_16.try_into().unwrap()).unbox();
 
-    let [trace_2_column_17_offset_0]: [QM31; 1] = (*trace_2_column_17.try_into().unwrap()).unbox();
-
-    let [trace_2_column_18_offset_0]: [QM31; 1] = (*trace_2_column_18.try_into().unwrap()).unbox();
-
-    let [trace_2_column_19_offset_0]: [QM31; 1] = (*trace_2_column_19.try_into().unwrap()).unbox();
-
-    let [trace_2_column_20_offset_0]: [QM31; 1] = (*trace_2_column_20.try_into().unwrap()).unbox();
-
-    let [trace_2_column_21_offset_0]: [QM31; 1] = (*trace_2_column_21.try_into().unwrap()).unbox();
-
-    let [trace_2_column_22_offset_0]: [QM31; 1] = (*trace_2_column_22.try_into().unwrap()).unbox();
-
-    let [trace_2_column_23_offset_0]: [QM31; 1] = (*trace_2_column_23.try_into().unwrap()).unbox();
-
-    let [trace_2_column_24_offset_0]: [QM31; 1] = (*trace_2_column_24.try_into().unwrap()).unbox();
-
-    let [trace_2_column_25_offset_neg_1, trace_2_column_25_offset_0]: [QM31; 2] =
-        (*trace_2_column_25
+    let [trace_2_column_17_offset_neg_1, trace_2_column_17_offset_0]: [QM31; 2] =
+        (*trace_2_column_17
         .try_into()
         .unwrap())
         .unbox();
 
-    let [trace_2_column_26_offset_neg_1, trace_2_column_26_offset_0]: [QM31; 2] =
-        (*trace_2_column_26
+    let [trace_2_column_18_offset_neg_1, trace_2_column_18_offset_0]: [QM31; 2] =
+        (*trace_2_column_18
         .try_into()
         .unwrap())
         .unbox();
 
-    let [trace_2_column_27_offset_neg_1, trace_2_column_27_offset_0]: [QM31; 2] =
-        (*trace_2_column_27
+    let [trace_2_column_19_offset_neg_1, trace_2_column_19_offset_0]: [QM31; 2] =
+        (*trace_2_column_19
         .try_into()
         .unwrap())
         .unbox();
 
-    let [trace_2_column_28_offset_neg_1, trace_2_column_28_offset_0]: [QM31; 2] =
-        (*trace_2_column_28
+    let [trace_2_column_20_offset_neg_1, trace_2_column_20_offset_0]: [QM31; 2] =
+        (*trace_2_column_20
         .try_into()
         .unwrap())
         .unbox();
@@ -281,8 +249,8 @@ pub fn evaluate_constraints_at_point(
             trace_2_column_12_offset_0,
         ],
     ))
-        * (intermediate0)
-        - (qm31_const::<1, 0, 0, 0>()))
+        * ((intermediate0) * (intermediate1))
+        - (intermediate1 + intermediate0))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -299,8 +267,8 @@ pub fn evaluate_constraints_at_point(
                 trace_2_column_12_offset_0,
             ],
         )))
-        * (intermediate1)
-        - (qm31_const::<1, 0, 0, 0>()))
+        * ((intermediate2) * (intermediate3))
+        - (intermediate3 + intermediate2))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -316,47 +284,11 @@ pub fn evaluate_constraints_at_point(
                 trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
                 trace_2_column_16_offset_0,
             ],
-        )))
-        * (intermediate2)
-        - (qm31_const::<1, 0, 0, 0>()))
-        * domain_vanish_at_point_inv;
-    sum = sum * random_coeff + constraint_quotient;
-
-    // Constraint 3
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
-        [
-            trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
-            trace_2_column_24_offset_0,
-        ],
-    )
-        - (QM31Trait::from_partial_evals(
-            [
-                trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
-                trace_2_column_20_offset_0,
-            ],
-        )))
-        * (intermediate3)
-        - (qm31_const::<1, 0, 0, 0>()))
-        * domain_vanish_at_point_inv;
-    sum = sum * random_coeff + constraint_quotient;
-
-    // Constraint 4
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
-        [
-            trace_2_column_25_offset_0, trace_2_column_26_offset_0, trace_2_column_27_offset_0,
-            trace_2_column_28_offset_0,
-        ],
-    )
-        - (QM31Trait::from_partial_evals(
-            [
-                trace_2_column_25_offset_neg_1, trace_2_column_26_offset_neg_1,
-                trace_2_column_27_offset_neg_1, trace_2_column_28_offset_neg_1,
-            ],
         ))
         - (QM31Trait::from_partial_evals(
             [
-                trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
-                trace_2_column_24_offset_0,
+                trace_2_column_17_offset_neg_1, trace_2_column_18_offset_neg_1,
+                trace_2_column_19_offset_neg_1, trace_2_column_20_offset_neg_1,
             ],
         ))
         + (claimed_sum) * (column_size.inverse().into()))
