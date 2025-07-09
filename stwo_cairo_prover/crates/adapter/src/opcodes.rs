@@ -719,7 +719,7 @@ fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
         let value = u256_from_le_array(val.as_u256());
 
         value <= SMALL_ADD_POSITIVE_UPPER_BOUND
-            || (value >= SMALL_ADD_NEGATIVE_LOWER_BOUND && value <= SMALL_ADD_NEGATIVE_UPPER_BOUND)
+            || (value >= SMALL_ADD_NEGATIVE_LOWER_BOUND && value < SMALL_ADD_NEGATIVE_UPPER_BOUND)
     })
 }
 
@@ -778,7 +778,7 @@ mod mappings_tests {
     }
 
     /// Small ranges: [0 … 2^27 − 1] (positive) | [P − 2^27 … P − 1] (negative mod P) | ([P.. P +
-    /// 2^27 − 1] (positive over P)).
+    /// 2^27 − 2] (positive over P)).
     #[test]
     fn test_small_add_postive_range() {
         // lower bound
@@ -854,11 +854,11 @@ mod mappings_tests {
         assert!(is_small_add(dst, op0, op1));
 
         // upper bound
-        let mut p_plus_2_to_27_min_1: [u32; 8] = p;
-        p_plus_2_to_27_min_1[0] += 2_u32.pow(27) - 1;
-        dst = MemoryValue::F252(p_plus_2_to_27_min_1);
-        op0 = MemoryValue::F252(p_plus_2_to_27_min_1);
-        op1 = MemoryValue::F252(p_plus_2_to_27_min_1);
+        let mut p_plus_2_to_27_min_2: [u32; 8] = p;
+        p_plus_2_to_27_min_2[0] += 2_u32.pow(27) - 2;
+        dst = MemoryValue::F252(p_plus_2_to_27_min_2);
+        op0 = MemoryValue::F252(p_plus_2_to_27_min_2);
+        op1 = MemoryValue::F252(p_plus_2_to_27_min_2);
         assert!(is_small_add(dst, op0, op1));
 
         // value in the range
