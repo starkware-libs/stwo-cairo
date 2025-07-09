@@ -120,6 +120,8 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
             }
         }
 
+        println!("remaining preprocessed_mask_values: {:?}", preprocessed_mask_values);
+
         assert!(preprocessed_mask_values.is_empty());
 
         PreprocessedMaskValues { values }

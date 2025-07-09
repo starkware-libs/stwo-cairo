@@ -77,6 +77,28 @@ impl PreProcessedTrace {
         Self { columns }
     }
 
+    pub fn canonical_without_pedersen_and_poseidon() -> Self {
+        let seq = (LOG_N_LANES..=MAX_SEQUENCE_LOG_SIZE)
+            .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
+        let bitwise_xor = XOR_N_BITS
+            .map(|n_bits| {
+                (0..3).map(move |col_index| {
+                    Box::new(BitwiseXor::new(n_bits, col_index)) as Box<dyn PreProcessedColumn>
+                })
+            })
+            .into_iter()
+            .flatten();
+        let range_check = gen_range_check_columns();
+        let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
+            .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
+
+        let columns = chain!(seq, bitwise_xor, range_check, blake_sigma)
+            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+            .collect();
+
+        Self { columns }
+    }
+
     pub fn log_sizes(&self) -> Vec<u32> {
         self.columns.iter().map(|c| c.log_size()).collect()
     }

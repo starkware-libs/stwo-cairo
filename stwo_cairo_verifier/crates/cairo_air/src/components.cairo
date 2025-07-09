@@ -17,6 +17,7 @@ pub mod blake_round;
 pub mod blake_round_sigma;
 pub mod call_opcode;
 pub mod call_opcode_rel_imm;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod cube_252;
 pub mod generic_opcode;
 pub mod jnz_opcode;
@@ -30,12 +31,19 @@ pub mod memory_id_to_big;
 pub mod mul_mod_builtin;
 pub mod mul_opcode;
 pub mod mul_opcode_small;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod partial_ec_mul;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod pedersen_builtin;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod pedersen_points_table;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod poseidon_3_partial_rounds_chain;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod poseidon_builtin;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod poseidon_full_round_chain;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod poseidon_round_keys;
 pub mod qm_31_add_mul_opcode;
 pub mod range_check_11;
@@ -68,7 +76,9 @@ pub mod range_check_9_9_f;
 pub mod range_check_9_9_g;
 pub mod range_check_9_9_h;
 pub mod range_check_builtin_bits_128;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod range_check_builtin_bits_96;
+#[cfg(not(feature: "minimal_verifier"))]
 pub mod range_check_felt_252_width_27;
 pub mod ret_opcode;
 pub mod subroutines;

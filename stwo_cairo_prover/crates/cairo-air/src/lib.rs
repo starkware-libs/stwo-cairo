@@ -29,6 +29,7 @@ pub use air::CairoProof;
 pub enum PreProcessedTraceVariant {
     Canonical,
     CanonicalWithoutPedersen,
+    CanonicalWithoutPedersenAndPoseidon,
 }
 impl PreProcessedTraceVariant {
     pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
@@ -36,6 +37,9 @@ impl PreProcessedTraceVariant {
             PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
             PreProcessedTraceVariant::CanonicalWithoutPedersen => {
                 PreProcessedTrace::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalWithoutPedersenAndPoseidon => {
+                PreProcessedTrace::canonical_without_pedersen_and_poseidon()
             }
         }
     }

@@ -264,8 +264,12 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let pedersenpoints_55 = preprocessed_mask_values
             .get(PreprocessedColumn::PedersenPoints((55)));
 
-        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().expect('pedersen_points_table.cairo:268')).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().expect('pedersen_points_table.cairo:269')).unbox();
+        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values
+            .multi_pop_front()
+            .expect('pedersen_points_table.cairo:268'))
+            .unbox();
+        let [enabler]: [QM31; 1] = (*enabler.try_into().expect('pedersen_points_table.cairo:269'))
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -320,10 +324,22 @@ fn lookup_constraints(
         .expect('pedersen_points_table.cairo:321'))
         .unbox();
 
-    let [trace_2_col0_neg1, trace_2_col0]: [QM31; 2] = (*trace_2_col0.try_into().expect('pedersen_points_table.cairo:324')).unbox();
-    let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().expect('pedersen_points_table.cairo:325')).unbox();
-    let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().expect('pedersen_points_table.cairo:326')).unbox();
-    let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().expect('pedersen_points_table.cairo:327')).unbox();
+    let [trace_2_col0_neg1, trace_2_col0]: [QM31; 2] = (*trace_2_col0
+        .try_into()
+        .expect('pedersen_points_table.cairo:324'))
+        .unbox();
+    let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1
+        .try_into()
+        .expect('pedersen_points_table.cairo:325'))
+        .unbox();
+    let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2
+        .try_into()
+        .expect('pedersen_points_table.cairo:326'))
+        .unbox();
+    let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3
+        .try_into()
+        .expect('pedersen_points_table.cairo:327'))
+        .unbox();
 
     core::internal::revoke_ap_tracking();
 
