@@ -21,7 +21,7 @@ pub impl ADD_U9_BB_U9_BOUNDED_TO_U23 of AddHelper<U9_BB_U9_BOUNDED, U23_BOUNDED_
 }
 
 /// Splits input into (msb, 2*u9, lsb) where lsb has log_2(shift) bits.
-fn take18(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9) {
+fn split_u32_to_4_chunks(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9) {
     let (q, lsb) = div_rem::<u32, _, _>(input, shift);
     let (q, r0) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
     let (q, r1) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
@@ -29,7 +29,7 @@ fn take18(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9) {
 }
 
 /// Splits input into (msb, 3*u9, lsb) where lsb has log_2(shift) bits.
-fn take27(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9, u9) {
+fn split_u32_to_5_chunks(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9, u9) {
     let (q, lsb) = div_rem::<u32, _, _>(input, shift);
     let (q, r0) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
     let (q, r1) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
@@ -37,13 +37,15 @@ fn take27(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9, u9) {
     (upcast(q), r2, r1, r0, upcast(lsb))
 }
 
-/// Update sum to sum * alpha + val.
-fn add_to_sum(ref sum: QM31, val: u9, alpha: QM31) {
-    sum = sum * alpha + M31Trait::new(upcast(val)).into();
+/// Update sum to sum * alpha + value.
+fn horner_step(ref sum: QM31, value: u9, alpha: QM31) {
+    sum = sum * alpha + M31Trait::new(upcast(value)).into();
 }
 
-/// Ignoring types, this is the same as `add_to_sum(ref sum, msb * shift + lsb, alpha)`.
-fn add_to_sum_with_shift(ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, shift: u9, alpha: QM31) {
+/// Same as `horner_step`, but the `value` is given as `msb * shift + lsb`.
+fn horner_step_with_split_input(
+    ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, shift: u9, alpha: QM31,
+) {
     sum = sum * alpha
         + M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(msb, shift), lsb))).into();
 }
@@ -61,64 +63,64 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
 
     // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
-    let (_, l27, l26, l25, l24_high) = take27(v7, 0x2);
+    let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
 
     let mut sum: QM31 = M31Trait::new(upcast(l27)).into();
-    add_to_sum(ref sum, l26, alpha);
-    add_to_sum(ref sum, l25, alpha);
+    horner_step(ref sum, l26, alpha);
+    horner_step(ref sum, l25, alpha);
 
     // Take 8 + 18 + 6 bits from v6
-    let (l24_low, l23, l22, l21_high) = take18(v6, 0x40);
-    add_to_sum_with_shift(ref sum, l24_high, l24_low, 0x100, alpha);
+    let (l24_low, l23, l22, l21_high) = split_u32_to_4_chunks(v6, 0x40);
+    horner_step_with_split_input(ref sum, l24_high, l24_low, 0x100, alpha);
 
-    add_to_sum(ref sum, l23, alpha);
-    add_to_sum(ref sum, l22, alpha);
+    horner_step(ref sum, l23, alpha);
+    horner_step(ref sum, l22, alpha);
 
     // Take 3 + 27 + 2 bits from v5
-    let (l21_low, l20, l19, l18, l17_high) = take27(v5, 0x4);
-    add_to_sum_with_shift(ref sum, l21_high, l21_low, 0x8, alpha);
+    let (l21_low, l20, l19, l18, l17_high) = split_u32_to_5_chunks(v5, 0x4);
+    horner_step_with_split_input(ref sum, l21_high, l21_low, 0x8, alpha);
 
-    add_to_sum(ref sum, l20, alpha);
-    add_to_sum(ref sum, l19, alpha);
-    add_to_sum(ref sum, l18, alpha);
+    horner_step(ref sum, l20, alpha);
+    horner_step(ref sum, l19, alpha);
+    horner_step(ref sum, l18, alpha);
 
     // Take 7 + 18 + 7 bits from v4
-    let (l17_low, l16, l15, l14_high) = take18(v4, 0x80);
-    add_to_sum_with_shift(ref sum, l17_high, l17_low, 0x80, alpha);
+    let (l17_low, l16, l15, l14_high) = split_u32_to_4_chunks(v4, 0x80);
+    horner_step_with_split_input(ref sum, l17_high, l17_low, 0x80, alpha);
 
-    add_to_sum(ref sum, l16, alpha);
-    add_to_sum(ref sum, l15, alpha);
+    horner_step(ref sum, l16, alpha);
+    horner_step(ref sum, l15, alpha);
 
     // Take 2 + 27 + 3 bits from v3
-    let (l14_low, l13, l12, l11, l10_high) = take27(v3, 0x8);
-    add_to_sum_with_shift(ref sum, l14_high, l14_low, 0x4, alpha);
+    let (l14_low, l13, l12, l11, l10_high) = split_u32_to_5_chunks(v3, 0x8);
+    horner_step_with_split_input(ref sum, l14_high, l14_low, 0x4, alpha);
 
-    add_to_sum(ref sum, l13, alpha);
-    add_to_sum(ref sum, l12, alpha);
-    add_to_sum(ref sum, l11, alpha);
+    horner_step(ref sum, l13, alpha);
+    horner_step(ref sum, l12, alpha);
+    horner_step(ref sum, l11, alpha);
 
     // Take 6 + 18 + 8 bits from v2
-    let (l10_low, l9, l8, l17_high) = take18(v2, 0x100);
-    add_to_sum_with_shift(ref sum, l10_high, l10_low, 0x40, alpha);
+    let (l10_low, l9, l8, l17_high) = split_u32_to_4_chunks(v2, 0x100);
+    horner_step_with_split_input(ref sum, l10_high, l10_low, 0x40, alpha);
 
-    add_to_sum(ref sum, l9, alpha);
-    add_to_sum(ref sum, l8, alpha);
+    horner_step(ref sum, l9, alpha);
+    horner_step(ref sum, l8, alpha);
 
     // Take 1 + 27 + 4 bits from v1
-    let (l17_low, l6, l5, l4, l3_high) = take27(v1, 0x10);
-    add_to_sum_with_shift(ref sum, l17_high, l17_low, 0x2, alpha);
+    let (l17_low, l6, l5, l4, l3_high) = split_u32_to_5_chunks(v1, 0x10);
+    horner_step_with_split_input(ref sum, l17_high, l17_low, 0x2, alpha);
 
-    add_to_sum(ref sum, l6, alpha);
-    add_to_sum(ref sum, l5, alpha);
-    add_to_sum(ref sum, l4, alpha);
+    horner_step(ref sum, l6, alpha);
+    horner_step(ref sum, l5, alpha);
+    horner_step(ref sum, l4, alpha);
 
     // Take 5 + 27 + 0 bits from v0
-    let (l3_low, l2, l1, l0, _) = take27(v0, 1);
-    add_to_sum_with_shift(ref sum, l3_high, l3_low, 0x20, alpha);
+    let (l3_low, l2, l1, l0, _) = split_u32_to_5_chunks(v0, 1);
+    horner_step_with_split_input(ref sum, l3_high, l3_low, 0x20, alpha);
 
-    add_to_sum(ref sum, l2, alpha);
-    add_to_sum(ref sum, l1, alpha);
-    add_to_sum(ref sum, l0, alpha);
+    horner_step(ref sum, l2, alpha);
+    horner_step(ref sum, l1, alpha);
+    horner_step(ref sum, l0, alpha);
 
     sum
 }
