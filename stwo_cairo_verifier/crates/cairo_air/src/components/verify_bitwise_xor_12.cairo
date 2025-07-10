@@ -30,9 +30,8 @@ pub struct Claim {}
 pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let preprocessed_log_sizes = array![LOG_SIZE].span();
-        let trace_log_sizes = ArrayImpl::new_repeated(16, LOG_SIZE).span();
-        let interaction_log_sizes = ArrayImpl::new_repeated(QM31_EXTENSION_DEGREE * 8, LOG_SIZE)
-            .span();
+        let trace_log_sizes = [LOG_SIZE; 16].span();
+        let interaction_log_sizes = [LOG_SIZE; QM31_EXTENSION_DEGREE * 8].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
