@@ -98,7 +98,7 @@ fn extract_composition_eval(
     let [v1] = (*c1.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
     let [v2] = (*c2.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
     let [v3] = (*c3.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    Ok(QM31Trait::from_partial_evals([v0, v1, v2, v3]))
+    Ok(QM31Trait::combine([v0, v1, v2, v3]))
 }
 
 /// Error when the sampled values have an invalid structure.

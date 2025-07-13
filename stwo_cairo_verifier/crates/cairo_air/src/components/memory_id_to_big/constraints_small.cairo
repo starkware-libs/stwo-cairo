@@ -275,7 +275,7 @@ pub fn evaluate_constraints_at_point(
     let intermediate4 = *intermediates.pop_front().unwrap();
 
     // Constraint 0
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::combine(
         [
             trace_2_column_9_offset_0, trace_2_column_10_offset_0, trace_2_column_11_offset_0,
             trace_2_column_12_offset_0,
@@ -287,13 +287,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 1
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::combine(
         [
             trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
             trace_2_column_16_offset_0,
         ],
     )
-        - (QM31Trait::from_partial_evals(
+        - (QM31Trait::combine(
             [
                 trace_2_column_9_offset_0, trace_2_column_10_offset_0, trace_2_column_11_offset_0,
                 trace_2_column_12_offset_0,
@@ -305,13 +305,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 2
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::combine(
         [
             trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
             trace_2_column_20_offset_0,
         ],
     )
-        - (QM31Trait::from_partial_evals(
+        - (QM31Trait::combine(
             [
                 trace_2_column_13_offset_0, trace_2_column_14_offset_0, trace_2_column_15_offset_0,
                 trace_2_column_16_offset_0,
@@ -323,13 +323,13 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 3
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::combine(
         [
             trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
             trace_2_column_24_offset_0,
         ],
     )
-        - (QM31Trait::from_partial_evals(
+        - (QM31Trait::combine(
             [
                 trace_2_column_17_offset_0, trace_2_column_18_offset_0, trace_2_column_19_offset_0,
                 trace_2_column_20_offset_0,
@@ -341,19 +341,19 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint 4
-    let constraint_quotient = ((QM31Trait::from_partial_evals(
+    let constraint_quotient = ((QM31Trait::combine(
         [
             trace_2_column_25_offset_0, trace_2_column_26_offset_0, trace_2_column_27_offset_0,
             trace_2_column_28_offset_0,
         ],
     )
-        - (QM31Trait::from_partial_evals(
+        - (QM31Trait::combine(
             [
                 trace_2_column_25_offset_neg_1, trace_2_column_26_offset_neg_1,
                 trace_2_column_27_offset_neg_1, trace_2_column_28_offset_neg_1,
             ],
         ))
-        - (QM31Trait::from_partial_evals(
+        - (QM31Trait::combine(
             [
                 trace_2_column_21_offset_0, trace_2_column_22_offset_0, trace_2_column_23_offset_0,
                 trace_2_column_24_offset_0,
