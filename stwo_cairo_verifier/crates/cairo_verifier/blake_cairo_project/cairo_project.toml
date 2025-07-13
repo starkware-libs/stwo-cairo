@@ -64,6 +64,9 @@ discriminator = "stwo_constraint_framework"
 [config.override."stwo_cairo_air".dependencies.stwo_verifier_core]
 discriminator = "stwo_verifier_core"
 
+[config.override."stwo_cairo_air".dependencies.bounded_int]
+discriminator = "bounded_int"
+
 [config.override."stwo_cairo_air".experimental_features]
 negative_impls = false
 associated_item_constraints = false
@@ -75,6 +78,11 @@ user_defined_inline_macros = false
 name = "stwo_constraint_framework"
 edition = "2024_07"
 version = "0.1.0"
+cfg_set = [
+    ["target", "lib"],
+    ["feature", "qm31_opcode"],
+]
+
 
 [config.override."stwo_constraint_framework".dependencies.stwo_constraint_framework]
 discriminator = "stwo_constraint_framework"
