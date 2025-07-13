@@ -25,16 +25,19 @@ pub fn relation_tracker(
     let mut dummy_channel = Blake2sChannel::default();
     let mut commitment_scheme = MockCommitmentScheme::default();
     let mut tree_builder = commitment_scheme.tree_builder();
+    tracing::info!("Generating preprocessed trace");
     tree_builder.extend_evals(preprocessed_trace.gen_trace());
     tree_builder.finalize_interaction();
 
     // Base trace.
+    tracing::info!("Generating base trace");
     let cairo_claim_generator = CairoClaimGenerator::new(input);
     let mut tree_builder = commitment_scheme.tree_builder();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     tree_builder.finalize_interaction();
 
     // Interaction trace. NOTE: we only need the interaction claim, not the interaction trace.
+    tracing::info!("Generating interaction trace");
     let dummy_interaction_elements = CairoInteractionElements::draw(&mut dummy_channel);
     let mut tree_builder = commitment_scheme.tree_builder();
     let interaction_claim = interaction_generator
@@ -48,6 +51,7 @@ pub fn relation_tracker(
         &preprocessed_trace.ids(),
     );
 
+    tracing::info!("Tracking Cairo relations");
     track_cairo_relations(&trace, &components, &claim.public_data)
 }
 
@@ -152,6 +156,7 @@ fn cairo_relation_entries(
     } = opcodes;
 
     let mut entries = HashMap::new();
+    tracing::info!("Tracking opcodes");
     entries = add_to_relation_entries_many(add, trace, entries);
     entries = add_to_relation_entries_many(add_small, trace, entries);
     entries = add_to_relation_entries_many(add_ap, trace, entries);
@@ -196,6 +201,7 @@ fn cairo_relation_entries(
     entries = add_to_relation_entries(&memory_id_to_value.1, trace, entries);
 
     if let Some(components) = &blake_context.components {
+        tracing::info!("Tracking Blake components");
         entries = add_to_relation_entries(&components.blake_round, trace, entries);
         entries = add_to_relation_entries(&components.blake_g, trace, entries);
         entries = add_to_relation_entries(&components.blake_sigma, trace, entries);
@@ -205,28 +211,36 @@ fn cairo_relation_entries(
 
     // Builtins
     if let Some(add_mod) = &builtins.add_mod_builtin {
+        tracing::info!("Tracking add_mod");
         entries = add_to_relation_entries(add_mod, trace, entries);
     }
     if let Some(bitwise) = &builtins.bitwise_builtin {
+        tracing::info!("Tracking bitwise");
         entries = add_to_relation_entries(bitwise, trace, entries);
     }
     if let Some(pederson) = &builtins.pedersen_builtin {
+        tracing::info!("Tracking pedersen");
         entries = add_to_relation_entries(pederson, trace, entries);
     }
     if let Some(poseidon) = &builtins.poseidon_builtin {
+        tracing::info!("Tracking poseidon");
         entries = add_to_relation_entries(poseidon, trace, entries);
     }
     if let Some(mul_mod) = &builtins.mul_mod_builtin {
+        tracing::info!("Tracking mul_mod");
         entries = add_to_relation_entries(mul_mod, trace, entries);
     }
     if let Some(rc_96) = &builtins.range_check_96_builtin {
+        tracing::info!("Tracking rc_96");
         entries = add_to_relation_entries(rc_96, trace, entries);
     }
     if let Some(rc_128) = &builtins.range_check_128_builtin {
+        tracing::info!("Tracking rc_128");
         entries = add_to_relation_entries(rc_128, trace, entries);
     }
 
     if let Some(components) = &poseidon_context.components {
+        tracing::info!("Tracking poseidon components");
         entries =
             add_to_relation_entries(&components.poseidon_3_partial_rounds_chain, trace, entries);
         entries = add_to_relation_entries(&components.poseidon_full_round_chain, trace, entries);
@@ -237,6 +251,7 @@ fn cairo_relation_entries(
     }
 
     if let Some(components) = &pedersen_context.components {
+        tracing::info!("Tracking pedersen components");
         entries = add_to_relation_entries(&components.pedersen_points_table, trace, entries);
         entries = add_to_relation_entries(&components.partial_ec_mul, trace, entries);
     }
@@ -281,4 +296,3 @@ mod tests {
         assert!(addr_to_id_relation_cleaned.is_none());
     }
 }
-

@@ -46,16 +46,16 @@ cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(Ohad): re export stwo from constraint-framework.
 # TODO(Ohad): separate cairo-air from prover code and use prover features only in the prover crate.
-stwo = { git = "https://github.com/starkware-libs/stwo", rev = "ea7d8c7", features = [
+stwo = { git = "https://github.com/starkware-libs/stwo", rev = "6858e3", features = [
     "parallel",
     "prover",
 ], default-features = false }
-stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "ea7d8c7", features = [
+stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "6858e3", features = [
     "parallel",
     "prover",
 ] }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "ea7d8c7" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "ea7d8c7" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "6858e3" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "6858e3" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.10", default-features = false }
 tracing = "0.1.40"
