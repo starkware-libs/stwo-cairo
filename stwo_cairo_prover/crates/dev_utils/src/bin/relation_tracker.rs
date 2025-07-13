@@ -46,10 +46,11 @@ fn main() {
     log_prover_input(&prover_input);
 
     let relation_entries = relation_tracker(prover_input, PreProcessedTrace::canonical());
+    log::info!("Summarizing relations.");
     let summary = RelationSummary::summarize_relations(&relation_entries)
         .cleaned()
         .0;
-    log::info!("Entries per relation:");
+    log::info!("Non-0 summed entries per relation:");
     for (relation, values) in &summary {
         log::info!("{}: {}", relation, values.len());
     }
@@ -66,7 +67,7 @@ fn main() {
     }
 }
 
-type BlameMap = HashMap<String, HashMap<Vec<M31>, Vec<((String, u32, u32), u32)>>>;
+type BlameMap = HashMap<String, Vec<(Vec<M31>, Vec<((String, u32, u32), u32)>)>>;
 
 #[allow(clippy::type_complexity)]
 fn reduce_blame(
@@ -90,7 +91,7 @@ fn reduce_blame(
             continue;
         };
 
-        let blame_vec: Vec<_> = entries
+        let mut blame_vec: Vec<_> = entries
             .par_chunks(1 << 15)
             .flat_map(|chunk| {
                 let mut blame_vec = vec![];
@@ -105,13 +106,14 @@ fn reduce_blame(
                 blame_vec
             })
             .collect();
+        blame_vec.sort_by(|a, b| a.values.cmp(&b.values));
         reduced_map.insert(relation, blame_vec);
     }
 
     // Create the blame map.
     let mut blame_map = HashMap::new();
     for (relation_name, blame_vec) in reduced_map {
-        let mut relation_blame = HashMap::new();
+        let mut relation_blame = vec![];
         blame_vec
             .into_iter()
             .group_by(|a| a.values.clone())
@@ -120,11 +122,11 @@ fn reduce_blame(
                 let mut group_blame = vec![];
                 let blame_group = blame_group.collect_vec();
                 for culprit in blame_group {
-                    let location = culprit.location;
+                    let location = culprit.location.clone();
                     let mult = culprit.mult.0;
                     group_blame.push((location, mult));
                 }
-                assert!(relation_blame.insert(value_vector, group_blame).is_none());
+                relation_blame.push((value_vector, group_blame));
             });
         blame_map.insert(relation_name, relation_blame);
     }

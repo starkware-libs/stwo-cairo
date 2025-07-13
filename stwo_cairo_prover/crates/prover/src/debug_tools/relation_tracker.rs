@@ -259,7 +259,7 @@ fn cairo_relation_entries(
     entries
 }
 
-fn add_to_relation_entries_many<E: FrameworkEval>(
+fn add_to_relation_entries_many<E: FrameworkEval + Sync>(
     components: &[FrameworkComponent<E>],
     trace: &TreeVec<Vec<&Vec<M31>>>,
     mut entries: CairoRelationEntries,

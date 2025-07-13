@@ -3271,7 +3271,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=6858e3#6858e38b0a1808129cf6c669f96f63bde844f77b"
+source = "git+https://github.com/starkware-libs/stwo?rev=7940032#794003288afb8584b7eed7a0c017abb9f79395dc"
 dependencies = [
  "blake2",
  "blake3",
@@ -3295,13 +3295,13 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=6858e3#6858e38b0a1808129cf6c669f96f63bde844f77b"
+source = "git+https://github.com/starkware-libs/stwo?rev=7940032#794003288afb8584b7eed7a0c017abb9f79395dc"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
  "rayon",
  "stwo",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=6858e3)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=7940032)",
 ]
 
 [[package]]
@@ -3319,7 +3319,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=6858e3#6858e38b0a1808129cf6c669f96f63bde844f77b"
+source = "git+https://github.com/starkware-libs/stwo?rev=7940032#794003288afb8584b7eed7a0c017abb9f79395dc"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3458,7 +3458,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=6858e3#6858e38b0a1808129cf6c669f96f63bde844f77b"
+source = "git+https://github.com/starkware-libs/stwo?rev=7940032#794003288afb8584b7eed7a0c017abb9f79395dc"
 dependencies = [
  "hashbrown 0.15.2",
  "itertools 0.12.1",
@@ -3512,8 +3512,8 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=6858e3)",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=6858e3)",
+ "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=7940032)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=7940032)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-common 0.1.0",
  "stwo-cairo-serialize 0.1.0",
