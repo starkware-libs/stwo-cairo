@@ -72,6 +72,7 @@ impl<B: Backend> TreeBuilder<B> for MockTreeBuilder<'_> {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use std::array;
     use std::simd::u32x16;

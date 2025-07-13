@@ -1,59 +1,70 @@
-use cairo_air::air::{CairoComponents, PublicData};
+use std::collections::HashMap;
+
+use cairo_air::air::{CairoComponents, CairoInteractionElements, PublicData};
 use cairo_air::opcodes_air::OpcodeComponents;
-use itertools::{chain, Itertools};
+use cairo_air::preprocessed::PreProcessedTrace;
 use num_traits::One;
-use stwo::core::channel::MerkleChannel;
+use stwo::core::channel::Blake2sChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::TreeVec;
-use stwo::core::poly::circle::CanonicCoset;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::backend::{BackendForChannel, Column};
-use stwo::prover::CommitmentSchemeProver;
+use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::prover_types::felt::split_f252;
-use stwo_constraint_framework::relation_tracker::{
-    add_to_relation_entries, RelationSummary, RelationTrackerEntry,
-};
+use stwo_constraint_framework::relation_tracker::{add_to_relation_entries, RelationTrackerEntry};
 use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
 
-pub fn track_and_summarize_cairo_relations<MC: MerkleChannel>(
-    commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
-    components: &CairoComponents,
-    public_data: &PublicData,
-) -> RelationSummary
-where
-    SimdBackend: BackendForChannel<MC>,
-{
-    let entries = track_cairo_relations(commitment_scheme, components, public_data);
-    RelationSummary::summarize_relations(&entries).cleaned()
+use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
+use crate::witness::cairo::CairoClaimGenerator;
+
+type CairoRelationEntries = HashMap<String, Vec<RelationTrackerEntry>>;
+
+pub fn relation_tracker(
+    input: ProverInput,
+    preprocessed_trace: PreProcessedTrace,
+) -> CairoRelationEntries {
+    // Proof preliminaries.
+    let mut dummy_channel = Blake2sChannel::default();
+    let mut commitment_scheme = MockCommitmentScheme::default();
+    let mut tree_builder = commitment_scheme.tree_builder();
+    tree_builder.extend_evals(preprocessed_trace.gen_trace());
+    tree_builder.finalize_interaction();
+
+    // Base trace.
+    let cairo_claim_generator = CairoClaimGenerator::new(input);
+    let mut tree_builder = commitment_scheme.tree_builder();
+    let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+    tree_builder.finalize_interaction();
+
+    // Interaction trace. NOTE: we only need the interaction claim, not the interaction trace.
+    let dummy_interaction_elements = CairoInteractionElements::draw(&mut dummy_channel);
+    let mut tree_builder = commitment_scheme.tree_builder();
+    let interaction_claim = interaction_generator
+        .write_interaction_trace(&mut tree_builder, &dummy_interaction_elements);
+
+    let trace = commitment_scheme.trace_domain_evaluations();
+    let components = CairoComponents::new(
+        &claim,
+        &dummy_interaction_elements,
+        &interaction_claim,
+        &preprocessed_trace.ids(),
+    );
+
+    track_cairo_relations(&trace, &components, &claim.public_data)
 }
 
-pub fn track_cairo_relations<MC: MerkleChannel>(
-    commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
+pub fn track_cairo_relations(
+    trace: &TreeVec<Vec<&Vec<M31>>>,
     components: &CairoComponents,
     public_data: &PublicData,
-) -> Vec<RelationTrackerEntry>
-where
-    SimdBackend: BackendForChannel<MC>,
-{
-    // Cairo air aggregates interpolated polynomials. Evaluate to get the original trace.
-    // NOTE: this process is slow, and should be only used for debugging.
-    // TODO(Ohad): skip lde and merkle.
-    let evals = commitment_scheme.trace().polys.map(|interaction_tree| {
-        interaction_tree
-            .iter()
-            .map(|poly| {
-                poly.evaluate(CanonicCoset::new(poly.log_size()).circle_domain())
-                    .values
-                    .to_cpu()
-            })
-            .collect_vec()
-    });
-    let evals = &evals.as_ref();
-    let trace = &evals.into();
-
+) -> CairoRelationEntries {
     let mut entries = cairo_relation_entries(components, trace);
 
     // Public data.
+    let get_location = || -> (String, u32, u32) {
+        let caller = std::panic::Location::caller();
+        (caller.file().to_string(), caller.line(), caller.column())
+    };
+    let mut memory_address_to_id_relation = entries.remove("MemoryAddressToId").unwrap();
+    let mut memory_id_to_big_relation = entries.remove("MemoryIdToBig").unwrap();
     let initial_pc = public_data.initial_state.pc.0;
     let initial_ap = public_data.initial_state.ap.0;
     let final_ap = public_data.final_state.ap.0;
@@ -61,31 +72,39 @@ where
         .public_memory
         .get_entries(initial_pc, initial_ap, final_ap)
         .for_each(|(addr, id, val)| {
-            entries.push(RelationTrackerEntry {
-                relation: "MemoryAddressToId".to_string(),
+            memory_address_to_id_relation.push(RelationTrackerEntry {
                 mult: M31::one(),
                 values: vec![M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                location: get_location(),
             });
-            entries.push(RelationTrackerEntry {
-                relation: "MemoryIdToBig".to_string(),
+            memory_id_to_big_relation.push(RelationTrackerEntry {
                 mult: M31::one(),
                 values: [
                     [M31::from_u32_unchecked(id)].as_slice(),
                     split_f252(val).as_slice(),
                 ]
                 .concat(),
+                location: get_location(),
             });
         });
-    entries.push(RelationTrackerEntry {
-        relation: "Opcodes".to_string(),
+    let mut opcodes_relation = entries.remove("Opcodes").unwrap();
+    opcodes_relation.push(RelationTrackerEntry {
         mult: M31::one(),
         values: public_data.final_state.values().to_vec(),
+        location: get_location(),
     });
-    entries.push(RelationTrackerEntry {
-        relation: "Opcodes".to_string(),
+    opcodes_relation.push(RelationTrackerEntry {
         mult: -M31::one(),
         values: public_data.initial_state.values().to_vec(),
+        location: get_location(),
     });
+
+    entries.insert(
+        "MemoryAddressToId".to_string(),
+        memory_address_to_id_relation,
+    );
+    entries.insert("MemoryIdToBig".to_string(), memory_id_to_big_relation);
+    entries.insert("Opcodes".to_string(), opcodes_relation);
 
     entries
 }
@@ -93,7 +112,7 @@ where
 fn cairo_relation_entries(
     cairo_components: &CairoComponents,
     trace: &TreeVec<Vec<&Vec<M31>>>,
-) -> Vec<RelationTrackerEntry> {
+) -> CairoRelationEntries {
     let CairoComponents {
         opcodes,
         verify_instruction,
@@ -132,100 +151,94 @@ fn cairo_relation_entries(
         ret,
     } = opcodes;
 
-    let mut entries = chain!(
-        add_to_relation_entries_many(add, trace),
-        add_to_relation_entries_many(add_small, trace),
-        add_to_relation_entries_many(add_ap, trace),
-        add_to_relation_entries_many(assert_eq, trace),
-        add_to_relation_entries_many(assert_eq_imm, trace),
-        add_to_relation_entries_many(assert_eq_double_deref, trace),
-        add_to_relation_entries_many(blake, trace),
-        add_to_relation_entries_many(call, trace),
-        add_to_relation_entries_many(call_rel_imm, trace),
-        add_to_relation_entries_many(generic, trace),
-        add_to_relation_entries_many(jnz, trace),
-        add_to_relation_entries_many(jnz_taken, trace),
-        add_to_relation_entries_many(jump, trace),
-        add_to_relation_entries_many(jump_double_deref, trace),
-        add_to_relation_entries_many(jump_rel, trace),
-        add_to_relation_entries_many(jump_rel_imm, trace),
-        add_to_relation_entries_many(mul, trace),
-        add_to_relation_entries_many(mul_small, trace),
-        add_to_relation_entries_many(qm31, trace),
-        add_to_relation_entries_many(ret, trace),
-        add_to_relation_entries(verify_instruction, trace),
-        add_to_relation_entries(&range_checks.rc_6, trace),
-        add_to_relation_entries(&range_checks.rc_8, trace),
-        add_to_relation_entries(&range_checks.rc_11, trace),
-        add_to_relation_entries(&range_checks.rc_12, trace),
-        add_to_relation_entries(&range_checks.rc_18, trace),
-        add_to_relation_entries(&range_checks.rc_19, trace),
-        add_to_relation_entries(&range_checks.rc_4_3, trace),
-        add_to_relation_entries(&range_checks.rc_4_4, trace),
-        add_to_relation_entries(&range_checks.rc_5_4, trace),
-        add_to_relation_entries(&range_checks.rc_9_9, trace),
-        add_to_relation_entries(&range_checks.rc_7_2_5, trace),
-        add_to_relation_entries(&range_checks.rc_3_6_6_3, trace),
-        add_to_relation_entries(&range_checks.rc_4_4_4_4, trace),
-        add_to_relation_entries(&range_checks.rc_3_3_3_3_3, trace),
-        add_to_relation_entries(verify_bitwise_xor_4, trace),
-        add_to_relation_entries(verify_bitwise_xor_7, trace),
-        add_to_relation_entries(verify_bitwise_xor_8, trace),
-        add_to_relation_entries(verify_bitwise_xor_9, trace),
-        add_to_relation_entries(memory_address_to_id, trace),
-        add_to_relation_entries_many(&memory_id_to_value.0, trace),
-        add_to_relation_entries(&memory_id_to_value.1, trace),
-    )
-    .collect_vec();
+    let mut entries = HashMap::new();
+    entries = add_to_relation_entries_many(add, trace, entries);
+    entries = add_to_relation_entries_many(add_small, trace, entries);
+    entries = add_to_relation_entries_many(add_ap, trace, entries);
+    entries = add_to_relation_entries_many(assert_eq, trace, entries);
+    entries = add_to_relation_entries_many(assert_eq_imm, trace, entries);
+    entries = add_to_relation_entries_many(assert_eq_double_deref, trace, entries);
+    entries = add_to_relation_entries_many(blake, trace, entries);
+    entries = add_to_relation_entries_many(call, trace, entries);
+    entries = add_to_relation_entries_many(call_rel_imm, trace, entries);
+    entries = add_to_relation_entries_many(generic, trace, entries);
+    entries = add_to_relation_entries_many(jnz, trace, entries);
+    entries = add_to_relation_entries_many(jnz_taken, trace, entries);
+    entries = add_to_relation_entries_many(jump, trace, entries);
+    entries = add_to_relation_entries_many(jump_double_deref, trace, entries);
+    entries = add_to_relation_entries_many(jump_rel, trace, entries);
+    entries = add_to_relation_entries_many(jump_rel_imm, trace, entries);
+    entries = add_to_relation_entries_many(mul, trace, entries);
+    entries = add_to_relation_entries_many(mul_small, trace, entries);
+    entries = add_to_relation_entries_many(qm31, trace, entries);
+    entries = add_to_relation_entries_many(ret, trace, entries);
+    entries = add_to_relation_entries(verify_instruction, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_6, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_8, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_11, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_12, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_18, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_19, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_4_3, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_4_4, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_5_4, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_9_9, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_7_2_5, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_3_6_6_3, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_4_4_4_4, trace, entries);
+    entries = add_to_relation_entries(&range_checks.rc_3_3_3_3_3, trace, entries);
+    entries = add_to_relation_entries(verify_bitwise_xor_4, trace, entries);
+    entries = add_to_relation_entries(verify_bitwise_xor_7, trace, entries);
+    entries = add_to_relation_entries(verify_bitwise_xor_8, trace, entries);
+    entries = add_to_relation_entries(verify_bitwise_xor_9, trace, entries);
+    entries = add_to_relation_entries(memory_address_to_id, trace, entries);
+    entries = add_to_relation_entries_many(&memory_id_to_value.0, trace, entries);
+    entries = add_to_relation_entries(&memory_id_to_value.1, trace, entries);
 
     if let Some(components) = &blake_context.components {
-        entries.extend(chain!(
-            add_to_relation_entries(&components.blake_round, trace),
-            add_to_relation_entries(&components.blake_g, trace),
-            add_to_relation_entries(&components.blake_sigma, trace),
-            add_to_relation_entries(&components.triple_xor_32, trace),
-            add_to_relation_entries(&components.verify_bitwise_xor_12, trace),
-        ));
+        entries = add_to_relation_entries(&components.blake_round, trace, entries);
+        entries = add_to_relation_entries(&components.blake_g, trace, entries);
+        entries = add_to_relation_entries(&components.blake_sigma, trace, entries);
+        entries = add_to_relation_entries(&components.triple_xor_32, trace, entries);
+        entries = add_to_relation_entries(&components.verify_bitwise_xor_12, trace, entries);
     }
 
     // Builtins
     if let Some(add_mod) = &builtins.add_mod_builtin {
-        entries.extend(add_to_relation_entries(add_mod, trace));
+        entries = add_to_relation_entries(add_mod, trace, entries);
     }
     if let Some(bitwise) = &builtins.bitwise_builtin {
-        entries.extend(add_to_relation_entries(bitwise, trace));
+        entries = add_to_relation_entries(bitwise, trace, entries);
     }
     if let Some(pederson) = &builtins.pedersen_builtin {
-        entries.extend(add_to_relation_entries(pederson, trace));
+        entries = add_to_relation_entries(pederson, trace, entries);
     }
     if let Some(poseidon) = &builtins.poseidon_builtin {
-        entries.extend(add_to_relation_entries(poseidon, trace));
+        entries = add_to_relation_entries(poseidon, trace, entries);
     }
     if let Some(mul_mod) = &builtins.mul_mod_builtin {
-        entries.extend(add_to_relation_entries(mul_mod, trace));
+        entries = add_to_relation_entries(mul_mod, trace, entries);
     }
     if let Some(rc_96) = &builtins.range_check_96_builtin {
-        entries.extend(add_to_relation_entries(rc_96, trace));
+        entries = add_to_relation_entries(rc_96, trace, entries);
     }
     if let Some(rc_128) = &builtins.range_check_128_builtin {
-        entries.extend(add_to_relation_entries(rc_128, trace));
+        entries = add_to_relation_entries(rc_128, trace, entries);
     }
 
     if let Some(components) = &poseidon_context.components {
-        entries.extend(chain!(
-            add_to_relation_entries(&components.poseidon_3_partial_rounds_chain, trace),
-            add_to_relation_entries(&components.poseidon_full_round_chain, trace),
-            add_to_relation_entries(&components.cube_252, trace),
-            add_to_relation_entries(&components.poseidon_round_keys, trace),
-            add_to_relation_entries(&components.range_check_felt_252_width_27, trace),
-        ));
+        entries =
+            add_to_relation_entries(&components.poseidon_3_partial_rounds_chain, trace, entries);
+        entries = add_to_relation_entries(&components.poseidon_full_round_chain, trace, entries);
+        entries = add_to_relation_entries(&components.cube_252, trace, entries);
+        entries = add_to_relation_entries(&components.poseidon_round_keys, trace, entries);
+        entries =
+            add_to_relation_entries(&components.range_check_felt_252_width_27, trace, entries);
     }
 
     if let Some(components) = &pedersen_context.components {
-        entries.extend(chain!(
-            add_to_relation_entries(&components.pedersen_points_table, trace),
-            add_to_relation_entries(&components.partial_ec_mul, trace),
-        ));
+        entries = add_to_relation_entries(&components.pedersen_points_table, trace, entries);
+        entries = add_to_relation_entries(&components.partial_ec_mul, trace, entries);
     }
 
     entries
@@ -234,9 +247,38 @@ fn cairo_relation_entries(
 fn add_to_relation_entries_many<E: FrameworkEval>(
     components: &[FrameworkComponent<E>],
     trace: &TreeVec<Vec<&Vec<M31>>>,
-) -> Vec<RelationTrackerEntry> {
-    components
-        .iter()
-        .flat_map(|x| add_to_relation_entries(x, trace))
-        .collect()
+    mut entries: CairoRelationEntries,
+) -> CairoRelationEntries {
+    for component in components {
+        entries = add_to_relation_entries(component, trace, entries);
+    }
+    entries
 }
+
+#[cfg(test)]
+mod tests {
+    use stwo_cairo_adapter::test_utils::{get_test_program, run_program_and_adapter};
+    use stwo_constraint_framework::relation_tracker::RelationSummary;
+
+    use super::*;
+
+    #[test]
+    fn test_relation_tracker() {
+        let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
+        let input = run_program_and_adapter(&compiled_program);
+        let preprocessed_trace = PreProcessedTrace::canonical_without_pedersen();
+
+        let entries = relation_tracker(input, preprocessed_trace);
+
+        let summary = RelationSummary::summarize_relations(&entries);
+        let addr_to_id_relation = summary
+            .get_relation_info("MemoryAddressToId")
+            .map(|r| r.to_vec());
+        let cleaned_summary = summary.cleaned();
+        let addr_to_id_relation_cleaned = cleaned_summary.get_relation_info("MemoryAddressToId");
+
+        assert!(!addr_to_id_relation.unwrap().is_empty());
+        assert!(addr_to_id_relation_cleaned.is_none());
+    }
+}
+

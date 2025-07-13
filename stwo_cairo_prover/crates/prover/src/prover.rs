@@ -94,18 +94,6 @@ where
         &preprocessed_trace.ids(),
     );
 
-    // TODO(Ohad): move to a testing routine.
-    #[cfg(feature = "relation-tracker")]
-    {
-        use crate::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
-        let summary = track_and_summarize_cairo_relations(
-            &commitment_scheme,
-            &component_builder,
-            &claim.public_data,
-        );
-        tracing::info!("Relations summary: {:?}", summary);
-    }
-
     let components = component_builder.provers();
 
     // Prove stark.
