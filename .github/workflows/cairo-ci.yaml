@@ -35,80 +35,110 @@ jobs:
       - run: scarb test --features=qm31_opcode --package stwo_verifier_core
       - run: scarb test --features=qm31_opcode --package stwo_cairo_air
       - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
-  run-tests:
-    runs-on: stwo-cairo-avx-l
+
+  rust-tests:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Adapter Tests"
+            runner: stwo-cairo-avx-l
+            working-directory: ./stwo_cairo_prover
+            command: cargo nextest run --features=std -j 1 -P ci --package stwo-cairo-adapter
+            needs-nextest: true
+            needs-scarb: true
+            env: {}
+          - name: "Prover Tests"
+            runner: stwo-cairo-avx-l
+            working-directory: ./stwo_cairo_prover
+            command: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j 1 -P ci --package stwo_cairo_prover
+            needs-nextest: true
+            needs-scarb: true
+            env:
+              RUST_MIN_STACK: 4194304
+              RUSTFLAGS: -C target-cpu=native
+              RUST_LOG_SPAN_EVENTS: enter,close
+              RUST_LOG: info
+          - name: "Cairo Air Tests"
+            runner: stwo-cairo-avx-l
+            working-directory: ./stwo_cairo_prover
+            command: cargo nextest run -P ci --package cairo-air
+            needs-nextest: true
+            needs-scarb: false
+            env: {}
+          - name: "Build Project"
+            runner: stwo-cairo-avx-l
+            working-directory: ./stwo_cairo_prover
+            command: cargo build
+            needs-nextest: false
+            needs-scarb: false
+            env: {}
+          - name: "Cairo Prove Test"
+            runner: ubuntu-latest
+            working-directory: ./cairo-prove
+            command: ./scripts/test_flow.sh
+            needs-nextest: false
+            needs-scarb: true
+            env: {}
+          - name: "Format Check"
+            runner: ubuntu-latest
+            working-directory: ./stwo_cairo_prover
+            command: scripts/rust_fmt.sh --check
+            needs-nextest: false
+            needs-scarb: false
+            toolchain: nightly-2025-04-06
+            components: rustfmt
+            env: {}
+          - name: "Clippy Check"
+            runner: ubuntu-latest
+            working-directory: ./stwo_cairo_prover
+            command: scripts/clippy.sh
+            needs-nextest: false
+            needs-scarb: false
+            toolchain: nightly-2025-04-06
+            components: clippy
+            env: {}
+    
+    name: ${{ matrix.name }}
     defaults:
       run:
-        working-directory: ./stwo_cairo_prover
+        working-directory: ${{ matrix.working-directory }}
+    
     steps:
       - uses: actions/checkout@v3
+      
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
+      
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        if: ${{ !matrix.toolchain }}
+      
+      - name: Install specific Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        if: ${{ matrix.toolchain }}
+        with:
+          components: ${{ matrix.components }}
+          toolchain: ${{ matrix.toolchain }}
+      
       - uses: software-mansion/setup-scarb@v1
+        if: ${{ matrix.needs-scarb }}
         with:
           scarb-version: "nightly-2025-05-17"
+      
       - name: Install latest nextest release
         uses: taiki-e/install-action@nextest
+        if: ${{ matrix.needs-nextest }}
+      
       - name: Fetch cache
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: stwo_cairo_prover
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests,std -j 1 -P ci
-        env:
-          RUST_MIN_STACK: 4194304
-          RUSTFLAGS: -C target-cpu=native
-          RUST_LOG_SPAN_EVENTS: enter,close
-          RUST_LOG: info
-
-  cairo-prove-test:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./cairo-prove
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential
-      - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: software-mansion/setup-scarb@v1
-        with:
-          scarb-version: "nightly-2025-05-17"
-      - name: Fetch cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: cairo-prove
-      - run: ./scripts/test_flow.sh
-
-  format:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          components: rustfmt
-          toolchain: nightly-2025-04-06
-      - uses: Swatinem/rust-cache@v2
-      - run: scripts/rust_fmt.sh --check
-
-  clippy:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
-    steps:
-      - uses: actions/checkout@v2
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          components: clippy
-          toolchain: nightly-2025-04-06
-      - uses: Swatinem/rust-cache@v2
-      - run: scripts/clippy.sh
+          workspaces: ${{ matrix.working-directory }}
+      
+      - name: Run command
+        run: ${{ matrix.command }}
+        env: ${{ matrix.env }}
 
   merge-gatekeeper:
     runs-on: ubuntu-latest
