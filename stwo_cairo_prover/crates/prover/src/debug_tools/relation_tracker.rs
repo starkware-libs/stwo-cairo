@@ -1,5 +1,7 @@
 use cairo_air::air::{CairoComponents, PublicData};
+use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::opcodes_air::OpcodeComponents;
+use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::{chain, Itertools};
 use num_traits::One;
 use stwo::core::channel::MerkleChannel;
@@ -132,6 +134,38 @@ fn cairo_relation_entries(
         ret,
     } = opcodes;
 
+    let RangeChecksComponents {
+        rc_6,
+        rc_8,
+        rc_11,
+        rc_12,
+        rc_18,
+        rc_18_b,
+        rc_19,
+        rc_19_b,
+        rc_19_c,
+        rc_19_d,
+        rc_19_e,
+        rc_19_f,
+        rc_19_g,
+        rc_19_h,
+        rc_4_3,
+        rc_4_4,
+        rc_5_4,
+        rc_9_9,
+        rc_9_9_b,
+        rc_9_9_c,
+        rc_9_9_d,
+        rc_9_9_e,
+        rc_9_9_f,
+        rc_9_9_g,
+        rc_9_9_h,
+        rc_7_2_5,
+        rc_3_6_6_3,
+        rc_4_4_4_4,
+        rc_3_3_3_3_3,
+    } = range_checks;
+
     let mut entries = chain!(
         add_to_relation_entries_many(add, trace),
         add_to_relation_entries_many(add_small, trace),
@@ -154,20 +188,35 @@ fn cairo_relation_entries(
         add_to_relation_entries_many(qm31, trace),
         add_to_relation_entries_many(ret, trace),
         add_to_relation_entries(verify_instruction, trace),
-        add_to_relation_entries(&range_checks.rc_6, trace),
-        add_to_relation_entries(&range_checks.rc_8, trace),
-        add_to_relation_entries(&range_checks.rc_11, trace),
-        add_to_relation_entries(&range_checks.rc_12, trace),
-        add_to_relation_entries(&range_checks.rc_18, trace),
-        add_to_relation_entries(&range_checks.rc_19, trace),
-        add_to_relation_entries(&range_checks.rc_4_3, trace),
-        add_to_relation_entries(&range_checks.rc_4_4, trace),
-        add_to_relation_entries(&range_checks.rc_5_4, trace),
-        add_to_relation_entries(&range_checks.rc_9_9, trace),
-        add_to_relation_entries(&range_checks.rc_7_2_5, trace),
-        add_to_relation_entries(&range_checks.rc_3_6_6_3, trace),
-        add_to_relation_entries(&range_checks.rc_4_4_4_4, trace),
-        add_to_relation_entries(&range_checks.rc_3_3_3_3_3, trace),
+        add_to_relation_entries(rc_6, trace),
+        add_to_relation_entries(rc_8, trace),
+        add_to_relation_entries(rc_11, trace),
+        add_to_relation_entries(rc_12, trace),
+        add_to_relation_entries(rc_18, trace),
+        add_to_relation_entries(rc_19, trace),
+        add_to_relation_entries(rc_4_3, trace),
+        add_to_relation_entries(rc_4_4, trace),
+        add_to_relation_entries(rc_5_4, trace),
+        add_to_relation_entries(rc_9_9, trace),
+        add_to_relation_entries(rc_9_9_b, trace),
+        add_to_relation_entries(rc_9_9_c, trace),
+        add_to_relation_entries(rc_9_9_d, trace),
+        add_to_relation_entries(rc_9_9_e, trace),
+        add_to_relation_entries(rc_9_9_f, trace),
+        add_to_relation_entries(rc_9_9_g, trace),
+        add_to_relation_entries(rc_9_9_h, trace),
+        add_to_relation_entries(rc_18_b, trace),
+        add_to_relation_entries(rc_19_b, trace),
+        add_to_relation_entries(rc_19_c, trace),
+        add_to_relation_entries(rc_19_d, trace),
+        add_to_relation_entries(rc_19_e, trace),
+        add_to_relation_entries(rc_19_f, trace),
+        add_to_relation_entries(rc_19_g, trace),
+        add_to_relation_entries(rc_19_h, trace),
+        add_to_relation_entries(rc_7_2_5, trace),
+        add_to_relation_entries(rc_3_6_6_3, trace),
+        add_to_relation_entries(rc_4_4_4_4, trace),
+        add_to_relation_entries(rc_3_3_3_3_3, trace),
         add_to_relation_entries(verify_bitwise_xor_4, trace),
         add_to_relation_entries(verify_bitwise_xor_7, trace),
         add_to_relation_entries(verify_bitwise_xor_8, trace),
@@ -178,53 +227,80 @@ fn cairo_relation_entries(
     )
     .collect_vec();
 
-    if let Some(components) = &blake_context.components {
+    if let Some(cairo_air::blake::air::Components {
+        blake_round,
+        blake_g,
+        blake_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
+    }) = &blake_context.components
+    {
         entries.extend(chain!(
-            add_to_relation_entries(&components.blake_round, trace),
-            add_to_relation_entries(&components.blake_g, trace),
-            add_to_relation_entries(&components.blake_sigma, trace),
-            add_to_relation_entries(&components.triple_xor_32, trace),
-            add_to_relation_entries(&components.verify_bitwise_xor_12, trace),
+            add_to_relation_entries(blake_round, trace),
+            add_to_relation_entries(blake_g, trace),
+            add_to_relation_entries(blake_sigma, trace),
+            add_to_relation_entries(triple_xor_32, trace),
+            add_to_relation_entries(verify_bitwise_xor_12, trace),
         ));
     }
 
     // Builtins
-    if let Some(add_mod) = &builtins.add_mod_builtin {
+    let BuiltinComponents {
+        add_mod_builtin,
+        bitwise_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        mul_mod_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin,
+    } = builtins;
+    if let Some(add_mod) = add_mod_builtin {
         entries.extend(add_to_relation_entries(add_mod, trace));
     }
-    if let Some(bitwise) = &builtins.bitwise_builtin {
+    if let Some(bitwise) = bitwise_builtin {
         entries.extend(add_to_relation_entries(bitwise, trace));
     }
-    if let Some(pederson) = &builtins.pedersen_builtin {
+    if let Some(pederson) = pedersen_builtin {
         entries.extend(add_to_relation_entries(pederson, trace));
     }
-    if let Some(poseidon) = &builtins.poseidon_builtin {
+    if let Some(poseidon) = poseidon_builtin {
         entries.extend(add_to_relation_entries(poseidon, trace));
     }
-    if let Some(mul_mod) = &builtins.mul_mod_builtin {
+    if let Some(mul_mod) = mul_mod_builtin {
         entries.extend(add_to_relation_entries(mul_mod, trace));
     }
-    if let Some(rc_96) = &builtins.range_check_96_builtin {
+    if let Some(rc_96) = range_check_96_builtin {
         entries.extend(add_to_relation_entries(rc_96, trace));
     }
-    if let Some(rc_128) = &builtins.range_check_128_builtin {
+    if let Some(rc_128) = range_check_128_builtin {
         entries.extend(add_to_relation_entries(rc_128, trace));
     }
 
-    if let Some(components) = &poseidon_context.components {
+    if let Some(cairo_air::poseidon::air::Components {
+        poseidon_3_partial_rounds_chain,
+        poseidon_full_round_chain,
+        cube_252,
+        poseidon_round_keys,
+        range_check_felt_252_width_27,
+    }) = &poseidon_context.components
+    {
         entries.extend(chain!(
-            add_to_relation_entries(&components.poseidon_3_partial_rounds_chain, trace),
-            add_to_relation_entries(&components.poseidon_full_round_chain, trace),
-            add_to_relation_entries(&components.cube_252, trace),
-            add_to_relation_entries(&components.poseidon_round_keys, trace),
-            add_to_relation_entries(&components.range_check_felt_252_width_27, trace),
+            add_to_relation_entries(poseidon_3_partial_rounds_chain, trace),
+            add_to_relation_entries(poseidon_full_round_chain, trace),
+            add_to_relation_entries(cube_252, trace),
+            add_to_relation_entries(poseidon_round_keys, trace),
+            add_to_relation_entries(range_check_felt_252_width_27, trace),
         ));
     }
 
-    if let Some(components) = &pedersen_context.components {
+    if let Some(cairo_air::pedersen::air::Components {
+        pedersen_points_table,
+        partial_ec_mul,
+    }) = &pedersen_context.components
+    {
         entries.extend(chain!(
-            add_to_relation_entries(&components.pedersen_points_table, trace),
-            add_to_relation_entries(&components.partial_ec_mul, trace),
+            add_to_relation_entries(pedersen_points_table, trace),
+            add_to_relation_entries(partial_ec_mul, trace),
         ));
     }
 
