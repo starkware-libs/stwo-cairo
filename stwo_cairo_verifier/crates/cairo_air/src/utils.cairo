@@ -1,6 +1,5 @@
 use core::array::ToSpanTrait;
 use core::iter::{IntoIterator, Iterator};
-use core::num::traits::WrappingMul;
 use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::fields::m31::M31;
@@ -52,8 +51,7 @@ pub fn tree_array_concat_cols(tree_array: Array<TreeArray<Span<u32>>>) -> TreeAr
 
 /// Splits a 252 bit dense representation into felts, each with `N_BITS_PER_FELT` bits.
 pub fn split_f252(x: [u32; 8]) -> [M31; memory_id_to_big::N_M31_IN_FELT252] {
-    let mask = pow2(memory_id_to_big::N_BITS_PER_FELT) - 1;
-    let segments: [u32; memory_id_to_big::N_M31_IN_FELT252] = split(x, mask);
+    let segments: [u32; memory_id_to_big::N_M31_IN_FELT252] = split(x);
     let mut m31_segments = array![];
 
     for segment in segments.span() {
@@ -106,40 +104,43 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
 /// - `N`: the number of 32-bit words in the input.
 /// - `M`: the number of felts in the output.
 /// - `x`: the input dense representation.
-/// - `mask`: (1 << N_BITS_PER_FELT) - 1.
-// TODO: Why is the mask passed?
 fn split<
     const N: usize,
     const M: usize,
     impl FixedArrayToSpan: ToSpanTrait<[u32; N], u32>,
     impl SpanTryIntoFixedArray: TryInto<Span<u32>, @Box<[u32; M]>>,
 >(
-    x: [u32; N], mask: u32,
+    x: [u32; N],
 ) -> [u32; M] {
     let mut res = array![];
     let mut n_bits_in_word = 32;
     let mut word_iter = FixedArrayToSpan::span(@x).into_iter();
     let mut word = *word_iter.next().unwrap_or(@0);
+    let n = pow2(memory_id_to_big::N_BITS_PER_FELT).try_into().unwrap();
 
     for _ in 0..M {
         if n_bits_in_word > memory_id_to_big::N_BITS_PER_FELT {
-            res.append(word & mask);
-            word /= pow2(memory_id_to_big::N_BITS_PER_FELT);
+            let (q, r) = DivRem::div_rem(word, n);
+            res.append(r);
+            word = q;
             n_bits_in_word -= memory_id_to_big::N_BITS_PER_FELT;
             continue;
         }
 
-        let mut segment = word;
+        let mut limb = word;
         // Fetch next word.
         word = *word_iter.next().unwrap_or(@0);
 
         // If we need more bits to fill, take from next word.
         if n_bits_in_word < memory_id_to_big::N_BITS_PER_FELT {
-            segment = segment | ((WrappingMul::wrapping_mul(word, pow2(n_bits_in_word))) & mask);
-            word /= pow2(memory_id_to_big::N_BITS_PER_FELT - n_bits_in_word);
+            let shift_left = pow2(n_bits_in_word);
+            let d = pow2(memory_id_to_big::N_BITS_PER_FELT - n_bits_in_word).try_into().unwrap();
+            let (q, r) = DivRem::div_rem(word, d);
+            limb = r * shift_left + limb;
+            word = q;
         }
 
-        res.append(segment);
+        res.append(limb);
 
         n_bits_in_word += 32 - memory_id_to_big::N_BITS_PER_FELT;
     }
