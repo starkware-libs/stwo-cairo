@@ -1,3 +1,4 @@
+use std::collections::hash_map::Entry;
 use std::ops::{Deref, DerefMut};
 
 use bytemuck::{Pod, Zeroable};
@@ -155,14 +156,7 @@ impl MemoryBuilder {
         }
 
         let res = EncodedMemoryValueId::encode(match value {
-            MemoryValue::Small(val) => {
-                if self.small_values.len() < 1 << self.config.log_small_value_capacity {
-                    self.push_small_value(val)
-                } else {
-                    let val = value.as_u256();
-                    self.push_f252_value(val)
-                }
-            }
+            MemoryValue::Small(val) => self.push_small_value(val),
             MemoryValue::F252(val) => self.push_f252_value(val),
         });
         self.address_to_id[addr as usize] = res;
@@ -171,11 +165,23 @@ impl MemoryBuilder {
     // Assumes value is smaller than `config.small_max`.
     fn push_small_value(&mut self, val: u128) -> MemoryValueId {
         let len = self.small_values.len();
-        let id = *self.small_values_cache.entry(val).or_insert(len);
-        if id == len {
-            self.small_values.push(val);
-        };
-        MemoryValueId::Small(id as u32)
+        let capacity = 1 << self.config.log_small_value_capacity;
+        match self.small_values_cache.entry(val) {
+            // If the value was seen before, return the ID.
+            Entry::Occupied(occupied_entry) => MemoryValueId::Small(*occupied_entry.get() as u32),
+            Entry::Vacant(vacant_entry) => {
+                // Otherwise, check if we can fit it in the small values component.
+                if len < capacity {
+                    vacant_entry.insert(len);
+                    self.small_values.push(val);
+                    MemoryValueId::Small(len as u32)
+                } else {
+                    // If not, treat it as a large value.
+                    let f252_value = MemoryValue::Small(val).as_u256();
+                    self.push_f252_value(f252_value)
+                }
+            }
+        }
     }
 
     fn push_f252_value(&mut self, val: [u32; 8]) -> MemoryValueId {
